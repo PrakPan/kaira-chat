@@ -964,7 +964,7 @@ const CityItem = ({
     
     const handleTransferSubmit = async (transferData) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       console.log("TransferDD",transferData);
 
       const bookingPayload = {
@@ -999,7 +999,6 @@ const CityItem = ({
         
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
-        if (loadbookings) loadbookings();
         
         dispatch(
           openNotification({

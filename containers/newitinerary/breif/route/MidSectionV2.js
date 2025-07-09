@@ -195,8 +195,6 @@ const MidSectionV2 = (props) => {
     marginLeft: "5px",
   };
 
-  // console.log("Load Bookings",props?.loadbookings);
-
   return (
     <Container className={`font-lexend`} hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>

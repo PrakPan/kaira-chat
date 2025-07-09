@@ -245,6 +245,14 @@ const ViewHotelDetails = (props) => {
           });
           props?.handleClose();
           props?.onHide();
+          router.push(
+            {
+              pathname: `/itinerary/${router.query.id}`,
+              query: {}, // remove "drawer"
+            },
+            undefined,
+            { scroll: false }
+          );
         } catch (error) {
           props.openNotification({
             type: "error",

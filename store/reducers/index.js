@@ -24,6 +24,7 @@ import Stays from "./StayBookings";
 import ItineraryStatus from './itineraryStatus'; 
 import Passengers from "./Passengers"
 import CallPaymentInfo from "./callPaymentInfo"
+import uiReducer from "./ui";
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -49,7 +50,8 @@ const rootReducer = combineReducers({
   Stays,
   ItineraryStatus,
   Passengers,
-  CallPaymentInfo
+  CallPaymentInfo,  
+  UIState: uiReducer,
 });
 
 export default rootReducer;

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { BiBed } from "react-icons/bi";
 import { ImSpoonKnife } from "react-icons/im";
 import Skeleton from "../../../components/ui/SkeletonCard";
@@ -11,19 +10,18 @@ import styled from "styled-components";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
-import { getHumanDate } from "../../../services/getHumanDate";
 import { getStars } from "../../../components/itinerary/itineraryCity/SlabElement";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import ViewHotelDetails from "../../../components/modals/ViewHotelDetails/viewHotelDetails";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
-import Drawer from "../../../components/ui/Drawer";
 import media from "../../../components/media";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { connect, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
+import { useRouter } from "next/router";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -55,9 +53,9 @@ const HotelBooking = ({
   CityData,
   start_date,
   setStayBookings,
-  itinerary_city_id
+  itinerary_city_id,
 }) => {
-  console.log("itinerary_city_id is:",itinerary_city_id)
+  const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -76,6 +74,8 @@ const HotelBooking = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const { drawer, booking_id, idx, city_id } = router.query;
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails(false);
@@ -113,10 +113,24 @@ const HotelBooking = ({
     }
   }
 
-  // console.log("Bkm",booking)
+  console.log("Bkm",stayBookings)
 
   const handleViewDetails = (value) => {
-    console.log("value is:", booking);
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "showHotelDetail",
+          idx: index,
+          booking_id: booking.id,
+          city_id: booking.city_id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
     handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
     logEvent({
       action: "Hotel_Details",
@@ -189,7 +203,7 @@ const HotelBooking = ({
   function handleBookedHotelViewDetails(i, id, data, city_id) {
     setOpenViewDetails(true);
     setBookingId(id);
-    setCurrentBooking(data);
+    setCurrentBooking(booking);
     setBookingFunData({ index: i, booking: data, city_id: city_id });
   }
 
@@ -231,8 +245,10 @@ const HotelBooking = ({
       clickType,
       occupancies
     );
-    data.clickType = clickType;
-    setCurrentBooking(data);
+    const newData=booking
+    console.log("booking is:",booking)
+    newData.clickType = clickType;
+    setCurrentBooking(newData);
     setShowBookingModal(true);
   }
 
@@ -296,7 +312,6 @@ const HotelBooking = ({
     setShowBookingModal(false);
     setShowDetails(false);
   };
-
 
   return (
     <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
@@ -577,54 +592,54 @@ const HotelBooking = ({
                   )}
                 </div>
 
-                  <div
-                    className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${
-                      payment?.paid_user || !payment?.user_allowed_to_pay
-                        ? "lh:mb-0 mb-2"
-                        : "lg:mb-0 mb-0"
-                    }`}
-                  >
-                    {isPageWide && (
+                <div
+                  className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${
+                    payment?.paid_user || !payment?.user_allowed_to_pay
+                      ? "lh:mb-0 mb-2"
+                      : "lg:mb-0 mb-0"
+                  }`}
+                >
+                  {isPageWide && (
+                    <Button
+                      padding="0.6rem 2.2rem"
+                      borderRadius="8px"
+                      hoverColor="white"
+                      fontWeight="400"
+                      onclick={() => handleViewDetails(booking.name)}
+                    >
+                      View Detail
+                    </Button>
+                  )}
+
+                  {payment?.is_registration_needed ? null : (
+                    // payment?.paid_user
+                    // || !payment?.user_allowed_to_pay ? null
+                    // :
+                    <div
+                      onClick={(e) =>
+                        handleChangeHotel(e, "Change", booking?.name)
+                      }
+                    >
                       <Button
                         padding="0.6rem 2.2rem"
+                        bgColor={"#F7E700"}
                         borderRadius="8px"
-                        hoverColor="white"
                         fontWeight="400"
-                        onclick={() => handleViewDetails(booking.name)}
+                        onclick={() => console.log("")}
                       >
-                        View Detail
+                        Change
                       </Button>
-                    )}
-
-                    {payment?.is_registration_needed ? null : (
-                      // payment?.paid_user
-                      // || !payment?.user_allowed_to_pay ? null
-                      // :
-                      <div
-                        onClick={(e) =>
-                          handleChangeHotel(e, "Change", booking?.name)
-                        }
-                      >
-                        <Button
-                          padding="0.6rem 2.2rem"
-                          bgColor={"#F7E700"}
-                          borderRadius="8px"
-                          fontWeight="400"
-                          onclick={() => console.log("")}
-                        >
-                          Change
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="lg:hidden pr-2 w-full">
-                    <button
-                      onClick={() => handleViewDetails(booking.name)}
-                      className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                    >
-                      View Details
-                    </button>
-                  </div>
+                    </div>
+                  )}
+                </div>
+                <div className="lg:hidden pr-2 w-full">
+                  <button
+                    onClick={() => handleViewDetails(booking.name)}
+                    className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                  >
+                    View Details
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -723,33 +738,41 @@ const HotelBooking = ({
         handleClose={closeBookingModal}
         city_id={booking.city_id}
       ></ViewHotelDetails>
-      <AccommodationModal
-        mercury
-        _setImagesHandler={_setImagesHandler}
-        onHide={() => setOpenViewDetails(false)}
-        id={bookingId}
-        currentBooking={currentBooking}
-        check_in={dates.check_in}
-        check_out={dates.check_out}
-        show={openViewDetails}
-        payment={payment}
-        plan={stayBookings}
-        BookingButton={!isDateOlderThanCurrent(start_date) ? true : false}
-        bookingFunData={bookingFunData}
-        BookingButtonFun={() => {
-          handleClickAc(
-            bookingFunData.index,
-            bookingFunData.booking,
-            bookingFunData.city_id
-          );
-        }}
-        provider={currentBooking?.source}
-        setStayBookings={setStayBookings}
-        setShowDetails={setShowDetails}
-        CityData={CityData}
-        handleCloseDrawer={handleCloseDrawer}
-        setShowLoginModal={setShowLoginModal}
-      />
+      {drawer === "showHotelDetail" && booking_id == booking?.id && (
+        <>
+        <AccommodationModal
+          mercury
+          _setImagesHandler={_setImagesHandler}
+          onHide={() => setOpenViewDetails(false)}
+          id={booking_id}
+          currentBooking={currentBooking}
+          check_in={dates.check_in}
+          check_out={dates.check_out}
+          show={true}
+          payment={payment}
+          plan={stayBookings}
+          BookingButton={!isDateOlderThanCurrent(start_date) ? true : false}
+          bookingFunData={bookingFunData}
+          handleClickAc={handleClickAc}
+          // {() => {
+          //   handleClickAc(
+          //     bookingFunData.index,
+          //     bookingFunData.booking,
+          //     bookingFunData.city_id
+          //   );
+          // }}
+          index={idx}
+          booking={bookingFunData?.booking}
+          city_id={city_id || bookingFunData?.city_id}
+          provider={currentBooking?.source}
+          setStayBookings={setStayBookings}
+          setShowDetails={setOpenViewDetails}
+          CityData={CityData}
+          handleCloseDrawer={handleCloseDrawer}
+          setShowLoginModal={setShowLoginModal}
+        />
+        </>
+      )}
 
       <BookingModal
         mercury

@@ -309,7 +309,7 @@ const Booking = (props) => {
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
-      city_id: props?.selectedBooking?.cityId,
+      city_id: props?.selectedBooking?.cityId || props?.selectedBooking?.city_id,
       filter_by: {
         price_lower_range: filters.budget.price_lower_range,
         price_upper_range: filters.budget.price_upper_range,

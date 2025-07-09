@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  FiX,
   FiMapPin,
   FiCalendar,
   FiClock,
   FiUsers,
-  FiSearch,
   FiNavigation,
-  FiLoader,
   FiCheckCircle,
   FiAlertCircle,
-  FiArrowRight,
+  FiPlane,
+  FiTruck,
+  FiChevronDown,
 } from "react-icons/fi";
 import Drawer from "../../components/ui/Drawer";
 import { FaCar } from "react-icons/fa";
@@ -70,7 +69,8 @@ const PickupDropDrawer = ({
   const [sourceSuggestions, setSourceSuggestions] = useState([]);
   const [destinationSuggestions, setDestinationSuggestions] = useState([]);
   const [showSourceSuggestions, setShowSourceSuggestions] = useState(false);
-  const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
+  const [showDestinationSuggestions, setShowDestinationSuggestions] =
+    useState(false);
   const [errors, setErrors] = useState({});
   const [traceId, setTraceId] = useState(null);
   const [source, setSource] = useState(null);
@@ -596,7 +596,7 @@ const searchAutocomplete = async (query, field) => {
     const gmapResults = res.data.results || [];
     const combinedResults = [...hotelSuggestions, ...gmapResults];
 
-    if (field === "source") {
+   if (field === "source") {
   setSourceSuggestions(combinedResults);
   setShowSourceSuggestions(true);
   
@@ -744,39 +744,68 @@ const searchAutocomplete = async (query, field) => {
       });
   };
 
-  const handleLocationSearch = useCallback((value, field) => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+  const handleLocationSearch = useCallback(
+    (value, field) => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
 
-    searchTimeoutRef.current = setTimeout(() => {
-      searchAutocomplete(value, field);
-    }, 300);
-  }, []);
+      searchTimeoutRef.current = setTimeout(() => {
+        // For pickup: source is hub, destination is gmaps
+        // For drop: source is gmaps, destination is hub
+        const shouldUseHub =
+          (transferType === "pickup" && field === "source") ||
+          (transferType === "drop" && field === "destination");
+
+        if (shouldUseHub) {
+          searchHubs(value);
+        } else {
+          searchAutocomplete(value, field);
+        }
+      }, 300);
+    },
+    [transferType]
+  );
 
   const handleSuggestionSelect = (suggestion, field) => {
+    const isHub = suggestion.code !== undefined;
+    const label = isHub ? suggestion.name : suggestion.text;
+    const id = suggestion.id;
+    console.log("Hereee", label, isHub);
     if (field === "source") {
       setFormData((prev) => ({
         ...prev,
-        sourceAddress: suggestion.text,
-        sourceGmapsId: suggestion.id,
+        sourceAddress: label,
+        sourceGmapsId: isHub ? "" : id,
+        sourceHubId: isHub ? id : "",
       }));
+      setSourceInput(label); // <- important!
       setShowSourceSuggestions(false);
+      setSourceSuggestions([]);
     } else {
       setFormData((prev) => ({
         ...prev,
-        destinationAddress: suggestion.text,
-        destinationGmapsId: suggestion.id,
+        destinationAddress: label,
+        destinationGmapsId: isHub ? "" : id,
+        destinationHubId: isHub ? id : "",
       }));
+      setDestinationInput(label); // <- important!
       setShowDestinationSuggestions(false);
+      setDestinationSuggestions([]);
+    }
+    setHubSuggestions([]);
+  };
+
+  const getCurrentSuggestions = (field) => {
+    const shouldUseHub =
+      (transferType === "pickup" && field === "source") ||
+      (transferType === "drop" && field === "destination");
+
+    if (shouldUseHub) {
+      return hubSuggestions;
     }
 
-    // Clear error for this field
-    const fieldName = field === "source" ? "sourceAddress" : "destinationAddress";
-    setErrors((prev) => ({
-      ...prev,
-      [fieldName]: "",
-    }));
+    return field === "source" ? sourceSuggestions : destinationSuggestions;
   };
 
   const searchTransfers = async () => {
@@ -876,12 +905,11 @@ const searchAutocomplete = async (query, field) => {
         transferType === "pickup" ? originCityName : destinationCityName,
       traceId,
       selectedQuote,
-      source
+      source,
     };
 
     onSubmit(submissionData);
   };
-
 
  const handleInputChange = (field, value) => {
   setFormData((prev) => {
@@ -1077,28 +1105,15 @@ useEffect(() => {
       mobileWidth="100vw"
       width={"50vw"}
     >
-      <div className="h-full w-full bg-white shadow-2xl">
-        <div className="flex h-full flex-col">
-          {/* Header */}
-          <div className="border-b bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="rounded-full bg-white p-2">
-                  
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-black">{getTitle()}</h2>
-                 
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="rounded-full bg-white bg-opacity-20 p-2 text-black hover:bg-opacity-30 transition-all"
-              >
-                <FiX size={24} />
-              </button>
-            </div>
-          </div>
+      <div className="flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-2 p-3">
+          <BackArrow handleClick={onClose} />
+        </div>
+
+        <h2 className="text-lg font-semibold text-gray-900 p-3">
+          {getTitle()}
+        </h2>
 
         {/* Content */}
         <div className="flex-1 overflow-y-visible">
@@ -1228,19 +1243,28 @@ useEffect(() => {
                         (suggestion) => (
                           <div
                             key={suggestion.id}
-                            onClick={() => handleSuggestionSelect(suggestion, "destination")}
-                            className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                            onMouseDown={() =>
+                              handleSuggestionSelect(suggestion, "destination")
+                            }
+                            className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                           >
-                            <div className="flex items-center space-x-3">
-                              <FiMapPin className="text-gray-400 flex-shrink-0" size={16} />
-                              <span className="text-gray-900">{suggestion.text}</span>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-sm text-gray-900">
+                                {suggestion.name || suggestion.text}
+                              </span>
+                              {suggestion.code && (
+                                <span className="text-xs text-gray-500 ml-auto">
+                                  {suggestion.code}
+                                </span>
+                              )}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                        )
+                      )}
+                    </div>
+                  )}
+              </div>
+            </div>
 
             {/* Date, Time, and Passengers */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -1264,47 +1288,83 @@ useEffect(() => {
                 )}
               </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FiClock size={16} className="inline mr-2 text-blue-600" />
-                      Time
-                    </label>
-                    <input
-                      type="time"
-                      value={formData.transferTime}
-                      onChange={(e) => handleInputChange("transferTime", e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.transferTime ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    {errors.transferTime && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.transferTime}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FiUsers size={16} className="inline mr-2 text-blue-600" />
-                      Passengers
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={formData.passengers}
-                      onChange={(e) => handleInputChange("passengers", parseInt(e.target.value) || 1)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.passengers ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    {errors.passengers && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.passengers}
-                      </p>
-                    )}
-                  </div>
+              <div className="relative" ref={timeDropdownRef}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiClock size={14} className="inline mr-1 text-blue-600" />
+                  Time
+                </label>
+                <div
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm cursor-pointer bg-white flex items-center justify-between ${
+                    errors.transferTime ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                >
+                  <span
+                    className={
+                      formData.transferTime ? "text-gray-900" : "text-gray-500"
+                    }
+                  >
+                    {getSelectedTimeDisplay()}
+                  </span>
+                  <FiChevronDown
+                    size={16}
+                    className={`text-gray-400 transform transition-transform ${
+                      showTimeDropdown ? "rotate-180" : ""
+                    }`}
+                  />
                 </div>
+
+                {showTimeDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-scroll">
+                    {timeOptions.map((option) => (
+                      <div
+                        key={option.value}
+                        onMouseDown={() => handleTimeSelect(option.value)}
+                        className={`px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${
+                          formData.transferTime === option.value
+                            ? "bg-blue-50 text-blue-600"
+                            : ""
+                        }`}
+                      >
+                        <span className="text-sm">{option.display}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {errors.transferTime && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.transferTime}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiUsers size={14} className="inline mr-1 text-blue-600" />
+                  Passengers
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.passengers}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "passengers",
+                      parseInt(e.target.value) || 1
+                    )
+                  }
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
+                    errors.passengers ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                {errors.passengers && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.passengers}
+                  </p>
+                )}
+              </div>
+            </div>
 
             {/* Search Button */}
             <div className="flex justify-center">
@@ -1341,15 +1401,15 @@ useEffect(() => {
             </div>
           </div>
 
-              {/* Error Message */}
-              {searchError && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center space-x-2">
-                    <FiAlertCircle className="text-red-500" size={20} />
-                    <span className="text-red-700">{searchError}</span>
-                  </div>
-                </div>
-              )}
+          {/* Error Message */}
+          {searchError && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4">
+              <div className="flex items-center space-x-2">
+                <FiAlertCircle className="text-red-500" size={16} />
+                <span className="text-red-700 text-sm">{searchError}</span>
+              </div>
+            </div>
+          )}
 
           {/* Transfer Results */}
           {!transferQuotes?.length && isLoadingQuotes ? (
