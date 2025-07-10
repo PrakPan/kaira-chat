@@ -67,12 +67,6 @@ const POI = (props) => {
   }, []);
   useEffect(() => {
     if (props.show && booking_id == props?.id) {
-      console.log(
-        "booking id is:",
-        booking_id,
-        "props booking id is:",
-        props?.id
-      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
@@ -202,11 +196,6 @@ const POI = (props) => {
     }
   };
 
-  // ) : (
-  //   <ErrorContainer>
-  //     Oops! There seems to be a problem, please try again later!
-  //   </ErrorContainer>
-  // )}
   return (
     <>
       <Container>
