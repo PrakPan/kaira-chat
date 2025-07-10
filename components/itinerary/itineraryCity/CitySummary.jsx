@@ -206,6 +206,7 @@ const CitySummary = (props) => {
     } catch (error) {
       setLoading(false);
 
+
       dispatch(
         openNotification({
           type: "error",
