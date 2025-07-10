@@ -16,6 +16,7 @@ import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import BackArrow from "../../ui/BackArrow";
+import zIndex from "@mui/material/styles/zIndex";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -90,10 +91,10 @@ const ErrorContainer = styled.div`
 const ViewHotelDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
+  const { drawer, booking_id, idx, city_id } = router.query;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
-  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -108,12 +109,24 @@ const ViewHotelDetails = (props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (props.show) {
+    if (props.show && drawer!=="showHotelDetail") {
+      console.log(
+        "booking id is:",
+        booking_id,
+        "props booking id is 2:",
+        props?.id
+      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
 
   const fetchDetails = () => {
+    console.log(
+      "booking id is:",
+      booking_id,
+      "props booking id is 2:",
+      props?.id
+    );
     setLoading(true);
     setError(false);
 
@@ -187,6 +200,7 @@ const ViewHotelDetails = (props) => {
         });
     }
   };
+
   const index = props.plan.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
 
   const updateBooking = (recommendation_id, rates) => {
@@ -226,6 +240,8 @@ const ViewHotelDetails = (props) => {
           text: "Hotel added successfully.",
           heading: "Success!",
         });
+        props?.onHide();
+
 
         try {
           stayBookings[index] = {
@@ -242,15 +258,6 @@ const ViewHotelDetails = (props) => {
             heading: "Success!",
           });
           props?.handleClose();
-          props?.onHide();
-          // router.push(
-          //   {
-          //     pathname: `/itinerary/${router.query.id}`,
-          //     query: {}, // remove "drawer"
-          //   },
-          //   undefined,
-          //   { scroll: false }
-          // );
         } catch (error) {
           props.openNotification({
             type: "error",
@@ -276,6 +283,7 @@ const ViewHotelDetails = (props) => {
       backdrop
       className="font-lexend"
       onHide={props.onHide}
+      style={{zIndex:1252}}
       width={"50vw"}
       mobileWidth={"100vw"}
     >

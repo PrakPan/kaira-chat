@@ -205,26 +205,6 @@ const ItineraryCity = (props) => {
           />
         )
       ) : null}
-
-      <HotelBookingDetails
-        // data={data}
-        showDetails={showDetails}
-        BookingButtonFun={() => {
-          if (!localStorage.getItem("access_token")) {
-            props?.setShowLoginModal(true); //put it in redux state
-            return;
-          }
-          props.handleClickAc(
-            props?.index,
-            props?.city,
-            props?.city?.city?.id,
-            props?.city?.id
-          );
-        }} //required
-        setShowDetails={setShowDetails}
-        id={stay ? stay[props?.index]?.id : props?.city?.hotels?.[0]?.id} //required
-        setShowLoginModal={props?.setShowLoginModal}
-      />
     </div>
   );
 };

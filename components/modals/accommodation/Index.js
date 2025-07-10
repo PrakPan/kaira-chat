@@ -63,12 +63,6 @@ const POI = (props) => {
   }, []);
   useEffect(() => {
     if (props.show && booking_id == props?.id) {
-      console.log(
-        "booking id is:",
-        booking_id,
-        "props booking id is:",
-        props?.id
-      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
@@ -77,22 +71,7 @@ const POI = (props) => {
     setLoading(true);
     setError(false);
 
-    if (props?.mercury) {
-      bookingDetails
-        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        })
-        .then((res) => {
-          setLoading(false);
-          setData(res.data);
-        })
-        .catch((err) => {
-          setLoading(false);
-          setError(true);
-        });
-    } else {
+    if (!props?.mercury) {
       setLoading(true);
       setError(false);
       let check_in = props.check_in;
@@ -213,11 +192,6 @@ const POI = (props) => {
     }
   };
 
-  // ) : (
-  //   <ErrorContainer>
-  //     Oops! There seems to be a problem, please try again later!
-  //   </ErrorContainer>
-  // )}
   return (
     <>
       <Container>

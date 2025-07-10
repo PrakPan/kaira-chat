@@ -149,12 +149,7 @@ const getRoomImage = (images) => {
 
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch();
-
-  const { id } = router.query;
-
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,

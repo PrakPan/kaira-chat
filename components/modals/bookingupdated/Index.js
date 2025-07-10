@@ -18,6 +18,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
+import { useRouter } from "next/router";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -87,6 +88,7 @@ const Booking = (props) => {
     errorMsg: "",
   });
 
+  const router=useRouter()
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -139,6 +141,8 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
+    console.log("searching hotels for 2:",props?.itinerary_city_id,"itinerary city is:",router?.query?.itineraryCityId)
+
     if (
       props?.showBookingModal &&
       currentBooking?.check_in &&
@@ -149,12 +153,12 @@ const Booking = (props) => {
     }
   }, [debouncedSearch]);
 
-  useEffect(() => {
-    setMoreOptionsJSX([]);
-    if (props?.showBookingModal && currentBooking?.check_in) {
-      fetchHotelsFilter();
-    }
-  }, [filters.applyFilter]);
+  // useEffect(() => {
+  //   setMoreOptionsJSX([]);
+  //   if (props?.showBookingModal && currentBooking?.check_in) {
+  //     fetchHotelsFilter();
+  //   }
+  // }, [filters.applyFilter]);
 
   const getDate = (dateString) => {
     try {
@@ -281,6 +285,7 @@ const Booking = (props) => {
   };
 
   const fetchHotelsFilter = () => {
+    if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -438,6 +443,7 @@ const Booking = (props) => {
 
   const fetchHotels = () => {
     try {
+      if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);

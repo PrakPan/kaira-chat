@@ -8,6 +8,7 @@ import BookingModal from "../../components/modals/bookingupdated/Index";
 import { format } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
 import * as ga from "../../services/ga/Index";
+import { useRouter } from "next/router";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -36,7 +37,7 @@ const DaybyDay = ({
   setShowLoginModal,
   ...props
 }) => {
-  console.log("transfer bookings is:", transferBookings);
+const router=useRouter()
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
@@ -77,9 +78,6 @@ const DaybyDay = ({
     }
   }, [itineraryDaybyDay]);
 
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
 
   const _changeBookingHandler = (
     name,
@@ -170,22 +168,31 @@ const DaybyDay = ({
       clickType,
       itinerary_city_id
     );
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "changeHotelBooking",
+          clickType: clickType,
+          itineraryCityId: itinerary_city_id,
+          booking_id: id,
+          check_in: stayBookings[i]["check_in"],
+          check_out: stayBookings[i]["check_out"],
+          duration: null,
+          city_id: cityId,
+          city_name: stayBookings[i]["city_name"],
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
     data.clickType = clickType;
     setCurrentBooking(data);
     props.setShowBookingModal(true);
   }
 
-  function handleClick(i, id, data, city_id) {
-    let check_in = props?.itineraryFilter.check_in;
-    let check_out = props?.itineraryFilter.check_out;
-    setDates({ check_in, check_out });
-
-    setBookingId(id);
-    setCurrentBooking(data);
-    setBookingFunData({ index: i, booking: data, city_id: city_id });
-    setShowDetails(true);
-  }
-  console.log("component show modal1 is:", props?.showBookingModal);
 
   const parseDate = (dateString) => {
     if (!dateString) return null;
@@ -580,37 +587,6 @@ const DaybyDay = ({
           />
         </div>
       </div>
-      <BookingModal
-        mercury
-        showFilter={showFilter}
-        setshowFilter={setshowFilter}
-        setShowLoginModal={setShowLoginModal}
-        payment={payment}
-        plan={stayBookings}
-        _setImagesHandler={_setImagesHandler}
-        getPaymentHandler={getPaymentHandler}
-        _updateStayBookingHandler={props._updateStayBookingHandler}
-        tailored_id={
-          stayBookings && stayBookings[0]
-            ? stayBookings[0]["tailored_itinerary"]
-            : null
-        }
-        _updatePaymentHandler={_updatePaymentHandler}
-        _updateBookingHandler={props?._updateBookingHandler}
-        selectedBooking={selectedBooking}
-        itinerary_city_id={itineraryCityId}
-        setShowBookingModal={props?.setShowBookingModal}
-        currentBooking={currentBooking}
-        showBookingModal={props?.showBookingModal}
-        setHideBookingModal={props?.setHideBookingModal}
-        AddHotel={AddHotel}
-        _GetInTouch={props._GetInTouch}
-        handleClick={handleClick}
-        stayBookings={stayBookings}
-        setStayBookings={setStayBookings}
-        itineraryDaybyDay={itineraryDaybyDay}
-        onHide={() => {}}
-      ></BookingModal>
     </>
   );
 };

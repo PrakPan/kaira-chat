@@ -75,20 +75,25 @@ const HotelBooking = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  
+
   const {
     drawer = null,
     booking_id = null,
     idx = null,
     city_id = null,
-    // itineraryCityId = null,
-    // clickType = null,
-    // check_in = null,
-    // check_out = null,
-    // duration = null,
-    // city_name = null,
+    itineraryCityId = null,
+    clickType = null,
+    check_in = null,
+    check_out = null,
+    duration = null,
+    city_name = null,
   } = router.query;
-
+  console.log(
+    "itinerarycityid is:",
+    itineraryCityId,
+    "itinerary_city_id is:",
+    itinerary_city_id
+  );
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails(false);
@@ -284,6 +289,26 @@ const HotelBooking = ({
     newData.clickType = clickType;
     setCurrentBooking(newData);
     setShowBookingModal(true);
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "changeHotelBooking",
+          clickType: clickType,
+          itineraryCityId: itinerary_city_id,
+          booking_id: booking.id,
+          check_in: stayBookings[index]["check_in"],
+          check_out: stayBookings[index]["check_out"],
+          duration: booking?.duration,
+          city_id: booking.city_id,
+          city_name: stayBookings[index]["city_name"],
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
   }
 
   const _setImagesHandler = (images) => {
@@ -782,7 +807,7 @@ const HotelBooking = ({
             currentBooking={currentBooking}
             check_in={dates.check_in}
             check_out={dates.check_out}
-            show={true}
+            show={booking_id == booking?.id}
             payment={payment}
             plan={stayBookings}
             BookingButton={!isDateOlderThanCurrent(start_date) ? true : false}
@@ -829,7 +854,7 @@ const HotelBooking = ({
             selectedBooking={selectedBooking}
             setShowBookingModal={setShowBookingModal}
             currentBooking={currentBooking}
-            showBookingModal={showBookingModal}
+            showBookingModal={itineraryCityId == itinerary_city_id}
             setHideBookingModal={setHideBookingModal}
             AddHotel={AddHotel}
             _GetInTouch={_GetInTouch}
@@ -837,11 +862,22 @@ const HotelBooking = ({
             stayBookings={stayBookings}
             setStayBookings={setStayBookings}
             CityData={CityData}
-            onHide={() => setOpenViewDetails(false)}
+            onHide={() => {
+              if (!drawer || itineraryCityId != itinerary_city_id) return;
+              router.push(
+                {
+                  pathname: `/itinerary/${router?.query?.id}`,
+                  query: {}, // remove "drawer"
+                },
+                undefined,
+                { scroll: false }
+              );
+              setOpenViewDetails(false);
+            }}
             itinerary_city_id={itinerary_city_id}
             clickType={clickType}
-            check_in={check_in}
-            check_out={check_out}
+            check_in={check_in.split(" ")[0]}
+            check_out={check_out.split(" ")[0]}
             duration={duration}
             city_id={city_id}
             city_name={city_name}

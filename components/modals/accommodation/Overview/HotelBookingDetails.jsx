@@ -224,8 +224,13 @@ const HotelBookingDetails = (props) => {
   } catch {}
 
   useEffect(() => {
-    console.log("booking id is:",booking_id,"props booking id is:",props?.id)
     const fetchDetails = async () => {
+      console.log(
+        "booking id is:",
+        booking_id,
+        "props booking id is 1:",
+        props?.id
+      );
       setLoadingDetails(true);
       await bookingDetails
         .get(`/${router?.query?.id}/bookings/accommodation/${props?.id}/`, {
@@ -323,7 +328,8 @@ const HotelBookingDetails = (props) => {
   };
 
   const handleCloseDrawer = () => {
-    const { id } = router.query;
+    const { id, drawer } = router.query;
+    if (!drawer || !props?.showDetails) return;
     router.push(
       {
         pathname: `/itinerary/${id}`,
