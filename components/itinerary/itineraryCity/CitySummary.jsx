@@ -156,7 +156,7 @@ const CitySummary = (props) => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      
+
       dispatch(
         openNotification({
           type: "error",
@@ -204,7 +204,9 @@ const CitySummary = (props) => {
       }
     } catch (err) {
       const errorMsg =
-      err?.response?.data?.errors?.[0]?.message?.[0] || err.response?.data?.errors[0]?.detail || err.message;
+        err?.response?.data?.errors?.[0]?.message?.[0] ||
+        err.response?.data?.errors[0]?.detail ||
+        err.message;
       dispatch(
         openNotification({
           type: "error",
@@ -323,7 +325,14 @@ const CitySummary = (props) => {
                           item?.number_of_adults +
                             item?.number_of_children +
                             item?.number_of_infants}{" "}
-                        tickets
+                        ticket
+                        {item?.pax ||
+                        item?.number_of_adults +
+                          item?.number_of_children +
+                          item?.number_of_infants >
+                          1
+                          ? "s"
+                          : ""}
                       </div>
                     </div>
                     {item?.duration && item?.duration != "0 hours" && (
@@ -377,7 +386,7 @@ const CitySummary = (props) => {
                       className="group relative flex gap-2 w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                       onClick={() => handleTaxi(item.id)}
                     >
-                    <div className="absolute top-2 sm:top-[10px] right-2 opacity-0 group-hover:!opacity-100 transition-opacity duration-200 z-10 p-1">
+                      <div className="absolute top-2 sm:top-[10px] right-2 opacity-0 group-hover:!opacity-100 transition-opacity duration-200 z-10 p-1">
                         <FaPen size={12} />
                       </div>
 
