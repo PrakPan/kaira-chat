@@ -153,12 +153,12 @@ const Booking = (props) => {
     }
   }, [debouncedSearch]);
 
-  // useEffect(() => {
-  //   setMoreOptionsJSX([]);
-  //   if (props?.showBookingModal && currentBooking?.check_in) {
-  //     fetchHotelsFilter();
-  //   }
-  // }, [filters.applyFilter]);
+  useEffect(() => {
+    setMoreOptionsJSX([]);
+    if (props?.showBookingModal && currentBooking?.check_in) {
+      fetchHotelsFilter();
+    }
+  }, [filters.applyFilter]);
 
   const getDate = (dateString) => {
     try {

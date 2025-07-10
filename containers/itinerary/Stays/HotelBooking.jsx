@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { BiBed } from "react-icons/bi";
@@ -56,6 +56,7 @@ const HotelBooking = ({
   itinerary_city_id,
 }) => {
   const router = useRouter();
+
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -131,7 +132,7 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bkm",stayBookings)
+  console.log("Bkm", stayBookings);
 
   const handleViewDetails = (value) => {
     router.push(

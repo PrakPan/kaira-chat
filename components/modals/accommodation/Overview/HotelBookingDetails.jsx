@@ -230,6 +230,7 @@ const HotelBookingDetails = (props) => {
   } catch {}
 
   useEffect(() => {
+    console.log("booking id is:",booking_id,"props booking id is:",props?.id)
     const fetchDetails = async () => {
       console.log(
         "booking id is:",

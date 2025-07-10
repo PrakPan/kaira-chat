@@ -41,7 +41,7 @@ const FloatingView = styled.div`
 `;
 
 const POI = (props) => {
-  console.log("poi hotel props are:",props)
+  console.log("poi hotel props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -51,6 +51,7 @@ const POI = (props) => {
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
+  const { drawer, booking_id, idx, city_id } = router.query;
   const { drawer, booking_id, idx, city_id } = router.query;
 
   useEffect(() => {
@@ -66,6 +67,12 @@ const POI = (props) => {
   }, []);
   useEffect(() => {
     if (props.show && booking_id == props?.id) {
+      console.log(
+        "booking id is:",
+        booking_id,
+        "props booking id is:",
+        props?.id
+      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
