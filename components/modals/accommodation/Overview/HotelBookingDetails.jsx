@@ -170,6 +170,7 @@ const HotelBookingDetails = (props) => {
   const [data, setData] = useState(null);
   const router = useRouter();
   const dispatch = useDispatch();
+  const { drawer, booking_id, idx, city_id } = router.query;
 
   const { id } = router.query;
 
@@ -223,6 +224,7 @@ const HotelBookingDetails = (props) => {
   } catch {}
 
   useEffect(() => {
+    console.log("booking id is:",booking_id,"props booking id is:",props?.id)
     const fetchDetails = async () => {
       setLoadingDetails(true);
       await bookingDetails
@@ -245,7 +247,9 @@ const HotelBookingDetails = (props) => {
         });
       setLoadingDetails(false);
     };
-    fetchDetails();
+    if (props?.id == booking_id && booking_id) {
+      fetchDetails();
+    }
   }, []);
 
   const handleDelete = async () => {
@@ -295,6 +299,7 @@ const HotelBookingDetails = (props) => {
         dispatch(setStays(newStays));
         dispatch(setItinerary(newItinerary));
         setLoading(false);
+        handleCloseDrawer()
         dispatch(
           openNotification({
             type: "success",

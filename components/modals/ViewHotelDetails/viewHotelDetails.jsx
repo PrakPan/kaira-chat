@@ -150,8 +150,6 @@ const ViewHotelDetails = (props) => {
     } else {
       setLoading(true);
       setError(false);
-      let check_in = props.check_in;
-      let check_out = props.check_out;
       if (props.check_in.includes("/")) {
         check_in = props.check_in.split("/").reverse().join("-");
         check_out = props.check_out.split("/").reverse().join("-");
@@ -161,9 +159,9 @@ const ViewHotelDetails = (props) => {
         show_rooms: true,
       };
       if (
-        props.currentBooking &&
-        props.currentBooking.source &&
-        props.currentBooking.source == "Agoda"
+        // props.currentBooking &&
+        // props.currentBooking.source &&
+        props.source == "Agoda"
       ) {
         paramsObj.source = "Agoda";
       }
@@ -245,14 +243,14 @@ const ViewHotelDetails = (props) => {
           });
           props?.handleClose();
           props?.onHide();
-          router.push(
-            {
-              pathname: `/itinerary/${router.query.id}`,
-              query: {}, // remove "drawer"
-            },
-            undefined,
-            { scroll: false }
-          );
+          // router.push(
+          //   {
+          //     pathname: `/itinerary/${router.query.id}`,
+          //     query: {}, // remove "drawer"
+          //   },
+          //   undefined,
+          //   { scroll: false }
+          // );
         } catch (error) {
           props.openNotification({
             type: "error",
@@ -293,7 +291,6 @@ const ViewHotelDetails = (props) => {
                 <HotelBookingDetails
                   _setImagesHandler={props._setImagesHandler}
                   user_rating={props.user_rating}
-                  currentBooking={props.currentBooking}
                   number_of_reviews={props.number_of_reviews}
                   data={data}
                   images={data?.images ? data.images : []}

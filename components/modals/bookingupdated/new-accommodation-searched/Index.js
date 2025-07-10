@@ -22,7 +22,6 @@ const Accommodation = (props) => {
         itinerary_id={props.itinerary_id}
         booking={props.accommodation}
         alternates={props.alternates}
-        selectedBooking={props.selectedBooking}
         num_adults={num_adults}
         num_children={num_children}
         openDetails={() => setShowDetails(true)}
@@ -35,13 +34,12 @@ const Accommodation = (props) => {
 
       <ViewHotelDetails
         mercury={props?.mercury}
-        check_in={props.selectedBooking.check_in}
-        check_out={props.selectedBooking.check_out}
-        pax={props.selectedBooking?.pax}
+        check_in={props.currentBooking.check_in}
+        check_out={props.currentBooking.check_out}
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
-        bookingId={props.selectedBooking.id}
+        bookingId={props.currentBooking.booking_id}
         currentBooking={props.accommodation}
         show={showDetails}
         traceId={props.traceId}

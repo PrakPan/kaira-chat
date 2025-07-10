@@ -38,7 +38,7 @@ const FloatingView = styled.div`
 `;
 
 const POI = (props) => {
-  console.log("poi hotel props are:",props)
+  console.log("poi hotel props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -48,9 +48,7 @@ const POI = (props) => {
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
-  const [hotelDrawerOpen,setHotelDrawerOpen]=useState(false)
-  const showHotelDrawer = useSelector((state) => state.UIState.showHotelDrawer);
-  // const { drawer, bookingId, index, booking, city_id } = router.query;
+  const { drawer, booking_id, idx, city_id } = router.query;
 
   useEffect(() => {
     const handleResize = () => {
@@ -64,7 +62,13 @@ const POI = (props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (props.show) {
+    if (props.show && booking_id == props?.id) {
+      console.log(
+        "booking id is:",
+        booking_id,
+        "props booking id is:",
+        props?.id
+      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
@@ -216,69 +220,70 @@ const POI = (props) => {
   // )}
   return (
     <>
-        <Container>
-          <div>
-            {" "}
-            {props.mercury ? (
-              <>
-                {/* {showHotelDrawer && props.id==bookingId&&<> */}
-                 {/* ( */}
-                  <HotelBookingDetails
-                    showDetails={props?.show}
-                    BookingButtonFun={() => {
-                      props?.handleClickAc(props?.index, props?.booking, props?.city_id);
-                    }}
-                    setShowDetails={props.setShowDetails}
-                    id={props?.id}
-                    setShowLoginModal={props?.setShowLoginModal}
-                    onHide={props?.onHide}
-                  />
-                {/* )</>} */}
-              </>
-            ) : (
-              <>
-                {props?.show ? (
-                  <OverviewParam
-                    _setImagesHandler={props._setImagesHandler}
-                    user_rating={props.user_rating}
-                    currentBooking={props.currentBooking}
-                    number_of_reviews={props.number_of_reviews}
-                    data={data}
-                    images={data?.images ? data.images : []}
-                    experience_filters={
-                      props.poi ? props.poi.experience_filters : null
-                    }
-                    name={props.poi ? props.poi.name : null}
-                    duration={props.poi ? props.poi.ideal_duration_hours : null}
-                    BookingButton={props.BookingButton}
-                    BookingButtonFun={() => {
-                      props?.handleClickAc(
-                        props?.index,
-                        props?.booking,
-                        props?.city_id
-                      );
-                    }}
-                    payment={props.payment}
-                    updateBooking={updateBooking}
-                    bookingId={props?.bookingId}
-                    onHide={props.onHide}
-                    show={props.show}
-                  ></OverviewParam>
-                ) : null}
-              </>
-            )}
-          </div>
-
-          {!isPageWide && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={props.onHide}
+      <Container>
+        <div>
+          {" "}
+          {props.mercury ? (
+            <>
+              <HotelBookingDetails
+                showDetails={props?.show}
+                BookingButtonFun={() => {
+                  props?.handleClickAc(
+                    props?.index,
+                    props?.booking,
+                    props?.city_id
+                  );
+                }}
+                setShowDetails={props.setShowDetails}
+                id={props?.id}
+                setShowLoginModal={props?.setShowLoginModal}
+                onHide={props?.onHide}
               />
-            </FloatingView>
+            </>
+          ) : (
+            <>
+              {props?.show ? (
+                <OverviewParam
+                  _setImagesHandler={props._setImagesHandler}
+                  user_rating={props.user_rating}
+                  currentBooking={props.currentBooking}
+                  number_of_reviews={props.number_of_reviews}
+                  data={data}
+                  images={data?.images ? data.images : []}
+                  experience_filters={
+                    props.poi ? props.poi.experience_filters : null
+                  }
+                  name={props.poi ? props.poi.name : null}
+                  duration={props.poi ? props.poi.ideal_duration_hours : null}
+                  BookingButton={props.BookingButton}
+                  BookingButtonFun={() => {
+                    props?.handleClickAc(
+                      props?.index,
+                      props?.booking,
+                      props?.city_id
+                    );
+                  }}
+                  payment={props.payment}
+                  updateBooking={updateBooking}
+                  bookingId={props?.bookingId}
+                  onHide={props.onHide}
+                  show={props.show}
+                ></OverviewParam>
+              ) : null}
+            </>
           )}
-        </Container>
+        </div>
+
+        {!isPageWide && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={props.onHide}
+            />
+          </FloatingView>
+        )}
+      </Container>
       <ToastContainer />
     </>
   );
