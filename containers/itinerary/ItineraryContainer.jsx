@@ -414,6 +414,7 @@ const ItineraryContainer = (props) => {
         } else {
           for (let hotel of hotels) {
             hotel.itinerary_city_id=itinerary_city_id,
+            hotel.gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id,
             hotel.city_name = city_name;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
@@ -1218,6 +1219,7 @@ if(oldOne){
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
+        itinerary={props?.itinerary}
         group_type={group_type || props.itinerary?.group_type}
         duration_time={duration_time || props.itinerary?.duration_time}
         images={props.itinerary.images}
@@ -1274,6 +1276,8 @@ if(oldOne){
         }
         setEditRoute={setEditRoute}
         cities={props?.cities}
+        resetRef={resetRef}
+        fetchData={fetchData}
         
       ></Overview>
 

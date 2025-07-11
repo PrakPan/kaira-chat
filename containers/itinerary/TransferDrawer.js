@@ -488,7 +488,7 @@ const TransferDrawer = ({
               setShowDrawer={setShowDrawer}
               noChange={isIntracity}
               error={error}
-              // isAirport={isAirport}
+              isAirport={isAirport}
               setIsTransferDrawerOpen={setIsTransferDrawerOpen}
             />
           ) : (
