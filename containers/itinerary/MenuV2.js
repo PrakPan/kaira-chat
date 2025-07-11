@@ -195,13 +195,20 @@ const SimpleTabsV2 = (props) => {
   //   items.push({ id: 4, label: "Transfers", link: "Transfers" });
   // }
 
-  if (props.activityBookings) {
-    items.push({
-      id: 5,
-      label: "Activities",
-      link: "Activities",
-    });
-  }
+ const hasActivities =
+  Array.isArray(props?.itinerary?.cities) &&
+  props.itinerary.cities.some(
+    (city) => Array.isArray(city?.activities) && city.activities.length > 0
+  );
+
+if (hasActivities) {
+  items.push({
+    id: 5,
+    label: "Activities",
+    link: "Activities",
+  });
+}
+
 
   const _handlePoiEditModalOpen = (poi) => {
     {
@@ -870,6 +877,8 @@ const SimpleTabsV2 = (props) => {
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
+                      fetchData={props.fetchData}
+                      resetRef={props?.resetRef}
                       _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
                       loading={loading}
@@ -1194,6 +1203,8 @@ const SimpleTabsV2 = (props) => {
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}
               itinerary={props.itinerary}
+              fetchData={props.fetchData}
+              resetRef={props?.resetRef}
               _GetInTouch={_GetInTouch}
               setShowLoginModal={setShowLoginModal}
               social_title={props?.social_title}

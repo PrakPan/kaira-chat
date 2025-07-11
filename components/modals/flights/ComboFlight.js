@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
 import { connect, useDispatch, useSelector } from "react-redux";
 import axiosflightsearch, {
+  axiosFlightHubSearch,
   axiosFlightSearch,
 } from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
@@ -14,7 +15,7 @@ import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
 import { TbArrowBack } from "react-icons/tb";
 import { openNotification } from "../../../store/actions/notification";
-import { FaFilter } from "react-icons/fa";
+import { FaExchangeAlt, FaFilter } from "react-icons/fa";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
@@ -24,7 +25,10 @@ import {
 } from "../../../store/actions/transferBookingsStore";
 import ComboSection from "./ComboSectionOne";
 import dayjs from "dayjs";
-import axios from 'axios';
+import axios from "axios";
+import { PulseLoader } from "react-spinners";
+import Generalbutton from "../../ui/button/Generallinkbutton";
+import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -90,8 +94,6 @@ const ContentContainer = styled.div`
     margin: auto;
   }
 `;
-
-
 
 const ComboFlight = (props) => {
   console.log("TIMEE", props?.comboStartTime);
@@ -161,6 +163,7 @@ const ComboFlight = (props) => {
   const [flights, setFlights] = useState(
     props?.flightResults ? props?.flightResults : []
   );
+  const [airlineCodes, setAirlineCodes] = useState([]);
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
   const [flightProvider, setProvider] = useState(null);
   const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
@@ -169,17 +172,44 @@ const ComboFlight = (props) => {
   const [propsReady, setPropsReady] = useState(false);
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
-  
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+  const [selectedAirlines, setSelectedAirlines] = useState([]);
+
   const abortControllerRef = useRef(null);
-  const cancelTokenSourceRef = useRef(null); 
+  const cancelTokenSourceRef = useRef(null);
 
   const [currentRequestId, setCurrentRequestId] = useState(0);
 
-const generateRequestId = () => {
-  const newId = currentRequestId + 1;
-  setCurrentRequestId(newId);
-  return newId;
-};
+  //for flight search
+  const [sourceInput, setSourceInput] = useState({
+    id: props?.transferData?.source?.id || "",
+    city_name: props?.transferData?.source?.city_name || "",
+    code: props?.transferData?.source?.code || "",
+  });
+  const [destinationInput, setDestinationInput] = useState({
+    id: props?.transferData?.destination?.id || "",
+    city_name: props?.transferData?.destination?.city_name || "",
+    code: props?.transferData?.destination?.code || "",
+  });
+  const [sourceSuggestions, setSourceSuggestions] = useState([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [sourceLoading, setSourceLoading] = useState(false);
+  const [destinationLoading, setDestinationLoading] = useState(false);
+  const [showSourceSuggestions, setShowSourceSuggestions] = useState(false);
+  const [showDestinationSuggestions, setShowDestinationSuggestions] =
+    useState(false);
+  const sourceInputRef = useRef(null);
+  const destinationInputRef = useRef(null);
+  const [sourceError, setSourceError] = useState("");
+  const [destinationError, setDestinationError] = useState("");
+  const [isSourceFocused, setIsSourceFocused] = useState(false);
+  const [isDestinationFocused, setIsDestinationFocused] = useState(false);
+
+  const generateRequestId = () => {
+    const newId = currentRequestId + 1;
+    setCurrentRequestId(newId);
+    return newId;
+  };
 
   console.log(
     "Source Itinerary",
@@ -187,21 +217,20 @@ const generateRequestId = () => {
     props?.destination_itinerary_city_id
   );
 
- const cancelCurrentRequest = () => {
-  if (cancelTokenSourceRef.current) {
-    console.log("Cancelling current API request");
-    cancelTokenSourceRef.current.cancel('Request cancelled by user');
-    cancelTokenSourceRef.current = null;
-  }
-};
-
-// Cleanup on component unmount
-useEffect(() => {
-  return () => {
-    cancelCurrentRequest();
+  const cancelCurrentRequest = () => {
+    if (cancelTokenSourceRef.current) {
+      console.log("Cancelling current API request");
+      cancelTokenSourceRef.current.cancel("Request cancelled by user");
+      cancelTokenSourceRef.current = null;
+    }
   };
-}, []);
 
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      cancelCurrentRequest();
+    };
+  }, []);
 
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
@@ -327,35 +356,32 @@ useEffect(() => {
     }
   }
 
-useEffect(() => {
-  if (!preferredDepartureTime) return;
+  useEffect(() => {
+    if (!preferredDepartureTime) return;
 
-  const shouldFetchFlights =
-    (props.showComboFlightModal &&
-    props.token &&
-    preferredDepartureTime) || 
-    !props?.skipFetch;
+    const shouldFetchFlights =
+      (props.showComboFlightModal && props.token && preferredDepartureTime) ||
+      !props?.skipFetch;
 
-  if (shouldFetchFlights) {
-    const timeoutId = setTimeout(() => {
-      _FetchFlightsHandler();
-      setTimeUpdated(false);
-    }, 50); 
+    if (shouldFetchFlights) {
+      const timeoutId = setTimeout(() => {
+        _FetchFlightsHandler();
+        setTimeUpdated(false);
+      }, 50);
 
-   
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }
-}, [
-  props.showComboFlightModal,
-  props.token,
-  preferredDepartureTime, 
-  isPageWide,
-  props?.skipFetch,
-  pax,
-  filtersState,
-]);
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [
+    props.showComboFlightModal,
+    props.token,
+    preferredDepartureTime,
+    isPageWide,
+    props?.skipFetch,
+    pax,
+    filtersState,
+  ]);
 
   useEffect(() => {
     console.log("F Resu", props?.flightResults, props?.selectedData);
@@ -376,181 +402,188 @@ useEffect(() => {
     }
   }, [props.flightResults, props.selectedData]);
 
+  const updatePreferredDepartureTime = (newDateTime) => {
+    setPreferredDepartureTime(newDateTime);
+  };
+
+  const handlePaxChange = (newPax) => {
+    setPax(newPax);
+  };
+
+  const handleFiltersChange = (newFilters) => {
+    setFiltersState(newFilters);
+  };
+
+  const _FetchFlightsHandler = async () => {
+    const requestId = generateRequestId();
+    console.log(`Starting request ${requestId}`);
+
+    if (cancelTokenSourceRef.current) {
+      console.log(
+        `Cancelling existing request, starting new request ${requestId}`
+      );
+      cancelTokenSourceRef.current.cancel(
+        "Operation cancelled due to new request"
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      cancelTokenSourceRef.current = null;
+    }
+    cancelTokenSourceRef.current = axios.CancelToken.source();
+    const currentCancelTokenSource = cancelTokenSourceRef.current;
+
+    console.log("Starting flight fetch with time:", preferredDepartureTime);
+    console.log("Using pax values:", pax);
+    console.log("Using filters:", filtersState);
+
+    setLoading(true);
+    setIsFetching(true);
+    setFlightsCount(0);
+    setFlights([]);
+    if (props?.setFlightResults) {
+      props?.setFlightResults([]);
+    }
+    setUpdateBookingState(false);
+    setUnauthorized(false);
+    setNoResults(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: ``,
+    });
+
+    if (props.token) {
+      const requestData = {
+        adult_count: pax.adults,
+        child_count: pax.children,
+        infant_count: pax.infants || 0,
+        direct_flight: filtersState.non_stop_flights ? "true" : "false",
+        journey_type: "1",
+        origin:
+          sourceInput.code ||
+          props.source_code ||
+          props.selectedBooking.origin_iata,
+        destination:
+          destinationInput.code ||
+          props.destination_code ||
+          props.selectedBooking.destination_iata,
+        preferred_departure_time: preferredDepartureTime,
+        flight_cabin_class: classType.value,
+      };
 
 
-const updatePreferredDepartureTime = (newDateTime) => {
-  setPreferredDepartureTime(newDateTime);
- 
-};
+      const selectedAirlines = filtersState?.airlines;
 
-const handlePaxChange = (newPax) => {
-  setPax(newPax);
-};
+      const url = selectedAirlines
+        ? `?airlines=${encodeURIComponent(selectedAirlines)}`
+        : ``;
 
-const handleFiltersChange = (newFilters) => {
-  setFiltersState(newFilters);
-
-};
-
-const _FetchFlightsHandler = async () => {
-  const requestId = generateRequestId();
-  console.log(`Starting request ${requestId}`);
-  
- 
-  if (cancelTokenSourceRef.current) {
-    console.log(`Cancelling existing request, starting new request ${requestId}`);
-    cancelTokenSourceRef.current.cancel('Operation cancelled due to new request');
-    
-    await new Promise(resolve => setTimeout(resolve, 10));
-    cancelTokenSourceRef.current = null;
-  }
-  cancelTokenSourceRef.current = axios.CancelToken.source();
-  const currentCancelTokenSource = cancelTokenSourceRef.current;
- 
-  
-  console.log("Starting flight fetch with time:", preferredDepartureTime);
-  console.log("Using pax values:", pax);
-  console.log("Using filters:", filtersState);
-
-  setLoading(true);
-  setIsFetching(true);
-  setFlightsCount(0);
-  setFlights([]);
-  if (props?.setFlightResults) {
-    props?.setFlightResults([]);
-  }
-  setUpdateBookingState(false);
-  setUnauthorized(false);
-  setNoResults(false);
-  setFetchingIsError({
-    error: false,
-    errorMsg: ``,
-  });
-
-  if (props.token) {
-    const requestData = {
-      adult_count: pax.adults,
-      child_count: pax.children,
-      infant_count: pax.infants || 0,
-      direct_flight: filtersState.non_stop_flights ? "true" : "false",
-      journey_type: "1",
-      origin: props.source_code || props.selectedBooking.origin_iata,
-      destination:
-        props.destination_code || props.selectedBooking.destination_iata,
-      preferred_departure_time: preferredDepartureTime,
-      flight_cabin_class: classType.value,
-    };
-
-    console.log("Flight search request:", requestData);
-
-    axiosFlightSearch
-      .post(
-        `?${filtersState.sort_by}_order=${filtersState.order}${
-          filtersState.departure_time_period
-            ? "&departure_time_period=" + filtersState.departure_time_period
-            : ""
-        }${
-          filtersState.arrival_time_period
-            ? "&arrival_time_period=" + filtersState.arrival_time_period
-            : ""
-        }`,
-        requestData,
-        {
+      axiosFlightSearch
+        .post(url, requestData, {
           headers: {
             Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json",
           },
-          cancelToken: currentCancelTokenSource.token, 
-        }
-      )
-      .then((res) => {
-        if (currentCancelTokenSource.token.reason) {
-          console.log(`Request ${requestId} was cancelled, ignoring response`);
-          return;
-        }
+          cancelToken: currentCancelTokenSource.token,
+        })
+        .then((res) => {
+          if (currentCancelTokenSource.token.reason) {
+            console.log(
+              `Request ${requestId} was cancelled, ignoring response`
+            );
+            return;
+          }
 
-        console.log("Flight search successful");
-        setLoading(false);
-        setMoreLoadingState(false);
-        setIsFetching(false);
-      
-        if (cancelTokenSourceRef.current === currentCancelTokenSource) {
-          cancelTokenSourceRef.current = null;
-        }
+          setLoading(false);
+          setMoreLoadingState(false);
+          setIsFetching(false);
 
-        const provider = res.data.provider;
-        setProvider(provider);
-        localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+          if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+            cancelTokenSourceRef.current = null;
+          }
 
-        if (res.data?.results && res.data.results.length) {
-          setFlights(res.data.results);
-          if (props?.setFlightResults)
-            props?.setFlightResults(res.data.results);
-          setFlightsCount(res.data.results.length);
-        } else {
+          const provider = res.data.provider;
+          setProvider(provider);
+          localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+
+          if (res.data?.results && res.data.results.length) {
+            setFlights(res.data.results);
+            if (!hasFetchedOnce) {
+              setAirlineCodes(res.data.airlines);
+              setHasFetchedOnce(true);
+            }
+            setAirlineCodes(res.data.airlines);
+            if (props?.setFlightResults)
+              props?.setFlightResults(res.data.results);
+            setFlightsCount(res.data.results.length);
+          } else {
+            setFlights([]);
+            if (props?.setFlightResults) props?.setFlightResults([]);
+            setFlightsCount(0);
+            setNoResults(true);
+          }
+        })
+        .catch((err) => {
+          if (axios.isCancel(err)) {
+            console.log(`Flight search request ${requestId} was cancelled`);
+            return;
+          }
+
+          if (currentCancelTokenSource.token.reason) {
+            console.log(
+              `Request ${requestId} was cancelled during error handling`
+            );
+            return;
+          }
+
+          console.error("Flight search error:", err);
+          setLoading(false);
+          setMoreLoadingState(false);
+          setIsFetching(false);
+
+          if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+            cancelTokenSourceRef.current = null;
+          }
+
           setFlights([]);
+
           if (props?.setFlightResults) props?.setFlightResults([]);
           setFlightsCount(0);
-          setNoResults(true);
-        }
-      })
-      .catch((err) => {
-        if (axios.isCancel(err)) {
-          console.log(`Flight search request ${requestId} was cancelled`);
-          return; 
-        }
-        
-     
-        if (currentCancelTokenSource.token.reason) {
-          console.log(`Request ${requestId} was cancelled during error handling`);
-          return;
-        }
-        
-        console.error("Flight search error:", err);
-        setLoading(false);
-        setMoreLoadingState(false);
-        setIsFetching(false);
-        
-        
-        if (cancelTokenSourceRef.current === currentCancelTokenSource) {
-          cancelTokenSourceRef.current = null;
-        }
-        
-        setFlights([]);
-        if (props?.setFlightResults) props?.setFlightResults([]);
-        setFlightsCount(0);
-        setFetchingIsError({
-          error: true,
-          errorMsg: `Sorry, we could not find any flights from ${
-            props.source_code || props.selectedBooking?.origin_iata
-          } to ${
-            props.destination_code || props.selectedBooking?.destination_iata
-          } for given dates at the moment. Please contact us to complete this booking`,
+          setFetchingIsError({
+            error: true,
+            errorMsg: `Sorry, we could not find any flights from ${
+              sourceInput.code ||
+              props.source_code ||
+              props.selectedBooking?.origin_iata
+            } to ${
+              destinationInput.code ||
+              props.destination_code ||
+              props.selectedBooking?.destination_iata
+            } for given dates at the moment. Please contact us to complete this booking`,
+          });
         });
+    } else {
+      console.log("Missing required data for flight search");
+      setLoading(false);
+      setMoreLoadingState(false);
+      setIsFetching(false);
+
+      if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+        cancelTokenSourceRef.current = null;
+      }
+
+      setFlights([]);
+      if (props?.setFlightResults) props?.setFlightResults([]);
+      setFlightsCount(0);
+      setFetchingIsError({
+        error: true,
+        errorMsg: `Sorry, we could not find any flights from ${
+          props.source_code || props.selectedBooking?.origin_iata
+        } to ${
+          props.destination_code || props.selectedBooking?.destination_iata
+        } for given dates at the moment. Please contact us to complete this booking`,
       });
-  } else {
-    console.log("Missing required data for flight search");
-    setLoading(false);
-    setMoreLoadingState(false);
-    setIsFetching(false);
-    
-    if (cancelTokenSourceRef.current === currentCancelTokenSource) {
-      cancelTokenSourceRef.current = null;
     }
-    
-    setFlights([]);
-    if (props?.setFlightResults) props?.setFlightResults([]);
-    setFlightsCount(0);
-    setFetchingIsError({
-      error: true,
-      errorMsg: `Sorry, we could not find any flights from ${
-        props.source_code || props.selectedBooking?.origin_iata
-      } to ${
-        props.destination_code || props.selectedBooking?.destination_iata
-      } for given dates at the moment. Please contact us to complete this booking`,
-    });
-  }
-};
+  };
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -684,7 +717,9 @@ const _FetchFlightsHandler = async () => {
       .catch((err) => {
         console.log("Error in Updating Flight", err.message);
         const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message || `This flight is currently not available at the moment.`;
+          err?.response?.data?.errors?.[0]?.message?.[0] ||
+          err.message ||
+          `This flight is currently not available at the moment.`;
         setUpdateBookingState(false);
         setMoreLoadingState(false);
         setUnauthorized(true);
@@ -751,6 +786,154 @@ const _FetchFlightsHandler = async () => {
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
   };
+
+  const searchHubsAirports = useCallback(async (query, type) => {
+    if (!query || query.length < 2) {
+      const setSuggestions =
+        type === "source" ? setSourceSuggestions : setDestinationSuggestions;
+      setSuggestions([]);
+      return;
+    }
+
+    const setLoading =
+      type === "source" ? setSourceLoading : setDestinationLoading;
+    const setSuggestions =
+      type === "source" ? setSourceSuggestions : setDestinationSuggestions;
+
+    setLoading(true);
+
+    try {
+      const response = await axiosFlightHubSearch.get(
+        `/?q=${encodeURIComponent(query)}`
+      );
+      setSuggestions(response.data.results || []);
+    } catch (error) {
+      console.error("Error searching hubs/airports:", error);
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  }, 300);
+
+  // Add this debounce function before the component or import it from lodash
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  const handleSourceInputChange = useCallback(
+    (value) => {
+      setSourceInput((prev) => ({
+        ...prev,
+        city_name: value,
+        ...(value !== prev.city_name && prev.code && { code: "", id: "" }),
+      }));
+
+      if (sourceError) {
+        setSourceError("");
+      }
+
+      if (value.length >= 1) {
+        setShowSourceSuggestions(true);
+        searchHubsAirports(value, "source");
+      } else {
+        setShowSourceSuggestions(false);
+        setSourceSuggestions([]);
+      }
+    },
+    [sourceError, searchHubsAirports]
+  );
+
+  const handleDestinationInputChange = useCallback(
+    (value) => {
+      setDestinationInput((prev) => ({
+        ...prev,
+        city_name: value,
+        ...(value !== prev.city_name && prev.code && { code: "", id: "" }),
+      }));
+
+      if (destinationError) {
+        setDestinationError("");
+      }
+
+      if (value.length >= 2) {
+        setShowDestinationSuggestions(true);
+        searchHubsAirports(value, "destination");
+      } else {
+        setShowDestinationSuggestions(false);
+        setDestinationSuggestions([]);
+      }
+    },
+    [destinationError, searchHubsAirports]
+  );
+
+  const handleSourceSelect = useCallback((suggestion) => {
+    setSourceInput({
+      id: suggestion.id,
+      city_name: suggestion.city_name,
+      code: suggestion.code,
+    });
+    setShowSourceSuggestions(false);
+    setSourceSuggestions([]);
+    setSourceError("");
+  }, []);
+
+  const handleDestinationSelect = useCallback((suggestion) => {
+    setDestinationInput({
+      id: suggestion.id,
+      city_name: suggestion.city_name,
+      code: suggestion.code,
+    });
+    setShowDestinationSuggestions(false);
+    setDestinationSuggestions([]);
+    setDestinationError("");
+  }, []);
+
+  // Add validation function
+  const validateInputs = () => {
+    let isValid = true;
+
+    if (!sourceInput.code) {
+      setSourceError("Please select a source airport");
+      isValid = false;
+    }
+
+    if (!destinationInput.code) {
+      setDestinationError("Please select a destination airport");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if click is outside both input containers
+      const sourceContainer = sourceInputRef.current?.closest(".relative");
+      const destinationContainer =
+        destinationInputRef.current?.closest(".relative");
+
+      if (sourceContainer && !sourceContainer.contains(event.target)) {
+        setShowSourceSuggestions(false);
+      }
+      if (
+        destinationContainer &&
+        !destinationContainer.contains(event.target)
+      ) {
+        setShowDestinationSuggestions(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
 
   const renderFlightContent = () => {
     if (updateBookingState) {
@@ -855,14 +1038,42 @@ const _FetchFlightsHandler = async () => {
       <div className="w-full">
         <ToastContainer />
 
+        <SearchSection
+          sourceInput={sourceInput}
+          destinationInput={destinationInput}
+          handleSourceInputChange={handleSourceInputChange}
+          handleDestinationInputChange={handleDestinationInputChange}
+          setDestinationInput={setDestinationInput}
+          setSourceInput={setSourceInput}
+          handleSourceSelect={handleSourceSelect}
+          handleDestinationSelect={handleDestinationSelect}
+          showSourceSuggestions={showSourceSuggestions}
+          showDestinationSuggestions={showDestinationSuggestions}
+          sourceSuggestions={sourceSuggestions}
+          destinationSuggestions={destinationSuggestions}
+          sourceError={sourceError}
+          destinationError={destinationError}
+          sourceInputRef={sourceInputRef}
+          destinationInputRef={destinationInputRef}
+          loading={loading}
+          validateInputs={validateInputs}
+          setShowSourceSuggestions={setShowSourceSuggestions}
+          setShowDestinationSuggestions={setShowDestinationSuggestions}
+          _FetchFlightsHandler={_FetchFlightsHandler}
+        />
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
           showFilter={showFilter}
           setShowFilter={setShowFilter}
           filtersState={filtersState}
+          flights={flights}
+          airlineCodes={airlineCodes}
+          setAirlineCodes={setAirlineCodes}
           setFiltersState={setFiltersState}
           flightCount={flightCount}
+          selectedAirlines={selectedAirlines}
+          setSelectedAirlines={setSelectedAirlines}
           setHideFlightModal={props.setHideFlightModal}
           text={props.selectedBooking?.name}
           selectedBooking={props.selectedBooking}
@@ -942,3 +1153,179 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(ComboFlight);
+
+const SearchSection = ({
+  sourceInput,
+  destinationInput,
+  handleSourceInputChange,
+  handleDestinationInputChange,
+  handleSourceSelect,
+  handleDestinationSelect,
+  showSourceSuggestions,
+  showDestinationSuggestions,
+  sourceSuggestions,
+  destinationSuggestions,
+  sourceError,
+  destinationError,
+  sourceInputRef,
+  destinationInputRef,
+  loading,
+  validateInputs,
+  setShowSourceSuggestions,
+  setShowDestinationSuggestions,
+  _FetchFlightsHandler,
+  setDestinationInput,
+  setSourceInput,
+}) => {
+  const handleLocationChange = () => {
+    setDestinationInput(sourceInput);
+    setSourceInput(destinationInput);
+    _FetchFlightsHandler();
+  };
+
+  console.log("Sourceee", sourceInput, destinationInput);
+  return (
+    // Your existing SearchSection JSX here
+  <div className="mb-4">
+  <div className="flex items-center justify-between">
+    {/* Source Input */}
+    <div className="flex items-center gap-2 w-full">
+      {/* From Input */}
+      <div className="relative flex-1 min-w-0">
+        <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+          From <FiNavigation color="red" />
+        </label>
+        <div className="relative overflow-hidden">
+          <input
+            ref={sourceInputRef}
+            type="text"
+            value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
+            onChange={(e) => {
+              handleSourceInputChange(e.target.value);
+              setShowSourceSuggestions(true);
+            }}
+            placeholder="Select source airport"
+            className={`w-full px-3 py-2 pl-8 ${sourceInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
+              sourceError ? "border-red-500" : "border-gray-300"
+            }`}
+            style={{ textOverflow: 'ellipsis' }}
+          />
+          {sourceInput.code && (
+            <FiCheckCircle
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+              size={16}
+            />
+          )}
+        </div>
+        {/* Error positioned absolutely to not affect layout */}
+        {sourceError && (
+          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+            {sourceError}
+          </div>
+        )}
+        {showSourceSuggestions && sourceSuggestions.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+            {sourceSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.id}
+                onClick={() => handleSourceSelect(suggestion)}
+                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              >
+                <div className="text-xs text-gray-900">{suggestion.name}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Swap Icon - Centered and aligned */}
+      <div className="flex items-center justify-center px-2 sm:px-3 mt-6 flex-shrink-0">
+        <FaExchangeAlt
+          onClick={handleLocationChange}
+          className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
+          size={14}
+        />
+      </div>
+
+      {/* To Input */}
+      <div className="relative flex-1 min-w-0">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+          To <FiMapPin color="green" />
+        </label>
+        <div className="relative overflow-hidden">
+          <input
+            ref={destinationInputRef}
+            type="text"
+            value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
+            onChange={(e) => {
+              handleDestinationInputChange(e.target.value);
+              setShowDestinationSuggestions(true);
+            }}
+            placeholder="Select destination airport"
+            className={`w-full px-3 py-2 pl-8 ${destinationInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
+              destinationError ? "border-red-500" : "border-gray-300"
+            }`}
+            style={{ textOverflow: 'ellipsis' }}
+          />
+          {destinationInput.code && (
+            <FiCheckCircle
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+              size={16}
+            />
+          )}
+        </div>
+        {/* Error positioned absolutely to not affect layout */}
+        {destinationError && (
+          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+            {destinationError}
+          </div>
+        )}
+        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+            {destinationSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.id}
+                onClick={() => handleDestinationSelect(suggestion)}
+                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              >
+                <div className="text-xs text-gray-900">{suggestion.name}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Search Button - Fixed height and alignment */}
+      <div className="flex items-center ml-2 sm:ml-4 mt-6 flex-shrink-0">
+        <Generalbutton
+          fontSize="0.8rem"
+          width="auto"
+          padding="0.4rem 1rem"
+          fontWeight="500"
+          margin="0"
+          borderRadius="6px"
+          borderWidth="1px"
+          bgColor="#f7e700"
+          loading={loading}
+          onclick={() => {
+            if (validateInputs()) {
+              setShowSourceSuggestions(false);
+              setShowDestinationSuggestions(false);
+              _FetchFlightsHandler();
+            }
+          }}
+          disabled={loading}
+          className="relative flex items-center justify-center min-w-[80px] sm:min-w-[120px] h-[38px] whitespace-nowrap text-xs sm:text-sm"
+        >
+          {loading ? (
+            <PulseLoader size={6} speedMultiplier={0.6} color="#000" />
+          ) : (
+            <span>Search</span>
+          )}
+        </Generalbutton>
+      </div>
+    </div>
+  </div>
+</div>
+  );
+};

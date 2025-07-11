@@ -291,6 +291,8 @@ const NewSummaryContainer = (props) => {
           itineraryDate={props?.itineraryDate}
           _GetInTouch={props?._GetInTouch}
           loading={props?.loading}
+          fetchData={props.fetchData}
+          resetRef={props?.resetRef}
           setShowLoginModal={props?.setShowLoginModal}
           social_title={props?.social_title}
           social_description={props?.social_description}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import Button from "../ui/button/Index";
 import { format } from "date-fns";
@@ -18,6 +18,7 @@ import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -88,9 +89,35 @@ const LoadingText = styled.div`
   opacity: 0.8;
 `;
 
+const useSourceParams = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams(); 
+
+  const source = useMemo(() => {
+    const queryObj = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (value === "true") queryObj[key] = true;
+      else if (value === "false") queryObj[key] = false;
+      else if (!isNaN(value)) queryObj[key] = Number(value);
+      else queryObj[key] = value;
+    }
+
+    let resolvedPath = pathname;
+    for (const [key, val] of Object.entries(params)) {
+      resolvedPath = resolvedPath.replace(`[${key}]`, val);
+    }
+
+    return {
+      path: resolvedPath,
+      ...queryObj,
+    };
+  }, [pathname, searchParams, params]);
+
+  return source;
+};
+
 const Enquiry = (props) => {
-  console.log("Enquiry Props:", props);
-  console.log("Enquiry Props:", props);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -113,6 +140,8 @@ const Enquiry = (props) => {
       childAges: [],
     },
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [priceRange, setPriceRange] = useState({
     min_price: 0,
     max_price: 3000,
@@ -145,7 +174,9 @@ const Enquiry = (props) => {
     min_price: 0,
     max_price: 3000,
   });
+  
   let isPageWide = media("(min-width: 768px)");
+  const source = useSourceParams();
 
   const divideTravellers = () => {
     let distribution = [];
@@ -253,61 +284,67 @@ const Enquiry = (props) => {
   //   ];
   // }
 
-  if (router?.query?.type == "Page" || props?.type == "Page") {
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "Page",
-      },
-    ];
-  } else if (
-    (routerquery.state && !routerquery.city) ||
-    props?.type == "State"
-  ) {
-    console.log("PROPS", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "State",
-      },
-    ];
-  } else if (props?.type == "City" || router?.query.type == "City") {
-    console.log("PROPS3", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "City",
-      },
-    ];
-  } else if (routerquery.country || props?.type == "Country") {
-    console.log("PROPS2", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "Country",
-      },
-    ];
-  } else {
-    console.log("PROPS4", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: routerquery?.type ? routerquery.type : props?.destinationType,
-      },
-    ];
-  }
+const queryType = router?.query?.type?.toLowerCase();
+const propType = props?.type?.toLowerCase();
 
-  console.log("SelectedObj", selectedObj, routerquery);
+if (queryType === "page" || propType === "page") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Page",
+    },
+  ];
+} else if ((routerquery.state && !routerquery.city) || propType === "state") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "State",
+    },
+  ];
+} else if ((routerquery.city) || propType === "city" || queryType === "city") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "City",
+    },
+  ];
+} else if (routerquery.country || propType === "country") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Country",
+    },
+  ];
+} else if (routerquery.continent || queryType === "continent" || propType === "continent") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Continent",
+    },
+  ];
+} else {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: routerquery?.type || props?.destinationType,
+    },
+  ];
+}
+
+
+ 
 
   const _handleHideBlack = () => {
     setShowCities(false);
@@ -318,7 +355,12 @@ const Enquiry = (props) => {
     const value_start = new Date(valueStart);
     const value_end = new Date(valueEnd);
 
+    if (isSubmitting) {
+    return;
+  }
+
     setLoading(true);
+    setIsSubmitting(true);
 
     let cityids = [];
     let locations = [];
@@ -341,18 +383,18 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        // console.log("Selected Cities",selectedCities);
+        console.log("Selected ",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type?.toLowerCase() == "state")
             stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Country")
+          else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Continent")
+          else if (selectedCities[i].type?.toLowerCase() == "continent")
             continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
+          else if(selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location"){
             cityids.push(selectedCities[i].id);
           }
           else {
@@ -382,10 +424,10 @@ let dist=divideTravellers()
       number_of_infants = numberOfInfants;
     }
 
-    const source = {
-  path: router.pathname, 
-  ...router.query,       
-};
+//     const source = {
+//   path: router.pathname, 
+//   ...router.query,       
+// };
 
     let data = null;
     data = {
@@ -437,6 +479,8 @@ let dist=divideTravellers()
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
 
+ 
+
   useEffect(() => {
     setShowPopup(popupObj);
   }, [
@@ -452,6 +496,7 @@ let dist=divideTravellers()
   ]);
 
   const _SlideOneSubmitHandler = () => {
+    console.log("Selected Cities",selectedCities)
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
@@ -509,19 +554,20 @@ let dist=divideTravellers()
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        // console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "Page") {
+          if (selectedCities[i].type?.toLowerCase() == "page") {
             pageIds.push(selectedCities[i].id);
-          } else if (selectedCities[i].type == "State")
+          } else if (selectedCities[i].type?.toLowerCase() == "state")
             stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Country")
+          else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Continent")
+          else if (selectedCities[i].type?.toLowerCase() == "continent"){
             continentIds.push(selectedCities[i].id);
+            pageIds.push(selectedCities[i].id);
+          }
           else {
             cityids.push(selectedCities[i].id);
           }
@@ -530,10 +576,10 @@ let dist=divideTravellers()
       }
     } catch {}
 
+    
+
     const data = {
-      source: {
-        path: router.asPath,
-      },
+      source,
       experience_filters_selected: preferences,
       start_location: {
         gmaps_place_id: startingLocation
@@ -551,6 +597,7 @@ let dist=divideTravellers()
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
+    console.log("Selected",data);
     setIsLoading(true);
     itineraryInitiate
       .post("", data)
@@ -607,9 +654,10 @@ let dist=divideTravellers()
 
 
     const data = {
-      source: {
-        path: router.asPath,
-      },
+      source,
+      // : {
+      //   path: router.asPath,
+      // },
       itinerary_id: itineraryId,
       group_type: groupType || "Solo",
       price_range: priceRange,
@@ -622,6 +670,7 @@ let dist=divideTravellers()
     };
 
     setLoading(true);
+    setIsSubmitting(true);
     localStorage.removeItem("MyPlans");
 
     itineraryComplete
@@ -646,6 +695,7 @@ let dist=divideTravellers()
       .catch((err) => {
         console.log("ERROR >>>", err);
         setLoading(false);
+        setIsSubmitting(false);
         setError(err.message);
         router.push("/thank-you");
       });
@@ -903,7 +953,8 @@ let dist=divideTravellers()
                   borderRadius="5px"
                   borderWidth="1px"
                   bgColor="#f7e700"
-                  loading={loading}
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
                   onclick={_submitDataHandler}
                 >
                   Get Itinerary!

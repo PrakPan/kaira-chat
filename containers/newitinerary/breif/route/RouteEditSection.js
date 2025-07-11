@@ -52,6 +52,7 @@ import useDebounce from "../../../../hooks/useDebounce";
 
 const Container = styled.div`
   position: relative;
+  
 
   .SingleDatePicker {
     width: 100%;
@@ -70,9 +71,10 @@ const Container = styled.div`
     overflow: hidden;
   }
   .DateInput > input {
-    font-family: poppins;
-    font-weight: 400;
-    font-size: 1rem;
+    font-family: lexend;
+    font-weight: 450;
+    font-size: 0.9rem;
+    padding:5px;
   }
   .DayPicker__withBorder {
     @media screen and (max-width: 768px) {
@@ -150,6 +152,8 @@ const Icon = styled.div`
   justify-content: end;
   margin-right: 5px;
   margin-top: -5px;
+  color:gray;
+  font-weight: 600;
 `;
 
 const CITY_COLOR_CODES = [

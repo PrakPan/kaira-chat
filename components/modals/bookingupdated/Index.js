@@ -407,6 +407,7 @@ const Booking = (props) => {
                     setShowLoginModal={props?.setShowLoginModal}
                     handleClose={handleClose}
                     itinerary_city_id={props.itinerary_city_id}
+                    city_id={props?.selectedBooking?.cityId}
                   ></AccommodationSearched>
                 );
             }
@@ -921,7 +922,7 @@ const Booking = (props) => {
               occupancies={filters.occupancies}
               setShowLoginModal={props?.setShowLoginModal}
               handleClose={handleClose}
-              cityId={props?.selectedBooking?.cityId}
+              city_id={props?.selectedBooking?.cityId}
               plan={props.plan}
               itinerary_city_id={props.itinerary_city_id}
             ></ViewHotelDetails>

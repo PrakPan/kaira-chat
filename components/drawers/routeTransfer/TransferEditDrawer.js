@@ -1303,12 +1303,11 @@ const RouteContainer = (props) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
-    const baseStartDate = selectedBooking?.check_in
-      ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
-          ? oCityData.start_date
-          : addDaysToDate(oCityData?.start_date, oCityData?.duration));
+    const baseStartDate =
+          dCityData?.start_date ??
+          (oCityData?.start_date && oCityData?.duration != null
+            ? addDaysToDate(oCityData.start_date, oCityData.duration)
+            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
 
     console.log(
       "Start Dtae",
@@ -1420,7 +1419,7 @@ const RouteContainer = (props) => {
           <>
             {console.log("current step is:", currentStep)}
             {
-              <div
+             !(currentStep === 1 && singleTransfer?.mode === "Flight") && <div
                 className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
                 onClick={() => setCurrentStep(1)}
               >
@@ -1446,6 +1445,7 @@ const RouteContainer = (props) => {
                   combo={false}
                   edge={singleTransfer?.id}
                   booking_id={booking_id}
+                  transferData={singleTransfer}
                   handleFlightSelect={handleFlightSelect}
                   showComboFlightModal={showComboFlightModal}
                   setShowComboFlightModal={setShowComboFlightModal}
@@ -2071,7 +2071,6 @@ const NewMultiModeContainer = ({
   };
 
   const handleFlightSelection = (flightData) => {
-    console.log("Flight Data", flightData);
     handleModeSelect(
       currentStep - 1,
       flightData?.id || flightData?.resultIndex,
@@ -2306,12 +2305,11 @@ const NewMultiModeContainer = ({
           }
         });
 
-      const baseStartDate = selectedBooking?.check_in
-      ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
-          ? oCityData.start_date
-          : addDaysToDate(oCityData?.start_date, oCityData?.duration));
+       const baseStartDate =
+          dCityData?.start_date ??
+          (oCityData?.start_date && oCityData?.duration != null
+            ? addDaysToDate(oCityData.start_date, oCityData.duration)
+            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
         const requestBody = {
           destination_itinerary_city: destination_itinerary_city_id,
           source_itinerary_city: origin_itinerary_city_id
@@ -2600,10 +2598,10 @@ const NewMultiModeContainer = ({
       )}
 
       {/* Expanded content */}
-      {currentStep >= 1 && (
+      {currentStep >= 1 &&  (
         <>
           <div className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md">
-            <div className="font-bold text-sm md:text-base">
+            {!(transfer[currentStep-1]?.mode == "Flight") && <div className="font-bold text-sm md:text-base">
               {sequencedModes.join(", ")} | &nbsp;
               <span className="font-normal">
                 {Math.ceil(
@@ -2611,7 +2609,7 @@ const NewMultiModeContainer = ({
                 )}{" "}
                 hours | {totalDistance} kms
               </span>
-            </div>
+            </div>}
             {/* <AiOutlineUp size={16} className="md:text-20" /> */}
           </div>
           <div className="border">
@@ -2660,7 +2658,7 @@ const NewMultiModeContainer = ({
               </div>
             </div>
 
-            <div className="flex md:flex-col flex-row justify-between items-center p-2 md:p-4 relative gap-2 sm:gap-0 text-center sm:text-left">
+            {/* <div className="flex md:flex-col flex-row justify-between items-center p-2 md:p-4 relative gap-2 sm:gap-0 text-center sm:text-left">
               <span className="text-[#2AAAFF] font-medium text-sm z-10 sm:pr-3">
                 {transfer[currentStep - 1]?.source?.city_name}
               </span>
@@ -2676,7 +2674,7 @@ const NewMultiModeContainer = ({
               <span className="text-green-600 font-medium text-sm z-10 sm:pl-3">
                 {transfer[currentStep - 1]?.destination?.city_name}
               </span>
-            </div>
+            </div> */}
 
             {currentStep >= 1 && currentStep <= totalSteps && (
               <div className="space-y-3 md:space-y-4">
@@ -2690,6 +2688,7 @@ const NewMultiModeContainer = ({
                         key={option.id}
                         combo={true}
                         edge={option?.id}
+                        transferData={option}
                         handleFlightSelect={handleFlightSelect}
                         showComboFlightModal={showComboFlightModal}
                         setShowComboFlightModal={setShowComboFlightModal}
@@ -3160,7 +3159,7 @@ const NewMultiModeContainer = ({
                       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
                         <button
                           onClick={handleUpdateTransfer}
-                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black ${
+                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black border border-black ${
                             (Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
                           }`}

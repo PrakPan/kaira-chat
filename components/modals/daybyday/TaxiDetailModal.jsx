@@ -45,7 +45,9 @@ const TaxiDetailModal = ({
   setShowDrawer,
   noChange,
   noHeading,
-  error
+  error,
+  isAirport,
+  setIsTransferDrawerOpen
 }) => {
   if (!data) return null;
 
@@ -153,6 +155,11 @@ const TaxiDetailModal = ({
                     padding={"7px 25px"}
                     marginMobile={"0px 0px 0px 2px"}
                     onClick={() => {
+                      if(isAirport){
+                        setHandleShow(false);
+                        setIsTransferDrawerOpen(true);
+                        return;
+                      }
                       setHandleShow(false);
                       setShowDrawer(true);
                       //setShowTaxi(true);console.log("")

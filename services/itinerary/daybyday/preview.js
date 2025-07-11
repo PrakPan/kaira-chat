@@ -14,3 +14,7 @@ export const axiosGetItinerary = axios.create({
 export const axiosGetItineraryStatus = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })
+
+export const axiosUpdateItineraryDates = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})

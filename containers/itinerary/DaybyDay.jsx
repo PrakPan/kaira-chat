@@ -38,6 +38,7 @@ const DaybyDay = ({
 }) => {
   console.log("transfer bookings is:", transferBookings);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
+  const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -237,6 +238,8 @@ const DaybyDay = ({
           <CityItem
             setShowLoginModal={setShowLoginModal}
             loadbookings={loadbookings}
+            hotelName={startCity?.city_name + " City Centre"}
+            destinationHotelName={stay?.[0]?.name ? stay[0]?.name + " City Centre" : null}
             key={2}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
@@ -366,6 +369,8 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
+                      hotelName={stay?.[index]?.name ? stay[index]?.name + " City Centre": null}
+                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name + " City Centre": null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -424,6 +429,8 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name + " City Centre": null}
+            destinationHotelName={endCity?.city_name + " City Centre"}
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>
@@ -463,6 +470,13 @@ const DaybyDay = ({
                   endCity?.gmaps_place_id
               ]?.name
             }
+            booking={transferBookings?.intercity?.[
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
+                  ":" +
+                  endCity?.gmaps_place_id
+              ]}
             booking_type={
               transferBookings?.intercity?.[
                 itineraryDaybyDay?.cities?.[

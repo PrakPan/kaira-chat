@@ -17,7 +17,6 @@ export default function PriceContainer({
 }) {
   const router = useRouter();
 
-  console.log("flight data",selectedBooking);
   const handleSelect = () => {
     onFlightSelect?.();
 

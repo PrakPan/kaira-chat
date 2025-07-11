@@ -211,7 +211,6 @@ export default function ActivityDetails(props) {
                     {e}
                   </span>
                 ))}
-                
               </div>
             )}
 
@@ -508,6 +507,16 @@ export default function ActivityDetails(props) {
 
 export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
+  const [isHovered, setIsHovered] = useState(false);
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginTop: "5px",
+    marginLeft: "5px",
+  };
 
   useEffect(() => {
     setIncluded(amenity?.included);
@@ -535,7 +544,10 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   return (
-    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+    <div
+      key={index}
+      className="relative gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]"
+    >
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
           {/* {getAmenityIcon(amenity?.type)} */}
@@ -559,13 +571,35 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 
-          <button
-            disabled={amenity.mandatory}
-            onClick={handleSelect}
-            className="flex flex-row items-center gap-1 cursor-pointer"
+          <div
+            className="relative flex items-center"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
           >
-            <CheckboxFormComponent checked={included} />
-          </button>
+            <button
+              disabled={amenity.mandatory}
+              onClick={handleSelect}
+              className="flex flex-row items-center gap-1 cursor-pointer"
+            >
+              <CheckboxFormComponent checked={included} />
+            </button>
+
+            {amenity.mandatory && (
+              <div
+                style={popupStyle}
+                className="z-[1600] absolute -right-3 top-full mt-2  text-sm text-center flex flex-col gap-2"
+              >
+                {/* Tooltip arrow */}
+                <div className="relative">
+                  <span className="absolute -top-5 right-0  w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+                  <span className="absolute -top-[21px] -right-0 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
+                  <div className="text-nowrap font-normal text-white text-sm bg-[#2b2b2a] px-2 py-1 rounded">
+                    This add on cannot be removed
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

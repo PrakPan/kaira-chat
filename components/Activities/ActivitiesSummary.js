@@ -121,7 +121,7 @@ const ActivitiesSummary = (props) => {
                         {props?.item.check_in && getDate(props?.item.check_in)}
                         {/* {props?.item.check_out &&
                           " - " + " " + getDate(props?.item.check_out)} */}
-                        {props?.item.check_in && ", " + formatToReadableTime(props?.item.check_in)}
+                        {/* {props?.item.check_in && ", " + formatToReadableTime(props?.item.check_in)} */}
                       </div>
                     </div>
                   </div>
