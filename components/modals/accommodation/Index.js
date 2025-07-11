@@ -52,7 +52,6 @@ const POI = (props) => {
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
   const { drawer, booking_id, idx, city_id } = router.query;
-  const { drawer, booking_id, idx, city_id } = router.query;
 
   useEffect(() => {
     const handleResize = () => {

@@ -310,7 +310,7 @@ const HotelBookingDetails = (props) => {
         dispatch(setStays(newStays));
         dispatch(setItinerary(newItinerary));
         setLoading(false);
-        handleCloseDrawer()
+        handleCloseDrawer();
         dispatch(
           openNotification({
             type: "success",
@@ -368,42 +368,7 @@ const HotelBookingDetails = (props) => {
               <div>
                 <Name>{data?.hotel_details?.name}</Name>
               </div>
-    <Drawer
-      show={props?.showDetails}
-      anchor={"right"}
-      backdrop
-      className="font-lexend"
-      onHide={handleCloseDrawer}
-      width={"50%"}
-      mobileWidth={"100%"}
-    >
-      <Container>
-        <BackContainer className=" font-lexend">
-          <BackArrow handleClick={handleCloseDrawer} />
-        </BackContainer>
-        {loadingDetails ? (
-          <POIDetailsSkeleton />
-        ) : (
-          <Container>
-            <FlexBox>
-              <div>
-                <Name>{data?.hotel_details?.name}</Name>
-              </div>
 
-              <Button
-                padding="7px 25px"
-                borderRadius="7px"
-                onclick={() => {
-                  if (!localStorage.getItem("access_token")) {
-                    props?.setShowLoginModal(true);
-                    return;
-                  }
-                  props.BookingButtonFun();
-                }}
-              >
-                Change
-              </Button>
-            </FlexBox>
               <Button
                 padding="7px 25px"
                 borderRadius="7px"
@@ -452,30 +417,6 @@ const HotelBookingDetails = (props) => {
               </div>
             )}
 
-            {isDesktop ? (
-              <ImageContainer>
-                {images.length > 3 ? (
-                  <>
-                    <GridImage>
-                      <Child area="1 / 1 / 5 / 4" className="div1 ">
-                        <div
-                          className="relative"
-                          style={{
-                            display: ImagesLoaded[0] ? "initial" : "none",
-                          }}
-                        >
-                          <ImageLoader
-                            url={
-                              ImagesError[0]
-                                ? "media/icons/bookings/notfounds/noroom.png"
-                                : images[0]?.image
-                            }
-                            width="100%"
-                            height="100%"
-                            onload={() => OnImageLoad(0)}
-                            onfail={() => OnImageError(0)}
-                            noLazy
-                          />
             {isDesktop ? (
               <ImageContainer>
                 {images.length > 3 ? (
