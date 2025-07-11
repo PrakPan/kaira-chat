@@ -349,7 +349,7 @@ const Details = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
   const _startRazorpayHandler = (data) => {
@@ -805,14 +805,14 @@ const Details = (props) => {
       <div className="px-0 pb-4">
         {props.couponJSX}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
-          <UpdateItineraryDates
+          {/* <UpdateItineraryDates
            itinerary={props?.itinerary}
   token={props.token}
   onUpdateSuccess={fetchItineraryStatus}
   convertDFormat={convertDFormat}
   tripsPage={props.tripsPage}
-/>
-          {/* <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+/> */}
+          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
@@ -834,7 +834,7 @@ const Details = (props) => {
               )}
 
               
-                {/* <>
+                 {/* <>
                   <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                     <MdEdit
                       className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
@@ -850,9 +850,9 @@ const Details = (props) => {
                       token={props.token}
                     ></SelectDate>
                   </div>
-                </> */}
-            {/* </div>
-          </div>    */}
+                </>  */}
+             </div>
+          </div>   
         </div>
 
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">

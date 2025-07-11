@@ -37,7 +37,7 @@ const AboutUsContainer = () => {
           ></meta>
           <link
             rel="canonical"
-            href={`https://thetarzanway.com/about-us`}
+            href={`https://www.thetarzanway.com/about-us`}
           ></link>
         </Head>
 

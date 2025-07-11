@@ -29,7 +29,7 @@ const Testimonials = () => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/testimonials`}
+          href={`https://www.thetarzanway.com/testimonials`}
         ></link>
       </Head>
 

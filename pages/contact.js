@@ -29,7 +29,7 @@ const Contact = () => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/contact`}
+          href={`https://www.thetarzanway.com/contact`}
         ></link>
       </Head>
       <ContactContainer></ContactContainer>

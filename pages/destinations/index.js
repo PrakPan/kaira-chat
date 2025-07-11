@@ -46,7 +46,7 @@ const AllDestinations = (props) => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/destinations`}
+          href={`https://www.thetarzanway.com/destinations`}
         ></link>
       </Head>
 

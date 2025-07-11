@@ -73,12 +73,12 @@ const IndexedItinerary = ({
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="og:url"
-          content={`https://thetarzanway.com/trips/${Data?.path}`}
+          content={`https://www.thetarzanway.com/trips/${Data?.path}`}
         />
         <meta property="og:type" content="website" />
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/trips/${Data?.path}`}
+          href={`https://www.thetarzanway.com/trips/${Data?.path}`}
         ></link>
 
         <script

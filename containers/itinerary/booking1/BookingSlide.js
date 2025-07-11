@@ -276,7 +276,7 @@ const Details = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
   const _startRazorpayHandler = (data) => {

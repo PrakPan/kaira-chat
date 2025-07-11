@@ -414,7 +414,7 @@ const ItineraryContainer = (props) => {
         } else {
           for (let hotel of hotels) {
             hotel.itinerary_city_id=itinerary_city_id,
-            hotel.gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id,
+            hotel.coordinates = hotel?.coordinates,
             hotel.city_name = city_name;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
