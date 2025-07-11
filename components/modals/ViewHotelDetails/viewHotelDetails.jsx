@@ -131,6 +131,7 @@ const ViewHotelDetails = (props) => {
         }),
         source: props?.source,
         currency: "INR",
+        city_id:props?.city_id
       };
       hotelDetails
         .post("", requestData, {
@@ -189,7 +190,6 @@ const ViewHotelDetails = (props) => {
     }
   };
   const index = props.plan.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
-  console.log("cityid2 is:",props?.itinerary_city_id)
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);

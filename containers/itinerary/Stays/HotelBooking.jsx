@@ -721,6 +721,7 @@ const HotelBooking = ({
         handleCloseDrawer={handleCloseDrawer}
         setShowLoginModal={setShowLoginModal}
         handleClose={closeBookingModal}
+        city_id={booking.city_id}
       ></ViewHotelDetails>
       <AccommodationModal
         mercury
