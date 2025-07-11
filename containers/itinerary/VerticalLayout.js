@@ -735,6 +735,8 @@ const CityItem = ({
   destinationLat,
   destinationLong,
 }) => {
+  const [isTransferDrawerOpen,setIsTransferDrawerOpen]=useState(false)
+
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
