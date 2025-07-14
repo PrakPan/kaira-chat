@@ -896,7 +896,19 @@ let dist=divideTravellers()
               borderRadius="5px"
               borderWidth="1px"
               bgColor="#f7e700"
-              onclick={_SlideOneSubmitHandler}
+              onclick={() => {
+                logEvent({
+                  action: "Form_Continue",
+                  params: {
+                    page: props.page || "Unknown",
+                    event_category: "Button Click",
+                    event_label: "Continue",
+                    event_action: "Tailored Form - Step 1",
+                    form_step: "destinations",
+                  },
+                });
+                _SlideOneSubmitHandler();
+              }}
               loading={isLoading}
               disabled={isLoading}
             >
@@ -926,7 +938,19 @@ let dist=divideTravellers()
                   borderRadius="5px"
                   borderWidth="1px"
                   bgColor="#f7e700"
-                  onclick={_SlideTwoSubmitHandler}
+                  onclick={() => {
+                    logEvent({
+                      action: "Form_Continue",
+                      params: {
+                        page: props.page || "Unknown",
+                        event_category: "Button Click",
+                        event_label: "Continue",
+                        event_action: "Tailored Form - Step 2",
+                        form_step: "preferences",
+                      },
+                    });
+                    _SlideTwoSubmitHandler();
+                  }}
                   loading={isLoading && submitted}
                 >
                   Continue
@@ -955,7 +979,19 @@ let dist=divideTravellers()
                   bgColor="#f7e700"
                   loading={isSubmitting}
                   disabled={isSubmitting}
-                  onclick={_submitDataHandler}
+                  onclick={() => {
+                    logEvent({
+                      action: "Get_Itinerary",
+                      params: {
+                        page: props.page || "Unknown",
+                        event_category: "Button Click",
+                        event_label: "Get Itinerary!",
+                        event_action: "Tailored Form - Final Step",
+                        form_step: "complete",
+                      },
+                    });
+                    _submitDataHandler();
+                  }}
                 >
                   Get Itinerary!
                 </Button>
