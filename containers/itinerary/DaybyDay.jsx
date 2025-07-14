@@ -238,8 +238,12 @@ const DaybyDay = ({
           <CityItem
             setShowLoginModal={setShowLoginModal}
             loadbookings={loadbookings}
-            hotelName={startCity?.city_name + " City Centre"}
-            destinationHotelName={stay?.[0]?.name ? stay[0]?.name + " City Centre" : null}
+            hotelName={startCity?.city_name}
+            sourceGmaps={startCity?.gmaps_place_id}
+            destinationHotelName={stay?.[0] ? stay[0]?.name : null}
+            sourceLat={startCity?.latitude}
+            sourceLong={startCity?.longitude}
+            destinationGmaps={stay?.[0] ? stay[0]?.gmaps_place_id : null}
             key={2}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
@@ -369,11 +373,19 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
-                      hotelName={stay?.[index]?.name ? stay[index]?.name + " City Centre": null}
-                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name + " City Centre": null}
+                      hotelName={stay?.[index]?.name ? stay[index]?.name: null}
+                      sourceGmaps={stay?.[index] ? stay[index]?.gmaps_place_id : null}
+                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.gmaps_place_id: null}
+                      sourceLat={stay?.[index] ? stay[index]?.lat : null}
+                      sourceLong={stay?.[index] ? stay[index]?.long : null}
+                      destinationLat={stay?.[index+ 1] ? stay[index+1]?.lat: null}
+                      destinationLong={stay?.[index+ 1] ? stay[index+1]?.long: null}
+                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name: null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
+                      lat={startCity?.latitude}
+                      long={startCity?.longitude}
                       city={transferBookings?.intercity?.[idMapping]?.name}
                       sourceKey={sourceKey}
                       airportBookings={airportBookings}
@@ -429,8 +441,14 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name + " City Centre": null}
-            destinationHotelName={endCity?.city_name + " City Centre"}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name: null}
+            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.gmaps_place_id : null}
+            sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
+            sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
+            destinationLat={endCity?.latitude}
+            destinationLong={endCity?.longitude}
+            destinationGmaps={endCity?.gmaps_place_id}
+            destinationHotelName={endCity?.city_name}
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>

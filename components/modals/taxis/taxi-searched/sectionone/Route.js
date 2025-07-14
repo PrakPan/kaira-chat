@@ -8,12 +8,15 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
 import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
-import { updateAirportTransferBooking, updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
+import {
+  updateAirportTransferBooking,
+  updateSingleTransferBooking,
+} from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const RouteContainer = styled.div`
@@ -90,48 +93,31 @@ const Section = (props) => {
     return regex.test(uuid);
   };
   const handleUpdate = async () => {
-  if (props.handleTaxiSelect) {
-    props.handleTaxiSelect({
-      trace_id: props.data.trace_id,
-      result_index: props.data.result_index,
-    });
-    return;
-  }
-
-  if (props?.handleAirportTaxiSelect) {
-    try {
-      setLoading(true);
-      
-      await props.handleAirportTaxiSelect(props.data);
-
-      setLoading(false);
-      // props.setHideBookingModal();
-    } catch (err) {
-      console.error("Error:", err);
-      setLoading(false);
-      dispatch(
-        openNotification({
-          type: "error",
-          text: err?.response?.data?.errors?.[0]?.message?.[0] || err.message || "There seems to be a problem, please try again after some time!",
-          heading: "Error!",
-        })
-      );
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect({
+        trace_id: props.data.trace_id,
+        result_index: props.data.result_index,
+      });
+      return;
     }
-    return;
-  }
-
-
 
     setLoading(true);
 
+    if (props?.handleAirportTaxiSelect) {    
+
+        await props.handleAirportTaxiSelect(props.data);
+        setLoading(false);
+      return;
+    }
+
 
     const requestData = {
-      booking_id:props?.booking_id,
+      booking_id: props?.booking_id,
       source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index,
-      source_itinerary_city:props?.origin_itinerary_city_id,
-      destination_itinerary_city:props?.destination_itinerary_city_id,
+      source_itinerary_city: props?.origin_itinerary_city_id,
+      destination_itinerary_city: props?.destination_itinerary_city_id,
       edge: props?.edge,
     };
 
@@ -154,21 +140,16 @@ const Section = (props) => {
             heading: "Sucess!",
           })
         );
-        if(!props?.airportBooking){
-        dispatch(
-                updateSingleTransferBooking(
-                  `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
-                  res.data
-                )
-              );
-            }else {
-              dispatch(
-                updateAirportTransferBooking(
-                  `${props?.cityId}`,
-                  res.data
-                )
-              );
-            }
+        if (!props?.airportBooking) {
+          dispatch(
+            updateSingleTransferBooking(
+              `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+              res.data
+            )
+          );
+        } else {
+          dispatch(updateAirportTransferBooking(`${props?.cityId}`, res.data));
+        }
         props._updateTaxiBookingHandler([res.data]);
         props.getPaymentHandler();
         props.setHideBookingModal();
@@ -177,11 +158,13 @@ const Section = (props) => {
         setLoading(false);
         console.log("Error Changing Taxi", err.message);
         const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+          err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
         dispatch(
           openNotification({
             type: "error",
-            text: errorMsg || "There seems to be a problem, please try again after some time!",
+            text:
+              errorMsg ||
+              "There seems to be a problem, please try again after some time!",
             heading: "Error!",
           })
         );
@@ -193,7 +176,7 @@ const Section = (props) => {
     return (
       <Container>
         <TaxiHeading>
-        {/* <Heading> */}
+          {/* <Heading> */}
           {props.data?.taxi_category?.type ? (
             <>
               {props.data.taxi_category.type}{" "}
@@ -210,138 +193,56 @@ const Section = (props) => {
           ) : (
             "One-way Taxi"
           )}
-        {/* </Heading> */}
+          {/* </Heading> */}
 
-         <div>
-                  <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
-        </div>
+          <div>
+            <Cost>
+              {"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}
+            </Cost>
+          </div>
         </TaxiHeading>
 
-        { (
-          <ModelText>{props.data?.taxi_category?.model_name}</ModelText>
-        )}
+        {<ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
 
-        
+        <div className="flex justify-between">
+          <SectionFour
+            setHideBookingModal={props.setHideBookingModal}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            selectedBooking={props.selectedBooking}
+            _updateSearchedTaxi={props._updateSearchedTaxi}
+            data={props.data}
+            setShowTaxiModal={props.setShowTaxiModal}
+          ></SectionFour>
 
-        
-        {/* <RouteContainer className="font-lexend">
-          <Location className="font-lexend">
-            {props.selectedBooking.city}
-          </Location>
-          <div style={{ margin: "0 2px" }}>
-            <ImageLoader
-              url="media/icons/bookings/next.png"
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
-              noLazy
-            ></ImageLoader>
-          </div>
-          <Location className="font-lexend">
-            {props.selectedBooking.destination_city}
-          </Location>
-        </RouteContainer> */}
-
-        {/* <div
-          style={{
-            display: "flex",
-            gap: "0.5rem",
-            marginBottom: "0.75rem",
-            marginTop: "0.75rem",
-          }}
-        > */}
-          {/* <ImageLoader
-            url="media/icons/bookings/distance.png"
-            height="1.5rem"
-            width="1.5rem"
-            widthmobile="1.5rem"
-            dimensions={{ width: 100, height: 100 }}
-            margin="0"
-            leftalign
-            noLazy
-          ></ImageLoader> */}
-
-          {/* <div
-            style={{ display: "flex", gap: "1rem" }}
-            className="flex flex-col md:flex-row justify-between w-full"
-          > */}
-            {/* <div className="flex flex-row gap-[1rem]">
-              {props.data?.distance?.text ? (
-                <div>
-                  <IconHeading className="font-lexend">
-                    {props.data.distance.text}
-                  </IconHeading>
-                  <Text className="font-nunito">Included</Text>
-                </div>
-              ) : null}
-
-              {props.data?.duration?.text ? (
-                <div>
-                  <IconHeading className="font-lexend">
-                    {props.data.duration.text}
-                  </IconHeading>
-                  <Text className="font-nunito">Included</Text>
-                </div>
-              ) : null}
-            </div> */}
-
-            {/* <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
-              <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
-                {/* <Cost>
-                  {"₹" +
-                    getIndianPrice(Math.ceil(props.data.price.total)) +
-                    "/-"}
-                </Cost> */}
-              {/* </div>
-
-              
-            </div> 
-          </div> */}
-        {/* </div> */}
-
-       
-       <div className="flex justify-between">
-
-        <SectionFour
-          setHideBookingModal={props.setHideBookingModal}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          getPaymentHandler={props.getPaymentHandler}
-          selectedBooking={props.selectedBooking}
-          _updateSearchedTaxi={props._updateSearchedTaxi}
-          data={props.data}
-          setShowTaxiModal={props.setShowTaxiModal}
-        ></SectionFour>
-
-        <div className="p-[0.4rem] flex items-center justify-center">
-  {!loading ? (
-    <label
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "0.5rem",
-        cursor: "pointer",
-      }}
-    >
-      <input
-        type="checkbox"
-        onChange={(e) => {
-          if (e.target.checked) handleUpdate();
-        }}
-        style={{ width: "1.25rem", height: "1.25rem" }}
-      />
-      {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
+          <div className="p-[0.4rem] flex items-center justify-center">
+            {!loading || !props?.bookingLoad ? (
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    if (e.target.checked) handleUpdate();
+                  }}
+                  style={{ width: "1.25rem", height: "1.25rem" }}
+                />
+                {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
         Select
       </span> */}
-    </label>
-  ) : (
-    <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
-  )}
-</div>
-
+              </label>
+            ) : (
+              <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+            )}
+          </div>
         </div>
-        <hr/>
+        <hr />
       </Container>
     );
   else return null;

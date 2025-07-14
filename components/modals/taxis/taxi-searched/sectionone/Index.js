@@ -25,16 +25,16 @@ const Section = (props) => {
     return (
       <Container className="font-lexend">
         <TaxiCard>
-        <ImageContainer
+          <ImageContainer
           // style={{
           //   padding: "0.75rem 0rem",
           //   borderColor: "rgba(238, 238, 238, 1)",
           //   borderWidth: "1px",
           //   borderStyle: "none solid none none",
           // }}
-        >
-          <PiTaxiLight size={18}/>
-          {/* {props.data?.taxi_category?.image ? (
+          >
+            <PiTaxiLight size={18} />
+            {/* {props.data?.taxi_category?.image ? (
             <ImageLoader
               is_url
               noLazy
@@ -51,7 +51,7 @@ const Section = (props) => {
               height="auto"
             ></ImageLoader>
           )} */}
-          {/* <p
+            {/* <p
             style={{
               margin: "0.5rem 0rem 0rem 0rem",
               fontSize: "15px",
@@ -61,7 +61,7 @@ const Section = (props) => {
           >
             {props.data.taxi_category.type}
           </p> */}
-          {/* <p
+            {/* <p
             style={{
               margin: "0 0rem 0.25rem 0rem",
               fontSize: "13px",
@@ -71,24 +71,25 @@ const Section = (props) => {
           >
             {props.data?.taxi_category?.seating_capacity + "-seater"}
           </p> */}
-        </ImageContainer>
+          </ImageContainer>
 
-        <Route
-          setHideBookingModal={props.setHideBookingModal}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          getPaymentHandler={props.getPaymentHandler}
-          selectedBooking={props.selectedBooking}
-          data={props.data}
-          _updateSearchedTaxi={props._updateSearchedTaxi}
-          handleTaxiSelect={props.handleTaxiSelect}
-          origin_itinerary_city_id={props?.origin_itinerary_city_id}
-                destination_itinerary_city_id={props?.destination_itinerary_city_id}
-                edge={props?.edge}
-                 booking_id={props?.booking_id}
-                 airportBooking={props?.airportBooking}
-                 cityId={props?.cityId}
-                 handleAirportTaxiSelect={props?.handleAirportTaxiSelect}
-        ></Route>
+          <Route
+            setHideBookingModal={props.setHideBookingModal}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            selectedBooking={props.selectedBooking}
+            data={props.data}
+            _updateSearchedTaxi={props._updateSearchedTaxi}
+            handleTaxiSelect={props.handleTaxiSelect}
+            origin_itinerary_city_id={props?.origin_itinerary_city_id}
+            destination_itinerary_city_id={props?.destination_itinerary_city_id}
+            edge={props?.edge}
+            booking_id={props?.booking_id}
+            airportBooking={props?.airportBooking}
+            cityId={props?.cityId}
+            handleAirportTaxiSelect={props?.handleAirportTaxiSelect}
+            bookingLoad={props?.bookingLoad}
+          ></Route>
         </TaxiCard>
       </Container>
     );

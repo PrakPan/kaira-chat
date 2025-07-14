@@ -1012,7 +1012,8 @@ let dist=divideTravellers()
                   borderRadius="5px"
                   borderWidth="1px"
                   bgColor="#f7e700"
-                  loading={loading}
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
                   onclick={_submitDataHandler}
                 >
                   Get Itinerary!
