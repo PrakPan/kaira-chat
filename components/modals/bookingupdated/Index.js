@@ -19,6 +19,7 @@ import { setItineraryFilters } from "../../../store/actions/setItineraryFilters"
 import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { useRouter } from "next/router";
+import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -899,7 +900,7 @@ const Booking = (props) => {
                 />
               </FloatingView>
             )}
-            <ViewHotelDetails
+            {/* <ViewHotelDetails
               mercury={true}
               check_in={props?.selectedBooking.check_in}
               check_out={props?.selectedBooking.check_out}
@@ -917,7 +918,7 @@ const Booking = (props) => {
               city_id={props?.selectedBooking?.cityId}
               plan={props.plan}
               itinerary_city_id={props.itinerary_city_id}
-            ></ViewHotelDetails>
+            ></ViewHotelDetails> */}
           </>
         </Drawer>
       </div>

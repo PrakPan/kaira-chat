@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
@@ -22,11 +21,6 @@ import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
 import { openNotification } from "../../../../store/actions/notification";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 import setItinerary from "../../../../store/actions/itinerary";
-import FullScreenGallery from "../../../fullscreengallery/Index";
-import { bookingDetails } from "../../../../services/bookings/FetchAccommodation";
-import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
-import BackArrow from "../../../ui/BackArrow";
-import Drawer from "../../../ui/Drawer";
 import FullScreenGallery from "../../../fullscreengallery/Index";
 import { bookingDetails } from "../../../../services/bookings/FetchAccommodation";
 import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";

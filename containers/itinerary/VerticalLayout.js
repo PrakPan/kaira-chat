@@ -735,8 +735,6 @@ const CityItem = ({
   destinationLat,
   destinationLong,
 }) => {
-  const [isTransferDrawerOpen,setIsTransferDrawerOpen]=useState(false)
-
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
@@ -963,22 +961,35 @@ const CityItem = ({
       hour12: true,
     });
 
-    const handleTransferSubmit = async (transferData) => {
+  const handleTransferSubmit = async (transferData) => {
+    if (!localStorage?.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
+    }
     try {
       // setLoading(true);
-      console.log("TransferDD",transferData);
+      console.log("TransferDD", transferData);
 
       const bookingPayload = {
+        
         transfer_type: "airport",
-        source_itinerary_city: transferData.transferType === 'pickup' ? (dCityData?.id || dCityData?.gmaps_place_id) : transferData?.sourceGmapsId,
-        destination_itinerary_city: transferData.transferType === 'pickup' ? transferData?.destinationGmapsId : (oCityData?.id || oCityData?.gmaps_place_id),
-        is_pickup: transferData.transferType === 'pickup',
-        is_drop: transferData.transferType === 'drop',
+        source_itinerary_city:
+          transferData.transferType === "pickup"
+            ? dCityData?.id || dCityData?.gmaps_place_id
+            : oCityData?.id || oCityData?.gmaps_place_id,
+        destination_itinerary_city:
+          transferData.transferType === "pickup"
+            ? dCityData?.id || dCityData?.gmaps_place_id
+            : oCityData?.id || oCityData?.gmaps_place_id,
+        is_pickup: transferData.transferType === "pickup",
+        is_drop: transferData.transferType === "drop",
         source: transferData?.source,
         trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index
+        result_index: transferData?.selectedQuote?.result_index,
+        booking_id: transferData?.booking_id,
       };
 
+      console.log("Payload",bookingPayload);
       const response = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
         bookingPayload,
@@ -991,32 +1002,39 @@ const CityItem = ({
 
       if (response.status === 200) {
         dispatch(
-                        updateAirportTransferBooking(
-                          `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
-                          }`,
-                          response.data
-                        )
-                      );
-        
+          updateAirportTransferBooking(
+            `${
+              transferData.transferType === "pickup"
+                ? dCityData?.id || dCityData?.gmaps_place_id
+                : oCityData?.id || oCityData?.gmaps_place_id
+            }`,
+            response.data
+          )
+        );
+
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
-        
+
         dispatch(
           openNotification({
             type: "success",
-            text: `${transferData.transferType === 'pickup' ? 'Pickup' : 'Drop'} transfer added successfully`,
+            text: `${
+              transferData.transferType === "pickup" ? "Pickup" : "Drop"
+            } transfer added successfully`,
             heading: "Success!",
           })
         );
       }
-     setIsTransferDrawerOpen(false);
-     setTransferDrawerType(null);
-     setSelectedTransferBooking(null);
+      setIsTransferDrawerOpen(false);
+      setTransferDrawerType(null);
+      setSelectedTransferBooking(null);
     } catch (error) {
       const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] || 
-        error?.response?.data?.message || error?.response?.data?.errors?.[0]?.detail ? error?.response?.data?.errors?.[0]?.detail?.[0] : null || 
-        error.message;
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error?.response?.data?.message ||
+        error?.response?.data?.errors?.[0]?.detail
+          ? error?.response?.data?.errors?.[0]?.detail?.[0]
+          : null || error.message;
       dispatch(
         openNotification({
           text: errorMsg,
@@ -1029,10 +1047,9 @@ const CityItem = ({
     }
   };
 
-
-    const supportsTransfers = (mode,index) => {
-      console.log("MOOde",mode,index)
-    return ['flight', 'train', 'ferry'].includes(mode?.toLowerCase());
+  const supportsTransfers = (mode, index) => {
+    console.log("MOOde", mode, index);
+    return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
 
   const existingPickupBookings = currentAirportBookings?.filter(

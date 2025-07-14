@@ -11,10 +11,7 @@ import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { ToastContainer } from "react-toastify";
-import { ToastContainer } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
-import OverviewParam from "./Overview/OverviewParam";
-import { setShowHotelDrawer } from "../../../store/actions/ui";
 import OverviewParam from "./Overview/OverviewParam";
 import { setShowHotelDrawer } from "../../../store/actions/ui";
 const Container = styled.div`

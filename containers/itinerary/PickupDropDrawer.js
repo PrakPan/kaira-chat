@@ -769,9 +769,12 @@ const searchAutocomplete = async (query, field) => {
 
   const handleSuggestionSelect = (suggestion, field) => {
     const isHub = suggestion.code !== undefined;
+    const isHotel = suggestion.isHotel === true;
     const label = isHub ? suggestion.name : suggestion.text;
     const id = suggestion.id;
-    console.log("Hereee", label, isHub);
+
+    console.log("Hereee", label, isHub, isHotel);
+
     if (field === "source") {
       setFormData((prev) => ({
         ...prev,
@@ -779,7 +782,7 @@ const searchAutocomplete = async (query, field) => {
         sourceGmapsId: isHub ? "" : id,
         sourceHubId: isHub ? id : "",
       }));
-      setSourceInput(label); // <- important!
+      setSourceInput(label);
       setShowSourceSuggestions(false);
       setSourceSuggestions([]);
     } else {
@@ -789,7 +792,7 @@ const searchAutocomplete = async (query, field) => {
         destinationGmapsId: isHub ? "" : id,
         destinationHubId: isHub ? id : "",
       }));
-      setDestinationInput(label); // <- important!
+      setDestinationInput(label);
       setShowDestinationSuggestions(false);
       setDestinationSuggestions([]);
     }

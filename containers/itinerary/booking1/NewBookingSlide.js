@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { connect, useDispatch, useSelector } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
@@ -350,7 +349,7 @@ const Details = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
   const _startRazorpayHandler = (data) => {
@@ -812,8 +811,8 @@ const Details = (props) => {
   onUpdateSuccess={fetchItineraryStatus}
   convertDFormat={convertDFormat}
   tripsPage={props.tripsPage}
-/>
-          {/* <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+/> */}
+          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
@@ -832,7 +831,7 @@ const Details = (props) => {
                       : null
                   )}
                 </div>
-              )} */}
+              )}
 
               
                  {/* <>
