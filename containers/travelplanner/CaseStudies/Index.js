@@ -31,7 +31,7 @@ const FullImgContent = (props) => {
         image: traveler.image,
         text: traveler.review,
         rating: 5,
-        itinerary_link: "https://www.thetarzanway.com/itinerary/" + traveler.id,
+        itinerary_link: "https://thetarzanway.com/itinerary/" + traveler.id,
       });
     }
 

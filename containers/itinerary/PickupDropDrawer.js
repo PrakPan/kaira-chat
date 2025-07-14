@@ -52,7 +52,11 @@ const PickupDropDrawer = ({
   sourceGmaps,
   destinationGmaps,
   booking_id,
-  loading
+  loading,
+ sourceLat,
+  sourceLong,
+  destinationLat,
+  destinationLong,
 }) => {
   console.log("HotelN", booking_id);
 
@@ -100,6 +104,10 @@ const PickupDropDrawer = ({
     destinationGmapsId: "",
     sourceHubId: "",
     destinationHubId: "",
+    sourceLatitude: "",
+  sourceLongitude: "",
+  destinationLatitude: "",
+  destinationLongitude: "",
   };
 
 
@@ -130,6 +138,12 @@ useEffect(() => {
     const transferTime = trip?.start_time || "12:00";
     const passengers = trip?.number_of_travellers || number_of_adults + number_of_children + number_of_infants;
 
+    const originLat = trip?.origin?.coordinates?.lat || "";
+    const originLng = trip?.origin?.coordinates?.lng || "";
+
+     const destinationLat = trip?.destination?.coordinates?.lat || "";
+    const destinationLng = trip?.destination?.coordinates?.lng || "";
+
     // Update form data - directly assign gmaps IDs from trip
     setFormData({
       sourceAddress,
@@ -139,14 +153,25 @@ useEffect(() => {
       passengers,
       notes: "",
       sourceGmapsId: trip?.origin?.gmaps_place_id || "",
+      
       destinationGmapsId: trip?.destination?.gmaps_place_id || "",
       sourceHubId: trip?.origin.hub_id || "",
       destinationHubId: trip?.destination?.hub_id || "",
+      sourceLatitude: originLat,
+      sourceLongitude: originLng,
+      destinationLatitude: destinationLat,
+      destinationLongitude: destinationLng,
     });
 
     // Set input display values to match form data
     setSourceInput(sourceAddress);
     setDestinationInput(destinationAddress);
+
+    if (transferType === "pickup" && destinationLat && destinationLong && !destinationAddress) {
+  setDestinationInput(`Location (${destinationLat}, ${destinationLong})`);
+} else if (transferType === "drop" && sourceLat && sourceLong && !sourceAddress) {
+  setSourceInput(`Location (${sourceLat}, ${sourceLong})`);
+}
 
     // Search for hubs if needed
     if (trip?.origin.hub_id || trip?.destination.hub_id) {
@@ -297,24 +322,53 @@ useEffect(() => {
   };
 
   // 2. SECOND - Initialize form data and trigger gmaps API calls
-  useEffect(() => {
+ useEffect(() => {
   if (isOpen && booking && !trips) {
     const initialData = getInitialFormState();
     
     // Check if we have gmaps IDs from props
     let updatedData = { ...initialData };
     
-    if (transferType === "pickup" && destinationGmaps) {
-      updatedData.destinationGmapsId = destinationGmaps;
-    } else if (transferType === "drop" && sourceGmaps) {
-      updatedData.sourceGmapsId = sourceGmaps;
+    if (transferType === "pickup") {
+      // For pickup: destination should be hotel name
+      if (destinationHotelName) {
+        updatedData.destinationAddress = destinationHotelName;
+      }
+      if (destinationGmaps || (destinationLat && destinationLong)) {
+        if (destinationGmaps) {
+          updatedData.destinationGmapsId = destinationGmaps;
+        } else if (destinationLat && destinationLong) {
+          updatedData.destinationLatitude = destinationLat;
+          updatedData.destinationLongitude = destinationLong;
+        }
+      }
+    } else if (transferType === "drop") {
+      // For drop: source should be hotel name
+      if (hotelName) {
+        updatedData.sourceAddress = hotelName;
+      }
+      if (sourceGmaps || (sourceLat && sourceLong)) {
+        if (sourceGmaps) {
+          updatedData.sourceGmapsId = sourceGmaps;
+        } else if (sourceLat && sourceLong) {
+          updatedData.sourceLatitude = sourceLat;
+          updatedData.sourceLongitude = sourceLong;
+        }
+      }
     }
     
     setFormData(updatedData);
 
-    // Set input display values
-    setSourceInput(initialData.sourceAddress);
-    setDestinationInput(initialData.destinationAddress);
+    // Set input display values - USE UPDATED DATA
+    setSourceInput(updatedData.sourceAddress);
+    setDestinationInput(updatedData.destinationAddress);
+
+    // Trigger autocomplete for hotel names to auto-fill gmaps data
+    if (transferType === "pickup" && destinationHotelName && !destinationGmaps) {
+      handleLocationSearch(destinationHotelName, "destination");
+    } else if (transferType === "drop" && hotelName && !sourceGmaps) {
+      handleLocationSearch(hotelName, "source");
+    }
 
     setIsAutoFilled(true);
     setInitialPropsAssigned(true);
@@ -331,6 +385,10 @@ useEffect(() => {
   trips,
   sourceGmaps,
   destinationGmaps,
+  sourceLat,
+  sourceLong,
+  destinationLat,
+  destinationLong,
 ]);
 
   // Update the hub auto-fill useEffect
@@ -502,12 +560,32 @@ useEffect(() => {
 const searchAutocomplete = async (query, field) => {
   if (!query.trim() || query.length < 2) {
     if (field === "source") {
-      setSourceSuggestions([]);
-      setShowSourceSuggestions(false);
-    } else {
-      setDestinationSuggestions([]);
-      setShowDestinationSuggestions(false);
-    }
+  setSourceSuggestions(combinedResults);
+  setShowSourceSuggestions(true);
+  
+  // Auto-select on first load for hotel name
+  if (combinedResults.length > 0 && 
+      !hasAutoFilledRef.current.source && 
+      transferType === "drop" && 
+      query === hotelName &&
+      !formData.sourceGmapsId) { // Only if not already filled
+    handleSuggestionSelect(combinedResults[0], "source");
+    hasAutoFilledRef.current.source = true;
+  }
+} else {
+  setDestinationSuggestions(combinedResults);
+  setShowDestinationSuggestions(true);
+  
+  // Auto-select on first load for hotel name
+  if (combinedResults.length > 0 && 
+      !hasAutoFilledRef.current.destination && 
+      transferType === "pickup" && 
+      query === destinationHotelName &&
+      !formData.destinationGmapsId) { // Only if not already filled
+    handleSuggestionSelect(combinedResults[0], "destination");
+    hasAutoFilledRef.current.destination = true;
+  }
+}
     return;
   }
 
@@ -736,16 +814,15 @@ const searchAutocomplete = async (query, field) => {
   };
 
   const searchTransfers = async () => {
-    const sourceId = formData.sourceHubId || formData.sourceGmapsId;
-    const destinationId =
-      formData.destinationHubId || formData.destinationGmapsId;
+     const sourceId = formData.sourceHubId || formData.sourceGmapsId || 
+    (formData.sourceLatitude && formData.sourceLongitude);
+  const destinationId = formData.destinationHubId || formData.destinationGmapsId ||
+    (formData.destinationLatitude && formData.destinationLongitude);
 
-    if (!sourceId || !destinationId) {
-      setSearchError(
-        "Please select both pickup and drop locations from suggestions"
-      );
-      return;
-    }
+  if (!sourceId || !destinationId) {
+    setSearchError("Please select both pickup and drop locations from suggestions");
+    return;
+  }
 
     setIsLoadingQuotes(true);
     setTransferQuotes([]);
@@ -756,12 +833,16 @@ const searchAutocomplete = async (query, field) => {
       trips: [
         {
           trip_type: "airport",
-          origin: formData.sourceHubId
-            ? { hub_id: formData.sourceHubId }
-            : { gmaps_place_id: formData.sourceGmapsId },
-          destination: formData.destinationHubId
-            ? { hub_id: formData.destinationHubId }
-            : { gmaps_place_id: formData.destinationGmapsId },
+           origin: formData.sourceHubId
+        ? { hub_id: formData.sourceHubId }
+        : formData.sourceGmapsId 
+        ? { gmaps_place_id: formData.sourceGmapsId }
+        : { coordinates: { lat: formData.sourceLatitude, long: formData.sourceLongitude } },
+      destination: formData.destinationHubId
+        ? { hub_id: formData.destinationHubId }
+        : formData.destinationGmapsId
+        ? { gmaps_place_id: formData.destinationGmapsId }
+       : { coordinates: { lat: formData.destinationLatitude, long: formData.destinationLongitude } },
           start_date: formData.transferDate,
           start_time: formData.transferTime,
           number_of_travellers: formData.passengers,
@@ -843,11 +924,16 @@ const searchAutocomplete = async (query, field) => {
     if (field === "sourceAddress") {
       newData.sourceGmapsId = "";
       newData.sourceHubId = "";
+
+      newData.sourceLatitude = "";
+      newData.sourceLongitude = "";
     } else if (field === "destinationAddress") {
       newData.destinationGmapsId = "";
       newData.destinationHubId = "";
-    }
 
+      newData.destinationLatitude = "";
+      newData.destinationLongitude = "";
+    }
     return newData;
   });
 
@@ -921,9 +1007,11 @@ const searchAutocomplete = async (query, field) => {
 
   const isFieldValid = (field) => {
     if (field === "source") {
-      return formData.sourceGmapsId || formData.sourceHubId;
-    }
-    return formData.destinationGmapsId || formData.destinationHubId;
+    return formData.sourceGmapsId || formData.sourceHubId || 
+      (formData.sourceLatitude && formData.sourceLongitude);
+  }
+  return formData.destinationGmapsId || formData.destinationHubId ||
+    (formData.destinationLatitude && formData.destinationLongitude);
   };
 
   useEffect(() => {

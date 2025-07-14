@@ -27,7 +27,7 @@ const Covid = () => {
 
         <link
           rel="canonical"
-          href={`https://www.thetarzanway.com/covid-19-safe-travel-india`}
+          href={`https://thetarzanway.com/covid-19-safe-travel-india`}
         ></link>
       </Head>
 

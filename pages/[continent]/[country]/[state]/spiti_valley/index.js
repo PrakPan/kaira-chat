@@ -53,7 +53,7 @@ const TravelPlanner = (props) => {
 
         <link
           rel="canonical"
-          href={`https://www.thetarzanway.com/${props.path}`}
+          href={`https://thetarzanway.com/${props.path}`}
         ></link>
       </Head>
 

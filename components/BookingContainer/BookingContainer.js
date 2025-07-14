@@ -27,7 +27,7 @@ const BookingContainer = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
     getURL();
 
   const handleSubmit = (e) => {

@@ -418,6 +418,8 @@ const ItineraryContainer = (props) => {
             hotel.city_name = city_name;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
+            hotel.lat=hotel?.latitude,
+            hotel.long=hotel?.longitude,
             stays.push(hotel);
           }
         }

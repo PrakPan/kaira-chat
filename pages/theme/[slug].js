@@ -118,7 +118,7 @@ const TravelPlanner = ({
 
         <link
           rel="canonical"
-          href={`https://www.thetarzanway.com/theme/${slug}`}
+          href={`https://thetarzanway.com/theme/${slug}`}
         ></link>
       </Head>
 

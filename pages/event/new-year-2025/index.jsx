@@ -26,7 +26,7 @@ export default function Page(params) {
                     content="new year trips, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
                 ></meta>
 
-                <link rel="canonical" href={`https://www.thetarzanway.com`}></link>
+                <link rel="canonical" href={`https://thetarzanway.com`}></link>
             </Head>
 
             <NewYearConatiner />

@@ -267,7 +267,7 @@ const Details = (props) => {
 
   setBookingSummary();
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com/" +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
     router.asPath;
   const [showVerification, setShowVerification] = useState(false);
   const [showRegistration, setShowRegistartion] = useState(false);
@@ -303,14 +303,14 @@ const Details = (props) => {
           .then((res) => {
             setPaymentLoading(false);
             window.location.href =
-              "https://www.thetarzanway.com/itinerary/physicswallah/" +
+              "https://thetarzanway.com/itinerary/physicswallah/" +
               data.itinerary +
               "?payment_status=success";
           })
           .catch((err) => {
             setPaymentLoading(false);
             window.location.href =
-              "https://www.thetarzanway.com/itinerary/physicswallah/" +
+              "https://thetarzanway.com/itinerary/physicswallah/" +
               data.itinerary +
               "?payment_status=fail";
           });

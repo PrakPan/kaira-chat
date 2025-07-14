@@ -689,6 +689,10 @@ const CityItem = ({
   destinationHotelName,
   sourceGmaps,
   destinationGmaps,
+  sourceLat,
+  sourceLong,
+  destinationLat,
+  destinationLong,
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
@@ -1207,6 +1211,10 @@ const CityItem = ({
         isOpen={isTransferDrawerOpen}
         hotelName={hotelName}
         destinationHotelName={destinationHotelName}
+        sourceLat={sourceLat}
+  sourceLong={sourceLong}
+  destinationLat={destinationLat}
+  destinationLong={destinationLong}
         booking={booking}
         onClose={() => {
           setIsTransferDrawerOpen(false);

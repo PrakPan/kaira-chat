@@ -9,7 +9,7 @@ console.log("Hi",process.env.YOUR_ENV_VAR,process.env.NEXT_PUBLIC_MERCURY_HOST);
 
 const generateSitemap = async () => {
   const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST;
-  const PROD_BASE_URL = "https://www.thetarzanway.com";
+  const PROD_BASE_URL = "https://thetarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(

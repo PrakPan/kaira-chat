@@ -41,7 +41,7 @@ const Home = (props) => {
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
         ></meta>
 
-        <link rel="canonical" href={`https://www.thetarzanway.com`}></link>
+        <link rel="canonical" href={`https://thetarzanway.com`}></link>
 
         <script
           type="application/ld+json"
@@ -51,9 +51,9 @@ const Home = (props) => {
               "@context": "https://schema.org",
               "@type": "TravelAgency",
               "name": "The Tarzan Way",
-              "image": "https://www.thetarzanway.com/logoblack.svg",
+              "image": "https://thetarzanway.com/logoblack.svg",
               "@id": "",
-              "url": "https://www.thetarzanway.com/",
+              "url": "https://thetarzanway.com/",
               "telephone": "+91 95821 25476",
               "address": {
                 "@type": "PostalAddress",

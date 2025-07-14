@@ -29,7 +29,7 @@ export default function ThankYou() {
 
         <link
           rel="canonical"
-          href={`https://www.thetarzanway.com/corporates`}
+          href={`https://thetarzanway.com/corporates`}
         ></link>
       </Head>
 
