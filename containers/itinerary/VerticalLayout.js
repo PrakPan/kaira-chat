@@ -61,6 +61,7 @@ const AirportBookingItem = ({
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showClickTooltip, setShowClickTooltip] = useState(false); // New state for click tooltip
   const dropdownRef = useRef(null);
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const tooltipTimeoutRef = useRef(null);
@@ -104,7 +105,7 @@ const AirportBookingItem = ({
   };
 
   const handleInfoHover = (show) => {
-    if (!showDetails) {
+    if (!showDetails && !showClickTooltip) {
       if (show) {
         if (tooltipTimeoutRef.current) {
           clearTimeout(tooltipTimeoutRef.current);
@@ -144,6 +145,7 @@ const AirportBookingItem = ({
     }
     setShowTooltip(false);
     setShowDetails(false);
+    setShowClickTooltip(false);
     handleIntracityBookings(upPresent && downPresent, {
       ...bookingItem,
       selectedType: type,
@@ -159,6 +161,7 @@ const AirportBookingItem = ({
     }
     setShowTooltip(false);
     setShowDetails(false);
+    setShowClickTooltip(false);
 
     if (type === "pickup") {
       onPickupClick();
@@ -277,32 +280,37 @@ const AirportBookingItem = ({
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDetails(false);
+        setShowClickTooltip(false);
       }
     };
 
-    if (showDetails) {
+    if (showDetails || showClickTooltip) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDetails]);
+  }, [showDetails, showClickTooltip]);
 
   const handleClick = () => {
-    // If no bookings and supports transfers, don't do anything (let tooltip handle it)
+    // If no bookings and supports transfers, show tooltip below text
     if (
       !hasPickup &&
       !hasDrop &&
       noPickupDropBookings.length === 0 &&
       supportsTransfers(bookingMode)
     ) {
+      setShowClickTooltip(!showClickTooltip);
+      setShowTooltip(false);
+      setShowDetails(false);
       return;
     }
 
     if (hasPickup && hasDrop) {
       setShowDetails(!showDetails);
       setShowTooltip(false);
+      setShowClickTooltip(false);
     } else if (hasPickup && !hasDrop) {
       if (pickupBookings.length === 1) {
         handleIntracityBookings(upPresent && downPresent, {
@@ -312,6 +320,7 @@ const AirportBookingItem = ({
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
+        setShowClickTooltip(false);
       }
     } else if (!hasPickup && hasDrop) {
       if (dropBookings.length === 1) {
@@ -322,6 +331,7 @@ const AirportBookingItem = ({
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
+        setShowClickTooltip(false);
       }
     } else if (booking && booking.length > 0) {
       if (booking.length === 1) {
@@ -332,6 +342,7 @@ const AirportBookingItem = ({
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
+        setShowClickTooltip(false);
       }
     }
   };
@@ -340,6 +351,7 @@ const AirportBookingItem = ({
     e.stopPropagation();
     setShowTooltip(false);
     setShowDetails(false);
+    setShowClickTooltip(false);
     handleIntracityBookings(upPresent && downPresent, {
       ...bookingItem,
       selectedType: type,
@@ -588,7 +600,7 @@ const AirportBookingItem = ({
               <LuInfo size={16} strokeWidth={2.5} />
             </div>
 
-            {showTooltip && !showDetails && (
+            {showTooltip && !showDetails && !showClickTooltip && (
               <div
                 className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
                 style={{ zIndex: 10000 }}
@@ -602,6 +614,19 @@ const AirportBookingItem = ({
           </div>
         )}
       </div>
+
+      {/* Click tooltip for no bookings case - positioned below the text */}
+      {showClickTooltip && (
+        <div className="relative mt-2">
+          <div
+            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
+            style={{ zIndex: 10000 }}
+          >
+            {renderTooltipContent()}
+            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+          </div>
+        </div>
+      )}
 
       {showDetails &&
         ((hasPickup && hasDrop) ||
@@ -623,7 +648,10 @@ const AirportBookingItem = ({
     supportsTransfers(bookingMode) && (
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
-          <span className="text-blue font-[500] text-[14px] hover:underline cursor-pointer">
+          <span 
+            className="text-blue font-[500] text-[14px] hover:underline cursor-pointer"
+            onClick={handleClick}
+          >
             + Add Pickup and Drop
           </span>
 
@@ -637,7 +665,7 @@ const AirportBookingItem = ({
                 <LuInfo size={16} strokeWidth={2.5} />
               </div>
 
-              {showTooltip && !showDetails && (
+              {showTooltip && !showDetails && !showClickTooltip && (
                 <div
                   className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
                   style={{ zIndex: 10000 }}
@@ -651,6 +679,19 @@ const AirportBookingItem = ({
             </div>
           )}
         </div>
+
+        {/* Click tooltip for no bookings case - positioned below the text */}
+        {showClickTooltip && (
+          <div className="relative mt-2">
+            <div
+              className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
+              style={{ zIndex: 10000 }}
+            >
+              {renderTooltipContent()}
+              <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+            </div>
+          </div>
+        )}
       </div>
     )
   );
