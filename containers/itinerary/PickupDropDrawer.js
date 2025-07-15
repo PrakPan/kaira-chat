@@ -835,12 +835,12 @@ const searchAutocomplete = async (query, field) => {
         ? { hub_id: formData.sourceHubId }
         : formData.sourceGmapsId 
         ? { gmaps_place_id: formData.sourceGmapsId }
-        : { coordinates: { lat: formData.sourceLatitude, long: formData.sourceLongitude } },
+        : { coordinates: { latitude: formData.sourceLatitude, longitude: formData.sourceLongitude } },
       destination: formData.destinationHubId
         ? { hub_id: formData.destinationHubId }
         : formData.destinationGmapsId
         ? { gmaps_place_id: formData.destinationGmapsId }
-       : { coordinates: { lat: formData.destinationLatitude, long: formData.destinationLongitude } },
+       : { coordinates: { latitude: formData.destinationLatitude, longitude: formData.destinationLongitude } },
           start_date: formData.transferDate,
           start_time: formData.transferTime,
           number_of_travellers: formData.passengers,
