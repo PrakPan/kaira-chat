@@ -1419,9 +1419,9 @@ export const DestinationPopUp = (props) => {
       // if (i === index) return false; 
       const cd = d.cityData;
       return (
-        cd?.resource_id === destination?.resource_id ||
+        (cd?.resource_id === destination?.resource_id ||
         cd?.city_id === destination?.resource_id ||
-        cd?.id === destination?.resource_id
+        cd?.id === destination?.resource_id) && i === index
       );
     });
 
