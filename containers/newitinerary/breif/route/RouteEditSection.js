@@ -125,7 +125,7 @@ const Container = styled.div`
   }
 
   .DateInput_input__focused {
-    border-bottom: 2px solid #f7e700;
+    
   }
   .DayPickerKeyboardShortcuts_show__topRight {
     display: none;
@@ -2294,7 +2294,91 @@ export const DatePicker = (props) => {
   bottom: auto !important;
 }
 
+.DayPickerNavigation_button {
+      border: 2px solid #000000 !important;
+      border-radius: 50% !important;
+      background: #ffffff !important;
+      width: 32px !important;
+      height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+      color: black;
+    }
 
+    .DayPickerNavigation_button:hover {
+      background: #f3f4f6 !important;
+      transform: scale(1.05) !important;
+    }
+
+    .DayPickerNavigation_button:active {
+      transform: scale(0.95) !important;
+    }
+
+    .DayPickerNavigation_button svg,
+    .DayPickerNavigation_button .DayPickerNavigation_svg,
+    .DayPickerNavigation_svg {
+      display: none !important;
+    }
+
+    .DayPickerNavigation_button:first-child::after {
+      content: "<";
+      position: absolute;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000000;
+      line-height: 1;
+    }
+
+    .DayPickerNavigation_button:last-child::after {
+      content: ">";
+      position: absolute;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000000;
+      line-height: 1;
+    }
+
+    .DayPickerNavigation_button[aria-label*="previous"]::after,
+    .DayPickerNavigation_button[aria-label*="Previous"]::after {
+      content: "<";
+    }
+
+    .DayPickerNavigation_button[aria-label*="next"]::after,
+    .DayPickerNavigation_button[aria-label*="Next"]::after {
+      content: ">";
+    }
+
+    /* Calendar Day styles */
+    .CalendarDay {
+      border: 0px;
+      margin: 1px;
+    }
+
+    .CalendarDay__selected,
+    .CalendarDay__selected:hover {
+      background-color: #f7e700;
+      border: 0px;
+      color: black;
+    }
+
+    .CalendarDay__selected_span,
+    .CalendarDay__hovered_span {
+      background-color: #f7e70033;
+      color: black;
+      border: 0px;
+    }
+
+    .CalendarDay__selected_span:hover,
+    .CalendarDay__hovered_span:hover {
+      background-color: #f7e7004a;
+      color: black;
+    }
+
+    .DayPickerKeyboardShortcuts_show__topRight {
+      display: none;
+    }
 
 .DayPicker_weekHeader {
       margin-top: 1rem !important;
@@ -2386,7 +2470,7 @@ body.react-dates__block-scroll {
   return (
     <div
       className={`w-full h-full flex items-center justify-center border-none ${
-        isHighlighted ? "bg-yellow-50" : ""
+        isHighlighted ? "bg-yellow-50 " : ""
       }`}
     >
       {day.date()}
