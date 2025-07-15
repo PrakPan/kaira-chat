@@ -494,7 +494,7 @@ const RouteEditSection = (props) => {
       },
     };
 
-    console.log("New Request Data", data);
+    console.log("New Request Data", data,destinations);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1407,73 +1407,83 @@ export const DestinationPopUp = (props) => {
     });
   };
 
-  const handleUpdateDestination = () => {
-    setDestinationChanges(true);
+ const handleUpdateDestination = () => {
+  setDestinationChanges(true);
+  console.log("New Desti", destination);
 
-    console.log("New Desti", destination);
+  setDestinations((prev) => {
+    let destinations = [...prev];
+    const curDestination = destinations[index];
 
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      const curDestination = destinations[index];
+    const match = destinations.find((d, i) => {
+      // if (i === index) return false; 
+      const cd = d.cityData;
+      return (
+        cd?.resource_id === destination?.resource_id ||
+        cd?.city_id === destination?.resource_id ||
+        cd?.id === destination?.resource_id
+      );
+    });
 
-      if (curDestination) {
-        console.log("Currr", curDestination);
-        if (curDestination.startingCity || curDestination.endingCity) {
-          console.log("Currr Is start end", curDestination);
-          destinations[index] = {
-            startingCity: curDestination.startingCity,
-            endingCity: curDestination.endingCity,
-            cityData: {
-              ...destination,
-              duration: nights,
-              place_id: destination?.place_id,
-            },
-          };
-        } else {
-          console.log("Currr Is not start end", curDestination);
-          destinations[index] = {
-            startingCity: curDestination.startingCity,
-            endingCity: curDestination.endingCity,
-            cityData: {
-              ...destination,
-              nights: nights,
-              color: curDestination.cityData.color,
-              duration: nights,
-            },
-          };
-        }
+    const matchedCityId = match?.cityData?.id;
+    if (matchedCityId) {
+      destination.id = matchedCityId;
+    }
+
+    if (curDestination) {
+      if (curDestination.startingCity || curDestination.endingCity) {
+        destinations[index] = {
+          startingCity: curDestination.startingCity,
+          endingCity: curDestination.endingCity,
+          cityData: {
+            ...destination,
+            duration: nights,
+            place_id: destination?.place_id,
+          },
+        };
       } else {
-        destinations.splice(destinations.length - 1, 0, {
-          startingCity: false,
-          endingCity: false,
+        destinations[index] = {
+          startingCity: curDestination.startingCity,
+          endingCity: curDestination.endingCity,
           cityData: {
             ...destination,
             nights: nights,
+            color: curDestination.cityData.color,
             duration: nights,
-            color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
-        });
+        };
       }
+    } else {
+      destinations.splice(destinations.length - 1, 0, {
+        startingCity: false,
+        endingCity: false,
+        cityData: {
+          ...destination,
+          nights: nights,
+          duration: nights,
+          color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
+        },
+      });
+    }
 
-      updateDestinationsDates(destinations);
+    updateDestinationsDates(destinations);
+    updateLatLong(destinations);
+    return destinations;
+  });
 
-      updateLatLong(destinations);
+  setPopUp(false);
 
-      return destinations;
-    });
+  logEvent({
+    action: "Route Edit",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Update Destination",
+      event_label: "Update",
+      event_action: "Update destination",
+    },
+  });
+};
 
-    setPopUp(false);
-
-    logEvent({
-      action: "Route Edit",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Update Destination",
-        event_label: "Update",
-        event_action: "Update destination",
-      },
-    });
-  };
 
   return (
     <div
