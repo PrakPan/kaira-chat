@@ -94,8 +94,6 @@ const Text = styled.div`
 
 const MidSectionV2 = (props) => {
   const router = useRouter();
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [addOrEdit, setAddOrEdit] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(
     props.Bookings
       ? props?.bookings[0]
@@ -104,8 +102,6 @@ const MidSectionV2 = (props) => {
           name: null,
         }
   );
-  const [showFlightModal, setShowFlightModal] = useState(false);
-  const [showTaxiModal, setShowTaxiModal] = useState(false);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
@@ -115,7 +111,7 @@ const MidSectionV2 = (props) => {
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: "editTransfer",
-          bookingId: selectedBooking?.id,
+          bookingId: props?.cityTransferBookings?.id,
           oItineraryCity:
             props?.oCityData?.id || props?.oCityData?.gmaps_place_id,
           dItineraryCity:
@@ -184,30 +180,7 @@ const MidSectionV2 = (props) => {
   else if (props?.route && props?.route?.transfers) hidemidsection = false;
   else hidemidsection = true;
 
-  const handleTransferEdit = (e) => {
-    setShowDrawer(true);
-    setAddOrEdit(e.target.id);
 
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: "Transfer Change",
-        event_action: "Route",
-      },
-    });
-  };
-
-  const handleChangeTransfer = (e) => {
-    if (props.cityTransferBookings?.modes === "Flight") {
-      setShowFlightModal(true);
-    } else if (props.cityTransferBookings?.modes === "Taxi") {
-      setShowTaxiModal(true);
-    } else {
-      handleTransferEdit(e, "Edit Transfer");
-    }
-  };
   const [isHovered, setIsHovered] = useState(false);
   const popupStyle = {
     display: isHovered ? "block" : "none",
@@ -297,103 +270,6 @@ const MidSectionV2 = (props) => {
           </>
         ))}
 
-      <FlightModal
-        showFlightModal={showFlightModal}
-        setShowFlightModal={setShowFlightModal}
-        setHideFlightModal={() => setShowFlightModal(false)}
-        setHideBookingModal={() => setShowFlightModal(false)}
-        getPaymentHandler={props.getPaymentHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-        _updateBookingHandler={props._updateBookingHandler}
-        // alternates={selectedBooking?.id}
-        // tailored_id={selectedBooking["tailored_itinerary"]}
-        selectedBooking={props?.cityTransferBookings || selectedBooking} // required for origin destination and edge id
-        // selectedTransferHeading={props?.route?.heading}
-        // fetchData={props?.fetchData}
-        setShowLoginModal={props?.setShowLoginModal} //move to redux
-        check_in={props?.route?.check_in}
-        _GetInTouch={props._GetInTouch}
-        daySlabIndex={props?.route?.element_location?.day_slab_index}
-        // elementIndex={props?.route?.element_index}
-        routeId={props?.route?.transfers?.id}
-        city={props?.city}
-        dcity={props?.dcity}
-        oCityData={props?.oCityData}
-        dCityData={props?.dCityData}
-      ></FlightModal>
-
-      <TaxiModal
-        mercury
-        showTaxiModal={showTaxiModal}
-        setHideBookingModal={() => setShowTaxiModal(false)}
-        setHideTaxiModal={() => setShowTaxiModal(false)}
-        getPaymentHandler={props.getPaymentHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-        selectedBooking={selectedBooking}
-        itinerary_id={props?.itinerary_id}
-        selectedTransferHeading={props?.route?.heading}
-        fetchData={props?.fetchData}
-        setShowLoginModal={props?.setShowLoginModal}
-        check_in={props?.route?.check_in}
-        _GetInTouch={props._GetInTouch}
-        daySlabIndex={props?.route?.element_location?.day_slab_index}
-        elementIndex={props?.route?.element_index}
-        routeId={props?.route?.transfers?.id}
-        origin={props?.originCity}
-        destination={props?.destinationCity}
-        city={props?.city}
-        dcity={props?.dcity}
-        oCityData={props?.oCityData}
-        dCityData={props?.dCityData}
-      ></TaxiModal>
-
-      <TransferEditDrawer
-        mercury
-        addOrEdit={addOrEdit}
-        showDrawer={showDrawer}
-        setShowDrawer={setShowDrawer}
-        selectedTransferHeading={props?.route?.heading}
-        origin={props?.originCity}
-        destination={props?.destinationCity}
-        day_slab_index={props?.route?.element_location?.day_slab_index}
-        element_index={props?.route?.element_index}
-        fetchData={props?.fetchData}
-        setShowLoginModal={props?.setShowLoginModal}
-        check_in={props?.route?.check_in}
-        _GetInTouch={props._GetInTouch}
-        routeId={props?.route?.transfers?.id}
-        // selectedBooking={selectedBooking}
-        getPaymentHandler={props.getPaymentHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-        _updateBookingHandler={props._updateBookingHandler}
-        city={props?.city}
-        dcity={props?.dcity}
-        oCityData={props?.oCityData}
-        dCityData={props?.dCityData}
-        selectedBooking={props?.cityTransferBookings}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={
-          props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id
-        }
-        destinationCityId={
-          props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
-        }
-        origin_itinerary_city_id={
-          props?.oCityData?.id ||
-          props?.oCityData?.gmaps_place_id ||
-          props?.oCityData?.gmaps_place_id
-        }
-        destination_itinerary_city_id={
-          props?.dCityData?.id ||
-          props?.dCityData?.gmaps_place_id ||
-          props?.dCityData?.gmaps_place_id
-        }
-        booking_id={selectedBooking?.id}
-      />
     </Container>
   );
 };

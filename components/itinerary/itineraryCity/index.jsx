@@ -4,15 +4,12 @@ import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import HotelBookingDetails from "../../modals/accommodation/Overview/HotelBookingDetails";
 import { logEvent } from "../../../services/ga/Index";
-import media from "../../media";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
   const { itinerary_status, hotels_status } = useSelector(
@@ -21,7 +18,6 @@ const ItineraryCity = (props) => {
 
   const router=useRouter()
   const fetchDetails = () => {
-    // setShowDetails(true);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -49,7 +45,6 @@ const ItineraryCity = (props) => {
         clickType
       );
     else props?.setShowLoginModal(true);
-    props?.setBookingId(props?.key);
 
     logEvent({
       action: "Hotel_Add_Change",
@@ -155,7 +150,7 @@ const ItineraryCity = (props) => {
             <div
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
-                handleStay(e, "Change", props.city.city.name, "Add")
+                handleStay(e, "Add", props.city.city.name, "Add")
               }
             >
               + Add Stay in {props?.city?.city?.name}

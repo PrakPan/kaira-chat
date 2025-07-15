@@ -42,8 +42,7 @@ const PinSection = (props) => {
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: "showCityDetail",
-          city_id: props?.cityId,
-          dayId: props?.findDayIdByCityId(props?.cityId),
+          city_id: props?.cityId
         },
       },
       undefined,
