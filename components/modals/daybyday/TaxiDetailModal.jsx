@@ -22,7 +22,7 @@ const Text = styled.div`
 const TaxiDetailModal = ({
   data,
   setIsOpen,
-  setHandleShow,
+  // setHandleShow,
   handleDelete,
   loading,
   booking,
@@ -42,12 +42,13 @@ const TaxiDetailModal = ({
   destinationCityId,
   origin_itinerary_city_id,
   destination_itinerary_city_id,
-  setShowDrawer,
+  handleClose,
   noChange,
   noHeading,
   error,
   isAirport,
-  setIsTransferDrawerOpen
+  setIsTransferDrawerOpen,
+  handleEditRoute
 }) => {
   if (!data) return null;
 
@@ -130,7 +131,7 @@ const TaxiDetailModal = ({
       <div className=" bg-gray-50 w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center justify-between">
-            <BackArrow handleClick={() => setHandleShow(false)} />
+            <BackArrow handleClick={handleClose} />
           </div>
         )}
 
@@ -156,12 +157,11 @@ const TaxiDetailModal = ({
                     marginMobile={"0px 0px 0px 2px"}
                     onClick={() => {
                       if(isAirport){
-                        setHandleShow(false);
                         setIsTransferDrawerOpen(true);
-                        return;
+                        return
                       }
-                      setHandleShow(false);
-                      setShowDrawer(true);
+                      handleClose()
+                      handleEditRoute()
                       //setShowTaxi(true);console.log("")
                     }}
                   >

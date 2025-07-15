@@ -28,14 +28,14 @@ const BackText = styled.div`
 const VehicleDetailModal = ({
   data,
   setIsOpen,
-  setHandleShow,
   handleDelete,
   loading,
   booking,
   type,
   isEmbedded,
-  setShowDrawer,
   error,
+  handleClose,
+  handleEditRoute
 }) => {
   if (!data) return null;
 
@@ -114,7 +114,7 @@ const VehicleDetailModal = ({
       <div className=" bg-gray-50 w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center">
-            <BackArrow handleClick={() => setHandleShow(false)} />
+            <BackArrow handleClick={handleClose} />
           </div>
         )}
         <div className="flex justify-between">
@@ -158,8 +158,8 @@ const VehicleDetailModal = ({
                     fontSize={"1rem"}
                     padding={"7px 25px"}
                     onClick={() => {
-                      setHandleShow(false);
-                      setShowDrawer(true);
+                      handleClose()
+                      handleEditRoute()
                       //setShowTaxi(true);console.log("")
                     }}
                   >

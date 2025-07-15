@@ -47,7 +47,7 @@ export default function FlightDetails({
   duration,
   isNonStop,
   numStops,
-  setShowDetails,
+  handleRoute,
 }) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -138,7 +138,7 @@ function getDayOffset(duration) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={() => {
-              setShowDetails((prev) => !prev);
+              handleRoute()
               setIsHovered(false);
             }}
             className="relative"
