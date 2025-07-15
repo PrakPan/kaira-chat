@@ -231,8 +231,8 @@ export default function ThemePage(props) {
                     <div className="space-y-3">
                       {(props?.slug === "perfect-proposals-2025" &&
                         (component?.priority == 13 ||
-                          component?.priority == 9)) ||
-                      (props?.slug === "la-tomatina-spain-2025" || props?.slug === "japan-in-autumn-2025")? (
+                          component?.priority == 9)) || component.heading == "The Gallery Section"
+                      ? (
                         ""
                       ) : (
                         <PrimaryHeading
