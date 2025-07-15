@@ -203,7 +203,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -333,7 +333,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -448,7 +448,7 @@ const TransferBookings = (props) => {
                 booking={booking}
                 payment={props?.payment}
                 token={props?.token}
-                setShowLoginModal={props?.setShowDrawer}
+               setShowLoginModal={props?.setShowLoginModal}
                 _changeTaxiHandler={_changeTaxiHandler}
                 _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
                 getPaymentHandler={props?.getPaymentHandler}
@@ -536,7 +536,7 @@ const TransferBookings = (props) => {
                 booking={booking}
                 payment={props?.payment}
                 token={props?.token}
-                setShowLoginModal={props?.setShowDrawer}
+                setShowLoginModal={props?.setShowLoginModal}
                 _changeTaxiHandler={_changeTaxiHandler}
                 _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
                 getPaymentHandler={props?.getPaymentHandler}
@@ -666,7 +666,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -758,7 +758,7 @@ const TransferBookings = (props) => {
             booking={booking}
             payment={props?.payment}
             token={props?.token}
-            setShowLoginModal={props?.setShowDrawer}
+            setShowLoginModal={props?.setShowLoginModal}
             _changeTaxiHandler={_changeTaxiHandler}
             _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
             getPaymentHandler={props?.getPaymentHandler}
@@ -801,7 +801,7 @@ const TransferBookings = (props) => {
             booking={booking}
             payment={props?.payment}
             token={props?.token}
-            setShowLoginModal={props?.setShowDrawer}
+            setShowLoginModal={props?.setShowLoginModal}
             _changeTaxiHandler={_changeTaxiHandler}
             _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
             getPaymentHandler={props?.getPaymentHandler}

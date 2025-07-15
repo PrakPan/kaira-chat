@@ -825,7 +825,7 @@ const TransferBooking = ({
                         }
                         // isIntracity={isIntracity}
                         booking_id={vehicleDetails?.booking_id}
-                        // isAirport={isAirport}
+                        isAirport={isAirport}
                         AirportTransferType={AirportTransferType}
                       />
                     )}
