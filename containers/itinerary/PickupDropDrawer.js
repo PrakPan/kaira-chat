@@ -296,9 +296,9 @@ useEffect(() => {
       // For flight: use source/destination directly
       if (!booking?.transfer_details) return null;
       return transferType === "pickup" && field === "source"
-        ? booking?.transfer_details?.destination?.hub_id
+        ? booking?.transfer_details?.destination?.id
         : transferType === "drop" && field === "destination"
-        ? booking?.transfer_details?.source?.hub_id
+        ? booking?.transfer_details?.source?.id
         : null;
     } else {
       // For train/ferry: use transfer_details
@@ -314,7 +314,7 @@ useEffect(() => {
         // For drop destination, get destination hub from booking
         return (
           transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id ||
-          transferDetails.destination?.hub_id ||
+          transferDetails.destination?.id ||
           null
         );
       }
