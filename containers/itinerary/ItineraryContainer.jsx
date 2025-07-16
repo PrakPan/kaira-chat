@@ -445,6 +445,7 @@ const ItineraryContainer = (props) => {
             hotel.source = hotel?.images?.[0]?.source;
             hotel.lat=hotel?.latitude,
             hotel.long=hotel?.longitude,
+            hotel.city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
             stays.push(hotel);
           }
         }
