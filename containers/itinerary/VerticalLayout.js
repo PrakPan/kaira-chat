@@ -23,6 +23,7 @@ import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
 import TransferPickupDropButton from "./TransferPickupDropButton";
 import PickupDropDrawer from "./PickupDropDrawer";
+import { useHandleClose } from "../../hooks/useHandleClose";
 
 const Container = styled.div`
   display: flex;
@@ -59,6 +60,7 @@ const AirportBookingItem = ({
   onPickupClick, // Add this prop
   onDropClick, // Add this prop
   handleEdit,
+  handlePickupDropDrawer,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -151,7 +153,7 @@ const AirportBookingItem = ({
     //   ...bookingItem,
     //   selectedType: type,
     // });
-    handleEdit(false,bookingItem);
+    handleEdit(false, bookingItem);
   };
 
   const handleTooltipAddClick = (e, type) => {
@@ -319,7 +321,7 @@ const AirportBookingItem = ({
         //   ...pickupBookings[0],
         //   selectedType: "Airport Pickup",
         // });
-        handleEdit(false,pickupBookings[0]);
+        handleEdit(false, pickupBookings[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -331,9 +333,8 @@ const AirportBookingItem = ({
         //   ...dropBookings[0],
         //   selectedType: "Airport Drop",
         // });
-         handleEdit(false,dropBookings[0]);
+        handleEdit(false, dropBookings[0]);
       } else {
-
         setShowDetails(!showDetails);
         setShowTooltip(false);
         setShowClickTooltip(false);
@@ -344,7 +345,7 @@ const AirportBookingItem = ({
         //   ...booking[0],
         //   selectedType: "Airport Transfer",
         // });
-         handleEdit(false,booking[0]);
+        handleEdit(false, booking[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -362,7 +363,7 @@ const AirportBookingItem = ({
     //   ...bookingItem,
     //   selectedType: type,
     // });
-    handleEdit(false,bookingItem);
+    handleEdit(false, bookingItem);
   };
 
   const formatDate = (dateString) => {
@@ -412,7 +413,7 @@ const AirportBookingItem = ({
           <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-              onClick={(e) => handleTooltipAddClick(e, "drop")}
+              onClick={() => handlePickupDropDrawer("drop")}
             >
               {getTransferLocationText(bookingMode, "drop")}
             </span>
@@ -421,7 +422,7 @@ const AirportBookingItem = ({
           <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-              onClick={(e) => handleTooltipAddClick(e, "pickup")}
+              onClick={() => handlePickupDropDrawer("pickup")}
             >
               {getTransferLocationText(bookingMode, "pickup")}
             </span>
@@ -744,9 +745,17 @@ const CityItem = ({
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
 
-  const { drawer, bookingId, oItineraryCity, dItineraryCity } = router?.query;
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+    router?.query;
 
-  console.log("bookigngid is:", bookingId, "booking_id is:", booking_id,"drawer is:","show" + (booking_type?.includes(",") ? "combo" : booking_type) + "Detail");
+  console.log(
+    "bookigngid is:",
+    bookingId,
+    "booking_id is:",
+    booking_id,
+    "drawer is:",
+    "show" + (booking_type?.includes(",") ? "combo" : booking_type) + "Detail"
+  );
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
     setSelectedTransferBooking(null);
@@ -800,8 +809,8 @@ const CityItem = ({
     airportBookings || []
   );
   const [pickupDropShow, setPickupDropShow] = useState(false);
+  const handleClose=useHandleClose()
 
-  console.log("Selected Booking", selectedBooking);
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   useEffect(() => {
@@ -816,7 +825,7 @@ const CityItem = ({
     }
   }, [booking_id]);
 
-  const handleEdit = async (combo,book) => {
+  const handleEdit = async (combo, book) => {
     setIsIntracity(false);
     if (combo) {
       setComboDetails(true);
@@ -828,6 +837,24 @@ const CityItem = ({
         query: {
           drawer: "show" + (combo ? "combo" : book?.booking_type) + "Detail",
           bookingId: book?.id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
+
+  const handlePickupDropDrawer = (drawerType) => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "addPickupDrop",
+          drawerType: drawerType,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
         },
       },
       undefined,
@@ -1151,7 +1178,7 @@ const CityItem = ({
                         onClick={() => {
                           upPresent &&
                             downPresent &&
-                            handleEdit(transfer_type === "combo",book);
+                            handleEdit(transfer_type === "combo", booking);
                         }}
                       >
                         <div className="group-hover:text-blue">
@@ -1222,51 +1249,56 @@ const CityItem = ({
               sourceGmaps={sourceGmaps}
               destinationGmaps={destinationGmaps}
               handleEdit={handleEdit}
+              handlePickupDropDrawer={handlePickupDropDrawer}
             />
           </div>
           {/* )} */}
         </div>
       </div>
 
-      <PickupDropDrawer
-        isOpen={isTransferDrawerOpen}
-        hotelName={hotelName}
-        destinationHotelName={destinationHotelName}
+      {drawer === "addPickupDrop" &&
+        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+          <PickupDropDrawer
+            isOpen={drawer === "addPickupDrop" &&
+              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) }
+            hotelName={hotelName}
+            destinationHotelName={destinationHotelName}
         sourceLat={sourceLat}
   sourceLong={sourceLong}
   destinationLat={destinationLat}
   destinationLong={destinationLong}
-        booking={booking}
-        onClose={() => {
-          setIsTransferDrawerOpen(false);
-          setTransferDrawerType(null);
-          setSelectedTransferBooking(null);
-        }}
-        transferType={transferDrawerType}
-        bookingMode={booking_type?.toLowerCase()}
-        originCityName={origin_city_name}
-        destinationCityName={destination_city_name}
-        onSubmit={handleTransferSubmit}
-        existingBooking={selectedTransferBooking}
-        sourceGmaps={sourceGmaps}
-        destinationGmaps={destinationGmaps}
-        // show={pickupDropShow}
-        _updateFlightBookingHandler={_updateFlightBookingHandler}
-        _updatePaymentHandler={_updatePaymentHandler}
-        getPaymentHandler={getPaymentHandler}
-        setShowLoginModal={setShowLoginModal}
-        city={origin_city_name}
-        dcity={destination_city_name}
-        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={
-          dCityData?.id || dCityData?.gmaps_place_id
-        }
-      />
+            booking={booking}
+            onClose={handleClose}
+            transferType={drawerType}
+            bookingMode={booking_type?.toLowerCase()}
+            originCityName={origin_city_name}
+            destinationCityName={destination_city_name}
+            onSubmit={handleTransferSubmit}
+            existingBooking={selectedTransferBooking}
+            sourceGmaps={sourceGmaps}
+            destinationGmaps={destinationGmaps}
+            // show={pickupDropShow}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
+            setShowLoginModal={setShowLoginModal}
+            city={origin_city_name}
+            dcity={destination_city_name}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+            destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+            origin_itinerary_city_id={
+              oCityData?.id || oCityData?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              dCityData?.id || dCityData?.gmaps_place_id
+            }
+          />
+        )}
 
       {drawer == "editTransfer" &&
         (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
@@ -1305,11 +1337,15 @@ const CityItem = ({
           />
         )}
 
-      {"show" + ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") === drawer &&
+      {"show" +
+        ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") ===
+        drawer &&
         bookingId == booking_id && (
           <TransferDrawer
             show={
-              "show" + ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") ===
+              "show" +
+                ((booking_type?.includes(",") ? "combo" : booking_type) +
+                  "Detail") ===
                 drawer && bookingId == booking_id
             }
             error={error}

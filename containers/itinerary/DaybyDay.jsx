@@ -135,7 +135,6 @@ const router=useRouter()
             width={width}
             length={itineraryDaybyDay?.cities?.length}
             oCityData={startCity}
-            dCityData={itineraryDaybyDay?.cities?.[0]}
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
