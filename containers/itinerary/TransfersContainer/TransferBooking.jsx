@@ -406,7 +406,7 @@ const TransferBooking = ({
                               <>
                                 <div className="pr-2">
                                   <button
-                                    onClick={handleRoute}
+                                    onClick={()=>handleRoute(booking)}
                                     className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     View Details
@@ -479,7 +479,7 @@ const TransferBooking = ({
                             <>
                               <div className="pr-2 w-full">
                                 <button
-                                  onClick={handleRoute}
+                                  onClick={()=>handleRoute(booking)}
                                   className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   View Details
@@ -903,14 +903,14 @@ const TransferBooking = ({
                                 <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
                                   {addbooking ? (
                                     <button
-                                      onClick={handleRoute}
+                                      onClick={()=>handleRoute(book)}
                                       className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                                     >
                                       {isDesktop ? "Change Taxi" : "Change"}
                                     </button>
                                   ) : (
                                     <button
-                                      onClick={handleRoute}
+                                      onClick={()=>handleRoute(book)}
                                       className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                     >
                                       {/* Add Taxi */}
@@ -921,7 +921,7 @@ const TransferBooking = ({
                               ) : (
                                 <div className="pr-2">
                                   <button
-                                    onClick={handleRoute}
+                                    onClick={()=>handleRoute(book)}
                                     className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     {/* Add Taxi */}
@@ -993,7 +993,7 @@ const TransferBooking = ({
                           <>
                             <div className="pr-2 w-full">
                               <button
-                                onClick={handleRoute}
+                                onClick={()=>handleRoute(book)}
                                 className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                               >
                                 View Details
@@ -1039,16 +1039,16 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
     else child = " Child";
   } catch {}
 
-  const handleRoute = () => {
+  const handleRoute = (book) => {
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer:
             "show" +
-            (booking_type?.includes(",") ? `combo` : booking_type) +
+            (book?.booking_type?.includes(",") ? `combo` : book?.booking_type) +
             "Detail",
-          bookingId: booking_id,
+          bookingId: book?.id,
         },
       },
       undefined,
@@ -1122,7 +1122,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
             {window.innerWidth >= 1000 && (
               <div>
                 <button
-                  onClick={handleRoute}
+                  onClick={()=>handleRoute(booking)}
                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                 >
                   View Details
@@ -1147,6 +1147,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               handleRoute={handleRoute}
               type={type}
+              booking={booking}
             />
           </div>
         </div>
@@ -1159,7 +1160,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
           {window.innerWidth < 1000 && (
             <div className="flex justify-end mt-4 pr-2 w-full">
               <button
-                onClick={handleRoute}
+                onClick={()=>handleRoute(booking)}
                 className="w-full md:w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
               >
                 View Details

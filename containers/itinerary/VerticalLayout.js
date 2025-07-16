@@ -58,6 +58,7 @@ const AirportBookingItem = ({
   destinationCityName, // Add this prop
   onPickupClick, // Add this prop
   onDropClick, // Add this prop
+  handleEdit,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -146,10 +147,11 @@ const AirportBookingItem = ({
     setShowTooltip(false);
     setShowDetails(false);
     setShowClickTooltip(false);
-    handleIntracityBookings(upPresent && downPresent, {
-      ...bookingItem,
-      selectedType: type,
-    });
+    // handleIntracityBookings(upPresent && downPresent, {
+    //   ...bookingItem,
+    //   selectedType: type,
+    // });
+    handleEdit(false,bookingItem);
   };
 
   const handleTooltipAddClick = (e, type) => {
@@ -313,10 +315,11 @@ const AirportBookingItem = ({
       setShowClickTooltip(false);
     } else if (hasPickup && !hasDrop) {
       if (pickupBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...pickupBookings[0],
-          selectedType: "Airport Pickup",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...pickupBookings[0],
+        //   selectedType: "Airport Pickup",
+        // });
+        handleEdit(false,pickupBookings[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -324,21 +327,24 @@ const AirportBookingItem = ({
       }
     } else if (!hasPickup && hasDrop) {
       if (dropBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...dropBookings[0],
-          selectedType: "Airport Drop",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...dropBookings[0],
+        //   selectedType: "Airport Drop",
+        // });
+         handleEdit(false,dropBookings[0]);
       } else {
+
         setShowDetails(!showDetails);
         setShowTooltip(false);
         setShowClickTooltip(false);
       }
     } else if (booking && booking.length > 0) {
       if (booking.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...booking[0],
-          selectedType: "Airport Transfer",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...booking[0],
+        //   selectedType: "Airport Transfer",
+        // });
+         handleEdit(false,booking[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -352,10 +358,11 @@ const AirportBookingItem = ({
     setShowTooltip(false);
     setShowDetails(false);
     setShowClickTooltip(false);
-    handleIntracityBookings(upPresent && downPresent, {
-      ...bookingItem,
-      selectedType: type,
-    });
+    // handleIntracityBookings(upPresent && downPresent, {
+    //   ...bookingItem,
+    //   selectedType: type,
+    // });
+    handleEdit(false,bookingItem);
   };
 
   const formatDate = (dateString) => {
@@ -815,7 +822,7 @@ const CityItem = ({
     }
   }, [booking_id]);
 
-  const handleEdit = async (combo) => {
+  const handleEdit = async (combo,book) => {
     setIsIntracity(false);
     if (combo) {
       setComboDetails(true);
@@ -825,8 +832,8 @@ const CityItem = ({
       {
         pathname: `/itinerary/${router.query.id}`,
         query: {
-          drawer: "show" + (combo ? "combo" : booking_type) + "Detail",
-          bookingId: booking?.id,
+          drawer: "show" + (combo ? "combo" : book?.booking_type) + "Detail",
+          bookingId: book?.id,
         },
       },
       undefined,
@@ -1150,7 +1157,7 @@ const CityItem = ({
                         onClick={() => {
                           upPresent &&
                             downPresent &&
-                            handleEdit(transfer_type === "combo");
+                            handleEdit(transfer_type === "combo",book);
                         }}
                       >
                         <div className="group-hover:text-blue">
@@ -1220,6 +1227,7 @@ const CityItem = ({
               show={pickupDropShow}
               sourceGmaps={sourceGmaps}
               destinationGmaps={destinationGmaps}
+              handleEdit={handleEdit}
             />
           </div>
           {/* )} */}
