@@ -16,7 +16,6 @@ import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import BackArrow from "../../ui/BackArrow";
-import zIndex from "@mui/material/styles/zIndex";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
