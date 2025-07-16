@@ -82,6 +82,7 @@ const PickupDropDrawer = ({
   const [sourceInput, setSourceInput] = useState("");
   const [destinationInput, setDestinationInput] = useState("");
   const [initialPropsAssigned, setInitialPropsAssigned] = useState(false);
+  const hasAutoSearchedRef = useRef(false);
 
   const sourceInputRef = useRef(null);
   const destinationInputRef = useRef(null);
@@ -115,7 +116,7 @@ const PickupDropDrawer = ({
 useEffect(() => {
   if (isOpen) {
     const trip = trips?.[0];
-    
+     hasAutoSearchedRef.current = false;
     // Reset state first
     setIsLoadingQuotes(false);
     setSourceSuggestions([]);
@@ -139,10 +140,10 @@ useEffect(() => {
     const passengers = trip?.number_of_travellers || number_of_adults + number_of_children + number_of_infants;
 
     const originLat = trip?.origin?.coordinates?.lat || "";
-    const originLng = trip?.origin?.coordinates?.lng || "";
+    const originLng = trip?.origin?.coordinates?.long || "";
 
      const destinationLat = trip?.destination?.coordinates?.lat || "";
-    const destinationLng = trip?.destination?.coordinates?.lng || "";
+    const destinationLng = trip?.destination?.coordinates?.long || "";
 
     // Update form data - directly assign gmaps IDs from trip
     setFormData({
@@ -295,9 +296,9 @@ useEffect(() => {
       // For flight: use source/destination directly
       if (!booking?.transfer_details) return null;
       return transferType === "pickup" && field === "source"
-        ? booking?.transfer_details?.source?.id
-        : transferType === "drop" && field === "destination"
         ? booking?.transfer_details?.destination?.id
+        : transferType === "drop" && field === "destination"
+        ? booking?.transfer_details?.source?.id
         : null;
     } else {
       // For train/ferry: use transfer_details
@@ -307,7 +308,7 @@ useEffect(() => {
       if (transferType === "pickup" && field === "source") {
         // For pickup source, get destination hub from booking
         return (
-          transferDetails.items?.[0]?.segments?.[0]?.destination?.hub_id || null
+          transferDetails.items?.[0]?.segments?.[segments?.length - 1]?.destination?.hub_id || null
         );
       } else if (transferType === "drop" && field === "destination") {
         // For drop destination, get destination hub from booking
@@ -392,52 +393,49 @@ useEffect(() => {
 ]);
 
   // Update the hub auto-fill useEffect
-  useEffect(() => {
-    if (hubSuggestions.length > 0 && booking && isAutoFilled && !trips) {
-      let targetHubId = null;
-      let fieldToUpdate = null;
+ useEffect(() => {
+  if (isOpen && booking && isAutoFilled && !trips) {
+    let targetHubId = null;
+    let fieldToUpdate = null;
 
-      if (transferType === "pickup") {
-        // For pickup: source should be hub
-        targetHubId = getHubId(booking, "pickup", "source");
-        fieldToUpdate = "source";
+    if (transferType === "pickup") {
+      targetHubId = getHubId(booking, "pickup", "source");
+      fieldToUpdate = "source";
+    } else {
+      targetHubId = getHubId(booking, "drop", "destination");
+      fieldToUpdate = "destination";
+    }
+
+    console.log("Target", targetHubId, fieldToUpdate);
+
+    if (targetHubId && fieldToUpdate) {
+      // Instead of searching in hubSuggestions, directly use the hub ID and generate a name
+      const hubName = getStationName(); // This already generates the appropriate name
+      
+      setFormData((prev) => ({
+        ...prev,
+        ...(fieldToUpdate === "source"
+          ? {
+              sourceAddress: hubName,
+              sourceHubId: targetHubId,
+              sourceGmapsId: "",
+            }
+          : {
+              destinationAddress: hubName,
+              destinationHubId: targetHubId,
+              destinationGmapsId: "",
+            }),
+      }));
+
+      // Update input display
+      if (fieldToUpdate === "source") {
+        setSourceInput(hubName);
       } else {
-        // For drop: destination should be hub
-        targetHubId = getHubId(booking, "drop", "destination");
-        fieldToUpdate = "destination";
-      }
-
-      console.log("Target", targetHubId, fieldToUpdate, hubSuggestions);
-
-      if (targetHubId && fieldToUpdate) {
-        const matchedHub = hubSuggestions.find((hub) => hub.id === targetHubId);
-
-        if (matchedHub) {
-          setFormData((prev) => ({
-            ...prev,
-            ...(fieldToUpdate === "source"
-              ? {
-                  sourceAddress: matchedHub.name,
-                  sourceHubId: matchedHub.id,
-                  sourceGmapsId: "",
-                }
-              : {
-                  destinationAddress: matchedHub.name,
-                  destinationHubId: matchedHub.id,
-                  destinationGmapsId: "",
-                }),
-          }));
-
-          // Update input display
-          if (fieldToUpdate === "source") {
-            setSourceInput(matchedHub.name);
-          } else {
-            setDestinationInput(matchedHub.name);
-          }
-        }
+        setDestinationInput(hubName);
       }
     }
-  }, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
+  }
+}, [booking, transferType, isAutoFilled, bookingMode, isOpen, trips]);
 
   // 1. FIRST - Reset everything when drawer opens/closes
 
@@ -477,26 +475,26 @@ useEffect(() => {
   }, [isOpen, booking, transferType]);
 
   // 3. THIRD - Search for hubs when drawer opens
-  useEffect(() => {
-    if (isOpen && bookingMode && booking) {
-      // Search hubs for the city where the hub should be located
-      const searchCityName =
-        transferType === "pickup" ? destinationCityName : originCityName;
+  // useEffect(() => {
+  //   if (isOpen && bookingMode && booking) {
+  //     // Search hubs for the city where the hub should be located
+  //     const searchCityName =
+  //       transferType === "pickup" ? destinationCityName : originCityName;
 
-      console.log("Searching hubs for city:", searchCityName);
+  //     console.log("Searching hubs for city:", searchCityName);
 
-      if (searchCityName) {
-        searchHubs(searchCityName);
-      }
-    }
-  }, [
-    isOpen,
-    bookingMode,
-    transferType,
-    originCityName,
-    destinationCityName,
-    booking,
-  ]);
+  //     if (searchCityName) {
+  //       searchHubs(searchCityName);
+  //     }
+  //   }
+  // }, [
+  //   isOpen,
+  //   bookingMode,
+  //   transferType,
+  //   originCityName,
+  //   destinationCityName,
+  //   booking,
+  // ]);
 
   // 4. FOURTH - Auto-fill hub data when suggestions become available
   useEffect(() => {
@@ -837,12 +835,12 @@ const searchAutocomplete = async (query, field) => {
         ? { hub_id: formData.sourceHubId }
         : formData.sourceGmapsId 
         ? { gmaps_place_id: formData.sourceGmapsId }
-        : { coordinates: { lat: formData.sourceLatitude, long: formData.sourceLongitude } },
+        : { coordinates: { latitude: formData.sourceLatitude, longitude: formData.sourceLongitude } },
       destination: formData.destinationHubId
         ? { hub_id: formData.destinationHubId }
         : formData.destinationGmapsId
         ? { gmaps_place_id: formData.destinationGmapsId }
-       : { coordinates: { lat: formData.destinationLatitude, long: formData.destinationLongitude } },
+       : { coordinates: { latitude: formData.destinationLatitude, longitude: formData.destinationLongitude } },
           start_date: formData.transferDate,
           start_time: formData.transferTime,
           number_of_travellers: formData.passengers,
@@ -1067,8 +1065,35 @@ const searchAutocomplete = async (query, field) => {
         : "Terminal";
     const location =
       transferType === "pickup" ? destinationCityName || trips?.[0]?.destination?.address : originCityName || trips?.[0]?.origin?.address;
-    return `${trips?.[0] ? 'Changing' : 'Add'} ${hubType} ${action} in ${location}`;
+    return `${trips?.[0] ? 'Changing' : 'Add'} ${trips?.[0] ? '' : hubType} ${action} in ${location}`;
   };
+
+  // Auto-search when all fields are filled on initial mount
+// Auto-search when all fields are filled on initial mount
+useEffect(() => {
+  if (isOpen && isAutoFilled && initialPropsAssigned && !hasAutoSearchedRef.current) {
+    // Check if all required fields are filled
+    const sourceId = formData.sourceHubId || formData.sourceGmapsId || 
+      (formData.sourceLatitude && formData.sourceLongitude);
+    const destinationId = formData.destinationHubId || formData.destinationGmapsId ||
+      (formData.destinationLatitude && formData.destinationLongitude);
+    
+    const allFieldsFilled = 
+      formData.sourceAddress &&
+      formData.destinationAddress &&
+      formData.transferDate &&
+      formData.transferTime &&
+      formData.passengers &&
+      sourceId &&
+      destinationId;
+
+    if (allFieldsFilled) {
+      console.log("All fields filled, auto-searching transfers...");
+      hasAutoSearchedRef.current = true;
+      searchTransfers();
+    }
+  }
+}, [isOpen, isAutoFilled, initialPropsAssigned]);
 
   if (!isOpen) return null;
 
