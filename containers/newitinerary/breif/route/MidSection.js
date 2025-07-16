@@ -98,51 +98,6 @@ const MidSection = (props) => {
       });
   };
 
-  const handleTransferEdit = (e, label) => {
-    setShowDrawer(true);
-    setAddOrEdit(e.target.id);
-    roundTripSuggestion();
-    routeAlternates
-      .get(
-        `/?route_id=${props?.route?.transfers?.id}&pax=${
-          props?.plan?.number_of_adults + props?.plan?.number_of_children
-        }`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((response) => {
-        if (response.status === 200 && response.data.routes.length > 0) {
-          const data = response.data;
-          setAlternateRoutes(data);
-        } else {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        setLoadingAlternates(false);
-        setAlternatesError(
-          "No route found, please get in touch with us to complete this booking!"
-        );
-      });
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_action: "Route",
-      },
-    });
-  };
-
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
@@ -233,21 +188,6 @@ const MidSection = (props) => {
                 ) : (
                   <></>
                 )}
-
-                {/* {props?.route?.transfers &&
-                  props?.route?.transfers?.id &&
-                  props?.route?.transfers?.id !== "" &&
-                  !props?.plan?.round_trip_taxi_added &&
-                  ((props?.route?.modes && props?.route?.modes?.length) ||
-                    (props?.bookings && props?.bookings?.length)) && (
-                    <div
-                      id="transferEdit"
-                      onClick={(e) => handleTransferEdit(e, "Edit Transfer")}
-                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                    >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                  )} */}
               </Text>
             )
           ) : (

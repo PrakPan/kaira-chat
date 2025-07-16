@@ -7,6 +7,7 @@ import Route from "../../newitinerary/breif/route/Index";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
+import { useParams, useSearchParams } from "next/navigation.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -39,23 +40,24 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
-  
-  const CITY_COLOR_CODES = [
-    '#359EBF',  //  # shade of blue
-    '#F0C631',  //# shade of yellow
-    '#BF3535',  //# shade of red
-    '#47691e',  //# shade of green
-    '#cc610a',  //# shade of orange
-    '#008080',  //# shade of teal
-    '#7d5e7d',  //# shade of purple
-];
-console.log("Inside routes Dataa",props?.CityData);
+  const searchParams = useSearchParams();
+  const {drawer}=router?.query
 
+  const CITY_COLOR_CODES = [
+    "#359EBF", //  # shade of blue
+    "#F0C631", //# shade of yellow
+    "#BF3535", //# shade of red
+    "#47691e", //# shade of green
+    "#cc610a", //# shade of orange
+    "#008080", //# shade of teal
+    "#7d5e7d", //# shade of purple
+  ];
+  console.log("Inside routes Dataa", props?.CityData);
 
   useEffect(() => {
     const Locationlatlong = [];
 
-     if(props.routesData.length >= 1) {
+    if (props.routesData.length >= 1) {
       for (var i = 0; i < props.routesData.length; i++) {
         var postion = props.breif.city_slabs[i + 1];
         if (
@@ -80,13 +82,12 @@ console.log("Inside routes Dataa",props?.CityData);
           });
         }
       }
-    }
-    else {
+    } else {
       if (props.CityData.length >= 1) {
         let color;
-      //  console.log("CityData",props.CityData);
+        //  console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
-          color = CITY_COLOR_CODES[i%7];
+          color = CITY_COLOR_CODES[i % 7];
           var postion = props.CityData[i];
           if (
             !postion?.is_departure_only &&
@@ -96,9 +97,9 @@ console.log("Inside routes Dataa",props?.CityData);
           ) {
             Locationlatlong.push({
               // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              dayId:'12',
+              dayId: "12",
               cityData: postion,
-              id: postion?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY',
+              id: postion?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY",
               city_id: postion.city?.id || postion?.gmaps_place_id,
               lat: postion.city?.latitude,
               long: postion.city?.longitude,
@@ -106,7 +107,7 @@ console.log("Inside routes Dataa",props?.CityData);
               duration: postion.duration,
               color: color,
               // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              date: postion.start_date
+              date: postion.start_date,
             });
           }
         }
@@ -188,16 +189,17 @@ console.log("Inside routes Dataa",props?.CityData);
               _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
               setShowTaxiModal={props.setShowTaxiModal}
               showTaxiModal={props.showTaxiModal}
+              findDayIdByCityId={findDayIdByCityId}
             />
           </div>
         </RouteComponent>
       </DetailsContainer>
 
-      {props.editRoute && (
+      {drawer=="handleEditRoute"&& (
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
-          editRoute={props.editRoute}
+          editRoute={drawer=="handleEditRoute"}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}
@@ -217,12 +219,7 @@ console.log("Inside routes Dataa",props?.CityData);
         </RouteEditSection>
       )}
 
-      <Drawer
-        show={showDrawer}
-        onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData?.city?.id}
-        dayId={findDayIdByCityId(showDrawerData?.city?.id)}
-      ></Drawer>
+
 
       {props.traveleritinerary ? (
         <DesktopBanner
@@ -245,4 +242,4 @@ console.log("Inside routes Dataa",props?.CityData);
   );
 };
 
-  export default React.memo(Details);
+export default React.memo(Details);

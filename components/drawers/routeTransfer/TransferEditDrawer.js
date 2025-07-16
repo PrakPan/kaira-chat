@@ -50,6 +50,8 @@ import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
 import { TbArrowBack } from "react-icons/tb";
 import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
+import { useHandleClose } from "../../../hooks/useHandleClose";
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 80px;
@@ -96,14 +98,10 @@ const TransferEditDrawer = (props) => {
   const {
     ItineraryId,
     showDrawer,
-    setShowDrawer,
-    selectedTransferHeading,
     origin,
     destination,
     day_slab_index,
-    element_index,
     openNotification,
-    fetchData,
     setShowLoginModal,
     check_in,
     routeId,
@@ -123,6 +121,7 @@ const TransferEditDrawer = (props) => {
     booking_id,
   } = props;
 
+  const actualClose=useHandleClose()
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -404,7 +403,7 @@ const TransferEditDrawer = (props) => {
         })
         .then((response) => {
           if (response.status === 201) {
-            fetchData((scroll = false));
+            // fetchData((scroll = false));
             openNotification({
               text: "Your Transfer updated successfully!",
               heading: "Success!",
@@ -412,12 +411,12 @@ const TransferEditDrawer = (props) => {
             });
           }
           setSelectLoading(false);
-          setShowDrawer(false);
+          actualClose();
           setCurrentStep(0);
         })
         .catch((err) => {
           setSelectLoading(false);
-          setShowDrawer(false);
+          actualClose();
           setCurrentStep(0);
           if (err.response.status === 403) {
             openNotification({
@@ -460,7 +459,7 @@ const TransferEditDrawer = (props) => {
       width={"50vw"}
       mobileWidth={"100vw"}
       onHide={() => {
-        setShowDrawer(false);
+        if(showDrawer)   actualClose();
         setCurrentStep(0);
         setIsRouteSelected(false);
         setShowOtherTrasfer(false);
@@ -476,7 +475,7 @@ const TransferEditDrawer = (props) => {
             <>
               <BackArrow
                 handleClick={() => {
-                  setShowDrawer(false);
+                  actualClose();
                   setCurrentStep(0);
                   setSkipFlightFetch(false);
                   setSkipTaxiFetch(false);
@@ -590,7 +589,7 @@ const TransferEditDrawer = (props) => {
                   padding="12px"
                   onclick={() => {
                     props._GetInTouch();
-                    setShowDrawer(false);
+                    actualClose();
                     setCurrentStep(0);
                     setIsRouteSelected(false);
                   }}
@@ -756,6 +755,7 @@ const TransferEditDrawer = (props) => {
                       transfers[selectedTransferIndex]?.transfers?.length >
                       1 ? (
                         <NewMultiModeContainer
+                          useHandleClose={actualClose}
                           key={selectedTransferIndex}
                           booking_id={booking_id}
                           name={transfers[selectedTransferIndex]?.name}
@@ -787,13 +787,10 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
-                          selectedTransferHeading={selectedTransferHeading}
-                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
-                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           mercury={mercuryTransfer}
@@ -805,7 +802,6 @@ const TransferEditDrawer = (props) => {
                           destination_itinerary_city_id={
                             destination_itinerary_city_id
                           }
-                          setShowDrawer={setShowDrawer}
                           dCityData={dCityData}
                           oCityData={oCityData}
                           openNotification={openNotification}
@@ -833,6 +829,7 @@ const TransferEditDrawer = (props) => {
                         />
                       ) : (
                         <RouteContainer
+                          useHandleClose={actualClose}
                           setSelectedMercuryTransfer={
                             setSelectedMercuryTransfer
                           }
@@ -853,7 +850,7 @@ const TransferEditDrawer = (props) => {
                             setShowComboFlightModal(false)
                           }
                           hideDrawer={() => {
-                            setShowDrawer(false);
+                            actualClose();
                             setCurrentStep(0);
                             setIsRouteSelected(false);
                             setShowOtherTrasfer(false);
@@ -878,13 +875,10 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
-                          selectedTransferHeading={selectedTransferHeading}
-                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
-                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           individual={props?.individual}
@@ -895,7 +889,6 @@ const TransferEditDrawer = (props) => {
                           destination_itinerary_city_id={
                             destination_itinerary_city_id
                           }
-                          setShowDrawer={setShowDrawer}
                           dCityData={dCityData}
                           oCityData={oCityData}
                           openNotification={openNotification}
@@ -917,6 +910,7 @@ const TransferEditDrawer = (props) => {
                     ) : // Mobile view logic
                     transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
                       <NewMultiModeContainer
+                        useHandleClose={actualClose}
                         key={selectedTransferIndex}
                         booking_id={booking_id}
                         name={transfers[selectedTransferIndex]?.name}
@@ -948,13 +942,10 @@ const TransferEditDrawer = (props) => {
                         tailored_id={selectedBooking?.tailored_itinerary}
                         selectedBooking={selectedBooking}
                         itinerary_id={ItineraryId}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={props._GetInTouch}
                         daySlabIndex={day_slab_index}
-                        elementIndex={element_index}
                         routeId={routeId}
                         mercuryTransfer={selectedMercuryTransfer}
                         mercury={mercuryTransfer}
@@ -966,7 +957,6 @@ const TransferEditDrawer = (props) => {
                         destination_itinerary_city_id={
                           destination_itinerary_city_id
                         }
-                        setShowDrawer={setShowDrawer}
                         dCityData={dCityData}
                         oCityData={oCityData}
                         openNotification={openNotification}
@@ -994,6 +984,7 @@ const TransferEditDrawer = (props) => {
                       />
                     ) : (
                       <RouteContainer
+                        useHandleClose={actualClose}
                         setSelectedMercuryTransfer={setSelectedMercuryTransfer}
                         booking_id={booking_id}
                         key={selectedTransferIndex}
@@ -1012,7 +1003,7 @@ const TransferEditDrawer = (props) => {
                           setShowComboFlightModal(false)
                         }
                         hideDrawer={() => {
-                          setShowDrawer(false);
+                          actualClose();
                           setCurrentStep(0);
                           setIsRouteSelected(false);
                           setShowOtherTrasfer(false);
@@ -1037,13 +1028,10 @@ const TransferEditDrawer = (props) => {
                         tailored_id={selectedBooking?.tailored_itinerary}
                         selectedBooking={selectedBooking}
                         itinerary_id={ItineraryId}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={props._GetInTouch}
                         daySlabIndex={day_slab_index}
-                        elementIndex={element_index}
                         routeId={routeId}
                         mercuryTransfer={selectedMercuryTransfer}
                         individual={props?.individual}
@@ -1054,7 +1042,6 @@ const TransferEditDrawer = (props) => {
                         destination_itinerary_city_id={
                           destination_itinerary_city_id
                         }
-                        setShowDrawer={setShowDrawer}
                         dCityData={dCityData}
                         oCityData={oCityData}
                         openNotification={openNotification}
@@ -1106,48 +1093,16 @@ const TransferEditDrawer = (props) => {
         // _updateFlightHandler={props._updateFlightHandler}
         selectedBooking={selectedBooking}
         itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
         setShowLoginModal={setShowLoginModal}
         check_in={check_in}
         _GetInTouch={props._GetInTouch}
         daySlabIndex={day_slab_index}
-        elementIndex={element_index}
         routeId={routeId}
         mercuryTransfer={selectedMercuryTransfer}
         individual={props?.individual}
         originCityId={props?.originCityId}
         destinationCityId={props?.destinationCityId}
       ></FlightModal>
-
-      {/* <ComboFlight
-        handleFlightSelect={handleSelectResult}
-        showFlightModal={showComboFlightModal}
-        setShowFlightModal={setShowComboFlightModal}
-        setHideFlightModal={() => setShowComboFlightModal(false)}
-        setHideBookingModal={() => setShowComboFlightModal(false)}
-        getPaymentHandler={props.getPaymentHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-        _updateBookingHandler={props._updateBookingHandler}
-        alternates={selectedBooking?.id}
-        tailored_id={selectedBooking?.tailored_itinerary}
-        // _updateFlightHandler={props._updateFlightHandler}
-        selectedBooking={selectedBooking}
-        itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
-        setShowLoginModal={setShowLoginModal}
-        check_in={check_in}
-        _GetInTouch={props._GetInTouch}
-        daySlabIndex={day_slab_index}
-        elementIndex={element_index}
-        routeId={routeId}
-        mercuryTransfer={selectedMercuryTransfer}
-        individual={props?.individual}
-        originCityId={props?.originCityId}
-        destinationCityId={props?.destinationCityId}
-      ></ComboFlight> */}
 
       <TaxiModal
         handleTaxiSelect={handleSelectResult}
@@ -1159,13 +1114,10 @@ const TransferEditDrawer = (props) => {
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         selectedBooking={selectedBooking}
         itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
         setShowLoginModal={setShowLoginModal}
         check_in={check_in}
         _GetInTouch={props._GetInTouch}
         daySlabIndex={day_slab_index}
-        elementIndex={element_index}
         routeId={routeId}
         oCityData={oCityData}
         dCityData={dCityData}
@@ -1187,7 +1139,7 @@ const TransferEditDrawer = (props) => {
             style={{ height: "28px", width: "28px" }}
             cursor={"pointer"}
             onClick={() => {
-              setShowDrawer(false);
+              actualClose();
               setCurrentStep(0);
               setSkipFlightFetch(false);
               setSkipTaxiFetch(false);
@@ -1244,8 +1196,6 @@ const RouteContainer = (props) => {
     tailored_id,
     selectedBooking,
     itinerary_id,
-    selectedTransferHeading,
-    fetchData,
     setShowLoginModal,
     check_in,
     _GetInTouch,
@@ -1259,7 +1209,6 @@ const RouteContainer = (props) => {
     token,
     destination_itinerary_city_id,
     origin_itinerary_city_id,
-    setShowDrawer,
     dCityData,
     oCityData,
     openNotification,
@@ -1277,6 +1226,7 @@ const RouteContainer = (props) => {
     hideDrawer,
     booking_id,
   } = props;
+  const actualClose=useHandleClose()
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
   const [comboStartDate, setComboStartDate] = useState(null);
@@ -1304,10 +1254,10 @@ const RouteContainer = (props) => {
     const currentTransfer = transfer[currentStep - 1];
 
     const baseStartDate =
-          dCityData?.start_date ??
-          (oCityData?.start_date && oCityData?.duration != null
-            ? addDaysToDate(oCityData.start_date, oCityData.duration)
-            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
+      dCityData?.start_date ??
+      (oCityData?.start_date && oCityData?.duration != null
+        ? addDaysToDate(oCityData.start_date, oCityData.duration)
+        : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
 
     console.log(
       "Start Dtae",
@@ -1418,8 +1368,8 @@ const RouteContainer = (props) => {
         ) : (
           <>
             {console.log("current step is:", currentStep)}
-            {
-             !(currentStep === 1 && singleTransfer?.mode === "Flight") && <div
+            {!(currentStep === 1 && singleTransfer?.mode === "Flight") && (
+              <div
                 className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
                 onClick={() => setCurrentStep(1)}
               >
@@ -1438,7 +1388,7 @@ const RouteContainer = (props) => {
                 </div>
                 <AiOutlineRight size={16} className="md:text-20" />
               </div>
-            }
+            )}
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
@@ -1459,8 +1409,6 @@ const RouteContainer = (props) => {
                   tailored_id={tailored_id}
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
-                  selectedTransferHeading={selectedTransferHeading}
-                  fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
                   check_in={check_in}
                   _GetInTouch={_GetInTouch}
@@ -1501,8 +1449,6 @@ const RouteContainer = (props) => {
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
                   edge={singleTransfer?.id}
-                  selectedTransferHeading={selectedTransferHeading}
-                  fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
                   check_in={check_in}
                   _GetInTouch={_GetInTouch}
@@ -1561,40 +1507,6 @@ const RouteContainer = (props) => {
             ) : (
               ""
             )}
-            {/* <div className="flex flex-row gap-2 w-full">
-          <div
-            className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
-          >
-            <TransfersIcon
-              TransportMode={singleTransfer?.mode}
-              Instyle={{
-                fontSize: singleTransfer?.mode === "Bus" ? "2.5rem" : "3rem",
-                color: "black",
-              }}
-              classname={{ width: 80, height: 75 }}
-            />
-          </div>
-
-          <div className="w-full flex flex-col gap-2 justify-center">
-            <div className="flex flex-row items-center justify-between">
-              <TransferItem transfer={singleTransfer} />
-              <div className="flex flex-col gap-2 items-end">
-                <EstimatedCost cost={singleTransfer?.prices[0]?.price} /> */}
-            {/* {
-                singleTransfer?.mode === "Bus" || singleTransfer?.mode === "Train" || singleTransfer?.mode === "Ferry" || singleTransfer?.mode === "Car" ? <MercurySelectButton transfer={singleTransfer} setShowMercuryTransfer={props?.setShowMercuryTransfer} setSelectedMercuryTransfer={props?.setSelectedMercuryTransfer}/>: */}
-            {/* <SelectButton
-                  transfer={singleTransfer}
-                  transferIndex={transferIndex}
-                  handleSelect={handleSelect}
-                  setSelectedMercuryTransfer={setSelectedMercuryTransfer}
-                  isRouteSelected={isRouteSelected}
-                  setIsRouteSelected={setIsRouteSelected}
-                /> */}
-            {/* } */}
-            {/* </div>
-            </div>
-          </div>
-        </div> */}
           </>
         )}
       </div>
@@ -1692,8 +1604,6 @@ const NewMultiModeContainer = ({
   tailored_id,
   selectedBooking,
   itinerary_id,
-  selectedTransferHeading,
-  fetchData,
   setShowLoginModal,
   check_in,
   _GetInTouch,
@@ -1707,7 +1617,6 @@ const NewMultiModeContainer = ({
   token,
   destination_itinerary_city_id,
   origin_itinerary_city_id,
-  setShowDrawer,
   dCityData,
   oCityData,
   openNotification,
@@ -1727,6 +1636,7 @@ const NewMultiModeContainer = ({
   setTaxiResults,
   booking_id,
 }) => {
+  const actualClose = useHandleClose();
   let isPageWide = media("(min-width: 768px)");
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
@@ -1758,33 +1668,7 @@ const NewMultiModeContainer = ({
 
   console.log("Selected Data", selectedData);
 
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
-
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
-
-  const sourceCity = transfer.length > 0 ? transfer[0].source.city_name : "";
-  const destinationCity =
-    transfer.length > 0
-      ? transfer[transfer.length - 1].destination.city_name
-      : "";
-
-  const calculateTotalPrice = () => {
-    let total = 0;
-
-    Object.keys(selectedModeIds).forEach((stepIndex) => {
-      const selectedId = selectedModeIds[stepIndex];
-      const selectedOption = transfer.find((t) => t.id === selectedId);
-
-      if (selectedOption && selectedOption.prices && selectedOption.prices[0]) {
-        total += selectedOption.prices[0].price;
-      }
-    });
-
-    return total > 0 ? `₹${total}` : "";
-  };
-
   const getCurrentMode = () => {
     return currentStep > 0 && currentStep <= sequencedModes.length
       ? sequencedModes[currentStep - 1]
@@ -1961,27 +1845,6 @@ const NewMultiModeContainer = ({
   };
 
   const timeOptions = generateTimeOptions();
-
-  const generateDateOptions = () => {
-    const baseDate = dayjs(currentModeDepartureDate);
-    const options = [];
-
-    for (let i = -2; i <= 2; i++) {
-      const date = baseDate.add(i, "day");
-      const isToday = date.isSame(dayjs(), "day");
-      const isSelected = date.format("YYYY-MM-DD") === currentModeDepartureDate;
-
-      options.push({
-        value: date.format("YYYY-MM-DD"),
-        display: date.format("MMM DD, YYYY"),
-        dayName: date.format("ddd"),
-        isToday,
-        isSelected,
-      });
-    }
-
-    return options;
-  };
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
@@ -2305,7 +2168,7 @@ const NewMultiModeContainer = ({
           }
         });
 
-       const baseStartDate =
+        const baseStartDate =
           dCityData?.start_date ??
           (oCityData?.start_date && oCityData?.duration != null
             ? addDaysToDate(oCityData.start_date, oCityData.duration)
@@ -2355,7 +2218,7 @@ const NewMultiModeContainer = ({
 
         console.log("Transfer from updated successfully:", data);
 
-        setShowDrawer(false);
+        actualClose();
 
         openNotification({
           text: `Transfer from ${city || mercury?.source?.city_name} to ${
@@ -2410,11 +2273,8 @@ const NewMultiModeContainer = ({
     let calculatedStartTime;
 
     if (currentStep === 1) {
-  calculatedStartTime = 
-    dayjs(`${baseStartDate} 12:00`)
-  ;
-}
-    else {
+      calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
+    } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
 
@@ -2539,25 +2399,6 @@ const NewMultiModeContainer = ({
     }
   }, [selectedData, selectedModeIds]);
 
-  //   useEffect(() => {
-  //   if (currentStep >= 1 && currentStep <= transfer.length) {
-  //     const currentTransfer = transfer[currentStep - 1];
-
-  //     if (currentTransfer && currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
-  //       // Only call API if not already selected
-  //       if (!selectedModeIds[currentStep - 1]) {
-  //         const paxData = {
-  //           adults: pax.adults,
-  //           children: pax.children,
-  //           infants: pax.infants,
-  //         };
-  //         const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
-  //         loadTransfers(currentTransfer, paxData, departureDateTime);
-  //       }
-  //     }
-  //   }
-  // }, [currentModeDepartureDate, currentModeDepartureTime]);
-
   useEffect(() => {
     if (showTimeDropdown) {
       const handleClickOutside = (event) => {
@@ -2598,18 +2439,20 @@ const NewMultiModeContainer = ({
       )}
 
       {/* Expanded content */}
-      {currentStep >= 1 &&  (
+      {currentStep >= 1 && (
         <>
           <div className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md">
-            {!(transfer[currentStep-1]?.mode == "Flight") && <div className="font-bold text-sm md:text-base">
-              {sequencedModes.join(", ")} | &nbsp;
-              <span className="font-normal">
-                {Math.ceil(
-                  transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
-                )}{" "}
-                hours | {totalDistance} kms
-              </span>
-            </div>}
+            {!(transfer[currentStep - 1]?.mode == "Flight") && (
+              <div className="font-bold text-sm md:text-base">
+                {sequencedModes.join(", ")} | &nbsp;
+                <span className="font-normal">
+                  {Math.ceil(
+                    transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
+                  )}{" "}
+                  hours | {totalDistance} kms
+                </span>
+              </div>
+            )}
             {/* <AiOutlineUp size={16} className="md:text-20" /> */}
           </div>
           <div className="border">
@@ -2704,8 +2547,6 @@ const NewMultiModeContainer = ({
                         tailored_id={tailored_id}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={_GetInTouch}
@@ -2772,8 +2613,6 @@ const NewMultiModeContainer = ({
                         tailored_id={tailored_id}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={_GetInTouch}
@@ -3160,15 +2999,11 @@ const NewMultiModeContainer = ({
                         <button
                           onClick={handleUpdateTransfer}
                           className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black border border-black ${
-                            (Object.keys(selectedModeIds).length !==
-                              totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
+                            Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
                           }`}
-  // ${
-  //   Object.keys(selectedModeIds).length === totalSteps
-  //     ?
-  //      "bg-[#f8e000] text-black"
-  //     : "bg-yellow-100 text-black-500 cursor-not-allowed"
-  // }`}
                           disabled={
                             Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading
@@ -4161,7 +3996,7 @@ const OtherTransfer = ({
   const [localSelectedData, setLocalSelectedData] = useState([]);
   const [isResultSelected, setIsResultSelected] = useState(false);
   const itinerary_id = useSelector((state) => state.ItineraryId);
-  
+
   // Initialize with props values directly
   const [departureTime, setDepartureTime] = useState(currentModeDepartureTime);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -4183,13 +4018,19 @@ const OtherTransfer = ({
 
   // Update state when props change
   useEffect(() => {
-    if (currentModeDepartureDate && currentModeDepartureDate !== departureDate) {
+    if (
+      currentModeDepartureDate &&
+      currentModeDepartureDate !== departureDate
+    ) {
       setDepartureDate(currentModeDepartureDate);
     }
   }, [currentModeDepartureDate]);
 
   useEffect(() => {
-    if (currentModeDepartureTime && currentModeDepartureTime !== departureTime) {
+    if (
+      currentModeDepartureTime &&
+      currentModeDepartureTime !== departureTime
+    ) {
       setDepartureTime(currentModeDepartureTime);
     }
   }, [currentModeDepartureTime]);
@@ -4299,12 +4140,13 @@ const OtherTransfer = ({
     // Also call if we had an error (to retry)
     if (
       (paxChanged || timeChanged || dateChanged) &&
-      selectedResult?.transfer &&  !isResultSelected 
+      selectedResult?.transfer &&
+      !isResultSelected
     ) {
       // Use props values as fallback
       const finalDate = departureDate || currentModeDepartureDate;
       const finalTime = departureTime || currentModeDepartureTime;
-      
+
       if (finalDate && finalTime) {
         const departureDateTime = `${finalDate}T${finalTime}:00`;
 
@@ -4320,7 +4162,15 @@ const OtherTransfer = ({
     setLastPaxState(currentPaxString);
     setLastTimeState(departureTime);
     setLastDateState(departureDate);
-  }, [pax, departureTime, departureDate, selectedResult?.transfer, error, currentModeDepartureDate, currentModeDepartureTime]);
+  }, [
+    pax,
+    departureTime,
+    departureDate,
+    selectedResult?.transfer,
+    error,
+    currentModeDepartureDate,
+    currentModeDepartureTime,
+  ]);
 
   useEffect(() => {
     if (selectedResult?.transfer && !otherTransfer && !error) {
@@ -4385,7 +4235,7 @@ const OtherTransfer = ({
       // Use props values as fallback
       const finalDate = departureDate || currentModeDepartureDate;
       const finalTime = departureTime || currentModeDepartureTime;
-      
+
       if (finalDate && finalTime) {
         const departureDateTime = `${finalDate}T${finalTime}:00`;
         loadTransfers(selectedResult.transfer, pax, departureDateTime);
@@ -4729,14 +4579,14 @@ const OtherTransfer = ({
       // Use props values as fallback
       const finalDate = departureDate || currentModeDepartureDate;
       const finalTime = departureTime || currentModeDepartureTime;
-      
+
       if (finalDate && finalTime) {
         const departureDateTime = `${finalDate}T${finalTime}:00`;
         const transferToUse =
           otherTransfer || Object.values(dynamicTransferData)[0];
         loadTransfers(transferToUse, pax, departureDateTime);
       }
-    } 
+    }
   };
 
   return (

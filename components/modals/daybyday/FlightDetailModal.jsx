@@ -47,10 +47,11 @@ const FlightDetailModal = ({
   drawer,
   onChange,
   isEmbedded,
-  setShowDrawer,
-  setHandleShow,
+  handleClose,
+  // setHandleShow,
   error,
-  setShowLoginModal
+  setShowLoginModal,
+  handleEditRoute
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -86,7 +87,7 @@ const FlightDetailModal = ({
             heading: "Success!",
           })
         );
-        setHandleShow(false);
+        handleClose()
       }
     } catch (err) {
       const errorMsg =
@@ -123,7 +124,7 @@ const FlightDetailModal = ({
         <div className="flex flex-col gap-2">
           <Heading>
             <div className="flex flex-row items-center gap-2">
-              <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
+              <BackArrow handleClick={handleClose} />
             </div>
           </Heading>
         </div>
@@ -144,8 +145,8 @@ const FlightDetailModal = ({
                     fontSize={"1rem"}
                     padding={"7px 25px"}
                     onClick={() => {
-                      setHandleShow(false);
-                      setShowDrawer(true);
+                      handleClose()
+                      handleEditRoute()
                       //setShowTaxi(true);console.log("")
                     }}
                   >

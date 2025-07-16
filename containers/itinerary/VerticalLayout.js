@@ -23,6 +23,7 @@ import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
 import TransferPickupDropButton from "./TransferPickupDropButton";
 import PickupDropDrawer from "./PickupDropDrawer";
+import { useHandleClose } from "../../hooks/useHandleClose";
 
 const Container = styled.div`
   display: flex;
@@ -58,6 +59,8 @@ const AirportBookingItem = ({
   destinationCityName, // Add this prop
   onPickupClick, // Add this prop
   onDropClick, // Add this prop
+  handleEdit,
+  handlePickupDropDrawer,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -146,10 +149,11 @@ const AirportBookingItem = ({
     setShowTooltip(false);
     setShowDetails(false);
     setShowClickTooltip(false);
-    handleIntracityBookings(upPresent && downPresent, {
-      ...bookingItem,
-      selectedType: type,
-    });
+    // handleIntracityBookings(upPresent && downPresent, {
+    //   ...bookingItem,
+    //   selectedType: type,
+    // });
+    handleEdit(false, bookingItem);
   };
 
   const handleTooltipAddClick = (e, type) => {
@@ -313,10 +317,11 @@ const AirportBookingItem = ({
       setShowClickTooltip(false);
     } else if (hasPickup && !hasDrop) {
       if (pickupBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...pickupBookings[0],
-          selectedType: "Airport Pickup",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...pickupBookings[0],
+        //   selectedType: "Airport Pickup",
+        // });
+        handleEdit(false, pickupBookings[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -324,10 +329,11 @@ const AirportBookingItem = ({
       }
     } else if (!hasPickup && hasDrop) {
       if (dropBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...dropBookings[0],
-          selectedType: "Airport Drop",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...dropBookings[0],
+        //   selectedType: "Airport Drop",
+        // });
+        handleEdit(false, dropBookings[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -335,10 +341,11 @@ const AirportBookingItem = ({
       }
     } else if (booking && booking.length > 0) {
       if (booking.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, {
-          ...booking[0],
-          selectedType: "Airport Transfer",
-        });
+        // handleIntracityBookings(upPresent && downPresent, {
+        //   ...booking[0],
+        //   selectedType: "Airport Transfer",
+        // });
+        handleEdit(false, booking[0]);
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -352,10 +359,11 @@ const AirportBookingItem = ({
     setShowTooltip(false);
     setShowDetails(false);
     setShowClickTooltip(false);
-    handleIntracityBookings(upPresent && downPresent, {
-      ...bookingItem,
-      selectedType: type,
-    });
+    // handleIntracityBookings(upPresent && downPresent, {
+    //   ...bookingItem,
+    //   selectedType: type,
+    // });
+    handleEdit(false, bookingItem);
   };
 
   const formatDate = (dateString) => {
@@ -405,7 +413,7 @@ const AirportBookingItem = ({
           <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-              onClick={(e) => handleTooltipAddClick(e, "drop")}
+              onClick={() => handlePickupDropDrawer("drop")}
             >
               {getTransferLocationText(bookingMode, "drop")}
             </span>
@@ -414,7 +422,7 @@ const AirportBookingItem = ({
           <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-              onClick={(e) => handleTooltipAddClick(e, "pickup")}
+              onClick={() => handlePickupDropDrawer("pickup")}
             >
               {getTransferLocationText(bookingMode, "pickup")}
             </span>
@@ -708,15 +716,10 @@ const CityItem = ({
   downPresent,
   booking_id,
   length,
-  bookingIdToDelete,
   destination_city_id,
-  origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings,
   setShowLoginModal,
-  origin,
-  destination,
   oCityData,
   dCityData,
   _updateFlightBookingHandler,
@@ -724,7 +727,6 @@ const CityItem = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   airportBookings,
-  intracityBookings,
   booking,
   hotelName,
   destinationHotelName,
@@ -735,12 +737,25 @@ const CityItem = ({
   destinationLat,
   destinationLong,
 }) => {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
 
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+    router?.query;
+
+  console.log(
+    "bookigngid is:",
+    bookingId,
+    "booking_id is:",
+    booking_id,
+    "drawer is:",
+    "show" + (booking_type?.includes(",") ? "combo" : booking_type) + "Detail"
+  );
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
     setSelectedTransferBooking(null);
@@ -752,8 +767,6 @@ const CityItem = ({
     setSelectedTransferBooking(null);
     setIsTransferDrawerOpen(true);
   };
-
-  console.log("Booking data:", airportBookings, upPresent, downPresent);
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode?.toLowerCase()) {
@@ -785,11 +798,9 @@ const CityItem = ({
     }
   };
 
-  const [handleShow, setHandleShow] = useState(false);
   const [data, setData] = useState({});
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showDrawer, setShowDrawer] = useState(false);
   const [comboDetails, setComboDetails] = useState(false);
   const [transferType, setTransferType] = useState(null);
   const [isIntracity, setIsIntracity] = useState(false);
@@ -798,10 +809,8 @@ const CityItem = ({
     airportBookings || []
   );
   const [pickupDropShow, setPickupDropShow] = useState(false);
+  const handleClose=useHandleClose()
 
-  console.log("Selected Booking", selectedBooking);
-  const router = useRouter();
-  const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   useEffect(() => {
@@ -816,35 +825,61 @@ const CityItem = ({
     }
   }, [booking_id]);
 
-  const handleEdit = async (combo) => {
+  const handleEdit = async (combo, book) => {
     setIsIntracity(false);
     if (combo) {
       setComboDetails(true);
     }
     setLoading(true);
-    console.log("inside show");
-    try {
-      setHandleShow(true);
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
-          combo ? `combo` : booking_type.toLowerCase()
-        }/${booking_id}/`
-      );
-      setData(res?.data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(true);
-      const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] || error.message;
-      dispatch(
-        openNotification({
-          text: errorMsg,
-          heading: "Error!",
-          type: "error",
-        })
-      );
-    }
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "show" + (combo ? "combo" : book?.booking_type) + "Detail",
+          bookingId: book?.id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
+
+  const handlePickupDropDrawer = (drawerType) => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "addPickupDrop",
+          drawerType: drawerType,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
+
+  const handleAddTransfer = () => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "editTransfer",
+          bookingId: booking?.id,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
   };
 
   const handleIntracityBookings = async (combo, booking) => {
@@ -856,7 +891,6 @@ const CityItem = ({
     setLoading(true);
     console.log("inside show");
     try {
-      setHandleShow(true);
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
           combo ? `combo` : booking?.booking_type.toLowerCase()
@@ -904,7 +938,6 @@ const CityItem = ({
           setVisible(true);
         }
 
-        setHandleShow(false);
         dispatch(
           openNotification({
             type: "success",
@@ -947,20 +980,6 @@ const CityItem = ({
     }
   };
 
-  const formattedDate = (dateObj) =>
-    dateObj.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-
-  const formattedTime = (dateObj) =>
-    dateObj.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
   const handleTransferSubmit = async (transferData) => {
     if (!localStorage?.getItem("access_token")) {
       setShowLoginModal(true);
@@ -971,7 +990,6 @@ const CityItem = ({
       console.log("TransferDD", transferData);
 
       const bookingPayload = {
-        
         transfer_type: "airport",
         source_itinerary_city:
           transferData.transferType === "pickup"
@@ -989,7 +1007,7 @@ const CityItem = ({
         booking_id: transferData?.booking_id,
       };
 
-      console.log("Payload",bookingPayload);
+      console.log("Payload", bookingPayload);
       const response = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
         bookingPayload,
@@ -1046,19 +1064,23 @@ const CityItem = ({
       setLoading(false);
     }
   };
-
+ 
   const supportsTransfers = (mode, index) => {
     console.log("MOOde", mode, index);
     return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
 
-  const existingPickupBookings =
-    currentAirportBookings?.filter((booking) => booking.is_airport_pickup) ||
-    [];
+  const existingPickupBookings = currentAirportBookings?.filter(
+    booking => booking.is_airport_pickup
+  ) || [];
+  
+  const existingDropBookings = currentAirportBookings?.filter(
+    booking => booking.is_airport_drop
+  ) || [];
 
-  const existingDropBookings =
-    currentAirportBookings?.filter((booking) => booking.is_airport_drop) || [];
 
+    
+  
   console.log("Redux DBD", booking_id, city, visible);
 
   return (
@@ -1156,7 +1178,7 @@ const CityItem = ({
                         onClick={() => {
                           upPresent &&
                             downPresent &&
-                            handleEdit(transfer_type === "combo");
+                            handleEdit(transfer_type === "combo", booking);
                         }}
                       >
                         <div className="group-hover:text-blue">
@@ -1182,7 +1204,7 @@ const CityItem = ({
                   </>
                 ) : isPageWide ? (
                   <button
-                    onClick={() => setShowDrawer(true)}
+                    onClick={handleAddTransfer}
                     className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
                   >
                     + Add Transfer from {origin_city_name} to{" "}
@@ -1190,7 +1212,7 @@ const CityItem = ({
                   </button>
                 ) : (
                   <button
-                    onClick={() => setShowDrawer(true)}
+                    onClick={handleAddTransfer}
                     className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
                   >
                     + Add Transfer
@@ -1226,125 +1248,133 @@ const CityItem = ({
               show={pickupDropShow}
               sourceGmaps={sourceGmaps}
               destinationGmaps={destinationGmaps}
+              handleEdit={handleEdit}
+              handlePickupDropDrawer={handlePickupDropDrawer}
             />
           </div>
           {/* )} */}
-
-          {/* {supportsTransfers(booking_type,duration) && ( 
-                  <div className={`-mt-2 ${currentAirportBookings && currentAirportBookings.length > 0 ?"mb-2":"mb-0 mt-0"  }`}>
-                    <TransferPickupDropButton
-                      bookingMode={booking_type}
-                      originCityName={origin_city_name}
-                      destinationCityName={destination_city_name}
-                      existingPickupBookings={existingPickupBookings}
-                      existingDropBookings={existingDropBookings}
-                      onPickupClick={handlePickupClick}
-                      onDropClick={handleDropClick}
-                      setHandleShow={setPickupDropShow}
-                      show={pickupDropShow}
-                    />
-                  </div>
-                 )}  */}
         </div>
       </div>
 
-      <PickupDropDrawer
-        isOpen={isTransferDrawerOpen}
-        hotelName={hotelName}
-        destinationHotelName={destinationHotelName}
+      {drawer === "addPickupDrop" &&
+        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+          <PickupDropDrawer
+            isOpen={drawer === "addPickupDrop" &&
+              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) }
+            hotelName={hotelName}
+            destinationHotelName={destinationHotelName}
         sourceLat={sourceLat}
   sourceLong={sourceLong}
   destinationLat={destinationLat}
   destinationLong={destinationLong}
-        booking={booking}
-        onClose={() => {
-          setIsTransferDrawerOpen(false);
-          setTransferDrawerType(null);
-          setSelectedTransferBooking(null);
-        }}
-        transferType={transferDrawerType}
-        bookingMode={booking_type?.toLowerCase()}
-        originCityName={origin_city_name}
-        destinationCityName={destination_city_name}
-        onSubmit={handleTransferSubmit}
-        existingBooking={selectedTransferBooking}
-        sourceGmaps={sourceGmaps}
-        destinationGmaps={destinationGmaps}
-        // show={pickupDropShow}
-        // setHandleShow={setPickupDropShow}
-        _updateFlightBookingHandler={_updateFlightBookingHandler}
-        _updatePaymentHandler={_updatePaymentHandler}
-        getPaymentHandler={getPaymentHandler}
-        setShowLoginModal={setShowLoginModal}
-        city={origin_city_name}
-        dcity={destination_city_name}
-        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={
-          dCityData?.id || dCityData?.gmaps_place_id
-        }
-      />
+            booking={booking}
+            onClose={handleClose}
+            transferType={drawerType}
+            bookingMode={booking_type?.toLowerCase()}
+            originCityName={origin_city_name}
+            destinationCityName={destination_city_name}
+            onSubmit={handleTransferSubmit}
+            existingBooking={selectedTransferBooking}
+            sourceGmaps={sourceGmaps}
+            destinationGmaps={destinationGmaps}
+            // show={pickupDropShow}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
+            setShowLoginModal={setShowLoginModal}
+            city={origin_city_name}
+            dcity={destination_city_name}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+            destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+            origin_itinerary_city_id={
+              oCityData?.id || oCityData?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              dCityData?.id || dCityData?.gmaps_place_id
+            }
+          />
+        )}
 
-      <TransferEditDrawer
-        mercury
-        addOrEdit={"transferAdd"}
-        showDrawer={showDrawer}
-        setShowDrawer={setShowDrawer}
-        destination={destination_city_id}
-        _updateFlightBookingHandler={_updateFlightBookingHandler}
-        _updatePaymentHandler={_updatePaymentHandler}
-        getPaymentHandler={getPaymentHandler}
-        oCityData={oCityData}
-        dCityData={dCityData}
-        setShowLoginModal={setShowLoginModal}
-        city={origin_city_name}
-        dcity={destination_city_name}
-        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={
-          dCityData?.id || dCityData?.gmaps_place_id
-        }
-        booking_id={booking_id}
-      />
+      {drawer == "editTransfer" &&
+        (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
+        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+          <TransferEditDrawer
+            mercury
+            addOrEdit={"transferAdd"}
+            showDrawer={
+              drawer == "editTransfer" &&
+              (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
+              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)
+            }
+            destination={destination_city_id}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
+            oCityData={oCityData}
+            dCityData={dCityData}
+            setShowLoginModal={setShowLoginModal}
+            city={origin_city_name}
+            dcity={destination_city_name}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+            destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+            origin_itinerary_city_id={
+              oCityData?.id || oCityData?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              dCityData?.id || dCityData?.gmaps_place_id
+            }
+            booking_id={booking_id}
+          />
+        )}
 
-      {handleShow && (
-        <TransferDrawer
-          show={handleShow}
-          error={error}
-          setHandleShow={setHandleShow}
-          data={data}
-          booking_type={transferType || booking_type}
-          loading={loading}
-          handleDelete={handleDelete}
-          setShowDrawer={setShowDrawer}
-          city={city}
-          _updateFlightBookingHandler={_updateFlightBookingHandler}
-          _updatePaymentHandler={_updatePaymentHandler}
-          getPaymentHandler={getPaymentHandler}
-          oCityData={oCityData}
-          dCityData={dCityData}
-          setShowLoginModal={setShowLoginModal}
-          dcity={destination_city_name}
-          selectedBooking={selectedBooking}
-          setSelectedBooking={setSelectedBooking}
-          originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-          destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-          origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-          destination_itinerary_city_id={
-            dCityData?.id || dCityData?.gmaps_place_id
-          }
-          isIntracity={isIntracity}
-          booking_id={booking_id}
-        />
-      )}
+      {"show" +
+        ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") ===
+        drawer &&
+        bookingId == booking_id && (
+          <TransferDrawer
+            show={
+              "show" +
+                ((booking_type?.includes(",") ? "combo" : booking_type) +
+                  "Detail") ===
+                drawer && bookingId == booking_id
+            }
+            error={error}
+            combo={booking_type?.includes(",")}
+            booking_type={transferType || booking_type}
+            handleDelete={handleDelete}
+            city={city}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
+            oCityData={oCityData}
+            dCityData={dCityData}
+            setShowLoginModal={setShowLoginModal}
+            dcity={destination_city_name}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+            destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+            origin_itinerary_city_id={
+              oCityData?.id || oCityData?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              dCityData?.id || dCityData?.gmaps_place_id
+            }
+            isIntracity={isIntracity}
+            booking_id={booking_id}
+            setError={setError}
+          />
+        )}
     </Container>
   );
 };

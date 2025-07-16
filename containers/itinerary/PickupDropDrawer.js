@@ -596,7 +596,7 @@ const searchAutocomplete = async (query, field) => {
     const gmapResults = res.data.results || [];
     const combinedResults = [...hotelSuggestions, ...gmapResults];
 
-    if (field === "source") {
+  if (field === "source") {
   setSourceSuggestions(combinedResults);
   setShowSourceSuggestions(true);
   
