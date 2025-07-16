@@ -11,6 +11,7 @@ import FlightDetails from "../../../components/modals/flights/new-flight-searche
 import { useRouter } from "next/router";
 import { getModeIcon } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
+import PickupDropDrawer from "../PickupDropDrawer";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -491,7 +492,7 @@ const TransferBooking = ({
                       </div>
                     </>
 
-                    <PickupDropDrawer
+                    {/* <PickupDropDrawer
                       isOpen={isTransferDrawerOpen}
                       trips={vehicleDetails?.transfer_details?.trips}
                       loading={loading}
@@ -532,9 +533,9 @@ const TransferBooking = ({
                       destination_itinerary_city_id={
                         dCityData?.id || dCityData?.gmaps_place_id
                       }
-                    />
+                    /> */}
 
-                    {showVehicleDrawer && (
+                    {/* {showVehicleDrawer && (
                       <TransferDrawer
                         show={showVehicleDrawer}
                         setIsTransferDrawerOpen={setIsTransferDrawerOpen}
@@ -574,7 +575,7 @@ const TransferBooking = ({
                         isAirport={isAirport}
                         AirportTransferType={AirportTransferType}
                       />
-                    )}
+                    )} */}
 
                     {/* <Drawer
                       show={showVehicleDrawer}
