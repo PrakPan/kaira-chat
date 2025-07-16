@@ -41,10 +41,8 @@ const Details = (props) => {
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
   const searchParams = useSearchParams();
-  const drawer = searchParams.get("drawer");
-  const cityId = searchParams.get("city_id");
+  const {drawer}=router?.query
 
-  console.log("drawer is:", drawer, "city id is:", cityId);
   const CITY_COLOR_CODES = [
     "#359EBF", //  # shade of blue
     "#F0C631", //# shade of yellow
@@ -197,11 +195,11 @@ const Details = (props) => {
         </RouteComponent>
       </DetailsContainer>
 
-      {props.editRoute && (
+      {drawer=="handleEditRoute"&& (
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
-          editRoute={props.editRoute}
+          editRoute={drawer=="handleEditRoute"}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}

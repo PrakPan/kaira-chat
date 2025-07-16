@@ -6,6 +6,7 @@ import { ITINERARY_VERSION } from "../../../../services/constants";
 import { connect, useSelector } from "react-redux";
 import { logEvent } from "../../../../services/ga/Index";
 import MidSectionV2 from "./MidSectionV2";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -15,7 +16,7 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-  console.log("Destination", props?.CityData);
+  const router=useRouter()
   const initialorder = {
     0: {
       location: "Jodhpur",
@@ -86,7 +87,17 @@ const Route = (props) => {
   };
 
   const handleEditRoute = () => {
-    props?.setEdit(true);
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query:{
+          drawer:"handleEditRoute"
+        }
+      },
+      undefined,
+      { scroll: false }
+    );
+    // props?.setEdit(true);
 
     logEvent({
       action: "Route Edit",

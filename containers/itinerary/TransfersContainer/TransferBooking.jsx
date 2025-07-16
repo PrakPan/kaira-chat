@@ -293,7 +293,7 @@ const TransferBooking = ({
                                     }
                                     //  width={"4rem"}
                                     //  widthmobile="4rem"
-                                    onfail={handleTransferImageFailed}
+                                    // onfail={handleTransferImageFailed}
                                   />
                                 ) : (
                                   <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
@@ -767,7 +767,7 @@ const TransferBooking = ({
                               height={
                                 book?.image?.includes("gozo") ? "3rem" : "4rem"
                               }
-                              onfail={handleTransferImageFailed}
+                              // onfail={handleTransferImageFailed}
                             />
                           ) : (
                             <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">

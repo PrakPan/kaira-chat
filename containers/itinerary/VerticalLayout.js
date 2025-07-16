@@ -715,15 +715,10 @@ const CityItem = ({
   downPresent,
   booking_id,
   length,
-  bookingIdToDelete,
   destination_city_id,
-  origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings,
   setShowLoginModal,
-  origin,
-  destination,
   oCityData,
   dCityData,
   _updateFlightBookingHandler,
@@ -731,7 +726,6 @@ const CityItem = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   airportBookings,
-  intracityBookings,
   booking,
   hotelName,
   destinationHotelName,
@@ -752,7 +746,7 @@ const CityItem = ({
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity } = router?.query;
 
-  console.log("bookigngid is:", bookingId, "booking_id is:", booking_id);
+  console.log("bookigngid is:", bookingId, "booking_id is:", booking_id,"drawer is:","show" + (booking_type?.includes(",") ? "combo" : booking_type) + "Detail");
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
     setSelectedTransferBooking(null);
@@ -1231,7 +1225,6 @@ const CityItem = ({
             />
           </div>
           {/* )} */}
-
         </div>
       </div>
 
@@ -1276,7 +1269,7 @@ const CityItem = ({
       />
 
       {drawer == "editTransfer" &&
-        // (bookingId === booking_id || (!booking_id && bookingId === "")) &&
+        (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
         oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
         dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
           <TransferEditDrawer
@@ -1284,7 +1277,7 @@ const CityItem = ({
             addOrEdit={"transferAdd"}
             showDrawer={
               drawer == "editTransfer" &&
-              // (bookingId === booking_id || (!booking_id && bookingId === ""))&&
+              (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
               oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
               dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)
             }
@@ -1312,15 +1305,15 @@ const CityItem = ({
           />
         )}
 
-      {"show" + (comboDetails ? "combo" : booking_type) + "Detail" === drawer &&
+      {"show" + ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") === drawer &&
         bookingId == booking_id && (
           <TransferDrawer
             show={
-              "show" + (comboDetails ? "combo" : booking_type) + "Detail" ===
+              "show" + ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") ===
                 drawer && bookingId == booking_id
             }
             error={error}
-            combo={comboDetails}
+            combo={booking_type?.includes(",")}
             booking_type={transferType || booking_type}
             handleDelete={handleDelete}
             city={city}
