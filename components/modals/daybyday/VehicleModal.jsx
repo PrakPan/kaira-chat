@@ -80,8 +80,8 @@ const VehicleDetailModal = ({
     console.log("Date String", dateString);
     const date = new Date(dateString);
     console.log("date is:");
-    date.setMinutes(date.getMinutes() + minutes);
-    return formatDateTime(date.toISOString());
+    date.setMinutes(date?.getMinutes() + minutes);
+    return formatDateTime(date?.toISOString());
   };
 
   const departure =
