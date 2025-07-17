@@ -110,25 +110,22 @@ const TransferBooking = ({
     );
   };
 
-  const handleRoute = () => {
+  const handleRoute = (book) => {
     router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer:
-            "show" +
-            (booking?.booking_type?.includes(",")
-              ? `combo`
-              : booking?.booking_type) +
-            "Detail",
-          bookingId: booking?.id,
-        },
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "Intracity",
+        bookingId: book?.id || booking_id,
+        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
+    },
+    undefined,
+    {
+      scroll: false,
+    }
+  );
   };
 
   return (
@@ -192,6 +189,8 @@ const TransferBooking = ({
                         ? `combo`
                         : booking?.booking_type
                     }
+                    oCityData={oCityData}
+                    dCityData={dCityData}
                   />
                 </>
               ) : (
@@ -1031,7 +1030,7 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(TransferBooking);
 
-const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
+const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCityData }) => {
   const router = useRouter();
   try {
     if (booking?.number_of_adults > 1) adult = " Adults";
@@ -1041,22 +1040,21 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
   } catch {}
 
   const handleRoute = (book) => {
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer:
-            "show" +
-            (book?.booking_type?.includes(",") ? `combo` : book?.booking_type) +
-            "Detail",
-          bookingId: book?.id,
-        },
+   router.push(
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "Intracity",
+        bookingId: book?.id,
+        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
+    },
+    undefined,
+    {
+      scroll: false,
+    }
+  );
   };
 
   return (
