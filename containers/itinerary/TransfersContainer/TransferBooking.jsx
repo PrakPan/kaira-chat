@@ -185,9 +185,7 @@ const TransferBooking = ({
                     booking={booking}
                     booking_id={booking_id}
                     booking_type={
-                      booking?.booking_type?.includes(",")
-                        ? `combo`
-                        : booking?.booking_type
+                      booking?.booking_type
                     }
                     oCityData={oCityData}
                     dCityData={dCityData}
@@ -674,12 +672,10 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
                     booking={book}
-                    booking_id={booking_id}
-                    type={"combo"}
+                    booking_id={booking?.id}
+                    type={booking?.booking_type}
                     booking_type={
-                      booking?.booking_type?.includes(",")
-                        ? `combo`
-                        : booking?.booking_type
+                      booking?.booking_type
                     }
                   />
                 </>
