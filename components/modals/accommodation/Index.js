@@ -89,7 +89,7 @@ const ErrorContainer = styled.div`
 `;
 
 const POI = (props) => {
-  console.log("city id 1 is:",props)
+  console.log("city id 1 is:", props)
 
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
@@ -98,8 +98,8 @@ const POI = (props) => {
   const [error, setError] = useState(false);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-  const dispatch=useDispatch();
-  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const dispatch = useDispatch();
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo)
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -115,6 +115,16 @@ const POI = (props) => {
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
+
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
 
   const fetchDetails = () => {
     setLoading(true);
@@ -158,7 +168,8 @@ const POI = (props) => {
         paramsObj.source = "Agoda";
       }
       fetchaccommodations
-        .get("", { params: paramsObj,
+        .get("", {
+          params: paramsObj,
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -227,7 +238,7 @@ const POI = (props) => {
             });
           } catch (error) {
             const errorMsg =
-            error?.response?.data?.errors?.[0]?.message?.[0] || error.message ;
+              error?.response?.data?.errors?.[0]?.message?.[0] || error.message;
             props.openNotification({
               type: "error",
               text: errorMsg || "Something went wrong! Please try after some time.",
@@ -239,7 +250,7 @@ const POI = (props) => {
         .catch((err) => {
           props.setUpdateBookingState(false);
           const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
           props.openNotification({
             type: "error",
             text: errorMsg || "Something went wrong! Please try after some time.",
@@ -247,7 +258,7 @@ const POI = (props) => {
           });
         });
     } catch (error) {
-      
+
       props.openNotification({
         type: "error",
         text: `${error.response?.data?.errors[0]?.message[0]}`,
@@ -269,7 +280,7 @@ const POI = (props) => {
       {!loading ? (
         <Container>
           <BackContainer className=" font-lexend">
-            <BackArrow  handleClick={props.onHide}/>
+            <BackArrow handleClick={props.onHide} />
           </BackContainer>
           {!error ? (
             <div>

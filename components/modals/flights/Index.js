@@ -21,6 +21,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import ComboFlight from "./ComboFlight";
 import BackArrow from "../../ui/BackArrow";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -80,7 +81,7 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("Flight Selected Booking", props?.selectedBooking);
+  console.log("Flight Selected Booking", props?.selectedBooking, props.showFlightModal);
   console.log(
     "Flight Selected Booking",
     props?.originCityId,
@@ -129,6 +130,18 @@ const Booking = (props) => {
     value: 1,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
+
+   useEffect(() => {
+    console.log("i am awork right palce",props.showFlightModal, props.setHideFlightModal)
+      if (props.showFlightModal) {
+        console.log(props.showFlightModal)
+        document.documentElement.style.overflow = "hidden";
+      }
+  
+      return () => {
+        document.documentElement.style.overflow = "auto";
+      };
+    }, [props.showFlightModal]);
 
   // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
@@ -445,6 +458,7 @@ const Booking = (props) => {
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
   };
+  
 
   if (props.token)
     return (

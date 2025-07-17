@@ -162,6 +162,18 @@ const TransferEditDrawer = (props) => {
     }
   }, [showDrawer]);
 
+
+  useEffect(() => {
+      if (showDrawer) {
+        document.documentElement.style.overflow = "hidden";
+      }
+  
+      return () => {
+        document.documentElement.style.overflow = "auto";
+      };
+    }, [showDrawer]);
+  
+
   const fetchRoutes = () => {
     setLoadingTransfers(true);
     setTransfersError(null);
@@ -1294,6 +1306,16 @@ const RouteContainer = (props) => {
     const newDate = dayjs(dateString).add(numberOfDays, "day");
     return newDate.format("YYYY-MM-DD");
   };
+
+   useEffect(() => {
+      if (props.show) {
+        document.documentElement.style.overflow = "hidden";
+      }
+  
+      return () => {
+        document.documentElement.style.overflow = "auto";
+      };
+    }, [props.show]);
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;

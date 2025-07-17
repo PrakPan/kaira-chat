@@ -161,6 +161,7 @@ const SelectedDestination = (props) => {
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
             updatedData={props.updatedData}
+            tailoredFormModal={props.tailoredFormModal}
           ></SearchInput>
         )}
       </div>

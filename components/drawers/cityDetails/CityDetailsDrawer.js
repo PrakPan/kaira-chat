@@ -44,6 +44,16 @@ const CityDetailsDrawer = (props) => {
     } else setData(null);
   }, [props.show]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   return (
     <Drawer
       show={props.show}
@@ -78,16 +88,16 @@ const CityDetailsDrawer = (props) => {
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
         {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => {
-              props.onHide()
-            }}
-          />
-        </FloatingView>
-      )}
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => {
+                props.onHide()
+              }}
+            />
+          </FloatingView>
+        )}
       </div>
     </Drawer>
   );
