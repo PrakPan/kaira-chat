@@ -356,7 +356,7 @@ const DaybyDay = ({
               intracityBookings = sortByCheckIn(intracityBookings);
             }
 
-            console.log("HotelN",stay?.[index],stay?.[index]?.city_gmaps_place_id,itineraryDaybyDay?.cities?.[index]?.city?.gmaps_place_id)
+
 
             return (
               <>
