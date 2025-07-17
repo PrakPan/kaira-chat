@@ -188,9 +188,7 @@ const TransferBooking = ({
                     booking={booking}
                     booking_id={booking_id}
                     booking_type={
-                      booking?.booking_type?.includes(",")
-                        ? `combo`
-                        : booking?.booking_type
+                      booking?.booking_type
                     }
                   />
                 </>
@@ -675,12 +673,10 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
                     booking={book}
-                    booking_id={booking_id}
-                    type={"combo"}
+                    booking_id={booking?.id}
+                    type={booking?.booking_type}
                     booking_type={
-                      booking?.booking_type?.includes(",")
-                        ? `combo`
-                        : booking?.booking_type
+                      booking?.booking_type
                     }
                   />
                 </>
@@ -1041,15 +1037,16 @@ const FlightBooking = ({ booking, type, booking_type, booking_id }) => {
   } catch {}
 
   const handleRoute = (book) => {
+    console.log("booking id is:",book)
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer:
             "show" +
-            (book?.booking_type?.includes(",") ? `combo` : book?.booking_type) +
+            (booking_type?.includes(",") ? `combo` : book?.booking_type) +
             "Detail",
-          bookingId: book?.id,
+          bookingId: booking_id,
         },
       },
       undefined,
