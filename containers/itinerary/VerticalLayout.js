@@ -748,6 +748,15 @@ const CityItem = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
+    console.log("=== DRAWER DEBUG ===");
+console.log("drawer from query:", drawer);
+console.log("bookingId from query:", bookingId);
+console.log("booking_id from props:", booking_id);
+console.log("drawer === 'Intracity':", drawer === "Intracity");
+console.log("bookingId === booking_id:", bookingId === booking_id);
+console.log("Overall condition:", drawer === "Intracity" && bookingId === booking_id);
+console.log("=== END DEBUG ===");
+
   console.log(
     "bookigngid is:",
     bookingId,
@@ -809,6 +818,7 @@ const CityItem = ({
     airportBookings || []
   );
   const [pickupDropShow, setPickupDropShow] = useState(false);
+  const [airportBookingId,setAirportBookingId] = useState(null);
   const handleClose=useHandleClose()
 
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
@@ -826,25 +836,28 @@ const CityItem = ({
   }, [booking_id]);
 
   const handleEdit = async (combo, book) => {
-    setIsIntracity(false);
-    if (combo) {
-      setComboDetails(true);
-    }
-    setLoading(true);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer: "show" + (combo ? "combo" : book?.booking_type) + "Detail",
-          bookingId: book?.id,
-        },
+  setIsIntracity(false);
+  if (combo) {
+    setComboDetails(true);
+  }
+  setAirportBookingId(book?.id);
+  setLoading(true);
+  router.push(
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "Intracity",
+        bookingId: book?.id,
+        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
-  };
+    },
+    undefined,
+    {
+      scroll: false,
+    }
+  );
+};
 
   const handlePickupDropDrawer = (drawerType) => {
     router.push(
@@ -1250,6 +1263,7 @@ const CityItem = ({
               destinationGmaps={destinationGmaps}
               handleEdit={handleEdit}
               handlePickupDropDrawer={handlePickupDropDrawer}
+              setAirportBookingId={setAirportBookingId}
             />
           </div>
           {/* )} */}
@@ -1337,17 +1351,12 @@ const CityItem = ({
           />
         )}
 
-      {"show" +
-        ((booking_type?.includes(",") ? "combo" : booking_type) + "Detail") ===
-        drawer &&
-        bookingId == booking_id && (
-          <TransferDrawer
-            show={
-              "show" +
-                ((booking_type?.includes(",") ? "combo" : booking_type) +
-                  "Detail") ===
-                drawer && bookingId == booking_id
-            }
+      {"Intracity" === drawer && 
+  (bookingId === airportBookingId || bookingId === booking_id) && (
+    <TransferDrawer
+      show={
+        "Intracity" === drawer &&  (bookingId === airportBookingId || bookingId === booking_id)
+      }
             error={error}
             combo={booking_type?.includes(",")}
             booking_type={transferType || booking_type}
@@ -1371,7 +1380,7 @@ const CityItem = ({
               dCityData?.id || dCityData?.gmaps_place_id
             }
             isIntracity={isIntracity}
-            booking_id={booking_id}
+            booking_id={airportBookingId || booking_id}
             setError={setError}
           />
         )}
