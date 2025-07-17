@@ -201,7 +201,9 @@ export default function ElementCard(props) {
           {props.data?.description && (
             <div>
               <Heading>About</Heading>
-              <Text>{props.data.description}</Text>
+              <Text
+    dangerouslySetInnerHTML={{ __html: props.data.description }}
+  />
             </div>
           )}
 
