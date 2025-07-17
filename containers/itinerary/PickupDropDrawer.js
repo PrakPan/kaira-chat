@@ -688,16 +688,16 @@ const searchAutocomplete = async (query, field) => {
     switch (bookingMode?.toLowerCase()) {
       case "flight":
         return transferType === "pickup"
-          ? `${destinationCityName} Airport`
-          : `${originCityName} Airport`;
+          ? `${destinationCityName} City`
+          : `${originCityName} City`;
       case "train":
         return transferType === "pickup"
-          ? `${destinationCityName} Railway Station`
-          : `${originCityName} Railway Station`;
+          ? `${destinationCityName} City`
+          : `${originCityName} City`;
       case "ferry":
         return transferType === "pickup"
-          ? `${destinationCityName} Ferry Terminal`
-          : `${originCityName} Ferry Terminal`;
+          ? `${destinationCityName} City`
+          : `${originCityName} City`;
       default:
         return "";
     }
