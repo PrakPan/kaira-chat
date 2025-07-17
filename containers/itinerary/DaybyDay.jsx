@@ -58,7 +58,7 @@ const DaybyDay = ({
   )?.transferBookings;
 
   let isPageWide = media("(min-width: 768px)");
-  console.log("Inside DaybyDay Itinerary", itinerary);
+  console.log("Inside DaybyDay Itinerary", itineraryDaybyDay);
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
@@ -240,12 +240,12 @@ const DaybyDay = ({
             loadbookings={loadbookings}
             hotelName={startCity?.city_name}
             sourceGmaps={startCity?.gmaps_place_id}
-            destinationHotelName={stay?.[0] ? stay[0]?.name : null}
+            destinationHotelName={stay?.[0] ? stay[0]?.name :null }
             sourceLat={startCity?.latitude}
             sourceLong={startCity?.longitude}
             destinationLat={stay?.[0] ? stay[0]?.lat: null}
             destinationLong={stay?.[0] ? stay[0]?.long: null}
-            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : null}
+            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
             key={2}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
@@ -356,6 +356,8 @@ const DaybyDay = ({
               intracityBookings = sortByCheckIn(intracityBookings);
             }
 
+            console.log("HotelN",stay?.[index],stay[index]?.city_gmaps_place_id,itineraryDaybyDay?.cities[index]?.city?.gmaps_place_id)
+
             return (
               <>
                 <ItineraryCity
@@ -384,8 +386,8 @@ const DaybyDay = ({
                       setShowLoginModal={setShowLoginModal}
                       mercury
                       hotelName={stay?.[index]?.name ? stay[index]?.name: null}
-                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : null}
-                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.city_gmaps_place_id: null}
+                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : itineraryDaybyDay?.cities[index]?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.city_gmaps_place_id: itineraryDaybyDay?.cities[index+1]?.city?.gmaps_place_id}
                       sourceLat={stay?.[index] ? stay[index]?.lat : null}
                       sourceLong={stay?.[index] ? stay[index]?.long : null}
                       destinationLat={stay?.[index+ 1] ? stay[index+1]?.lat: null}
@@ -452,7 +454,7 @@ const DaybyDay = ({
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
             hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name: null}
-            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : null}
+            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
             sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
             sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
             destinationLat={endCity?.latitude}

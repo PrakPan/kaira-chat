@@ -58,7 +58,7 @@ const PickupDropDrawer = ({
   destinationLat,
   destinationLong,
 }) => {
-  console.log("HotelN", booking_id);
+  console.log("HotelN", sourceGmaps, destinationGmaps);
 
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -172,14 +172,14 @@ const PickupDropDrawer = ({
         transferType === "pickup" &&
         destinationLat &&
         destinationLong &&
-        !destinationAddress
+        !destinationHotelName
       ) {
         setDestinationInput(`Location (${destinationLat}, ${destinationLong})`);
       } else if (
         transferType === "drop" &&
         sourceLat &&
         sourceLong &&
-        !sourceAddress
+        !hotelName
       ) {
         setSourceInput(`Location (${sourceLat}, ${sourceLong})`);
       }
@@ -341,70 +341,77 @@ const PickupDropDrawer = ({
   useEffect(() => {
     if (isOpen && booking && !trips) {
       const initialData = getInitialFormState();
-
-      // Check if we have gmaps IDs from props
       let updatedData = { ...initialData };
 
       if (transferType === "pickup") {
-        // For pickup: destination should be hotel name or city name
-        if (destinationHotelName) {
+        // For pickup: destination gets hotel data if available, source gets hub
+        if (destinationHotelName && destinationLat && destinationLong) {
+          // Hotel exists - use hotel data for destination
           updatedData.destinationAddress = destinationHotelName;
+          updatedData.destinationLatitude = destinationLat;
+          updatedData.destinationLongitude = destinationLong;
+        } else if (destinationLat && destinationLong && !destinationHotelName) {
+          // No hotel but coordinates exist - use coordinates for destination
+          updatedData.destinationAddress = `Location (${destinationLat}, ${destinationLong})`;
+          updatedData.destinationLatitude = destinationLat;
+          updatedData.destinationLongitude = destinationLong;
         } else if (destinationCityName) {
-          // Auto-fill with city name if hotel not present
+          // No hotel or coordinates - use city gmaps for destination
           updatedData.destinationAddress = destinationCityName;
-        }
-
-        if (destinationGmaps || (destinationLat && destinationLong)) {
           if (destinationGmaps) {
             updatedData.destinationGmapsId = destinationGmaps;
-          } else if (destinationLat && destinationLong) {
-            updatedData.destinationLatitude = destinationLat;
-            updatedData.destinationLongitude = destinationLong;
+          }
+        }
+
+        // Source gets hub data for pickup
+        const sourceHubId = getHubId(booking, "pickup", "source");
+        if (sourceHubId) {
+          updatedData.sourceHubId = sourceHubId;
+          updatedData.sourceAddress = getStationName();
+        } else if (originCityName) {
+          // Fallback to city if no hub
+          updatedData.sourceAddress = originCityName;
+          if (sourceGmaps) {
+            updatedData.sourceGmapsId = sourceGmaps;
           }
         }
       } else if (transferType === "drop") {
-        // For drop: source should be hotel name or city name
-        if (hotelName) {
+        // For drop: source gets hotel data if available, destination gets hub
+        if (hotelName && sourceLat && sourceLong) {
+          // Hotel exists - use hotel data for source
           updatedData.sourceAddress = hotelName;
+          updatedData.sourceLatitude = sourceLat;
+          updatedData.sourceLongitude = sourceLong;
+        } else if (sourceLat && sourceLong && !hotelName) {
+          // No hotel but coordinates exist - use coordinates for source
+          updatedData.sourceAddress = `Location (${sourceLat}, ${sourceLong})`;
+          updatedData.sourceLatitude = sourceLat;
+          updatedData.sourceLongitude = sourceLong;
         } else if (originCityName) {
-          // Auto-fill with city name if hotel not present
+          // No hotel or coordinates - use city gmaps for source
           updatedData.sourceAddress = originCityName;
-        }
-
-        if (sourceGmaps || (sourceLat && sourceLong)) {
           if (sourceGmaps) {
             updatedData.sourceGmapsId = sourceGmaps;
-          } else if (sourceLat && sourceLong) {
-            updatedData.sourceLatitude = sourceLat;
-            updatedData.sourceLongitude = sourceLong;
+          }
+        }
+
+        // Destination gets hub data for drop
+        const destHubId = getHubId(booking, "drop", "destination");
+        if (destHubId) {
+          updatedData.destinationHubId = destHubId;
+          updatedData.destinationAddress = getStationName();
+        } else if (destinationCityName) {
+          // Fallback to city if no hub
+          updatedData.destinationAddress = destinationCityName;
+          if (destinationGmaps) {
+            updatedData.destinationGmapsId = destinationGmaps;
           }
         }
       }
 
       setFormData(updatedData);
-
-      // Set input display values - USE UPDATED DATA
       setSourceInput(updatedData.sourceAddress);
       setDestinationInput(updatedData.destinationAddress);
-
-      // Trigger autocomplete for hotel names OR city names to auto-fill gmaps data
-      if (transferType === "pickup") {
-        if (destinationHotelName && !destinationGmaps) {
-          handleLocationSearch(destinationHotelName, "destination");
-        } else if (
-          !destinationHotelName &&
-          destinationCityName &&
-          !destinationGmaps
-        ) {
-          handleLocationSearch(destinationCityName, "destination");
-        }
-      } else if (transferType === "drop") {
-        if (hotelName && !sourceGmaps) {
-          handleLocationSearch(hotelName, "source");
-        } else if (!hotelName && originCityName && !sourceGmaps) {
-          handleLocationSearch(originCityName, "source");
-        }
-      }
 
       setIsAutoFilled(true);
       setInitialPropsAssigned(true);
@@ -615,34 +622,27 @@ const PickupDropDrawer = ({
         setShowSourceSuggestions(true);
 
         // Auto-select on first load for hotel name OR city name
-
-        if (
-          combinedResults.length > 0 &&
-          !hasAutoFilledRef.current.source &&
-          transferType === "drop" &&
-          (query === hotelName || (!hotelName && query === originCityName)) &&
-          !formData.sourceGmapsId &&
-          initialPropsAssigned
-        ) {
-          handleSuggestionSelect(combinedResults[0], "source");
-          hasAutoFilledRef.current.source = true;
-        }
+        // if (combinedResults.length > 0 &&
+        //     !hasAutoFilledRef.current.source &&
+        //     transferType === "drop" &&
+        //     (query === hotelName || (!hotelName && query === originCityName)) &&
+        //     !formData.sourceGmapsId) {
+        //   handleSuggestionSelect(combinedResults[0], "source");
+        //   hasAutoFilledRef.current.source = true;
+        // }
       } else {
         setDestinationSuggestions(combinedResults);
         setShowDestinationSuggestions(true);
 
-        if (
-          combinedResults.length > 0 &&
-          !hasAutoFilledRef.current.destination &&
-          transferType === "pickup" &&
-          (query === destinationHotelName ||
-            (!destinationHotelName && query === destinationCityName)) &&
-          !formData.destinationGmapsId &&
-          initialPropsAssigned
-        ) {
-          handleSuggestionSelect(combinedResults[0], "destination");
-          hasAutoFilledRef.current.destination = true;
-        }
+        // Auto-select on first load for hotel name OR city name
+        // if (combinedResults.length > 0 &&
+        //     !hasAutoFilledRef.current.destination &&
+        //     transferType === "pickup" &&
+        //     (query === destinationHotelName || (!destinationHotelName && query === destinationCityName)) &&
+        //     !formData.destinationGmapsId) {
+        //   handleSuggestionSelect(combinedResults[0], "destination");
+        //   hasAutoFilledRef.current.destination = true;
+        // }
       }
     } catch (error) {
       console.error("Autocomplete search error:", error);
@@ -1122,7 +1122,6 @@ const PickupDropDrawer = ({
 
   // Auto-search when all fields are filled on initial mount
   // Auto-search when all fields are filled on initial mount
-  // Auto-search when all fields are filled on initial mount
   useEffect(() => {
     if (
       isOpen &&
@@ -1130,6 +1129,7 @@ const PickupDropDrawer = ({
       initialPropsAssigned &&
       !hasAutoSearchedRef.current
     ) {
+      // Check if all required fields are filled
       const sourceId =
         formData.sourceHubId ||
         formData.sourceGmapsId ||
@@ -1154,7 +1154,7 @@ const PickupDropDrawer = ({
         searchTransfers();
       }
     }
-  }, [isOpen, isAutoFilled, initialPropsAssigned, formData]); // Add formData to dependencies
+  }, [isOpen, isAutoFilled, initialPropsAssigned]);
 
   if (!isOpen) return null;
 
