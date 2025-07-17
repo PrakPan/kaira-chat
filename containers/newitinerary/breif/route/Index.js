@@ -6,6 +6,7 @@ import { ITINERARY_VERSION } from "../../../../services/constants";
 import { connect, useSelector } from "react-redux";
 import { logEvent } from "../../../../services/ga/Index";
 import MidSectionV2 from "./MidSectionV2";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -15,8 +16,7 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-
-  console.log("Destination",props?.CityData);
+  const router=useRouter()
   const initialorder = {
     0: {
       location: "Jodhpur",
@@ -33,19 +33,18 @@ const Route = (props) => {
   };
 
   const CITY_COLOR_CODES = [
-    '#359EBF',  // shade of blue
-    '#F0C631',  // shade of yellow
-    '#BF3535',  // shade of red
-    '#47691e',  // shade of green
-    '#cc610a',  // shade of orange
-    '#008080',  // shade of teal
-    '#7d5e7d',  // shade of purple
-]
+    "#359EBF", // shade of blue
+    "#F0C631", // shade of yellow
+    "#BF3535", // shade of red
+    "#47691e", // shade of green
+    "#cc610a", // shade of orange
+    "#008080", // shade of teal
+    "#7d5e7d", // shade of purple
+  ];
   let color_index = 0;
 
-
   let locationsArr = [];
-  const {transfers_status} = useSelector((state)=>state.ItineraryStatus)
+  const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const [order, setOrder] = useState(initialorder);
 
   const _moveDownHandler = (index) => {
@@ -88,7 +87,17 @@ const Route = (props) => {
   };
 
   const handleEditRoute = () => {
-    props?.setEdit(true);
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query:{
+          drawer:"handleEditRoute"
+        }
+      },
+      undefined,
+      { scroll: false }
+    );
+    // props?.setEdit(true);
 
     logEvent({
       action: "Route Edit",
@@ -103,7 +112,10 @@ const Route = (props) => {
 
   let startingcity = null;
   let endingcity = null;
-  if (props?.plan?.version == ITINERARY_VERSION.version_2 && !props?.mercuryItinerary)  {
+  if (
+    props?.plan?.version == ITINERARY_VERSION.version_2 &&
+    !props?.mercuryItinerary
+  ) {
     if (props?.routes) {
       for (var i = 0; i < props?.routes.length; i += 2) {
         locationsArr.push(
@@ -221,14 +233,17 @@ const Route = (props) => {
                   icon={null}
                   routesData={props?.routesData}
                   version={"v1"}
-                  transportMode={props?.breif?.city_slabs[i].intracity_transport}
+                  transportMode={
+                    props?.breif?.city_slabs[i].intracity_transport
+                  }
                   duration={props?.breif?.city_slabs[i].duration}
                   _GetInTouch={props?._GetInTouch}
                 ></MidSection>
               );
             }
           }
-          if (!startingcity) startingcity = props?.breif?.city_slabs[0].city_name;
+          if (!startingcity)
+            startingcity = props?.breif?.city_slabs[0].city_name;
           if (!endingcity)
             endingcity =
               props?.breif?.city_slabs[props?.breif?.city_slabs.length - 1]
@@ -246,7 +261,8 @@ const Route = (props) => {
               setCurrentPopup={props?.setCurrentPopup}
               handlemap={handlemap}
               dayId={
-                props?.breif?.city_slabs[i].day_slab_location.start_day_slab_index
+                props?.breif?.city_slabs[i].day_slab_location
+                  .start_day_slab_index
               }
               setShowDrawer={props?.setShowDrawer}
               setShowDrawerData={props?.setShowDrawerData}
@@ -292,97 +308,141 @@ const Route = (props) => {
       }
   }
 
-if(props?.CityData) {
-        let length = props?.CityData.length;    
-        for (var i = 0; i < props?.CityData.length; i++) {
-          let color = CITY_COLOR_CODES[i%7];
-          locationsArr.push(
-            <PinSection
-              mercury
-              startingCity={i === 0}
-              endingCity={i === props?.CityData.length - 1}
-              setCurrentPopup={props?.setCurrentPopup}
-              handlemap={handlemap}
-              dayId={
-                // props?.breif?.city_slabs[i].day_slab_location.start_day_slab_index 
-                '12'
-              }
-              setShowDrawer={props?.setShowDrawer}
-              setShowDrawerData={props?.setShowDrawerData}
-              cityData={props?.CityData[i]}
-              dayslab={props?.day_by_day}
-              lat={props?.CityData[i]?.city?.latitude || props?.CityData[i]?.latitude}
-              long={props?.CityData[i]?.city?.longitude || props?.CityData[i]?.longitude}
-              Mapid={props?.CityData[i]?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY'}
-              city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
-              cityId={props?.CityData[i]?.city?.id}
-              duration={
-                props?.CityData[i]?.duration
-                  ? props?.CityData[i]?.duration
-                  : null
-              }
-              pinColour={i=== 0 || i === props?.CityData.length - 1 ? 'black' : (props?.CityData[i]?.color || color)}
-              data={order[i]}
-              _moveDownHandler={_moveDownHandler}
-              _moveUpHandler={_moveUpHandler}
-              index={i}
-              length={length}
-            ></PinSection>
-          );
-          if (i < props?.CityData.length - 1) {
-            let key;
-            if(i+1 < props?.CityData.length - 1){
-            key = `${(props?.CityData[i]?.gmaps_place_id!=undefined ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.id) + ":" + props?.CityData[i+1]?.id}`;
-            }
-            else {
-              key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.id) + ":" + (props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.id)}`;
-            }
-            console.log("Keys",key);
-            locationsArr.push(
-              <MidSectionV2
-              loadbookings={props?.loadbookings}
-                pinColour={i===0 || i === props?.CityData.length - 1? 'black' : (props?.CityData[i]?.color || color)}
-                modes={
-                    props?.cityTransferBookings?.intercity[key] ? props?.cityTransferBookings?.intercity[key].booking_type : "Taxi"
-                }
-                hidemidsection={true}
-                icon={null}
-                routesData={props?.routesData}
-                cityTransferBookings={props?.cityTransferBookings?.intercity[key]}
-                version={"v2"}
-                transportMode={props?.CityData[i]?.transfers}
-                duration={props?.CityData[i]?.duration}
-                _GetInTouch={props?._GetInTouch}
-                originCity={props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.city?.id}
-                city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
-                destinationCity={props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.city?.id}
-                dcity={props?.CityData[i+1]?.city?.name || props?.CityData[i+1]?.city_name}
-                oCityData={props?.CityData[i]}
-                dCityData={props?.CityData[i+1]}
-                setShowLoginModal={props?.setShowLoginModal}
-                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              ></MidSectionV2>
-            );
+  if (props?.CityData) {
+    let length = props?.CityData.length;
+    for (var i = 0; i < props?.CityData.length; i++) {
+      let color = CITY_COLOR_CODES[i % 7];
+      locationsArr.push(
+        <PinSection
+          mercury
+          startingCity={i === 0}
+          endingCity={i === props?.CityData.length - 1}
+          setCurrentPopup={props?.setCurrentPopup}
+          handlemap={handlemap}
+          dayId={
+            // props?.breif?.city_slabs[i].day_slab_location.start_day_slab_index
+            "12"
           }
+          setShowDrawer={props?.setShowDrawer}
+          setShowDrawerData={props?.setShowDrawerData}
+          cityData={props?.CityData[i]}
+          dayslab={props?.day_by_day}
+          lat={
+            props?.CityData[i]?.city?.latitude || props?.CityData[i]?.latitude
+          }
+          long={
+            props?.CityData[i]?.city?.longitude || props?.CityData[i]?.longitude
+          }
+          Mapid={
+            props?.CityData[i]?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY"
+          }
+          city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
+          cityId={props?.CityData[i]?.city?.id}
+          duration={
+            props?.CityData[i]?.duration ? props?.CityData[i]?.duration : null
+          }
+          pinColour={
+            i === 0 || i === props?.CityData.length - 1
+              ? "black"
+              : props?.CityData[i]?.color || color
+          }
+          data={order[i]}
+          _moveDownHandler={_moveDownHandler}
+          _moveUpHandler={_moveUpHandler}
+          index={i}
+          length={length}
+          findDayIdByCityId={props?.findDayIdByCityId}
+        ></PinSection>
+      );
+      if (i < props?.CityData.length - 1) {
+        let key;
+        if (i + 1 < props?.CityData.length - 1) {
+          key = `${
+            (props?.CityData[i]?.gmaps_place_id != undefined
+              ? props?.CityData[i]?.gmaps_place_id
+              : props?.CityData[i]?.id) +
+            ":" +
+            props?.CityData[i + 1]?.id
+          }`;
+        } else {
+          key = `${
+            (props?.CityData[i]?.gmaps_place_id
+              ? props?.CityData[i]?.gmaps_place_id
+              : props?.CityData[i]?.id) +
+            ":" +
+            (props?.CityData[i + 1]?.gmaps_place_id
+              ? props?.CityData[i + 1]?.gmaps_place_id
+              : props?.CityData[i + 1]?.id)
+          }`;
         }
+        console.log("Keys", key);
+        locationsArr.push(
+          <MidSectionV2
+            loadbookings={props?.loadbookings}
+            pinColour={
+              i === 0 || i === props?.CityData.length - 1
+                ? "black"
+                : props?.CityData[i]?.color || color
+            }
+            modes={
+              props?.cityTransferBookings?.intercity[key]
+                ? props?.cityTransferBookings?.intercity[key].booking_type
+                : "Taxi"
+            }
+            hidemidsection={true}
+            icon={null}
+            routesData={props?.routesData}
+            cityTransferBookings={props?.cityTransferBookings?.intercity[key]}
+            version={"v2"}
+            transportMode={props?.CityData[i]?.transfers}
+            duration={props?.CityData[i]?.duration}
+            _GetInTouch={props?._GetInTouch}
+            originCity={
+              props?.CityData[i]?.gmaps_place_id
+                ? props?.CityData[i]?.gmaps_place_id
+                : props?.CityData[i]?.city?.id
+            }
+            city={
+              props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name
+            }
+            destinationCity={
+              props?.CityData[i + 1]?.gmaps_place_id
+                ? props?.CityData[i + 1]?.gmaps_place_id
+                : props?.CityData[i + 1]?.city?.id
+            }
+            dcity={
+              props?.CityData[i + 1]?.city?.name ||
+              props?.CityData[i + 1]?.city_name
+            }
+            oCityData={props?.CityData[i]}
+            dCityData={props?.CityData[i + 1]}
+            setShowLoginModal={props?.setShowLoginModal}
+            _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            _updateFlightBookingHandler={props._updateFlightBookingHandler}
+          ></MidSectionV2>
+        );
       }
+    }
+  }
   return (
     <Container>
       <div className="flex flex-row justify-between items-end">
         <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
-        {transfers_status === "SUCCESS" ?
-        props?.cityTransferBookings && props?.cityTransferBookings !== 'null' && props?.cityTransferBookings !== 'undefined' ? (
-          <button
-            onClick={handleEditRoute}
-            className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
-          >
-            Edit Route
-          </button>
-        ) : null : null} 
+        {transfers_status === "SUCCESS" ? (
+          props?.cityTransferBookings &&
+          props?.cityTransferBookings !== "null" &&
+          props?.cityTransferBookings !== "undefined" ? (
+            <button
+              onClick={handleEditRoute}
+              className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
+            >
+              Edit Route
+            </button>
+          ) : null
+        ) : null}
       </div>
 
       {locationsArr}

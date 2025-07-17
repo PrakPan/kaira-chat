@@ -4,6 +4,11 @@ import { MdModeEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
 import { connect } from "react-redux";
 import { logEvent } from "../../../services/ga/Index";
+import UpdateItineraryDates from "../../itinerary/booking1/UpdateItineraryDates";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
+import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 const Container = styled.div`
   display: grid;
@@ -35,14 +40,19 @@ const Text = styled.p`
   margin: 0;
 `;
 
-const convertDFormat = (dt) => {
-  const date = parseISO(dt);
-  const formattedDate = format(date, "MMMM do");
-  return formattedDate;
+ const convertDFormat = (dt) => {
+  if (dt) {
+    const date = parseISO(dt);
+    const formattedDate = format(date, "MMM dd, yyyy"); 
+    return formattedDate;
+  }
+  return "";
 };
 
 const Details = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const router = useRouter();
+  const [showEditDate,setShowEditDate] = useState(false)
 
   function handleEditDates() {
     props.setEditRoute("editDates");
@@ -57,6 +67,35 @@ const Details = (props) => {
       },
     });
   }
+
+    const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+        try {
+          const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
+          const status = res.data?.celery;
+          dispatch(
+            setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+          );
+          dispatch(
+            setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+          );
+          dispatch(
+            setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+          );
+          dispatch(
+            setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+          );
+          fetchItinerary();
+        } catch (err) {
+          console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+        }
+      };
+    
+      const fetchItinerary = async () => {
+        props?.resetRef();
+        // setWaitingForStatusUpdate(true);
+        props.fetchData(true);
+      };
+  
 
   return (
     <Container className="font-lexend">
@@ -110,7 +149,7 @@ const Details = (props) => {
               <Text>{props.duration}</Text>
             </div>
           ) : (
-            <div>
+             <div>
               <Heading className="flex flex-row gap-2 items-center">
                 Dates ({props.duration})
               </Heading>
@@ -143,6 +182,27 @@ const Details = (props) => {
           ) : null} */}
         </div>
       ) : null}
+       
+       {/* <div style={{ position: "relative", overflow: "visible", zIndex: 1500 }}>
+
+       {showEditDate && <UpdateItineraryDates
+                 itinerary={props?.itinerary}
+        token={props.token}
+        onUpdateSuccess={fetchItineraryStatus}
+        convertDFormat={convertDFormat}
+        tripsPage={false}
+        setShowEditDate={setShowEditDate}
+      />}
+
+      </div>
+      <div>
+        <button
+            onClick={()=>{setShowEditDate(true);}}
+            className="font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
+          >
+            Edit Dates
+          </button>
+      </div> */}
     </Container>
   );
 };

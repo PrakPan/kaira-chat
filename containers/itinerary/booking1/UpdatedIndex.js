@@ -1115,7 +1115,7 @@ const Booking = (props) => {
 
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
     router.asPath;
 
   const _setImagesHandler = (images) => {

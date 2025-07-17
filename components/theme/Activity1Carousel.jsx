@@ -107,7 +107,7 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         </div>
       </div>
 
-      <POIDetailsDrawer
+      <NewPOIDetailsDrawer
         themePage
         show={show}
         ActivityiconId={id}
@@ -116,9 +116,8 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         data={data}
         removeDelete={true}
         removeChange
-      >
+     / >
         <PlanYourTripButton />
-      </POIDetailsDrawer>
     </Container>
   );
 };

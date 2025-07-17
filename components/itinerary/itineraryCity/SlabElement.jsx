@@ -7,6 +7,7 @@ import media from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export const getStars = (rating) => {
   const stars = [];
@@ -52,31 +53,50 @@ export default SlabElement;
 
 const Activity = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [activityData, setActivityData] = useState({
-    id: "",
-    type: "",
-  });
-  const [showBookingDetail, setShowBookingDetail] = useState(true);
-
+  const router = useRouter();
+  const { drawer, poi_id, type } = router?.query;
+  const activityData= {
+    id: poi_id,
+    type: type,
+  };
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
-    setShowDrawer(false);
+    router.push(
+      {
+        pathname: `/itinerary/${router?.query?.id}`,
+        query: {}, // remove "drawer"
+      },
+      undefined,
+      { scroll: false }
+    );
   };
 
-  const handleActivity = async (poi, type) => {
-    setShowDrawer(true);
-    if (poi?.booking?.id) setShowBookingDetail(true);
-    setActivityData(() => ({
-      id: poi?.booking?.id
-        ? poi?.booking?.id
-        : poi?.poi
-        ? poi?.poi
-        : poi?.activity
-        ? poi?.activity
-        : null,
-      type: type,
-    }));
+  const handleActivity = async (poi, type,dayIndex) => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "showPoiDetail",
+          poi_id: poi?.booking?.id || poi?.poi,
+          type: type,
+          dayIndex:props?.dayIndex,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+    // setActivityData(() => ({
+    //   id: poi?.booking?.id
+    //     ? poi?.booking?.id
+    //     : poi?.poi
+    //     ? poi?.poi
+    //     : poi?.activity
+    //     ? poi?.activity
+    //     : null,
+    //   type: type,
+    // }));
 
     logEvent({
       action: "Details_View",
@@ -306,28 +326,36 @@ const Activity = (props) => {
         </div>
       </div>
 
-      <POIDetailsDrawer
-        itineraryDrawer
-        show={showDrawer}
-        iconId={
-          props.element?.poi ? props.element?.poi : props.element?.activity
-        }
-        handleCloseDrawer={handleCloseDrawer}
-        name={props.element.heading}
-        image={props.element.icon}
-        text={props.element?.text}
-        Topheading={"Select Our Point Of Interest"}
-        activityData={activityData}
-        itinerary_city_id={props?.itinerary_city_id}
-        dayIndex={props?.dayIndex}
-        slabIndex={props?.slabIndex}
-        showBookingDetail={showBookingDetail}
-        setShowLoginModal={props?.setShowLoginModal}
-        date={props?.date}
-        cityID={props?.cityID}
-        cityName={props?.cityName}
-        removeDelete={false}
-      />
+      {drawer === "showPoiDetail" &&
+        String(poi_id) ===
+          String(
+            props?.element?.booking?.id ||
+              props.element?.poi ||
+              props.element?.activity
+          ) && (
+          <POIDetailsDrawer
+            itineraryDrawer
+            show={true}
+            iconId={
+              props.element?.poi ? props.element?.poi : props.element?.activity
+            }
+            handleCloseDrawer={handleCloseDrawer}
+            name={props.element.heading}
+            image={props.element.icon}
+            text={props.element?.text}
+            Topheading={"Select Our Point Of Interest"}
+            activityData={activityData}
+            itinerary_city_id={props?.itinerary_city_id}
+            dayIndex={props?.dayIndex}
+            slabIndex={props?.slabIndex}
+            showBookingDetail={true}
+            setShowLoginModal={props?.setShowLoginModal}
+            date={props?.date}
+            cityID={props?.cityID}
+            cityName={props?.cityName}
+            removeDelete={false}
+          />
+        )}
     </>
   );
 };

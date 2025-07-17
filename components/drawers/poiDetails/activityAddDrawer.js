@@ -26,6 +26,7 @@ import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/Ne
 import Drawer from "../../ui/Drawer";
 import BackArrow from "../../ui/BackArrow";
 import { TbArrowBack } from "react-icons/tb";
+import { useRouter } from "next/router";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -75,6 +76,7 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
+  const router=useRouter()
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);
@@ -82,7 +84,7 @@ const ActivityAddDrawer = (props) => {
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
-  const [selectSearch, setSelectedSearch] = useState(null);
+  const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
   const [loaded, setLoaded] = useState(false);
   const [loadingPoi, setLoadingPoi] = useState(true);
@@ -102,15 +104,15 @@ const ActivityAddDrawer = (props) => {
       traveler_ages: Array(num_adults).fill(null),
     },
     experienceFilters: ["All"],
-    experienceFiltersActivity:["All"],
+    experienceFiltersActivity: ["All"],
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
     category: [],
     tour_type: [],
     guide: [],
-    experienceFilters:[],
-    experienceFiltersActivity:[],
+    experienceFilters: [],
+    experienceFiltersActivity: [],
   });
   const [pax, setPax] = useState({
     adults: itinerary.number_of_adults,
@@ -132,6 +134,16 @@ const ActivityAddDrawer = (props) => {
 
   const [error, setError] = useState(null);
 
+  const dateObj = new Date(props.date);
+const pad = (n) => (n < 10 ? `0${n}` : n);
+const formattedDate =
+  pad(dateObj.getDate()) +
+  "/" +
+  pad(dateObj.getMonth() + 1) +
+  "/" +
+  dateObj.getFullYear();
+
+  
   useEffect(() => {
     const updateHeight = () => setHeight(window.innerHeight);
     updateHeight(); // initial run
@@ -314,7 +326,11 @@ const ActivityAddDrawer = (props) => {
               filterState.guide && filterState.guide[0] !== "All"
                 ? filterState.guide
                 : null,
-            experience_filters:filterState?.experienceFiltersActivity && filterState.experienceFiltersActivity[0] !== "All"?filterState.experienceFiltersActivity:null
+            experience_filters:
+              filterState?.experienceFiltersActivity &&
+              filterState.experienceFiltersActivity[0] !== "All"
+                ? filterState.experienceFiltersActivity
+                : null,
           },
           sort_by: {},
         };
@@ -541,6 +557,18 @@ const ActivityAddDrawer = (props) => {
     setLoadingPoi(true);
     setOptions([]);
   };
+  const handleCloseDrawer = () => {
+    const { id, drawer } = router.query;
+    if (!drawer || !props?.showDrawer) return;
+    router.push(
+      {
+        pathname: `/itinerary/${id}`,
+        query: {}, // remove "drawer"
+      },
+      undefined,
+      { scroll: false }
+    );
+  };
   return (
     <Drawer
       show={props.showDrawer}
@@ -550,18 +578,20 @@ const ActivityAddDrawer = (props) => {
       mobileWidth={"100%"}
       style={{ zIndex: 1501 }}
       className={`font-lexend !overflow-y-hidden`}
-      onHide={() => props.setShowDrawer(false)}
+      onHide={handleCloseDrawer}
     >
       {error == null ? (
         <>
           <div
-            className={`px-2  !font-[lexend] overflow-y-scroll`}
+            className={`!font-[lexend] overflow-y-scroll`}
             style={{ height: `${height}px` }}
           >
             <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
               <div className="flex flex-row gap-[20px] justify-between w-full items-center">
                 <div className="flex flex-row gap-3 items-center">
-                  <BackArrow handleClick={() => props.setShowDrawer(false)} />
+                  <BackArrow
+                    handleClick={handleCloseDrawer}
+                  />
                 </div>
               </div>
               <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
@@ -599,7 +629,7 @@ const ActivityAddDrawer = (props) => {
                 <select
                   className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
                   onChange={(e) => setStartDate(e.target.value)}
-                  defaultValue={props?.date}
+                  defaultValue={formattedDate}
                 >
                   {[...Array(props.duration)].map((_, i) => {
                     const baseDateStr = props?.mercuryItinerary
@@ -612,13 +642,12 @@ const ActivityAddDrawer = (props) => {
                     const currentDate = new Date(baseDate);
                     currentDate.setDate(currentDate.getDate() + i);
 
-                    const pad = (n) => (n < 10 ? `0${n}` : n);
                     const isoDate = `${pad(currentDate.getDate())}/${pad(
                       currentDate.getMonth() + 1
                     )}/${currentDate.getFullYear()}`;
+                    const formattedDate = getHumanDate(isoDate);
                     console.log("formatted date:", isoDate);
 
-                    const formattedDate = getHumanDate(isoDate);
                     return (
                       <option key={i} value={isoDate}>
                         {formattedDate} | Day {i + 1}
@@ -884,7 +913,7 @@ const ActivityAddDrawer = (props) => {
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
             cursor={"pointer"}
-            onClick={(e) => props.setShowDrawer(false)}
+            onClick={handleCloseDrawer}
           />
         </FloatingView>
       )}

@@ -22,7 +22,7 @@ const Text = styled.div`
 const TaxiDetailModal = ({
   data,
   setIsOpen,
-  setHandleShow,
+  // setHandleShow,
   handleDelete,
   loading,
   booking,
@@ -42,10 +42,13 @@ const TaxiDetailModal = ({
   destinationCityId,
   origin_itinerary_city_id,
   destination_itinerary_city_id,
-  setShowDrawer,
+  handleClose,
   noChange,
   noHeading,
-  error
+  error,
+  isAirport,
+  setIsTransferDrawerOpen,
+  handleEditRoute
 }) => {
   if (!data) return null;
 
@@ -128,7 +131,7 @@ const TaxiDetailModal = ({
       <div className=" bg-gray-50 w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center justify-between">
-            <BackArrow handleClick={() => setHandleShow(false)} />
+            <BackArrow handleClick={handleClose} />
           </div>
         )}
 
@@ -137,7 +140,7 @@ const TaxiDetailModal = ({
             {loading ? (
               <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-            !noHeading && (data?.name || `Taxi from ${data?.transfer_details?.trips[0]?.origin?.address} to ${data?.transfer_details?.trips[0]?.destination?.address}`)
+            !noHeading && (data?.name || `Taxi from ${data?.transfer_details?.trips?.[0]?.origin?.address} to ${data?.transfer_details?.trips?.[0]?.destination?.address}`)
             )}
           </h1>
           {!isEmbedded && !noChange && (
@@ -153,8 +156,12 @@ const TaxiDetailModal = ({
                     padding={"7px 25px"}
                     marginMobile={"0px 0px 0px 2px"}
                     onClick={() => {
-                      setHandleShow(false);
-                      setShowDrawer(true);
+                      if(isAirport){
+                        setIsTransferDrawerOpen(true);
+                        return
+                      }
+                      handleClose()
+                      handleEditRoute()
                       //setShowTaxi(true);console.log("")
                     }}
                   >
@@ -178,7 +185,7 @@ const TaxiDetailModal = ({
                 {loading ? (
                   <div className="w-24 h-4 bg-gray-300 opacity-50 rounded "></div>
                 ) : (
-                  (data?.transfer_type === "sightseeing" && (data?.transfer_details?.trips[0]?.origin?.address  && (data?.transfer_details?.trips[0]?.destination?.address))) ? `${distance} | ${duration_text}` : `${distance} | ${duration_text}`
+                  (data?.transfer_type === "sightseeing" && (data?.transfer_details?.trips?.[0]?.origin?.address  && (data?.transfer_details?.trips?.[0]?.destination?.address))) ? `${distance} | ${duration_text}` : `${distance} | ${duration_text}`
                 )}
               </div>
 
@@ -203,7 +210,7 @@ const TaxiDetailModal = ({
                   ) : (
                     <>
                       <p className="font-bold text-lg">
-                        {data?.transfer_type === "sightseeing" && data?.transfer_details?.trips[0]?.origin?.address && data?.transfer_details?.trips[0]?.destination?.address ? data?.transfer_details?.trips[0]?.origin?.address  : data?.transfer_details?.trips[0]?.origin?.address}
+                        {data?.transfer_type === "sightseeing" && data?.transfer_details?.trips?.[0]?.origin?.address && data?.transfer_details?.trips?.[0]?.destination?.address ? data?.transfer_details?.trips?.[0]?.origin?.address  : data?.transfer_details?.trips?.[0]?.origin?.address}
                       </p>
                       <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{depart.time}</span>
@@ -223,9 +230,9 @@ const TaxiDetailModal = ({
                     </>
                   ) : (
                     <>
-                      {data?.transfer_details?.trips[0]?.destination?.address && (
+                      {data?.transfer_details?.trips?.[0]?.destination?.address && (
                         <p className="font-bold text-lg">
-                          {data?.transfer_details?.trips[0]?.destination?.address}
+                          {data?.transfer_details?.trips?.[0]?.destination?.address}
                         </p>
                       )}
                      {arrival.time && arrival.date && <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">

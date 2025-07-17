@@ -29,7 +29,6 @@ const Rooms = (props) => {
         if (props.data[i]?.total_rate) {
           rooms_arr.push(
             <RoomType
-              currentBooking={props?.currentBooking}
               key={i}
               index={i}
               price={props.data[i].total_rate}

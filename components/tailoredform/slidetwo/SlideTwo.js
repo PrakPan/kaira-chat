@@ -74,124 +74,135 @@ const SlideTwo = (props) => {
         ></GroupType>
       </Section>
 
-      {!(props?.groupType === "Solo"||props.groupType === "Couple") &&<Section>
-        <div className="flex justify-between items-center mb-3">
-          <div>
-            <div className="font-medium">Adults</div>
-            <div className="text-xs text-gray-500">12+ years</div>
+      {!(props?.groupType === "Solo" || props.groupType === "Couple") && (
+        <Section>
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <div className="font-medium">Adults</div>
+              <div className="text-xs text-gray-500">12+ years</div>
+            </div>
+            <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+              <button
+                className={` flex items-center justify-center  ${
+                  props.numberOfAdults > 1 ? "text-blue " : "text-gray-300"
+                }`}
+                onClick={() => props.setNumberOfAdults((prev) => prev - 1)}
+                disabled={props.numberOfAdults <= 1}
+              >
+                -
+              </button>
+              <span className="mx-2 w-6 text-center">
+                {props.numberOfAdults}
+              </span>
+              <button
+                className="flex items-center justify-center text-blue"
+                onClick={() => props.setNumberOfAdults((prev) => prev + 1)}
+                disabled={
+                  props.numberOfAdults >= 14 || props?.groupType === "Solo"
+                }
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-            <button
-              className={` flex items-center justify-center  ${
-                props.numberOfAdults > 1 ? "text-blue " : "text-gray-300"
-              }`}
-              onClick={() => props.setNumberOfAdults((prev) => prev - 1)}
-              disabled={props.numberOfAdults <= 1}
-            >
-              -
-            </button>
-            <span className="mx-2 w-6 text-center">{props.numberOfAdults}</span>
-            <button
-              className="flex items-center justify-center text-blue"
-              onClick={() => props.setNumberOfAdults((prev) => prev + 1)}
-              disabled={
-                props.numberOfAdults >= 14 || props?.groupType === "Solo"
-              }
-            >
-              +
-            </button>
-          </div>
-        </div>
 
-        <div
-          className={`flex justify-between items-center mb-3 ${
-            (props.groupType === "Solo" || props.groupType === "Couple") &&
-            "opacity-50 pointer-events-none"
-          }`}
-        >
-          <div>
-            <div className="font-medium">Children</div>
-            <div className="text-xs text-gray-500">2-12 years</div>
+          <div
+            className={`flex justify-between items-center mb-3 ${
+              (props.groupType === "Solo" || props.groupType === "Couple") &&
+              "opacity-50 pointer-events-none"
+            }`}
+          >
+            <div>
+              <div className="font-medium">Children</div>
+              <div className="text-xs text-gray-500">2-12 years</div>
+            </div>
+            <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+              <button
+                className={`flex items-center justify-center ${
+                  props.numberOfChildren > 0 ? "text-blue" : "text-gray-300"
+                }`}
+                onClick={() => props.setNumberOfChildren((prev) => prev - 1)}
+                disabled={props.numberOfChildren == 0}
+              >
+                -
+              </button>
+              <span className="mx-2 w-6 text-center">
+                {props.numberOfChildren}
+              </span>
+              <button
+                className=" flex items-center justify-center text-blue"
+                onClick={() => props.setNumberOfChildren((prev) => prev + 1)}
+                disabled={props.numberOfChildren > 12}
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-            <button
-              className={`flex items-center justify-center ${
-                props.numberOfChildren > 0 ? "text-blue" : "text-gray-300"
-              }`}
-              onClick={() => props.setNumberOfChildren((prev) => prev - 1)}
-              disabled={props.numberOfChildren == 0}
-            >
-              -
-            </button>
-            <span className="mx-2 w-6 text-center">
-              {props.numberOfChildren}
-            </span>
-            <button
-              className=" flex items-center justify-center text-blue"
-              onClick={() => props.setNumberOfChildren((prev) => prev + 1)}
-              disabled={props.numberOfChildren > 12}
-            >
-              +
-            </button>
-          </div>
-        </div>
 
-        <div
-          className={`flex justify-between items-center mb-3 ${
-            (props.groupType === "Solo" || props.groupType === "Couple") &&
-            "opacity-50 pointer-events-none"
-          }`}
-        >
-          <div>
-            <div className="font-medium">Infants</div>
-            <div className="text-xs text-gray-500"> {`<2 years`}</div>
+          <div
+            className={`flex justify-between items-center mb-3 ${
+              (props.groupType === "Solo" || props.groupType === "Couple") &&
+              "opacity-50 pointer-events-none"
+            }`}
+          >
+            <div>
+              <div className="font-medium">Infants</div>
+              <div className="text-xs text-gray-500"> {`<2 years`}</div>
+            </div>
+            <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+              <button
+                className={` flex items-center justify-center  ${
+                  props.numberOfInfants > 0 ? "text-blue " : "text-gray-300"
+                }`}
+                onClick={() => props.setNumberOfInfants((prev) => prev - 1)}
+                disabled={props.numberOfInfants <= 0}
+              >
+                -
+              </button>
+              <span className="mx-2 w-6 text-center">
+                {props.numberOfInfants}
+              </span>
+              <button
+                className="flex items-center justify-center text-blue"
+                onClick={() => props.setNumberOfInfants((prev) => prev + 1)}
+                disabled={props.numberOfInfants > 4}
+              >
+                +
+              </button>
+            </div>
           </div>
-          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-            <button
-              className={` flex items-center justify-center  ${
-                props.numberOfInfants > 0 ? "text-blue " : "text-gray-300"
-              }`}
-              onClick={() => props.setNumberOfInfants((prev) => prev - 1)}
-              disabled={props.numberOfInfants <= 0}
-            >
-              -
-            </button>
-            <span className="mx-2 w-6 text-center">
-              {props.numberOfInfants}
-            </span>
-            <button
-              className="flex items-center justify-center text-blue"
-              onClick={() => props.setNumberOfInfants((prev) => prev + 1)}
-              disabled={props.numberOfInfants > 4}
-            >
-              +
-            </button>
-          </div>
-        </div>
-      </Section>}
+        </Section>
+      )}
 
       <Section className="space-y-5">
-        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+        <label
+          htmlFor="add-flights"
+          className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+        >
           <input
+            id="add-flights"
             type="checkbox"
             checked={props.addFlights}
             onChange={(e) => props.setAddFlights(e.target.checked)}
             className="focus:outline-none cursor-pointer"
-          ></input>
+          />
           <div className="text-sm">Add flights to my itinerary?</div>
-        </div>
+        </label>
 
-        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+        <label
+          htmlFor="add-hotels"
+          className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+        >
           <input
+            id="add-hotels"
             type="checkbox"
             checked={props.addHotels}
             onChange={(e) => props.setAddHotels(e.target.checked)}
             className="focus:outline-none cursor-pointer"
-          ></input>
+          />
           <div className="text-sm">Add hotels to my itinerary?</div>
-        </div>
+        </label>
       </Section>
-
     </Container>
   );
 };

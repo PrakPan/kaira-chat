@@ -51,9 +51,9 @@ const Home = (props) => {
               "@context": "https://schema.org",
               "@type": "TravelAgency",
               "name": "The Tarzan Way",
-              "image": "https://www.thetarzanway.com/logoblack.svg",
+              "image": "https://thetarzanway.com/logoblack.svg",
               "@id": "",
-              "url": "https://www.thetarzanway.com/",
+              "url": "https://thetarzanway.com/",
               "telephone": "+91 95821 25476",
               "address": {
                 "@type": "PostalAddress",

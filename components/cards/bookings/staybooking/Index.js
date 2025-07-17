@@ -141,6 +141,7 @@ const Booking = (props) => {
           check_out={props.check_out}
           _setImagesHandler={props.setImagesHandler}
           onHide={() => setShowDetails(false)}
+          setShowDetails={setShowDetails}
           id={props.data.accommodation}
           show={showDetails}
           setShowLoginModal={props.setShowLoginModal}

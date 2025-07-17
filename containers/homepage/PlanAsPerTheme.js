@@ -181,7 +181,6 @@ const PlanAsPerTheme = (props) => {
       key={i}
       onClick={() => _handleTripRedirect(e.path)}
     >
-      {console.log("image is:",e.image)}
       <ImageContainer bg="road-trip.png" href={"/theme/" + e.path}>
         <TextContainer className="AnimateTop">
           <H5>{e.name}</H5>

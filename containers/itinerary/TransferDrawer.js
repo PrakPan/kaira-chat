@@ -14,6 +14,12 @@ import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
 import { FaTaxi } from "react-icons/fa";
 import ImageLoader from "../../components/ImageLoader";
+import { useDispatch } from "react-redux";
+import { openNotification } from "../../store/actions/notification";
+import axios from "axios";
+import { MERCURY_HOST } from "../../services/constants";
+import { useRouter } from "next/router";
+import { useHandleClose } from "../../hooks/useHandleClose";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -33,10 +39,7 @@ const FloatingView = styled.div`
 
 const TransferDrawer = ({
   show,
-  setHandleShow,
-  data,
   booking_type,
-  loading,
   handleDelete,
   city,
   _updateFlightBookingHandler,
@@ -52,11 +55,21 @@ const TransferDrawer = ({
   destinationCityId,
   origin_itinerary_city_id,
   destination_itinerary_city_id,
-  setShowDrawer,
   isIntracity,
   error,
   isAirport,
+  AirportTransferType,
+  setIsTransferDrawerOpen,
+  combo,
+  setError,
+  booking_id,
 }) => {
+  const handleClose=useHandleClose()
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
@@ -66,6 +79,25 @@ const TransferDrawer = ({
     }
   }, [show, isCombo, data?.children?.length]);
 
+  const handleEditRoute = () => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "editTransfer",
+          bookingId: booking_id,
+          oItineraryCity:origin_itinerary_city_id,
+          dItineraryCity:destination_itinerary_city_id
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
+
+
   const toggleExpand = (index) => {
     if (expandedIndexes.includes(index)) {
       setExpandedIndexes(expandedIndexes.filter((i) => i !== index));
@@ -73,6 +105,35 @@ const TransferDrawer = ({
       setExpandedIndexes([...expandedIndexes, index]);
     }
   };
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
+            combo ? `combo` : booking_type.toLowerCase()
+          }/${booking_id}/`
+        );
+        setData(res?.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+        const errorMsg =
+          error?.response?.data?.errors?.[0]?.message?.[0] || error.message;
+        dispatch(
+          openNotification({
+            text: errorMsg,
+            heading: "Error!",
+            type: "error",
+          })
+        );
+      }
+    };
+
+    fetchDetails();
+  }, []);
 
   const renderDetailContent = (transferData, index) => {
     const type = transferData?.booking_type;
@@ -125,7 +186,7 @@ const TransferDrawer = ({
 
     const renderDetailsByType = () => {
       if (loading) {
-        return <VehicleDetailLoader setHandleShow={null} />;
+        return <VehicleDetailLoader />;
       }
 
       switch (type) {
@@ -141,28 +202,29 @@ const TransferDrawer = ({
               name={transferData?.name}
               isEmbedded={true}
               setShowLoginModal={setShowLoginModal}
+              handleEditRoute={handleEditRoute}
             />
           );
         case "Taxi":
           return (
             <TaxiDetailModal
               data={transferData}
-              setHandleShow={null}
               handleDelete={null}
               loading={loading}
               isEmbedded={true}
               noHeading={true}
+              handleEditRoute={handleEditRoute}
             />
           );
         default:
           return (
             <VehicleDetailModal
               data={transferData}
-              setHandleShow={null}
               handleDelete={null}
               loading={loading}
               isEmbedded={true}
-              setShowDrawer={setShowDrawer}
+              handleClose={handleClose}
+              handleEditRoute={handleEditRoute}
             />
           );
       }
@@ -183,7 +245,11 @@ const TransferDrawer = ({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2 mb-1">
                     <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
-                      {childTitle} &nbsp;<span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize"> {transferType}</span>
+                      {childTitle} &nbsp;
+                      <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                        {" "}
+                        {transferType}
+                      </span>
                     </h3>
                     {/* <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                       
@@ -438,7 +504,7 @@ const TransferDrawer = ({
       backdrop
       style={{ zIndex: 1501 }}
       className="font-lexend"
-      onHide={setHandleShow}
+      onHide={handleClose}
       mobileWidth="100vw"
       width={"50vw"}
     >
@@ -452,21 +518,19 @@ const TransferDrawer = ({
                 segments={data?.transfer_details?.items?.[0]?.segments}
                 fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
                 booking_id={data?.id}
-                setShowDetails={setHandleShow}
                 name={city}
                 setShowLoginModal={setShowLoginModal}
                 onChange={true}
-                setShowDrawer={setShowDrawer}
-                setHandleShow={setHandleShow}
+                handleClose={handleClose}
                 error={error}
+                handleEditRoute={handleEditRoute}
               />
             )
           ) : loading ? (
-            <VehicleDetailLoader setHandleShow={setHandleShow} />
+            <VehicleDetailLoader  />
           ) : booking_type === "Taxi" ? (
             <TaxiDetailModal
               data={data}
-              setHandleShow={setHandleShow}
               handleDelete={handleDelete}
               loading={loading}
               _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -483,19 +547,21 @@ const TransferDrawer = ({
               destinationCityId={destinationCityId}
               origin_itinerary_city_id={origin_itinerary_city_id}
               destination_itinerary_city_id={destination_itinerary_city_id}
-              setShowDrawer={setShowDrawer}
+              handleClose={handleClose}
               noChange={isIntracity}
               error={error}
-              isAirport={isAirport}
+              // isAirport={isAirport}
+              setIsTransferDrawerOpen={setIsTransferDrawerOpen}
+              handleEditRoute={handleEditRoute}
             />
           ) : (
             <VehicleDetailModal
               data={data}
-              setHandleShow={setHandleShow}
               handleDelete={handleDelete}
               loading={loading}
-              setShowDrawer={setShowDrawer}
+              handleClose={handleClose}
               error={error}
+              handleEditRoute={handleEditRoute}
             />
           )}
         </>
@@ -515,7 +581,7 @@ const TransferDrawer = ({
       ) : (
         <div className="h-screen flex flex-col">
           <div className="p-4 border-b">
-            <BackArrow handleClick={() => setHandleShow(false)} />
+            <BackArrow handleClick={handleClose} />
             <div className="flex justify-between">
               <div>
                 <div className="text-xl font-semibold mt-2">
@@ -529,184 +595,217 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {data?.combo_type != "multicity" && <div>
-                <Generalbuttonstyle
-                  borderRadius={"7px"}
-                  fontSize={"1rem"}
-                  padding={"7px 25px"}
-                  onClick={() => {
-                    setHandleShow(false);
-                    setShowDrawer(true);
-                    //setShowTaxi(true);console.log("")
-                  }}
-                >
-                  Change
-                </Generalbuttonstyle>
-              </div>}
+              {data?.combo_type != "multicity" && (
+                <div>
+                  <Generalbuttonstyle
+                    borderRadius={"7px"}
+                    fontSize={"1rem"}
+                    padding={"7px 25px"}
+                    onClick={() => {
+                      handleEditRoute()
+                      handleClose();
+                      //setShowTaxi(true);console.log("")
+                    }}
+                  >
+                    Change
+                  </Generalbuttonstyle>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="flex-grow overflow-auto py-4 pb-24 ">
-            {
-              data?.combo_type == "multicity" && <>
-               <div className="bg-gray-50 p-4 rounded-lg">
-                            <p className="font-semibold text-gray-800 mb-4">
+            {data?.combo_type == "multicity" && (
+              <>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="font-semibold text-gray-800 mb-4">
+                    {loading ? (
+                      <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                    ) : (
+                      "TAXI DETAILS"
+                    )}
+                  </p>
+
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex flex-col gap-4 items-center">
+                      <div
+                        className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
+                        style={{ height: "140px" }}
+                      >
+                        {loading ? (
+                          <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
+                        ) : (
+                          <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
+                            {data?.children[0]?.transfer_details?.quote
+                              ?.taxi_category?.image ? (
+                              <ImageLoader
+                                url={
+                                  data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.image
+                                }
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              <FaTaxi className="w-16 h-16 text-gray-400" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {data?.children[0]?.transfer_details?.quote?.taxi_category
+                        ?.type && (
+                        <div>
+                          <p className="text-gray-500 text-sm">
+                            <span className="font-semibold text-gray-800">
                               {loading ? (
-                                <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                              ) : data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.type ? (
+                                data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.type
                               ) : (
-                                "TAXI DETAILS"
+                                ""
+                              )}
+                            </span>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 w-full">
+                      <div className="grid grid-cols-2 gap-4">
+                        {
+                          <div>
+                            <p className="text-gray-500 text-sm">Model</p>
+                            <p className="font-semibold text-gray-800">
+                              {loading ? (
+                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                              ) : data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.model_name ? (
+                                data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.model_name
+                              ) : (
+                                "NA"
                               )}
                             </p>
-              
-                            <div className="flex flex-col md:flex-row gap-4">
-                              <div className="flex flex-col gap-4 items-center">
-                              <div
-                                className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
-                                style={{ height: "140px" }}
-                              >
-                                {loading ? (
-                                  <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
-                                ) : (
-                                  
-                                  <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
-                                    {data?.children[0]?.transfer_details?.quote?.taxi_category?.image ? (
-                                      <ImageLoader
-                                        url={
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.image
-                                        }
-                                        className="w-full h-full object-contain"
-                                      />
-                                    ) : (
-                                      <FaTaxi className="w-16 h-16 text-gray-400" />
-                                    )}
-                                  </div>
-                
-                                )}
-                                
-                              </div>
-              
-                              {data?.children[0]?.transfer_details?.quote?.taxi_category?.type && <div>
-                                    <p className="text-gray-500 text-sm"><span className="font-semibold text-gray-800">
-                                        {loading ? (
-                                          <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                                        ) : (
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.type ? data?.children[0]?.transfer_details?.quote?.taxi_category?.type : ""
-                                        )}
-                                    </span></p>
-                                   
-                                  </div>}
-                              </div>
-              
-                              <div className="flex-1 w-full">
-                                <div className="grid grid-cols-2 gap-4">
-                                  {
-                                    <div>
-                                      <p className="text-gray-500 text-sm">Model</p>
-                                      <p className="font-semibold text-gray-800">
-                                        {loading ? (
-                                          <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                                        ) : (
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.model_name ? data?.children[0]?.transfer_details?.quote?.taxi_category?.model_name : "NA"
-                                        )}
-                                      </p>
-                                    </div>
-                                  }
-              
-                                  {/* Fuel Type */}
-                                  {
-                                    <div>
-                                      <p className="text-gray-500 text-sm">Fuel Type</p>
-                                      <p className="font-semibold text-gray-800">
-                                        {loading ? (
-                                          <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                                        ) : (
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.fuel_type ? data?.children[0]?.transfer_details?.quote?.taxi_category?.fuel_type : "NA"
-                                        )}
-                                      </p>
-                                    </div>
-                                  }
-              
-                                  {/* Luggage Bags */}
-                                  {
-                                    <div>
-                                      <p className="text-gray-500 text-sm">Luggage Bags</p>
-                                      <p className="font-semibold text-gray-800">
-                                        {loading ? (
-                                          <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
-                                        ) : (
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.bag_capacity ? data?.children[0]?.transfer_details?.quote?.taxi_category?.bag_capacity : "NA"
-                                        )}
-                                      </p>
-                                    </div>
-                                  }
-              
-                                  {/* Seat Capacity */}
-                                  {
-                                    <div>
-                                      <p className="text-gray-500 text-sm">Seat Capacity</p>
-                                      <p className="font-semibold text-gray-800">
-                                        {loading ? (
-                                          <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
-                                        ) : (
-                                          data?.children[0]?.transfer_details?.quote?.taxi_category?.seating_capacity ? data?.children[0]?.transfer_details?.quote?.taxi_category?.seating_capacity : "NA"
-                                        )}
-                                      </p>
-                                    </div>
-                                  }
-                                </div>
-                              </div>
-                            </div>
-                          </div>   
+                          </div>
+                        }
 
-                          <h2 className="text-sm md:text-base ml-2 md:ml-5 font-semibold text-gray-900">Booking Inclusions</h2>
-                          </>
-            }
+                        {/* Fuel Type */}
+                        {
+                          <div>
+                            <p className="text-gray-500 text-sm">Fuel Type</p>
+                            <p className="font-semibold text-gray-800">
+                              {loading ? (
+                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                              ) : data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.fuel_type ? (
+                                data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.fuel_type
+                              ) : (
+                                "NA"
+                              )}
+                            </p>
+                          </div>
+                        }
+
+                        {/* Luggage Bags */}
+                        {
+                          <div>
+                            <p className="text-gray-500 text-sm">
+                              Luggage Bags
+                            </p>
+                            <p className="font-semibold text-gray-800">
+                              {loading ? (
+                                <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
+                              ) : data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.bag_capacity ? (
+                                data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.bag_capacity
+                              ) : (
+                                "NA"
+                              )}
+                            </p>
+                          </div>
+                        }
+
+                        {/* Seat Capacity */}
+                        {
+                          <div>
+                            <p className="text-gray-500 text-sm">
+                              Seat Capacity
+                            </p>
+                            <p className="font-semibold text-gray-800">
+                              {loading ? (
+                                <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                              ) : data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.seating_capacity ? (
+                                data?.children[0]?.transfer_details?.quote
+                                  ?.taxi_category?.seating_capacity
+                              ) : (
+                                "NA"
+                              )}
+                            </p>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <h2 className="text-sm md:text-base ml-2 md:ml-5 font-semibold text-gray-900">
+                  Booking Inclusions
+                </h2>
+              </>
+            )}
             {data.children.map((child, index) =>
               renderDetailContent(child, index)
             )}
           </div>
 
-          {data?.combo_type != "multicity" && <div className="p-4 bg-white sticky bottom-0 shadow-md">
-            <button
-              className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
-              onClick={() => handleDelete(data)}
-              disabled={loading}
-            >
-              <div style={{ position: "relative" }}>
-                <div className="flex gap-1 items-center text-white">
-                  <div
-                    style={{ visibility: loading ? "hidden" : "visible" }}
-                    className="flex gap-1 items-center"
-                  >
-                    <Image
-                      src="/delete.svg"
-                      width={20}
-                      height={20}
-                      alt="Delete"
-                    />
-                    <div>Delete Booking</div>
-                  </div>
-
-                  {loading && (
+          {data?.combo_type != "multicity" && (
+            <div className="p-4 bg-white sticky bottom-0 shadow-md">
+              <button
+                className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+                onClick={() => handleDelete(data)}
+                disabled={loading}
+              >
+                <div style={{ position: "relative" }}>
+                  <div className="flex gap-1 items-center text-white">
                     <div
-                      style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                      }}
+                      style={{ visibility: loading ? "hidden" : "visible" }}
+                      className="flex gap-1 items-center"
                     >
-                      <PulseLoader
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#ffffff"
+                      <Image
+                        src="/delete.svg"
+                        width={20}
+                        height={20}
+                        alt="Delete"
                       />
+                      <div>Delete Booking</div>
                     </div>
-                  )}
+
+                    {loading && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                        }}
+                      >
+                        <PulseLoader
+                          size={12}
+                          speedMultiplier={0.6}
+                          color="#ffffff"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </button>
-          </div>}
+              </button>
+            </div>
+          )}
         </div>
       )}
       {!isPageWide && (
@@ -714,7 +813,7 @@ const TransferDrawer = ({
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
             cursor={"pointer"}
-            onClick={() => setHandleShow(false)}
+            onClick={handleClose}
           />
         </FloatingView>
       )}

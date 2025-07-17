@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
@@ -37,6 +37,12 @@ import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
 import media from "../../../components/media";
 import SocialShareMobile from "./SocialShareMobile";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
+import {
+  axiosGetItineraryStatus,
+  axiosUpdateItineraryDates,
+} from "../../../services/itinerary/daybyday/preview";
+import UpdateItineraryDates from "./UpdateItineraryDates";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -46,7 +52,7 @@ const GetInTouchContainer = styled.div`
 
 const Details = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
+  const dispatch = useDispatch();
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [Newitinerary, setNewitinerary] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
@@ -100,9 +106,10 @@ const Details = (props) => {
   const convertDFormat = (dt) => {
     if (dt) {
       const date = parseISO(dt);
-      const formattedDate = format(date, "MMMM do yyyy");
+      const formattedDate = format(date, "MMM dd, yyyy");
       return formattedDate;
-    } else return;
+    }
+    return "";
   };
 
   const [date, setDate] = useState(
@@ -127,6 +134,41 @@ const Details = (props) => {
       spy: true,
       offset: -150,
     });
+  };
+
+  // axiosUpdateItineraryDates
+  //   .post(`${router.query.id}/update-dates/`)
+  //   .then((res) => {})
+  //   .catch((error) => {
+  //     console.log("ERROR:UPDATING ITINERARY DATES", error.message);
+  //   });
+
+  const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+    try {
+      const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
+      const status = res.data?.celery;
+      dispatch(
+        setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+      );
+      fetchItinerary();
+    } catch (err) {
+      console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+    }
+  };
+
+  const fetchItinerary = async () => {
+    props?.resetRef();
+    // setWaitingForStatusUpdate(true);
+    props.fetchData(true);
   };
 
   const setBookingSummary = () => {
@@ -310,7 +352,7 @@ const Details = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
   const _startRazorpayHandler = (data) => {
@@ -765,37 +807,21 @@ const Details = (props) => {
 
       <div className="px-0 pb-4">
         {props.couponJSX}
-        <div className=" border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
-          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-            <BsCalendar2 className="text-md text-[#7A7A7A]" />
-            <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-              {props.tripsPage ? (
+        <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
+          <UpdateItineraryDates
+            itinerary={props?.itinerary}
+            token={props.token}
+            onUpdateSuccess={fetchItineraryStatus}
+            convertDFormat={convertDFormat}
+            tripsPage={props.tripsPage}
+          />
+          {/* <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+            <BsCalendar2 className="text-md text-[#7A7A7A]" /> */}
+            {/* <div className="text-md font-medium text-black flex flex-row items-center gap-2"> */}
+              {/* {props.tripsPage ? (
                 <div>{props?.itinerary?.duration + " Nights"}</div>
               ) : (
                 <div>
-                  {/* {props.itinerary
-                    ? props.itinerary
-                      ? date ? getHumanDateWithYear(
-                          format(new Date(date), "dd-mm-yyyy").replaceAll(
-                            "-",
-                            "/",
-                          ),
-                        ) :null
-                      : null
-                    : null} */}
-                  {/* {props?.itinerary?.start_date ? getHumanDateWithYear(
-                                            (props?.itinerary?.start_date).replaceAll(
-                                              "-",
-                                              "/",
-                                            ),
-                                          ):  null}
-                  {" - "}
-                  {props?.itinerary?.end_date ? getHumanDateWithYear(
-                                            (props?.itinerary?.end_date).replaceAll(
-                                              "-",
-                                              "/",
-                                            ),
-                                          ):  null} */}
                   {convertDFormat(
                     props?.itinerary?.start_date
                       ? props?.itinerary?.start_date
@@ -807,27 +833,10 @@ const Details = (props) => {
                       ? props?.itinerary?.end_date
                       : null
                   )}
-                  {/* {date
-                    ? getHumanDateWithYear(
-                        format(
-                          new Date(
-                            addDaysToDate(
-                              date,
-                              props?.itinerary?.duration
-                                ? props?.itinerary?.duration
-                                : 4,
-                            ),
-                          ),
-                          "dd-MM-yyyy",
-                        ).replaceAll("-", "/"),
-                      )
-                    : null} */}
                 </div>
-              )}
+              )} */}
 
-              {props.payment?.itinerary_status ===
-              ITINERARY_STATUSES?.itinerary_prepared ? (
-                <>
+              {/* <>
                   <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                     <MdEdit
                       className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
@@ -843,10 +852,9 @@ const Details = (props) => {
                       token={props.token}
                     ></SelectDate>
                   </div>
-                </>
-              ) : null}
-            </div>
-          </div>
+                </>  */}
+            {/* </div>
+          </div> */}
         </div>
 
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
@@ -864,34 +872,8 @@ const Details = (props) => {
                 {pluralDetector("Infant", props.itinerary?.number_of_infants)}
               </div>
             ) : null}
-            {/* {props.payment?.itinerary_status ===
-            ITINERARY_STATUSES?.itinerary_finalized ? null : (
-              <>
-                <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
-                  <MdEdit
-                    className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                    onClick={() => setDropdownOpen(!DropdownOpen)}
-                  />
-                </div>
-
-                <UiDropdown
-                  hideSelector={true}
-                  DropdownOpen={DropdownOpen}
-                  options={[
-                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                    18, 19, 20,
-                  ]}
-                  onSelect={handleSelectOption}
-                  scrollable={true}
-                ></UiDropdown>
-              </>
-            )} */}
           </div>
         </div>
-
-        {/* <div>
-          <CountdownTimer priceValidUntil={props?.payment?.price_valid_until} />
-        </div> */}
       </div>
 
       {props.tripsPage ? (
@@ -910,179 +892,6 @@ const Details = (props) => {
         </Button>
       ) : (
         <>
-          {/* {pricing_status === "PENDING" ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={() => {
-                console.log("");
-              }}
-              loading={pricing_status === "PENDING"}
-            >
-              Loading...
-            </Button>
-          ) : props.payment && props.token ? (
-            // props.payment?.itinerary_status ===
-            //   ITINERARY_STATUSES?.itinerary_finalized &&
-            !props.payment?.paid_user ? (
-              props.payment?.user_allowed_to_pay ? (
-                props.payment?.total_cost ||
-                props.payment?.discounted_cost > 0 ? (
-                  <>
-                  {passengersDetail!=null?
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={() => handlePayNow("_saleCreateHandler")}
-                    loading={paymentLoading}
-                  >
-                    Pay Now & Book
-                  </Button>:
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={() => setShowSetPassenger(true)}
-                    loading={paymentLoading}
-                  >
-                    Add Traveller Details
-                  </Button>}
-                  </>
-                ) : (
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={() => handleViewBooking("Add Hotels")}
-                  >
-                    Add Hotels
-                  </Button>
-                )
-              ) : // props?.payment?.is_registration_needed ? (
-              //   props?.payment?.email_reverification_needed ? (
-              !props.payment?.user_allowed_to_pay ? (
-                <GetInTouchContainer>
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={handleGetInTouch}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
-                </GetInTouchContainer>
-              ) : (
-                props?.payment?.paid_user && (
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={() => handleViewBooking("View Bookings")}
-                  >
-                    View Bookings
-                  </Button>
-                )
-              )
-            ) : (
-              //  : (
-              //   <Button
-              //     color="#111"
-              //     fontWeight="500"
-              //     fontSize="1rem"
-              //     borderWidth="2px"
-              //     width="100%"
-              //     borderRadius="8px"
-              //     bgColor="#f8e000"
-              //     padding="12px"
-              //     onclick={handleTravellersDetails}
-              //   >
-              //     Add Travellers Details
-              //   </Button>
-              // )
-
-              <GetInTouchContainer>
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={handleGetInTouch}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />{" "}
-                    <span>Get in touch!</span>
-                  </div>
-                </Button>
-              </GetInTouchContainer>
-            )
-          ) : pricing_status === "FAILURE" ? ( */}
           {props?.token && (
             <GetInTouchContainer>
               <Button
@@ -1207,16 +1016,15 @@ const Details = (props) => {
         </Link>
       </div>
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-4">
-
-      {!isPageWide && (
-        <SocialShareMobile
-          social_title={props?.social_title}
-          // social_description={props?.social_description}
-          // itineraryName={"Share This Itinerary"}
-          // itineraryImage={props?.itinerary?.images?.[0]}
-          more
-        />
-      )}
+        {!isPageWide && (
+          <SocialShareMobile
+            social_title={props?.social_title}
+            // social_description={props?.social_description}
+            // itineraryName={"Share This Itinerary"}
+            // itineraryImage={props?.itinerary?.images?.[0]}
+            more
+          />
+        )}
       </div>
 
       <RegistrationModal

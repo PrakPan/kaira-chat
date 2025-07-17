@@ -53,7 +53,7 @@ const Experience = (props) => {
           <MobileBanner
             cityName={props.cityData.name}
             onClick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name)
+              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
             }
           />
         )}

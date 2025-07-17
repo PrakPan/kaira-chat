@@ -98,7 +98,7 @@ const FullImgContent = (props) => {
               fontSize: !isPageWide ? "25px" : null,
               fontWeight: !isPageWide && "600",
             }}
-            className="text-start ml-3"
+            className="text-start ml-3 md:ml-0"
           >
             {props.title}
           </H1>

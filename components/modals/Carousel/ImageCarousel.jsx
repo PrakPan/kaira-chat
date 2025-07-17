@@ -73,7 +73,6 @@ const SwiperContainer = styled.div`
 `;
 
 const ImageCarousel = ({ images, noCaption }) => {
-  console.log("images are:",images)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [emptyImages, setEmptyImages] = useState(false);
   const [mouseHovered, setMouseHovered] = useState(false);

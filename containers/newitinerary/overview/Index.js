@@ -4,6 +4,8 @@ import ImagesMobile from "./ImagesMobile";
 import useMediaQuery from "../../../hooks/useMedia";
 import Ratings from "../../../components/itinerary/Ratings/Rating";
 import { connect } from "react-redux";
+import setItineraryStatus from "../../../store/actions/itineraryStatus";
+import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
 
 const GridContainer = styled.div`
   display: grid;
@@ -31,6 +33,7 @@ const toTitleCase = (str) => {
 const Overview = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
 
+
   return (
     <div>
       <GridContainer className="gap-2">
@@ -44,9 +47,12 @@ const Overview = (props) => {
         <Details
           mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
+          itinerary={props?.itinerary}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
           start_date={props.start_date}
+          resetRef={props?.resetRef}
+          fetchData={props?.fetchData}
           end_date={props.end_date}
           duration={props.duration}
           budget={props?.budget}

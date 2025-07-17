@@ -4,7 +4,8 @@ import { MdNavigateNext } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDetailsDrawer";
+
 
 
 const LeftSlideIn = keyframes`

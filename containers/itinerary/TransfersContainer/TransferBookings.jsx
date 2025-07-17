@@ -187,8 +187,6 @@ const TransferBookings = (props) => {
       const airportDropBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
-     
-      
       if (airportDropBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportDropBookings);
 
@@ -203,7 +201,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -231,14 +229,14 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Drop"}
+              AirportTransferType={"drop"}
             />
           );
         }
         });
       }
 
-       if (intracityBookings.length > 0) {
+      if (intracityBookings.length > 0) {
         const sortedIntracity = sortByCheckIn(intracityBookings);
 
         sortedIntracity.forEach((booking, index) => {
@@ -282,7 +280,7 @@ const TransferBookings = (props) => {
           );
         });
       }
-      
+
       if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
         sections.push(
           <TransferBooking
@@ -317,8 +315,6 @@ const TransferBookings = (props) => {
         );
       }
 
-     
-
       if (airportBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportBookings);
 
@@ -333,7 +329,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -361,14 +357,12 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Pickup"}
+              AirportTransferType={"pickup"}
             />
           );
         }
         });
       }
-
-      
     }
 
     itineraries?.cities?.forEach((item, index) => {
@@ -448,7 +442,7 @@ const TransferBookings = (props) => {
                 booking={booking}
                 payment={props?.payment}
                 token={props?.token}
-                setShowLoginModal={props?.setShowDrawer}
+               setShowLoginModal={props?.setShowLoginModal}
                 _changeTaxiHandler={_changeTaxiHandler}
                 _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
                 getPaymentHandler={props?.getPaymentHandler}
@@ -477,14 +471,14 @@ const TransferBookings = (props) => {
                 _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
                 isAirport={true}
-                AirportTransferType={"Drop"}
+                AirportTransferType={"drop"}
               />
             );
           }
           });
         }
 
-         if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
+        if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
           sections.push(
             <TransferBooking
               booking_id={intercityBooking?.id}
@@ -518,11 +512,7 @@ const TransferBookings = (props) => {
           );
         }
 
-    
-
-        
-
-           if (airportNextBookings.length > 0) {
+        if (airportNextBookings.length > 0) {
           const sortedBookings = sortByCheckIn(airportNextBookings);
 
           sortedBookings?.map((booking, idx) => {
@@ -536,7 +526,7 @@ const TransferBookings = (props) => {
                 booking={booking}
                 payment={props?.payment}
                 token={props?.token}
-                setShowLoginModal={props?.setShowDrawer}
+                setShowLoginModal={props?.setShowLoginModal}
                 _changeTaxiHandler={_changeTaxiHandler}
                 _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
                 getPaymentHandler={props?.getPaymentHandler}
@@ -565,19 +555,12 @@ const TransferBookings = (props) => {
                 _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
                 isAirport={true}
-                AirportTransferType={"Pickup"}
+                AirportTransferType={"pickup"}
               />
             );
           }
           });
         }
-       
-
-      
-
-        
-
-        
       }
     });
 
@@ -605,11 +588,7 @@ const TransferBookings = (props) => {
       const airportDropBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
-
-     
-
-
-       if (intracityBookings.length > 0) {
+      if (intracityBookings.length > 0) {
         const sortedIntracity = sortByCheckIn(intracityBookings);
 
         sortedIntracity.forEach((booking, idx) => {
@@ -666,7 +645,7 @@ const TransferBookings = (props) => {
               booking={booking}
               payment={props?.payment}
               token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
+              setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
               _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
               getPaymentHandler={props?.getPaymentHandler}
@@ -694,7 +673,7 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Drop"}
+              AirportTransferType={"drop"}
             />
           );
         }
@@ -732,19 +711,11 @@ const TransferBookings = (props) => {
           />
         );
       }
-
-      
-      
-
-    
-       
-     
-    
-      
     }
 
-      const lastCityAirportBookings = transferBooking?.airport[itineraries?.end_city?.gmaps_place_id] || [];
-      if (lastCityAirportBookings.length > 0) {
+    const lastCityAirportBookings =
+      transferBooking?.airport[itineraries?.end_city?.gmaps_place_id] || [];
+    if (lastCityAirportBookings.length > 0) {
       const sortedBookings = sortByCheckIn(lastCityAirportBookings);
 
       sortedBookings?.map((booking, index) => {
@@ -758,7 +729,7 @@ const TransferBookings = (props) => {
             booking={booking}
             payment={props?.payment}
             token={props?.token}
-            setShowLoginModal={props?.setShowDrawer}
+            setShowLoginModal={props?.setShowLoginModal}
             _changeTaxiHandler={_changeTaxiHandler}
             _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
             getPaymentHandler={props?.getPaymentHandler}
@@ -780,14 +751,14 @@ const TransferBookings = (props) => {
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updatePaymentHandler={props._updatePaymentHandler}
             isAirport={true}
-            AirportTransferType={"Pickup"}
+            AirportTransferType={"pickup"}
           />
         );
       }
       });
     }
 
-     if (lastCityAirportBookings.length > 0) {
+    if (lastCityAirportBookings.length > 0) {
       const sortedBookings = sortByCheckIn(lastCityAirportBookings);
 
       sortedBookings?.map((booking, index) => {
@@ -801,7 +772,7 @@ const TransferBookings = (props) => {
             booking={booking}
             payment={props?.payment}
             token={props?.token}
-            setShowLoginModal={props?.setShowDrawer}
+            setShowLoginModal={props?.setShowLoginModal}
             _changeTaxiHandler={_changeTaxiHandler}
             _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
             getPaymentHandler={props?.getPaymentHandler}
@@ -823,7 +794,7 @@ const TransferBookings = (props) => {
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updatePaymentHandler={props._updatePaymentHandler}
             isAirport={true}
-            AirportTransferType={"Drop"}
+            AirportTransferType={"drop"}
           />
         );
       }

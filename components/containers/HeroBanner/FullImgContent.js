@@ -88,7 +88,7 @@ const FullImgContent = (props) => {
     <Container className="font-lexend">
       <PaddingContianer className="">
         <div className="">
-          <H1 style={{ color: "white" }}>{props.destination} Trip Planner</H1>
+          <H1 style={{ color: "white" }}>{props.destination ?  props.destination + " Trip Planner" : props?.title}</H1>
           {props.subheading ? (
             <H7
               style={{

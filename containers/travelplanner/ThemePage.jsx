@@ -187,12 +187,24 @@ export default function ThemePage(props) {
         {props?.slug === "japan-cherry-blossom" && (
           <PathNavigation path={"asia/japan"} />
         )}
-        {props.experienceData.overview_heading && props.experienceData.overview_text ? <Overview
-          heading={props.experienceData.overview_heading}
-          text={props.experienceData.overview_text}
-          image={props.experienceData.overview_image}
-          slug={props.slug}
-        /> : null}
+        {props.experienceData.overview_heading &&
+        props.experienceData.overview_text ? (
+          <Overview
+            heading={props.experienceData.overview_heading}
+            text={props.experienceData.overview_text}
+            image={props.experienceData.overview_image}
+            slug={props.slug}
+          />
+        ) : null}
+        {props.experienceData.overview_heading &&
+        props.experienceData.overview_text ? (
+          <Overview
+            heading={props.experienceData.overview_heading}
+            text={props.experienceData.overview_text}
+            image={props.experienceData.overview_image}
+            slug={props.slug}
+          />
+        ) : null}
 
         <div className="mt-5">
           {components &&
@@ -204,18 +216,20 @@ export default function ThemePage(props) {
 
                 return navComponents.length > 0 ? (
                   <div key={index} className={`mx-3 space-y-12 mt-5`}>
-                    {
-                      props?.slug === "perfect-proposals-2025" ? 
+                    {props?.slug === "perfect-proposals-2025" ? (
                       <>
-                        <ThemeBackground component={component} slug={props?.slug}/>
-                      </> 
-                      : <PrimaryHeading> {component.heading}</PrimaryHeading>
-                    }
-                    
+                        <ThemeBackground
+                          component={component}
+                          slug={props?.slug}
+                        />
+                      </>
+                    ) : (
+                      <PrimaryHeading> {component.heading}</PrimaryHeading>
+                    )}
+
                     <Navigation slug={props?.slug} components={navComponents} />
 
                     <PlanYourTripButton text={"Plan Itinerary For Free"} />
-                    
                   </div>
                 ) : null;
               }
@@ -224,21 +238,28 @@ export default function ThemePage(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      {(props?.slug === "perfect-proposals-2025" && (component?.priority == 13 || component?.priority == 9)) || props?.slug === "la-tomatina-spain-2025" ? "" :<PrimaryHeading
-                        className={` ${
-                          props?.slug != "japan-cherry-blossom"
-                            ? "mx-auto text-center"
-                            : "mt-7"
-                        }`}
-                      >
-                        {component.heading}
-                      </PrimaryHeading>}
+                      {(props?.slug === "perfect-proposals-2025" &&
+                        (component?.priority == 13 ||
+                          component?.priority == 9)) || component.heading == "The Gallery Section"
+                      ? (
+                        ""
+                      ) : (
+                        <PrimaryHeading
+                          className={` ${
+                            props?.slug != "japan-cherry-blossom"
+                              ? "mx-auto text-center"
+                              : "mt-7"
+                          }`}
+                        >
+                          {component.heading}
+                        </PrimaryHeading>
+                      )}
                       <SecondaryHeading className="mx-auto text-center">
                         {component.text}
                       </SecondaryHeading>
                     </div>
 
-                    <ThemeBackground component={component} slug={props?.slug}/>
+                    <ThemeBackground component={component} slug={props?.slug} />
 
                     {props.slug === "japan-cherry-blossom" &&
                       component?.priority == 4 &&
@@ -305,16 +326,17 @@ export default function ThemePage(props) {
                       )}
 
                     {/* Rendering Static Components */}
-                   
-                    {component.type === "Generic" &&  component?.heading === "How We Keep It Budget-Friendly?" && (
-                      <div>
-                        <BudgetFriendly
-                          page_id={props.experienceData?.id}
-                          destination={props.experienceData?.destination}
-                        ></BudgetFriendly>
-                      </div>
-                    )}
 
+                    {component.type === "Generic" &&
+                      component?.heading ===
+                        "How We Keep It Budget-Friendly?" && (
+                        <div>
+                          <BudgetFriendly
+                            page_id={props.experienceData?.id}
+                            destination={props.experienceData?.destination}
+                          ></BudgetFriendly>
+                        </div>
+                      )}
 
                     {component.type === "How it works?" && (
                       <div>
@@ -338,10 +360,19 @@ export default function ThemePage(props) {
                           handlePlanButton={handlePlanButton}
                           setDestination={setDestination}
                           packages={[
-    ...component.cities.map(item => ({ ...item, type: "City" })),
-    ...component.states.map(item => ({ ...item, type: "State" })),
-    ...component.countries.map(item => ({ ...item, type: "Country" })),
-  ]}
+                            ...component.cities.map((item) => ({
+                              ...item,
+                              type: "City",
+                            })),
+                            ...component.states.map((item) => ({
+                              ...item,
+                              type: "State",
+                            })),
+                            ...component.countries.map((item) => ({
+                              ...item,
+                              type: "Country",
+                            })),
+                          ]}
                         />
                         <PlanYourTripButton text={"Start your journey now!"} />
                       </>
@@ -495,7 +526,7 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "Image Caraousel" ? (
                       <>
-                        <ImageCarousel/>
+                        <ImageCarousel />
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                         />
@@ -553,9 +584,6 @@ export default function ThemePage(props) {
             <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
           </>
         )}
-
-
-
       </SetWidthContainer>
 
       <TailoredFormMobileModal

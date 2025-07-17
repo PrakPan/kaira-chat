@@ -64,6 +64,7 @@ const Booking = (props) => {
          airportBooking={props?.airportBooking}
          cityId={props?.cityId}
          handleAirportTaxiSelect={props?.handleAirportTaxiSelect}
+         bookingLoad={props?.bookingLoad}
       ></SectionOne>
       }
     </Container>

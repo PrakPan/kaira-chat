@@ -7,6 +7,7 @@ import Route from "../../newitinerary/breif/route/OldIndex";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
+import { useParams } from "next/navigation.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -39,6 +40,9 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
+
+  const {drawer,ciyId}=useParams()
+  console.log("drawr is:",drawer,"city id is:",ciyId)
 
   useEffect(() => {
     const Locationlatlong = [];

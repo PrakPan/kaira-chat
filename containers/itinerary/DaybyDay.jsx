@@ -8,6 +8,7 @@ import BookingModal from "../../components/modals/bookingupdated/Index";
 import { format } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
 import * as ga from "../../services/ga/Index";
+import { useRouter } from "next/router";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -36,7 +37,7 @@ const DaybyDay = ({
   setShowLoginModal,
   ...props
 }) => {
-  console.log("transfer bookings is:", transferBookings);
+const router=useRouter()
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
@@ -44,25 +45,14 @@ const DaybyDay = ({
     id: null,
     name: null,
   });
-  const [showDetails, setShowDetails] = useState(false);
-  const [AddHotel, setAddHotel] = useState(false);
-  const [bookingId, setBookingId] = useState(null);
-  const [images, setImages] = useState(null);
-  const [currentBooking, setCurrentBooking] = useState(null);
-  const [bookingFunData, setBookingFunData] = useState(null);
-  const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const [showFilter, setshowFilter] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
 
   let isPageWide = media("(min-width: 768px)");
-  console.log("Inside DaybyDay Itinerary", itinerary);
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
-  const[itineraryCityId,setItineraryCityId]=useState(null)
 
   useEffect(() => {
     let array = [];
@@ -77,115 +67,33 @@ const DaybyDay = ({
     }
   }, [itineraryDaybyDay]);
 
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
-
-  const _changeBookingHandler = (
-    name,
-    itinerary_id,
-    tailored_id,
-    accommodation,
-    id,
-    check_in,
-    check_out,
-    pax,
-    city,
-    cityId,
-    room_type,
-    itinerary_name,
-    cost,
-    costings_breakdown,
-    images,
-    clickType,
-    itinerary_city_id
-  ) => {
-    {
-      process.env.NODE_ENV === "production" &&
-        !CONTENT_SERVER_HOST.includes("dev") &&
-        ga.event({
-          action: "Itinerary-bookings-acc_change",
-          params: { name: name },
-        });
-    }
-
-    setSelectedBooking({
-      ...selectedBooking,
-      name: name,
-      itinerary_id: itinerary_id,
-      accommodation: accommodation,
-      id: id,
-      tailored_id: tailored_id,
-      check_in: format(new Date(check_in), "yyyy-MM-dd").replaceAll("-", "/"),
-      check_out: format(new Date(check_out), "yyyy-MM-dd").replaceAll("-", "/"),
-      pax: pax,
-      city: city,
-      cityId: cityId,
-      room_type: room_type,
-      itinerary_name: itinerary_name,
-      cost: Math.round(cost),
-      costings_breakdown: costings_breakdown,
-      images: images,
-      clickType: clickType,
-    });
-    props.setShowBookingModal(true);
-  };
-
   function handleClickAc(i, data, city_id,itinerary_city_id, clickType) {
-    let name = stayBookings[i]?.["name"];
-    let itinerary_id = stayBookings[i]?.["itinerary_id"];
-    let itinerary_name = stayBookings[i]?.["itinerary_name"];
-    let accommodation = stayBookings[i]?.["accommodation"];
-    let tailored_id = stayBookings[i]?.["tailored_itinerary"];
-    let user_rating = stayBookings[i]?.star_category;
-    let number_of_reviews = stayBookings[i]?.user_ratings_total;
     let id = stayBookings[i]?.["id"];
-    let check_in = stayBookings[i]?.["check_in"];
-    let check_out = stayBookings[i]?.["check_out"];
-    let pax = {
-      number_of_adults: stayBookings[i]?.["number_of_adults"],
-      number_of_children: stayBookings[i]?.["number_of_children"],
-      number_of_infants: stayBookings[i]?.["number_of_infants"],
-    };
-    let city = stayBookings[i]?.["city_name"];
     let cityId =
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
-    let room_type = stayBookings[i]?.["room"];
-    setItineraryCityId(itinerary_city_id)
-    _changeBookingHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      accommodation,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      cityId,
-      room_type,
-      user_rating,
-      number_of_reviews,
-      itinerary_name,
-      clickType,
-      itinerary_city_id
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "changeHotelBooking",
+          clickType: clickType,
+          itineraryCityId: itinerary_city_id,
+          booking_id: id,
+          check_in: stayBookings[i]["check_in"],
+          check_out: stayBookings[i]["check_out"],
+          duration: null,
+          city_id: cityId,
+          city_name: stayBookings[i]["city_name"],
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
     );
     data.clickType = clickType;
-    setCurrentBooking(data);
-    props.setShowBookingModal(true);
   }
 
-  function handleClick(i, id, data, city_id) {
-    let check_in = props?.itineraryFilter.check_in;
-    let check_out = props?.itineraryFilter.check_out;
-    setDates({ check_in, check_out });
-
-    setBookingId(id);
-    setCurrentBooking(data);
-    setBookingFunData({ index: i, booking: data, city_id: city_id });
-    setShowDetails(true);
-  }
-  console.log("component show modal1 is:", props?.showBookingModal);
 
   const parseDate = (dateString) => {
     if (!dateString) return null;
@@ -227,7 +135,6 @@ const DaybyDay = ({
             width={width}
             length={itineraryDaybyDay?.cities?.length}
             oCityData={startCity}
-            dCityData={itineraryDaybyDay?.cities?.[0]}
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -238,6 +145,14 @@ const DaybyDay = ({
           <CityItem
             setShowLoginModal={setShowLoginModal}
             loadbookings={loadbookings}
+            hotelName={startCity?.city_name}
+            sourceGmaps={startCity?.gmaps_place_id}
+            destinationHotelName={stay?.[0]?.name ? stay[0]?.name : null}
+            sourceLat={startCity?.latitude}
+            sourceLong={startCity?.longitude}
+            destinationLat={stay?.[0] ? stay[0]?.lat: null}
+            destinationLong={stay?.[0] ? stay[0]?.long: null}
+            destinationGmaps={stay?.[0] ? stay[0]?.gmaps_place_id : null}
             key={2}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
@@ -307,7 +222,7 @@ const DaybyDay = ({
             destination_city_id={itineraryDaybyDay?.cities?.[0]?.city?.id}
             origin_city_name={startCity?.city_name}
             destination_city_name={itineraryDaybyDay?.cities?.[0]?.city?.name}
-            setBookingId={setBookingId}
+            
             oCityData={startCity}
             dCityData={itineraryDaybyDay?.cities?.[0]}
             selectedBooking={selectedBooking}
@@ -350,9 +265,8 @@ const DaybyDay = ({
                   setItinerary={setItinerary}
                   activityBookings={activityBookings}
                   setActivityBookings={setActivityBookings}
-                  setBookingId={setBookingId}
+                  
                   idMapping={transferBookings?.intercity?.[idMapping]?.id}
-                  setShowDetails={setShowDetails}
                   setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
                   index={index}
@@ -367,11 +281,19 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
-                      hotelName={stay?.[index] ? stay[index]?.name : null}
-                      destinationHotelName={stay?.[index+ 1] ? stay[index+1]?.name : null}
+                      hotelName={stay?.[index]?.name ? stay[index]?.name: null}
+                      sourceGmaps={stay?.[index] ? stay[index]?.gmaps_place_id : null}
+                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.gmaps_place_id: null}
+                      sourceLat={stay?.[index] ? stay[index]?.lat : null}
+                      sourceLong={stay?.[index] ? stay[index]?.long : null}
+                      destinationLat={stay?.[index+ 1] ? stay[index+1]?.lat: null}
+                      destinationLong={stay?.[index+ 1] ? stay[index+1]?.long: null}
+                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name: null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
+                      lat={startCity?.latitude}
+                      long={startCity?.longitude}
                       city={transferBookings?.intercity?.[idMapping]?.name}
                       sourceKey={sourceKey}
                       airportBookings={airportBookings}
@@ -403,7 +325,7 @@ const DaybyDay = ({
                       destination_city_name={
                         itineraryDaybyDay?.cities?.[index + 1]?.city?.name
                       }
-                      setBookingId={setBookingId}
+                      
                       oCityData={itineraryDaybyDay?.cities?.[index]}
                       dCityData={itineraryDaybyDay?.cities?.[index + 1]}
                       selectedBooking={selectedBooking}
@@ -427,7 +349,13 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name: null}
+            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.gmaps_place_id : null}
+            sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
+            sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
+            destinationLat={endCity?.latitude}
+            destinationLong={endCity?.longitude}
+            destinationGmaps={endCity?.gmaps_place_id}
             destinationHotelName={endCity?.city_name}
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
@@ -527,7 +455,7 @@ const DaybyDay = ({
                 ?.city?.name
             }
             destination_city_name={endCity?.city_name}
-            setBookingId={setBookingId}
+            
             oCityData={
               itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
             }
@@ -558,37 +486,6 @@ const DaybyDay = ({
           />
         </div>
       </div>
-      <BookingModal
-        mercury
-        showFilter={showFilter}
-        setshowFilter={setshowFilter}
-        setShowLoginModal={setShowLoginModal}
-        payment={payment}
-        plan={stayBookings}
-        _setImagesHandler={_setImagesHandler}
-        getPaymentHandler={getPaymentHandler}
-        _updateStayBookingHandler={props._updateStayBookingHandler}
-        tailored_id={
-          stayBookings && stayBookings[0]
-            ? stayBookings[0]["tailored_itinerary"]
-            : null
-        }
-        _updatePaymentHandler={_updatePaymentHandler}
-        _updateBookingHandler={props?._updateBookingHandler}
-        selectedBooking={selectedBooking}
-        itinerary_city_id={itineraryCityId}
-        setShowBookingModal={props?.setShowBookingModal}
-        currentBooking={currentBooking}
-        showBookingModal={props?.showBookingModal}
-        setHideBookingModal={props?.setHideBookingModal}
-        AddHotel={AddHotel}
-        _GetInTouch={props._GetInTouch}
-        handleClick={handleClick}
-        stayBookings={stayBookings}
-        setStayBookings={setStayBookings}
-        itineraryDaybyDay={itineraryDaybyDay}
-        onHide={() => {}}
-      ></BookingModal>
     </>
   );
 };

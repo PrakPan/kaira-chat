@@ -88,13 +88,12 @@ const ErrorContainer = styled.div`
 `;
 
 const ViewHotelDetails = (props) => {
-  console.log("login props are2:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
+  const { drawer, booking_id, idx, city_id } = router.query;
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
-  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -109,7 +108,13 @@ const ViewHotelDetails = (props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (props.show) {
+    if (props.show && drawer!=="showHotelDetail") {
+      console.log(
+        "booking id is:",
+        booking_id,
+        "props booking id is 2:",
+        props?.id
+      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
@@ -125,6 +130,12 @@ const ViewHotelDetails = (props) => {
   }, [props.show]);
 
   const fetchDetails = () => {
+    console.log(
+      "booking id is:",
+      booking_id,
+      "props booking id is 2:",
+      props?.id
+    );
     setLoading(true);
     setError(false);
 
@@ -161,8 +172,6 @@ const ViewHotelDetails = (props) => {
     } else {
       setLoading(true);
       setError(false);
-      let check_in = props.check_in;
-      let check_out = props.check_out;
       if (props.check_in.includes("/")) {
         check_in = props.check_in.split("/").reverse().join("-");
         check_out = props.check_out.split("/").reverse().join("-");
@@ -172,9 +181,9 @@ const ViewHotelDetails = (props) => {
         show_rooms: true,
       };
       if (
-        props.currentBooking &&
-        props.currentBooking.source &&
-        props.currentBooking.source == "Agoda"
+        // props.currentBooking &&
+        // props.currentBooking.source &&
+        props.source == "Agoda"
       ) {
         paramsObj.source = "Agoda";
       }
@@ -200,8 +209,8 @@ const ViewHotelDetails = (props) => {
         });
     }
   };
+
   const index = props.plan.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
-  console.log("cityid2 is:", props?.itinerary_city_id)
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
@@ -240,6 +249,8 @@ const ViewHotelDetails = (props) => {
           text: "Hotel added successfully.",
           heading: "Success!",
         });
+        props?.onHide();
+
 
         try {
           stayBookings[index] = {
@@ -256,7 +267,6 @@ const ViewHotelDetails = (props) => {
             heading: "Success!",
           });
           props?.handleClose();
-          props?.onHide();
         } catch (error) {
           props.openNotification({
             type: "error",
@@ -282,6 +292,7 @@ const ViewHotelDetails = (props) => {
       backdrop
       className="font-lexend"
       onHide={props.onHide}
+      style={{zIndex:1252}}
       width={"50vw"}
       mobileWidth={"100vw"}
     >
@@ -297,7 +308,6 @@ const ViewHotelDetails = (props) => {
                 <HotelBookingDetails
                   _setImagesHandler={props._setImagesHandler}
                   user_rating={props.user_rating}
-                  currentBooking={props.currentBooking}
                   number_of_reviews={props.number_of_reviews}
                   data={data}
                   images={data?.images ? data.images : []}
