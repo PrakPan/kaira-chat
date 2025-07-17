@@ -195,7 +195,21 @@ const ItineraryCard = (props) => {
 
         <Button
           borderRadius="6px"
-          onclick={_handleRedirect}
+          onclick={() => {
+            logEvent({
+              action: "View_Itinerary_Details",
+              params: {
+                page: props.page || "Theme Page",
+                event_category: "Button Click",
+                event_label: "View Details",
+                event_action: "Itinerary Card",
+                itinerary_id: props.data?.id,
+                itinerary_name: props.data?.name,
+                destination: props.data?.destination,
+              },
+            });
+            _handleRedirect();
+          }}
           fontSizeDesktop="12px"
           borderWidth="1.25px"
           width="100%"
