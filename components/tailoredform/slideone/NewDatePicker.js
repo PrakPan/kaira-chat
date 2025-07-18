@@ -169,6 +169,28 @@ const DatePicker = (props) => {
     if (props.setFocusedDate) setFocusedInput(props.inputDate);
   }, [props.inputDate]);
 
+  // Custom validation function for date selection
+  const isOutsideRange = (day) => {
+    // Prevent selection of past dates (before today)
+    return day.startOf("day").isBefore(moment().startOf("day"));
+  };
+
+  // Custom function to determine initial visible month
+  const getInitialVisibleMonth = () => {
+    // Always start with current month
+    return () => moment();
+  };
+
+  // Custom function to prevent navigation to past months
+  const onPrevMonthClick = (newMonth) => {
+    // Prevent navigation if the new month is before current month
+    if (newMonth.isBefore(moment(), 'month')) {
+      return;
+    }
+    // Allow navigation to current month or future months
+    return newMonth;
+  };
+
   return (
     <>
       <TextContainer
@@ -197,13 +219,15 @@ const DatePicker = (props) => {
           }}
           focusedInput={focusedInput}
           onFocusChange={setFocusedInput}
-          isOutsideRange={(day) =>
-            day.startOf("day").isBefore(moment().add(0, "day"))
-          }
-          initialVisibleMonth={() => moment().subtract(0, "month")}
+          isOutsideRange={isOutsideRange}
+          initialVisibleMonth={getInitialVisibleMonth()}
           numberOfMonths={isPageWide && !props.tailoredFormModal ? 2 : 1}
           orientation={"horizontal"}
           noBorder={true}
+          // Prevent navigation to past months
+          onPrevMonthClick={onPrevMonthClick}
+          // Set minimum date to current month's first day to prevent past month navigation
+          minDate={moment().startOf('month')}
         />
 
         <CalenderIcons
