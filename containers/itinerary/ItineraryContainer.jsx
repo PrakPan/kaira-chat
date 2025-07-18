@@ -595,6 +595,7 @@ const ItineraryContainer = (props) => {
       setIsPastTravelerItinerary(true);
     
     const fetchStatus = async () => {
+      console.log("I'm inside ItiContainer");
   try {
     const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
     const status = res.data?.celery;
@@ -626,6 +627,8 @@ const ItineraryContainer = (props) => {
     const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
       (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
     );
+
+    console.log("I'm inside ItiContainer All Status",allStatusesCompleted);
 
     if (allStatusesCompleted) {
       dispatch(setItineraryStatus("finalized_status", "SUCCESS"));

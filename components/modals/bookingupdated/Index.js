@@ -351,7 +351,7 @@ const Booking = (props) => {
         }
 
         if (res.data?.data?.length) {
-          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
           let options = [];
@@ -510,7 +510,7 @@ const Booking = (props) => {
         }
 
         if (res.data?.data?.length) {
-          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
           let options = [];

@@ -10,10 +10,16 @@ import "react-dates/lib/css/_datepicker.css";
 import { DateRangePicker } from "react-dates";
 import moment from "moment";
 import styled from "styled-components";
+import { openNotification } from "../../../store/actions/notification";
+import { useDispatch } from "react-redux";
 
 const StyledDateRangeContainer = styled.div`
   .DateRangePicker {
     width: 100%;
+  }
+
+  .DatePicker_transitionContainer {
+    height: 296px;
   }
 
   .DateRangePickerInput {
@@ -82,8 +88,8 @@ const StyledDateRangeContainer = styled.div`
     border: 2px solid #000000 !important;
     border-radius: 50% !important;
     background: #ffffff !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 24px !important;
+    height: 24px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -109,7 +115,10 @@ const StyledDateRangeContainer = styled.div`
    .DayPickerNavigation_button:first-child::after {
     content: "<";
     position: absolute;
-    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
     font-weight: bold;
     color: #000000;
     line-height: 1;
@@ -118,7 +127,10 @@ const StyledDateRangeContainer = styled.div`
   .DayPickerNavigation_button:last-child::after {
     content: ">";
     position: absolute;
-    font-size: 14px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
     font-weight: bold;
     color: #000000;
     line-height: 1;
@@ -127,13 +139,32 @@ const StyledDateRangeContainer = styled.div`
   .DayPickerNavigation_button[aria-label*="previous"]::after,
   .DayPickerNavigation_button[aria-label*="Previous"]::after {
     content: "<";
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .DayPickerNavigation_button[aria-label*="next"]::after,
   .DayPickerNavigation_button[aria-label*="Next"]::after {
     content: ">";
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
     
+  .DayPicker_caption {
+    text-align: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .CalendarMonth_caption {
+    text-align: center !important;
+    padding-top: 16px !important;
+    margin: 0 !important;
+  }
   .CalendarDay {
     border: 0px;
     margin: 1px;
@@ -143,7 +174,6 @@ const StyledDateRangeContainer = styled.div`
   .CalendarDay__selected:hover {
     background-color: #f7e700;
     border: 0px;
-    border-radius: 50%;
     color: black;
   }
 
@@ -157,7 +187,6 @@ const StyledDateRangeContainer = styled.div`
   .CalendarDay__selected_span:hover,
   .CalendarDay__hovered_span:hover {
     background-color: #f7e7004a;
-    border-radius: 50%;
     color: black;
   }
 
@@ -213,6 +242,7 @@ const MobileOverlay = styled.div`
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
+    display: hidden;
   }
 
   @media (min-width: 768px) {
@@ -226,8 +256,11 @@ const UpdateItineraryDates = ({
   onUpdateSuccess,
   convertDFormat,
   tripsPage = false,
-  setShowEditDate
+  setShowEditDate,
+  showEditDate
 }) => {
+
+  const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
   );
@@ -302,8 +335,7 @@ const UpdateItineraryDates = ({
 
   const handleCancel = () => {
     if(setShowEditDate){
-      setShowEditDate(false);
-      return;
+      setShowEditDate(true);
     }
     setFocusedInput(null);
     setStartDate(itinerary?.start_date || "");
@@ -352,155 +384,142 @@ const UpdateItineraryDates = ({
       })
       .catch((error) => {
         setIsLoading(false);
+        let errorMsg = error.response.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
         console.log("ERROR:UPDATING ITINERARY DATES", error.message);
+        dispatch(openNotification({
+                  type: "error",
+                  text: errorMsg,
+                  heading: "Error!",
+                }));
       });
   };
 
   return (
-    <div className="mb-2">
-      <div className="group flex flex-row gap-2 items-center py-[1rem] relative">
-        <BsCalendar2 className="text-md text-[#7A7A7A]" />
-
-        {/* Display mode - show dates with appropriate icon */}
-        <div className="text-md font-medium text-black flex flex-row items-center justify-center gap-2">
-          
-          {!isEditing ? (
-            <div>
-              {convertDFormat
-                ? convertDFormat(itinerary?.start_date)
-                : itinerary?.start_date}{" "}
-              -{" "}
-              {convertDFormat
-                ? convertDFormat(itinerary?.end_date)
-                : itinerary?.end_date}
-            </div>
-          ) : (
-            <div>
-              {formatDateRangeDisplay()}
-            </div>
-          )}
-
-          {/* Show pencil icon when not editing, reset button when editing */}
-          {!isEditing ? (
-            <button
-              onClick={handleEditClick}
-              className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110 active:scale-90"
-            >
-              <FaPen
-                size={16}
-                className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-              />
-            </button>
-          ) : (
-            <div className="cursor-pointer text-blue underline" onClick={handleCancel}>
-              Reset
-            </div>
-          )}
-        </div>
-
-        {/* Calendar overlay - show when showCalendar is true */}
-        {showCalendar && (
-          <>
-            <MobileOverlay onClick={() => setShowCalendar(false)} />
-
-            <div className={`${isMobile ? "fixed" : "absolute top-full left-0 mt-2"} z-[9999]`}>
-              <StyledDateRangeContainer $show={showCalendar}>
-                <div className={`${isMobile ? "p-4" : "mb-1"}`}>
-                  {/* Mobile header */}
-                  {isMobile && (
-                    <div className="flex items-center justify-between mb-1 pt-2">
-                    
-                      <button
-                        onClick={() => setShowCalendar(false)}
-                        className="text-gray-500 hover:text-gray-700"
-                      >
-                        <FaX size={16} /> 
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Single date input that shows range */}
-                  <div className="">
-                    <div 
-                      className="single-date-input"
-                      onClick={handleSingleInputClick}
-                    >
-                      <span>{formatDateRangeDisplay()}</span>
-                      {/* <BsCalendar2 className="text-gray-400" /> */}
-                    </div>
-                  </div>
-
-                  <DateRangePicker
-                    displayFormat="DD MMM YYYY"
-                    startDate={momentStartDate}
-                    startDateId="startDate"
-                    endDate={momentEndDate}
-                    endDateId="endDate"
-                    onDatesChange={({ startDate, endDate }) => {
-                      setMomentStartDate(startDate);
-                      setMomentEndDate(endDate);
-
-                      // Update string dates for API
-                      if (startDate) {
-                        setStartDate(startDate.format("YYYY-MM-DD"));
-                      }
-                      if (endDate) {
-                        setEndDate(endDate.format("YYYY-MM-DD"));
-                      }
-
-                      // Clear end date when selecting new start date
-                      if (
-                        startDate &&
-                        momentEndDate &&
-                        startDate.isAfter(momentEndDate)
-                      ) {
-                        setMomentEndDate(null);
-                        setEndDate("");
-                      }
-
-                      // Hide calendar when both dates are selected
-                      if (startDate && endDate) {
-                        setShowCalendar(false);
-                        setFocusedInput(null);
-                      }
-                    }}
-                    focusedInput={focusedInput}
-                    onFocusChange={(focusedInput) => {
-                      setFocusedInput(focusedInput);
-                    }}
-                    isOutsideRange={(day) => day.isBefore(moment(), "day")}
-                    numberOfMonths={isMobile ? 1 : 2}
-                    orientation="horizontal"
-                    noBorder={true}
-                    readOnly={true}
-                    keepOpenOnDateSelect={false}
-                    reopenPickerOnClearDates={false}
-                    hideKeyboardShortcutsPanel={true}
-                    daySize={isMobile ? 40 : 39}
-                    
-                  />
-                </div>
-              </StyledDateRangeContainer>
-            </div>
-          </>
+    <div className="flex flex-row items-center gap-2 absolute overflow-visible z-[1500] mt-[1.3rem]">
+      {/* Date display with pen icon */}
+      <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
+        {!isEditing ? (
+          <div className="min-w-max">
+            {convertDFormat
+              ? convertDFormat(itinerary?.start_date)
+              : itinerary?.start_date}{" "}
+            -{" "}
+            {convertDFormat
+              ? convertDFormat(itinerary?.end_date)
+              : itinerary?.end_date}
+          </div>
+        ) : (
+          <div className="min-w-max">
+            {formatDateRangeDisplay()}
+          </div>
         )}
+
+        {/* Show pencil icon when not editing, reset button when editing */}
+        {!isMobile && isMobile ? !isEditing ? (
+          <button
+            onClick={handleEditClick}
+            className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 hover:text-blue-500 hover:scale-110 active:scale-90"
+          >
+            <FaPen
+              size={16}
+              className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+            />
+          </button>
+        ) : (
+          <div className="cursor-pointer text-blue underline text-sm" onClick={handleCancel}>
+            Reset
+          </div>
+        ) : ''}
       </div>
-      
+
       {/* Update button - show only when editing and dates are selected */}
       {isEditing && !showCalendar && momentStartDate && momentEndDate && (
-        <div className="mt-2 w-full">
-          <button
-            onClick={handleUpdateDates}
-            disabled={isLoading}
-            className={`w-full px-6 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium transition-opacity ${
-              isLoading
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[#e6cc00]"
-            }`}
-          >
-            {isLoading ? "Applying Changes..." : "Apply Date Change!"}
-          </button>
-        </div>
+        <button
+          onClick={handleUpdateDates}
+          disabled={isLoading}
+          className={`px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${
+            isLoading
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-[#e6cc00]"
+          }`}
+        >
+          {isLoading ? "Applying..." : "Apply Date Change!"}
+        </button>
+      )}
+
+      {/* Calendar overlay - positioned absolutely but relative to this container */}
+      {showCalendar && (
+        <>
+          <MobileOverlay onClick={() => setShowCalendar(false)} />
+
+          <div className={`${isMobile ? "hidden fixed" : "absolute top-full left-0"} z-[9999]`}>
+            <StyledDateRangeContainer $show={showCalendar}>
+              <div className={`${isMobile ? "p-4" : "mb-1"}`}>
+                {/* Mobile header */}
+                {isMobile && (
+                  <div className="flex items-center justify-between mb-1 pt-2">
+                    <button
+                      onClick={() => setShowCalendar(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <FaX size={16} /> 
+                    </button>
+                  </div>
+                )}
+
+                <DateRangePicker
+                  displayFormat="DD MMM YYYY"
+                  startDate={momentStartDate}
+                  startDateId="startDate"
+                  endDate={momentEndDate}
+                  endDateId="endDate"
+                  onDatesChange={({ startDate, endDate }) => {
+                    setMomentStartDate(startDate);
+                    setMomentEndDate(endDate);
+
+                    // Update string dates for API
+                    if (startDate) {
+                      setStartDate(startDate.format("YYYY-MM-DD"));
+                    }
+                    if (endDate) {
+                      setEndDate(endDate.format("YYYY-MM-DD"));
+                    }
+
+                    // Clear end date when selecting new start date
+                    if (
+                      startDate &&
+                      momentEndDate &&
+                      startDate.isAfter(momentEndDate)
+                    ) {
+                      setMomentEndDate(null);
+                      setEndDate("");
+                    }
+
+                    // Hide calendar when both dates are selected
+                    if (startDate && endDate) {
+                      setShowCalendar(false);
+                      setFocusedInput(null);
+                    }
+                  }}
+                  focusedInput={focusedInput}
+                  onFocusChange={(focusedInput) => {
+                    setFocusedInput(focusedInput);
+                  }}
+                  isOutsideRange={(day) => day.isBefore(moment(), "day")}
+                  numberOfMonths={isMobile ? 1 : 2}
+                  orientation="horizontal"
+                  noBorder={true}
+                  readOnly={true}
+                  keepOpenOnDateSelect={false}
+                  reopenPickerOnClearDates={false}
+                  hideKeyboardShortcutsPanel={true}
+                  daySize={isMobile ? 40 : 39}
+                  
+                />
+              </div>
+            </StyledDateRangeContainer>
+          </div>
+        </>
       )}
     </div>
   );
