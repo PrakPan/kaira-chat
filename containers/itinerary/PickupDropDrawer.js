@@ -865,9 +865,11 @@ const PickupDropDrawer = ({
             : formData.sourceGmapsId
             ? { gmaps_place_id: formData.sourceGmapsId }
             : {
+                 address: hotelName || originCityName,
                 coordinates: {
                   latitude: formData.sourceLatitude,
                   longitude: formData.sourceLongitude,
+                 
                 },
               },
           destination: formData.destinationHubId
@@ -875,9 +877,11 @@ const PickupDropDrawer = ({
             : formData.destinationGmapsId
             ? { gmaps_place_id: formData.destinationGmapsId }
             : {
+                address: destinationHotelName || destinationCityName,
                 coordinates: {
                   latitude: formData.destinationLatitude,
                   longitude: formData.destinationLongitude,
+                  
                 },
               },
           start_date: formData.transferDate,
