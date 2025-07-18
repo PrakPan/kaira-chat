@@ -602,6 +602,7 @@ const CitySummary = (props) => {
           // oCityData={oCityData}
           // dCityData={dCityData}
           setShowLoginModal={props?.setShowLoginModal}
+          setError={props?.setError}
           // dcity={destination_city_name}
           // selectedBooking={selectedBooking}
           // setSelectedBooking={setSelectedBooking}
