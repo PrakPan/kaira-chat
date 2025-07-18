@@ -183,7 +183,7 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
                     booking={booking}
-                    booking_id={booking_id}
+                    booking_id={booking?.id}
                     booking_type={
                       booking?.booking_type
                     }
@@ -906,7 +906,7 @@ const TransferBooking = ({
                                     </button>
                                   ) : (
                                     <button
-                                      onClick={()=>handleRoute(book)}
+                                      onClick={()=>handleRoute(booking)}
                                       className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                     >
                                       {/* Add Taxi */}
@@ -989,7 +989,7 @@ const TransferBooking = ({
                           <>
                             <div className="pr-2 w-full">
                               <button
-                                onClick={()=>handleRoute(book)}
+                                onClick={()=>handleRoute(booking)}
                                 className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                               >
                                 View Details
@@ -1041,7 +1041,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
       pathname: `/itinerary/${router.query.id}`,
       query: {
         drawer: "Intracity",
-        bookingId: book?.id,
+        bookingId: booking_id,
         oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
         dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },
