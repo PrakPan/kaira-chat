@@ -115,7 +115,7 @@ const TransferBooking = ({
     {
       pathname: `/itinerary/${router.query.id}`,
       query: {
-        drawer: "Intracity",
+        drawer: book?.transfer_type=="sightseeing"?"SightSeeing":"Intracity",
         bookingId: book?.id || booking_id,
         oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
         dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id

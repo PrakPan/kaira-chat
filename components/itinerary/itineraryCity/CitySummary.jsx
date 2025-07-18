@@ -28,8 +28,17 @@ const CitySummary = (props) => {
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const { drawer, poi_id, type, dayIndex, index, itinerary_city_id,idx ,date} =
-    router?.query;
+  const {
+    drawer,
+    poi_id,
+    type,
+    dayIndex,
+    index,
+    itinerary_city_id,
+    idx,
+    date,
+    bookingId,
+  } = router?.query;
   const activityData = {
     id: poi_id,
     type: type,
@@ -121,8 +130,8 @@ const CitySummary = (props) => {
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.city?.id,
-          idx:0,
-          date:props?.city?.start_date
+          idx: 0,
+          date: props?.city?.start_date,
         },
       },
       undefined,
@@ -132,7 +141,7 @@ const CitySummary = (props) => {
     );
   };
 
-  const handleCloseAddActivity=()=>{
+  const handleCloseAddActivity = () => {
     router.push(
       {
         pathname: `/itinerary/${router?.query?.id}`,
@@ -141,7 +150,7 @@ const CitySummary = (props) => {
       undefined,
       { scroll: false }
     );
-  }
+  };
 
   const handleSeeMore = () => {
     props.setViewMore(true);
@@ -192,29 +201,42 @@ const CitySummary = (props) => {
 
   const handleTaxi = async (id) => {
     console.log("Innnn");
+
     setHandleShowTaxi(true);
-    try {
-      setLoading(true);
-      setTaxiData(null);
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "SightSeeing",
+          bookingId: id,
+        },
+      },
+      undefined,
+      { scroll: false }
+    );
 
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/${id}/`
-      );
+    // try {
+    //   setLoading(true);
+    //   setTaxiData(null);
 
-      setTaxiData(res?.data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
+    //   const res = await axios.get(
+    //     `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/${id}/`
+    //   );
 
+    //   setTaxiData(res?.data);
+    //   setLoading(false);
+    // } catch (error) {
+    //   setLoading(false);
 
-      dispatch(
-        openNotification({
-          type: "error",
-          text: `${error.response?.data?.errors[0]?.message[0]}`,
-          heading: "Error!",
-        })
-      );
-    }
+    //   dispatch(
+    //     openNotification({
+    //       type: "error",
+    //       text: `${error.response?.data?.errors[0]?.message[0]}`,
+    //       heading: "Error!",
+    //     })
+    //   );
+    // } finally {
+    // }
   };
 
   const handleDelete = async (val) => {
@@ -558,6 +580,37 @@ const CitySummary = (props) => {
                         </div>
                       </div>
                     </div>
+
+                    {drawer == "SightSeeing" && item?.id == bookingId && (
+                      <TransferDrawer
+                        show={drawer == "SightSeeing" && item?.id == bookingId}
+                        setHandleShow={setHandleShowTaxi}
+                        bookingData={taxiData}
+                        booking_type={"taxi"}
+                        booking_id={item?.id}
+                        loading={loading}
+                        handleDelete={handleDelete}
+                        setShowDrawer={setHandleShowTaxi}
+                        // city={city}
+                        _updateFlightBookingHandler={
+                          props?._updateFlightBookingHandler
+                        }
+                        _updatePaymentHandler={props?._updatePaymentHandler}
+                        getPaymentHandler={props?.getPaymentHandler}
+                        // oCityData={oCityData}
+                        // dCityData={dCityData}
+                        setShowLoginModal={props?.setShowLoginModal}
+                        setError={props?.setError}
+                        // dcity={destination_city_name}
+                        // selectedBooking={selectedBooking}
+                        // setSelectedBooking={setSelectedBooking}
+                        // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                        // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+                        // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                        // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+                        isIntracity={true}
+                      />
+                    )}
                   </>
                 ))}
               </div>
@@ -565,7 +618,7 @@ const CitySummary = (props) => {
           </div>
         )}
 
-      {drawer === "showAddActivity" && itinerary_city_id == props?.city?.id &&(
+      {drawer === "showAddActivity" && itinerary_city_id == props?.city?.id && (
         <ActivityAddDrawer
           showDrawer={itinerary_city_id == props?.city?.id}
           setShowDrawer={setShowAddDrawer}
@@ -584,34 +637,6 @@ const CitySummary = (props) => {
           setItinerary={props?.setItinerary}
           setShowLoginModal={props?.setShowLoginModal}
         ></ActivityAddDrawer>
-      )}
-
-      {handleShowTaxi && (
-        <TransferDrawer
-          show={handleShowTaxi}
-          setHandleShow={setHandleShowTaxi}
-          data={taxiData}
-          booking_type={taxiData?.transferType || taxiData?.booking_type}
-          loading={loading}
-          handleDelete={handleDelete}
-          setShowDrawer={setHandleShowTaxi}
-          // city={city}
-          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-          _updatePaymentHandler={props?._updatePaymentHandler}
-          getPaymentHandler={props?.getPaymentHandler}
-          // oCityData={oCityData}
-          // dCityData={dCityData}
-          setShowLoginModal={props?.setShowLoginModal}
-          setError={props?.setError}
-          // dcity={destination_city_name}
-          // selectedBooking={selectedBooking}
-          // setSelectedBooking={setSelectedBooking}
-          // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-          // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-          // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-          // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-          isIntracity={true}
-        />
       )}
     </div>
   );
