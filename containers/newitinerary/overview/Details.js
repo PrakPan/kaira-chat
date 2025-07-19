@@ -66,6 +66,11 @@ const Details = (props) => {
         event_action: "Edit Route Dates",
       },
     });
+
+    // Enhanced tracking using passed function
+    if (props.handleEditRouteClick) {
+      props.handleEditRouteClick();
+    }
   }
 
     const fetchItineraryStatus = async (itineraryId = router.query.id) => {
