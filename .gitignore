@@ -23,6 +23,8 @@ target/
 
 # JetBrains IDE
 .idea/
+.kiro
+.docs/
 
 # Unit test reports
 TEST*.xml

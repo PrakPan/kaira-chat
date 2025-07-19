@@ -249,6 +249,11 @@ if (hasActivities) {
         action: "Itinerary-tabs-" + tabName.toLowerCase(),
       });
     }
+    
+    // Enhanced tracking using passed function
+    if (props.handleTabClick) {
+      props.handleTabClick(tabName);
+    }
   };
 
   const handleLoginButton = () => {
@@ -305,6 +310,11 @@ if (hasActivities) {
         event_action: "Navigation Bar",
       },
     });
+
+    // Enhanced tracking using passed function
+    if (props.handleGetInTouchClick) {
+      props.handleGetInTouchClick();
+    }
   };
 
   const handleCreateTripButton = () => {
@@ -595,6 +605,7 @@ if (hasActivities) {
             travellerType={props.travellerType}
             editRoute={props.editRoute}
             setEditRoute={props.setEditRoute}
+            handleMapInteraction={props.handleMapInteraction}
           ></Breif>
         ) : (
           citydatadone && (
@@ -617,6 +628,7 @@ if (hasActivities) {
               travellerType={props.travellerType}
               editRoute={props.editRoute}
               setEditRoute={props.setEditRoute}
+              handleMapInteraction={props.handleMapInteraction}
             ></OldBreif>
           )
         )}
@@ -691,6 +703,7 @@ if (hasActivities) {
                 setStayBookings={props.setStayBookings}
                 CityData={CityData}
                 cities={props?.cities}
+                handleAddToStaysClick={props.handleAddToStaysClick}
               />
             ) : (
               <HotelsBooking
@@ -746,6 +759,7 @@ if (hasActivities) {
                 itinerary_id={props.itinerary_id}
                 fetchData={props.fetchData}
                 _GetInTouch={_GetInTouch}
+                handleTransferComponentClick={props.handleTransferComponentClick}
               />
             ) : (
               <>
@@ -867,6 +881,7 @@ if (hasActivities) {
                       setShowLoginModal={setShowLoginModal}
                       plan={props.plan}
                       _GetInTouch={() => _GetInTouch()}
+                      handlePaymentComponentClick={props.handlePaymentComponentClick}
                     ></SummaryContainer>
                   ) : (
                     <NewSummaryContainers
@@ -878,6 +893,7 @@ if (hasActivities) {
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
                       fetchData={props.fetchData}
+                      handlePaymentComponentClick={props.handlePaymentComponentClick}
                       resetRef={props?.resetRef}
                       _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
