@@ -825,7 +825,7 @@ const TransferBooking = ({
                         }
                         // isIntracity={isIntracity}
                         booking_id={vehicleDetails?.booking_id}
-                        // isAirport={isAirport}
+                        isAirport={isAirport}
                         AirportTransferType={AirportTransferType}
                       />
                     )}
@@ -1732,6 +1732,7 @@ const FlightBooking = ({
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               setShowDetails={setShowDetails}
               type={type}
+              booking={booking}
             />
           </div>
         </div>

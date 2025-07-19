@@ -12,6 +12,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../../services/constants";
 import * as PagesToIdMapping from "../../../../data/PagesToIdMapping.json";
 import { convertDbNameToCapitalFirst } from "../../../../helper/convertDbnameToCapitalFirst";
+import ThemePage from "../../../../containers/travelplanner/ThemePage"
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -58,12 +59,16 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
-      <StatePage
-        experienceData={props.Data}
-        locations={props.locations}
-        page_id={props.page_id || ""}
-        type={props?.Type}
-      ></StatePage>
+      {props.pageData ? (
+    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} />
+  ) : (
+    <StatePage
+      experienceData={props.Data}
+      locations={props.locations}
+      page_id={props.page_id || ""}
+      type={props?.Type}
+    />
+  )}
     </Layout>
   );
 };
@@ -112,12 +117,17 @@ export async function getStaticProps(context) {
   let Type = "State";
   let Id = PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "";
 
+  let isThemePage = false;
   //mercury api
   await axios
     .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then((res) => {
-      data = res.data.data.state;
-    })
+     const stateData = res.data.data.state;
+     data = stateData;
+    if (stateData.page_data && Object.keys(stateData.page_data).length > 0) {
+      isThemePage = true;
+    }
+  })
     .catch((err) => {
       console.log(
         `[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `,
@@ -163,14 +173,14 @@ export async function getStaticProps(context) {
 
   return {
     props: {
-      Data: data,
-      locations,
-      path,
-      hotLocationSearch,
-      page_id:
-        PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "",
-      Type,
-    },
+    Data: data,
+    locations,
+    path,
+    hotLocationSearch,
+    page_id: PagesToIdMapping[path] || "",
+    Type,
+    pageData: isThemePage,
+  },
   };
 }
 

@@ -125,7 +125,7 @@ const Container = styled.div`
   }
 
   .DateInput_input__focused {
-    border-bottom: 2px solid #f7e700;
+    
   }
   .DayPickerKeyboardShortcuts_show__topRight {
     display: none;
@@ -494,7 +494,7 @@ const RouteEditSection = (props) => {
       },
     };
 
-    console.log("New Request Data", data);
+    console.log("New Request Data", data,destinations);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1407,73 +1407,83 @@ export const DestinationPopUp = (props) => {
     });
   };
 
-  const handleUpdateDestination = () => {
-    setDestinationChanges(true);
+ const handleUpdateDestination = () => {
+  setDestinationChanges(true);
+  console.log("New Desti", destination);
 
-    console.log("New Desti", destination);
+  setDestinations((prev) => {
+    let destinations = [...prev];
+    const curDestination = destinations[index];
 
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      const curDestination = destinations[index];
+    const match = destinations.find((d, i) => {
+      // if (i === index) return false; 
+      const cd = d.cityData;
+      return (
+        (cd?.resource_id === destination?.resource_id ||
+        cd?.city_id === destination?.resource_id ||
+        cd?.id === destination?.resource_id) && i === index
+      );
+    });
 
-      if (curDestination) {
-        console.log("Currr", curDestination);
-        if (curDestination.startingCity || curDestination.endingCity) {
-          console.log("Currr Is start end", curDestination);
-          destinations[index] = {
-            startingCity: curDestination.startingCity,
-            endingCity: curDestination.endingCity,
-            cityData: {
-              ...destination,
-              duration: nights,
-              place_id: destination?.place_id,
-            },
-          };
-        } else {
-          console.log("Currr Is not start end", curDestination);
-          destinations[index] = {
-            startingCity: curDestination.startingCity,
-            endingCity: curDestination.endingCity,
-            cityData: {
-              ...destination,
-              nights: nights,
-              color: curDestination.cityData.color,
-              duration: nights,
-            },
-          };
-        }
+    const matchedCityId = match?.cityData?.id;
+    if (matchedCityId) {
+      destination.id = matchedCityId;
+    }
+
+    if (curDestination) {
+      if (curDestination.startingCity || curDestination.endingCity) {
+        destinations[index] = {
+          startingCity: curDestination.startingCity,
+          endingCity: curDestination.endingCity,
+          cityData: {
+            ...destination,
+            duration: nights,
+            place_id: destination?.place_id,
+          },
+        };
       } else {
-        destinations.splice(destinations.length - 1, 0, {
-          startingCity: false,
-          endingCity: false,
+        destinations[index] = {
+          startingCity: curDestination.startingCity,
+          endingCity: curDestination.endingCity,
           cityData: {
             ...destination,
             nights: nights,
+            color: curDestination.cityData.color,
             duration: nights,
-            color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
-        });
+        };
       }
+    } else {
+      destinations.splice(destinations.length - 1, 0, {
+        startingCity: false,
+        endingCity: false,
+        cityData: {
+          ...destination,
+          nights: nights,
+          duration: nights,
+          color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
+        },
+      });
+    }
 
-      updateDestinationsDates(destinations);
+    updateDestinationsDates(destinations);
+    updateLatLong(destinations);
+    return destinations;
+  });
 
-      updateLatLong(destinations);
+  setPopUp(false);
 
-      return destinations;
-    });
+  logEvent({
+    action: "Route Edit",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Update Destination",
+      event_label: "Update",
+      event_action: "Update destination",
+    },
+  });
+};
 
-    setPopUp(false);
-
-    logEvent({
-      action: "Route Edit",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Update Destination",
-        event_label: "Update",
-        event_action: "Update destination",
-      },
-    });
-  };
 
   return (
     <div
@@ -2294,7 +2304,91 @@ export const DatePicker = (props) => {
   bottom: auto !important;
 }
 
+.DayPickerNavigation_button {
+      border: 2px solid #000000 !important;
+      border-radius: 50% !important;
+      background: #ffffff !important;
+      width: 32px !important;
+      height: 32px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+      color: black;
+    }
 
+    .DayPickerNavigation_button:hover {
+      background: #f3f4f6 !important;
+      transform: scale(1.05) !important;
+    }
+
+    .DayPickerNavigation_button:active {
+      transform: scale(0.95) !important;
+    }
+
+    .DayPickerNavigation_button svg,
+    .DayPickerNavigation_button .DayPickerNavigation_svg,
+    .DayPickerNavigation_svg {
+      display: none !important;
+    }
+
+    .DayPickerNavigation_button:first-child::after {
+      content: "<";
+      position: absolute;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000000;
+      line-height: 1;
+    }
+
+    .DayPickerNavigation_button:last-child::after {
+      content: ">";
+      position: absolute;
+      font-size: 14px;
+      font-weight: bold;
+      color: #000000;
+      line-height: 1;
+    }
+
+    .DayPickerNavigation_button[aria-label*="previous"]::after,
+    .DayPickerNavigation_button[aria-label*="Previous"]::after {
+      content: "<";
+    }
+
+    .DayPickerNavigation_button[aria-label*="next"]::after,
+    .DayPickerNavigation_button[aria-label*="Next"]::after {
+      content: ">";
+    }
+
+    /* Calendar Day styles */
+    .CalendarDay {
+      border: 0px;
+      margin: 1px;
+    }
+
+    .CalendarDay__selected,
+    .CalendarDay__selected:hover {
+      background-color: #f7e700;
+      border: 0px;
+      color: black;
+    }
+
+    .CalendarDay__selected_span,
+    .CalendarDay__hovered_span {
+      background-color: #f7e70033;
+      color: black;
+      border: 0px;
+    }
+
+    .CalendarDay__selected_span:hover,
+    .CalendarDay__hovered_span:hover {
+      background-color: #f7e7004a;
+      color: black;
+    }
+
+    .DayPickerKeyboardShortcuts_show__topRight {
+      display: none;
+    }
 
 .DayPicker_weekHeader {
       margin-top: 1rem !important;
@@ -2386,7 +2480,7 @@ body.react-dates__block-scroll {
   return (
     <div
       className={`w-full h-full flex items-center justify-center border-none ${
-        isHighlighted ? "bg-yellow-50" : ""
+        isHighlighted ? "bg-yellow-50 " : ""
       }`}
     >
       {day.date()}

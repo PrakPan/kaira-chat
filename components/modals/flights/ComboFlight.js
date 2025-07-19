@@ -205,6 +205,21 @@ const ComboFlight = (props) => {
   const [isSourceFocused, setIsSourceFocused] = useState(false);
   const [isDestinationFocused, setIsDestinationFocused] = useState(false);
 
+const [traceId, setTraceId] = useState(null);
+const [traceIdTimestamp, setTraceIdTimestamp] = useState(null);
+const [remainingTime, setRemainingTime] = useState(900);
+
+
+const isTraceIdValid = () => {
+  if (!traceId || !traceIdTimestamp) return false;
+  
+  const currentTime = Date.now();
+  const elapsedSeconds = (currentTime - traceIdTimestamp) / 1000;
+  
+  return elapsedSeconds < remainingTime;
+};
+
+
   const generateRequestId = () => {
     const newId = currentRequestId + 1;
     setCurrentRequestId(newId);
@@ -452,6 +467,7 @@ const ComboFlight = (props) => {
     });
 
     if (props.token) {
+      const shouldSendTraceId = filtersState?.airlines && isTraceIdValid();
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -468,6 +484,7 @@ const ComboFlight = (props) => {
           props.selectedBooking.destination_iata,
         preferred_departure_time: preferredDepartureTime,
         flight_cabin_class: classType.value,
+        ...(shouldSendTraceId && { trace_id: traceId })
       };
 
 
@@ -504,6 +521,12 @@ const ComboFlight = (props) => {
           const provider = res.data.provider;
           setProvider(provider);
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+
+          if (res.data.trace_id) {
+      setTraceId(res.data.trace_id);
+      setTraceIdTimestamp(Date.now());
+      setRemainingTime(res.data.remaining_time || 900);
+    }
 
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
@@ -621,7 +644,7 @@ const ComboFlight = (props) => {
 
     const requestData = {
       booking_id,
-      trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
+      trace_id: traceId || localStorage.getItem(`${flightProvider}_trace_id`),
       result_indices: [result_index],
       source_itinerary_city: props?.source_itinerary_city_id,
       destination_itinerary_city: props?.destination_itinerary_city_id,
