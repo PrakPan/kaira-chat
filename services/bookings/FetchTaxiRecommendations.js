@@ -9,6 +9,10 @@ export const fetchTransferMode = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/geos/route/",
 });
 
+export const fetchMulticityRoundtrip = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/transfers/taxi/multicity/search/",
+})
+
 export const UpdateTransferMode = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });

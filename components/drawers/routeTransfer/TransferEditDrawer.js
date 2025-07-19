@@ -21,6 +21,7 @@ import FlightModal from "../../../components/modals/flights/Index";
 import media from "../../../components/media";
 import { getDate } from "../../../helper/DateUtils";
 import {
+  fetchMulticityRoundtrip,
   fetchTransferMode,
   loadOtherTransfers,
   UpdateTransferMode,
@@ -165,7 +166,7 @@ const TransferEditDrawer = (props) => {
   const fetchRoutes = () => {
     setLoadingTransfers(true);
     setTransfersError(null);
-    roundTripSuggestion();
+    // roundTripSuggestion();
 
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
@@ -173,6 +174,29 @@ const TransferEditDrawer = (props) => {
         number_of_adults + number_of_children + number_of_infants,
     };
 
+    const multiCityRoundtripRequestData = {
+      start_date: "2025-10-05",
+      start_time: `10:00`,
+      number_of_travellers:
+        number_of_adults + number_of_children + number_of_infants,
+    }
+
+    {
+      mercury || props?.isMercury ?
+      fetchMulticityRoundtrip
+      .post(
+        `/${props?.ItineraryId}`,
+        multiCityRoundtripRequestData
+      )
+      .then((response)=>{
+          setMultiCitySuggestions(response?.data?.data?.[0]?.data?.quotes);
+          setRoundTripSuggestions(response?.data?.data?.[1]?.data?.quotes)
+      })
+      .catch(error=>{
+        console.error("Error::Fetching Multicity Round Trip");
+      })
+    : null
+    }
     {
       mercury || props?.isMercury
         ? fetchTransferMode
@@ -612,7 +636,7 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
-            {/* <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
+            <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
               <RadioButton
                 name={TRANSFER_TYPES.ONEWAYTRIP.name}
                 label={TRANSFER_TYPES.ONEWAYTRIP.label}
@@ -635,7 +659,7 @@ const TransferEditDrawer = (props) => {
                   handleTransferType={handleTransferType}
                 />
               )}
-            </div> */}
+            </div>
 
             {selectLoading && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
