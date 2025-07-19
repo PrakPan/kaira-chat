@@ -350,7 +350,7 @@ const Mobile = (props) => {
         <Drawer
           anchor="left"
           show={toggleMenu}
-          onClose={() => setToggleMenu(false)}
+          onHide={() => setToggleMenu(false)}
           className="mobile-header-menu"
           width="250px"
           style={{ zIndex: "1200 !important" }}
