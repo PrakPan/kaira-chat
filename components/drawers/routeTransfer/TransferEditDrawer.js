@@ -6,7 +6,7 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
 import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
-import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
+import axiosRoundTripInstance, { axiosMulticityRoundTripInstance } from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import Button from "../../../components/ui/button/Index";
@@ -87,10 +87,10 @@ const TRANSFER_TYPES = {
     name: "round-trip",
     label: "Round-trip options",
   },
-  MULTICITYTRIP: {
-    name: "multi-city-trip",
-    label: "Multi-city options",
-  },
+  MULTICITYROUNDTRIP: {
+  name: "MULTICITYROUNDTRIP",
+  label: "Multi-City/Roundtrip"
+},
 };
 
 const TransferEditDrawer = (props) => {
@@ -135,6 +135,12 @@ const TransferEditDrawer = (props) => {
   const [transferType, setTransferType] = useState(
     TRANSFER_TYPES.ONEWAYTRIP.name
   );
+  const [loadingRoundTrip, setLoadingRoundTrip] = useState(false);
+  const [loadingMultiCity, setLoadingMultiCity] = useState(false);
+  const [updatingTransfer, setUpdatingTransfer] = useState(false);
+  const [selectedCab, setSelectedCab] = useState(null);
+  const [multicityRoundtripTraceId, setMulticityRoundtripTraceId] = useState(null);
+
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showComboFlightModal, setShowComboFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
@@ -181,22 +187,23 @@ const TransferEditDrawer = (props) => {
         number_of_adults + number_of_children + number_of_infants,
     }
 
-    {
-      mercury || props?.isMercury ?
-      fetchMulticityRoundtrip
-      .post(
-        `/${props?.ItineraryId}`,
-        multiCityRoundtripRequestData
-      )
-      .then((response)=>{
-          setMultiCitySuggestions(response?.data?.data?.[0]?.data?.quotes);
-          setRoundTripSuggestions(response?.data?.data?.[1]?.data?.quotes)
-      })
-      .catch(error=>{
-        console.error("Error::Fetching Multicity Round Trip");
-      })
-    : null
-    }
+    // {
+    //   mercury || props?.isMercury ?
+    //   fetchMulticityRoundtrip
+    //   .post(
+    //     `/${props?.ItineraryId}/`,
+    //     multiCityRoundtripRequestData
+    //   )
+    //   .then((response)=>{
+    //       setMultiCitySuggestions(response?.data?.suggestions?.[0]);
+    //       setMulticityRoundtripTraceId(response?.data?.trace_id);
+    //       setRoundTripSuggestions(response?.data?.suggestions?.[1]?.data)
+    //   })
+    //   .catch(error=>{
+    //     console.error("Error::Fetching Multicity Round Trip");
+    //   })
+    // : null
+    // }
     {
       mercury || props?.isMercury
         ? fetchTransferMode
@@ -470,6 +477,75 @@ const TransferEditDrawer = (props) => {
     });
   };
 
+  const handleMultiCitySelect = (trace_id, result_index, quote_index) => {
+  const access_token = localStorage.getItem("access_token");
+  if (!props.token) {
+    setShowLoginModal(true);
+    return;
+  }
+  setUpdatingTransfer(true);
+  setSelectLoading(true);
+
+  const data = {
+    trace_id,
+    result_index,
+    quote_index
+  };
+
+  axiosMulticityRoundTripInstance 
+    .post(`${ItineraryId}/bookings/multicitytaxi/`, data, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      if (response.status === 201 || response.status === 200) {
+        fetchData((scroll = false));
+        openNotification({
+          text: "Your Multi-City transfer booked successfully!",
+          heading: "Success!",
+          type: "success",
+        });
+      }
+      setSelectLoading(false);
+       setUpdatingTransfer(false);
+      setShowDrawer(false);
+      setCurrentStep(0);
+    })
+    .catch((err) => {
+      setSelectLoading(false);
+       setUpdatingTransfer(false);
+      setShowDrawer(false);
+      setCurrentStep(0);
+      console.error("Error::While Creating Multicity/RoundTrip Booking",error.message)
+      if (err.response?.status === 403) {
+        openNotification({
+          text: "You are not allowed to make changes to this itinerary",
+          heading: "Error!",
+          type: "error",
+        });
+      } else {
+        openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
+      }
+    });
+
+  logEvent({
+    action: "MultiCity_Transfer_Add_Change",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: `Select`,
+      event_value: trace_id,
+      event_action: "MultiCity Transfer Add/Change Drawer",
+    },
+  });
+};
+
   const handleTransferType = (e) => {
     setTransferType(e.target.id);
   };
@@ -492,6 +568,7 @@ const TransferEditDrawer = (props) => {
         setSkipTaxiFetch(false);
         setFlightResults([]);
         setTaxiResults([]);
+       setTransferType(TRANSFER_TYPES.ONEWAYTRIP.name);
       }}
     >
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
@@ -643,22 +720,14 @@ const TransferEditDrawer = (props) => {
                 transferType={transferType}
                 handleTransferType={handleTransferType}
               />
-              {roundTripSuggestions && (
-                <RadioButton
-                  name={TRANSFER_TYPES.ROUNDTRIP.name}
-                  label={TRANSFER_TYPES.ROUNDTRIP.label}
-                  transferType={transferType}
-                  handleTransferType={handleTransferType}
-                />
-              )}
-              {multiCitySuggestions && (
-                <RadioButton
-                  name={TRANSFER_TYPES.MULTICITYTRIP.name}
-                  label={TRANSFER_TYPES.MULTICITYTRIP.label}
-                  transferType={transferType}
-                  handleTransferType={handleTransferType}
-                />
-              )}
+              {(roundTripSuggestions || multiCitySuggestions) && (
+  <RadioButton
+    name="MULTICITYROUNDTRIP"
+    label="Multi-City/Roundtrip"
+    transferType={transferType}
+    handleTransferType={handleTransferType}
+  />
+)}
             </div>
 
             {selectLoading && (
@@ -1100,17 +1169,64 @@ const TransferEditDrawer = (props) => {
                   )}
                 </div>
               </>
-            ) : transferType === TRANSFER_TYPES.ROUNDTRIP.name ? (
-              <RoundTripSuggestion
-                handleRoundTripSelect={handleRoundTripSelect}
-                roundTripSuggestions={roundTripSuggestions}
-              />
-            ) : transferType === TRANSFER_TYPES.MULTICITYTRIP.name ? (
-              <MultiCityTripSuggestion
-                handleRoundTripSelect={handleRoundTripSelect}
-                multiCitySuggestions={multiCitySuggestions}
-              />
-            ) : null}
+            ) : transferType === "MULTICITYROUNDTRIP" ? (
+  <div className="w-full flex flex-col items-center gap-4">
+    {roundTripSuggestions && (
+      <div className="w-full">
+        <h3 className="text-lg font-semibold mb-3">Round Trip</h3>
+        <RoundTripSuggestion
+           handleRoundTripSelect={handleMultiCitySelect}
+          roundTripSuggestions={roundTripSuggestions}
+           selectedCab={selectedCab}
+          setSelectedCab={setSelectedCab}
+        />
+      </div>
+    )}
+    
+    {multiCitySuggestions && (
+      <div className="w-full">
+        <h3 className="text-lg font-semibold mb-3">{multiCitySuggestions?.name}</h3>
+        <MultiCityTripSuggestion
+          handleRoundTripSelect={handleMultiCitySelect}
+          multiCitySuggestions={multiCitySuggestions}
+          selectedCab={selectedCab}
+          setSelectedCab={setSelectedCab}
+        />
+      </div>
+    )}
+  </div>
+) : null}
+          </div>
+        )}
+
+         {transferType === "MULTICITYROUNDTRIP" && 
+         (roundTripSuggestions || multiCitySuggestions) && (
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+            <div className="flex justify-center items-end p-4 md:p-0">
+              <button
+                onClick={() => handleMultiCitySelect(multicityRoundtripTraceId, 0, selectedCab?.result_index)}
+                className={`
+                  w-full max-w-md px-8 py-3 rounded-lg font-semibold text-base
+                  transition-all duration-200 ease-in-out
+                  flex items-center justify-center min-h-[48px]
+                  ${
+                    !selectedCab || updatingTransfer
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-[#f8e000] text-black border-2 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
+                  }
+                `}
+                disabled={!selectedCab || updatingTransfer}
+              >
+                {updatingTransfer ? (
+                  <div className="flex items-end gap-2">
+                    <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  "Update Transfer"
+                )}
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -3626,8 +3742,9 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
 const RoundTripSuggestion = ({
   roundTripSuggestions,
   handleRoundTripSelect,
+  selectedCab,
+  setSelectedCab
 }) => {
-  const [selectedCab, setSelectedCab] = useState(null);
   const [selectError, setSelectError] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [pricing, setPricing] = useState([]);
@@ -3721,7 +3838,7 @@ const RoundTripSuggestion = ({
               >
                 <div className="w-1 h-1 bg-black rounded-full"></div>
                 <div className="text-[14px] font-normal">
-                  {route?.source?.shortName} to {route?.destination?.shortName}
+                  {route?.name}
                 </div>
               </div>
             ))}
@@ -3807,32 +3924,33 @@ const RoundTripSuggestion = ({
 const MultiCityTripSuggestion = ({
   multiCitySuggestions,
   handleRoundTripSelect,
+  selectedCab,
+  setSelectedCab
 }) => {
-  const [selectedCab, setSelectedCab] = useState(null);
   const [selectError, setSelectError] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [pricing, setPricing] = useState([]);
   const [viewDetails, setViewDetails] = useState([
-    ...Array(multiCitySuggestions.length).fill(false),
+    ...Array(multiCitySuggestions?.data?.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   useEffect(() => {
     const routes = [];
     const pricing = [];
-    multiCitySuggestions?.routes?.forEach((route) => {
+    multiCitySuggestions?.data?.trips?.forEach((route) => {
       routes.push(route);
     });
     setRoutes(routes);
-    multiCitySuggestions?.data?.cabRate.forEach((route) => {
-      pricing.push(route);
+    multiCitySuggestions?.data?.quotes?.forEach((quote) => {
+      pricing.push(quote);
     });
     setPricing(pricing);
   }, [multiCitySuggestions]);
 
-  const handleSelectCab = (e) => {
+  const handleSelectCab = (cab) => {
     setSelectError(false);
-    setSelectedCab(e.target.id);
+    setSelectedCab(cab);
   };
 
   const handleSelect = () => {
@@ -3880,10 +3998,11 @@ const MultiCityTripSuggestion = ({
           )}
           <div className="flex flex-col gap-1">
             <div className="text-[16px] font-medium">
+
               Destination Taxi Only {isDesktop && "(Multicity)"}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
-              Distance: {multiCitySuggestions?.data?.quotedDistance} Kms
+              Distance: {multiCitySuggestions?.data?.distance?.value} Kms
             </div>
           </div>
         </div>
@@ -3898,7 +4017,7 @@ const MultiCityTripSuggestion = ({
               >
                 <div className="w-1 h-1 bg-black rounded-full"></div>
                 <div className="text-[14px] font-normal">
-                  {route?.source?.shortName} to {route?.destination?.shortName}
+                  {route?.name}
                 </div>
               </div>
             ))}
@@ -3922,17 +4041,17 @@ const MultiCityTripSuggestion = ({
               >
                 <div>
                   <div
-                    id={price?.cab?.id}
-                    onClick={handleSelectCab}
+                    id={price?.result_index}
+                    onClick={()=>handleSelectCab(price)}
                     className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                      selectedCab == price?.cab?.id
+                      selectedCab == price?.result_index
                         ? "border-black"
                         : "border-[#636366]"
                     } `}
                   >
-                    {selectedCab == price?.cab?.id && (
+                    {selectedCab == price?.result_index && (
                       <div
-                        id={price?.cab?.id}
+                        id={price?.result_index}
                         className="w-3 h-3 bg-black rounded-full"
                       ></div>
                     )}
@@ -3941,25 +4060,25 @@ const MultiCityTripSuggestion = ({
 
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-[#636366] text-[14px] font-normal">
-                    {price.cab.type}:{" "}
+                    {price?.taxi_category?.model_name}:{" "}
                     <span className="text-black font-bold">
-                      ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
+                      ₹{getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
                   </div>
                   {(viewDetails[i] || true) && (
                     <div className="text-sm">
                       <span className="font-semibold">Facilities: </span>
-                      {price?.cab?.seatingCapacity
-                        ? `${price.cab.seatingCapacity} Seating Capacity | `
+                      {price?.taxi_category?.seating_capacity
+                        ? `${price.taxi_category.seating_capacity} Seats | `
                         : null}
-                      {price?.cab?.bagCapacity
-                        ? `${price.cab.bagCapacity} Bag Capacity | `
+                      {price?.taxi_category?.bag_capacity
+                        ? `${price.taxi_category.bag_capacity} Bags | `
                         : null}
-                      {price?.cab?.bigBagCapaCity
-                        ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
+                      {price?.taxi_category?.bigBagCapaCity
+                        ? `${price.taxi_category.bigBagCapaCity} Big Bag Capacity | `
                         : null}
-                      {price?.cab?.fuelType
-                        ? ` Fuel Type ${price.cab?.fuelType}`
+                      {price?.taxi_category?.fuel_type
+                        ? ` Fuel Type: ${price.taxi_category?.fuel_type}`
                         : null}
                     </div>
                   )}
@@ -3979,6 +4098,7 @@ const MultiCityTripSuggestion = ({
           </label>
         </div>
       </div>
+      
     </div>
   );
 };

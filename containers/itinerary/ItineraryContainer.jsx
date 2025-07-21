@@ -402,7 +402,7 @@ const ItineraryContainer = (props) => {
             city_name,
             city_id,
             city_gmaps_place_id,
-
+            
             trace_city_id: data?.cities[i]?.id,
             duration: data?.cities[i]?.duration,
             check_in: data?.cities[i]?.start_date,
@@ -419,6 +419,7 @@ const ItineraryContainer = (props) => {
             hotel.itinerary_city_id=itinerary_city_id,
             hotel.coordinates = hotel?.coordinates,
             hotel.city_name = city_name;
+            hotel.key = i;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
             hotel.lat=hotel?.latitude,

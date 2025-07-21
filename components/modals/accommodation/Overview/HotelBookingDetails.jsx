@@ -227,12 +227,15 @@ const HotelBookingDetails = (props) => {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {
-          if (item?.hotels?.[0]?.id == props?.id) {
-            item.hotels = [];
-            item.itinerary_city_id=item?.itinerary_city_id
-          }
-          return item;
-        });
+  const hasMatchingHotel = item?.hotels?.some(hotel => hotel?.id === props?.id);
+
+  if (hasMatchingHotel) {
+    item.hotels = [];
+   item.itinerary_city_id=item?.itinerary_city_id
+  }
+
+  return item;
+});
 
         newStays = newStays.map((item) => {
           console.log('props5:',item)

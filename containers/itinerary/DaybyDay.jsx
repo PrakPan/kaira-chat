@@ -200,6 +200,8 @@ const DaybyDay = ({
     });
   };
 
+
+
   return (
     <>
       <div
@@ -337,6 +339,15 @@ const DaybyDay = ({
             var idMapping =
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
+            const cityHotels = stay?.filter(hotel => 
+    hotel?.itinerary_city_id === city?.id
+  ) || [];
+
+  const totalDuration = cityHotels.reduce(
+    (total, hotel) => total + (hotel?.duration || 0), 
+    0
+  ) || city?.duration;
+
             let sourceKey = city?.id;
             let airportBookings = [
               ...(transferBooking?.airport[sourceKey]?.filter(
@@ -374,6 +385,9 @@ const DaybyDay = ({
                   setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
                   index={index}
+                  cityHotels={cityHotels}
+                  totalDuration={totalDuration}
+                  itinerary_city_id={city?.id}
                   intracityBookings={intracityBookings}
                   _updateFlightBookingHandler={_updateFlightBookingHandler}
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}

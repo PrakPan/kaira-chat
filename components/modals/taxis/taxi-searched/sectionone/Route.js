@@ -177,9 +177,9 @@ const Section = (props) => {
       <Container>
         <TaxiHeading>
           {/* <Heading> */}
-          {props.data?.taxi_category?.type ? (
+          {props.data?.taxi_category?.model_name ? (
             <>
-              {props.data.taxi_category.type}{" "}
+              {props.data.taxi_category.model_name}{" "}
               <>
                 {props.data.taxi_category?.fuel_type ? (
                   `(${props.data.taxi_category.fuel_type})`
@@ -202,7 +202,7 @@ const Section = (props) => {
           </div>
         </TaxiHeading>
 
-        {<ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
+        {<ModelText>{props.data?.taxi_category?.type}</ModelText>}
 
         <div className="flex justify-between">
           <SectionFour

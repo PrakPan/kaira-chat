@@ -1121,7 +1121,7 @@ const CityItem = ({
                     booking_type?.toLowerCase()
                   )
                     ? "mt-5"
-                    : "mt-0"
+                    : (booking_id || city) && !visible ?"mt-5" : "mt-0"
                 }`}
               >
                 {(booking_id || city) && !visible ? (
