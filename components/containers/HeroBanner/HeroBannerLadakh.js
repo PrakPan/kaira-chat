@@ -11,7 +11,7 @@ const HeroBannerLadakh = (props) => {
     <FullImage
       heightmobile="30rem"
       height="37rem"
-      url={"/media/states/ladakh-group.png"}
+      url={props?.url}
       filter="brightness(1)"
       resizeMode={props.resizeMode}
       noLazy
@@ -19,8 +19,8 @@ const HeroBannerLadakh = (props) => {
       <div
         className={
           isDesktop
-            ? "h-full pt-[2rem] md:bg-gradient-to-r md:from-neutral-800 md:to-50%"
-            : "h-full pt-[2rem] bg-black bg-opacity-25"
+            ? "h-full pt-[2rem] md:bg-gradient-to-r md:from-neutral-800 md:to-50% h-full"
+            : "h-full pt-[2rem] bg-black bg-opacity-25 h-full"
         }
       >
         <FullImgContentLadakh

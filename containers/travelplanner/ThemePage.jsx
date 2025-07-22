@@ -40,6 +40,13 @@ import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 import ImageCarousel from "./ImageCaraousel.js";
 import Element from "../newcityplanner/elements/Index.js";
 import ThemeHeadline from "./ThemeHeadines.js";
+import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import LadakhLogo from "../../components/cards/LadakhLogo.js";
+import Destination7Carousel from "../../components/theme/Destination7Carousel.jsx";
+import Activity3Carousel from "../../components/theme/Activity3Carousel.jsx";
+import ElementCard2 from "../newcityplanner/elements/ElementCard2.jsx";
+import Element2 from "../newcityplanner/elements/Element2.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -52,6 +59,7 @@ const SetWidthContainer = styled.div`
 `;
 
 export default function ThemePage(props) {
+  console.log("ladakh props are: ", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -125,17 +133,36 @@ export default function ThemePage(props) {
         />
       )}
 
-      <ThemeBanner
-        image={props.experienceData.image}
-        page_id={props.experienceData.id}
-        destination={props.experienceData.destination}
-        cities={props.experienceData.locations}
-        children_cities={props.experienceData.children}
-        title={props.experienceData.banner_heading}
-        subheading={props.experienceData.banner_text}
-        page={"State Page"}
-        slug={props.slug}
-      />
+      {props?.slug === "ladakh" ? (
+        <>
+          <HeroBannerLadakh
+            image={props.experienceData.image}
+            page_id={props.page_id}
+            type={props.type}
+            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
+            cities={props.experienceData.locations}
+            children_cities={props.experienceData.children}
+            title={props.experienceData.banner_heading}
+            subheading={props.experienceData.banner_text}
+            page={"State Page"}
+            eventDates={props.eventDates}
+            url={props?.experienceData?.image}
+          />
+        </>
+      ) : (
+        <ThemeBanner
+          image={props.experienceData.image}
+          page_id={props.experienceData.id}
+          destination={props.experienceData.destination}
+          cities={props.experienceData.locations}
+          children_cities={props.experienceData.children}
+          title={props.experienceData.banner_heading}
+          subheading={props.experienceData.banner_text}
+          page={"State Page"}
+          slug={props.slug}
+        />
+      )}
+      {props.slug === "ladakh" && <LadakhLogo />}
 
       {props.slug === "japan-cherry-blossom" && (
         <div className="relative">
@@ -188,7 +215,7 @@ export default function ThemePage(props) {
           <PathNavigation path={"asia/japan"} />
         )}
         {props.experienceData.overview_heading &&
-        props.experienceData.overview_text ? (
+        props.experienceData.overview_text  && props?.slug!=="ladakh"? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -231,8 +258,8 @@ export default function ThemePage(props) {
                     <div className="space-y-3">
                       {(props?.slug === "perfect-proposals-2025" &&
                         (component?.priority == 13 ||
-                          component?.priority == 9)) || component.heading == "The Gallery Section"
-                      ? (
+                          component?.priority == 9)) ||
+                      component.heading == "The Gallery Section" ? (
                         ""
                       ) : (
                         <PrimaryHeading
@@ -251,7 +278,6 @@ export default function ThemePage(props) {
                     </div>
 
                     <ThemeBackground component={component} slug={props?.slug} />
-
                     {props.slug === "japan-cherry-blossom" &&
                       component?.priority == 4 &&
                       isPageWide && (
@@ -406,7 +432,10 @@ export default function ThemePage(props) {
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        <Activity1Carousel activities={component.activities} />{" "}
+                        <Activity1Carousel
+                          activities={component.activities}
+                          slug={props?.slug}
+                        />{" "}
                         <PlanYourTripButton
                           text={"Create your free itinerary"}
                         />
@@ -522,7 +551,38 @@ export default function ThemePage(props) {
                           text={"Create your travel plan now!"}
                         />
                       </>
-                    ) : null}
+                    ) : component.carousel === "destination-7" ? (
+                      <>
+                        <Destination7Carousel
+                          heading={component?.heading}
+                          text={component?.text}
+                          cities={component?.cities}
+                        />
+                      </>
+                    ) : component.carousel === "Activity-3" ? (
+                      <>
+                        <Activity3Carousel
+                          activities={component.activities}
+                          slug={props?.slug}
+                        />{" "}
+                        <PlanYourTripButton
+                          text={"Create your free itinerary"}
+                        />
+                      </>
+                    ) : component.carousel === "destination-8" ? (
+                      <>
+                        <Element2
+                          data={component.elements}
+                          elements={component?.elements}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={props?.slug}
+                          page={"Country Page"}
+                        />
+                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                      </>
+                    ):null}
                   </div>
                 )
               );

@@ -35,32 +35,6 @@ const PaddingContianer = styled.div`
   }
 `;
 
-const IconText = styled.div`
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: black;
-  font-weight: 400;
-  margin-top: 7px;
-  @media screen and (min-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const IconsContainer = styled.div`
-  display: flex;
-  filter: invert(100%);
-  justify-content: space-between;
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  padding-inline: 10px;
-  @media screen and (min-width: 768px) {
-    width: 40%;
-  }
-`;
-
 const FullImgContentLadakh = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
@@ -85,8 +59,8 @@ const FullImgContentLadakh = (props) => {
   };
 
   return (
-    <Container className="font-lexend">
-      <PaddingContianer className="">
+    <Container className="font-lexend h-full !flex justify-center items-center">
+      <PaddingContianer className="flex items-center justify-center">
 
         {isPageWide ? (
           <div>
@@ -100,8 +74,9 @@ const FullImgContentLadakh = (props) => {
               borderWidth="1px"
               onclick={handlePlanButton}
               margin="3vh 0 1vh 0"
+              className="flex justify-center items-center"
             >
-              Plan Itinerary For Free!
+              Get My Custom Plan!
             </Button>
           </div>
         ) : (
@@ -117,67 +92,11 @@ const FullImgContentLadakh = (props) => {
               onclick={handlePlanButton}
               margin="1rem auto 1rem auto"
             >
-              Start Planning
+              Get My Custom Plan!
             </Button>
           </div>
         )}
       </PaddingContianer>
-
-      {isPageWide && (
-        <div style={{ marginTop: "1.2rem" }}>
-          <TailoredForm
-            page_id={props.page_id}
-            type={props?.type}
-            children_cities={props.children_cities}
-            destination={props.destination}
-            cities={props.cities}
-            HeroBanner
-            eventDates={props.eventDates}
-          ></TailoredForm>
-        </div>
-      )}
-
-      <IconsContainer>
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/travel.png"
-            noLazy
-          />
-          <IconText>
-            Free Personalized <br /> Itineraries
-          </IconText>
-        </div>
-
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/booking.png"
-            noLazy
-          />
-          <IconText>
-            Affordable & <br />
-            Flexible Bookings
-          </IconText>
-        </div>
-
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/money.png"
-            noLazy
-          />
-          <IconText>
-            Zero Hidden <br /> Charges
-          </IconText>
-        </div>
-      </IconsContainer>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

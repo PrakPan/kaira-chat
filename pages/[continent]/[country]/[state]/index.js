@@ -16,7 +16,7 @@ import ThemePage from "../../../../containers/travelplanner/ThemePage"
 
 const TravelPlanner = (props) => {
   useEffect(() => {
-    console.log("props are:", props);
+    console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
