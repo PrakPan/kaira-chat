@@ -53,11 +53,13 @@ const AirportBookingItem = ({
   upPresent,
   downPresent,
   onBookingDelete,
-  bookingMode, // Add this prop
-  originCityName, // Add this prop
-  destinationCityName, // Add this prop
-  onPickupClick, // Add this prop
-  onDropClick, // Add this prop
+  bookingMode, 
+  originCityName, 
+  destinationCityName,
+  onPickupClick, 
+  onDropClick,
+  firstCity,
+  lastCity,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -181,7 +183,6 @@ const AirportBookingItem = ({
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
 
-  // Check if booking mode supports transfers
   const supportsTransfers = (mode) => {
     return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
@@ -734,6 +735,8 @@ const CityItem = ({
   sourceLong,
   destinationLat,
   destinationLong,
+  firstCity,
+  lastCity
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
@@ -1226,6 +1229,8 @@ const CityItem = ({
               show={pickupDropShow}
               sourceGmaps={sourceGmaps}
               destinationGmaps={destinationGmaps}
+              firstCity={firstCity}
+              lastCity={lastCity}
             />
           </div>
           {/* )} */}

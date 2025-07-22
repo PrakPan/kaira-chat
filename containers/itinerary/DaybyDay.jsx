@@ -334,6 +334,7 @@ const DaybyDay = ({
             _updatePaymentHandler={_updatePaymentHandler}
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             getPaymentHandler={getPaymentHandler}
+            firstCity={true}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -596,6 +597,7 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
+            lastCity={true}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
