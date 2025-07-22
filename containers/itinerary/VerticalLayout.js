@@ -1009,10 +1009,10 @@ console.log("=== END DEBUG ===");
           transferData.transferType === "pickup"
             ? dCityData?.id || dCityData?.gmaps_place_id
             : oCityData?.id || oCityData?.gmaps_place_id,
-        destination_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
+        destination_itinerary_city: null,
+          // transferData.transferType === "pickup"
+          //   ? dCityData?.id || dCityData?.gmaps_place_id
+          //   : oCityData?.id || oCityData?.gmaps_place_id,
         is_pickup: transferData.transferType === "pickup",
         is_drop: transferData.transferType === "drop",
         source: transferData?.source,

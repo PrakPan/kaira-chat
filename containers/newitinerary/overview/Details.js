@@ -160,7 +160,7 @@ const Details = (props) => {
         <DateContainer>
           {props.tripsPage ? (
             <div>
-              <Heading className="flex flex-row gap-2 items-center overflow-visible">
+              <Heading className="flex flex-row gap-2 items-center md:overflow-visible">
                 Dates
               </Heading>
               <Text>{props.duration}</Text>

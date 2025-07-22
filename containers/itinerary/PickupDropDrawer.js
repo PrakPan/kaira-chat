@@ -58,7 +58,7 @@ const PickupDropDrawer = ({
   destinationLat,
   destinationLong,
 }) => {
-  console.log("HotelN", sourceGmaps, destinationGmaps);
+  console.log("VVV", booking);
 
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -220,12 +220,15 @@ const PickupDropDrawer = ({
     let newTime = "12:00";
 
     if (transferType === "pickup") {
-      newDate = formatDate(booking.check_out);
-      newTime = calculateTimeWithOffset(booking.check_out, 30);
-    } else {
-      newDate = formatDate(booking.check_in);
-      newTime = calculateTimeWithOffset(booking.check_in, 30);
-    }
+  const result = calculateTimeWithOffset(booking.check_out, 30);
+  newDate = result.date;
+  newTime = { value: result.value, display: result.display };
+} else {
+  const result = calculateTimeWithOffset(booking.check_in, -30);
+  newDate = result.date;
+  newTime = { value: result.value, display: result.display };
+}
+
 
     // Set hotel addresses with city name fallback
     let newSourceAddress = "";
@@ -247,14 +250,11 @@ const PickupDropDrawer = ({
     };
   };
 
-  // Initialize with basic state
   const [formData, setFormData] = useState(initialFormState);
 
-  // Fix the date formatting function
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return "";
 
-    // Make the datetime ISO-compliant
     const safeString = dateTimeString.replace(" ", "T");
 
     const date = new Date(safeString);
@@ -267,12 +267,13 @@ const PickupDropDrawer = ({
     return `${year}-${month}-${day}`;
   };
 
-  // Fix the time calculation function
   const calculateTimeWithOffset = (dateTimeString, offsetMinutes) => {
-    if (!dateTimeString) return { value: "12:00", display: "12:00 PM" };
+    if (!dateTimeString)
+      return { value: "12:00", display: "12:00 PM", date: "" };
 
     let date = new Date(dateTimeString);
-    if (isNaN(date.getTime())) return { value: "12:00", display: "12:00 PM" };
+    if (isNaN(date.getTime()))
+      return { value: "12:00", display: "12:00 PM", date: "" };
 
     // Apply offset
     date.setMinutes(date.getMinutes() + offsetMinutes);
@@ -288,25 +289,31 @@ const PickupDropDrawer = ({
       date.setMinutes(0);
     }
 
-    // 24-hour value for API
+    // Final time value
     const value = date.toTimeString().slice(0, 5); // "22:00"
 
-    // 12-hour display for UI
+    // Final date
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const finalDate = `${year}-${month}-${day}`;
+
+    // 12-hour display
     let hours = date.getHours();
     const mins = date.getMinutes().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const displayHour = hours % 12 || 12;
     const display = `${displayHour}:${mins} ${ampm}`;
 
-    return { value, display };
+    console.log("VVV",dateTimeString);
+
+    return { value, display, date: finalDate };
   };
 
-  // Fix the getHubId function
   const getHubId = (booking, transferType, field) => {
     if (!booking) return null;
 
     if (bookingMode === "train" || bookingMode === "ferry") {
-      // For flight: use source/destination directly
       if (!booking?.transfer_details) return null;
       return transferType === "pickup" && field === "source"
         ? booking?.transfer_details?.destination?.id
@@ -495,11 +502,13 @@ const PickupDropDrawer = ({
       let newTime = { value: "12:00", display: "12:00 PM" };
 
       if (transferType === "pickup") {
-        newDate = formatDate(booking.check_out);
-        newTime = calculateTimeWithOffset(booking.check_out, 30);
+        const result = calculateTimeWithOffset(booking.check_out, 30);
+        newDate = result.date;
+        newTime = { value: result.value, display: result.display };
       } else {
-        newDate = formatDate(booking.check_in);
-        newTime = calculateTimeWithOffset(booking.check_in, -30);
+        const result = calculateTimeWithOffset(booking.check_in, -30);
+        newDate = result.date;
+        newTime = { value: result.value, display: result.display };
       }
 
       console.log("Calculated date:", newDate, "time:", newTime);
@@ -865,11 +874,10 @@ const PickupDropDrawer = ({
             : formData.sourceGmapsId
             ? { gmaps_place_id: formData.sourceGmapsId }
             : {
-                 address: hotelName || originCityName,
+                address: hotelName || originCityName,
                 coordinates: {
                   latitude: formData.sourceLatitude,
                   longitude: formData.sourceLongitude,
-                 
                 },
               },
           destination: formData.destinationHubId
@@ -881,7 +889,6 @@ const PickupDropDrawer = ({
                 coordinates: {
                   latitude: formData.destinationLatitude,
                   longitude: formData.destinationLongitude,
-                  
                 },
               },
           start_date: formData.transferDate,

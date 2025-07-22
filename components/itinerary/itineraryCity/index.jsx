@@ -72,6 +72,7 @@ const ItineraryCity = (props) => {
     return hotel?.itinerary_city_id === props?.itinerary_city_id;
   });
 
+  console.log("Multiii",multiHotelStays);
   const multiHotelDuration = props.totalDuration || multiHotelStays?.reduce(
     (accumulator, currentValue) => accumulator + currentValue?.duration,
     0,
@@ -191,7 +192,7 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" ? (
+          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" && multiHotelStays?.[0]?.id  ? (
             <div className="flex flex-col gap-2">
               {multiHotelStays?.map((hotel, hotelIndex) => {
                 return (

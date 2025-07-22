@@ -395,7 +395,7 @@ const UpdateItineraryDates = ({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 absolute overflow-visible z-[1500] mt-[1.3rem]">
+    <div className="flex flex-row items-center gap-2 absolute overflow-visible z-[8] mt-[1.3rem]">
       {/* Date display with pen icon */}
       <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
         {!isEditing ? (
@@ -452,7 +452,7 @@ const UpdateItineraryDates = ({
         <>
           <MobileOverlay onClick={() => setShowCalendar(false)} />
 
-          <div className={`${isMobile ? "hidden fixed" : "absolute top-full left-0"} z-[9999]`}>
+          <div className={`${isMobile ? "hidden fixed" : "absolute top-full left-0"} z-[8]`}>
             <StyledDateRangeContainer $show={showCalendar}>
               <div className={`${isMobile ? "p-4" : "mb-1"}`}>
                 {/* Mobile header */}
