@@ -56,17 +56,16 @@ const TransferDrawer = ({
   origin_itinerary_city_id,
   destination_itinerary_city_id,
   isIntracity,
-  error,
   isAirport,
   AirportTransferType,
   setIsTransferDrawerOpen,
   combo,
-  setError,
   booking_id,
 }) => {
   const handleClose=useHandleClose()
   const dispatch = useDispatch();
   const router = useRouter();
+  const [error,setError]=useState(false)
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -112,7 +111,7 @@ const TransferDrawer = ({
       try {
         const res = await axios.get(
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
-            combo ? `combo` : booking_type.toLowerCase()
+            combo ? `combo` : booking_type?.toLowerCase()
           }/${booking_id}/`
         );
         setData(res?.data);

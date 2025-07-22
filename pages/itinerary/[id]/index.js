@@ -10,6 +10,7 @@ import axioslocationsinstance from "../../../services/search/search";
 import ItineraryContainer from "../../../containers/itinerary/ItineraryContainer";
 import { useSearchParams } from "next/navigation";
 import CityDetailsDrawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
+import ScrollRestoration from "../../../components/ScrollRestoration";
 
 const Itinerary = (props) => {
   const router = useRouter();
@@ -53,6 +54,7 @@ const Itinerary = (props) => {
 
   return (
     <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
+      <ScrollRestoration/>
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
         <meta
