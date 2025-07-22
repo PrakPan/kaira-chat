@@ -205,7 +205,17 @@ const ViewHotelDetails = (props) => {
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
     let stayBookings = props.plan;
-    const index = stayBookings.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
+    let index = stayBookings.findIndex(item => {
+    const sameCity = item.itinerary_city_id == props?.itinerary_city_id;
+    const sameBooking = item.id == props?.bookingId;
+
+  const duplicateCityCount = stayBookings.filter(
+    b => b.itinerary_city_id == props?.itinerary_city_id
+  ).length;
+
+  return duplicateCityCount > 1 ? (sameCity && sameBooking) : sameCity;
+});
+
     const requestData = {
       rates: rates,
       itinerary_code: data?.itinerary_code,

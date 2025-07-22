@@ -185,7 +185,6 @@ const AirportBookingItem = ({
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
 
-  // Check if booking mode supports transfers
   const supportsTransfers = (mode) => {
     return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
@@ -736,6 +735,8 @@ const CityItem = ({
   sourceLong,
   destinationLat,
   destinationLong,
+  firstCity,
+  lastCity
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1156,7 +1157,7 @@ console.log("=== END DEBUG ===");
                     booking_type?.toLowerCase()
                   )
                     ? "mt-5"
-                    : "mt-0"
+                    : (booking_id || city) && !visible ?"mt-5" : "mt-0"
                 }`}
               >
                 {(booking_id || city) && !visible ? (

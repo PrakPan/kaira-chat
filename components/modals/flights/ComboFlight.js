@@ -138,6 +138,8 @@ const ComboFlight = (props) => {
   const [flightCount, setFlightsCount] = useState(
     props?.flightResults ? props?.flightResults?.length : 0
   );
+  const [previousAirlineFilter, setPreviousAirlineFilter] = useState(null);
+
   const [pax, setPax] = useState({
     adults:
       number_of_adults ||
@@ -467,7 +469,8 @@ const isTraceIdValid = () => {
     });
 
     if (props.token) {
-      const shouldSendTraceId = filtersState?.airlines && isTraceIdValid();
+      const hasAirlineFilterChanged = filtersState?.airlines !== previousAirlineFilter;
+      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid();
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -531,10 +534,12 @@ const isTraceIdValid = () => {
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
             if (!hasFetchedOnce) {
+
               setAirlineCodes(res.data.airlines);
               setHasFetchedOnce(true);
             }
             setAirlineCodes(res.data.airlines);
+            setPreviousAirlineFilter(filtersState?.airlines);
             if (props?.setFlightResults)
               props?.setFlightResults(res.data.results);
             setFlightsCount(res.data.results.length);

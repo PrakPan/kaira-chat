@@ -389,13 +389,16 @@ const ItineraryContainer = (props) => {
         let hotels = data?.cities[i]?.hotels;
         let city_name = data?.cities[i]?.city?.name;
         let city_id = data?.cities[i]?.city?.id;
-        let itinerary_city_id = data?.cities[i]?.id;
+        let itinerary_city_id=data?.cities[i]?.id
+        let city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
 
         if (hotels.length === 0) {
           stays.push({
             itinerary_city_id,
             city_name,
             city_id,
+            city_gmaps_place_id,
+            
             trace_city_id: data?.cities[i]?.id,
             duration: data?.cities[i]?.duration,
             check_in: data?.cities[i]?.start_date,
@@ -412,10 +415,12 @@ const ItineraryContainer = (props) => {
             hotel.itinerary_city_id=itinerary_city_id,
             hotel.coordinates = hotel?.coordinates,
             hotel.city_name = city_name;
+            hotel.key = i;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
             hotel.lat=hotel?.latitude,
             hotel.long=hotel?.longitude,
+            hotel.city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
             stays.push(hotel);
           }
         }

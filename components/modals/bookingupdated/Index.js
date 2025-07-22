@@ -339,7 +339,7 @@ const Booking = (props) => {
         }
 
         if (res.data?.data?.length) {
-          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
           let options = [];
@@ -496,9 +496,9 @@ const Booking = (props) => {
             localStorage.setItem("trace_id", res?.data?.trace_details?.id);
           }
 
-          if (res.data?.data?.length) {
-            if (res.data?.total_count) setTotalCount(res.data.total_count);
-            setNoResults(false);
+        if (res.data?.data?.length) {
+          if (res.data?.count) setTotalCount(res.data.count);
+          setNoResults(false);
 
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
