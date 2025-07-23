@@ -89,8 +89,6 @@ function getDayOffset(checkIn, checkOut) {
   return null;
 }
 
-console.log("Flight Data",booking);
-
 
   return (
     <div className=" w-full lg:w-[100%]  flex flex-col  gap-2  mt-2 md:mt-4">

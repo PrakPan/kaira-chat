@@ -468,7 +468,6 @@ const Details = (props) => {
     });
   };
 
-  console.log("HERE >>>>", props.payment);
 
   return (
     <>

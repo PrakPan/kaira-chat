@@ -120,8 +120,6 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-  console.log("activity data:", props?.removeDelete);
-
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
   const isSmallScreen = useMediaQuery("(max-width:586px)");
@@ -213,12 +211,6 @@ const ActivityDetails = (props) => {
         newItinerary.cities = itineraryCities;
 
         props?.handleCloseDrawer(e);
-        console.log(
-          "Removed ID:",
-          props.data.id,
-          "Updated itinerary:",
-          newItinerary
-        );
         dispatch(setItinerary(newItinerary));
 
         dispatch(
@@ -835,7 +827,6 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   const handleSelect = () => {
-    console.log("here");
     handleAmenityChange(index, !included);
     setIncluded((prev) => !prev);
   };

@@ -220,7 +220,6 @@ const ComboSection = (props) => {
   }
 
   const calculateArrivalTime = (startDate, startTime, durationInMinutes) => {
-    console.log("Selected Data", startDate, startTime, durationInMinutes);
     const startDateTime = dayjs(`${startDate}T${startTime}`);
     const arrivalDateTime = startDateTime.add(durationInMinutes, "minute");
     return arrivalDateTime.format("YYYY-MM-DDTHH:mm:ss");

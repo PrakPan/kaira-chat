@@ -420,7 +420,6 @@ const formattedDate =
           );
         }
         setNextUrl(res?.data?.next);
-        console.log("next url is:", nextUrl);
         setOptions(result);
       } catch (error) {
         setError(error.response?.data?.errors[0]?.message[0]);
@@ -646,7 +645,6 @@ const formattedDate =
                       currentDate.getMonth() + 1
                     )}/${currentDate.getFullYear()}`;
                     const formattedDate = getHumanDate(isoDate);
-                    console.log("formatted date:", isoDate);
 
                     return (
                       <option key={i} value={isoDate}>

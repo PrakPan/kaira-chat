@@ -97,7 +97,6 @@ const Card = (props) => {
   const [loading, setLoading] = useState(true);
 
   const handleImageClick = (pageId, destination, type) => {
-    console.log("ThemeV",type);
     props.setDestination({
       name: destination,
       pageId: pageId,

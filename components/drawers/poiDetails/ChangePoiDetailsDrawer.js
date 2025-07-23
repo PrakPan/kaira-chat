@@ -92,7 +92,6 @@ const ChangePoiDetailDrawer = (props) => {
         return city;
       });
       newItinerary.cities = itineraryCities;
-      console.log("new itinerary is:", newItinerary);
       dispatch(setItinerary(newItinerary));
       props.openNotification({
         type: "success",

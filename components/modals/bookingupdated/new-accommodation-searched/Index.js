@@ -11,7 +11,6 @@ const Accommodation = (props) => {
   const num_children=props.occupancies?.reduce(
     (sum,room)=>sum+(room.childAges?.length || 0),0
   )
-  console.log("num_children:", num_children);
   return (
     <div>
       <NewHotelBooking

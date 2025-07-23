@@ -109,23 +109,11 @@ const ViewHotelDetails = (props) => {
   }, []);
   useEffect(() => {
     if (props.show && drawer!=="showHotelDetail") {
-      console.log(
-        "booking id is:",
-        booking_id,
-        "props booking id is 2:",
-        props?.id
-      );
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
 
   const fetchDetails = () => {
-    console.log(
-      "booking id is:",
-      booking_id,
-      "props booking id is 2:",
-      props?.id
-    );
     setLoading(true);
     setError(false);
 

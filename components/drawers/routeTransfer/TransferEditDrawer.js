@@ -305,12 +305,10 @@ const TransferEditDrawer = (props) => {
   };
 
   const handleSelect = (index, transfer, multimode, mode) => {
-    console.log("Inside handleSelect", transfer);
     if (!transfer) {
       setSelectedResult(null);
       return;
     }
-    console.log("STransfer", transfer, mode);
     let selectedBookings = {
       ...selectedBooking,
       origin_iata: transfer?.source?.code,
@@ -319,7 +317,6 @@ const TransferEditDrawer = (props) => {
     };
 
     setSelectedBooking(selectedBookings);
-    console.log("Transfer", selectedBooking);
 
     if (!props.token) {
       setShowLoginModal(true);
@@ -486,7 +483,6 @@ const TransferEditDrawer = (props) => {
           setTransferBookings(data);
           // setCityTransferBookings(data);
           dispatch(setTransfersBookings(data));
-          console.log("New Transfer Data", data);
         })
         .catch((err) => {
           console.error("Error fetching all bookings", err.message);
@@ -1418,17 +1414,6 @@ const RouteContainer = (props) => {
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
 
-    console.log(
-      "Start Dtae",
-      selectedBooking,
-      selectedBooking?.check_in,
-      dCityData?.start_date,
-      oCityData.start_date,
-      oCityData.duration,
-      baseStartDate,
-      dCityData,
-      oCityData
-    );
     let calculatedStartTime;
 
     if (currentStep === 1) {
@@ -1468,7 +1453,6 @@ const RouteContainer = (props) => {
   }, [currentStep, transfer]);
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
-  console.log("Origin & Desti Single Transfer", origin_itinerary_city_id);
 
   return (
     <>
@@ -1526,7 +1510,6 @@ const RouteContainer = (props) => {
           )
         ) : (
           <>
-            {console.log("current step is:", currentStep)}
             {!(currentStep === 1 && singleTransfer?.mode === "Flight") && (
               <div
                 className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
@@ -1825,8 +1808,6 @@ const NewMultiModeContainer = ({
 
   const sequencedModes = transfer.map((t) => t.mode);
 
-  console.log("Selected Data", selectedData);
-
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
   const getCurrentMode = () => {
     return currentStep > 0 && currentStep <= sequencedModes.length
@@ -1938,12 +1919,10 @@ const NewMultiModeContainer = ({
     }
 
     const currentTransfer = transfer[currentStep - 2];
-    console.log("Current Transfer", currentTransfer, currentStep);
     if (currentTransfer.mode === "Flight") {
       // setSkipFlightFetch(true);
       setShowComboFlightModal(true);
     } else if (currentTransfer.mode === "Taxi") {
-      console.log("Inside fetch");
       // setSkipTaxiFetch(true);
       setShowComboTaxiModal(true);
     }
@@ -2076,7 +2055,6 @@ const NewMultiModeContainer = ({
       }
     }
 
-    console.log("Selllmon", selectedData);
     handleSelect(
       transferIndex,
       isDeselecting
@@ -2360,12 +2338,6 @@ const NewMultiModeContainer = ({
         );
 
         const data = response.data;
-
-        console.log(
-          "Using key:",
-          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`
-        );
-
         dispatch(
           updateSingleTransferBooking(
             `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
@@ -2374,8 +2346,6 @@ const NewMultiModeContainer = ({
         );
 
         getPaymentHandler();
-
-        console.log("Transfer from updated successfully:", data);
 
         actualClose();
 
@@ -2574,8 +2544,6 @@ const NewMultiModeContainer = ({
       };
     }
   }, [showTimeDropdown]); // Remove showDateDropdown from dependency array
-
-  console.log("Transfer Results", transferResults);
 
   return (
     <div className="w-full bg-white">
@@ -4369,7 +4337,6 @@ const OtherTransfer = ({
   }, []);
 
   useEffect(() => {
-    console.log("Result", selectedResult?.transfer);
     if (selectedResult) {
       setSelectedResult(selectedResult);
       getOtherTrasfer(selectedResult?.transfer);
@@ -4617,13 +4584,10 @@ const OtherTransfer = ({
           lastRequestData.number_of_infants !==
             newRequestBody.number_of_infants)
       ) {
-        console.log("Only pax changed, not making API call");
         setLastRequestData(newRequestBody);
         return;
       }
       setUpdateLoading(true);
-
-      console.log("Sending request body:", newRequestBody);
 
       const response = await UpdateTransferMode.post(
         `${itinerary_id}/bookings/transfer/`,
@@ -4647,13 +4611,6 @@ const OtherTransfer = ({
       );
 
       getPaymentHandler();
-
-      console.log(
-        "Key to update",
-        origin_itinerary_city_id,
-        destination_itinerary_city_id
-      );
-      console.log("Transfer updated successfully:", data);
 
       if (!newTime && !newDate) {
         hideDrawer();
@@ -4702,7 +4659,6 @@ const OtherTransfer = ({
   };
 
   const formatTimeForDisplay = (timeValue) => {
-    console.log("Time Value", timeValue);
     if (!timeValue) return "";
 
     const timeOption = timeOptions.find((option) => option.value === timeValue);
@@ -4718,7 +4674,6 @@ const OtherTransfer = ({
   };
 
   const formatDateForDisplay = (dateValue) => {
-    console.log("Other", dateValue);
     if (!dateValue) return "";
     const date = dayjs(dateValue);
     return date.format("MMM DD, YYYY");

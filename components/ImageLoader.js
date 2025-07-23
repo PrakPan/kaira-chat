@@ -191,7 +191,6 @@ const ImageLoader = (props) => {
 
   const _handleError = () => {
     if (!error) {
-      console.log(`Image not found in S3: ${props.url}`);
       if (props.onfail) props.onfail();
       setError(true);
     }

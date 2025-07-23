@@ -82,7 +82,6 @@ const Homepage = (props) => {
       );
       const newTrips = tripsResponse?.data?.data?.plans;
       const count = tripsResponse?.data?.results;
-console.log('trips are:',newTrips)
       setPlansCount(count);
       setTrips(newTrips);
     } catch (err) {

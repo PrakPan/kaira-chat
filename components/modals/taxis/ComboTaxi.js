@@ -134,7 +134,6 @@ const ComboTaxi = (props) => {
 
   useEffect(() => {
     if (props.showTaxiModal && !props?.skipTaxiFetch) {
-      console.log("Inside fetch data", props.showTaxiModal);
       fetchData();
     }
   }, [
@@ -146,12 +145,10 @@ const ComboTaxi = (props) => {
   ]);
 
   useEffect(() => {
-    console.log("T Resu", props?.taxiResults, props?.selectedData);
     if (
       props?.taxiResults?.length &&
       props?.selectedData?.result_index !== undefined
     ) {
-      console.log("T Resu", props?.taxiResults, props?.selectedData);
       const selectedIndex = props.taxiResults.findIndex(
         (taxi) => taxi?.result_index === props.selectedData?.result_index
       );
@@ -209,7 +206,6 @@ const ComboTaxi = (props) => {
   };
 
   const fetchDataWithProps = (propsToUse) => {
-    console.log("Inside fetch data with time:", propsToUse?.comboStartTime);
     setError(false);
     setLoading(true);
     setUpdateLoadingState(false);
@@ -308,7 +304,6 @@ const ComboTaxi = (props) => {
       ],
     };
 
-    console.log("API Request Data:", requestData);
 
     propsToUse?.comboStartDate &&
       axiosTaxiSearch
@@ -424,7 +419,6 @@ const ComboTaxi = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-        console.log("Error updating Taxi", err.message);
         const errorMsg =
           err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
         dispatch(

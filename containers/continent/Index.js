@@ -71,7 +71,6 @@ const MapInfo = styled.div`
 `;
 
 const Index = (props) => {
-  console.log("locations is:", props.locations);
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
@@ -95,7 +94,6 @@ const Index = (props) => {
         setUserItineraries(item.itineraries);
       }
     });
-    console.log("locations is:", hot_locations);
     setHotLocations(hot_locations);
   }, [props?.data?.components?.[0]?.itineraries]);
 

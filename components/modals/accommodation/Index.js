@@ -38,7 +38,6 @@ const FloatingView = styled.div`
 `;
 
 const POI = (props) => {
-  console.log("poi hotel props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);

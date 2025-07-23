@@ -29,7 +29,6 @@ const CustomMarkerIcon = ({ index, color }) => (
 
 const Mapbox = React.memo((props) => {
   const [polylines, setPolylines] = useState();
-  console.log("MapBox",props?.locations);
 
   useEffect(() => {
     const updatedPolylines = props.locations.map((element) => [

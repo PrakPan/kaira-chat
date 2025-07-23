@@ -153,7 +153,6 @@ export default function PoiDetails(props) {
     setLoading(true);
     if (!token) {
       props.setShowLoginModal(true);
-      console.log("showing login drawer");
       setLoading(false);
       return;
     }

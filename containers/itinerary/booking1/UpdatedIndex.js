@@ -1111,7 +1111,6 @@ const Booking = (props) => {
     props.transferBookings,
     props.hasUserPaid,
   ]);
-  console.log("component show modal2 is:",props?.showBookingModal)
 
 
   let message =

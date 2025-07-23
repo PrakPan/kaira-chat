@@ -79,12 +79,6 @@ const FAQs = (props) => {
           );
         } catch {}
       }
-      console.log(
-        "BOOO",
-        props?.payment,
-        bookings[props.payment.summary[key].bookings[i]],
-        bookings[props.payment.summary[key].bookings[i]]?.["text"]
-      );
       HeadingsJSX.push(
         <Accordion
           key={key}
