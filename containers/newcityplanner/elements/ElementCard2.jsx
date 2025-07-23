@@ -77,7 +77,7 @@ export default function ElementCard2(props) {
         onClick={handleCardClick}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
-        className="group relative cursor-pointer p-3 gap-3 flex flex-col mx-1 w-full max-w-[384px]"
+        className="group relative cursor-pointer p-3 gap-3 flex flex-col mx-1 w-full "
       >
         <div
           className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-800 text-white px-3 py-2 rounded-md drop-shadow-2xl text-sm ${
@@ -90,13 +90,14 @@ export default function ElementCard2(props) {
         <div className="relative h-[240px] w-full overflow-hidden rounded-lg">
           <ImageLoader
             url={props?.data?.image || placeholderImage}
-            dimensions={{ width: 384, height: 240 }}
-            dimensionsMobile={{ width: 384, height: 240 }}
+            dimensions={null}
+            dimensionsMobile={null}
             width="100%"
             height="240px"
             borderRadius="8px"
             noLazy
             hoverpointer
+            className="w-full"
           />
           {props?.data?.tag && (
             <div className="absolute z-[30] top-2 right-2 bg-[#E0F2FF]  text-black px-3 py-1 rounded-[20px] text-[14px]">

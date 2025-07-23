@@ -260,7 +260,7 @@ export default function ThemePage(props) {
                       {(props?.slug === "perfect-proposals-2025" &&
                         (component?.priority == 13 ||
                           component?.priority == 9)) ||
-                      component.heading == "The Gallery Section" ? (
+                      component.heading == "The Gallery Section"  ? (
                         ""
                       ) : (
                         <PrimaryHeading
@@ -589,7 +589,6 @@ export default function ThemePage(props) {
             })}
         </div>
         {/* <CurveImageGallery /> */}
-
 
         {props.slug === "honeymoon-2025" && (
           <div className="relative">
