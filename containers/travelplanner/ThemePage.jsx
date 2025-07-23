@@ -45,8 +45,8 @@ import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapital
 import LadakhLogo from "../../components/cards/LadakhLogo.js";
 import Destination7Carousel from "../../components/theme/Destination7Carousel.jsx";
 import Activity3Carousel from "../../components/theme/Activity3Carousel.jsx";
-import ElementCard2 from "../newcityplanner/elements/ElementCard2.jsx";
 import Element2 from "../newcityplanner/elements/Element2.jsx";
+import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -215,7 +215,8 @@ export default function ThemePage(props) {
           <PathNavigation path={"asia/japan"} />
         )}
         {props.experienceData.overview_heading &&
-        props.experienceData.overview_text  && props?.slug!=="ladakh"? (
+        props.experienceData.overview_text &&
+        props?.slug !== "ladakh" ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -370,7 +371,6 @@ export default function ThemePage(props) {
                       )}
 
                     {/* Render specific carousel components based on type */}
-
                     {component.carousel === "destination-1" ? (
                       <>
                         <Destination1Carousel
@@ -582,12 +582,14 @@ export default function ThemePage(props) {
                         />
                         <PlanYourTripButton text={"Plan Itinerary For Free"} />
                       </>
-                    ):null}
+                    ) : null}
                   </div>
                 )
               );
             })}
         </div>
+        {/* <CurveImageGallery /> */}
+
 
         {props.slug === "honeymoon-2025" && (
           <div className="relative">
