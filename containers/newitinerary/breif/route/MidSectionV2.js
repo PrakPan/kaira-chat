@@ -372,6 +372,7 @@ const MidSectionV2 = (props) => {
         dCityData={props?.dCityData}
         selectedBooking={props?.cityTransferBookings}
         setSelectedBooking={setSelectedBooking}
+        transferData={props?.cityTransferBookings}
         originCityId={
           props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id
         }

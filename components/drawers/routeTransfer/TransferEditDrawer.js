@@ -46,7 +46,7 @@ import {
 } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
-import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
+import { setTransfersBookings, updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
 import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
 import { TbArrowBack } from "react-icons/tb";
@@ -91,7 +91,7 @@ const TRANSFER_TYPES = {
   },
   MULTICITYROUNDTRIP: {
   name: "MULTICITYROUNDTRIP",
-  label: "Multi-City/Roundtrip Taxi"
+  label: "Multi-City/Round Trip Taxi"
 },
 };
 
@@ -124,9 +124,11 @@ const TransferEditDrawer = (props) => {
     destinationCityId,
     _updateFlightBookingHandler,
     booking_id,
+    transferData,
   } = props;
 
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const dispatch = useDispatch();
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
@@ -165,11 +167,19 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
+
+  
   useEffect(() => {
     if (showDrawer) {
       fetchRoutes();
     }
   }, [showDrawer]);
+
+
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const newDate = dayjs(dateString).add(numberOfDays, "day");
+    return newDate.format("YYYY-MM-DD");
+  };
 
   const fetchRoutes = () => {
     setLoadingTransfers(true);
@@ -183,7 +193,10 @@ const TransferEditDrawer = (props) => {
     };
 
     const multiCityRoundtripRequestData = {
-      start_date: "2025-10-05",
+      start_date: dCityData?.start_date ??
+          (oCityData?.start_date && oCityData?.duration != null
+            ? addDaysToDate(oCityData.start_date, oCityData.duration)
+            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD")),
       start_time: `10:00`,
       number_of_travellers:
         number_of_adults + number_of_children + number_of_infants,
@@ -479,21 +492,7 @@ const TransferEditDrawer = (props) => {
     });
   };
 
-   const getAllBookings = () => {
-      axiosGetTransfers
-        .get(`/${props.id}/bookings/transfers/`)
-        .then((res) => {
-          dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
-          const data = res.data;
-          setTransferBookings(data);
-          // setCityTransferBookings(data);
-          dispatch(setTransfersBookings(data));
-          console.log("New Transfer Data", data);
-        })
-        .catch((err) => {
-          console.error("Error fetching all bookings", err.message);
-        });
-    };
+ 
   const handleMultiCitySelect = (trace_id, result_index, quote_index) => {
   const access_token = localStorage.getItem("access_token");
   if (!props.token) {
@@ -525,7 +524,8 @@ const TransferEditDrawer = (props) => {
           type: "success",
         });
       }
-      getAllBookings();
+       dispatch(setTransfersBookings(response?.data?.data));
+       props?.getPaymentHandler();
       setSelectLoading(false);
        setUpdatingTransfer(false);
       setShowDrawer(false);
@@ -743,7 +743,7 @@ const TransferEditDrawer = (props) => {
               {(roundTripSuggestions || multiCitySuggestions) && (
   <RadioButton
     name="MULTICITYROUNDTRIP"
-    label="Multi-City/Roundtrip Taxi"
+    label="Multi-City/Round Trip Taxi"
     transferType={transferType}
     handleTransferType={handleTransferType}
   />
@@ -4070,7 +4070,7 @@ const MultiCityTripSuggestion = ({
                         : "border-[#636366]"
                     } `}
                   >
-                    {selectedCab == price?.result_index && (
+                    {selectedCab?.result_index == price?.result_index && (
                       <div
                         id={price?.result_index}
                         className="w-3 h-3 bg-black rounded-full"
@@ -4110,7 +4110,7 @@ const MultiCityTripSuggestion = ({
         </div>
 
         <div
-          onClick={handleSelect}
+          // onClick={handleSelect}
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent checked={selectedCab} className="mb-1" />
