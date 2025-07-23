@@ -151,7 +151,7 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   return (
     <div className="h-[500px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
       <div>
          <Image src={"/ReviewSvg.svg"} width={"48"} height={"48"} />
       </div>
@@ -178,9 +178,9 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
           </p>
         </div>
 
-        <PrimaryButton onClick={handleViewItinerary}>
+        {/* <PrimaryButton onClick={handleViewItinerary}>
           View Itinerary
-        </PrimaryButton>
+        </PrimaryButton> */}
       </div>
 
       <div className="flex items-center gap-3">
