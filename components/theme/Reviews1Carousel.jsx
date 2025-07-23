@@ -11,6 +11,7 @@ import "swiper/swiper-bundle.min.css";
 import styled from "styled-components";
 import media from "../../components/media";
 import PrimaryButton from "../ui/PrimaryButton";
+import Image from "next/image";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -149,26 +150,18 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
 
   return (
     <div className="h-[500px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
-      <div className="flex items-center gap-3">
-        {/* Image Section */}
-        <div className="w-[65px] h-[65px]">
-          <ImageLoader
-            url={image}
-            width={"65px"}
-            height={"65px"}
-            borderRadius="100%"
-          />
-        </div>
 
-        {/* Text Section */}
-        <div className="flex flex-col h-fit">
-          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
-          <div className="text-[#FEB739] text-xl">
+      <div className="flex justify-between">
+      <div>
+         <Image src={"/ReviewSvg.svg"} width={"48"} height={"48"} />
+      </div>
+      <div className="text-[#FEB739] text-3xl">
             {"★".repeat(rating)}{" "}
             <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
           </div>
-        </div>
+      
       </div>
+      
 
       <div className="flex flex-col justify-between h-full">
         <div>
@@ -188,6 +181,23 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         <PrimaryButton onClick={handleViewItinerary}>
           View Itinerary
         </PrimaryButton>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {/* Image Section */}
+        <div className="w-[65px] h-[65px]">
+          <ImageLoader
+            url={image}
+            width={"65px"}
+            height={"65px"}
+            borderRadius="100%"
+          />
+        </div>
+
+        {/* Text Section */}
+        <div className="flex flex-col h-fit">
+          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
+        </div>
       </div>
     </div>
   );

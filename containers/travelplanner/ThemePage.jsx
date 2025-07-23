@@ -608,7 +608,7 @@ export default function ThemePage(props) {
 
         <div className="my-[100px]">
           {props.experienceData.faq.length > 0 && (
-            <ThemeFaqs faqs={props.experienceData.faq} />
+            <ThemeFaqs faqs={props.experienceData.faq || props?.FAQ} />
           )}
         </div>
 

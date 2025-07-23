@@ -20,6 +20,53 @@ const TravelPlanner = (props) => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
+  const faq = [
+            {
+                "question": "What makes The Tarzan Way's 2025 proposal services unique?",
+                "answer": "The Tarzan Way’s Proposal 2025 services are designed for unforgettable, hyper-personalized proposals. We curate dreamy locations, unique themes, and exclusive experiences, all tailored to your love story—ensuring a magical “Yes!” moment like no other!"
+            },
+            {
+                "question": "Can I customize my itinerary?",
+                "answer": "Absolutely! The Tarzan Way offers fully customizable honeymoon itineraries to match your preferences, travel style, and budget. Whether you want a romantic beach escape, an adventurous mountain retreat, or a cultural experience, we can tailor your trip to perfection."
+            },
+            {
+                "question": "Can I plan a surprise proposal with your team?",
+                "answer": "Of course! Our team specializes in discreetly planning surprise proposals while ensuring every detail is perfect."
+            },
+            {
+                "question": "Do you offer travel and accommodation assistance along with the proposal?",
+                "answer": "Yes! We can take care of flights, hotels, transportation, and everything needed for a stress-free proposal trip."
+            },
+            {
+                "question": "Can we include adventure activities in our proposal package?-",
+                "answer": "Absolutely! You can add adventure activities like trekking, scuba diving, or paragliding to make your honeymoon exciting."
+            },
+            {
+                "question": "Can I propose at a specific landmark or private venue?",
+                "answer": "Yes! We can help arrange proposals at iconic landmarks, private villas, resorts, or any special location of your choice."
+            },
+            {
+                "question": "Can you help with ring presentation ideas?",
+                "answer": "Of course! Whether you want the ring hidden in a dessert, presented by a scuba diver, or delivered by a drone, we can make it happen!"
+            },
+            {
+                "question": "How does The Tarzan Way ensure a stress-free proposal?",
+                "answer": "The Tarzan Way ensures a stress-free proposal by taking care of each and everything- from your stays, transfers to proposal bookings. We make sure to make your day THE BEST."
+            },
+            {
+                "question": "What are some unique proposal ideas you offer?",
+                "answer": "We offer ideas like proposing under the Northern Lights in Iceland, a hot air balloon proposal in Jaipur, or a shikara proposal in Kashmir."
+            },
+            {
+                "question": "What are your cancellation and refund policies?",
+                "answer": "Our policies depend on the destination and package. Please refer to our cancellation guidelines or contact us for details."
+            },
+            {
+                "question": "Which place is best for a proposal?",
+                "answer": "The best place for a proposal depends on your love story! Whether it's a private beach, a breathtaking mountain peak, a historic castle, or a dreamy candlelit setup, The Tarzan Way curates the perfect destination based on your partner’s preferences, making the moment truly unforgettable."
+            }
+        ]
+
   return (
     <Layout
       page_id={props.Data.id}
@@ -60,7 +107,7 @@ const TravelPlanner = (props) => {
       </Head>
 
       {props.pageData ? (
-    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} />
+    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} FAQ={faq} />
   ) : (
     <StatePage
       experienceData={props.Data}
