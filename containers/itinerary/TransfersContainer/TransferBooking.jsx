@@ -900,7 +900,7 @@ const TransferBooking = ({
                                 <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
                                   {addbooking ? (
                                     <button
-                                      onClick={()=>handleRoute(book)}
+                                      onClick={()=>handleRoute(booking)}
                                       className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                                     >
                                       {isDesktop ? "Change Taxi" : "Change"}
@@ -918,7 +918,7 @@ const TransferBooking = ({
                               ) : (
                                 <div className="pr-2">
                                   <button
-                                    onClick={()=>handleRoute(book)}
+                                    onClick={()=>handleRoute(booking)}
                                     className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     {/* Add Taxi */}
@@ -1042,7 +1042,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
       pathname: `/itinerary/${router.query.id}`,
       query: {
         drawer: "Intracity",
-        bookingId: booking_id,
+        bookingId: booking?.id || booking_id,
         oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
         dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },

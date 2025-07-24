@@ -261,7 +261,6 @@ const TransferBookings = (props) => {
                 booking.transfer_details?.destination || itineraries?.start_city
               }
               oCityData={itineraries?.start_city}
-              dItineraryCityId={itineraries?.cities?.[0]?.id}
               dCityData={itineraries?.start_city}
               id={itineraries?.start_city?.gmaps_place_id}
               check_in={booking.check_in}
@@ -302,7 +301,6 @@ const TransferBookings = (props) => {
             origin={itineraries?.start_city}
             destination={itineraries?.cities?.[0].city}
             oCityData={itineraries?.start_city}
-            dItineraryCityId={itineraries?.cities?.[0]?.id}
             dCityData={itineraries?.cities?.[0]}
             id={itineraries?.start_city?.gmaps_place_id}
             check_in={itineraries?.start_date}
@@ -413,7 +411,6 @@ const TransferBookings = (props) => {
                 destination={booking.transfer_details?.destination || item.city}
                 oCityData={itineraries?.cities?.[index]}
                 dCityData={itineraries?.cities?.[index]}
-                dItineraryCityId={itineraries?.cities?.[index + 1]?.id}
                 id={item.id}
                 check_in={booking.check_in}
                 selectedBooking={selectedBooking}
@@ -504,7 +501,6 @@ const TransferBookings = (props) => {
               origin={item.city}
               destination={itineraries?.cities?.[index + 1].city}
               oCityData={itineraries?.cities?.[index]}
-              dItineraryCityId={itineraries?.cities?.[index+1]?.id}
               dCityData={itineraries?.cities?.[index + 1]}
               id={item.id}
               check_in={item.start_date}
@@ -620,7 +616,6 @@ const TransferBookings = (props) => {
               }
               oCityData={itineraries?.cities?.[lastIndex]}
               dCityData={itineraries?.cities?.[lastIndex]}
-              dItineraryCityId={itineraries?.end_city?.gmaps_place_id}
               id={lastCity.id}
               check_in={booking.check_in}
               selectedBooking={selectedBooking}
@@ -709,7 +704,6 @@ const TransferBookings = (props) => {
             destination={itineraries?.end_city}
             oCityData={lastCity}
             dCityData={itineraries?.end_city}
-            dItineraryCityId={itineraries?.end_city?.gmaps_place_id}
             id={itineraries?.end_city?.gmaps_place_id}
             check_in={itineraries?.end_date}
             selectedBooking={selectedBooking}
