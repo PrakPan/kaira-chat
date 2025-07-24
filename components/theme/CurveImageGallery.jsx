@@ -23,7 +23,10 @@ export default function CurvedSwiper() {
   const swiperRef = useRef();
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-10 h-[500px] relative overflow-visible">
+    <div
+      className="w-full max-w-7xl mx-auto py-10 h-[500px] relative overflow-visible"
+      style={{ perspective: "1200px" }}
+    >
       <Swiper
         className="!h-[500px]"
         height={500}
@@ -60,38 +63,52 @@ export default function CurvedSwiper() {
         {images.map((img, i) => (
           <SwiperSlide
             key={i}
-            className="!h-[488px] !w-auto overflow-visible flex items-center justify-center"
+            className="!w-auto overflow-visible flex items-center justify-center"
           >
             {() => {
               const swiper = swiperRef.current;
               let rotateY = 0;
+              let height = 488;
+              let clipPath = "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)";
 
               if (swiper) {
                 const current = swiper.realIndex + 1;
                 const virtualIndex = i % images.length;
                 const diff = virtualIndex - current;
 
-                if (diff === -2) rotateY = 40;
-                else if (diff === -1) rotateY = 30;
-                else if (diff === 1) rotateY = -30;
-                else if (diff === 2) rotateY = -40;
+                if (diff === -2) {
+                  rotateY = 10;
+                  clipPath = "polygon(0% 0%, 100% 10%, 100% 90%, 0% 100%)";
+                } else if (diff === -1) {
+                  rotateY = 5;
+                  clipPath = "polygon(0% 0%, 100% 6%, 100% 94%, 0% 100%)";
+                } else if (diff === 1) {
+                  rotateY = -5;
+                  clipPath = "polygon(0% 6%, 100% 0%, 100% 100%, 0% 94%)";
+                } else if (diff === 2) {
+                  rotateY = -10;
+                  clipPath = "polygon(0% 10%, 100% 0%, 100% 100%, 0% 90%)";
+                } else if (diff === 0) {
+                  // Center slide: height should match the shorter side of adjacent slides (~94%)
+                  height = Math.round(488 * 0.94); // 458px
+                }
               }
 
               return (
                 <div
-                className="transition-transform duration-500 w-[336px] !h-[488px]"
-                style={{
-                  transform: `rotateY(${rotateY}deg)`,
-                  transformStyle: "preserve-3d",
-                  backfaceVisibility: "hidden",
-                }}
-            
+                  className="transition-transform duration-500 w-[336px] overflow-hidden"
+                  style={{
+                    height: `${height}px`,
+                    transform: `rotateY(${rotateY}deg)`,
+                    transformStyle: "preserve-3d",
+                    backfaceVisibility: "hidden",
+                    clipPath: clipPath,
+                  }}
                 >
                   <img
                     src={img}
                     alt="Slide"
                     className="rounded-3xl w-full h-full object-cover shadow-xl"
-                    height={"488"}
                   />
                 </div>
               );

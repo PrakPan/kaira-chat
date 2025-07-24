@@ -268,12 +268,14 @@ export default function ThemePage(props) {
                             props?.slug != "japan-cherry-blossom"
                               ? "mx-auto text-center"
                               : "mt-7"
-                          }`}
+                          }
+                          ${props?.slug=="ladakh"&& component.carousel=="destination-7"&&"max-w-[600px]"}
+                          `}
                         >
                           {component.heading}
                         </PrimaryHeading>
                       )}
-                      <SecondaryHeading className="mx-auto text-center">
+                      <SecondaryHeading className={`mx-auto text-center ${props?.slug=="ladakh" && component.carousel=="destination-7"&&"max-w-[800px] text-[#7C7C7C]"}`}>
                         {component.text}
                       </SecondaryHeading>
                     </div>
