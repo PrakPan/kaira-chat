@@ -62,10 +62,12 @@ const TaxiDetailModal = ({
     destination_address,
     check_in,
     check_out,
+    is_airport_drop,
+    is_airport_pickup
   } = data;
 
   const [showTaxi, setShowTaxi] = useState(false);
-  console.log("Taxi Data", data);
+  console.log("Taxi Dataaa", data);
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -160,7 +162,7 @@ const TaxiDetailModal = ({
                         return
                       }
                       handleClose()
-                      handleEditRoute()
+                      handleEditRoute(data)
                       //setShowTaxi(true);console.log("")
                     }}
                   >

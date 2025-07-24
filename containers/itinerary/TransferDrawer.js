@@ -78,12 +78,13 @@ const TransferDrawer = ({
     }
   }, [show, isCombo, data?.children?.length]);
 
-  const handleEditRoute = () => {
+  const handleEditRoute = (data=null) => {
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
         query: {
-          drawer: "editTransfer",
+          drawer: data?.is_airport_drop || data?.is_airport_pickup ? "addPickupDrop" : "editTransfer",
+          drawerType: data?.is_airport_drop ? "drop" : "pickup",
           bookingId: booking_id,
           oItineraryCity:origin_itinerary_city_id,
           dItineraryCity:destination_itinerary_city_id
