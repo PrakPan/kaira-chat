@@ -121,8 +121,9 @@ export default function ElementCard2(props) {
             </H8>
           </div>
 
-          <div className="text-[13px] font-[400] text-gray-600 line-clamp-2">
-            {props?.data?.description}
+          <div className="text-[13px] font-[400] text-gray-600 line-clamp-2" 
+                dangerouslySetInnerHTML={{ __html: props.data.description }}
+                >
           </div>
         </div>
       </div>
