@@ -821,6 +821,8 @@ const CityItem = ({
   }, [booking_id]);
 
   const handleEdit = async (combo, book) => {
+
+  console.log()
   setIsIntracity(false);
   if (combo) {
     setComboDetails(true);
@@ -895,6 +897,7 @@ const CityItem = ({
         }/${booking?.id}/`
       );
       setData(res?.data);
+       setTransferType(res?.data?.booking_type);
       setLoading(false);
     } catch (error) {
       setError(true);
