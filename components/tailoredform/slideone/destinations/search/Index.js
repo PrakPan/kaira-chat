@@ -131,6 +131,7 @@ const Search = (props) => {
           selectedCities={props.selectedCities}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
+          tailoredFormModal={props.tailoredFormModal}
         ></SearchResults>
       )}
     </Container>

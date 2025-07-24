@@ -66,6 +66,16 @@ const POI = (props) => {
     }
   }, [props.id, props.show, props.provider]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const fetchDetails = () => {
     setLoading(true);
     setError(false);

@@ -75,6 +75,16 @@ const ActivityDetailsDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show, filterState]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const fetchData = (data) => {
     if (!data?.amenities) {
       setLoading(true);

@@ -50,6 +50,16 @@ const CityDetailsDrawer = () => {
     } else setData(null);
   }, []);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   return (
     <Drawer
       show={true}

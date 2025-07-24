@@ -55,6 +55,16 @@ const NewPoiDetailsDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const [error, setError] = useState(null);
 
   const fetchData = async () => {

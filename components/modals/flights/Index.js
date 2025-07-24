@@ -406,6 +406,7 @@ const Booking = (props) => {
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
   };
+  
 
   if (props.token)
     return (
