@@ -15,7 +15,6 @@ import {
 } from "../modals/flights/new-flight-searched/FlightStyles";
 
 export default function PassengerDetails({ index, data, setData, name, ssr ,isDomestic,setPrice,price}) {
-  console.log("is domestic is", isDomestic);
   const defaultFormData = {
     title: "",
     first_name: "",
@@ -82,9 +81,7 @@ export default function PassengerDetails({ index, data, setData, name, ssr ,isDo
       updateData(updatedData);
       return updatedData;
     });
-    console.log("price is",JSON.parse(value).amt,prevPrice)
     setPrice((prev)=>{
-      console.log("prev price is",price)
       return{
       ...prev,
       addOns:price.addOns-prevPrice+JSON.parse(value).amt,

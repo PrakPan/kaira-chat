@@ -13,7 +13,6 @@ export default function Filters(props) {
   const [selectedFacilities, setSelectedFacilities] = useState((props?.filters?.facilities?.length==0 || !props?.filters?.facilities )?[]:props?.filters?.facilities);
   const [selectedTags, setSelectedTags] = useState((props?.filters?.tags?.length==0 || !props?.filters?.tags )?[]:props?.filters?.tags);
   const [selectedTypes, setSelectedTypes] = useState((props?.filters?.type?.length==0 || !props?.filters?.type )?["All"]:props?.filters?.type);
-console.log("type is:",(props?.filters?.type?.length==0 || !props?.filters?.type )?["All"]:props?.filters?.type)
   const handleApply = () => {
     props.updateUserStarHandler(selectedUserStar);
     props._addFilterHandler(selectedFacilities, "facilities");

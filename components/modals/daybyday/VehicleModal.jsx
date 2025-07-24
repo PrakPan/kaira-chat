@@ -56,7 +56,6 @@ const VehicleDetailModal = ({
     booking_type,
     cancellation_policies
   } = data;
-  console.log("day by day data is:", data, booking_type);
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -77,11 +76,9 @@ const VehicleDetailModal = ({
   };
 
   const addMinutesToDate = (dateString, minutes) => {
-    console.log("Date String", dateString);
     const date = new Date(dateString);
-    console.log("date is:");
-    date.setMinutes(date.getMinutes() + minutes);
-    return formatDateTime(date.toISOString());
+    date.setMinutes(date?.getMinutes() + minutes);
+    return formatDateTime(date?.toISOString());
   };
 
   const departure =
@@ -326,7 +323,6 @@ const VehicleDetailModal = ({
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type != "combo" && (
           <div className="p-4 bg-white">
-            {console.log("type is:", type)}
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking || data)}

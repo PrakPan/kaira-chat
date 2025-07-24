@@ -66,7 +66,6 @@ const Continentcarousel = (props) => {
 
     for (let i = 0; i < props.data.length; i++) {
       let hd = props.data[i].hot_destinations.length;
-      console.log("data of ith index is:", props.data[i]);
       cardsArr.push(
         <GridContainer key={i}>
           <Card

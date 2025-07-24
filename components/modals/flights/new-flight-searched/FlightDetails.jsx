@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { FaPlane } from "react-icons/fa";
 import { useState } from "react";
+import moment from 'moment';
 
 const DottedLine = styled.div`
   position: relative;
@@ -73,19 +74,16 @@ export default function FlightDetails({
     return totalMinutes;
   }
 
-function getDayOffset(duration) {
-  if (typeof duration === "number") {
-    const days = Math.floor(duration / 1440); // for minutes
-    return days >= 1 ? `+${days}D` : null;
-  }
+function getDayOffset(checkIn, checkOut) {
+  const inDate = moment(checkIn, "YYYY-MM-DD HH:mm:ss");
+  const outDate = moment(checkOut, "YYYY-MM-DD HH:mm:ss");
 
-  if (typeof duration === "string") {
-    const match = duration.match(/(\d+)/); // get first number from "46-47 hours"
-    if (match && match[1]) {
-      const hours = parseInt(match[1], 10);
-      const days = Math.floor(hours / 24);
-      return days >= 1 ? `+${days}D` : null;
-    }
+  const inDay = inDate.format("YYYY-MM-DD");
+  const outDay = outDate.format("YYYY-MM-DD");
+
+  if (inDay !== outDay) {
+    const diff = outDate.startOf('day').diff(inDate.startOf('day'), 'days');
+    return `+${diff}`;
   }
 
   return null;
@@ -201,22 +199,19 @@ function getDayOffset(duration) {
           .padStart(2, "0")}`
       : ""}
   </span>
+  
   <div className="w-full text-[12px] text-gray-600 truncate text-center">
             ({destination?.city_code})
           </div>
   </div>
-  {getDayOffset(data?.total_duration || duration) && (
-    <sup
-      style={{
-        fontSize: "0.8rem",
-        verticalAlign: "super",
-        marginLeft: "1px",
-        color: "#555",
-        marginTop: "0.7rem"
-      }}
-    >
-      {getDayOffset(data?.total_duration || duration)}
-    </sup>
+  {getDayOffset(booking?.check_in,booking?.check_out) && (
+   <div className="flex flex-col items-center text-red-600 text-[8px]" style={{ marginTop: "0.1rem" }}>
+  <span className="font-semibold leading-none">
+    {getDayOffset(booking?.check_in, booking?.check_out)}
+  </span>
+  <span className="text-[8px] leading-none">Day</span>
+</div>
+
   )}
 </div>
 

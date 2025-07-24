@@ -225,12 +225,6 @@ const HotelBookingDetails = (props) => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      console.log(
-        "booking id is:",
-        booking_id,
-        "props booking id is 1:",
-        props?.id
-      );
       setLoadingDetails(true);
       await bookingDetails
         .get(`/${router?.query?.id}/bookings/accommodation/${props?.id}/`, {
@@ -277,15 +271,17 @@ const HotelBookingDetails = (props) => {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {
-          if (item?.hotels?.[0]?.id == props?.id) {
-            item.hotels = [];
-            item.itinerary_city_id = item?.itinerary_city_id;
-          }
-          return item;
-        });
+  const hasMatchingHotel = item?.hotels?.some(hotel => hotel?.id === props?.id);
+
+  if (hasMatchingHotel) {
+    item.hotels = [];
+   item.itinerary_city_id=item?.itinerary_city_id
+  }
+
+  return item;
+});
 
         newStays = newStays.map((item) => {
-          console.log("props5:", item);
           if (item?.id === props?.id) {
             return {
               itinerary_city_id: item?.itinerary_city_id,

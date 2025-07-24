@@ -193,12 +193,10 @@ export default function ChangePoiDetails(props) {
     setLoading(true);
     if (!token) {
       props.setShowLoginModal(true);
-      console.log("showing login drawer");
       setLoading(false);
       return;
     }
     props.updatedActivityBooking().then((res) => {
-      console.log("clicked here");
       setLoading(false);
       if (res != 0) {
         props?.setShowDrawer(false);

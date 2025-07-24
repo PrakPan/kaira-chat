@@ -53,7 +53,6 @@ const TaxiDetailModal = ({
   if (!data) return null;
 
    let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
-  console.log("Selllec", selectedBooking);
   const {
     name,
     transfer_details,

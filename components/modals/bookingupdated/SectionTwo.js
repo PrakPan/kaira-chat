@@ -20,7 +20,6 @@ const Container = styled.div`
 `;
 
 const Section = (props) => {
-  console.log("filters are:",props?.filters)
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
   const [refundable, setRefundable] = useState(false)

@@ -393,7 +393,6 @@ if (queryType === "page" || propType === "page") {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        console.log("Selected ",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -506,7 +505,6 @@ let dist=divideTravellers()
   ]);
 
   const _SlideOneSubmitHandler = () => {
-    console.log("Selected Cities",selectedCities)
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
@@ -607,7 +605,6 @@ let dist=divideTravellers()
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
-    console.log("Selected",data);
     setIsLoading(true);
     itineraryInitiate
       .post("", data)

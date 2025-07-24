@@ -42,7 +42,6 @@ const Details = (props) => {
   const [locationsLatLong, setLocationsLatLong] = useState([]);
 
   const {drawer,ciyId}=useParams()
-  console.log("drawr is:",drawer,"city id is:",ciyId)
 
   useEffect(() => {
     const Locationlatlong = [];

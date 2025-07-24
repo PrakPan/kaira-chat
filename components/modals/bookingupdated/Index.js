@@ -72,7 +72,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("change props bookinga:", props);
   const [paginationStatus, setPaginationStatus] = useState({
     traceId: null,
     page: 1,
@@ -142,7 +141,6 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-    console.log("searching hotels for 2:",props?.itinerary_city_id,"itinerary city is:",router?.query?.itineraryCityId)
 
     if (
       props?.showBookingModal &&
@@ -339,7 +337,7 @@ const Booking = (props) => {
         }
 
         if (res.data?.data?.length) {
-          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
           let options = [];
@@ -496,9 +494,9 @@ const Booking = (props) => {
             localStorage.setItem("trace_id", res?.data?.trace_details?.id);
           }
 
-          if (res.data?.data?.length) {
-            if (res.data?.total_count) setTotalCount(res.data.total_count);
-            setNoResults(false);
+        if (res.data?.data?.length) {
+          if (res.data?.count) setTotalCount(res.data.count);
+          setNoResults(false);
 
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
@@ -590,7 +588,6 @@ const Booking = (props) => {
           setLoading(false);
         })
         .catch((err) => {
-          console.log("new error:", err);
           setLoading(false);
           setUpdateLoadingState(false);
           if (err?.response.status == 400) {

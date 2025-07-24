@@ -19,6 +19,10 @@ import openTailoredModal from "../../services/openTailoredModal";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
+import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
+import axios from "axios";
+import { MERCURY_HOST } from "../../services/constants";
+import SwiperCarousel from "../../components/SwiperCarousel";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -54,46 +58,40 @@ const HowItWorksContainer = styled.div`
     margin: auto;
   }
 `;
+const GridCard = styled.div`
+  margin: 1rem 0.5rem;
+`;
 
 const Homepage = (props) => {
   const router = useRouter();
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansCount, setPlansCount] = useState(null);
+  const [trips, setTrips] = useState([]);
   let isPageWide = media("(min-width: 768px)");
+
+  const fetchTrips = async (allPlans) => {
+    try {
+      const query = allPlans ? "" : "?limit=3&offset=0";
+      const tripsResponse = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/my-plans/${query}`,
+        {
+          headers: {
+            Authorization: "Bearer " + props?.token,
+          },
+        }
+      );
+      const newTrips = tripsResponse?.data?.data?.plans;
+      const count = tripsResponse?.data?.results;
+      setPlansCount(count);
+      setTrips(newTrips);
+    } catch (err) {
+      console.log("[ERROR][TripsResponse:getStaticProps]: ", err.message);
+    }
+  };
 
   useEffect(() => {
     if (props.token) {
-      const MyPlans = JSON.parse(localStorage.getItem("MyPlans"));
-
-      if (MyPlans && MyPlans.access_token === props.token) {
-        setMyPlansArr(MyPlans.plans);
-        setPlansCount(MyPlans.count);
-      } else {
-        axiomyplansinstance
-          .get("?limit=3&offset=0", {
-            headers: {
-              Authorization: `Bearer ${props.token}`,
-            },
-          })
-          .then((res) => {
-            let plansarr = [];
-
-            for (var i = 0; i < res.data.results.length; i++) {
-              plansarr.push(res.data.results[i]);
-            }
-            setMyPlansArr(plansarr.slice());
-            localStorage.setItem(
-              "MyPlans",
-              JSON.stringify({
-                plans: plansarr,
-                count: res.data.count,
-                access_token: props.token,
-              })
-            );
-            setPlansCount(res.data.count);
-          })
-          .catch((err) => {});
-      }
+      fetchTrips(false);
     }
   }, [props.token]);
 
@@ -181,6 +179,103 @@ const Homepage = (props) => {
         text="Want to personalize your own experience?"
       ></DesktopBanner>
 
+      {trips.length > 0 && (
+        <SetWidthContainer>
+          <H3
+            style={{
+              color: "black",
+              padding: "5px",
+              margin: !isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0",
+            }}
+          >
+            My Trips ({plansCount})
+          </H3>
+          <div className="hidden-mobile">
+            <SwiperCarousel
+              navigationButtons={true}
+              slidesPerView={3}
+              cards={trips.map((trip, i) => (
+                <ExperienceCard
+                  key={trip?.id}
+                  data={trip}
+                  slug={trip?.slug}
+                  rating={trip?.rating}
+                  budget={trip?.payment_information.per_person_discounted_cost}
+                  group_type={trip?.group_type}
+                  number_of_adults={trip?.number_of_adults}
+                  filter={trip[0]}
+                  id={trip?.id}
+                  text={trip?.short_text}
+                  experience={trip?.name}
+                  images={trip?.images}
+                  starting_cost={
+                    trip?.payment_information?.show_per_person_cost
+                      ? trip?.payment_information.per_person_discounted_cost
+                      : trip?.payment_information?.discounted_cost
+                  }
+                  duration={
+                    trip?.duration ||
+                    (trip?.duration_number && trip?.duration_unit
+                      ? trip?.duration_number
+                      : null)
+                  }
+                  location={trip?.locations?.[0]?.name}
+                  locations={trip?.itinerary_locations}
+                  hardcoded={trip?.payment_info ? true : false}
+                />
+              ))}
+            />
+          </div>
+
+          <div className="hidden-desktop">
+            <SwiperCarousel
+              slidesPerView={1}
+              initialIndex={0}
+              cards={trips.map((trip, i) => (
+                <ExperienceCard
+                  data={trip}
+                  slug={trip?.slug}
+                  rating={trip?.rating}
+                  budget={trip?.payment_information.per_person_discounted_cost}
+                  group_type={trip?.group_type}
+                  number_of_adults={trip?.number_of_adults}
+                  filter={trip?.experience_filters?.[0]}
+                  id={trip?.id}
+                  text={trip?.short_text}
+                  experience={trip?.name}
+                  images={trip?.images}
+                  starting_cost={
+                    trip?.payment_information?.show_per_person_cost
+                      ? trip?.payment_information.per_person_discounted_cost
+                      : trip?.payment_information?.discounted_cost
+                  }
+                  duration={
+                    trip?.duration ||
+                    (trip?.duration_number && trip?.duration_unit
+                      ? trip?.duration_number
+                      : null)
+                  }
+                  location={trip?.locations?.[0]?.name}
+                  locations={trip?.itinerary_locations}
+                  hardcoded={trip?.payment_info ? true : false}
+                />
+              ))}
+            />
+          </div>
+          <Button
+            fontWeight="500"
+            boxShadow
+            borderRadius="8px"
+            bgColor="white"
+            margin="2.5rem auto"
+            padding="0.5rem 2rem"
+            borderWidth="1px"
+            onclick={() => fetchTrips(true)}
+          >
+            {"View all plans"}
+          </Button>
+        </SetWidthContainer>
+      )}
       <SetWidthContainer>
         <HowItWorksContainer>
           <H3
@@ -366,10 +461,7 @@ const Homepage = (props) => {
               Plan trip as per mood
             </H3>
 
-            <PlanAsPerTheme
-              ThemeData={props.ThemeData}
-              page={"Home Page"}
-            />
+            <PlanAsPerTheme ThemeData={props.ThemeData} page={"Home Page"} />
           </>
         ) : null}
 

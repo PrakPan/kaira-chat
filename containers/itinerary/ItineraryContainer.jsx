@@ -385,17 +385,19 @@ const ItineraryContainer = (props) => {
       let data = res.data;
       let stays = [];
       for (let i = 0; i < data?.cities.length; i++) {
-        console.log("itinerary city id2 is:".data?.cities[i]);
         let hotels = data?.cities[i]?.hotels;
         let city_name = data?.cities[i]?.city?.name;
         let city_id = data?.cities[i]?.city?.id;
-        let itinerary_city_id = data?.cities[i]?.id;
+        let itinerary_city_id=data?.cities[i]?.id
+        let city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
 
         if (hotels.length === 0) {
           stays.push({
             itinerary_city_id,
             city_name,
             city_id,
+            city_gmaps_place_id,
+            
             trace_city_id: data?.cities[i]?.id,
             duration: data?.cities[i]?.duration,
             check_in: data?.cities[i]?.start_date,
@@ -412,16 +414,17 @@ const ItineraryContainer = (props) => {
             hotel.itinerary_city_id=itinerary_city_id,
             hotel.coordinates = hotel?.coordinates,
             hotel.city_name = city_name;
+            hotel.key = i;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
             hotel.lat=hotel?.latitude,
             hotel.long=hotel?.longitude,
+            hotel.city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
             stays.push(hotel);
           }
         }
       }
 
-      console.log("Prepared stays data:", stays);
 
       setStayBookings(stays);
       dispatch(setStays(stays));
@@ -432,14 +435,12 @@ const ItineraryContainer = (props) => {
         stayBookings: data?.cities ? data?.cities : null,
       });
 
-      console.log("Stay bookings:", stays);
     } catch (error) {
       console.log("ERROR[HotelBookingInfo][Itinerary]", error);
     }
   };
 
   const getPaymentInfo = async () => {
-    console.log("I'm Inside Payment");
     let stay_data = {};
     let activity_data = {};
     let transfer_data = {};
@@ -569,7 +570,6 @@ const ItineraryContainer = (props) => {
         setTransferBookings(data);
         // setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        console.log("New Transfer Data", data);
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -608,9 +608,6 @@ const ItineraryContainer = (props) => {
         // const notPrepared = res.data?.status == "Not Prepared";
 
         if (itineraryFailure) {
-          console.log(
-            "Itinerary failure or status not PREPARED. Redirecting to thank-you."
-          );
           setPolling(false);
           router.push("/thank-you");
           return;
@@ -650,9 +647,6 @@ const ItineraryContainer = (props) => {
             "Itinerary matching query does not exist"
           )
         ) {
-          console.log(
-            "Itinerary not found error detected, redirecting to v1 version"
-          );
           setPolling(false);
           setItineraryLoading(false);
           setOldOne(true);
@@ -745,9 +739,6 @@ const ItineraryContainer = (props) => {
             "Itinerary matching query does not exist"
           )
         ) {
-          console.log(
-            "Itinerary not found error detected in fetchItinerary, redirecting to v1 version"
-          );
           setPolling(false);
           setItineraryLoading(false);
           // router.push(`/itinerary/v1/${props.id}`);
@@ -762,12 +753,9 @@ const ItineraryContainer = (props) => {
     const handleApiError = () => {
       setConsecutiveErrors((prev) => {
         const newCount = prev + 1;
-        console.log(`API error occurred. Consecutive errors: ${newCount}`);
 
         if (newCount >= 2) {
-          console.log(
-            "Two consecutive API errors detected, redirecting to thank you page"
-          );
+
           setPolling(false);
           router.push("/thank-you");
         }
@@ -792,7 +780,6 @@ const ItineraryContainer = (props) => {
       } catch (error) {
       } finally {
         const end = Date.now(); // End time
-        console.log("finally called after", end - start, "ms");
         setLoadPricing(true);
       }
     };
@@ -818,8 +805,6 @@ const ItineraryContainer = (props) => {
 
   useEffect(() => {
     let interval;
-
-    console.log("Polling:", polling);
 
     if (polling) {
       fetchData(true);

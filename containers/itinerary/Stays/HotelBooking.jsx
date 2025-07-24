@@ -89,12 +89,6 @@ const HotelBooking = ({
     duration = null,
     city_name = null,
   } = router.query;
-  console.log(
-    "itinerarycityid is:",
-    itineraryCityId,
-    "itinerary_city_id is:",
-    itinerary_city_id
-  );
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails(false);
@@ -132,7 +126,6 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bkm", stayBookings);
 
   const handleViewDetails = (value) => {
     router.push(
@@ -366,8 +359,8 @@ const HotelBooking = ({
       accommodation: accommodation,
       id: id,
       tailored_id: tailored_id,
-      check_in: format(new Date(check_in), "yyyy-MM-dd").replaceAll("-", "/"),
-      check_out: format(new Date(check_out), "yyyy-MM-dd").replaceAll("-", "/"),
+      check_in: format(new Date(check_in), "yyyy-MM-dd")?.replaceAll("-", "/"),
+      check_out: format(new Date(check_out), "yyyy-MM-dd")?.replaceAll("-", "/"),
       pax: pax,
       city: city,
       cityId: cityId,

@@ -2,13 +2,14 @@ import styled from "styled-components";
 import { format, parseISO } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { logEvent } from "../../../services/ga/Index";
 import UpdateItineraryDates from "../../itinerary/booking1/UpdateItineraryDates";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { FaPen } from "react-icons/fa";
 
 const Container = styled.div`
   display: grid;
@@ -17,6 +18,7 @@ const Container = styled.div`
   overflow-x: auto;
   grid-gap: 1rem;
   white-space: nowrap;
+  align-items: start;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -40,6 +42,22 @@ const Text = styled.p`
   margin: 0;
 `;
 
+const DateContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: max-content;
+  min-width: max-content;
+`;
+
+const DateRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+`;
+
  const convertDFormat = (dt) => {
   if (dt) {
     const date = parseISO(dt);
@@ -52,6 +70,7 @@ const Text = styled.p`
 const Details = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
+  const dispatch = useDispatch();
   const [showEditDate,setShowEditDate] = useState(false)
 
   function handleEditDates() {
@@ -69,6 +88,7 @@ const Details = (props) => {
   }
 
     const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+      console.log("I'm inside Details")
         try {
           const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
           const status = res.data?.celery;
@@ -137,72 +157,35 @@ const Details = (props) => {
       ) : null}
 
       {props.travellerType != null ? (
-        <div
-          style={{ width: "max-content" }}
-          className="flex flex-row items-center gap-4"
-        >
+        <DateContainer>
           {props.tripsPage ? (
             <div>
-              <Heading className="flex flex-row gap-2 items-center">
+              <Heading className="flex flex-row gap-2 items-center md:overflow-visible">
                 Dates
               </Heading>
               <Text>{props.duration}</Text>
             </div>
           ) : (
-             <div>
+            <div>
               <Heading className="flex flex-row gap-2 items-center">
                 Dates ({props.duration})
               </Heading>
-              {props.start_date && (
-                <Text>
-                  {convertDFormat(props.start_date)} -{" "}
-                  {convertDFormat(props.end_date)}
-                </Text>
-              )}
+              <DateRow>
+                <UpdateItineraryDates
+                  itinerary={props?.itinerary}
+                  token={props.token}
+                  onUpdateSuccess={fetchItineraryStatus}
+                  convertDFormat={convertDFormat}
+                  tripsPage={false}
+                  setShowEditDate={setShowEditDate}
+                  showEditDate={showEditDate}
+                />
+              </DateRow>
             </div>
           )}
-
-          {/* {(!props.plan?.is_released_for_customer &&
-          props.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
-          props?.routes &&
-          props.routes.length > 0) || props?.mercuryItinerary ? (
-            isDesktop ? (
-              <button
-                onClick={handleEditDates}
-                className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
-              >
-                Edit Dates
-              </button>
-            ) : (
-              <MdModeEdit
-                onClick={handleEditDates}
-                className="text-lg cursor-pointer hover:text-yellow-400"
-              />
-            )
-          ) : null} */}
-        </div>
+        </DateContainer>
       ) : null}
        
-       {/* <div style={{ position: "relative", overflow: "visible", zIndex: 1500 }}>
-
-       {showEditDate && <UpdateItineraryDates
-                 itinerary={props?.itinerary}
-        token={props.token}
-        onUpdateSuccess={fetchItineraryStatus}
-        convertDFormat={convertDFormat}
-        tripsPage={false}
-        setShowEditDate={setShowEditDate}
-      />}
-
-      </div>
-      <div>
-        <button
-            onClick={()=>{setShowEditDate(true);}}
-            className="font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
-          >
-            Edit Dates
-          </button>
-      </div> */}
     </Container>
   );
 };

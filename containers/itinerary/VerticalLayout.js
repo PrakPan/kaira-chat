@@ -75,7 +75,6 @@ const AirportBookingItem = ({
     (book) => !book?.is_airport_drop && !book?.is_airport_pickup
   );
 
-  console.log("BookingAir", booking);
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -185,7 +184,6 @@ const AirportBookingItem = ({
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
 
-  // Check if booking mode supports transfers
   const supportsTransfers = (mode) => {
     return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
@@ -736,6 +734,8 @@ const CityItem = ({
   sourceLong,
   destinationLat,
   destinationLong,
+  firstCity,
+  lastCity
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -748,33 +748,18 @@ const CityItem = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-    console.log("=== DRAWER DEBUG ===");
-console.log("drawer from query:", drawer);
-console.log("bookingId from query:", bookingId);
-console.log("booking_id from props:", booking_id);
-console.log("drawer === 'Intracity':", drawer === "Intracity");
-console.log("bookingId === booking_id:", bookingId === booking_id);
-console.log("Overall condition:", drawer === "Intracity" && bookingId === booking_id);
-console.log("=== END DEBUG ===");
-
-  console.log(
-    "bookigngid is:",
-    bookingId,
-    "booking_id is:",
-    booking_id,
-    "drawer is:",
-    "show" + (booking_type?.includes(",") ? "combo" : booking_type) + "Detail"
-  );
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
     setSelectedTransferBooking(null);
     setIsTransferDrawerOpen(true);
+    handlePickupDropDrawer("pickup")
   };
 
   const handleDropClick = () => {
     setTransferDrawerType("drop");
     setSelectedTransferBooking(null);
     setIsTransferDrawerOpen(true);
+    handlePickupDropDrawer("drop")
   };
 
   const correctIcon = (TransportMode) => {
@@ -860,6 +845,7 @@ console.log("=== END DEBUG ===");
 };
 
   const handlePickupDropDrawer = (drawerType) => {
+    console.log("Drawer Clicked",drawerType);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -902,7 +888,6 @@ console.log("=== END DEBUG ===");
       setComboDetails(true);
     }
     setLoading(true);
-    console.log("inside show");
     try {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
@@ -1000,7 +985,6 @@ console.log("=== END DEBUG ===");
     }
     try {
       // setLoading(true);
-      console.log("TransferDD", transferData);
 
       const bookingPayload = {
         transfer_type: "airport",
@@ -1008,10 +992,10 @@ console.log("=== END DEBUG ===");
           transferData.transferType === "pickup"
             ? dCityData?.id || dCityData?.gmaps_place_id
             : oCityData?.id || oCityData?.gmaps_place_id,
-        destination_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
+        destination_itinerary_city: null,
+          // transferData.transferType === "pickup"
+          //   ? dCityData?.id || dCityData?.gmaps_place_id
+          //   : oCityData?.id || oCityData?.gmaps_place_id,
         is_pickup: transferData.transferType === "pickup",
         is_drop: transferData.transferType === "drop",
         source: transferData?.source,
@@ -1020,7 +1004,6 @@ console.log("=== END DEBUG ===");
         booking_id: transferData?.booking_id,
       };
 
-      console.log("Payload", bookingPayload);
       const response = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
         bookingPayload,
@@ -1079,7 +1062,6 @@ console.log("=== END DEBUG ===");
   };
  
   const supportsTransfers = (mode, index) => {
-    console.log("MOOde", mode, index);
     return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
   };
 
@@ -1094,7 +1076,6 @@ console.log("=== END DEBUG ===");
 
     
   
-  console.log("Redux DBD", booking_id, city, visible);
 
   return (
     <Container>
@@ -1156,7 +1137,7 @@ console.log("=== END DEBUG ===");
                     booking_type?.toLowerCase()
                   )
                     ? "mt-5"
-                    : "mt-0"
+                    : (booking_id || city) && !visible ?"mt-5" : "mt-0"
                 }`}
               >
                 {(booking_id || city) && !visible ? (
