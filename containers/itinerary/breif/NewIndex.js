@@ -52,7 +52,6 @@ const Details = (props) => {
     "#008080", //# shade of teal
     "#7d5e7d", //# shade of purple
   ];
-  console.log("Inside routes Dataa", props?.CityData);
 
   useEffect(() => {
     const Locationlatlong = [];

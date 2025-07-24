@@ -129,7 +129,6 @@ const AddPoi = (props) => {
   }, [debouncedSearch, filterState]);
 
   const handleClose = () => {
-    console.log("clicked");
     props?.setShowDrawer(false);
     props?.handleCloseDrawer();
   };

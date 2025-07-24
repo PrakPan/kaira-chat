@@ -47,7 +47,6 @@ const CitySummary = (props) => {
   };
   const handleView = async (poi, type, dayIndex) => {
     try {
-      console.log("day index is:", dayIndex);
       router.push(
         {
           pathname: `/itinerary/${router.query.id}`,
@@ -200,8 +199,6 @@ const CitySummary = (props) => {
   );
 
   const handleTaxi = async (id) => {
-    console.log("Innnn");
-
     setHandleShowTaxi(true);
     router.push(
       {
@@ -314,7 +311,6 @@ const CitySummary = (props) => {
                     >
                       {poi.heading}
                     </span>
-                    {console.log("poi id in citysummary is:", poi)}
                     {dayByDay && dayByDay.length ? (
                       <>
                         {drawer === "showPoiDetail" &&

@@ -156,7 +156,6 @@ const Section = (props) => {
       })
       .catch((err) => {
         setLoading(false);
-        console.log("Error Changing Taxi", err.message);
         const errorMsg =
           err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
         dispatch(

@@ -89,12 +89,6 @@ const HotelBooking = ({
     duration = null,
     city_name = null,
   } = router.query;
-  console.log(
-    "itinerarycityid is:",
-    itineraryCityId,
-    "itinerary_city_id is:",
-    itinerary_city_id
-  );
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails(false);
@@ -132,7 +126,6 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bkm", stayBookings);
 
   const handleViewDetails = (value) => {
     router.push(

@@ -229,7 +229,6 @@ export default function TemporaryDrawer(props) {
                 <button
                   onClick={() => {
                     props.setShowFilters(true);
-                    console.log("filters pressed");
                   }}
                   className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all"
                 >

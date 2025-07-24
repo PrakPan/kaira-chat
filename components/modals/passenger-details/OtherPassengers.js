@@ -6,7 +6,6 @@ const OtherPassengers = ({ input, setInput, index }) => {
         const tempVal=[...input]
         const { name, value } = e.target;
         tempVal[index][name]=value;
-        console.log("tempval is:",tempVal)
         setInput(tempVal);
       };
   return (

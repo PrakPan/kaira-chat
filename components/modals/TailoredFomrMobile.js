@@ -4,7 +4,6 @@ import media from "../media";
 import TailoredForm from "../tailoredform/Index";
 
 const TailoredFormMobileModal = (props) => {
-  console.log("TailoredFormMobile props:",props)
   let isPageWide = media("(min-width: 768px)");
 
   return (

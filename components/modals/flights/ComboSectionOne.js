@@ -103,10 +103,6 @@ const ComboSection = (props) => {
   useEffect(() => {
     if (preferred_departure_time && !isInitialized) {
       const time = dayjs(preferred_departure_time);
-      console.log(
-        "Initial sync with preferred time:",
-        time.format("YYYY-MM-DDTHH:mm:ss")
-      );
       setSelectedTime(time.format("h:mm A"));
       setSelectedDate(time.format("DD MMM, YYYY"));
       setIsInitialized(true);
@@ -126,12 +122,6 @@ const ComboSection = (props) => {
     const currentTimeString = currentTimeFromPreferred.format("HH:mm:ss");
     const newDateTime = dayjs(`${dateOption.value}T${currentTimeString}`);
 
-    console.log("Date selection:", {
-      selectedDate: dateOption.value,
-      currentTime: currentTimeString,
-      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-      oldDateTime: preferred_departure_time,
-    });
 
     const timer = setTimeout(() => {
       if (updatePreferredDepartureTime) {
@@ -162,13 +152,6 @@ const ComboSection = (props) => {
     const [hours, minutes] = slot.value.split(":");
     const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
 
-    console.log("Time selection:", {
-      selectedTime: slot.display,
-      selectedDate: selectedDate,
-      currentDate: currentDate,
-      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-      oldDateTime: preferred_departure_time,
-    });
 
     // Debounce the API call
     const timer = setTimeout(() => {

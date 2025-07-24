@@ -31,7 +31,6 @@ const Section = (props) => {
       <BackArrow
         handleClick={() => {
           try {
-            console.log("Show B Inside Back")
             props?.handleClose();
           } catch (error) {
             console.log("unable to close:", error);

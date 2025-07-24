@@ -256,7 +256,6 @@ const CityDay = (props) => {
           </button>
         </div> */}
       </div>
-      {console.log("props from itinerary city id is:",props?.itinerary_city_id)}
       {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx==props?.index && (
         <ActivityAddDrawer
           showDrawer={itinerary_city_id == props?.itinerary_city_id && idx==props?.index}

@@ -72,7 +72,6 @@ const ItineraryCity = (props) => {
     return hotel?.itinerary_city_id === props?.itinerary_city_id;
   });
 
-  console.log("Multiii",multiHotelStays);
   const multiHotelDuration = props.totalDuration || multiHotelStays?.reduce(
     (accumulator, currentValue) => accumulator + currentValue?.duration,
     0,

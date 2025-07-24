@@ -160,7 +160,6 @@ const Details = ({
 
     let traceId;
     if (booking_id) {
-      console.log("here");
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );

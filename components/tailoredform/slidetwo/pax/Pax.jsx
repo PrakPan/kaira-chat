@@ -5,7 +5,6 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Button from "../../../ui/button/Index";
 
 const Pax = (props) => {
-  console.log("distribution is 1:",props)
   const containerRef = useRef(null);
   const [isRoomExpanded, setIsRoomExpanded] = useState(false);
   const [travelers, setTravelers] = useState(
