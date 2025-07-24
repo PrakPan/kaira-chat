@@ -770,12 +770,14 @@ console.log("=== END DEBUG ===");
     setTransferDrawerType("pickup");
     setSelectedTransferBooking(null);
     setIsTransferDrawerOpen(true);
+    handlePickupDropDrawer("pickup")
   };
 
   const handleDropClick = () => {
     setTransferDrawerType("drop");
     setSelectedTransferBooking(null);
     setIsTransferDrawerOpen(true);
+    handlePickupDropDrawer("drop")
   };
 
   const correctIcon = (TransportMode) => {
@@ -861,6 +863,7 @@ console.log("=== END DEBUG ===");
 };
 
   const handlePickupDropDrawer = (drawerType) => {
+    console.log("Drawer Clicked",drawerType);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

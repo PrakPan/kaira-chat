@@ -72,6 +72,7 @@ const TransferBooking = ({
   isIntracity,
   isAirport,
   booking_id,
+  dItineraryCityId
 }) => {
 
   console.log("BKing",booking);
@@ -100,7 +101,7 @@ const TransferBooking = ({
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
+          dItineraryCity: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id,
         },
       },
       undefined,
