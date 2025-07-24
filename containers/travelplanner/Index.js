@@ -23,6 +23,7 @@ import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -254,6 +255,20 @@ const Homepage = (props) => {
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
+      {props?.experienceData?.slug=="ladakh"?<>
+        <HeroBannerLadakh
+        image={props.experienceData.image}
+        page_id={props.page_id}
+        type={props.type}
+        destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
+        cities={props.experienceData.locations}
+        children_cities={props.experienceData.children}
+        title={props.experienceData.banner_heading}
+        subheading={props.experienceData.banner_text}
+        page={"State Page"}
+        eventDates={props.eventDates}
+      />
+      </>:<>
       <HeroBanner
         image={props.experienceData.image}
         page_id={props.page_id}
@@ -545,6 +560,7 @@ const Homepage = (props) => {
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>
+      </>}
     </div>
   );
 };

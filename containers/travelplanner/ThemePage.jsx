@@ -40,6 +40,14 @@ import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 import ImageCarousel from "./ImageCaraousel.js";
 import Element from "../newcityplanner/elements/Index.js";
 import ThemeHeadline from "./ThemeHeadines.js";
+import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import LadakhLogo from "../../components/cards/LadakhLogo.js";
+import Destination7Carousel from "../../components/theme/Destination7Carousel.jsx";
+import Activity3Carousel from "../../components/theme/Activity3Carousel.jsx";
+import Element2 from "../newcityplanner/elements/Element2.jsx";
+import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
+import { Padding } from "@mui/icons-material";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -52,6 +60,7 @@ const SetWidthContainer = styled.div`
 `;
 
 export default function ThemePage(props) {
+  console.log("ladakh props are: ", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -125,17 +134,36 @@ export default function ThemePage(props) {
         />
       )}
 
-      <ThemeBanner
-        image={props.experienceData.image}
-        page_id={props.experienceData.id}
-        destination={props.experienceData.destination}
-        cities={props.experienceData.locations}
-        children_cities={props.experienceData.children}
-        title={props.experienceData.banner_heading}
-        subheading={props.experienceData.banner_text}
-        page={"State Page"}
-        slug={props.slug}
-      />
+      {props?.slug === "ladakh" ? (
+        <>
+          <HeroBannerLadakh
+            image={props.experienceData.image}
+            page_id={props.state?.id}
+            type={"state"}
+            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
+            cities={props.experienceData.locations}
+            children_cities={props.experienceData.children}
+            title={props.experienceData.banner_heading}
+            subheading={props.experienceData.banner_text}
+            page={"State Page"}
+            eventDates={props.eventDates}
+            url={props?.experienceData?.image}
+          />
+        </>
+      ) : (
+        <ThemeBanner
+          image={props.experienceData.image}
+          page_id={props.experienceData.id}
+          destination={props.experienceData.destination}
+          cities={props.experienceData.locations}
+          children_cities={props.experienceData.children}
+          title={props.experienceData.banner_heading}
+          subheading={props.experienceData.banner_text}
+          page={"State Page"}
+          slug={props.slug}
+        />
+      )}
+      {props.slug === "ladakh" && <LadakhLogo />}
 
       {props.slug === "japan-cherry-blossom" && (
         <div className="relative">
@@ -188,7 +216,8 @@ export default function ThemePage(props) {
           <PathNavigation path={"asia/japan"} />
         )}
         {props.experienceData.overview_heading &&
-        props.experienceData.overview_text ? (
+        props.experienceData.overview_text &&
+        props?.slug !== "ladakh" ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -231,8 +260,8 @@ export default function ThemePage(props) {
                     <div className="space-y-3">
                       {(props?.slug === "perfect-proposals-2025" &&
                         (component?.priority == 13 ||
-                          component?.priority == 9)) || component.heading == "The Gallery Section"
-                      ? (
+                          component?.priority == 9)) ||
+                      component.heading == "The Gallery Section" ? (
                         ""
                       ) : (
                         <PrimaryHeading
@@ -240,18 +269,29 @@ export default function ThemePage(props) {
                             props?.slug != "japan-cherry-blossom"
                               ? "mx-auto text-center"
                               : "mt-7"
-                          }`}
+                          }
+                          ${
+                            props?.slug == "ladakh" &&
+                            component.carousel == "destination-7" &&
+                            "max-w-[600px]"
+                          }
+                          `}
                         >
                           {component.heading}
                         </PrimaryHeading>
                       )}
-                      <SecondaryHeading className="mx-auto text-center">
+                      <SecondaryHeading
+                        className={`mx-auto text-center ${
+                          props?.slug == "ladakh" &&
+                          component.carousel == "destination-7" &&
+                          "max-w-[800px] text-[#7C7C7C]"
+                        }`}
+                      >
                         {component.text}
                       </SecondaryHeading>
                     </div>
 
                     <ThemeBackground component={component} slug={props?.slug} />
-
                     {props.slug === "japan-cherry-blossom" &&
                       component?.priority == 4 &&
                       isPageWide && (
@@ -344,7 +384,6 @@ export default function ThemePage(props) {
                       )}
 
                     {/* Render specific carousel components based on type */}
-
                     {component.carousel === "destination-1" ? (
                       <>
                         <Destination1Carousel
@@ -372,7 +411,21 @@ export default function ThemePage(props) {
                         <Itinerary1Carousel
                           itineraries={component.itineraries}
                         />
-                        <PlanYourTripButton />
+                        {props?.slug == "ladakh" ? (
+                          <PlanYourTripLadakhButton
+                            className={
+                              "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+                            }
+                            text={"Plan Your Trip Now!"}
+                            page_id={props.state?.id}
+                            type={"state"}
+                            destination={convertDbNameToCapitalFirst(
+                              props.experienceData.slug
+                            )}
+                          />
+                        ) : (
+                          <PlanYourTripButton />
+                        )}
                       </>
                     ) : component.carousel === "itinerary-2" ? (
                       <div className="w-full relative">
@@ -406,7 +459,10 @@ export default function ThemePage(props) {
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        <Activity1Carousel activities={component.activities} />{" "}
+                        <Activity1Carousel
+                          activities={component.activities}
+                          slug={props?.slug}
+                        />{" "}
                         <PlanYourTripButton
                           text={"Create your free itinerary"}
                         />
@@ -427,7 +483,21 @@ export default function ThemePage(props) {
                         )}
 
                         <Reviews1Carousel reviews={component.reviews} />
-                        <PlanYourTripButton />
+                        {props?.slug == "ladakh" ? (
+                          <PlanYourTripLadakhButton
+                          page_id={props.state?.id}
+                          type={"state"}
+                            destination={convertDbNameToCapitalFirst(
+                              props.experienceData.slug
+                            )}
+                            className={
+                              "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+                            }
+                            text={"Plan Your Trip Now!"}
+                          />
+                        ) : (
+                          <PlanYourTripButton />
+                        )}
                       </div>
                     ) : component.carousel === "destination-3" ? (
                       <>
@@ -522,12 +592,73 @@ export default function ThemePage(props) {
                           text={"Create your travel plan now!"}
                         />
                       </>
+                    ) : component.carousel === "destination-7" ? (
+                      <>
+                        <Destination7Carousel
+                          heading={component?.heading}
+                          text={component?.text}
+                          cities={component?.cities}
+                        />
+                        <PlanYourTripLadakhButton
+                          page_id={props.state?.id}
+                          type={"state"}
+                          destination={convertDbNameToCapitalFirst(
+                            props.experienceData.slug
+                          )}
+                          className={
+                            "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[176px] !h-[56px] !px-0 !py-0"
+                          }
+                          text={"Plan a Trip Now!"}
+                        />
+                      </>
+                    ) : component.carousel === "Activity-3" ? (
+                      <>
+                        <Activity3Carousel
+                          activities={component.activities}
+                          slug={props?.slug}
+                        />{" "}
+                        <PlanYourTripLadakhButton
+                          page_id={props.state?.id}
+                          type={"state"}
+                          destination={convertDbNameToCapitalFirst(
+                            props.experienceData.slug
+                          )}
+                          className={
+                            "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+                          }
+                          text={"Create your free itinerary"}
+                        />
+                      </>
+                    ) : component.carousel === "destination-8" ? (
+                      <>
+                        <Element2
+                          data={component.elements}
+                          elements={component?.elements}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={props?.slug}
+                          page={"Country Page"}
+                        />
+                        <PlanYourTripLadakhButton
+                          page_id={props.state?.id}
+                          type={"state"}
+                          destination={convertDbNameToCapitalFirst(
+                            props.experienceData.slug
+                          )}
+                          className={
+                            "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+                          }
+                          text={"Plan Around This Festival"}
+                        />
+                      </>
                     ) : null}
                   </div>
                 )
               );
             })}
         </div>
+        {/* <CurveImageGallery /> */}
 
         {props.slug === "honeymoon-2025" && (
           <div className="relative">
@@ -548,7 +679,7 @@ export default function ThemePage(props) {
 
         <div className="my-[100px]">
           {props.experienceData.faq.length > 0 && (
-            <ThemeFaqs faqs={props.experienceData.faq} />
+            <ThemeFaqs faqs={props.experienceData.faq || props?.FAQ} />
           )}
         </div>
 
@@ -637,6 +768,54 @@ export const PlanYourTripButton = (props) => {
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
+    </div>
+  );
+};
+
+export const PlanYourTripLadakhButton = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const router = useRouter();
+
+  console.log("props in plan your trip is: ",props)
+  const handlePlanButton = () => {
+    openTailoredModal(router, props.page_id, props.destination, props.type);
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free!",
+        event_action: "Banner",
+      },
+    });
+  };
+
+  return (
+    <div className="flex items-center justify-center mt-5 bg-white">
+      <button
+        onClick={handlePlanButton}
+        className={
+          " border-black rounded-lg mx-auto hover:text-white hover:bg-black transition-all " +
+          props.className
+        }
+      >
+        {props.text}
+      </button>
+
+      {/* <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      /> */}
     </div>
   );
 };
