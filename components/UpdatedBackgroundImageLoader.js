@@ -9,53 +9,49 @@ const SaifBackgroundImageLoader = (props) => {
   };
 
   return (
-    <div
-      style={{
-        position: "relative", 
-        zIndex: "0",
-        height: props.height || "100%",
-        width: props.width || "100%",
-        borderRadius: props.borderRadius || "0",
-        overflow: "hidden", 
-        ...props.style,
-      }}
-    >
-      <ImageLoader
-        noLazy={props.noLazy}
-        url={props.url}
-        style={{
-          filter: props.filter,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "100%",
-          objectFit: props.resizeMode || "cover",
-          zIndex: -1,
-        }}
-        height="100%"
-        width="100%"
-        dimensions={props.dimensions}
-        dimensionsMobile={props.dimensionsMobile}
-        borderRadius={props.borderRadius || "0"}
-        noPlaceholder={props.noPlaceholder}
-        onload={props.onload || handleImageLoad}
-      />
-
+    <>
       <div
+        className={loaded ? "" : "bg-gray-50"}
         style={{
-          width: "100%",
-          height: "100%",
-          padding: props.padding,
-          opacity: loaded ? 1 : 0,
-          transition: "opacity 0.3s ease-in-out",
+          position: "static",
+          zIndex: "0",
+          top: "0",
+          left: "0",
+          height: props.height ? props.height : "100%",
+          width: props.width ? props.width : "100%",
+          borderRadius: props.borderRadius ? props.borderRadius : "0",
+          filter: props.filter,
+          ...props.style,
         }}
       >
-        {props.children}
+        <ImageLoader
+          noLazy={props.noLazy}
+          url={props.url}
+          style={{ filter: props.filter }}
+          height={props.height ? props.height : "100%"}
+          width={props.width ? props.width : "100%"}
+          dimensions={props.dimensions}
+          dimensionsMobile={props.dimensionsMobile}
+          borderRadius={props.borderRadius ? props.borderRadius : "0"}
+          noPlaceholder={props.noPlaceholder}
+          resizeMode={props.resizeMode}
+          onload={props.onload ? props.onload : handleImageLoad}
+        />
       </div>
-    </div>
+
+      {loaded && (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            padding: props.padding,
+          }}
+        >
+          {props.children}
+        </div>
+      )}
+    </>
   );
 };
-
 
 export default SaifBackgroundImageLoader;

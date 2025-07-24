@@ -51,11 +51,12 @@ const Destinations = (props) => {
           setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
           updatedData={updatedData}
+          tailoredFormModal={props.tailoredFormModal}
         ></SelectedDestination>
       );
     }
     setDestinations(des);
-  }, [JSON.stringify(props.selectedCities)]);
+  }, [JSON.stringify(props.selecftedCities)]);
 
   const _addDestinationHandler = () => {
     let dest = destinations.slice();
@@ -75,6 +76,7 @@ const Destinations = (props) => {
         setValueStart={props.setValueStart}
         setValueEnd={props.setValueEnd}
         eventDates={props.eventDates}
+        tailoredFormModal={props.tailoredFormModal}
       ></SelectedDestination>
     );
     setDestinations(dest.slice());

@@ -41,6 +41,16 @@ const ChangePoiDetailDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const fetchData = async () => {
     setLoading(true);
 
@@ -101,7 +111,7 @@ const ChangePoiDetailDrawer = (props) => {
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
       props.openNotification({
         type: "error",
         text: errorMsg,
@@ -148,7 +158,7 @@ const ChangePoiDetailDrawer = (props) => {
           handleCloseDrawer={props.handleCloseDrawer}
         />
       )}
-       {!isDesktop && (
+      {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}

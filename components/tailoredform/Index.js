@@ -227,6 +227,16 @@ const Enquiry = (props) => {
   };
 
   useEffect(() => {
+    if (props.tailoredFormModal) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.tailoredFormModal]);
+
+  useEffect(() => {
     if (loginComplete && props.token && props.phone !== "null") {
       _submitDataHandler();
     }

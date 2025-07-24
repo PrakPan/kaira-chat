@@ -54,6 +54,16 @@ const POIDetailsDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show]);
 
+ useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const fetchData = async () => {
     setLoading(true);
 
