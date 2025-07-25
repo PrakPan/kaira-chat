@@ -88,12 +88,12 @@ const ActivityCard = ({
           <div
             className={`w-full h-full ${
               scale ? "hover:scale-110" : "group-hover:scale-105"
-            } transition-all`}
+            } transition-all ${isPageWide && "aspect-square"}`}
           >
             <ImageLoader
               url={image}
-              width={isPageWide ? "282px" : "350px"}
-              height={isPageWide ? "282px" : "350px"}
+              width={isPageWide?"100%":"350px"}
+              height={isPageWide?"100%":"350px"}
               borderRadius="10px"
             />
           </div>
