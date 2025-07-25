@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { NumToClass } from "../../public/content/flights";
 import Layout from "../../components/Layout";
 import { useRouter } from "next/navigation";
+import { logEvent } from "../../services/ga/Index";
 const Container = styled.div`
   position: relative;
 
@@ -283,7 +284,19 @@ const Flight = () => {
               borderRadius="7px"
               color="black"
               borderWidth="1px"
-              onclick={() =>
+              onclick={() => {
+                logEvent({
+                  action: "Search_Flights",
+                  params: {
+                    page: "Flights Page",
+                    event_category: "Button Click",
+                    event_label: "Search",
+                    event_action: "Flight Search Form",
+                    trip_type: input.tripType,
+                    from: input.from?.name || "",
+                    to: input.to?.name || "",
+                  },
+                });
                 router.push({
                   pathname: "/flights/searchflights",
                   query: {
@@ -297,8 +310,8 @@ const Flight = () => {
                     infants: input.infants,
                     flightCabinClass: input.flightCabinClass,
                   },
-                })
-              }
+                });
+              }}
             >
               Search
             </Button>

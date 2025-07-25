@@ -87,12 +87,22 @@ export default function DestinationsPageContainer({
 
                 <div className="w-full flex items-center justify-center mt-5">
                   <Button
-                    onclick={() =>
+                    onclick={() => {
+                      logEvent({
+                        action: "Create_Travel_Plan",
+                        params: {
+                          page: "Destinations Page",
+                          event_category: "Button Click",
+                          event_label: `Create your travel plan to ${dest.continent.title}`,
+                          event_action: "Continent Section",
+                          destination: dest.continent.title,
+                        },
+                      });
                       handlePlanButton(
                         dest.continent.slug,
                         dest.continent.title
-                      )
-                    }
+                      );
+                    }}
                     borderWidth="1px"
                     fontWeight="500"
                     borderRadius="6px"

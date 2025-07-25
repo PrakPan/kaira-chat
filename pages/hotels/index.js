@@ -10,6 +10,7 @@ import styled from "styled-components";
 import Layout from "../../components/Layout";
 import { useRouter } from "next/navigation";
 import PriceRange from "./priceRange";
+import { logEvent } from "../../services/ga/Index";
 const Container = styled.div`
   position: relative;
 
@@ -409,6 +410,20 @@ export const SearchComponent = ({ input, setInput, handleChange, small }) => {
           color="black"
           borderWidth="1px"
           onclick={() => {
+            logEvent({
+              action: "Search_Hotels",
+              params: {
+                page: "Hotels Page",
+                event_category: "Button Click",
+                event_label: "Search",
+                event_action: "Hotel Search Form",
+                destination: input.destination?.name || "",
+                check_in: input.checkIn,
+                check_out: input.checkOut,
+                rooms: input.occupancies?.length || 1,
+              },
+            });
+
             var roomData = "";
             input.occupancies.forEach((room, index) => {
               if (roomData !== "") {

@@ -228,6 +228,17 @@ const Homepage = (props) => {
               borderRadius="6px"
               margin="1.5rem auto"
               padding="0.5rem 2rem"
+              onclick={() => {
+                logEvent({
+                  action: "View_All_Trips",
+                  params: {
+                    page: "Home Page",
+                    event_category: "Button Click",
+                    event_label: "View All",
+                    event_action: "My Trips Section",
+                  },
+                });
+              }}
             >
               View All
             </Button>
@@ -288,6 +299,18 @@ const Homepage = (props) => {
               margin="2.5rem auto"
               padding="0.5rem 2rem"
               borderWidth="1px"
+              onclick={() => {
+                logEvent({
+                  action: "Start_Journey",
+                  params: {
+                    page: "Home Page",
+                    event_category: "Button Click",
+                    event_label: "Start your journey to Europe now!",
+                    event_action: "Europe Section",
+                    destination: "Europe",
+                  },
+                });
+              }}
             >
               {"Start your journey to Europe now!"}
             </Button>
@@ -325,6 +348,18 @@ const Homepage = (props) => {
               margin="2.5rem auto"
               padding="0.5rem 2rem"
               borderWidth="1px"
+              onclick={() => {
+                logEvent({
+                  action: "Start_Journey",
+                  params: {
+                    page: "Home Page",
+                    event_category: "Button Click",
+                    event_label: "Start your journey to Asia now!",
+                    event_action: "Asia Section",
+                    destination: "Asia",
+                  },
+                });
+              }}
             >
               {"Start your journey to Asia now!"}
             </Button>

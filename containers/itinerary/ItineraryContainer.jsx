@@ -36,6 +36,7 @@ import setItineraryStatus from "../../store/actions/itineraryStatus";
 import { toast, ToastContainer } from "react-toastify";
 import SetPassengers from "../../store/actions/passengers";
 import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
+import { logEvent } from "../../services/ga/Index";
 
 const Container = styled.div`
   width: 90%;
@@ -194,6 +195,21 @@ const ItineraryContainer = (props) => {
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
+
+  // Throttle function for performance optimization
+  const throttle = (func, limit) => {
+    let inThrottle;
+    return function() {
+      const args = arguments;
+      const context = this;
+      if (!inThrottle) {
+        func.apply(context, args);
+        inThrottle = true;
+        setTimeout(() => inThrottle = false, limit);
+      }
+    };
+  };
+
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
@@ -238,6 +254,15 @@ const ItineraryContainer = (props) => {
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
   const [oldOne,setOldOne] = useState(false);
+
+  // Scroll depth tracking state
+  const [scrollDepthTracked, setScrollDepthTracked] = useState({
+    25: false,
+    50: false,
+    75: false,
+    100: false,
+  });
+  const [pageStartTime] = useState(Date.now());
 
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
@@ -837,6 +862,55 @@ useEffect(() => {
   return () => clearInterval(interval);
 }, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
 
+// Scroll depth tracking useEffect
+useEffect(() => {
+  // Add scroll event listener
+  const throttledHandleScroll = throttle(handleScroll, 100); // Throttle for performance
+  window.addEventListener('scroll', throttledHandleScroll);
+
+  // Track initial page load
+  const loadTime = Date.now() - pageStartTime;
+  logEvent({
+    action: "Itinerary_Page_Load",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Page Performance",
+      event_label: "Initial Load",
+      load_time_ms: loadTime,
+      itinerary_id: props.id,
+      itinerary_name: props.itinerary?.name,
+      user_authenticated: !!props.token,
+    },
+  });
+
+  // Track page unload for session summary
+  const handlePageUnload = () => {
+    const sessionDuration = Math.floor((Date.now() - pageStartTime) / 1000);
+    const scrolledDepths = Object.keys(scrollDepthTracked).filter(depth => scrollDepthTracked[depth]);
+    
+    logEvent({
+      action: "Page_Session_End",
+      params: {
+        page: "Itinerary Page",
+        event_category: "User Behavior",
+        event_label: "Session Summary",
+        session_duration_seconds: sessionDuration,
+        max_scroll_depth: scrolledDepths.length > 0 ? Math.max(...scrolledDepths.map(Number)) : 0,
+        scroll_milestones_reached: scrolledDepths.length,
+        itinerary_id: props.id,
+        itinerary_name: props.itinerary?.name,
+      },
+    });
+  };
+
+  window.addEventListener('beforeunload', handlePageUnload);
+
+  return () => {
+    window.removeEventListener('scroll', throttledHandleScroll);
+    window.removeEventListener('beforeunload', handlePageUnload);
+  };
+}, [props.id, props.itinerary?.name, props.token, scrollDepthTracked]);
+
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array 
@@ -1190,6 +1264,145 @@ useEffect(() => {
     setPayment(json);
   };
 
+  // Tracking functions for button analytics
+  const handleTabClick = (tabName) => {
+    logEvent({
+      action: "Itinerary_Tab_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Tab Navigation",
+        event_label: tabName,
+        event_value: props.id,
+        itinerary_name: props.itinerary?.name,
+      },
+    });
+  };
+
+  const handleGetInTouchClick = () => {
+    logEvent({
+      action: "Get_In_Touch_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Get in Touch",
+        event_value: props.id,
+        itinerary_name: props.itinerary?.name,
+        user_authenticated: !!props.token,
+      },
+    });
+  };
+
+  const handleEditRouteClick = () => {
+    logEvent({
+      action: "Edit_Route_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Edit Route",
+        event_value: props.id,
+        itinerary_name: props.itinerary?.name,
+        duration: props.itinerary?.duration,
+        budget: props.itinerary?.budget,
+      },
+    });
+  };
+
+  const handleMapInteraction = (interactionType, poiName = null) => {
+    logEvent({
+      action: "Map_Interaction",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Map Component",
+        event_label: interactionType,
+        event_value: props.id,
+        poi_name: poiName,
+        itinerary_name: props.itinerary?.name,
+      },
+    });
+  };
+
+  const handleAddToStaysClick = (stayInfo = null) => {
+    logEvent({
+      action: "Add_To_Stays_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Add to Stays",
+        event_value: props.id,
+        stay_name: stayInfo?.name,
+        city: stayInfo?.city,
+        itinerary_name: props.itinerary?.name,
+      },
+    });
+  };
+
+  const handlePaymentComponentClick = (actionType) => {
+    logEvent({
+      action: "Payment_Component_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Payment Action",
+        event_label: actionType,
+        event_value: props.id,
+        payment_amount: payment?.total_cost,
+        itinerary_name: props.itinerary?.name,
+        user_authenticated: !!props.token,
+      },
+    });
+  };
+
+  const handleTransferComponentClick = (actionType, transferInfo = null) => {
+    logEvent({
+      action: "Transfer_Component_Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Transfer Action",
+        event_label: actionType,
+        event_value: props.id,
+        transfer_type: transferInfo?.transfer_type,
+        from_city: transferInfo?.from_city,
+        to_city: transferInfo?.to_city,
+        itinerary_name: props.itinerary?.name,
+      },
+    });
+  };
+
+  // Scroll depth tracking function
+  const handleScrollDepth = (depth) => {
+    logEvent({
+      action: "Scroll_Depth",
+      params: {
+        page: "Itinerary Page",
+        event_category: "User Behavior",
+        event_label: `${depth}%_scrolled`,
+        event_value: props.id,
+        itinerary_name: props.itinerary?.name,
+        time_to_scroll_seconds: Math.floor((Date.now() - pageStartTime) / 1000),
+        user_authenticated: !!props.token,
+      },
+    });
+  };
+
+  // Scroll event handler
+  const handleScroll = () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = Math.round((scrollTop / documentHeight) * 100);
+
+    // Track scroll depth milestones
+    const depthMilestones = [25, 50, 75, 100];
+    
+    depthMilestones.forEach(milestone => {
+      if (scrollPercentage >= milestone && !scrollDepthTracked[milestone]) {
+        setScrollDepthTracked(prev => ({
+          ...prev,
+          [milestone]: true
+        }));
+        handleScrollDepth(milestone);
+      }
+    });
+  };
+
   const setHideBookingModal = () => {
     setShowBookingModal(false);
     setShowStayBookingModal(false);
@@ -1288,6 +1501,7 @@ if(oldOne){
         cities={props?.cities}
         resetRef={resetRef}
         fetchData={fetchData}
+        handleEditRouteClick={handleEditRouteClick}
         
       ></Overview>
 
@@ -1371,6 +1585,14 @@ if(oldOne){
           setActivityBookings={setActivityBookings}
           shouldShowLoader={shouldShowLoader}
           displayText={displayText}
+          // Tracking functions
+          handleTabClick={handleTabClick}
+          handleGetInTouchClick={handleGetInTouchClick}
+          handleEditRouteClick={handleEditRouteClick}
+          handleMapInteraction={handleMapInteraction}
+          handleAddToStaysClick={handleAddToStaysClick}
+          handlePaymentComponentClick={handlePaymentComponentClick}
+          handleTransferComponentClick={handleTransferComponentClick}
         ></Menu>
       </div>
       <ToastContainer />
