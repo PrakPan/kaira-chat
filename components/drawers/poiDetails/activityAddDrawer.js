@@ -102,15 +102,15 @@ const ActivityAddDrawer = (props) => {
       traveler_ages: Array(num_adults).fill(null),
     },
     experienceFilters: ["All"],
-    experienceFiltersActivity:["All"],
+    experienceFiltersActivity: ["All"],
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
     category: [],
     tour_type: [],
     guide: [],
-    experienceFilters:[],
-    experienceFiltersActivity:[],
+    experienceFilters: [],
+    experienceFiltersActivity: [],
   });
   const [pax, setPax] = useState({
     adults: itinerary.number_of_adults,
@@ -314,7 +314,11 @@ const ActivityAddDrawer = (props) => {
               filterState.guide && filterState.guide[0] !== "All"
                 ? filterState.guide
                 : null,
-            experience_filters:filterState?.experienceFiltersActivity && filterState.experienceFiltersActivity[0] !== "All"?filterState.experienceFiltersActivity:null
+            experience_filters:
+              filterState?.experienceFiltersActivity &&
+              filterState.experienceFiltersActivity[0] !== "All"
+                ? filterState.experienceFiltersActivity
+                : null,
           },
           sort_by: {},
         };
@@ -394,6 +398,21 @@ const ActivityAddDrawer = (props) => {
               key={i}
               setShowDrawer={props?.setShowDrawer}
               data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={startDate}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
+            ></NewPoiBooking>
+          );
+        }
+        for (var i = 0; i < res.data.data.suggested_places.length; i++) {
+          result.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.suggested_places[i]}
               setLoginModal={props.setShowLoginModal}
               date={startDate}
               cityId={props?.cityID}
@@ -486,6 +505,21 @@ const ActivityAddDrawer = (props) => {
               key={i}
               setShowDrawer={props?.setShowDrawer}
               data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={startDate}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
+            ></NewPoiBooking>
+          );
+        }
+        for (var i = 0; i < res.data.data.suggested_places.length; i++) {
+          options.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.suggested_places[i]}
               setLoginModal={props.setShowLoginModal}
               date={startDate}
               cityId={props?.cityID}
