@@ -797,8 +797,7 @@ export const PlanYourTripLadakhButton = (props) => {
       <button
         onClick={handlePlanButton}
         className={
-          " border-black rounded-lg mx-auto hover:text-white hover:bg-black transition-all " +
-          props.className
+          "border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all "
         }
       >
         {props.text}

@@ -87,14 +87,14 @@ export default function ElementCard2(props) {
           {props?.data?.name}
         </div>
 
-        <div className="relative h-[240px] w-full overflow-hidden rounded-lg">
+        <div className="relative  w-full overflow-hidden rounded-[24px]  aspect-[8/5]">
           <ImageLoader
             url={props?.data?.image || placeholderImage}
             dimensions={null}
             dimensionsMobile={null}
             width="100%"
-            height="240px"
-            borderRadius="8px"
+            height="100%"
+            borderRadius="24px"
             noLazy
             hoverpointer
             className="w-full"
