@@ -1,10 +1,13 @@
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import { useRef } from "react";
+import {
+  ANIMATION_CONFIG,
+  createEntranceAnimation,
+  createSequentialContentAnimation,
+  gsap,
+  splitTextIntoWords,
+  useGSAP,
+} from "../common/gsapConfig";
 import styles from "./HeadingContent.module.scss";
-
-// Register the useGSAP plugin
-gsap.registerPlugin(useGSAP);
 
 const HeadingContent = ({ title, subtitle }) => {
   const headingRef = useRef(null);
@@ -14,81 +17,36 @@ const HeadingContent = ({ title, subtitle }) => {
 
   useGSAP(
     () => {
-      // Split text into words and wrap each word in a span
-      const headings = headingRef.current.querySelectorAll(".heading-text");
+      // Split text into words and get word elements
+      const wordElements = splitTextIntoWords(headingRef.current);
 
-      headings.forEach((heading) => {
-        const text = heading.textContent;
-        const words = text.split(" ");
-
-        // Clear the heading and rebuild with wrapped words
-        heading.innerHTML = words
-          .map(
-            (word) =>
-              `<span class="word" style="display: inline-block; overflow: hidden;">
-          <span style="display: inline-block;">${word}</span>
-        </span>`
-          )
-          .join(" ");
-      });
-
-      // Get all word elements
-      const wordElements = headingRef.current.querySelectorAll(".word span");
-
-      // Set initial state for headings - words are below and invisible
-      gsap.set(wordElements, {
-        y: 100,
-        opacity: 0,
-      });
-
-      // Set initial state for content wrapper - invisible
-      gsap.set(contentWrapperRef.current, {
-        opacity: 0,
-        y: 30,
-      });
-
-      // Set initial state for button - invisible
-      gsap.set(buttonRef.current, {
-        opacity: 0,
-        y: 30,
-      });
+      // Set initial states using shared configuration
+      gsap.set(wordElements, ANIMATION_CONFIG.initialStates.fromBottom);
+      gsap.set(
+        contentWrapperRef.current,
+        ANIMATION_CONFIG.initialStates.fromBottomSmall
+      );
+      gsap.set(
+        buttonRef.current,
+        ANIMATION_CONFIG.initialStates.fromBottomSmall
+      );
 
       // Create timeline for coordinated animations
       const tl = gsap.timeline();
 
       // Animate words appearing from bottom with stagger
-      tl.to(wordElements, {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "back.out(1.7)",
-        stagger: {
-          amount: 1.2, // Total time to stagger all words
-          from: "start",
-        },
-      })
-        // Animate content wrapper fade-in after headings complete
-        .to(
-          contentWrapperRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-          },
-          "+=0.3"
-        ) // Start 0.3 seconds after heading animation completes
-        // Animate button fade-in after content wrapper
-        .to(
-          buttonRef.current,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "power2.out",
-          },
-          "+=0.2"
-        ); // Start 0.2 seconds after content wrapper animation
+      tl.to(
+        wordElements,
+        createEntranceAnimation(wordElements, {
+          stagger: ANIMATION_CONFIG.stagger.long,
+        })
+      );
+
+      // Animate content wrapper and button sequentially
+      createSequentialContentAnimation(tl, [
+        contentWrapperRef.current,
+        buttonRef.current,
+      ]);
     },
     { scope: containerRef }
   );
