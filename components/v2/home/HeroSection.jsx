@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import Image from 'next/image';
 import styles from './HeroSection.module.scss';
 import f1 from '../assets/1.png';
@@ -11,11 +12,37 @@ import f4 from '../assets/4.png';
 
 const collect = [f1, f2, f3, f4];
 
+// Register the useGSAP plugin
+gsap.registerPlugin(useGSAP);
+
 const HeroSection = ({ title, subtitle }) => {
   const imageRefs = useRef([]);
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
 
+  // GSAP animation using useGSAP hook
+  useGSAP(() => {
+    // Set initial state - images are below viewport and invisible
+    gsap.set(imageRefs.current, {
+      y: 100,
+      opacity: 0,
+      scale: 0.8,
+      transformOrigin: "center bottom"
+    });
+
+    // Create the pop-up animation with stagger effect
+    gsap.to(imageRefs.current, {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      duration: 0.8,
+      ease: "back.out(1.7)",
+      stagger: {
+        amount: 0.4, // Total time to stagger all animations
+        from: "start" // Start from first image
+      }
+    });
+  }, { scope: containerRef });
 
   return (
     <section ref={sectionRef} className={styles.heroSection}>
