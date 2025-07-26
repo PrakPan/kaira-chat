@@ -25,6 +25,7 @@ target/
 .idea/
 .kiro
 .docs/
+.vscode/
 
 # Unit test reports
 TEST*.xml
