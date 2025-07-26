@@ -9,6 +9,7 @@ import f1 from '../assets/1.png';
 import f2 from '../assets/2.png';
 import f3 from '../assets/3.png';
 import f4 from '../assets/4.png';
+import HeadingContent from './HeadingContent';
 
 const collect = [f1, f2, f3, f4];
 
@@ -88,6 +89,7 @@ const HeroSection = ({ title, subtitle }) => {
 
   return (
     <section ref={sectionRef} className={styles.heroSection}>
+       <HeadingContent title={title} subtitle={subtitle} />
         <div ref={containerRef} className={styles.backgroundWrapper}>
           {collect.map((image, index) => (
             <div
