@@ -14,8 +14,6 @@ const collect = [f1, f2, f3, f4];
 const HeroSection = ({ title, subtitle }) => {
   const imageRefs = useRef([]);
   const containerRef = useRef(null);
-  const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
   const sectionRef = useRef(null);
 
 
