@@ -26,15 +26,16 @@ const HeroSection = ({ title, subtitle }) => {
     gsap.set(imageRefs.current, {
       y: 100,
       opacity: 0,
-      scale: 0.8,
       transformOrigin: "center bottom"
     });
 
-    // Create the pop-up animation with stagger effect
-    gsap.to(imageRefs.current, {
+    // Create timeline for coordinated animations
+    const tl = gsap.timeline();
+
+    // Initial pop-up animation with stagger effect
+    tl.to(imageRefs.current, {
       y: 0,
       opacity: 1,
-      scale: 1,
       duration: 0.8,
       ease: "back.out(1.7)",
       stagger: {
@@ -42,6 +43,47 @@ const HeroSection = ({ title, subtitle }) => {
         from: "start" // Start from first image
       }
     });
+
+    // Continuous floating animation - starts after initial animation
+    tl.to(imageRefs.current, {
+      y: -8,
+      duration: 3,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.3,
+        from: "start"
+      }
+    }, "+=0.5") // Start 0.5 seconds after previous animation
+    .to(imageRefs.current, {
+      y: 8,
+      duration: 3,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.3,
+        from: "center"
+      }
+    })
+    .to(imageRefs.current, {
+      y: -5,
+      duration: 2.5,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.2,
+        from: "end"
+      }
+    })
+    .to(imageRefs.current, {
+      y: 0,
+      duration: 2,
+      ease: "power2.inOut",
+      stagger: {
+        amount: 0.4,
+        from: "random"
+      }
+    });
+
+    // Make the floating animation repeat infinitely
+    tl.repeat(-1);
   }, { scope: containerRef });
 
   return (
