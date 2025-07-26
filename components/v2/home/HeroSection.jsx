@@ -97,7 +97,7 @@ const HeroSection = ({ title, subtitle }) => {
               ref={(el) => (imageRefs.current[index] = el)}
               className={styles.foregroundImage}
             >
-              <img src={image.src} alt={`Background ${index + 1}`} />
+              <Image src={image} alt={`Background ${index + 1}`} />
             </div>
           ))}
         </div>
