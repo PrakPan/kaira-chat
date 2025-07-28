@@ -1,14 +1,12 @@
-import React from "react";
-import FullImage from "../../FullImage";
-import FullImgContent from "./FullImgContent";
 import useMediaQuery from "../../media";
 import FullImgContentLadakh from "./FullImgContentLadakh";
+import FullImageLadakh from "../../FullImageLadakh";
 
 const HeroBannerLadakh = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
 
   return (
-    <FullImage
+    <FullImageLadakh
       heightmobile="30rem"
       height="37rem"
       url={props?.url}
@@ -36,7 +34,7 @@ const HeroBannerLadakh = (props) => {
           eventDates={props.eventDates}
         />
       </div>
-    </FullImage>
+    </FullImageLadakh>
   );
 };
 
