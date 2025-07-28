@@ -72,7 +72,8 @@ const TransferBooking = ({
   isIntracity,
   isAirport,
   booking_id,
-  dItineraryCityId
+  dItineraryCityId,
+  oItineraryCityId
 }) => {
 
   console.log("BKing",booking);
@@ -118,8 +119,8 @@ const TransferBooking = ({
       query: {
         drawer: book?.transfer_type=="sightseeing"?"SightSeeing":"Intracity",
         bookingId: book?.id || booking_id,
-        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+        oItineraryCity: oItineraryCityId || oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id
       },
     },
     undefined,

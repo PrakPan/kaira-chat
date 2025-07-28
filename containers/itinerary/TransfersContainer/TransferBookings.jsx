@@ -455,6 +455,7 @@ const TransferBookings = (props) => {
                   itineraries?.start_city
                 }
                 oCityData={itineraries?.start_city}
+                oItineraryCityId={itineraries?.cities?.[index]?.id}
                 dItineraryCityId={itineraries?.cities?.[index+1]?.id}
                 dCityData={itineraries?.start_city}
                 id={itineraries?.start_city?.gmaps_place_id}
@@ -540,6 +541,7 @@ const TransferBookings = (props) => {
                   itineraries?.start_city
                 }
                 oCityData={itineraries?.start_city}
+                oItineraryCityId={itineraries?.cities?.[index]?.id}
                 dItineraryCityId={itineraries?.cities?.[index+1]?.id}
                 dCityData={itineraries?.start_city}
                 id={itineraries?.start_city?.gmaps_place_id}
@@ -659,6 +661,7 @@ const TransferBookings = (props) => {
                 booking.transfer_details?.destination || itineraries?.start_city
               }
               oCityData={itineraries?.start_city}
+              oItineraryCityId={itineraries?.cities?.[lastIndex]?.id}
               dItineraryCityId={itineraries?.end_city?.gmaps_place_id}
               dCityData={itineraries?.start_city}
               id={itineraries?.start_city?.gmaps_place_id}
@@ -745,6 +748,7 @@ const TransferBookings = (props) => {
             }
             oCityData={itineraries?.start_city}
             dCityData={itineraries?.start_city}
+            oItineraryCityId={itineraries?.cities?.[itineraries?.cities?.length - 1]?.id}
             dItineraryCityId={itineraries?.end_city?.gmaps_place_id}
             id={itineraries?.start_city?.gmaps_place_id}
             check_in={booking.check_in}
@@ -789,6 +793,7 @@ const TransferBookings = (props) => {
             }
             oCityData={itineraries?.start_city}
             dCityData={itineraries?.start_city}
+            oItineraryCityId={itineraries?.cities?.[itineraries?.cities?.length - 1]?.id}
             dItineraryCityId={itineraries?.end_city?.gmaps_place_id}
             id={itineraries?.start_city?.gmaps_place_id}
             check_in={booking.check_in}

@@ -61,6 +61,7 @@ const AirportBookingItem = ({
   onDropClick, // Add this prop
   handleEdit,
   handlePickupDropDrawer,
+  setTransferType
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -153,6 +154,7 @@ const AirportBookingItem = ({
     //   selectedType: type,
     // });
     handleEdit(false, bookingItem);
+    setTransferType("Taxi")
   };
 
   const handleTooltipAddClick = (e, type) => {
@@ -320,6 +322,7 @@ const AirportBookingItem = ({
         //   selectedType: "Airport Pickup",
         // });
         handleEdit(false, pickupBookings[0]);
+        setTransferType("Taxi")
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -332,6 +335,7 @@ const AirportBookingItem = ({
         //   selectedType: "Airport Drop",
         // });
         handleEdit(false, dropBookings[0]);
+        setTransferType("Taxi")
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -344,6 +348,7 @@ const AirportBookingItem = ({
         //   selectedType: "Airport Transfer",
         // });
         handleEdit(false, booking[0]);
+        setTransferType("Taxi")
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -362,6 +367,7 @@ const AirportBookingItem = ({
     //   selectedType: type,
     // });
     handleEdit(false, bookingItem);
+    setTransferType("Taxi")
   };
 
   const formatDate = (dateString) => {
@@ -821,6 +827,7 @@ const CityItem = ({
   }, [booking_id]);
 
   const handleEdit = async (combo, book) => {
+    setTransferType(book?.booking_type || booking_type);
 
   console.log()
   setIsIntracity(false);
@@ -1248,6 +1255,7 @@ const CityItem = ({
               handleEdit={handleEdit}
               handlePickupDropDrawer={handlePickupDropDrawer}
               setAirportBookingId={setAirportBookingId}
+              setTransferType={setTransferType}
             />
           </div>
           {/* )} */}
@@ -1342,6 +1350,7 @@ const CityItem = ({
         "Intracity" === drawer &&  (bookingId === airportBookingId || bookingId === booking_id)
       }
             error={error}
+            transferType={transferType}
             combo={booking_type?.includes(",")}
             booking_type={transferType || booking_type}
             handleDelete={handleDelete}

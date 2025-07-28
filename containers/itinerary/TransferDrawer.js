@@ -61,6 +61,7 @@ const TransferDrawer = ({
   setIsTransferDrawerOpen,
   combo,
   booking_id,
+  transferType
 }) => {
   const handleClose=useHandleClose()
   const dispatch = useDispatch();
@@ -84,7 +85,7 @@ const TransferDrawer = ({
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: data?.is_airport_drop || data?.is_airport_pickup ? "addPickupDrop" : "editTransfer",
-          drawerType: data?.is_airport_drop ? "drop" : "pickup",
+          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : "multicity",
           bookingId: booking_id,
           oItineraryCity:origin_itinerary_city_id,
           dItineraryCity:destination_itinerary_city_id
@@ -96,6 +97,8 @@ const TransferDrawer = ({
       }
     );
   };
+
+  console.log("BBK",booking_type,transferType);
 
 
   const toggleExpand = (index) => {
@@ -595,15 +598,15 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {data?.combo_type != "multicity" && (
+              { (
                 <div>
                   <Generalbuttonstyle
                     borderRadius={"7px"}
                     fontSize={"1rem"}
                     padding={"7px 25px"}
                     onClick={() => {
-                      handleEditRoute()
-                      handleClose();
+                      handleEditRoute(data)
+                      // handleClose();
                       //setShowTaxi(true);console.log("")
                     }}
                   >
