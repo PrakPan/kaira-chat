@@ -1,7 +1,11 @@
 .navigationMenu {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 20px;
+  position: relative;
+  background: white;
+  z-index: 100;
 }
 
 .menuList {
@@ -10,4 +14,209 @@
   align-items: center;
   list-style: none;
   gap: 20px;
+
+  li {
+    .menuItem {
+      text-decoration: none;
+      color: black;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #007bff;
+      }
+
+      &.active {
+        font-weight: bold;
+        border-bottom: 2px solid #000;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.desktopActions {
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Hamburger Menu Styles
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 110;
+
+  @media (max-width: 768px) {
+    display: flex;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.hamburgerLine {
+  width: 100%;
+  height: 2px;
+  background: #333;
+  border-radius: 2px;
+  transform-origin: center;
+}
+
+// Mobile Overlay
+.mobileOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+// Mobile Sidebar
+.mobileSidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  max-width: 80vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2);
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebarLogo {
+  height: 40px;
+  width: auto;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.mobileMenuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  padding-top: 40px;
+
+  li {
+    margin: 0;
+  }
+}
+
+.mobileMenuItem {
+  display: block;
+  padding: 20px 30px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  position: relative;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #fff;
+    transform: translateX(5px);
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.15);
+    border-left-color: #fff;
+    font-weight: 600;
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+    }
+  }
+}
+
+.sidebarActions {
+  padding: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobileCta {
+  width: 100%;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 480px) {
+  .mobileSidebar {
+    width: 280px;
+  }
+
+  .mobileMenuItem {
+    padding: 18px 25px;
+    font-size: 16px;
+  }
 }
