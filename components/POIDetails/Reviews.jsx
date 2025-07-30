@@ -25,7 +25,7 @@ const ReviewPoi = ({ review }) => {
       ) : (
         <div className="text-[12px]">
           {review?.text.slice(0, 150)}{" "}
-          <div className="font-bold cursor-pointer h-[72px] overflow-auto" onClick={()=>setViewMore(true)}>View more</div>
+          {review?.text?.length>150&&<div className="font-bold cursor-pointer h-[72px] overflow-auto" onClick={()=>setViewMore(true)}>View more</div>}
         </div>
       )}
       </div>

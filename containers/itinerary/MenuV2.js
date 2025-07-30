@@ -84,6 +84,8 @@ const SimpleTabsV2 = (props) => {
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
 
+  console.log("Itiii",stays,props?.activityBookings,props?.itinerary)
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       scrollToElement("Itenary");

@@ -15,6 +15,7 @@ import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
 import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
+import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -58,6 +59,8 @@ const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
+  const [loading,setLoading] = useState(false);
+  const [showDetails,setShowDetails] =  useState(false);
   const { itinerary_status, hotels_status } = useSelector(
     (state) => state.ItineraryStatus
   );
@@ -84,6 +87,7 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
+    console.log("Hii I'm there")
 
 
     
@@ -105,28 +109,28 @@ const ItineraryCity = (props) => {
       }
     );
     
-    await bookingDetails
-      .get(
-        `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        dispatch(
-          openNotification({
-            type: "error",
-            text: "unable to get detail",
-            heading: "Error!",
-          })
-        );
-        setShowDetails(false);
-      });
+    // await bookingDetails
+    //   .get(
+    //     `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setData(res.data);
+    //   })
+    //   .catch((err) => {
+    //     dispatch(
+    //       openNotification({
+    //         type: "error",
+    //         text: "unable to get detail",
+    //         heading: "Error!",
+    //       })
+    //     );
+    //     setShowDetails(false);
+    //   });
     setLoading(false);
   };
 
