@@ -171,16 +171,6 @@ function MyApp({ Component, pageProps, store }) {
           rel="stylesheet"
         />
       </Head>
-      <body>
-        <Script
-          src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-          strategy="afterInteractive"
-          onLoad={() => {
-            console.log("CRMOne bot script loaded");
-            restartBot(); // Start bot once script is ready
-          }}
-        />
-      </body>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

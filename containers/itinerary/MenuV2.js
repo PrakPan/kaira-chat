@@ -49,6 +49,7 @@ import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 import { TopicSharp } from "@mui/icons-material";
 import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
+import ChatBot  from "../../components/Chatbot";
 const useStyles = {
   root: `
     flex-grow-1
@@ -195,19 +196,19 @@ const SimpleTabsV2 = (props) => {
   //   items.push({ id: 4, label: "Transfers", link: "Transfers" });
   // }
 
- const hasActivities =
-  Array.isArray(props?.itinerary?.cities) &&
-  props.itinerary.cities.some(
-    (city) => Array.isArray(city?.activities) && city.activities.length > 0
-  );
+  const hasActivities =
+    Array.isArray(props?.itinerary?.cities) &&
+    props.itinerary.cities.some(
+      (city) => Array.isArray(city?.activities) && city.activities.length > 0
+    );
 
-if (hasActivities) {
-  items.push({
-    id: 5,
-    label: "Activities",
-    link: "Activities",
-  });
-}
+  if (hasActivities) {
+    items.push({
+      id: 5,
+      label: "Activities",
+      link: "Activities",
+    });
+  }
 
 
   const _handlePoiEditModalOpen = (poi) => {
@@ -325,10 +326,10 @@ if (hasActivities) {
     <div
       className={classes.root}
       style={{
-      paddingTop: "20px",
-      paddingBottom:
-      isPageWide <= 768 ? "42px" : "20px"
-  }}
+        paddingTop: "20px",
+        paddingBottom:
+          isPageWide <= 768 ? "42px" : "20px"
+      }}
     >
       <div className="z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
@@ -350,219 +351,218 @@ if (hasActivities) {
 
       {isPageWide && (
 
-         
+
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
-            {props?.displayText ? <ItineraryStatusLoader 
-                displayText={props?.displayText}
-                isVisible={props?.shouldShowLoader()}
-              /> :
-            <div className="flex flex-row justify-between ">
-              
-              {pricing_status === "PENDING" ? (
-                <div className="flex flex-col animate-pulse w-full max-w-[120px]">
-                  <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
-                  <div className="h-5 w-24 bg-gray-400 rounded"></div>
-                </div>
-              ) : (
-                <div className="flex flex-col">
-                  <div className="text-[0.725rem]">
-                    {props?.payment?.pay_only_for_one ||
-                    props?.payment?.show_per_person_cost
-                      ? "Per Person"
-                      : props.payment?.is_estimated_price
-                      ? `${
-                          props.payment.total_cost === 0
+            {props?.displayText ? <ItineraryStatusLoader
+              displayText={props?.displayText}
+              isVisible={props?.shouldShowLoader()}
+            /> :
+              <div className="flex flex-row justify-between ">
+
+                {pricing_status === "PENDING" ? (
+                  <div className="flex flex-col animate-pulse w-full max-w-[120px]">
+                    <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
+                    <div className="h-5 w-24 bg-gray-400 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <div className="text-[0.725rem]">
+                      {props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                        ? "Per Person"
+                        : props.payment?.is_estimated_price
+                          ? `${props.payment.total_cost === 0
                             ? "No Bookings"
                             : "Estimated Price"
-                        }`
-                      : "Total Cost"}
-                  </div>
-                  {props.payment ? (
-                    <div>
-                      <span className="font-bold">
-                        ₹{" "}
-                        {!props?.mercuryItinerary
-                          ? props?.payment?.pay_only_for_one ||
-                            props?.payment?.show_per_person_cost
-                            ? getIndianPrice(
+                          }`
+                          : "Total Cost"}
+                    </div>
+                    {props.payment ? (
+                      <div>
+                        <span className="font-bold">
+                          ₹{" "}
+                          {!props?.mercuryItinerary
+                            ? props?.payment?.pay_only_for_one ||
+                              props?.payment?.show_per_person_cost
+                              ? getIndianPrice(
                                 Math.round(
                                   Math.round(
                                     props.payment.per_person_discounted_cost
                                   ) / 100
                                 )
                               )
-                            : getIndianPrice(
+                              : getIndianPrice(
                                 Math.round(
                                   Math.round(props.payment.discounted_cost)
                                 )
                               )
-                          : props?.payment?.pay_only_for_one ||
-                            props?.payment?.show_per_person_cost
-                          ? getIndianPrice(
-                              Math.round(
+                            : props?.payment?.pay_only_for_one ||
+                              props?.payment?.show_per_person_cost
+                              ? getIndianPrice(
                                 Math.round(
-                                  props.payment.per_person_discounted_cost
+                                  Math.round(
+                                    props.payment.per_person_discounted_cost
+                                  )
                                 )
                               )
-                            )
-                          : getIndianPrice(
-                              Math.round(
-                                Math.round(props.payment.discounted_cost)
-                              )
-                            )}
-                        {"/-"}
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              )}
+                              : getIndianPrice(
+                                Math.round(
+                                  Math.round(props.payment.discounted_cost)
+                                )
+                              )}
+                          {"/-"}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
 
-              {props?.token && props?.payment?.paid_user && (
-                <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
-                  PAID
-                </div>
-              )}
+                {props?.token && props?.payment?.paid_user && (
+                  <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
+                    PAID
+                  </div>
+                )}
 
-              {props.tripsPage ? (
-                <Button
-                  color="#111"
-                  fontWeight="400"
-                  fontSize="0.45rem"
-                  borderWidth="1px"
-                  width="12rem"
-                  borderRadius="10px"
-                  bgColor="#F7E700"
-                  onclick={handleCreateTripButton}
-                >
-                  Craft a new trip!
-                </Button>
-              ) : (
-                <>
-                  {!props.token ? (
-                    <div>
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="1px"
-                        width="12rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={handleLoginButton}
-                      >
-                        Log in to proceed
-                      </Button>
-                    </div>
-                  ) : null}
+                {props.tripsPage ? (
+                  <Button
+                    color="#111"
+                    fontWeight="400"
+                    fontSize="0.45rem"
+                    borderWidth="1px"
+                    width="12rem"
+                    borderRadius="10px"
+                    bgColor="#F7E700"
+                    onclick={handleCreateTripButton}
+                  >
+                    Craft a new trip!
+                  </Button>
+                ) : (
+                  <>
+                    {!props.token ? (
+                      <div>
+                        <Button
+                          color="#111"
+                          fontWeight="400"
+                          fontSize="0.45rem"
+                          borderWidth="1px"
+                          width="12rem"
+                          borderRadius="10px"
+                          bgColor="#F7E700"
+                          onclick={handleLoginButton}
+                        >
+                          Log in to proceed
+                        </Button>
+                      </div>
+                    ) : null}
 
-                  {props.payment && props.token ? (
-                    props.payment.itinerary_status ===
-                      ITINERARY_STATUSES.itinerary_finalized &&
-                    !props.payment.paid_user &&
-                    props.payment.user_allowed_to_pay ? (
-                      props.payment.total_cost > 0 ? (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="13rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                            onclickparams={null}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="9rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("Add Hotels")}
-                          >
-                            Add Hotels
-                          </Button>
-                        </div>
-                      )
-                    ) : !props.payment.paid_user ? (
-                      props.payment.is_registration_needed ? (
-                        <div className="">
-                          <Button
-                            color="#111"
-                            fontWeight="600"
-                            fontSize="0.85rem"
-                            borderWidth="1px"
-                            width="11rem"
-                            borderRadius="8px"
-                            bgColor="#f8e000"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <GetInTouchContainer>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="12rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={handleGetInTouch}
-                            loading={loading}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                                alignItems: "center",
-                              }}
+                    {props.payment && props.token ? (
+                      props.payment.itinerary_status ===
+                        ITINERARY_STATUSES.itinerary_finalized &&
+                        !props.payment.paid_user &&
+                        props.payment.user_allowed_to_pay ? (
+                        props.payment.total_cost > 0 ? (
+                          <div>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="13rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={() => handleButtonClick("View Inclusions")}
+                              onclickparams={null}
                             >
-                              <ImageLoader
-                                dimensions={{ height: 50, width: 50 }}
-                                dimensionsMobile={{ height: 50, width: 50 }}
-                                height={"20px"}
-                                width={"20px"}
-                                leftalign
-                                url={
-                                  "media/icons/login/customer-service-black.png"
-                                }
-                              />{" "}
-                              <span>Get in touch!</span>
-                            </div>
-                          </Button>
-                        </GetInTouchContainer>
+                              View Inclusions
+                            </Button>
+                          </div>
+                        ) : (
+                          <div>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="9rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={() => handleButtonClick("Add Hotels")}
+                            >
+                              Add Hotels
+                            </Button>
+                          </div>
+                        )
+                      ) : !props.payment.paid_user ? (
+                        props.payment.is_registration_needed ? (
+                          <div className="">
+                            <Button
+                              color="#111"
+                              fontWeight="600"
+                              fontSize="0.85rem"
+                              borderWidth="1px"
+                              width="11rem"
+                              borderRadius="8px"
+                              bgColor="#f8e000"
+                              onclick={() => handleButtonClick("View Inclusions")}
+                            >
+                              View Inclusions
+                            </Button>
+                          </div>
+                        ) : (
+                          <GetInTouchContainer>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="12rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={handleGetInTouch}
+                              loading={loading}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  gap: "0.5rem",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <ImageLoader
+                                  dimensions={{ height: 50, width: 50 }}
+                                  dimensionsMobile={{ height: 50, width: 50 }}
+                                  height={"20px"}
+                                  width={"20px"}
+                                  leftalign
+                                  url={
+                                    "media/icons/login/customer-service-black.png"
+                                  }
+                                />{" "}
+                                <span>Get in touch!</span>
+                              </div>
+                            </Button>
+                          </GetInTouchContainer>
+                        )
+                      ) : (
+                        <Button
+                          color="#111"
+                          fontWeight="400"
+                          fontSize="0.45rem"
+                          borderWidth="1px"
+                          width="9rem"
+                          borderRadius="10px"
+                          bgColor="#F7E700"
+                          onclick={() => handleButtonClick("View Bookings")}
+                        >
+                          View Bookings
+                        </Button>
                       )
-                    ) : (
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="1px"
-                        width="9rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={() => handleButtonClick("View Bookings")}
-                      >
-                        View Bookings
-                      </Button>
-                    )
-                  ) : null}
-                </>
-              )}
-            </div>}
+                    ) : null}
+                  </>
+                )}
+              </div>}
           </div>
         </div>
       )}
@@ -772,29 +772,6 @@ if (hasActivities) {
                     _GetInTouch={_GetInTouch}
                   />
                 )}
-                {/* {props.transferBookings && (
-                <TransferBookings
-                  mercuryItinerary={props?.mercuryItinerary}
-                  setShowLoginModal={setShowLoginModal}
-                  showTaxiModal={props.showTaxiModal}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  fetchData={props.fetchData}
-                  _GetInTouch={_GetInTouch}
-                />
-              )} */}
               </>
             )}
           </div>
@@ -829,22 +806,11 @@ if (hasActivities) {
             backdrop
             closeIcon={true}
             onCLose={() => setShowFooterBannerMobile(false)}
-            onHide={()=>{}}
+            onHide={() => { }}
             borderRadius={"12px"}
           >
             {props.payment ? (
               <>
-                {/* <RxCross2
-                  style={{
-                    position: "absolute",
-                    top: "15px",
-                    right: "15px",
-                    fontSize: "1.5rem",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setShowFooterBannerMobile(false)}
-                /> */}
-
                 {!props.payment.is_registration_needed ? (
                   !props?.mercuryItinerary ? (
                     <SummaryContainer
@@ -924,75 +890,88 @@ if (hasActivities) {
               </>
             ) : null}
           </Modal>
+
+          <div className="fixed z-[999] bottom-[80px] right-[20px] ">
+                    <Button
+                    color="#111"
+                    fontWeight="400"
+                    borderWidth="1px"
+                    borderRadius="10px"
+                    bgColor="#F7E700"
+                    onclick={handleCreateTripButton}
+                  >
+                   Chatbot
+                  </Button> 
+          </div>
         </>
-      )}
+      )} 
 
       {isPageWide ? (
         <SplitScreen
           classStyle="min-h-[600px]"
           isPageWide
-          leftWidth={8}
-          rightWidth={0}
+          leftWidth={5}
+          rightWidth={5}
         >
           <div>
             <div id={"Itenary"}>
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
-                    <DaybyDay
-                      mercuryItinerary={props?.mercuryItinerary}
-                      activityBookings={props?.activityBookings}
-                      setActivityBookings={props?.setActivityBookings}
-                      transferBookings={props?.transferBookings}
-                      setTransferBookings={props?.setTransferBookings}
-                      setItinerary={props?.setItinerary}
-                      itinerary={props?.itinerary}
-                      loadbookings={props?.loadbookings}
-                      payment={props.payment}
-                      stayBookings={stays}
-                      setStayBookings={props.setStayBookings}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      getPaymentHandler={props.getPaymentHandler}
-                      _updateFlightBookingHandler={
-                        props._updateFlightBookingHandler
-                      }
-                      _updateTaxiBookingHandler={
-                        props._updateTaxiBookingHandler
-                      }
-                      setShowBookingModal={(val) =>
-                        props.setShowStayBookingModal(val)
-                      }
-                      showBookingModal={props.showStayBookingModal}
-                      setHideBookingModal={props.setHideBookingModal}
-                      setShowLoginModal={setShowLoginModal}
-                      _GetInTouch={_GetInTouch}
-                    />
-                  )
+                  <DaybyDay
+                    mercuryItinerary={props?.mercuryItinerary}
+                    activityBookings={props?.activityBookings}
+                    setActivityBookings={props?.setActivityBookings}
+                    transferBookings={props?.transferBookings}
+                    setTransferBookings={props?.setTransferBookings}
+                    setItinerary={props?.setItinerary}
+                    itinerary={props?.itinerary}
+                    loadbookings={props?.loadbookings}
+                    payment={props.payment}
+                    stayBookings={stays}
+                    setStayBookings={props.setStayBookings}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={
+                      props._updateStayBookingHandler
+                    }
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    _updateTaxiBookingHandler={
+                      props._updateTaxiBookingHandler
+                    }
+                    setShowBookingModal={(val) =>
+                      props.setShowStayBookingModal(val)
+                    }
+                    showBookingModal={props.showStayBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
+                  />
+                )
                 : props?.itinerary && (
-                    <NewItenaryMain
-                      setShowLoginModal={setShowLoginModal}
-                      plan={props.plan}
-                      payment={props.payment}
-                      city_slabs={props?.breif?.city_slabs}
-                      itinerary={props?.itinerary}
-                      setItinerary={props.setItinerary}
-                      getPaymentHandler={props.getPaymentHandler}
-                      token={props.token}
-                      transferBookings={props.transferBookings}
-                      stayBookings={props.stayBookings}
-                      activityBookings={props.activityBookings}
-                      getAccommodationAndActivitiesHandler={
-                        props.getAccommodationAndActivitiesHandler
-                      }
-                      setShowBookingModal={() =>
-                        props.setShowBookingModal(true)
-                      }
-                      _GetInTouch={_GetInTouch}
-                    ></NewItenaryMain>
-                  )}
+                  <NewItenaryMain
+                    setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
+                    payment={props.payment}
+                    city_slabs={props?.breif?.city_slabs}
+                    itinerary={props?.itinerary}
+                    setItinerary={props.setItinerary}
+                    getPaymentHandler={props.getPaymentHandler}
+                    token={props.token}
+                    transferBookings={props.transferBookings}
+                    stayBookings={props.stayBookings}
+                    activityBookings={props.activityBookings}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
+                    setShowBookingModal={() =>
+                      props.setShowBookingModal(true)
+                    }
+                    _GetInTouch={_GetInTouch}
+                  ></NewItenaryMain>
+                )}
             </div>
 
             {isGroup ? (
@@ -1194,187 +1173,52 @@ if (hasActivities) {
               ></SummaryContainer>
             </div>
           ) : props?.mercuryItinerary ? (
-            <NewSummaryContainers
-              id={props.itinerary_id}
-              token={props.token}
-              loadpricing={props?.loadpricing}
-              setLoadPricing={props?.setLoadPricing}
-              payment={props?.payment}
-              itineraryDate={props?.itineraryDate}
-              mercuryItinerary={props?.mercuryItinerary}
-              itinerary={props.itinerary}
-              fetchData={props.fetchData}
-              resetRef={props?.resetRef}
-              _GetInTouch={_GetInTouch}
-              setShowLoginModal={setShowLoginModal}
-              social_title={props?.social_title}
-              social_description={props?.social_description}
-              itineraryName={props.itinerary.name}
-              itineraryImage={props?.itinerary?.images?.[0]}
-            />
+            <>
+              <div
+              className="sticky top-[4rem] mt-40 ml-5"
+            >
+               <ChatBot
+                id={props.itinary_id}
+              />
+            </div>
+             
+              {/* <NewSummaryContainers
+                id={props.itinerary_id}
+                token={props.token}
+                loadpricing={props?.loadpricing}
+                setLoadPricing={props?.setLoadPricing}
+                payment={props?.payment}
+                itineraryDate={props?.itineraryDate}
+                mercuryItinerary={props?.mercuryItinerary}
+                itinerary={props.itinerary}
+                fetchData={props.fetchData}
+                resetRef={props?.resetRef}
+                _GetInTouch={_GetInTouch}
+                setShowLoginModal={setShowLoginModal}
+                social_title={props?.social_title}
+                social_description={props?.social_description}
+                itineraryName={props.itinerary.name}
+                itineraryImage={props?.itinerary?.images?.[0]}
+              /> */}
+            </>
           ) : null}
         </SplitScreen>
       ) : null}
 
       <div className="z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2 md:hidden">
-        {props?.displayText ? <ItineraryStatusLoader 
-                displayText={props?.displayText}
-                isVisible={props?.shouldShowLoader()}
-              /> :
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col">
-            <div className="flex justify-between">
-              {pricing_status === "FAILURE" ? (
-                <p className="text-red-600 text-sm">
-                  Get in touch to finalize the pricing!
-                </p>
-              ) : null}
-              {pricing_status === "FAILURE" ? (
-                <GetInTouchContainer className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    loading={loading}
-                    onclick={handleGetInTouch}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        widthmobile={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
-                </GetInTouchContainer>
-              ) : null}
-            </div>
-            {props?.payment && (
-              <div className="text-sm">
-                {props?.payment?.pay_only_for_one ||
-                props?.payment?.show_per_person_cost
-                  ? "Per Person"
-                  : props.payment?.is_estimated_price
-                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                  : "Total Cost"}
-              </div>
-            )}
-            {props.payment ? (
-              <div>
-                <span className="font-bold">
-                  ₹{" "}
-                  {!props?.mercuryItinerary
-                    ? props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
-                      ? getIndianPrice(
-                          Math.round(
-                            Math.round(
-                              props.payment.per_person_discounted_cost
-                            ) / 100
-                          )
-                        )
-                      : getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment.discounted_cost) / 100
-                          )
-                        )
-                    : props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
-                    ? getIndianPrice(
-                        Math.round(
-                          Math.round(props.payment.per_person_discounted_cost)
-                        )
-                      )
-                    : getIndianPrice(
-                        Math.round(Math.round(props.payment.discounted_cost))
-                      )}
-                  {"/-"}
-                </span>
-              </div>
-            ) : null}
-          </div>
-          {props?.token && props?.payment?.paid_user && (
-            <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
-              PAID
-            </div>
-          )}
-
-          {props.tripsPage ? (
-            <Button
-              color="#111"
-              fontWeight="600"
-              fontSize="0.85rem"
-              borderWidth="1px"
-              width="10rem"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              onclick={handleCreateTripButton}
-            >
-              Craft a new trip!
-            </Button>
-          ) : (
-            <>
-              
-
-              {props.payment? (
-                (props.payment?.itinerary_status ===
-                  ITINERARY_STATUSES?.itinerary_finalized ||
-                  pricing_status === "SUCCESS") &&
-                !props.payment?.paid_user &&
-                // props.payment?.user_allowed_to_pay ? (
-                (props.payment.total_cost > 0 ||
-                  props?.payment?.discounted_cost > 0) ? (
-                  <div className="">
-                    <Button
-                      color="#111"
-                      fontWeight="600"
-                      fontSize="0.9rem"
-                      borderWidth="1px"
-                      width="10rem"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      onclick={() =>
-                        handleFooterBannerMobile("View Inclusions")
-                      }
-                    >
-                      View Inclusions
-                    </Button>
-                  </div>
-                ) : !props.payment.paid_user ? (
-                  // props.payment.is_registration_needed ? (
-                  <div className="">
-                    <Button
-                      color="#111"
-                      fontWeight="600"
-                      fontSize="0.9rem"
-                      borderWidth="2px"
-                      width="10rem"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      onclick={() =>
-                        handleFooterBannerMobile("View Inclusions")
-                      }
-                    >
-                      View Inclusions
-                    </Button>
-                  </div>
-                ) : (
+        {props?.displayText ? <ItineraryStatusLoader
+          displayText={props?.displayText}
+          isVisible={props?.shouldShowLoader()}
+        /> :
+          <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                {pricing_status === "FAILURE" ? (
+                  <p className="text-red-600 text-sm">
+                    Get in touch to finalize the pricing!
+                  </p>
+                ) : null}
+                {pricing_status === "FAILURE" ? (
                   <GetInTouchContainer className="">
                     <Button
                       color="#111"
@@ -1408,11 +1252,156 @@ if (hasActivities) {
                       </div>
                     </Button>
                   </GetInTouchContainer>
-                )
+                ) : null}
+              </div>
+              {props?.payment && (
+                <div className="text-sm">
+                  {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
+                    ? "Per Person"
+                    : props.payment?.is_estimated_price
+                      ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                      : "Total Cost"}
+                </div>
+              )}
+              {props.payment ? (
+                <div>
+                  <span className="font-bold">
+                    ₹{" "}
+                    {!props?.mercuryItinerary
+                      ? props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                          Math.round(
+                            Math.round(
+                              props.payment.per_person_discounted_cost
+                            ) / 100
+                          )
+                        )
+                        : getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.discounted_cost) / 100
+                          )
+                        )
+                      : props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.per_person_discounted_cost)
+                          )
+                        )
+                        : getIndianPrice(
+                          Math.round(Math.round(props.payment.discounted_cost))
+                        )}
+                    {"/-"}
+                  </span>
+                </div>
               ) : null}
-            </>
-          )}
-        </div>}
+            </div>
+            {props?.token && props?.payment?.paid_user && (
+              <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
+                PAID
+              </div>
+            )}
+
+            {props.tripsPage ? (
+              <Button
+                color="#111"
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="1px"
+                width="10rem"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                onclick={handleCreateTripButton}
+              >
+                Craft a new trip!
+              </Button>
+            ) : (
+              <>
+
+
+                {props.payment ? (
+                  (props.payment?.itinerary_status ===
+                    ITINERARY_STATUSES?.itinerary_finalized ||
+                    pricing_status === "SUCCESS") &&
+                    !props.payment?.paid_user &&
+                    // props.payment?.user_allowed_to_pay ? (
+                    (props.payment.total_cost > 0 ||
+                      props?.payment?.discounted_cost > 0) ? (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.9rem"
+                        borderWidth="1px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Inclusions
+                      </Button>
+                    </div>
+                  ) : !props.payment.paid_user ? (
+                    // props.payment.is_registration_needed ? (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.9rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Inclusions
+                      </Button>
+                    </div>
+                  ) : (
+                    <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        loading={loading}
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  )
+                ) : null}
+              </>
+            )}
+          </div>}
       </div>
 
       {isPageWide && (

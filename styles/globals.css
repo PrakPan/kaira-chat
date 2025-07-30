@@ -222,3 +222,7 @@ a.termsnavunderlinelink {
     visibility: visible;
     transform: translate(0%, 0%) scale(1);
 }
+
+.border-radius-10{
+    border-radius: 10px;
+}

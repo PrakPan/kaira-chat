@@ -162,35 +162,6 @@ export default class MyDocument extends Document {
             `,
             }}
           /> */}
-          <style>
-          {`
-            #chatbot-iframe-container {
-              bottom: 0;
-              right: 0;
-              margin-right: 20px;
-              margin-bottom: 10px;
-              z-index:1024 !important;
-            }
-
-            #chatbot-iframe-container iframe {
-              width: 100%;
-              height: 100%;
-              border: none;
-            }
-
-
-          @media (max-width: 765px) {
-            #chatbot-iframe-container {
-              margin-bottom: 60px;
-              margin-right: 16px;
-              height: calc(100% - 60px) !important;
-              min-height: auto !important;
-              width: calc(100% - 20px) !important;
-            }
-        
-          }
-        `}
-        </style>
 
 
           {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />

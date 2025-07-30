@@ -166,10 +166,10 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-2 border-gray-200 rounded-t-lg flex flex-col w-full"
+      className="border-1 border-gray-200 rounded-t-lg flex flex-col w-full"
     >
-      <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
-        <div className="space-y-1">
+      <div className="flex items-start justify-between p-3 rounded-t-lg border-b">
+        <div className="space-y-1 font-montserrat">
           <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
             {" - "}
@@ -198,8 +198,8 @@ const ItineraryCity = (props) => {
                   <div key={hotel.id} className="flex flex-col gap-1">
                     
                      
-                      <div className="flex flex-col">
-                        { hotel?.name &&<><div className="flex gap-2">
+                      <div className="flex flex-row">
+                        { hotel?.name &&<><div className="flex gap-2 pr-[8px] ">
                          <Image
                         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
                         height={22}
@@ -215,20 +215,15 @@ const ItineraryCity = (props) => {
                           {/* ({hotel?.duration} {hotel?.duration === 1 ? "Night" : "Nights"}) */}
                         </div>
                         </div>
-                        <div className="flex flex-row items-center">
-                          {hotel?.rating && hotel?.rating !== 0
-                            ? getStars(hotel?.rating)
-                            : null}{" "}
-                          <div className="text-[#7A7A7A] text-[12px] ml-1">
+                        <div className="flex flex-row items-center border-l pl-[8px]">
+                            <div className="text-[#7A7A7A] text-[12px] ml-1">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
                           </div>
-                          {hotel?.user_ratings_total ? (
-                            <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
-                              {hotel?.user_ratings_total} Google reviews
-                            </div>
-                          ) : null}
+                          {hotel?.rating && hotel?.rating !== 0
+                            ? getStars(hotel?.rating)
+                            : null}{" "}
                         </div></>}
                       </div>
                   </div>

@@ -8,9 +8,29 @@ import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { FaEdit } from "react-icons/fa";
 import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
+import styled from "styled-components";
+import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+
+const SectionHeading = styled.div`
+   font-family: Montserrat;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 22px;
+`
+
+const DivideSlabElement = styled.div`
+    border-left: 1px dashed #A09E9E;
+    margin-left: 1rem;
+    padding: 10px 5px;
+    font-family: Montserrat;
+    font-weight: 500;
+    font-size: 12px;
+    color: #A09E9E;
+`
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [viewMore, setViewMore] = useState(false);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
@@ -18,9 +38,9 @@ const CityDay = (props) => {
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const router=useRouter()
-  const { drawer, idx, itinerary_city_id,date } =
-  router?.query;
+  const router = useRouter()
+  const { drawer, idx, itinerary_city_id, date } =
+    router?.query;
   const handleAddActivity = () => {
     router.push(
       {
@@ -28,8 +48,8 @@ const CityDay = (props) => {
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.itinerary_city_id,
-          idx:props?.index,
-          date:props?.day?.date
+          idx: props?.index,
+          date: props?.day?.date
         },
       },
       undefined,
@@ -49,10 +69,21 @@ const CityDay = (props) => {
     setElements(elements);
   }, [props.day?.slab_elements]);
 
+  useEffect(() => {
+   if(props?.index === 0){
+     setViewMore(true);
+   }
+   },[])
+
   function convertDateFormat(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const day = date.getDate();
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const year = date.getFullYear();
+
+    return `${day} ${month}, ${year}`;
   }
+
 
   const matchingIntracityBookings = props?.intracityBookings?.filter(
     (booking) => {
@@ -95,51 +126,54 @@ const CityDay = (props) => {
     }
   );
   return (
-    <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
-      <div
-        className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
-      >
-        {props?.day?.date &&
-          (isPageWide ? (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ) : (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ))}
-        <span className="text-[#ABABAB] font-normal">
-          {" "}
-          (Day {props.index + 1})
-        </span>
-      </div>
-
-      <div className="flex flex-col p-3 md:w-[85%]">
-        {elements.map((element, index) => (
-          <>
-            <SlabElement
-              itinerary_city_id={props?.itinerary_city_id}
-              key={index}
-              element={element}
-              dayIndex={props?.index}
-              slabIndex={index}
-              setShowLoginModal={props?.setShowLoginModal}
-              date={props?.date}
-              cityID={props.city.id}
-              cityName={props.city.name}
-            />
-
-            {index !== elements.length - 1 ? <hr /> : null}
-          </>
-        ))}
-
-        {finalized_status === "PENDING" ? (
-          <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
-        ) : (
+    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
+      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 border-l' : '' }`}>
+        <div className={`flex items-center justify-between p-2 ${!viewMore ? ' bg-white rounded-2xl shadow-sm' : ''}`} >
+          <SectionHeading > Day {props.index + 1} |  <span>{convertDateFormat(props?.day?.date)}</span></SectionHeading>
           <button
-            onClick={handleAddActivity}
-            className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+            onClick={() => setViewMore((prev) => !prev)}
+            className="flex items-center text-sm font-semibold"
           >
-            + Add activities on {convertDateFormat(props?.day?.date)}
+            {viewMore ? (
+              <RiArrowDropUpLine className="text-3xl" />
+            ) : (
+              <RiArrowDropDownLine className="text-3xl" />
+            )}
           </button>
-        )}
+        </div>
+
+        {viewMore ? <>
+          {elements.map((element, index) => (
+            <>
+              <SlabElement
+                itinerary_city_id={props?.itinerary_city_id}
+                key={index}
+                element={element}
+                dayIndex={props?.index}
+                slabIndex={index}
+                setShowLoginModal={props?.setShowLoginModal}
+                date={props?.date}
+                cityID={props.city.id}
+                cityName={props.city.name}
+              />
+
+              {index !== elements.length - 1 ? <DivideSlabElement> 2h </DivideSlabElement> : null}
+            </>
+          ))}
+
+          {finalized_status === "PENDING" ? (
+            <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+          ) : (
+            <button
+              onClick={handleAddActivity}
+              className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+            >
+              + Add activities on {convertDateFormat(props?.day?.date)}
+            </button>
+          )}
+        </>
+
+          : null}
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&
@@ -214,11 +248,10 @@ const CityDay = (props) => {
                                     const pax =
                                       item?.pax ??
                                       item?.number_of_adults +
-                                        item?.number_of_children +
-                                        item?.number_of_infants;
-                                    return `${pax} Passenger${
-                                      pax > 1 ? "s" : ""
-                                    }`;
+                                      item?.number_of_children +
+                                      item?.number_of_infants;
+                                    return `${pax} Passenger${pax > 1 ? "s" : ""
+                                      }`;
                                   })()}
                                 </div>
                               </div>
@@ -256,9 +289,9 @@ const CityDay = (props) => {
           </button>
         </div> */}
       </div>
-      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx==props?.index && (
+      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx == props?.index && (
         <ActivityAddDrawer
-          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx==props?.index}
+          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx == props?.index}
           mercuryItinerary={props?.mercuryItinerary}
           setShowDrawer={setShowAddDrawer}
           cityName={props.city.name}
