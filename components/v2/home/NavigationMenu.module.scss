@@ -1,0 +1,13 @@
+.navigationMenu {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+}
+
+.menuList {
+  all: unset;
+  display: flex;
+  align-items: center;
+  list-style: none;
+  gap: 20px;
+}
