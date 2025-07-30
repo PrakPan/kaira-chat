@@ -12,6 +12,7 @@ import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
+import ThemePage from "../../../containers/travelplanner/ThemePage";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -54,13 +55,17 @@ const TravelPlanner = (props) => {
         ></link>
       </Head>
 
+      {props.pageData && props.Data?.page_data?.slug != "india" ? (
+          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
+        ) : (
+
       <CountryPage
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
         page_id={props.page_id || ""}
         type={props?.Type}
-      ></CountryPage>
+      ></CountryPage>)}
     </Layout>
   );
 };
@@ -104,6 +109,7 @@ export async function getStaticProps(context) {
   const path = `${continent}/${country}`;
   let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
 
+  let isThemePage = false;
 
   try {
     //mercury api
@@ -111,6 +117,9 @@ export async function getStaticProps(context) {
       `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
     data = res.data.data.country;
+    if (data?.page_data && Object.keys(data?.page_data).length > 0) {
+      isThemePage = true;
+    }
     locations = data?.see_also || [];
 
     if (!data) {
@@ -167,6 +176,7 @@ export async function getStaticProps(context) {
       hotLocationSearch,
       page_id: PagesToIdMapping[path],
       Type,
+      pageData: isThemePage,
     },
   };
 }

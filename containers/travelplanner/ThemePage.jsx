@@ -134,12 +134,12 @@ export default function ThemePage(props) {
         />
       )}
 
-      {props?.slug === "ladakh" ? (
+      {props?.slug === "ladakh" || props?.slug === "thailand"   ? (
         <>
           <HeroBannerLadakh
             image={props.experienceData.image}
             page_id={props.state?.id}
-            type={"state"}
+            type={props?.slug === "ladakh" ? "state" : props?.slug === "thailand" ? "country" : "country" }
             destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
             cities={props.experienceData.locations}
             children_cities={props.experienceData.children}
