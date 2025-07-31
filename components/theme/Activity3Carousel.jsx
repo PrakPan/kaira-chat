@@ -29,7 +29,7 @@ export default function Activity3Carousel(props) {
           {...activity}
         />
       ))}
-      slidesPerView={isPageWide ? 5 : 1}
+      slidesPerView={isPageWide ? 6 : 1.5}
       // spaceBetween={25}
       navigationButtons={true}
       navButtonsTop={isPageWide ? "140px" : "175px"}
@@ -88,7 +88,7 @@ const ActivityCard = ({
           <div
             className={`w-full h-full ${
               scale ? "hover:scale-110" : "group-hover:scale-105"
-            } transition-all ${isPageWide && "aspect-square"}`}
+            } transition-all  aspect-square`}
           >
             <ImageLoader
               url={image}

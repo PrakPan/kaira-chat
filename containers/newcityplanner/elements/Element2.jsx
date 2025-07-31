@@ -23,8 +23,6 @@ const Button = styled.button`
 `;
 
 const Element2 = (props) => {
-  const router = useRouter();
-  
   const [openDrawerId, setOpenDrawerId] = useState(null);
 
   const _handleOpen = (index) => {
@@ -38,7 +36,7 @@ const Element2 = (props) => {
 
   const cards = props.elements?.map((element, i) => (
     <ElementCard2
-      key={i} 
+      key={i}
       data={element}
       index={i}
       isOpen={openDrawerId === i}
@@ -59,12 +57,10 @@ const Element2 = (props) => {
           navButtonsTop={"50%"}
           spaceBetween={10}
         />
-
-      
       </div>
 
       <div className="hidden-desktop">
-        <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
+        <SwiperCarousel slidesPerView={1.3} pageDots noPadding cards={cards} />
       </div>
     </div>
   );
