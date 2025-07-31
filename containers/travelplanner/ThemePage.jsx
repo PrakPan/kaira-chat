@@ -48,6 +48,8 @@ import Activity3Carousel from "../../components/theme/Activity3Carousel.jsx";
 import Element2 from "../newcityplanner/elements/Element2.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import { Padding } from "@mui/icons-material";
+import CurvedSwiper from "../../components/theme/CurveImageGallery.jsx";
+import JourneyType from "../../components/theme/journeyType.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -494,8 +496,8 @@ export default function ThemePage(props) {
                         <Reviews1Carousel reviews={component.reviews} />
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
-                          page_id={props.state?.id}
-                          type={"state"}
+                            page_id={props.state?.id}
+                            type={"state"}
                             destination={convertDbNameToCapitalFirst(
                               props.experienceData.slug
                             )}
@@ -658,16 +660,38 @@ export default function ThemePage(props) {
                           className={
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
-                          text={"Plan Around This Festival"}
+                          text={"Plan Your Trip Now!"}
                         />
                       </>
+                    ) : component.carousel == "images-1" ? (
+                      <div>
+                        <CurvedSwiper />
+                        <PlanYourTripLadakhButton
+                          className={
+                            "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+                          }
+                          text={"Plan Your Trip Now!"}
+                          page_id={props.state?.id}
+                          type={"state"}
+                          destination={convertDbNameToCapitalFirst(
+                            props.experienceData.slug
+                          )}
+                        />
+                      </div>
+                    ) : component.carousel == "journey-1" ? (
+                      <JourneyType
+                        page_id={props.state?.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.experienceData.slug
+                        )}
+                        type={"state"}
+                      />
                     ) : null}
                   </div>
                 )
               );
             })}
         </div>
-        {/* <CurveImageGallery /> */}
 
         {props.slug === "honeymoon-2025" && (
           <div className="relative">
@@ -691,7 +715,6 @@ export default function ThemePage(props) {
             <ThemeFaqs faqs={props.experienceData.faq || props?.FAQ} />
           )}
         </div>
-
         {props?.experienceData?.slug === "japan-cherry-blossom" && (
           <>
             {isPageWide && (
@@ -786,7 +809,7 @@ export const PlanYourTripLadakhButton = (props) => {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
 
-  console.log("props in plan your trip is: ",props)
+  console.log("props in plan your trip is: ", props);
   const handlePlanButton = () => {
     openTailoredModal(router, props.page_id, props.destination, props.type);
 

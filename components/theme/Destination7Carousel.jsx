@@ -13,7 +13,7 @@ const Destination7Carousel = (props) => {
   return (
     <div className="flex flex-col gap-6 justify-center items-center w-full">
       <Swiper
-        slidesPerView={isPageWide ? 3 : 1}
+        slidesPerView={isPageWide ? 3 : 1.2}
         initialSlide={0}
         spaceBetween={20}
         className="!h-max"
