@@ -83,12 +83,12 @@ const Carousel3D = () => {
       `}
           </style>
 
-          <div className="relative w-screen h-[500px] mx-auto perspective">
+          <div className="relative w-screen h-[700px] mx-auto perspective">
             {/* Left Navigation */}
             <Image
               src="/arrow-circle-left.svg"
               alt="left"
-              className="nav-button left-40 !bg-inherit"
+              className="nav-button !top-[45%] left-40 !bg-inherit"
               onClick={() => setRotation((prev) => prev - anglePerSlide)}
               width={48}
               height={48}
@@ -98,7 +98,7 @@ const Carousel3D = () => {
             <Image
               src="/arrow-circle-right.svg"
               alt="left"
-              className="nav-button right-40 !bg-inherit"
+              className="nav-button !top-[45%] right-40 !bg-inherit"
               onClick={() => setRotation((prev) => prev + anglePerSlide)}
               width={48}
               height={48}
@@ -131,12 +131,12 @@ const Carousel3D = () => {
           <Swiper
             slidesPerView={1.2}
             initialSlide={0}
-            spaceBetween={5}
+            spaceBetween={15}
             className="!h-max"
           >
             {images?.map((item, index) => (
               <SwiperSlide key={index}>
-                <div className="relative w-[280px] h-[312px] rounded-[16px] overflow-hidden">
+                <div className="relative aspect-[280/312] rounded-[16px] overflow-hidden">
                   <Image
                     src={"https://images.thetarzanway.com/" + item}
                     alt={`${index}_image`}
