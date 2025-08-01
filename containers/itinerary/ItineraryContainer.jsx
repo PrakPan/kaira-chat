@@ -51,6 +51,8 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
     return null;
   }
 
+  
+
   return (
     <div className="">
       <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg max-w-sm">

@@ -113,6 +113,9 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
+    // if(isAirport){
+    //   setAirportBookingId(book?.id)
+    // }
     router.push(
     {
       pathname: `/itinerary/${router.query.id}`,
