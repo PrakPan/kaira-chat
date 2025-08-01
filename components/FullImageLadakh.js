@@ -54,7 +54,7 @@ const FullImage = (props) => {
         <BackgroundImageLoader
           padding={props.padding}
           filter={props.filter}
-          url={(isDesktop|| props?.destination!=="Ladakh")?props.url:"media/website/ladakh.png"}
+          url={isDesktop?props.url:props?.destination!=="Ladakh"?"media/thailand/thailand-mobile.png":"media/website/ladakh.png"}
           dimensions={
             props?.resizeMode === "fill"
               ? { width: 2240, height: 840 }

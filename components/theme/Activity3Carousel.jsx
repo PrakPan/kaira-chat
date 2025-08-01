@@ -118,11 +118,6 @@ const ActivityCard = ({
 
         <div className="">
           <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
-          {slug !== "ladakh" && (
-            <TertiaryHeading className="line-clamp-3">
-              {short_description}
-            </TertiaryHeading>
-          )}
         </div>
       </div>
 
