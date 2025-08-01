@@ -13,6 +13,7 @@ const HeroBannerLadakh = (props) => {
       filter="brightness(1)"
       resizeMode={props.resizeMode}
       noLazy
+      destination={props?.destination}
     >
       <div
         className={
