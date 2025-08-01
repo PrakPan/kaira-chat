@@ -136,7 +136,7 @@ export default function ThemePage(props) {
         />
       )}
 
-      {props?.slug === "ladakh" || props?.slug === "thailand"   ? (
+      {props?.slug === "ladakh"  ? (
         <>
           <HeroBannerLadakh
             image={props.experienceData.image}
