@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import LayoutV2 from "../../../components/Layout";
 import * as authaction from "../../../store/actions/auth";
 import setItineraryId from "../../../store/actions/itineraryId";
@@ -15,13 +15,16 @@ import ScrollRestoration from "../../../components/ScrollRestoration";
 const Itinerary = (props) => {
   const router = useRouter();
   const { drawer, city_id: cityId } = router.query;
+  const itineraryId = useSelector((state) => state.ItineraryId);
 
   useEffect(() => {
-    if (router.query.id) {
-      props.setItineraryId(router.query.id);
+    if (!itineraryId) {
+      if (router.query.id) {
+        props.setItineraryId(router.query.id);
+      }
+      getHotLocationsSearch();
+      props.checkAuthState();
     }
-    getHotLocationsSearch();
-    props.checkAuthState();
   }, [router]);
 
   const getHotLocationsSearch = async () => {
@@ -54,7 +57,7 @@ const Itinerary = (props) => {
 
   return (
     <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
-      <ScrollRestoration/>
+      <ScrollRestoration />
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
         <meta
