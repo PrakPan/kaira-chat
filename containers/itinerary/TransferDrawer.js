@@ -57,8 +57,10 @@ const TransferDrawer = ({
   error,
   isAirport,
  AirportTransferType,
- setIsTransferDrawerOpen
+ setIsTransferDrawerOpen,
+ isSightseeing,
 }) => {
+  console.log("IsSight",isSightseeing);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
@@ -129,6 +131,7 @@ const TransferDrawer = ({
       if (loading) {
         return <VehicleDetailLoader setHandleShow={null} />;
       }
+      
 
       switch (type) {
         case "Flight":
@@ -532,7 +535,7 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {data?.combo_type != "multicity" && <div>
+              {!isSightseeing && <div>
                 <Generalbuttonstyle
                   borderRadius={"7px"}
                   fontSize={"1rem"}
@@ -540,7 +543,6 @@ const TransferDrawer = ({
                   onClick={() => {
                     setHandleShow(false);
                     setShowDrawer(true);
-                    //setShowTaxi(true);console.log("")
                   }}
                 >
                   Change

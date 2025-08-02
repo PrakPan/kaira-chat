@@ -887,6 +887,7 @@ const TransferBooking = ({
                 addOrEdit={"transferAdd"}
                 showDrawer={showDrawer}
                 setShowDrawer={setShowDrawer}
+                booking_type={vehicleDetails?.combo_type}
                 selectedTransferHeading={origin}
                 origin={origin?.id != undefined ? origin?.id : id}
                 destination={

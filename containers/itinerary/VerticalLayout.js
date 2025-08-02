@@ -1299,6 +1299,7 @@ const CityItem = ({
         addOrEdit={"transferAdd"}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
+        booking_type={data?.combo_type}
         destination={destination_city_id}
         _updateFlightBookingHandler={_updateFlightBookingHandler}
         _updatePaymentHandler={_updatePaymentHandler}
