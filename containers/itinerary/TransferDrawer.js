@@ -59,6 +59,7 @@ const TransferDrawer = ({
   isAirport,
   AirportTransferType,
   setIsTransferDrawerOpen,
+ isSightseeing,
   combo,
   booking_id,
   transferType
@@ -192,6 +193,7 @@ const TransferDrawer = ({
       if (loading) {
         return <VehicleDetailLoader />;
       }
+      
 
       switch (type) {
         case "Flight":
@@ -605,22 +607,19 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              { (
-                <div>
-                  <Generalbuttonstyle
-                    borderRadius={"7px"}
-                    fontSize={"1rem"}
-                    padding={"7px 25px"}
-                    onClick={() => {
-                      handleEditRoute(data)
-                      // handleClose();
-                      //setShowTaxi(true);console.log("")
-                    }}
-                  >
-                    Change
-                  </Generalbuttonstyle>
-                </div>
-              )}
+              {!isSightseeing && <div>
+                <Generalbuttonstyle
+                  borderRadius={"7px"}
+                  fontSize={"1rem"}
+                  padding={"7px 25px"}
+                  onClick={() => {
+                    setHandleShow(false);
+                    setShowDrawer(true);
+                  }}
+                >
+                  Change
+                </Generalbuttonstyle>
+              </div>}
             </div>
           </div>
 

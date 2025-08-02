@@ -614,25 +614,77 @@ const CitySummary = (props) => {
           </div>
         )}
 
-      {drawer === "showAddActivity" && itinerary_city_id == props?.city?.id && (
-        <ActivityAddDrawer
-          showDrawer={itinerary_city_id == props?.city?.id}
-          setShowDrawer={setShowAddDrawer}
-          cityName={props.city.city.name}
-          cityID={props.city.city.id}
-          date={date}
-          start_date={props?.city?.start_date}
-          itinerary_city_id={props?.city?.id}
-          setActivities={setActivities}
-          activities={activities}
-          activityBookings={props?.activityBookings}
-          setActivityBookings={props?.setActivityBookings}
-          day={`Day ${idx + 1}`}
-          day_slab_index={idx}
-          duration={props.city.duration}
-          setItinerary={props?.setItinerary}
+      {dayByDay && dayByDay.length ? (
+        <>
+          <POIDetailsDrawer
+            itineraryDrawer
+            show={showDrawer}
+            handleCloseDrawer={handleCloseDrawer}
+            slabIndex={dayByDayIndex}
+            iconId={
+              dayByDay?.[dayByDayIndex]
+                ? dayByDay?.[dayByDayIndex]?.poi
+                : dayByDay?.[dayByDayIndex]?.activity
+            }
+            name={dayByDay?.[dayByDayIndex]?.heading}
+            image={dayByDay[dayByDayIndex].icon}
+            text={dayByDay[dayByDayIndex]?.text}
+            Topheading={"Select Our Point Of Interest"}
+            activityData={activityData}
+            showBookingDetail={showBookingDetail}
+            setShowLoginModal={props?.setShowLoginModal}
+            dayIndex={activityData.dayIndex}
+            itinerary_city_id={props.city.id}
+            cityID={props.city.city.id}
+            cityName={props.city.city.name}
+            removeDelete={false}
+          />
+        </>
+      ) : null}
+      <ActivityAddDrawer
+        showDrawer={showAddDrawer}
+        setShowDrawer={setShowAddDrawer}
+        cityName={props.city.city.name}
+        cityID={props.city.city.id}
+        date={props?.city?.start_date}
+        start_date={props?.city?.start_date}
+        itinerary_city_id={props?.city?.id}
+        setActivities={setActivities}
+        activities={activities}
+        activityBookings={props?.activityBookings}
+        setActivityBookings={props?.setActivityBookings}
+        day="Day 1"
+        duration={props.city.duration}
+        setItinerary={props?.setItinerary}
+        setShowLoginModal={props?.setShowLoginModal}
+      ></ActivityAddDrawer>
+
+      {handleShowTaxi && (
+        <TransferDrawer
+          show={handleShowTaxi}
+          setHandleShow={setHandleShowTaxi}
+          data={taxiData}
+          booking_type={taxiData?.transferType || taxiData?.booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setHandleShowTaxi}
+          // city={city}
+          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+          _updatePaymentHandler={props?._updatePaymentHandler}
+          getPaymentHandler={props?.getPaymentHandler}
+          // oCityData={oCityData}
+          // dCityData={dCityData}
           setShowLoginModal={props?.setShowLoginModal}
-        ></ActivityAddDrawer>
+          // dcity={destination_city_name}
+          // selectedBooking={selectedBooking}
+          // setSelectedBooking={setSelectedBooking}
+          // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+          isIntracity={true}
+          isSightseeing={true}
+        />
       )}
     </div>
   );
