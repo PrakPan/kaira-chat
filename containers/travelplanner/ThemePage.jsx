@@ -50,6 +50,7 @@ import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import { Padding } from "@mui/icons-material";
 import CurvedSwiper from "../../components/theme/CurveImageGallery.jsx";
 import JourneyType from "../../components/theme/journeyType.jsx";
+import OverviewThailand from "../themes/OverviewThailand.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -136,12 +137,18 @@ export default function ThemePage(props) {
         />
       )}
 
-      {props?.slug === "ladakh" || props?.slug==="thailand"? (
+      {props?.slug === "ladakh" || props?.slug === "thailand" ? (
         <>
           <HeroBannerLadakh
             image={props.experienceData.image}
             page_id={props.state?.id}
-            type={props?.slug === "ladakh" ? "state" : props?.slug === "thailand" ? "country" : "country" }
+            type={
+              props?.slug === "ladakh"
+                ? "state"
+                : props?.slug === "thailand"
+                ? "country"
+                : "country"
+            }
             destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
             cities={props.experienceData.locations}
             children_cities={props.experienceData.children}
@@ -219,7 +226,8 @@ export default function ThemePage(props) {
         )}
         {props.experienceData.overview_heading &&
         props.experienceData.overview_text &&
-        props?.slug !== "ladakh" ? (
+        props?.slug !== "ladakh" &&
+        props?.slug !== "thailand" ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -227,6 +235,27 @@ export default function ThemePage(props) {
             slug={props.slug}
           />
         ) : null}
+        {props?.slug == "thailand" && (
+          <>
+            <OverviewThailand
+              heading={props.experienceData.overview_heading}
+              text={props.experienceData.overview_text}
+              image={props.experienceData.overview_image}
+              slug={props.slug}
+            />
+            <PlanYourTripLadakhButton
+              className={
+                "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
+              }
+              text={"Plan Your Trip Now!"}
+              page_id={props.country?.id}
+              type={"country"}
+              destination={convertDbNameToCapitalFirst(
+                props.experienceData.slug
+              )}
+            />
+          </>
+        )}
 
         <div className="mt-5">
           {components &&
