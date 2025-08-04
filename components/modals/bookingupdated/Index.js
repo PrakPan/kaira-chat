@@ -150,7 +150,7 @@ const Booking = (props) => {
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch,filters]);
 
   // useEffect(() => {
   //   setMoreOptionsJSX([]);
@@ -407,14 +407,14 @@ const Booking = (props) => {
               tags: res.data?.tags,
             });
           }
-          setFilters((prev) => ({
-            ...prev,
-            facilities: res?.data?.selected_filters?.facilities,
-            type: res?.data?.selected_filters?.type,
-            tags: res?.data?.selected_filters?.tags,
-            page: 1,
-            trace_id: null,
-          }));
+          // setFilters((prev) => ({
+          //   ...prev,
+          //   facilities: res?.data?.selected_filters?.facilities,
+          //   type: res?.data?.selected_filters?.type,
+          //   tags: res?.data?.selected_filters?.tags,
+          //   page: 1,
+          //   trace_id: null,
+          // }));
           // setTotalCount(res?.data?.count);
           setMoreOptionsJSX(options);
           setPaginationStatus({
@@ -517,6 +517,7 @@ const Booking = (props) => {
                   options.push(
                     <AccommodationSearched
                       mercury
+                      itinerary_city_id={props.itinerary_city_id}
                       source={res?.data?.data?.[i]?.source}
                       handleClick={props?.handleClick}
                       payment={props.payment}
@@ -568,14 +569,14 @@ const Booking = (props) => {
             }
             // setTotalCount(res?.data?.count);
             setMoreOptionsJSX([...moreOptionsJSX, ...options]);
-            setFilters((prev) => ({
-              ...prev,
-              facilities: res?.data?.selected_filters?.facilities,
-              type: res?.data?.selected_filters?.type,
-              tags: res?.data?.selected_filters?.tags,
-              trace_id: paginationStatus?.traceId,
-              page: paginationStatus?.page,
-            }));
+            // setFilters((prev) => ({
+            //   ...prev,
+            //   facilities: res?.data?.selected_filters?.facilities,
+            //   type: res?.data?.selected_filters?.type,
+            //   tags: res?.data?.selected_filters?.tags,
+            //   trace_id: paginationStatus?.traceId,
+            //   page: paginationStatus?.page,
+            // }));
             setPaginationStatus({
               traceId: res?.data?.trace_details?.id,
               page: res?.data?.current_page,

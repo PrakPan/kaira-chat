@@ -165,7 +165,7 @@ const ActivityDetailsDrawer = (props) => {
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {
-              if (day?.date === props?.date) {
+              if (day?.date === props?.date?.split("/").reverse().join("-")) {
                 return {
                   ...day,
                   slab_elements: [...(day?.slab_elements || []), activityData],
