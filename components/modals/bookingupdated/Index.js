@@ -88,7 +88,7 @@ const Booking = (props) => {
     errorMsg: "",
   });
 
-  const router=useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -99,6 +99,7 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
+  const [hasUserSearched, setHasUserSearched] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
@@ -141,16 +142,24 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-
     if (
       props?.showBookingModal &&
-      currentBooking?.check_in &&
-      (debouncedSearch.length > 2 || debouncedSearch.length == 0)
+      currentBooking?.check_in 
     ) {
+      console.log("filters useEffect triggered", filters);
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
-  }, [debouncedSearch,filters]);
+  }, [filters.applyFilter]);
+
+  useEffect(() => {
+    if (debouncedSearch.length > 2||hasUserSearched) {
+      console.log("searching in debounced search")
+       setHasUserSearched(true);
+      setMoreOptionsJSX([]);
+      fetchHotelsFilter();
+    }
+  }, [debouncedSearch]);
 
   // useEffect(() => {
   //   setMoreOptionsJSX([]);
@@ -211,6 +220,7 @@ const Booking = (props) => {
   };
 
   const _addFilterHandler = (filter, heading) => {
+    console.log("add filter handler called")
     setFilters((prev) => ({
       ...prev,
       [heading]: filter,
@@ -284,7 +294,7 @@ const Booking = (props) => {
   };
 
   const fetchHotelsFilter = () => {
-    if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
+    if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -442,7 +452,7 @@ const Booking = (props) => {
 
   const fetchHotels = () => {
     try {
-      if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
+      if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);
@@ -494,9 +504,9 @@ const Booking = (props) => {
             localStorage.setItem("trace_id", res?.data?.trace_details?.id);
           }
 
-        if (res.data?.data?.length) {
-          if (res.data?.count) setTotalCount(res.data.count);
-          setNoResults(false);
+          if (res.data?.data?.length) {
+            if (res.data?.count) setTotalCount(res.data.count);
+            setNoResults(false);
 
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
