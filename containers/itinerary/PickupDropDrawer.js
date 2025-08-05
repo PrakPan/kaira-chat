@@ -115,6 +115,10 @@ const PickupDropDrawer = ({
       const trip = trips?.[0];
       hasAutoSearchedRef.current = false;
       // Reset state first
+      setFormData(initialFormState); 
+      setSourceInput(""); 
+      setDestinationInput("");
+      setInitialPropsAssigned(false);
       setIsLoadingQuotes(false);
       setSourceSuggestions([]);
       setDestinationSuggestions([]);
@@ -127,6 +131,7 @@ const PickupDropDrawer = ({
       setTraceId(null);
       setSource(null);
       setIsAutoFilled(false);
+      
       hasAutoFilledRef.current = { source: false, destination: false };
 
       // Extract data from trip
@@ -1116,14 +1121,49 @@ const PickupDropDrawer = ({
 
   // Auto-search when all fields are filled on initial mount
   // Auto-search when all fields are filled on initial mount
+  // useEffect(() => {
+  //   if (
+  //     isOpen &&
+  //     isAutoFilled &&
+  //     initialPropsAssigned &&
+  //     !hasAutoSearchedRef.current
+  //   ) {
+  //     // Check if all required fields are filled
+  //     const sourceId =
+  //       formData.sourceHubId ||
+  //       formData.sourceGmapsId ||
+  //       (formData.sourceLatitude && formData.sourceLongitude);
+  //     const destinationId =
+  //       formData.destinationHubId ||
+  //       formData.destinationGmapsId ||
+  //       (formData.destinationLatitude && formData.destinationLongitude);
+
+  //     const allFieldsFilled =
+  //       formData.sourceAddress &&
+  //       formData.destinationAddress &&
+  //       formData.transferDate &&
+  //       formData.transferTime &&
+  //       formData.passengers &&
+  //       sourceId &&
+  //       destinationId;
+
+  //     if (allFieldsFilled) {
+  //       console.log("All fields filled, auto-searching transfers...");
+  //       hasAutoSearchedRef.current = true;
+  //       searchTransfers();
+  //     }
+  //   }
+  // }, [isOpen, isAutoFilled, initialPropsAssigned]);
+
   useEffect(() => {
-    if (
-      isOpen &&
-      isAutoFilled &&
-      initialPropsAssigned &&
-      !hasAutoSearchedRef.current
-    ) {
-      // Check if all required fields are filled
+  // Only run auto-search after a short delay to ensure all form data is set
+  if (
+    isOpen &&
+    isAutoFilled &&
+    initialPropsAssigned &&
+    !hasAutoSearchedRef.current
+  ) {
+    const timeoutId = setTimeout(() => {
       const sourceId =
         formData.sourceHubId ||
         formData.sourceGmapsId ||
@@ -1146,8 +1186,11 @@ const PickupDropDrawer = ({
         hasAutoSearchedRef.current = true;
         searchTransfers();
       }
-    }
-  }, [isOpen, isAutoFilled, initialPropsAssigned]);
+    }, 500); 
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [formData, isOpen, isAutoFilled, initialPropsAssigned]);
 
   if (!isOpen) return null;
 
