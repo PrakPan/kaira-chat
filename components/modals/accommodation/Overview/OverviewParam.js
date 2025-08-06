@@ -2,19 +2,18 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
-import NextImage from "next/image";
 import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
+import MoreText from "../../../ui/MoreText";
+import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
-import { connect, useDispatch } from "react-redux";
-import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
-import ImageCarousel from "../../Carousel/ImageCarousel";
-import { useRouter } from "next/router";
-import { dateFormat } from "../../../../helper/DateUtils";
-import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
+import { connect } from "react-redux";
+import BackArrow from "../../../ui/BackArrow";
+import Drawer from "../../../ui/Drawer";
+
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -23,6 +22,21 @@ const starRating = (rating) => {
   if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
   return stars;
 };
+
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
 
 const Container = styled.div`
   font-size: 14px;
@@ -112,7 +126,6 @@ const Heading = styled.div`
 const Address = styled.div`
   font-weight: 400;
   font-size: 14px;
-  font-family: poppins;
 `;
 
 const CheckInText = styled.div`
@@ -135,21 +148,10 @@ const DescriptionText = styled.div`
     margin-bottom: 12px;
   }
 `;
-const getRoomImage = (images) => {
-  if (images && images.length) {
-    for (let image of images) {
-      if (image?.image) {
-        return image.image;
-      }
-    }
-  }
 
-  return null;
-};
-
-const HotelBookingDetails = (props) => {
+const OverviewParam = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  const router = useRouter();
+
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,
@@ -163,7 +165,6 @@ const HotelBookingDetails = (props) => {
     2: false,
     3: false,
   });
-  const [open, setOpen] = useState(false);
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -191,15 +192,28 @@ const HotelBookingDetails = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
+
   return (
+    <Drawer
+      show={props.show}
+      anchor={"right"}
+      backdrop
+      className="font-lexend"
+      onHide={props.onHide}
+      width={"50vw"}
+      mobileWidth={"100vw"}
+    >
     <Container>
+      <BackContainer className=" font-lexend">
+        <BackArrow handleClick={props.onHide} />
+      </BackContainer>
       <FlexBox>
         <div>
-          <Name>{props?.data?.name}</Name>
-          <Address style={{ fontSize: "14px" }}>
-            {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
-              .filter(Boolean)
-              .join(", ")}
+          <Name>{props.data.name}</Name>
+          <Address>
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
@@ -208,13 +222,7 @@ const HotelBookingDetails = (props) => {
             <Button
               padding="7px 25px"
               borderRadius="7px"
-              onclick={() => {
-                if (!localStorage.getItem("access_token")) {
-                  props?.setShowLoginModal(true);
-                  return;
-                }
-                props.BookingButtonFun();
-              }}
+              onclick={() => props.BookingButtonFun()}
             >
               Change
             </Button>
@@ -224,18 +232,45 @@ const HotelBookingDetails = (props) => {
         )}
       </FlexBox>
 
-      {props?.data?.rating && (
+      {props.data?.rating ? (
         <div className="gap-1 flex flex-row  items-center">
           <div className="flex flex-row text-[#FFD201]">
-            {starRating(props?.data?.rating)}
+            {starRating(props.data?.rating)}
           </div>
           <div>
-            {props?.data?.rating}
+            {props.data?.rating}
             {" . "}
           </div>
-          {props?.data?.user_ratings_total && (
+          {props.data?.num_reviews && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props?.data?.user_ratings_total} reviews
+              {props.data?.num_reviews}{" "}
+              {props.data?.agoda_accommodation
+                ? "user reviews"
+                : "Google reviews"}
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {props?.currentBooking?.user_rating && (
+        <div className="flex flex-col gap-1">
+          {props?.currentBooking.user_rating && (
+            <div className="gap-1 flex flex-row  items-center">
+              <div className="flex flex-row text-[#ffa500]">
+                {starRating(props?.currentBooking.user_rating)}
+              </div>
+              <div>
+                {props?.currentBooking?.user_rating}
+                {" . "}
+              </div>
+              {props?.currentBooking?.number_of_reviews && (
+                <div className="text-sm text-[#7A7A7A] font-medium underline">
+                  {props?.currentBooking?.number_of_reviews}{" "}
+                  {props?.currentBooking?.source === "Agoda"
+                    ? "user reviews"
+                    : "Google reviews"}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -244,152 +279,150 @@ const HotelBookingDetails = (props) => {
       {isDesktop ? (
         <ImageContainer>
           {images.length > 3 ? (
-            <>
-              <GridImage>
-                <Child area="1 / 1 / 5 / 4" className="div1 ">
-                  <div
-                    className="relative"
-                    style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
-                  >
-                    <ImageLoader
-                      url={
-                        ImagesError[0]
-                          ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]?.image
-                      }
-                      width="100%"
-                      height="100%"
-                      onload={() => OnImageLoad(0)}
-                      onfail={() => OnImageError(0)}
-                      noLazy
-                    />
+            <GridImage>
+              <Child area="1 / 1 / 5 / 4" className="div1 ">
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                >
+                  <ImageLoader
+                    url={
+                      ImagesError[0]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[0]
+                    }
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(0)}
+                    onfail={() => OnImageError(0)}
+                    noLazy
+                  />
 
-                    {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                        {images[0]?.caption}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div
-                    style={{
-                      display: !ImagesLoaded[0] ? "initial" : "none",
-                      height: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <SkeletonCard lottieDimension={"50rem"} />
-                  </div>
-                </Child>
+                  {images[0]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[0]?.caption}
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
+              </Child>
 
-                <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                  <div
-                    className="relative"
-                    style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
-                  >
-                    <ImageLoader
-                      url={
-                        ImagesError[1]
-                          ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]?.image
-                      }
-                      fit="cover"
-                      width="100%"
-                      height="100%"
-                      onload={() => OnImageLoad(1)}
-                      onfail={() => OnImageError(1)}
-                      noLazy
-                    />
+              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                >
+                  <ImageLoader
+                    url={
+                      ImagesError[1]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[1]
+                    }
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(1)}
+                    onfail={() => OnImageError(1)}
+                    noLazy
+                  />
 
-                    {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                        {images[1]?.caption}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div
-                    style={{
-                      display: !ImagesLoaded[1] ? "initial" : "none",
-                      height: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <SkeletonCard lottieDimension={"50rem"} />
-                  </div>
-                </Child>
+                  {images[1]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[1]?.caption}
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[1] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
+              </Child>
 
-                <Child area="1 / 4 / 3 / 8" className="div3">
-                  <div
-                    className="relative"
-                    style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
-                  >
-                    <ImageLoader
-                      url={
-                        ImagesError[2]
-                          ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[2]?.image
-                      }
-                      fit="cover"
-                      width="100%"
-                      height="100%"
-                      onload={() => OnImageLoad(2)}
-                      onfail={() => OnImageError(2)}
-                      noLazy
-                    />
+              <Child area="1 / 4 / 3 / 8" className="div3">
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+                >
+                  <ImageLoader
+                    url={
+                      ImagesError[2]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[2]
+                    }
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(2)}
+                    onfail={() => OnImageError(2)}
+                    noLazy
+                  />
 
-                    {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                        {images[2]?.caption}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div
-                    style={{
-                      display: !ImagesLoaded[2] ? "initial" : "none",
-                      height: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <SkeletonCard lottieDimension={"50rem"} />
-                  </div>
-                </Child>
+                  {images[2]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[2]?.caption}
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[2] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
+              </Child>
 
-                <Child area="3 / 4 / 5 / 8" className="div4">
-                  <div
-                    className="relative"
-                    style={{ display: ImagesLoaded[3] ? "initial" : "none" }}
-                  >
-                    <ImageLoader
-                      url={
-                        ImagesError[3]
-                          ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[3]?.image
-                      }
-                      fit="cover"
-                      width="100%"
-                      height="100%"
-                      onload={() => OnImageLoad(3)}
-                      onfail={() => OnImageError(3)}
-                      noLazy
-                    />
+              <Child area="3 / 4 / 5 / 8" className="div4">
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[3] ? "initial" : "none" }}
+                >
+                  <ImageLoader
+                    url={
+                      ImagesError[3]
+                        ? "media/icons/bookings/notfounds/noroom.png"
+                        : images[3]
+                    }
+                    fit="cover"
+                    width="100%"
+                    height="100%"
+                    onload={() => OnImageLoad(3)}
+                    onfail={() => OnImageError(3)}
+                    noLazy
+                  />
 
-                    {images[3]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                        {images[3]?.caption}
-                      </div>
-                    ) : null}
-                  </div>
-                  <div
-                    style={{
-                      display: !ImagesLoaded[3] ? "initial" : "none",
-                      height: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <SkeletonCard lottieDimension={"50rem"} />
-                  </div>
-                </Child>
-              </GridImage>
-            </>
+                  {images[3]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[3]?.caption}
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  style={{
+                    display: !ImagesLoaded[3] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
+              </Child>
+            </GridImage>
           ) : images.length == 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
@@ -402,7 +435,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]?.image
+                        : images[0]
                     }
                     width="100%"
                     height="100%"
@@ -411,7 +444,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -437,7 +470,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]?.image
+                        : images[1]
                     }
                     fit="cover"
                     width="100%"
@@ -447,7 +480,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -473,7 +506,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]?.image
+                        : images[2]
                     }
                     fit="cover"
                     width="100%"
@@ -483,7 +516,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[2]?.caption}
                     </div>
                   ) : null}
@@ -521,7 +554,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -547,7 +580,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]?.image
+                        : images[1].image
                     }
                     fit="cover"
                     width="100%"
@@ -557,7 +590,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -584,7 +617,7 @@ const HotelBookingDetails = (props) => {
                   url={
                     ImagesError[0]
                       ? "media/icons/bookings/notfounds/noroom.png"
-                      : images[0]?.image
+                      : images[0]
                   }
                   fit="cover"
                   width="100%"
@@ -595,7 +628,7 @@ const HotelBookingDetails = (props) => {
                 />
 
                 {images[0]?.caption ? (
-                  <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                     {images[0]?.caption}
                   </div>
                 ) : null}
@@ -619,7 +652,7 @@ const HotelBookingDetails = (props) => {
                 onClick={() => props._setImagesHandler(images)}
                 className="font-lexend bg-black"
               >
-                Photos Gallery
+                View Gallery
               </PhotosButton>
             ) : null
           ) : null}
@@ -643,7 +676,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]?.image
+                          : images[0]
                       }
                       fit="cover"
                       width="100%"
@@ -653,7 +686,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -679,7 +712,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]?.image
+                          : images[1]
                       }
                       fit="cover"
                       width="100%"
@@ -689,7 +722,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -715,7 +748,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[2]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[2]?.image
+                          : images[2].image
                       }
                       fit="cover"
                       width="100%"
@@ -725,7 +758,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[2]?.caption}
                       </div>
                     ) : null}
@@ -763,7 +796,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -789,7 +822,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]?.image
+                          : images[1].image
                       }
                       fit="cover"
                       width="100%"
@@ -799,7 +832,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -837,7 +870,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -862,7 +895,7 @@ const HotelBookingDetails = (props) => {
                 onClick={() => props._setImagesHandler(images)}
                 className="font-lexend bg-black"
               >
-                Photos Gallery
+                All Photos
               </PhotosButton>
             ) : null
           ) : null}
@@ -881,15 +914,15 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props?.data?.check_in?.begin_time && props?.data?.check_out?.time ? (
+        {props.data?.check_in?.begin_time && props.data?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {dateFormat(props?.data?.check_in.date)}|
-              {getHumanTime(dateFormat(props?.data?.check_in.begin_time))}
+              Check in:{" "}
+              {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
             </div>
             <div>
-              Check out: {dateFormat(props?.data?.check_out.date)}|
-              {getHumanTime(props?.data?.check_out.time)}
+              Check out:{" "}
+              {getHumanTime(props.data.check_out.time.substring(0, 5))}
             </div>
           </CheckInText>
         ) : (
@@ -897,172 +930,55 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props?.data?.rates?.map((room, index) => (
-        <div
-          key={index}
-          className="flex flex-col gap-3 bg-white p-2 rounded-lg"
-        >
-          <div className="flex flex-row gap-3">
-            {getRoomImage(room?.images) && (
-              <ImageContainer>
-                <ImageLoader
-                  noLazy
-                  height={isPageWide ? "85px" : "75px"}
-                  width={isPageWide ? "85px" : "75px"}
-                  borderRadius="10px"
-                  dimensions={{ height: 200, width: 200 }}
-                  url={getRoomImage(room?.images)}
-                />
-              </ImageContainer>
-            )}
-
-            <div className="w-full">
-              {room.name ? (
-                <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
-                  {room.name}{" "}
-                  <span>
-                    <RxCross2 className="inline" /> 1 room
-                  </span>
-                </div>
-              ) : null}
-
-              {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                <div className="flex flex-row gap-1">
-                  <div className="text-md font-semibold">Sleeps</div>
-                  <div>
-                    {room.number_of_adults > 1
-                      ? `${room.number_of_adults} Adults`
-                      : `${room.number_of_adults} Adult`}
-                    {room?.number_of_children &&
-                    room?.number_of_children !== "0"
-                      ? `, ${room.number_of_children} Children`
-                      : null}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      ))}
-
-      {props?.data?.description ? (
+      {props.data?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
-            className="text-[14px]"
+            className="text-[14px] ml-[-30px]"
             dangerouslySetInnerHTML={{
-              __html: props?.data?.description,
+              __html: props.data?.check_in?.instructions[0],
             }}
           ></div>
         </div>
       ) : null}
 
-      {props?.data?.rates?.[0]?.rooms?.[0]?.description && (
+      {props.data?.description && (
         <>
-          <Heading>Room Information</Heading>
-          <div className="flex flex-col gap-3">
-            {props?.data?.rates?.[0]?.rooms.map((room, index) => (
-              <div key={index} className="flex flex-col gap-3">
-                <div
-                  key={index}
-                  className="flex flex-col md:flex-row gap-1 justify-between"
-                >
-                  <div>
-                    {room?.name && (
-                      <div className="text-[16px] font-bold">{room?.name}</div>
-                    )}
-                    {room?.description ? (
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: room.description,
-                        }}
-                        className=""
-                      ></div>
-                    ) : null}
-                  </div>
-                  {room?.images && room?.images?.length > 0 && (
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[80%] h-[250px]">
-                      <ImageCarousel images={room?.images} />
-                    </div>
-                  )}
-                </div>
-
-                {room?.facilities && room?.facilities?.length ? (
-                  <div className="flex flex-col gap-2">
-                    <div className="text-lg font-semibold">Amenities</div>
-                    <div className="text-[14px]">
-                      <div className="flex flex-wrap gap-2">
-                        {room.facilities.map((item, index) => (
-                          <div key={index}>
-                            <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
-                              {item}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            ))}
-          </div>
+          <Heading>About</Heading>
+          <MoreText>
+            <DescriptionText
+              dangerouslySetInnerHTML={{ __html: props.data.description }}
+            ></DescriptionText>
+          </MoreText>
         </>
       )}
 
-      {props?.data?.recommendations &&
-      props?.data?.recommendations?.length > 0 ? (
+      {props.data?.recommendations && props.data?.recommendations?.length ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
             Room Recommendations
           </Heading>
 
           <Rooms
-            data={props?.data?.recommendations}
-            checkInDate={props?.data?.check_in?.date}
-            city={props?.data?.city}
+            currentBooking={props?.currentBooking}
+            data={props.data?.recommendations}
+            checkInDate={props.data?.check_in}
+            city={props.data?.city}
             updateBooking={props.updateBooking}
-            duration={props?.data?.duration}
+            bookingId={props?.bookingId}
           ></Rooms>
         </>
       ) : (
         <></>
       )}
-      {props?.data?.category_ratings &&
-        props?.data?.category_ratings?.length > 0 && (
-          <div>
-            <Heading>Ratings</Heading>
-            <table>
-              <tbody>
-                {props?.data?.category_ratings.map((item, index) => (
-                  <tr>
-                    {item?.category != "recommendation_percent" && (
-                      <>
-                        <td className="">
-                          {item?.category?.slice(0, 1).toUpperCase() +
-                            item?.category?.slice(1, item?.category?.length)}
-                        </td>
-                        <td className="flex items-center gap-1">
-                          <div className="flex text-[#FFD201]">
-                            {getStars(item?.rating)}
-                          </div>
-                          {item?.rating}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
 
-      {props?.data?.google_maps_link ? (
+      {props.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
-              .filter(Boolean)
-              .join(", ")}
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
           </Address>
           <div
             style={{
@@ -1086,116 +1002,68 @@ const HotelBookingDetails = (props) => {
               />
             </div>
             <a
-              href={props?.data?.google_maps_link}
+              href={props.data?.google_maps_link}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
-              View on Google Maps
+              View on Google Map
             </a>
           </div>
         </div>
-      ) : props?.data?.coordinates?.latitude &&
-        props?.data?.coordinates?.longitude ? (
+      ) : props.data?.latitude && props.data?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <div className="flex gap-2">
-            <div>
-              <svg
-                width="23"
-                height="24"
-                viewBox="0 0 23 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g clip-path="url(#clip0_9135_4118)">
-                  <rect
-                    y="0.800781"
-                    width="22.4"
-                    height="22.4"
-                    rx="4"
-                    fill="#169873"
-                    fill-opacity="0.09"
-                  />
-                  <path
-                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
-                    fill="#169873"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_9135_4118">
-                    <rect
-                      y="0.800781"
-                      width="22.4"
-                      height="22.4"
-                      rx="4"
-                      fill="white"
-                    />
-                  </clipPath>
-                </defs>
-                <g
-                  xmlns="http://www.w3.org/2000/svg"
-                  clip-path="url(#clip0_9135_4118)"
-                >
-                  <rect
-                    y="0.800781"
-                    width="22.4"
-                    height="22.4"
-                    rx="4"
-                    fill="#169873"
-                    fill-opacity="0.09"
-                  />
-                  <path
-                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
-                    fill="#169873"
-                  />
-                </g>
-                <defs xmlns="http://www.w3.org/2000/svg">
-                  <clipPath id="clip0_9135_4118">
-                    <rect
-                      y="0.800781"
-                      width="22.4"
-                      height="22.4"
-                      rx="4"
-                      fill="white"
-                    />
-                  </clipPath>
-                </defs>
-              </svg>
+          <Address style={{ fontSize: "14px" }}>
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
+          </Address>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              justifyContent: "left",
+              marginTop: "0.5rem",
+            }}
+          >
+            <div style={{ height: "30px", width: "30px" }}>
+              <Image
+                noLazy
+                url={
+                  ImagesError[i]
+                    ? "media/icons/bookings/notfounds/noroom.png"
+                    : "media/icons/google-maps.png"
+                }
+                height="30px"
+                width="30px"
+              />
             </div>
-            <Address style={{ fontSize: "14px" }}>
-              {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
-                .filter(Boolean)
-                .join(", ")}
-            </Address>
-          </div>
-          <div className="flex justify-between">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                justifyContent: "left",
-                marginTop: "0.5rem",
-              }}
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${
+                props.data?.coordinates?.latitude
+              },${props.data.coordinates?.longitude}+(${props.data?.name
+                ?.split(" ")
+                .join("+")})`}
+              target="_blank"
+              style={{ color: "black", fontSize: "14px" }}
             >
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${
-                  props?.data?.coordinates?.latitude
-                },${props?.data?.coordinates?.longitude}+(${props?.data?.name
-                  ?.split(" ")
-                  .join("+")})`}
-                target="_blank"
-                style={{ color: "#0000EE", fontSize: "14px" }}
-              >
-                View on Google Maps
-              </a>
-            </div>
+              View on Google Map
+            </a>
+            <FiChevronRight
+              style={{
+                fontSize: "1rem",
+                margin: "4px 0px 0px -12px",
+                display: "inline",
+              }}
+            />
           </div>
         </div>
       ) : (
         <></>
       )}
     </Container>
+    </Drawer>
   );
 };
 
@@ -1205,4 +1073,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-export default connect(mapStateToPros)(HotelBookingDetails);
+export default connect(mapStateToPros)(OverviewParam);

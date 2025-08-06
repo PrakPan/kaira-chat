@@ -5,12 +5,7 @@ import CityDaybyDay from "./CityDaybyDay";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
-import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
-import Drawer from "../../ui/Drawer";
-import HotelBookingDetails from "../../modals/accommodation/Overview/HotelBookingDetails";
-import styled from "styled-components";
-import { IoMdClose } from "react-icons/io";
 import { logEvent } from "../../../services/ga/Index";
 import { toast } from "react-toastify";
 import BackArrow from "../../ui/BackArrow";
@@ -19,6 +14,8 @@ import FullScreenGallery from "../../fullscreengallery/Index";
 import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
 import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
+import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -59,18 +56,17 @@ const BackContainer = styled.div`
 `;
 
 const ItineraryCity = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  console.log("itineraryciy is:", props);
-  const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
+  const [loading,setLoading] = useState(false);
+  const [showDetails,setShowDetails] =  useState(false);
   const { itinerary_status, hotels_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+
+  const router=useRouter()
+ 
   const [images, setImages] = useState(null);
   const dispatch = useDispatch();
 
@@ -79,7 +75,6 @@ const ItineraryCity = (props) => {
     return hotel?.itinerary_city_id === props?.itinerary_city_id;
   });
 
-  console.log("Multiii",multiHotelStays);
   const multiHotelDuration = props.totalDuration || multiHotelStays?.reduce(
     (accumulator, currentValue) => accumulator + currentValue?.duration,
     0,
@@ -92,47 +87,66 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
+    console.log("Hii I'm there")
+
+
     
     const targetHotelId = hotelId || (stay?.[props?.index]?.id || multiHotelStays?.[0]?.id);
+
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "showHotelDetail",
+          idx: props?.index,
+          booking_id: targetHotelId,
+          city_id: props?.city?.city?.id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
     
-    await bookingDetails
-      .get(
-        `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        dispatch(
-          openNotification({
-            type: "error",
-            text: "unable to get detail",
-            heading: "Error!",
-          })
-        );
-        setShowDetails(false);
-      });
+    // await bookingDetails
+    //   .get(
+    //     `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setData(res.data);
+    //   })
+    //   .catch((err) => {
+    //     dispatch(
+    //       openNotification({
+    //         type: "error",
+    //         text: "unable to get detail",
+    //         heading: "Error!",
+    //       })
+    //     );
+    //     setShowDetails(false);
+    //   });
     setLoading(false);
   };
 
   const handleStay = (e, label, value, clickType) => {
-    console.log("cityindex5 is:", props?.city);
     e.stopPropagation();
-    if (token)
+    if (token){
+      const index = multiHotelStays.findIndex(h => h?.id === data?.id);
       props?.handleClickAc(
-        props?.index,
+         index !== -1 ? index : props?.index,
         props?.city,
         props?.city?.city?.id,
         props?.city?.id,
         clickType
       );
+    }
     else props?.setShowLoginModal(true);
-    props?.setBookingId(props?.key);
 
     logEvent({
       action: "Hotel_Add_Change",
@@ -151,8 +165,6 @@ const ItineraryCity = (props) => {
       setViewMore(true);
     }
   }, []);
-
-  console.log("STTTT", multiHotelStays);
 
   return (
     <div
@@ -231,7 +243,7 @@ const ItineraryCity = (props) => {
             <div
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
-                handleStay(e, "Change", props.city.city.name, "Add")
+                handleStay(e, "Add", props.city.city.name, "Add")
               }
             >
               + Add Stay in {props?.city?.city?.name}
@@ -281,80 +293,6 @@ const ItineraryCity = (props) => {
           />
         )
       ) : null}
-      
-      <Drawer
-        show={showDetails}
-        anchor={"right"}
-        backdrop
-        className="font-lexend"
-        onHide={() => setShowDetails(false)}
-        width={"50%"}
-        mobileWidth={"100%"}
-      >
-        {loading ? (
-          <Skeleton />
-        ) : (
-          <Container>
-            <BackContainer className=" font-lexend">
-              <BackArrow handleClick={() => setShowDetails(false)} />
-            </BackContainer>
-            <HotelBookingDetails
-              _setImagesHandler={_setImagesHandler}
-              user_rating={props.city.hotels?.[0]?.rating}
-              number_of_reviews={props.city.hotels?.[0]?.user_ratings_total}
-              data={data}
-              BookingButtonFun={() => {
-                if (!localStorage.getItem("access_token")) {
-                  props?.setShowLoginModal(true);
-                  return;
-                }
-                const index = multiHotelStays.findIndex(h => h?.id === data?.id);
-                props.handleClickAc(
-                  index !== -1 ? index : props?.index,
-                  props?.city,
-                  props?.city?.city?.id,
-                  props?.city?.id
-                );
-              }}
-              images={
-                data?.hotel_details?.images ? data?.hotel_details?.images : []
-              }
-              experience_filters={
-                props.poi ? props.poi.experience_filters : null
-              }
-              name={
-                props?.city?.hotels?.[0]?.name
-                  ? props?.city?.hotels?.[0]?.name
-                  : null
-              }
-              duration={
-                props?.city?.hotels?.[0]?.duration
-                  ? props?.city?.hotels?.[0]?.duration
-                  : null
-              }
-              setShowDetails={setShowDetails}
-              id={data?.id || props?.city?.hotels?.[0]?.id}
-              setShowLoginModal={props?.setShowLoginModal}
-            />
-            {images ? (
-              <FullScreenGallery
-                mercury
-                closeGalleryHandler={() => setImages(null)}
-                images={images}
-              ></FullScreenGallery>
-            ) : null}
-          </Container>
-        )}
-        {!isPageWide && (
-          <FloatingView>
-            <TbArrowBack
-              style={{ height: "28px", width: "28px" }}
-              cursor={"pointer"}
-              onClick={() => setShowDetails(false)}
-            />
-          </FloatingView>
-        )}
-      </Drawer>
     </div>
   );
 };

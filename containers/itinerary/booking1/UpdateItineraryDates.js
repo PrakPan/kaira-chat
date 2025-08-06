@@ -415,7 +415,7 @@ const UpdateItineraryDates = ({
         )}
 
         {/* Show pencil icon when not editing, reset button when editing */}
-        {!isMobile && isMobile ? !isEditing ? (
+        {!isMobile  ? !isEditing ? (
           <button
             onClick={handleEditClick}
             className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 hover:text-blue-500 hover:scale-110 active:scale-90"

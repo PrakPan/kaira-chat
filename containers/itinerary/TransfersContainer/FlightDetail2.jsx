@@ -84,7 +84,7 @@ const Details = ({
   destinationCityId,
   provider,
   resultIndex,
-  setShowDetails,
+  handleRoute,
   fareRule,
   individual,
   booking_id,
@@ -98,8 +98,8 @@ const Details = ({
   getPaymentHandler,
   setShowLoginModal,
   cancellationPolicy,
+  handleClose
 }) => {
-  console.log("booking id is:", booking_id);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   const router = useRouter();
@@ -160,7 +160,6 @@ const Details = ({
 
     let traceId;
     if (booking_id) {
-      console.log("here");
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
@@ -186,12 +185,15 @@ const Details = ({
     }
   };
 
+  
   return (
     <div className="relative flex flex-col gap-4 rounded-md px-3 py-2 h-full">
       {drawer && (
         <div className="flex flex-col gap-2">
           <Heading>
-            <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
+            <BackArrow
+              handleClick={handleClose}
+            />
           </Heading>
         </div>
       )}
@@ -290,7 +292,7 @@ const Details = ({
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
             cursor={"pointer"}
-            onClick={() => setShowDetails((prev) => !prev)}
+            onClick={handleClose}
           />
         </FloatingView>
       )}
@@ -493,7 +495,7 @@ const FlightSegment = ({ segments }) => {
               </div>
 
               <div className="flex  items-start justify-between gap-[20px] text-xs mt-4 w-full">
-                {["cabin_class",].map((key) => (
+                {["cabin_class"].map((key) => (
                   <div
                     key={key}
                     className="flex flex-col gap-2 p-[10px] w-[calc(50%_-_10px)] bg-[#6464640C] rounded-[8px]"

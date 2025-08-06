@@ -83,6 +83,8 @@ const SimpleTabsV2 = (props) => {
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
 
+  console.log("Itiii",stays,props?.activityBookings,props?.itinerary)
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       scrollToElement("Itenary");
@@ -1570,7 +1572,6 @@ function newFunction(
 
   async function processRoutes2(props) {
     if (props?.breif && !props.mercuryItinerary) {
-      console.log("Inside pr2");
       // CityDataTemp.push(props?.itinerary?.start_city);
       //  RoutesData.push(props?.itinerary?.start_city);
       for (var i = 0; i < props.breif.city_slabs.length; i++) {

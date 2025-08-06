@@ -58,7 +58,6 @@ const PickupDropDrawer = ({
   destinationLat,
   destinationLong,
 }) => {
-  console.log("VVV", booking);
 
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -310,7 +309,6 @@ const PickupDropDrawer = ({
     const displayHour = hours % 12 || 12;
     const display = `${displayHour}:${mins} ${ampm}`;
 
-    console.log("VVV",dateTimeString);
 
     return { value, display, date: finalDate };
   };
@@ -462,7 +460,6 @@ const PickupDropDrawer = ({
         fieldToUpdate = "destination";
       }
 
-      console.log("Target", targetHubId, fieldToUpdate);
 
       if (targetHubId && fieldToUpdate) {
         // Instead of searching in hubSuggestions, directly use the hub ID and generate a name
@@ -498,9 +495,6 @@ const PickupDropDrawer = ({
   // 2. SECOND - Initialize form data and trigger gmaps API calls
   useEffect(() => {
     if (isOpen && booking) {
-      console.log("Autofilling form with existing booking:", booking);
-      console.log("Transfer type:", transferType);
-      console.log("Hotel names:", hotelName, destinationHotelName);
 
       // Calculate date and time
       let newDate = "";
@@ -516,7 +510,6 @@ const PickupDropDrawer = ({
         newTime = { value: result.value, display: result.display };
       }
 
-      console.log("Calculated date:", newDate, "time:", newTime);
 
       // Update form data
       setFormData((prev) => ({
@@ -554,7 +547,6 @@ const PickupDropDrawer = ({
   // 4. FOURTH - Auto-fill hub data when suggestions become available
   useEffect(() => {
     if (hubSuggestions.length > 0 && booking && isAutoFilled) {
-      console.log("Hub suggestions available:", hubSuggestions);
 
       let targetHubId = null;
       let fieldToUpdate = null;
@@ -569,17 +561,10 @@ const PickupDropDrawer = ({
         fieldToUpdate = "destination";
       }
 
-      console.log(
-        "Looking for hub ID:",
-        targetHubId,
-        "for field:",
-        fieldToUpdate
-      );
 
       if (targetHubId && fieldToUpdate) {
         const matchedHub = hubSuggestions.find((hub) => hub.id === targetHubId);
 
-        console.log("Matched hub:", matchedHub);
 
         if (matchedHub) {
           setFormData((prev) => ({
@@ -608,7 +593,6 @@ const PickupDropDrawer = ({
     }
   }, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
 
-  console.log("formData", formData, sourceGmaps, destinationGmaps);
 
   const searchAutocomplete = async (query, field) => {
     if (!query.trim() || query.length < 2) {
@@ -810,7 +794,6 @@ const PickupDropDrawer = ({
     const label = isHub ? suggestion.name : suggestion.text;
     const id = suggestion.id;
 
-    console.log("Hereee", label, isHub, isHotel);
 
     if (field === "source") {
       setFormData((prev) => ({
@@ -1286,7 +1269,6 @@ const PickupDropDrawer = ({
                         <div
                           key={suggestion.id}
                           onMouseDown={() => {
-                            console.log("Clicked", suggestion);
                             handleSuggestionSelect(suggestion, "source");
                           }}
                           className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"

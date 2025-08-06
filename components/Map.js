@@ -15,6 +15,15 @@ const customIcon = leaflet.icon({
 });
 
 const Mapbox = React.memo((props) => {
+  const [mounted, setMounted] = React.useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted || !props.locations?.length) return null;
+  
   const FitBoundsOnMount = () => {
     const map = useMap();
 
@@ -68,7 +77,10 @@ const Mapbox = React.memo((props) => {
 
   return props?.locations ? (
     <MapContainer
-      center={{ lat: props?.locations[0]?.latitude, lng: props?.locations[0]?.longitude }}
+      center={{
+        lat: props?.locations[0]?.latitude,
+        lng: props?.locations[0]?.longitude,
+      }}
       zoom={props.defaultZoom || 1}
       style={{
         height: props.height || "100%",

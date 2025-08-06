@@ -10,7 +10,7 @@ import ChangePoiBooking from "../../../containers/newitinerary/itineraryelements
 import POIDetailsSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
 import H3 from "../../heading/H3";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
-import Button from "../../../components/ui/button/Index";
+import Button from "../../ui/button/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { useDispatch } from "react-redux";
 import { TbArrowBack } from "react-icons/tb";
@@ -129,7 +129,6 @@ const AddPoi = (props) => {
   }, [debouncedSearch, filterState]);
 
   const handleClose = () => {
-    console.log("clicked");
     props?.setShowDrawer(false);
     props?.handleCloseDrawer();
   };

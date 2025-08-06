@@ -153,7 +153,6 @@ export default function PoiDetails(props) {
     setLoading(true);
     if (!token) {
       props.setShowLoginModal(true);
-      console.log("showing login drawer");
       setLoading(false);
       return;
     }
@@ -180,9 +179,269 @@ export default function PoiDetails(props) {
           <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
         <div className={`flex flex-col gap-4 `}>
-          {props?.data?.extra_images?.length > 0 && (
-            <GridImage>
-              <Child area="1 / 1 / 5 / 4" className="div1">
+          <>
+            {props?.data?.extra_images?.length > 3 ? (
+              <GridImage>
+                <Child area="1 / 1 / 5 / 4" className="div1">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[0]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(0)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(0);
+                    }}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[1]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 1"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(1)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(1);
+                    }}
+                    priority
+                  />{" "}
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="1 / 4 / 3 / 8" className="div3">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[2]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 2"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(2)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(2);
+                    }}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[2] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="3 / 4 / 5 / 8" className="div4">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[3]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 3"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(3)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(3);
+                    }}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[3] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+              </GridImage>
+            ) : props?.data?.extra_images?.length == 3 ? (
+              <>
+                <GridImage>
+                  <Child area="1 / 1 / 5 / 4" className="div1 ">
+                    <Image
+                      src={
+                        props?.data?.extra_images?.[0]
+                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                          : "/media/icons/bookings/notfounds/noroom.png"
+                      }
+                      alt="Image 0"
+                      fill
+                      className="object-cover"
+                      onLoad={() => OnImageLoad(0)}
+                      onError={(e) => {
+                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                        OnImageError(0);
+                      }}
+                      priority
+                    />
+                    <div
+                      style={{
+                        display: !ImagesLoaded[0] ? "initial" : "none",
+                        height: "100%",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <SkeletonCard lottieDimension={"50rem"} />
+                    </div>
+                  </Child>
+
+                  <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
+                    <Image
+                      src={
+                        props?.data?.extra_images?.[1]
+                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                          : "/media/icons/bookings/notfounds/noroom.png"
+                      }
+                      alt="Image 0"
+                      fill
+                      className="object-cover"
+                      onLoad={() => OnImageLoad(1)}
+                      onError={(e) => {
+                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                        OnImageError(1);
+                      }}
+                      priority
+                    />
+                    <div
+                      style={{
+                        display: !ImagesLoaded[1] ? "initial" : "none",
+                        height: "100%",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <SkeletonCard lottieDimension={"50rem"} />
+                    </div>
+                  </Child>
+
+                  <Child area="1 / 7 / 5 / 11" className="div3">
+                    <Image
+                      src={
+                        props?.data?.extra_images?.[2]
+                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                          : "/media/icons/bookings/notfounds/noroom.png"
+                      }
+                      alt="Image 0"
+                      fill
+                      className="object-cover"
+                      onLoad={() => OnImageLoad(2)}
+                      onError={(e) => {
+                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                        OnImageError(2);
+                      }}
+                      priority
+                    />
+                    <div
+                      style={{
+                        display: !ImagesLoaded[2] ? "initial" : "none",
+                        height: "100%",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <SkeletonCard lottieDimension={"50rem"} />
+                    </div>
+                  </Child>
+                </GridImage>
+              </>
+            ) : props?.data?.extra_images?.length == 2 ? (
+              <GridImage>
+                <Child area="1 / 1 / 5 / 6" className="div1 ">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[0]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(0)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(0);
+                    }}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+
+                <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[1]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(1)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(1);
+                    }}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+              </GridImage>
+            ) : (
+              <Child style={{ height: "19rem" }}>
                 <Image
                   src={
                     props?.data?.extra_images?.[0]
@@ -206,96 +465,11 @@ export default function PoiDetails(props) {
                     overflow: "hidden",
                   }}
                 >
-                  <SkeletonCard lottieDimension="50rem" />
+                  <SkeletonCard lottieDimension={"50rem"} />
                 </div>
               </Child>
-
-              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <Image
-                  src={
-                    props?.data?.extra_images?.[1]
-                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
-                  }
-                  alt="Image 1"
-                  fill
-                  className="object-cover"
-                  onLoad={() => OnImageLoad(1)}
-                  onError={(e) => {
-                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                    OnImageError(1);
-                  }}
-                  priority
-                />{" "}
-                <div
-                  style={{
-                    display: !ImagesLoaded[1] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension="50rem" />
-                </div>
-              </Child>
-
-              <Child area="1 / 4 / 3 / 8" className="div3">
-                <Image
-                  src={
-                    props?.data?.extra_images?.[2]
-                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
-                  }
-                  alt="Image 2"
-                  fill
-                  className="object-cover"
-                  onLoad={() => OnImageLoad(2)}
-                  onError={(e) => {
-                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                    OnImageError(2);
-                  }}
-                  priority
-                />
-                <div
-                  style={{
-                    display: !ImagesLoaded[2] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension="50rem" />
-                </div>
-              </Child>
-
-              <Child area="3 / 4 / 5 / 8" className="div4">
-                <Image
-                  src={
-                    props?.data?.extra_images?.[3]
-                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
-                  }
-                  alt="Image 3"
-                  fill
-                  className="object-cover"
-                  onLoad={() => OnImageLoad(3)}
-                  onError={(e) => {
-                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                    OnImageError(3);
-                  }}
-                  priority
-                />
-                <div
-                  style={{
-                    display: !ImagesLoaded[3] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension="50rem" />
-                </div>
-              </Child>
-            </GridImage>
-          )}
-
+            )}
+          </>
           <div className="flex flex-col gap-3">
             <div className="text-[20px] font-[800]">{props.data.name}</div>
 

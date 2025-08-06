@@ -55,6 +55,16 @@ const NewPoiDetailsDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
@@ -77,7 +87,6 @@ const NewPoiDetailsDrawer = (props) => {
           heading: "Error!",
         })
       );
-      console.log("poi drawer error is:", error);
     }
   };
 
@@ -99,17 +108,14 @@ const NewPoiDetailsDrawer = (props) => {
       );
       var newItinerary = itinerary;
       const itineraryCities = newItinerary?.cities?.map((item) => {
-        console.log("city is:", item);
         const city = item;
         if (item.id == props?.itinerary_city_id) {
           const day_by_day = city?.day_by_day;
-          console.log("city1 is:", props?.dayIndex);
           day_by_day[props?.dayIndex].slab_elements = [
             ...day_by_day[props?.dayIndex]?.slab_elements,
             res?.data,
           ];
           city.day_by_day = day_by_day;
-          console.log("city2 is:", day_by_day);
         }
         return city;
       });

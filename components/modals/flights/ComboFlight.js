@@ -96,17 +96,6 @@ const ContentContainer = styled.div`
 `;
 
 const ComboFlight = (props) => {
-  console.log("TIMEE", props?.comboStartTime);
-  console.log(
-    "Flight Selected Booking",
-    props?.selectedBooking,
-    props?.showComboFlightModal
-  );
-  console.log(
-    "Flight Selected Booking",
-    props?.originCityId,
-    props?.destinationCityId
-  );
 
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
@@ -228,15 +217,9 @@ const isTraceIdValid = () => {
     return newId;
   };
 
-  console.log(
-    "Source Itinerary",
-    props?.source_itinerary_city_id,
-    props?.destination_itinerary_city_id
-  );
 
   const cancelCurrentRequest = () => {
     if (cancelTokenSourceRef.current) {
-      console.log("Cancelling current API request");
       cancelTokenSourceRef.current.cancel("Request cancelled by user");
       cancelTokenSourceRef.current = null;
     }
@@ -262,13 +245,6 @@ const isTraceIdValid = () => {
   ]);
 
   useEffect(() => {
-    console.log(
-      "Combo S",
-      props?.comboStartDate,
-      props?.comboStartTime,
-      dateTimeInitialized,
-      propsReady
-    );
 
     function roundToNext30Min(input) {
       try {
@@ -297,7 +273,6 @@ const isTraceIdValid = () => {
             props?.comboStartDate,
             props?.comboStartTime
           );
-          console.log("Using combo start time/date:", isoString);
           if (!isoString) {
             console.error("Failed to generate ISO string from date and time");
             return;
@@ -310,13 +285,11 @@ const isTraceIdValid = () => {
       } else if (props?.selectedBooking?.check_in) {
         try {
           baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
-          console.log("Using check_in time:", props?.selectedBooking?.check_in);
         } catch (error) {
           console.error("Error with check_in:", error);
           return;
         }
       } else {
-        console.log("No valid date source available");
         return;
       }
 
@@ -327,10 +300,6 @@ const isTraceIdValid = () => {
 
       const roundedTime = roundToNext30Min(baseTime);
       if (roundedTime) {
-        console.log(
-          "Setting preferred departure time to:",
-          roundedTime.format("YYYY-MM-DDTHH:mm:ss")
-        );
         setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
         setDateTimeInitialized(true);
         if (timeUpdated) {
@@ -401,12 +370,10 @@ const isTraceIdValid = () => {
   ]);
 
   useEffect(() => {
-    console.log("F Resu", props?.flightResults, props?.selectedData);
     if (
       props?.flightResults?.length &&
       props?.selectedData?.resultIndex !== undefined
     ) {
-      console.log("F Resu", props?.flightResults, props?.selectedData);
       const selectedIndex = props.flightResults.findIndex(
         (flight) =>
           flight?.result_index ===
@@ -433,12 +400,8 @@ const isTraceIdValid = () => {
 
   const _FetchFlightsHandler = async () => {
     const requestId = generateRequestId();
-    console.log(`Starting request ${requestId}`);
 
     if (cancelTokenSourceRef.current) {
-      console.log(
-        `Cancelling existing request, starting new request ${requestId}`
-      );
       cancelTokenSourceRef.current.cancel(
         "Operation cancelled due to new request"
       );
@@ -448,10 +411,6 @@ const isTraceIdValid = () => {
     }
     cancelTokenSourceRef.current = axios.CancelToken.source();
     const currentCancelTokenSource = cancelTokenSourceRef.current;
-
-    console.log("Starting flight fetch with time:", preferredDepartureTime);
-    console.log("Using pax values:", pax);
-    console.log("Using filters:", filtersState);
 
     setLoading(true);
     setIsFetching(true);
@@ -507,9 +466,6 @@ const isTraceIdValid = () => {
         })
         .then((res) => {
           if (currentCancelTokenSource.token.reason) {
-            console.log(
-              `Request ${requestId} was cancelled, ignoring response`
-            );
             return;
           }
 
@@ -552,14 +508,10 @@ const isTraceIdValid = () => {
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
-            console.log(`Flight search request ${requestId} was cancelled`);
             return;
           }
 
           if (currentCancelTokenSource.token.reason) {
-            console.log(
-              `Request ${requestId} was cancelled during error handling`
-            );
             return;
           }
 
@@ -590,7 +542,6 @@ const isTraceIdValid = () => {
           });
         });
     } else {
-      console.log("Missing required data for flight search");
       setLoading(false);
       setMoreLoadingState(false);
       setIsFetching(false);
@@ -656,7 +607,6 @@ const isTraceIdValid = () => {
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-    console.log("Request Data", requestData);
 
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
@@ -743,7 +693,6 @@ const isTraceIdValid = () => {
         props.setHideFlightModal();
       })
       .catch((err) => {
-        console.log("Error in Updating Flight", err.message);
         const errorMsg =
           err?.response?.data?.errors?.[0]?.message?.[0] ||
           err.message ||
@@ -1136,12 +1085,10 @@ const isTraceIdValid = () => {
           itinerary_id={props?.itinerary_id}
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
           origin={props.selectedBooking?.city}
           destination={props.selectedBooking?.destination_city}
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
-          fetchData={props?.fetchData}
           setShowLoginModal={props?.setShowLoginModal}
           check_in={props?.check_in}
           _GetInTouch={props._GetInTouch}
@@ -1211,7 +1158,6 @@ const SearchSection = ({
     _FetchFlightsHandler();
   };
 
-  console.log("Sourceee", sourceInput, destinationInput);
   return (
     // Your existing SearchSection JSX here
   <div className="mb-4">

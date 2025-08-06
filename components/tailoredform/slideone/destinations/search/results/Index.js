@@ -11,6 +11,13 @@ const AbsoluteContainer = styled.div`
   width: 100%;
   left: 0;
   z-index: 1500;
+   ${(props) =>
+    props.tailoredFormModal &&
+    `
+    min-height: 100px;
+    max-height: 250px;
+    overflow: auto;
+    `}
 `;
 
 const Heading = styled.p`
@@ -71,11 +78,11 @@ const SearchResults = (props) => {
       </AbsoluteContainer>
     );
 
-    console.log("Resul",props?.results, props)
   return (
     <AbsoluteContainer
       className={props?.results?.length && "border"}
       top={props.top}
+      tailoredFormModal={props.tailoredFormModal}
     >
       {props.hotLocations && props?.results?.length ? (
         <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>

@@ -4,14 +4,14 @@ import ViewHotelDetails from "../../ViewHotelDetails/viewHotelDetails";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
-  const num_adults=props.occupancies?.reduce(
+  const num_adults = props.occupancies?.reduce(
     (sum, room) => sum + (room.adults || 0),
     0
-  )
-  const num_children=props.occupancies?.reduce(
-    (sum,room)=>sum+(room.childAges?.length || 0),0
-  )
-  console.log("num_children:", num_children);
+  );
+  const num_children = props.occupancies?.reduce(
+    (sum, room) => sum + (room.childAges?.length || 0),
+    0
+  );
   return (
     <div>
       <NewHotelBooking
@@ -22,7 +22,6 @@ const Accommodation = (props) => {
         itinerary_id={props.itinerary_id}
         booking={props.accommodation}
         alternates={props.alternates}
-        selectedBooking={props.selectedBooking}
         num_adults={num_adults}
         num_children={num_children}
         openDetails={() => setShowDetails(true)}
@@ -30,19 +29,17 @@ const Accommodation = (props) => {
         handleClick={props?.handleClick}
         key={props?.key}
         handleClose={props?.handleClose}
-
       />
 
       <ViewHotelDetails
+        currentBooking={props.currentBooking}
         mercury={props?.mercury}
-        check_in={props.selectedBooking.check_in}
-        check_out={props.selectedBooking.check_out}
-        pax={props.selectedBooking?.pax}
+        check_in={props.currentBooking.check_in}
+        check_out={props.currentBooking.check_out}
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
-        bookingId={props.selectedBooking.id}
-        currentBooking={props.accommodation}
+        bookingId={props.currentBooking.booking_id}
         show={showDetails}
         traceId={props.traceId}
         provider={props.provider}
@@ -56,7 +53,7 @@ const Accommodation = (props) => {
         occupancies={props.occupancies}
         source={props.source}
         setShowLoginModal={props?.setShowLoginModal}
-        handleClose={props?.handleClose}              
+        handleClose={props?.handleClose}
         itinerary_city_id={props.itinerary_city_id}
         city_id={props?.city_id}
       ></ViewHotelDetails>

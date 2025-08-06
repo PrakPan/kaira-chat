@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
-import Overview from "./Overview/Overview";
-import Drawer from "../../ui/Drawer";
-import Skeleton from "./Skeleton";
 import { openNotification } from "../../../store/actions/notification";
 import fetchaccommodations, {
-  hotelDetails,
   bookingDetails,
 } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
-import { convertDate } from "../../../helper/getDateYYY-MM-DD";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
-import BackArrow from "../../ui/BackArrow";
-
+import OverviewParam from "./Overview/OverviewParam";
+import { setShowHotelDrawer } from "../../../store/actions/ui";
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
@@ -27,40 +21,6 @@ const Container = styled.div`
   }
 `;
 
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
-
-const FloatingVContaineriew = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: #f7e700;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
@@ -77,67 +37,50 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 
-
-const ErrorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 90%;
-  margin: auto;
-  text-align: center;
-`;
-
 const POI = (props) => {
-  console.log("city id 1 is:",props)
-
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
-  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-  const dispatch=useDispatch();
-  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const dispatch = useDispatch();
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+
+  const { drawer, booking_id, idx, city_id } = router.query;
+
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
     };
 
     handleResize();
+
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (props.show) {
+    if (props.show && booking_id == props?.id) {
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
+
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
 
   const fetchDetails = () => {
     setLoading(true);
     setError(false);
 
-    if (props?.mercury) {
-      bookingDetails
-        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        )
-        .then((res) => {
-          setLoading(false);
-          setData(res.data);
-        })
-        .catch((err) => {
-          setLoading(false);
-          setError(true);
-        });
-    } else {
+    if (!props?.mercury) {
       setLoading(true);
       setError(false);
       let check_in = props.check_in;
@@ -158,7 +101,8 @@ const POI = (props) => {
         paramsObj.source = "Agoda";
       }
       fetchaccommodations
-        .get("", { params: paramsObj,
+        .get("", {
+          params: paramsObj,
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -207,7 +151,7 @@ const POI = (props) => {
         .then((response) => {
           props._updateStayBookingHandler([response.data]);
           props.setUpdateBookingState(false);
-          dispatch(SetCallPaymentInfo(!CallPaymentInfo))
+          dispatch(SetCallPaymentInfo(!CallPaymentInfo));
           setTimeout(() => {
             props.getPaymentHandler();
           }, 1000);
@@ -227,10 +171,11 @@ const POI = (props) => {
             });
           } catch (error) {
             const errorMsg =
-            error?.response?.data?.errors?.[0]?.message?.[0] || error.message ;
+              error?.response?.data?.errors?.[0]?.message?.[0] || error.message;
             props.openNotification({
               type: "error",
-              text: errorMsg || "Something went wrong! Please try after some time.",
+              text:
+                errorMsg || "Something went wrong! Please try after some time.",
               heading: "Error!",
             });
             console.error("Error updating stay bookings:", error);
@@ -239,15 +184,15 @@ const POI = (props) => {
         .catch((err) => {
           props.setUpdateBookingState(false);
           const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
           props.openNotification({
             type: "error",
-            text: errorMsg || "Something went wrong! Please try after some time.",
+            text:
+              errorMsg || "Something went wrong! Please try after some time.",
             heading: "Error!",
           });
         });
     } catch (error) {
-      
       props.openNotification({
         type: "error",
         text: `${error.response?.data?.errors[0]?.message[0]}`,
@@ -257,51 +202,31 @@ const POI = (props) => {
   };
 
   return (
-    <Drawer
-      show={props.show}
-      anchor={"right"}
-      backdrop
-      className="font-lexend"
-      onHide={props.onHide}
-      width={"50vw"}
-      mobileWidth={"100vw"}
-    >
-      {!loading ? (
-        <Container>
-          <BackContainer className=" font-lexend">
-            <BackArrow  handleClick={props.onHide}/>
-          </BackContainer>
-          {!error ? (
-            <div>
-              {" "}
-              {props.mercury ? (
-                <HotelBookingDetails
-                  _setImagesHandler={props._setImagesHandler}
-                  user_rating={props.user_rating}
-                  currentBooking={props.currentBooking}
-                  number_of_reviews={props.number_of_reviews}
-                  data={data}
-                  images={
-                    data?.hotel_details?.images
-                      ? data?.hotel_details?.images
-                      : []
-                  }
-                  experience_filters={
-                    props.poi ? props.poi.experience_filters : null
-                  }
-                  name={props.poi ? props.poi.name : null}
-                  duration={props.poi ? props.poi.ideal_duration_hours : null}
-                  BookingButton={props.BookingButton}
-                  BookingButtonFun={props.BookingButtonFun}
-                  payment={props.payment}
-                  updateBooking={updateBooking}
-                  handleClick={props?.handleClick}
-                  setShowDetails={props?.setShowDetails}
-                  id={props?.id}
-                  setShowLoginModal={props?.setShowLoginModal}
-                />
-              ) : (
-                <Overview
+    <>
+      <Container>
+        <div>
+          {" "}
+          {props.mercury ? (
+            <>
+              <HotelBookingDetails
+                showDetails={props?.show}
+                BookingButtonFun={() => {
+                  props?.handleClickAc(
+                    props?.index,
+                    props?.booking,
+                    props?.city_id
+                  );
+                }}
+                setShowDetails={props.setShowDetails}
+                id={props?.id}
+                setShowLoginModal={props?.setShowLoginModal}
+                onHide={props?.onHide}
+              />
+            </>
+          ) : (
+            <>
+              {props?.show ? (
+                <OverviewParam
                   _setImagesHandler={props._setImagesHandler}
                   user_rating={props.user_rating}
                   currentBooking={props.currentBooking}
@@ -314,33 +239,36 @@ const POI = (props) => {
                   name={props.poi ? props.poi.name : null}
                   duration={props.poi ? props.poi.ideal_duration_hours : null}
                   BookingButton={props.BookingButton}
-                  BookingButtonFun={props.BookingButtonFun}
+                  BookingButtonFun={() => {
+                    props?.handleClickAc(
+                      props?.index,
+                      props?.booking,
+                      props?.city_id
+                    );
+                  }}
                   payment={props.payment}
                   updateBooking={updateBooking}
                   bookingId={props?.bookingId}
-                ></Overview>
-              )}
-            </div>
-          ) : (
-            <ErrorContainer>
-              Oops! There seems to be a problem, please try again later!
-            </ErrorContainer>
+                  onHide={props.onHide}
+                  show={props.show}
+                ></OverviewParam>
+              ) : null}
+            </>
           )}
-          {!isPageWide && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={props.onHide}
-              />
-            </FloatingView>
-          )}
-        </Container>
-      ) : (
-        <Skeleton onHide={props.onHide} />
-      )}
+        </div>
+
+        {!isPageWide && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={props.onHide}
+            />
+          </FloatingView>
+        )}
+      </Container>
       <ToastContainer />
-    </Drawer>
+    </>
   );
 };
 

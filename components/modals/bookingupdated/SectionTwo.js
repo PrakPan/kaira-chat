@@ -20,7 +20,6 @@ const Container = styled.div`
 `;
 
 const Section = (props) => {
-  console.log("filters are:",props?.filters)
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
   const [refundable, setRefundable] = useState(false)
@@ -88,6 +87,11 @@ const Section = (props) => {
         showFilters={props.showFilters}
         filters={props.filters}
         setFilters={props.setFilters}
+        handleFreeBreakfast={handleFreeBreakfast}
+        handleRefundable={handleRefundable}
+        handleBudgetChange={handleBudgetChange}
+        budget={budget}
+        setBudget={setBudget}
       ></FiltersMobile>
 
       <Drawer

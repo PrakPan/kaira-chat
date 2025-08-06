@@ -75,6 +75,16 @@ const ActivityDetailsDrawer = (props) => {
     if (props.show) fetchData();
   }, [props.show, filterState]);
 
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.show]);
+
   const fetchData = (data) => {
     if (!data?.amenities) {
       setLoading(true);
@@ -155,7 +165,7 @@ const ActivityDetailsDrawer = (props) => {
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {
-              if (day?.date === props?.date) {
+              if (day?.date === props?.date?.split("/").reverse().join("-")) {
                 return {
                   ...day,
                   slab_elements: [...(day?.slab_elements || []), activityData],

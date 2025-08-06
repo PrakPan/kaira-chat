@@ -4,26 +4,13 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
-import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
-import TransferEditDrawer, {
-  getModeIcon,
-} from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail2";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import {
-  updateAirportTransferBooking,
-  updateTransferBookings,
-} from "../../../store/actions/transferBookingsStore";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { getModeIcon } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
-import TransferDrawer from "../TransferDrawer";
 import PickupDropDrawer from "../PickupDropDrawer";
 
 const LineContainer = styled.div`
@@ -72,65 +59,33 @@ const ComboContainer = styled.div`
 `;
 
 const TransferBooking = ({
-  index,
   booking,
-  plan,
   payment,
-  token,
-  tripsPage,
-  notificationText,
-  openNotification,
-  setShowLoginModal,
-  _changeTaxiHandler,
-  _changeFlightHandler,
   origin,
   destination,
-  id,
-  check_in,
-  end,
   Transfer,
-  selectedBooking,
-  setSelectedBooking,
   oCityData,
   dCityData,
-  originCityId,
-  destinationCityId,
-  loadbookings,
   mercuryItinerary,
   pinColour1,
   pinColour2,
-  _updateFlightBookingHandler,
-  _updateTaxiBookingHandler,
-  _updatePaymentHandler,
-  getPaymentHandler,
   isIntracity,
   isAirport,
-  AirportTransferType,
   booking_id,
+  dItineraryCityId,
+  oItineraryCityId
 }) => {
 
   console.log("BKing",booking);
   const router = useRouter();
-  const dispatch = useDispatch();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
-  const [loading, setLoading] = useState(true);
-  const [transferImageFailed, setTransferImageFailed] = useState(null);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
-  const [vehicleDetails, setVehicleDetails] = useState(null);
-  const [handleShow, setHandleShow] = useState(false);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
-  const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
 
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
-
-  const handleTransferImageFailed = () => {
-    setTransferImageFailed(true);
-  };
 
   function truncateString(str, maxLength) {
     if (str.length > maxLength) {
@@ -138,209 +93,46 @@ const TransferBooking = ({
     }
     return str;
   }
-  const handleViewDetails = async (itineraryId, id, mode) => {
-    try {
-      setLoading(true);
-      setVehicleDetails(null);
 
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
-      );
-
-      setVehicleDetails(res?.data);
-      setHandleShow(true);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      dispatch(
-        openNotification({
-          type: "error",
-          text: `${error.response?.data?.errors[0]?.message[0]}`,
-          heading: "Error!",
-        })
-      );
-    }
-  };
-
-  const handleDelete = async (book) => {
-    if (!localStorage.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${
-          book?.id
-        }/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(book?.id));
-        getPaymentHandler();
-        setLoading(false);
-        openNotification({
-          type: "success",
-          text: "Booking deleted successfully",
-          heading: "Success!",
-        });
+  const handleAddTransfer = () => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "editTransfer",
+          bookingId: booking?.id,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
       }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
-      openNotification({
-        type: "error",
-        text: errorMsg,
-        heading: "Error!",
-      });
-      setLoading(false);
-    }
+    );
   };
 
-  const handleComboDelete = async (val) => {
-    if (!localStorage?.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
+  const handleRoute = (book) => {
+    // if(isAirport){
+    //   setAirportBookingId(book?.id)
+    // }
+    router.push(
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: book?.transfer_type=="sightseeing"?"SightSeeing":"Intracity",
+        bookingId: book?.id || booking_id,
+        oItineraryCity: oItineraryCityId || oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id
+      },
+    },
+    undefined,
+    {
+      scroll: false,
     }
-    const dataPassed = val != null ? val : data;
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${
-          dataPassed?.booking_type?.includes(",")
-            ? `combo`
-            : dataPassed?.booking_type?.toLowerCase()
-        }/${dataPassed?.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(dataPassed?.id));
-        setLoading(false);
-        getPaymentHandler();
-
-        // if (isIntracity) {
-        //   setCurrentAirportBookings((prev) =>
-        //     prev.filter((booking) => booking.id !== dataPassed?.id)
-        //   );
-        // }
-        // } else {
-        //   setVisible(true);
-        // }
-
-        setHandleShow(false);
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${city} deleted successfully`,
-            heading: "Success!",
-          })
-        );
-      }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] ||
-        err.response?.data?.errors[0]?.detail ||
-        err.message;
-      dispatch(
-        openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
-        })
-      );
-      setLoading(false);
-    }
+  );
   };
 
-  const handleTransferSubmit = async (transferData) => {
-    try {
-      setLoading(true);
-      console.log("TransferDD", transferData);
-
-      const bookingPayload = {
-        booking_id: transferData?.booking_id,
-        transfer_type: "airport",
-       source_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
-        destination_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
-        is_pickup: transferData.transferType === "pickup",
-        is_drop: transferData.transferType === "drop",
-        source: transferData?.source,
-        trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index,
-      };
-
-      const response = await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
-        bookingPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        dispatch(
-          updateAirportTransferBooking(
-            `${
-              transferData.transferType === "pickup"
-                ? dCityData?.id || dCityData?.gmaps_place_id
-                : oCityData?.id || oCityData?.gmaps_place_id
-            }`,
-            response.data
-          )
-        );
-
-        if (_updatePaymentHandler) _updatePaymentHandler();
-        if (getPaymentHandler) getPaymentHandler();
-
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${
-              transferData.transferType === "pickup" ? "Pickup" : "Drop"
-            } transfer added successfully`,
-            heading: "Success!",
-          })
-        );
-      }
-      setIsTransferDrawerOpen(false);
-    } catch (error) {
-      const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] ||
-        error?.response?.data?.message ||
-        error?.response?.data?.errors?.[0]?.detail
-          ? error?.response?.data?.errors?.[0]?.detail?.[0]
-          : null || error.message;
-      dispatch(
-        openNotification({
-          text: errorMsg,
-          heading: "Error!",
-          type: "error",
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  console.log("Boooking", booking);
   return (
     <>
       {transfers_status === "PENDING" && mercuryItinerary ? (
@@ -376,7 +168,6 @@ const TransferBooking = ({
               </div>
             </div>
 
-            {/* Button Placeholder */}
             <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
               <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse" />
             </div>
@@ -390,8 +181,6 @@ const TransferBooking = ({
                 <HalfLine Transfers={Transfer} color={pinColour1} flex={9} />
                 <HalfLine Transfers={Transfer} color={pinColour2} flex={1} />
               </LineContainer>
-
-              {/* <Line Transfers={Transfer} pinColour1={pinColour1} pinColour2={pinColour2}/> */}
             </div>
             <>
               {booking?.booking_type === "Flight" ? (
@@ -399,20 +188,12 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
                     booking={booking}
-                    booking_id={booking_id}
-                    notificationText={notificationText}
-                    plan={plan}
-                    tripsPage={tripsPage}
-                    openNotification={openNotification}
-                    payment={payment}
-                    index={index}
-                    _changeFlightHandler={_changeFlightHandler}
-                    token={token}
-                    setShowLoginModal={setShowLoginModal}
-                    originCityId={originCityId}
-                    destinationCityId={destinationCityId}
-                    setShowDrawer={setShowDrawer}
-                    getPaymentHandler={getPaymentHandler}
+                    booking_id={booking?.id}
+                    booking_type={
+                      booking?.booking_type
+                    }
+                    oCityData={oCityData}
+                    dCityData={dCityData}
                   />
                 </>
               ) : (
@@ -455,24 +236,6 @@ const TransferBooking = ({
                             </>
                           )
                         ) : isAirport ? (
-                          // booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ?
-                          // (
-                          //   <>
-
-                          //     {booking?.transfer_details?.source?.name}
-                          //     <svg
-                          //       width="12"
-                          //       height="12"
-                          //       viewBox="0 0 12 12"
-                          //       fill="none"
-                          //       xmlns="http://www.w3.org/2000/svg"
-                          //     >
-                          //       <path
-                          //         d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                          //         fill="#1F1F1F"
-                          //       />
-                          //     </svg>{" "} { booking?.transfer_details?.source?.city_name}
-                          //   </> )
                           booking?.name
                         ) : (booking?.transfer_details?.source?.name ||
                             booking?.transfer_details?.source?.city_name) &&
@@ -533,7 +296,7 @@ const TransferBooking = ({
                                     }
                                     //  width={"4rem"}
                                     //  widthmobile="4rem"
-                                    onfail={handleTransferImageFailed}
+                                    // onfail={handleTransferImageFailed}
                                   />
                                 ) : (
                                   <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
@@ -646,14 +409,7 @@ const TransferBooking = ({
                               <>
                                 <div className="pr-2">
                                   <button
-                                    onClick={() => {
-                                      handleViewDetails(
-                                        router?.query?.id,
-                                        booking?.id,
-                                        booking?.booking_type.toLowerCase()
-                                      );
-                                      setShowVehicleDrawer(true);
-                                    }}
+                                    onClick={()=>handleRoute(booking)}
                                     className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     View Details
@@ -726,14 +482,7 @@ const TransferBooking = ({
                             <>
                               <div className="pr-2 w-full">
                                 <button
-                                  onClick={() => {
-                                    handleViewDetails(
-                                      router?.query?.id,
-                                      booking?.id,
-                                      booking?.booking_type.toLowerCase()
-                                    );
-                                    setShowVehicleDrawer(true);
-                                  }}
+                                  onClick={()=>handleRoute(booking)}
                                   className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   View Details
@@ -745,184 +494,10 @@ const TransferBooking = ({
                       </div>
                     </>
 
-                    <PickupDropDrawer
-                      isOpen={isTransferDrawerOpen}
-                      trips={vehicleDetails?.transfer_details?.trips}
-                      loading={loading}
-                      bookingMode={booking?.booking_type?.toLowerCase()}
-                      // hotelName={hotelName}
-                      // destinationHotelName={destinationHotelName}
-                      booking_id={vehicleDetails?.id}
-                      booking={vehicleDetails}
-                      onClose={() => {
-                        setIsTransferDrawerOpen(false);
-                      }}
-                      transferType={AirportTransferType}
-                      // bookingMode={vehicleDetails?.booking_type?.toLowerCase()}
-                      // originCityName={origin_city_name}
-                      // destinationCityName={destination_city_name}
-                      onSubmit={handleTransferSubmit}
-                      // existingBooking={selectedTransferBooking}
-                      // show={pickupDropShow}
-                      // setHandleShow={setPickupDropShow}
-                      _updateFlightBookingHandler={_updateFlightBookingHandler}
-                      _updatePaymentHandler={_updatePaymentHandler}
-                      getPaymentHandler={getPaymentHandler}
-                      setShowLoginModal={setShowLoginModal}
-                      // city={origin_city_name}
-                      // dcity={destination_city_name}
-                      _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-                      selectedBooking={selectedBooking}
-                      setSelectedBooking={setSelectedBooking}
-                      originCityId={
-                        oCityData?.city?.id || oCityData?.gmaps_place_id
-                      }
-                      destinationCityId={
-                        dCityData?.city?.id || dCityData?.gmaps_place_id
-                      }
-                      origin_itinerary_city_id={
-                        oCityData?.id || oCityData?.gmaps_place_id
-                      }
-                      destination_itinerary_city_id={
-                        dCityData?.id || dCityData?.gmaps_place_id
-                      }
-                    />
-
-                    {showVehicleDrawer && (
-                      <TransferDrawer
-                        show={showVehicleDrawer}
-                        setIsTransferDrawerOpen={setIsTransferDrawerOpen}
-                        // error={error}
-                        setHandleShow={setShowVehicleDrawer}
-                        data={vehicleDetails}
-                        booking_type={vehicleDetails?.booking_type}
-                        loading={loading}
-                        handleDelete={handleDelete}
-                        setShowDrawer={setShowDrawer}
-                        // city={city}
-                        _updateFlightBookingHandler={
-                          _updateFlightBookingHandler
-                        }
-                        _updatePaymentHandler={_updatePaymentHandler}
-                        getPaymentHandler={getPaymentHandler}
-                        oCityData={oCityData}
-                        dCityData={dCityData}
-                        setShowLoginModal={setShowLoginModal}
-                        // dcity={destination_city_name}
-                        selectedBooking={selectedBooking}
-                        setSelectedBooking={setSelectedBooking}
-                        originCityId={
-                          oCityData?.city?.id || oCityData?.gmaps_place_id
-                        }
-                        destinationCityId={
-                          dCityData?.city?.id || dCityData?.gmaps_place_id
-                        }
-                        origin_itinerary_city_id={
-                          oCityData?.id || oCityData?.gmaps_place_id
-                        }
-                        destination_itinerary_city_id={
-                          dCityData?.id || dCityData?.gmaps_place_id
-                        }
-                        // isIntracity={isIntracity}
-                        booking_id={vehicleDetails?.booking_id}
-                        isAirport={isAirport}
-                        AirportTransferType={AirportTransferType}
-                      />
-                    )}
-
-                    {/* <Drawer
-                      show={showVehicleDrawer}
-                      anchor="right"
-                      mobileWidth="100vw"
-                      width="50vw"
-                      style={1503}
-                      className="font-lexend"
-                      onHide={() => setShowVehicleDrawer(false)}
-                    >
-                      {loading || !vehicleDetails ? (
-                        <VehicleDetailLoader
-                          setHandleShow={setShowVehicleDrawer}
-                        />
-                      ) : vehicleDetails?.booking_type?.toLowerCase() ===
-                          "taxi" ||
-                        vehicleDetails?.transfer_details?.mode === "taxi" ? (
-                        <TaxiDetailModal
-                          data={vehicleDetails}
-                          loading={loading}
-                          setIsOpen={setShowVehicleDrawer}
-                          handleDelete={handleDelete}
-                          setHandleShow={setShowVehicleDrawer}
-                          booking={booking}
-                          setShowDrawer={setShowDrawer}
-                          noChange={isIntracity || isAirport}
-                        />
-                      ) : (
-                        <VehicleDetailModal
-                          data={vehicleDetails}
-                          loading={loading}
-                          setIsOpen={setShowVehicleDrawer}
-                          handleDelete={handleDelete}
-                          setHandleShow={setShowVehicleDrawer}
-                          booking={booking}
-                          setShowDrawer={setShowDrawer}
-                          noChange={isIntracity || isAirport}
-                        />
-                      )}
-                     {!isPageWide && (
-                          <FloatingView>
-                            <TbArrowBack
-                              style={{ height: "28px", width: "28px" }}
-                              cursor={"pointer"}
-                              onClick={() => setShowVehicleDrawer(false)}
-                            />
-                          </FloatingView>
-                        )}
-                    </Drawer> */}
+                   
                   </div>
                 </>
               )}
-              <TransferEditDrawer
-                mercury
-                booking_id={selectedBooking?.id || booking_id}
-                addOrEdit={"transferAdd"}
-                showDrawer={showDrawer}
-                setShowDrawer={setShowDrawer}
-                booking_type={vehicleDetails?.combo_type}
-                selectedTransferHeading={origin}
-                origin={origin?.id != undefined ? origin?.id : id}
-                destination={
-                  destination?.id != undefined ? destination?.id : id
-                }
-                check_in={check_in}
-                routeId={id}
-                city={
-                  origin?.name != undefined
-                    ? origin?.name || origin?.city_name
-                    : null
-                }
-                dcity={
-                  destination?.name != undefined
-                    ? destination?.name || destination?.city_name
-                    : null
-                }
-                oCityData={oCityData}
-                dCityData={dCityData}
-                selectedBooking={selectedBooking}
-                setSelectedBooking={setSelectedBooking}
-                originCityId={originCityId}
-                destinationCityId={destinationCityId}
-                getPaymentHandler={getPaymentHandler}
-                _updateFlightBookingHandler={_updateFlightBookingHandler}
-                _updatePaymentHandler={_updatePaymentHandler}
-                _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-                setShowLoginModal={setShowLoginModal}
-                origin_itinerary_city_id={
-                  oCityData?.id || oCityData?.gmaps_place_id
-                }
-                destination_itinerary_city_id={
-                  dCityData?.id || dCityData?.gmaps_place_id
-                }
-              />
             </>
           </Container>
         ) : (
@@ -936,18 +511,10 @@ const TransferBooking = ({
                 <HalfLine Transfers={Transfer} color={pinColour1} flex={8} />
                 <HalfLine Transfers={Transfer} color={pinColour2} flex={2} />
               </LineContainer>
-
-              {/* 
-              <Line
-                Transfers={Transfer}
-                end={end}
-                pinColour1={pinColour1}
-                pinColour2={pinColour2}
-              /> */}
             </div>
             {isPageWide ? (
               <button
-                onClick={() => setShowDrawer(true)}
+                onClick={handleAddTransfer}
                 className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
               >
                 + Add Transfer from {origin?.name || origin?.city_name} to{" "}
@@ -955,46 +522,12 @@ const TransferBooking = ({
               </button>
             ) : (
               <button
-                onClick={() => setShowDrawer(true)}
+                onClick={handleAddTransfer}
                 className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
               >
                 + Add Transfer
               </button>
             )}
-            <TransferEditDrawer
-              mercury
-              booking_id={selectedBooking?.id || booking_id}
-              addOrEdit={"transferAdd"}
-              showDrawer={showDrawer}
-              setShowDrawer={setShowDrawer}
-              setShowLoginModal={setShowLoginModal}
-              selectedTransferHeading={origin}
-              origin={origin?.id != undefined ? origin?.id : id}
-              destination={destination?.id != undefined ? destination?.id : id}
-              check_in={check_in}
-              routeId={id}
-              city={origin?.city_name || origin?.name}
-              dcity={destination?.city_name || destination?.name}
-              selectedBooking={selectedBooking}
-              setSelectedBooking={setSelectedBooking}
-              oCityData={oCityData}
-              dCityData={dCityData}
-              originCityId={originCityId}
-              destinationCityId={destinationCityId}
-              _updateFlightBookingHandler={_updateFlightBookingHandler}
-              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-              getPaymentHandler={getPaymentHandler}
-              origin_itinerary_city_id={
-                oCityData?.id ||
-                oCityData?.gmaps_place_id ||
-                oCityData?.gmaps_place_id
-              }
-              destination_itinerary_city_id={
-                dCityData?.id ||
-                dCityData?.gmaps_place_id ||
-                dCityData?.gmaps_place_id
-              }
-            />
           </div>
         )
       ) : (
@@ -1011,29 +544,12 @@ const TransferBooking = ({
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
-                    key={index}
                     booking={book}
-                    notificationText={notificationText}
-                    plan={plan}
-                    tripsPage={tripsPage}
-                    openNotification={openNotification}
-                    payment={payment}
-                    index={index}
-                    _changeFlightHandler={_changeFlightHandler}
-                    token={token}
-                    setShowLoginModal={setShowLoginModal}
-                    originCityId={originCityId}
-                    destinationCityId={destinationCityId}
-                    type={"combo"}
-                    setShowDrawer={setHandleShow}
-                    getPaymentHandler={getPaymentHandler}
-                    viewComboDetails={() => {
-                      handleViewDetails(
-                        router?.query?.id,
-                        book?.id,
-                        book?.booking_type.toLowerCase()
-                      );
-                    }}
+                    booking_id={booking?.id}
+                    type={booking?.booking_type}
+                    booking_type={
+                      booking?.booking_type
+                    }
                   />
                 </>
               ) : (
@@ -1120,9 +636,7 @@ const TransferBooking = ({
                               height={
                                 book?.image?.includes("gozo") ? "3rem" : "4rem"
                               }
-                              // width={"4rem"}
-                              // widthmobile="4rem"
-                              onfail={handleTransferImageFailed}
+                              // onfail={handleTransferImageFailed}
                             />
                           ) : (
                             <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
@@ -1258,29 +772,14 @@ const TransferBooking = ({
                                 <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
                                   {addbooking ? (
                                     <button
-                                      onClick={() => {
-                                        handleViewDetails(
-                                          router?.query?.id,
-                                          book?.id,
-                                          "combo"
-                                          // book?.booking_type.toLowerCase()
-                                        );
-                                      }}
+                                      onClick={()=>handleRoute(booking)}
                                       className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                                     >
                                       {isDesktop ? "Change Taxi" : "Change"}
                                     </button>
                                   ) : (
                                     <button
-                                      onClick={() => {
-                                        console.log("clicked");
-                                        handleViewDetails(
-                                          router?.query?.id,
-                                          book?.id,
-                                          book?.booking_type.toLowerCase()
-                                        );
-                                        // setShowVehicleDrawer(true);
-                                      }}
+                                      onClick={()=>handleRoute(booking)}
                                       className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                     >
                                       {/* Add Taxi */}
@@ -1291,15 +790,7 @@ const TransferBooking = ({
                               ) : (
                                 <div className="pr-2">
                                   <button
-                                    onClick={() => {
-                                      handleViewDetails(
-                                        router?.query?.id,
-                                        book?.id,
-                                        book?.booking_type.toLowerCase()
-                                      );
-
-                                      // setShowVehicleDrawer(true);
-                                    }}
+                                    onClick={()=>handleRoute(booking)}
                                     className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
                                     {/* Add Taxi */}
@@ -1371,14 +862,7 @@ const TransferBooking = ({
                           <>
                             <div className="pr-2 w-full">
                               <button
-                                onClick={() => {
-                                  handleViewDetails(
-                                    router?.query?.id,
-                                    book?.id,
-                                    book?.booking_type.toLowerCase()
-                                  );
-                                  // setShowVehicleDrawer(true);
-                                }}
+                                onClick={()=>handleRoute(booking)}
                                 className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                               >
                                 View Details
@@ -1388,137 +872,11 @@ const TransferBooking = ({
                         )}
                       </div>
                     </div>
-
-                    {/* <Drawer
-                      show={showVehicleDrawer}
-                      anchor="right"
-                      mobileWidth="100vw"
-                      width="50vw"
-                      style={1503}
-                      className="font-lexend"
-                      onHide={() => setShowVehicleDrawer(false)}
-                    >
-                      {loading ? (
-                        <>
-                          <VehicleDetailLoader
-                            setHandleShow={setShowVehicleDrawer}
-                          />
-                        </>
-                      ) : (
-                        <>
-                          {vehicleDetails?.booking_type == "Taxi" ? (
-                            <TaxiDetailModal
-                              data={vehicleDetails}
-                              loading={loading}
-                              setIsOpen={setShowVehicleDrawer}
-                              handleDelete={handleDelete}
-                              setHandleShow={setShowVehicleDrawer}
-                              booking={booking}
-                              type={"combo"}
-                              setShowDrawer={setShowDrawer}
-                              noChange={isIntracity || isAirport}
-                              // noChange={true}
-                            />
-                          ) : (
-                            <VehicleDetailModal
-                              data={vehicleDetails}
-                              loading={loading}
-                              setIsOpen={setShowVehicleDrawer}
-                              handleDelete={handleDelete}
-                              setHandleShow={setShowVehicleDrawer}
-                              booking={booking}
-                              type={"combo"}
-                              setShowDrawer={setShowDrawer}
-                              noChange={isIntracity || isAirport}
-                            />
-                          )}
-                        </>
-                      )}
-                    </Drawer> */}
-                    {handleShow && (
-                      <TransferDrawer
-                        show={handleShow}
-                        // error={error}
-                        setHandleShow={setHandleShow}
-                        data={vehicleDetails}
-                        booking_type={booking?.booking_type}
-                        loading={loading}
-                        handleDelete={handleComboDelete}
-                        setShowDrawer={setShowDrawer}
-                        // city={city}
-                        _updateFlightBookingHandler={
-                          _updateFlightBookingHandler
-                        }
-                        _updatePaymentHandler={_updatePaymentHandler}
-                        getPaymentHandler={getPaymentHandler}
-                        oCityData={oCityData}
-                        dCityData={dCityData}
-                        setShowLoginModal={setShowLoginModal}
-                        // dcity={destination_city_name}
-                        selectedBooking={selectedBooking}
-                        setSelectedBooking={setSelectedBooking}
-                        originCityId={
-                          oCityData?.city?.id || oCityData?.gmaps_place_id
-                        }
-                        destinationCityId={
-                          dCityData?.city?.id || dCityData?.gmaps_place_id
-                        }
-                        origin_itinerary_city_id={
-                          oCityData?.id || oCityData?.gmaps_place_id
-                        }
-                        destination_itinerary_city_id={
-                          dCityData?.id || dCityData?.gmaps_place_id
-                        }
-                        // isIntracity={isIntracity}
-                        booking_id={booking?.booking_id}
-                      />
-                    )}
                   </div>
                 </>
               )}
-
-              {/* } */}
             </ComboContainer>
           ))}
-          <TransferEditDrawer
-            mercury
-            addOrEdit={"transferAdd"}
-            booking_id={selectedBooking?.id || booking_id}
-            showDrawer={showDrawer}
-            setShowDrawer={setShowDrawer}
-            selectedTransferHeading={origin}
-            origin={origin?.id != undefined ? origin?.id : id}
-            destination={destination?.id != undefined ? destination?.id : id}
-            check_in={check_in}
-            routeId={id}
-            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-            city={
-              origin?.name != undefined
-                ? origin?.name || origin?.city_name
-                : null
-            }
-            dcity={
-              destination?.name != undefined
-                ? destination?.name || destination?.city_name
-                : null
-            }
-            oCityData={oCityData}
-            dCityData={dCityData}
-            selectedBooking={selectedBooking}
-            setSelectedBooking={setSelectedBooking}
-            originCityId={originCityId}
-            destinationCityId={destinationCityId}
-            getPaymentHandler={getPaymentHandler}
-            _updateFlightBookingHandler={_updateFlightBookingHandler}
-            _updatePaymentHandler={_updatePaymentHandler}
-            setShowLoginModal={setShowLoginModal}
-            origin_itinerary_city_id={
-              oCityData?.id || oCityData?.gmaps_place_id
-            }
-            destination_itinerary_city_id={
-              dCityData?.id || dCityData?.gmaps_place_id
-            }
-          />
         </>
       )}
     </>
@@ -1541,103 +899,32 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(TransferBooking);
 
-const FlightBooking = ({
-  booking,
-  plan,
-  tripsPage,
-  payment,
-  index,
-  _changeFlightHandler,
-  token,
-  setShowLoginModal,
-  originCityId,
-  destinationCityId,
-  loadbookings,
-  type,
-  setShowDrawer,
-  getPaymentHandler,
-  booking_id,
-  viewComboDetails,
-}) => {
-  const [showDetails, setShowDetails] = useState(false);
-
-  let isPageWide = media("(min-width: 768px)");
-
+const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCityData }) => {
   const router = useRouter();
-  function HandleFlights(i, label) {
-    if (!token) {
-      return setShowLoginModal(true);
-    }
-    setShowDetails(false);
-    setShowDrawer(true);
-
-    // let name = booking["name"];
-    // let costings_breakdown = booking["costings_breakdown"]; //not prsent
-    // let cost = booking["booking_cost"]; //not present
-    // let itinerary_id = router.query.id; // not present
-    // let itinerary_name = booking["name"]; // not present
-    // let tailored_id = booking["tailored_itinerary"]; // not present
-    // let id = booking["id"];
-    // let check_in =
-    //   booking?.transfer_details?.items?.[0]?.segments[0]?.origin
-    //     ?.departure_time;
-    // let check_out = booking["check_out"]; // not present
-    // let pax = {
-    //   number_of_adults: booking["number_of_adults"],
-    //   number_of_children: booking["number_of_children"],
-    //   number_of_infants: booking["number_of_infants"],
-    // };
-    // let city = booking["city"];
-    // let taxi_type = booking["taxi_type"];
-    // let transfer_type = booking["transfer_type"];
-    // let destination_city = booking["destination_city"];
-    // let origin_iata = booking?.transfer_details?.source?.code;
-    // let destination_iata = booking?.transfer_details?.destination?.code;
-    // let user_selected = booking?.user_selected;
-    // let edge = booking?.edge;
-    // _changeFlightHandler(
-    //   name,
-    //   itinerary_id,
-    //   tailored_id,
-    //   id,
-    //   check_in,
-    //   check_out,
-    //   pax,
-    //   city,
-    //   itinerary_name,
-    //   cost,
-    //   costings_breakdown,
-    //   origin_iata,
-    //   destination_iata,
-    //   destination_city,
-    //   taxi_type,
-    //   transfer_type,
-    //   user_selected,
-    //   booking?.id,
-    //   originCityId,
-    //   destinationCityId,
-    //   edge
-    // );
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  }
-
   try {
     if (booking?.number_of_adults > 1) adult = " Adults";
     else adult = " Adult";
-    var child;
     if (booking?.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
+
+  const handleRoute = (book) => {
+   router.push(
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "Intracity",
+        bookingId: booking?.id || booking_id,
+        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+      },
+    },
+    undefined,
+    {
+      scroll: false,
+    }
+  );
+  };
 
   return (
     <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
@@ -1703,12 +990,7 @@ const FlightBooking = ({
             {window.innerWidth >= 1000 && (
               <div>
                 <button
-                  onClick={() => {
-                    if (type == "combo") {
-                      setShowDrawer(true);
-                      viewComboDetails();
-                    } else setShowDetails(true);
-                  }}
+                  onClick={()=>handleRoute(booking)}
                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                 >
                   View Details
@@ -1731,7 +1013,7 @@ const FlightBooking = ({
               duration={booking?.duration}
               segments={booking?.transfer_details?.items?.[0]?.segments}
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
-              setShowDetails={setShowDetails}
+              handleRoute={handleRoute}
               type={type}
               booking={booking}
             />
@@ -1746,11 +1028,7 @@ const FlightBooking = ({
           {window.innerWidth < 1000 && (
             <div className="flex justify-end mt-4 pr-2 w-full">
               <button
-                onClick={() => {
-                  if (type == "combo") {
-                    setShowDrawer(true);
-                  } else setShowDetails(true);
-                }}
+                onClick={()=>handleRoute(booking)}
                 className="w-full md:w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
               >
                 View Details
@@ -1759,44 +1037,6 @@ const FlightBooking = ({
           )}
         </div>
       </div>
-
-      <Drawer
-        show={showDetails}
-        anchor={"right"}
-        backdrop
-        width={"50%"}
-        mobileWidth={"100%"}
-        style={{ zIndex: 1503 }}
-        className={`font-lexend ${
-          window.innerWidth < 768 ? "w-full" : "w-[50%]"
-        }`}
-        onHide={() => setShowDetails(false)}
-      >
-        {originCityId !== undefined && destinationCityId !== undefined && (
-          <>
-            <Details
-              cancellationPolicy={booking?.cancellation_policies}
-              segments={booking?.transfer_details?.items?.[0]?.segments}
-              resultIndex={booking?.transfer_details?.items?.[0]?.result_index}
-              setShowDetails={setShowDetails}
-              individual={false}
-              booking_id={booking?.id}
-              drawer={true}
-              name={booking?.name}
-              fareRule={booking?.transfer_details?.items?.[0]?.fare_rule}
-              originCityId={"karan"}
-              destinationCityId={destinationCityId}
-              onChange={() => {
-                setShowDetails(false);
-                HandleFlights(index, "Change Flight");
-              }}
-              type={type}
-              getPaymentHandler={getPaymentHandler}
-              setShowLoginModal={setShowLoginModal}
-            />
-          </>
-        )}
-      </Drawer>
     </div>
   );
 };

@@ -8,6 +8,8 @@ import { useState } from "react";
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
 import styled from "styled-components";
 import media from "../../../components/media.js";
+import { useRouter } from "next/router.js";
+import { useSearchParams } from "next/navigation.js";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -26,12 +28,16 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 
-const CityDetailsDrawer = (props) => {
+const CityDetailsDrawer = () => {
   let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const cityId = searchParams.get("city_id");
+  const dayId = searchParams.get("dayId");
   const getCityData = async () => {
     try {
-      const res = await axioscitydatainstance.get("/city/" + props.city_id);
+      const res = await axioscitydatainstance.get("/city/" + cityId);
       setData(res.data?.data?.city);
     } catch (err) {
       console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
@@ -39,23 +45,49 @@ const CityDetailsDrawer = (props) => {
   };
 
   useEffect(() => {
-    if (props.show) {
+    if (cityId) {
       getCityData();
     } else setData(null);
+  }, []);
+
+  useEffect(() => {
+    if (props.show) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
   }, [props.show]);
 
   return (
     <Drawer
-      show={props.show}
+      show={true}
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
       className="font-lexend"
-      onHide={props.onHide}
+      onHide={() => {
+        router.push(
+          {
+            pathname: `/itinerary/${router.query.id}`,
+          },
+          undefined,
+          { scroll: false }
+        );
+      }}
     >
       <div>
         <TbArrowBack
-          onClick={() => props.onHide()}
+          onClick={() =>
+            router.push(
+              {
+                pathname: `/itinerary/${router.query.id}`,
+              },
+              undefined,
+              { scroll: false }
+            )
+          }
           className="hover-pointer"
           style={{
             margin: "0.5rem",
@@ -71,23 +103,33 @@ const CityDetailsDrawer = (props) => {
               data.elevation[0]?.elevation
             }
             data={data}
-            onHide={props.onHide}
-            dayId={props.dayId}
+            onHide={() =>
+              router.push({
+                pathname: `/itinerary/${router.query.id}`,
+              })
+            }
+            dayId={dayId}
           ></CityDetails>
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
         {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => {
-              props.onHide()
-            }}
-          />
-        </FloatingView>
-      )}
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => {
+                router.push(
+                  {
+                    pathname: `/itinerary/${router.query.id}`,
+                  },
+                  undefined,
+                  { scroll: false }
+                );
+              }}
+            />
+          </FloatingView>
+        )}
       </div>
     </Drawer>
   );

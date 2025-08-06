@@ -49,6 +49,7 @@ import Spinner from "../../../loaderbar/Index";
 import { axiosGetItineraryStatus } from "../../../../services/itinerary/daybyday/preview";
 import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
+import { useHandleClose } from "../../../../hooks/useHandleClose";
 
 const Container = styled.div`
   position: relative;
@@ -152,7 +153,7 @@ const Icon = styled.div`
   justify-content: end;
   margin-right: 5px;
   margin-top: -5px;
-  color:gray;
+  color: gray;
   font-weight: 600;
 `;
 
@@ -185,6 +186,7 @@ const FloatingView = styled.div`
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
+  const handleClose = useHandleClose();
   const [startDate, setStartDate] = useState(
     getDate(props?.plan ? props?.plan.start_date : props?.itinerary?.start_date)
   );
@@ -218,8 +220,6 @@ const RouteEditSection = (props) => {
 
     return `${year}-${month}-${day}`;
   }
-
-  console.log("Props.routes", props?.routes);
 
   useEffect(() => {
     const cities = [];
@@ -339,7 +339,7 @@ const RouteEditSection = (props) => {
             heading: "Sucess!",
           })
         );
-        props.setEdit(false);
+        handleClose();
       }
     }
   }, [
@@ -509,6 +509,7 @@ const RouteEditSection = (props) => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
+          handleClose()
         })
         .catch((err) => {
           setLoading(false);
@@ -544,6 +545,7 @@ const RouteEditSection = (props) => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
+          handleClose()
         })
         .catch((err) => {
           setLoading(false);
@@ -585,7 +587,6 @@ const RouteEditSection = (props) => {
     } else {
       setIsValidDates(false);
     }
-    console.log("Valid Dates", validateDates());
     logEvent({
       action: "Route Edit",
       params: {
@@ -700,6 +701,7 @@ const RouteEditSection = (props) => {
             setEditDestination={setEditDestination}
             handleSaveButton={handleSaveButton}
             itineraryLoading={itineraryLoading}
+            handleClose={handleClose}
           />
         )}
 
@@ -710,7 +712,7 @@ const RouteEditSection = (props) => {
               cursor={"pointer"}
               onClick={
                 editDestination
-                  ? () => props.setEdit(false)
+                  ? () => handleClose()
                   : () => setEditDestination(true)
               }
             />
@@ -2242,7 +2244,9 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
 export const DatePicker = (props) => {
   const [focusedInput, setFocusedInput] = useState(false);
 
-  const { start_date, end_date, cities } = useSelector((state) => state.Itinerary);
+  const { start_date, end_date, cities } = useSelector(
+    (state) => state.Itinerary
+  );
 
   function handleFocus() {
     setFocusedInput(true);
@@ -2263,14 +2267,14 @@ export const DatePicker = (props) => {
     const startMoment = moment(start_date);
     const endMoment = moment(end_date);
     const dates = [];
-    
+
     // Generate all dates between start_date and end_date (inclusive)
     let currentDate = startMoment.clone();
     while (currentDate.isSameOrBefore(endMoment)) {
       dates.push(currentDate.clone());
-      currentDate.add(1, 'day');
+      currentDate.add(1, "day");
     }
-    
+
     return dates;
   };
 
@@ -2283,11 +2287,13 @@ export const DatePicker = (props) => {
     if (!start_date || !end_date) {
       return "No dates selected";
     }
-    
+
     const startMoment = moment(start_date);
     const endMoment = moment(end_date);
-    
-    return `Itinerary Dates - ${startMoment.format("MMM DD")} to ${endMoment.format("MMM DD")}`;
+
+    return `Itinerary Dates - ${startMoment.format(
+      "MMM DD"
+    )} to ${endMoment.format("MMM DD")}`;
   };
 
   useEffect(() => {
@@ -2456,25 +2462,28 @@ body.react-dates__block-scroll {
         isDayHighlighted={isDayHighlighted}
         renderMonthElement={({ month, onMonthSelect, onYearSelect }) => {
           const dateRange = getDateRange();
-          const currentMonthHasDates = dateRange.some(date => 
-            date.isSame(month, 'month')
+          const currentMonthHasDates = dateRange.some((date) =>
+            date.isSame(month, "month")
           );
-          
+
           return (
             <div className="w-full">
-              <div className="text-center mb-2">{month.format("MMMM YYYY")}</div>
+              <div className="text-center mb-2">
+                {month.format("MMMM YYYY")}
+              </div>
               {currentMonthHasDates && (
                 <div className="relative z-15 bg-yellow-50 border-l-2 border-yellow-400 px-2 py-1 mx-1 mb-2">
                   <div className="flex items-center gap-1 text-xs text-gray-700">
                     <div className="w-1.5 h-1.5 bg-[#ffe8bc] rounded-sm flex-shrink-0"></div>
-                    <span className="text-[10px] leading-tight">{formatDateRange()}</span>
+                    <span className="text-[10px] leading-tight">
+                      {formatDateRange()}
+                    </span>
                   </div>
                 </div>
               )}
             </div>
           );
         }}
-
         renderDayContents={(day) => {
   const isHighlighted = isDayHighlighted(day);
   return (
@@ -2505,6 +2514,7 @@ export const ActionPanel = (props) => {
     editDestination,
     handleSaveButton,
     itineraryLoading,
+    handleClose,
   } = props;
 
   return (
@@ -2514,7 +2524,7 @@ export const ActionPanel = (props) => {
           <button
             onClick={
               editDestination
-                ? () => setEdit(false)
+                ? () => handleClose()
                 : () => setEditDestination(true)
             }
             className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
