@@ -819,8 +819,7 @@ const CityItem = ({
   }, [airportBookings]);
 
   useEffect(() => {
-  setAirportBookingId(router.query?.airportBookingId || null);
-}, [router.query?.airportBookingId]);
+}, [bookingId]);
 
   useEffect(() => {
     if (!booking_id) {
@@ -1264,8 +1263,8 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
         dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
           <PickupDropDrawer
             isOpen={drawer === "addPickupDrop" &&
-              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
+            oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+            dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
             hotelName={hotelName}
             destinationHotelName={destinationHotelName}
             sourceLat={sourceLat}
@@ -1303,10 +1302,12 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
           />
         )}
 
-      {drawer == "editTransfer" &&
+      
+
+      {((drawer == "editTransfer" &&
         (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
         oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) || drawerType == "multicity" )&& (
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
@@ -1337,6 +1338,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
               dCityData?.id || dCityData?.gmaps_place_id
             }
             booking_id={booking_id}
+            booking_type={drawerType == "multicity" ? "multicity" : null}
           />
         )}
 
