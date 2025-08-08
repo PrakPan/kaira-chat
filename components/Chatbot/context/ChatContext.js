@@ -1,16 +1,24 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 const BASE_WS_URL = "wss://chat.tarzanway.com/ws";
 const ChatContext = createContext();
+import { useDispatch, useSelector } from 'react-redux';
+import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
+import setItinerary, { updateSinglePoiDetails } from "../../../store/actions/itinerary";
+import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 
 export const ChatProvider = ({ bookingId, children }) => {
     const [conversations, setConversations] = useState([]);
     const [quickReplies, setQuickReplies] = useState([]);
+    const [lastProductSliderPosition, setLastProductSliderPosition] = useState(0);
     const [currentBotMessage, setCurrentBotMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
     const [disableQuerySection, setDisableQuerySection] = useState(false);
     const socketRef = useRef(null);
-    const token = localStorage.getItem('access_token')
+    const token = localStorage.getItem('access_token');
+    const itinerary = useSelector((state) => state.Itinerary);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (!bookingId) return;
@@ -22,14 +30,15 @@ export const ChatProvider = ({ bookingId, children }) => {
             console.log("WebSocket connected");
             setIsConnected(true);
             setDisableQuerySection(true);
-            const initialtest = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} Explain my detailed plan.`;
+            const initialpromt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} Explain my detailed plan.`;
             if (socketRef.current?.readyState === WebSocket.OPEN) {
-                socketRef.current.send(JSON.stringify({ message: initialtest, token: token }));
+                socketRef.current.send(JSON.stringify({ message: initialpromt, token: token }));
             }
         };
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            // console.log(data);
             handleStreamData(data);
         };
 
@@ -64,17 +73,29 @@ export const ChatProvider = ({ bookingId, children }) => {
             case 'text_complete':
                 setDisableQuerySection(false);
                 setIsTyping(false);
-                finalizeBotMessage(data.content); // Pass latest message
+                finalizeBotMessage(data.content);
                 break;
 
             case 'render_action':
                 console.log('Logging render action with data:')
                 console.log(data.content);
+                if (data.content.length > 0) {
+                    data.content.map((item) => {
+                        updateProductSlider(item);
+                    })
+                }
                 break;
 
             case 'refresh_action':
                 console.log('Logging refresh action with data:')
                 console.log(data.content);
+                if (data.content.length > 0) {
+                    data.content.map((item) => {
+                        if (item.data) {
+                            updateItineraryDetailsByaction(item);
+                        }
+                    })
+                }
                 break;
 
             case 'quick_replies':
@@ -117,6 +138,126 @@ export const ChatProvider = ({ bookingId, children }) => {
         }
     };
 
+
+    const updateProductSlider = (payload) => {
+        setLastProductSliderPosition(prev => {
+            const newPosition = prev + 1;
+
+            const dataMap = {
+                hotel_search: payload?.data?.data,
+                flights_search: payload?.data?.results,
+                activity_search: payload?.data?.data?.activities,
+                poi_search: payload?.data?.data?.pois,
+            };
+
+            const data = dataMap[payload.action_type]
+
+            setConversations(prevConvs => [
+                ...prevConvs,
+                {
+                    data,
+                    sender: 'bot',
+                    type: payload.action_type,
+                    position: newPosition,
+                }
+            ]);
+
+            return newPosition;
+        });
+    };
+
+    const updateItineraryDetailsByaction = (payload) => {
+        switch (payload.action_type) {
+            case "createAccommodationBooking":
+                dispatch(updateSingleStayCityAndCheckInWise(payload.data));
+                break;
+
+            case "createActivityBooking":
+                console.log("createActivityBooking");
+                updateActivityBooking(payload.data);
+                break
+
+            case "poiAdd":
+                console.log("poiAdd");
+                dispatch(updateSinglePoiDetails(payload.data));
+                break
+
+            case "createFlightBooking":
+                console.log("createFlightBooking");
+                fetchAllTransferBooking(bookingId)
+                break
+
+            default:
+                console.log("Unhandle update details itinerary action :- ", payload.action_type);
+                break;
+        }
+    }
+
+
+    const updateActivityBooking = (res) => {
+
+        const newItinerary = {
+            ...itinerary,
+            cities: itinerary?.cities?.map((city) => {
+                if (city?.id === res?.itinerary_city) {
+                    const updatedActivities = [...(city?.activities || []), res];
+
+                    const activityData = {
+                        activity: res?.activity?.id,
+                        booking: {
+                            id: res?.id,
+                            pax:
+                                res?.number_of_adults +
+                                res?.number_of_children +
+                                res?.number_of_infants,
+                            duration: res?.duration,
+                        },
+                        element_type: "activity",
+                        heading: res?.activity?.name,
+                        icon: res?.image,
+                        poi: null,
+                        rating: res?.activity?.rating,
+                        user_ratings_total: res?.activity?.user_ratings_total,
+                    };
+
+                    const date = res?.check_in.split(" ")[0];
+                    const updatedDayByDay = city?.day_by_day?.map((day) => {
+                        console.log(day?.date === date);
+                        if (day?.date === date) {
+                            return {
+                                ...day,
+                                slab_elements: [...(day?.slab_elements || []), activityData],
+                            };
+                        }
+                        return day;
+                    });
+
+                    return {
+                        ...city,
+                        activities: updatedActivities,
+                        day_by_day: updatedDayByDay,
+                    };
+                }
+                return city;
+            }),
+        };
+
+        dispatch(setItinerary(newItinerary));
+    }
+
+
+    const fetchAllTransferBooking = (id) => {
+        axiosGetTransfers
+            .get(`/${id}/bookings/transfers/`)
+            .then((res) => {
+                const data = res.data;
+                dispatch(setTransfersBookings(data));
+            })
+            .catch((err) => {
+                console.error("Error fetching all bookings", err.message);
+            });
+    }
+
     return (
         <ChatContext.Provider
             value={{
@@ -126,7 +267,8 @@ export const ChatProvider = ({ bookingId, children }) => {
                 isTyping,
                 currentBotMessage,
                 quickReplies,
-                disableQuerySection
+                disableQuerySection,
+                lastProductSliderPosition
             }}
         >
             {children}

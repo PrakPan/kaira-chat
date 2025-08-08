@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import useChat from './hook/UseChat';
 import Markdown from 'react-markdown';
 import styles from "../../styles/Chatbot.module.css";
+import ProductSlider from './product-slider/ProductSlider';
+import media from '../../components/media';
 
 const Container = styled.div`
    height: calc(100% - 270px);
@@ -15,6 +17,7 @@ const Container = styled.div`
    flex: 1;
    scroll-behavior: smooth;
    font-family: Montserrat;
+   box-sizing: border-box;
 `;
 
 const MessageWrapper = styled.div`
@@ -23,9 +26,9 @@ const MessageWrapper = styled.div`
 `;
 
 const Message = styled.div`
-    background:  ${(props) => (props.isUser ? '#F2F2F2' : '#FAFAFA')};
+    background:  ${(props) => (props.isUser ? '#F2F2F2' : '')};
     border-radius: 7px;
-    padding: 6px 12px;
+    padding: ${(props) => (props.isUser ? ' 6px 12px' : '')};
     font-family: Montserrat;
     font-weight: 400;
     font-size: 14px;
@@ -46,21 +49,56 @@ const ChatMessage = React.memo(({ item }) => {
 });
 
 function ChatSection(props) {
-    const { conversations, isTyping, currentBotMessage } = useChat();
-
+    let isPageWide = media("(min-width: 768px)");
+    const { conversations, isTyping, currentBotMessage,lastProductSliderPosition } = useChat();
     const scrollRef = useRef(null);
 
+
     useEffect(() => {
+        const scrollToBottom = () => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollTo({
+                    top: scrollRef.current.scrollHeight,
+                    behavior: 'smooth',
+                });
+            }
+        };
+
+        const observer = new MutationObserver(() => {
+            scrollToBottom();
+        });
+
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            observer.observe(scrollRef.current, {
+                childList: true,
+                subtree: true,
+            });
+            scrollToBottom();
         }
-    }, [conversations, currentBotMessage, isTyping]);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+
 
     return (
         <Container ref={scrollRef} className={styles.chatWrapper}>
-            <div className="chat-section">
+            <div className="chat-section" >
                 {conversations.map((chatObj, idx) => (
-                    < ChatMessage key={idx} item={chatObj} ></ChatMessage>
+                    chatObj?.type && chatObj?.data?.length > 0 ?
+                        <div key={idx} style={{ width: isPageWide ? "calc(50vw - 160px)" : 'calc(100vw - 50px)' }}>
+                            <ProductSlider data={chatObj?.data}
+                                type={chatObj?.type}
+                                slidesPerView={4}
+                                navigationButtons={true}
+                                pageDots={false}
+                                position={chatObj.position}
+                                isDisabled={chatObj.position < lastProductSliderPosition}
+                            />
+                        </div>
+                        :
+                        < ChatMessage key={idx} item={chatObj} ></ChatMessage>
                 ))}
 
                 {currentBotMessage && (
@@ -71,7 +109,6 @@ function ChatSection(props) {
                     <span></span><span></span><span></span>
                 </div> <span className={styles.thinking}>Bot is thinking...</span></div>}
             </div>
-
         </Container>
     );
 }

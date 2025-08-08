@@ -4,8 +4,8 @@ import { useEffect } from "react";
 const Container = styled.div`
   border-radius: 50%;
   background-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   z-index: 0;
 
   display: flex;
@@ -16,13 +16,15 @@ const Container = styled.div`
 
 const InnerContainer = styled.div`
   border-radius: 50%;
-  background-color: ${(props) =>
-    (props.index === -1 || (props.length && props.index === props.length - 1) || props?.index==null)
-      ? "yellow"
-      : "white"};
-  width: 6px;
-  height: 6px;
+  background-color: #fff;
+  width: 8px;
+  height: 8px;
 `;
+
+//  background-color: ${(props) =>
+//     (props.index === -1 || (props.length && props.index === props.length - 1) || props?.index==null)
+//       ? "yellow"
+//       : "white"};
 
 const Pin = (props) => {
   console.log("props1 are:",props)

@@ -56,7 +56,7 @@ const BackContainer = styled.div`
 `;
 
 const ItineraryCity = (props) => {
-  const [viewMore, setViewMore] = useState(false);
+  const [viewMore, setViewMore] = useState(true);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
   const [loading,setLoading] = useState(false);
@@ -170,9 +170,9 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 border-gray-200 rounded-t-lg flex flex-col w-full"
+      className="border-1 rounded-t-lg flex flex-col w-full border-color-light-grey"
     >
-      <div className="flex items-start justify-between p-3 rounded-t-lg border-b">
+      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey">
         <div className="space-y-1 font-montserrat">
           <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
@@ -219,8 +219,8 @@ const ItineraryCity = (props) => {
                           {/* ({hotel?.duration} {hotel?.duration === 1 ? "Night" : "Nights"}) */}
                         </div>
                         </div>
-                        <div className="flex flex-row items-center border-l pl-[8px]">
-                            <div className="text-[#7A7A7A] text-[12px] ml-1">
+                        <div className="flex flex-row items-center border-l pl-[8px] ">
+                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
@@ -236,7 +236,7 @@ const ItineraryCity = (props) => {
             </div>
           ) : (
             <div
-              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
+              className="text-blue cursor-pointer text-[14px] font-medium hover:underline font-montserrat"
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add")
               }
@@ -250,11 +250,6 @@ const ItineraryCity = (props) => {
           onClick={() => setViewMore((prev) => !prev)}
           className="flex items-center text-sm font-semibold"
         >
-          {viewMore ? (
-            <RiArrowDropUpLine className="text-3xl" />
-          ) : (
-            <RiArrowDropDownLine className="text-3xl" />
-          )}
         </button>
       </div>
 

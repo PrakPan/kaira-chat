@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react';
 import Header from './Header';
 import styled from 'styled-components';
 import AskQuery from './AskQuery';
@@ -7,20 +6,19 @@ import { ChatProvider } from './context/ChatContext';
 import { useRouter } from "next/router";
 
 const Container = styled.div`
-  padding: 20px;
-  box-shadow: 0px 4px 24px 0px #B9B2B240;
+  padding:  ${(props) => (props.ispopup ? '0px 20px' : '20px')};
+  box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')}; ;
   position: relative;
-  height: 90vh;
+  height: ${(props) => (props.ispopup ? '93vh' : '90vh')};
   border-radius: 16px;
 `;
 
-function ChatBot() {
+function ChatBot(props) {
   const router = useRouter();
   const bookingId = router.query.id;
-  console.log(bookingId, "inside the indexjs");
   return (
     <ChatProvider bookingId={bookingId} >
-      <Container>
+      <Container ispopup={props.showAsPopup}>
         <Header />
         <ChatSection />
         <AskQuery />

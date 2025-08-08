@@ -155,10 +155,10 @@ const Activity = (props) => {
                 />
               </div>
 
-              <div className="opacity-[.5] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
+              <div className="opacity-[.4] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
 
               {props.element?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF]">
-                <div className="text-[12px] opacity-[.5]">
+                <div className="text-[12px] opacity-[.4]">
                   {props.element?.rating}
                 </div>
                 <div className="flex items-center">
@@ -180,7 +180,7 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }
-              className="lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-md px-[16px] py-[5px] text-nowrap  font-montserrat">
+              className="ttw-btn-secondary">
               Details
             </button>
           </div>
@@ -305,10 +305,10 @@ const Recommendation = (props) => {
                 />
               </div>
 
-              <div className="opacity-[.5] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
+              <div className="opacity-[.4] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
 
               {props.element?.restaurants?.[0]?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF]">
-                <div className="text-[12px] opacity-[.5]">
+                <div className="text-[12px] opacity-[.4]">
                   {props.element?.restaurants?.[0]?.rating}
                 </div>
                 <div className="flex items-center">
@@ -328,7 +328,7 @@ const Recommendation = (props) => {
               onClick={() =>
                 handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
               }
-              className="lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap font-montserrat"
+             className="ttw-btn-secondary"
             >
               Details
             </button>

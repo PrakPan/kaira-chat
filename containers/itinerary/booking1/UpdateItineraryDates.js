@@ -397,9 +397,9 @@ const UpdateItineraryDates = ({
   return (
     <div className="flex flex-row items-center gap-2 absolute overflow-visible z-[8] mt-[1.3rem]">
       {/* Date display with pen icon */}
-      <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
+      <div className="font-400 text-black flex flex-row items-center gap-2">
         {!isEditing ? (
-          <div className="min-w-max">
+          <div className="min-w-max ">
             {convertDFormat
               ? convertDFormat(itinerary?.start_date)
               : itinerary?.start_date}{" "}

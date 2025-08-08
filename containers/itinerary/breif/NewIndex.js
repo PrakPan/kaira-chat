@@ -8,6 +8,7 @@ import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
 import { useParams, useSearchParams } from "next/navigation.js";
+import Image from "next/image.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -32,6 +33,13 @@ const RouteComponent = styled.div`
     width: 30%;
   }
 `;
+
+const RoutesRow = styled.div`
+  background: rgba(147, 189, 255, 0.15);
+  border-radius : 30px;
+  padding : 10px 30px;
+  
+`
 
 const Details = (props) => {
   const router = useRouter();
@@ -138,9 +146,14 @@ const Details = (props) => {
   }
 
   return (
-    <div id="brief" className="mt-8">
+    <div id="brief" className="mb-[40px] mt-[20px]">
       <DetailsContainer>
-        <div
+
+        <RoutesRow className="flex w-full justify-between font-montserrat">
+          <div className="flex gap-[10px]"> <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />  <sapn className="font-[500] text-[20px] text-color-dark-blue">Routes</sapn></div> 
+          <button className="font-[400] text-[16px] text-color-dark-blue font-montserrat underline underline-offset-1">View</button>
+        </RoutesRow>
+        {/* <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
           id="MapcontainerRoute"
         >
@@ -191,7 +204,7 @@ const Details = (props) => {
               findDayIdByCityId={findDayIdByCityId}
             />
           </div>
-        </RouteComponent>
+        </RouteComponent> */}
       </DetailsContainer>
 
       {drawer=="handleEditRoute"&& (

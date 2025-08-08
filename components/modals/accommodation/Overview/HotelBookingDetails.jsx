@@ -170,6 +170,7 @@ const HotelBookingDetails = (props) => {
   const [data, setData] = useState(null);
   const router = useRouter();
   const dispatch = useDispatch();
+  const [runTimeShowPopup, setRunTimeShowPopup] = useState(props?.showDetails);
   const { drawer, booking_id, idx, city_id } = router.query;
 
   const { id } = router.query;
@@ -334,11 +335,12 @@ const HotelBookingDetails = (props) => {
       undefined,
       { scroll: false }
     );
+    setRunTimeShowPopup(false);
   };
 
   return (
     <Drawer
-      show={props?.showDetails}
+      show={runTimeShowPopup}
       anchor={"right"}
       backdrop
       className="font-lexend"

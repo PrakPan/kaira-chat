@@ -35,6 +35,7 @@ const DaybyDay = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   setShowLoginModal,
+  index,
   ...props
 }) => {
 const router=useRouter()
@@ -117,10 +118,10 @@ const router=useRouter()
           !isPageWide ? "" : "max-w-[54vw]"
         }`}
       >
-        <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
+        {/* <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
           Day By Day Itinerary
           <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
-        </h1>
+        </h1> */}
 
         {/* to navigate between cities in frontend */}
         {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
@@ -156,6 +157,7 @@ const router=useRouter()
             destinationLong={stay?.[0] ? stay[0]?.long: null}
             destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
             key={2}
+            pinColour={CITY_COLOR_CODES[index % 7]}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
               ":" +
@@ -207,7 +209,6 @@ const router=useRouter()
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.transfer_type
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={true}
             upPresent={true}
@@ -455,7 +456,7 @@ const router=useRouter()
                   endCity?.gmaps_place_id
               ]?.duration
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={CITY_COLOR_CODES[index % 7]}
             onClick={() => alert(`Clicked`)}
             upPresent={true}
             downPresent={true}
@@ -509,7 +510,7 @@ const router=useRouter()
             setShowLoginModal={setShowLoginModal}
             key={endCity?.place_id}
             city={endCity?.city_name}
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={CITY_COLOR_CODES[index % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
             upPresent={false}

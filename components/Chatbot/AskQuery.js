@@ -116,8 +116,8 @@ function AskQuery() {
         <GrowTextAreaBox>
             <Container>
                 <ChipsContainer>
-                    {quickReplies.map((item) => <>
-                        <SingleChips key={`${item}`} onClick={() => handleQuickReplies(item)} >
+                    {quickReplies.map((item, index) => <>
+                        <SingleChips key={index} onClick={() => handleQuickReplies(item)} >
                             {item}
                         </SingleChips>
                     </>)}
@@ -145,7 +145,10 @@ function AskQuery() {
                         <div className="flex items-center gap-4">
                             <div><img src="/assets/chatbot/speech.png" /></div>
                             <div>
-                                <SubmitButton disabled={isSubmitDisabled || disableQuerySection} onClick={handleSubmitQuery}><img src="/assets/chatbot/query-submit.png" /></SubmitButton>
+                                <SubmitButton disabled={isSubmitDisabled || disableQuerySection} onClick={(e) => {
+                                    e.preventDefault();
+                                    handleSubmitQuery()
+                                }}><img src="/assets/chatbot/query-submit.png" /></SubmitButton>
                             </div>
                         </div>
                     </div>

@@ -16,7 +16,6 @@ const Container = styled.div`
   grid-template-columns: auto auto auto auto auto;
   max-width: 100vw;
   overflow-x: auto;
-  grid-gap: 1rem;
   white-space: nowrap;
   align-items: start;
   ::-webkit-scrollbar {
@@ -25,20 +24,20 @@ const Container = styled.div`
   -ms-overflow-style: none;
   @media screen and (min-width: 768px) {
     grid-template-columns: max-content max-content max-content max-content max-content max-content;
-    grid-column-gap: 2.5rem;
   }
 `;
 
 const Heading = styled.p`
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 400;
   color: #7a7a7a;
   margin: 0;
+  
 `;
 
 const Text = styled.p`
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   margin: 0;
 `;
 
@@ -56,6 +55,8 @@ const DateRow = styled.div`
   align-items: center;
   gap: 1rem;
   flex-wrap: nowrap;
+  font-size:14px;
+  font-weight:600;
 `;
 
  const convertDFormat = (dt) => {
@@ -118,9 +119,9 @@ const Details = (props) => {
   
 
   return (
-    <Container className="font-lexend">
+    <Container className="font-montserrat">
       {props?.group_type !== null ? (
-        <div style={{ width: "max-content" }}>
+        <div className="pr-[24px]"  style={{ width: "max-content" }}>
           <Heading>Group Type</Heading>
           <Text className="flex flex-row gap-2">
             {props.group_type}
@@ -149,14 +150,16 @@ const Details = (props) => {
         </div>
       ) : null}
 
+
       {props?.budget ? (
-        <div style={{ width: "max-content" }}>
+        <div className="pr-[24px] pl-[24px] border-l  min-h-full"  style={{ width: "max-content" }}>
           <Heading>Budget</Heading>
           <Text>{props.budget}</Text>
         </div>
       ) : null}
 
       {props.travellerType != null ? (
+        <div className="border-l min-h-full pl-[24px] pr-[114px]">
         <DateContainer>
           {props.tripsPage ? (
             <div>
@@ -184,6 +187,7 @@ const Details = (props) => {
             </div>
           )}
         </DateContainer>
+        </div>
       ) : null}
        
     </Container>

@@ -29,7 +29,6 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: 6%;
 `;
 
 const VerticalLine = styled.div`
@@ -82,24 +81,24 @@ const AirportBookingItem = ({
       case "Flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       case "Taxi":
       case "Car":
-        return <IoCar className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Bus":
         return (
           <FaBus
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       default:
@@ -740,7 +739,8 @@ const CityItem = ({
   destinationLat,
   destinationLong,
   firstCity,
-  lastCity
+  lastCity,
+  pinColour
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -772,24 +772,24 @@ const CityItem = ({
       case "flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       case "taxi":
       case "car":
-        return <IoCar className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "bus":
         return (
           <FaBus
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       default:
@@ -1110,7 +1110,7 @@ console.log("Hi I'm CityItem")
       <PinWrapper>
         {upPresent && <VerticalLine height="50px" gradient="top" />}
         {upPresent && downPresent ? (
-          <Pin length={length} />
+          <Pin length={length}  pinColour={pinColour}/>
         ) : (
           <svg
             width="24"
@@ -1144,7 +1144,7 @@ console.log("Hi I'm CityItem")
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className="">{city}</div>}
+          {!(upPresent && downPresent) && <div className="font-montserrat font-[500] text-[18px] text-[#01202B]">{city}</div>}
 
           {transfers_status === "PENDING" ? (
             upPresent && downPresent ? (
@@ -1177,7 +1177,7 @@ console.log("Hi I'm CityItem")
                               {correctIcon(mode)}
                               {i < booking?.children?.length - 1 && (
                                 <span>
-                                  <RiArrowDropRightLine size={18} />
+                                  <RiArrowDropRightLine size={18} color={'#a5a5a5'} />
                                 </span>
                               )}
                             </React.Fragment>
@@ -1199,7 +1199,7 @@ console.log("Hi I'm CityItem")
                             handleEdit(transfer_type === "combo", booking);
                         }}
                       >
-                        <div className="group-hover:text-blue">
+                        <div className="group-hover:text-blue font-montserrat font-[500] text-[15px] text-[#01202B]">
                           {upPresent && downPresent ? city : ""}
                         </div>
                         {upPresent && downPresent && (
@@ -1214,7 +1214,7 @@ console.log("Hi I'm CityItem")
 
                       {/* Duration */}
                       {duration && (
-                        <div className="font-[400] text-[12px]">
+                        <div className="font-[400] text-[12px] font-montserrat">
                           Duration: {duration}
                         </div>
                       )}
@@ -1223,7 +1223,7 @@ console.log("Hi I'm CityItem")
                 ) : isPageWide ? (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                    className="text-[14px] font-medium leading-[60px] text-blue hover:underline font-montserrat"
                   >
                     + Add Transfer from {origin_city_name} to{" "}
                     {destination_city_name}
@@ -1231,7 +1231,7 @@ console.log("Hi I'm CityItem")
                 ) : (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                    className="text-[14px]font-medium leading-[60px] text-blue hover:underline font-montserrat"
                   >
                     + Add Transfer
                   </button>

@@ -9,7 +9,8 @@ import { FaEdit } from "react-icons/fa";
 import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import Image from "next/image";
+import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
 
 const SectionHeading = styled.div`
    font-family: Montserrat;
@@ -70,19 +71,10 @@ const CityDay = (props) => {
   }, [props.day?.slab_elements]);
 
   useEffect(() => {
-   if(props?.index === 0){
-     setViewMore(true);
-   }
-   },[])
-
-  function convertDateFormat(dateString) {
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleString("en-US", { month: "short" });
-    const year = date.getFullYear();
-
-    return `${day} ${month}, ${year}`;
-  }
+    if (props?.index === 0) {
+      setViewMore(true);
+    }
+  }, [])
 
 
   const matchingIntracityBookings = props?.intracityBookings?.filter(
@@ -127,18 +119,20 @@ const CityDay = (props) => {
   );
   return (
     <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
-      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 border-l' : '' }`}>
+      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 border-l' : ''}`}>
         <div className={`flex items-center justify-between p-2 ${!viewMore ? ' bg-white rounded-2xl shadow-sm' : ''}`} >
-          <SectionHeading > Day {props.index + 1} |  <span>{convertDateFormat(props?.day?.date)}</span></SectionHeading>
+          <SectionHeading > Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></SectionHeading>
           <button
             onClick={() => setViewMore((prev) => !prev)}
             className="flex items-center text-sm font-semibold"
           >
-            {viewMore ? (
-              <RiArrowDropUpLine className="text-3xl" />
-            ) : (
-              <RiArrowDropDownLine className="text-3xl" />
-            )}
+              <Image
+                src={'/assets/Itinerary/arrow-up.svg'}
+                alt="ticket"
+                width={12}
+                height={8}
+                className={`transition-200 ${viewMore ? '' : 'rotate-180'}`}
+              />
           </button>
         </div>
 
@@ -166,9 +160,9 @@ const CityDay = (props) => {
           ) : (
             <button
               onClick={handleAddActivity}
-              className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+              className="mt-3  w-fit text-[14px] text-blue underline font-medium font-montserrat"
             >
-              + Add activities on {convertDateFormat(props?.day?.date)}
+              + Add activities on {getHumanDateWithYearv2(props?.day?.date)}
             </button>
           )}
         </>
@@ -191,7 +185,7 @@ const CityDay = (props) => {
                         <div
                           key={item.id}
                           className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
-                          // onClick={() => handleTaxi(item.id)}
+                        // onClick={() => handleTaxi(item.id)}
                         >
                           <div className="hidden hover:block cursor-pointer">
                             <FaEdit />

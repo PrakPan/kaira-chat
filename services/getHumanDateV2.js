@@ -1,11 +1,5 @@
-import { dateIsValid } from "./isDateDDMMYYY";
-
-export const getHumanDateWithYear = (dateString) => {
-  if (!dateIsValid(dateString)) return dateString;
-  else {
-    let d = dateString.split("/") || dateString.split("-");
-
-    let date = new Date(d[2], d[1] - 1, d[0]);
+export const getHumanDateWithYearv2 = (dateString) => {
+    let date = new Date(dateString);
     const months = [
       "Jan",
       "Feb",
@@ -30,8 +24,7 @@ export const getHumanDateWithYear = (dateString) => {
     else day = day + "th";
 
     let month = months[date.getMonth()];
-    let year = date.getFullYear(); // Get the year
+    let year = date.getFullYear();
 
-    return `${day} ${month} ${year}`;
-  }
+    return `${day} ${month}, ${year}`;
 };

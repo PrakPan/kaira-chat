@@ -196,7 +196,7 @@ const TransferBooking = ({
               ) : (
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
-                  <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
+                  <div className="mt-3 ml-1 md:ml-7 flex flex-col">
                     <div className=" w-full items-center">
                       <div className="font-medium text-[15px] flex items-center gap-2">
                         <div className="text-[#C5C1C1]">
@@ -554,7 +554,7 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                   <div
                     key={index}
-                    className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
+                    className="mt-3 ml-1 md:ml-7 flex flex-col"
                   >
                     <div className=" w-full items-center">
                       <div className="font-medium text-[15px]  inline flex items-center gap-2">
@@ -924,7 +924,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
   };
 
   return (
-    <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
+    <div className="mt-3 ml-1 md:ml-7 flex flex-col items-center justify-center ">
       <div className=" w-full items-center">
         {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name &&
           booking?.transfer_details?.items[0]?.segments[
