@@ -3,6 +3,7 @@ import styled, { keyframes } from "styled-components";
 import { fadeIn } from "react-animations";
 import { BsCheck } from "react-icons/bs";
 import { EXPERIENCE_FILTERS_BOX } from "../../../../services/constants";
+import { StyledButton,StyledFlexWrap } from "../../../styled-components/TailoredForm";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -83,38 +84,27 @@ const GroupType = (props) => {
 
   return (
     <Container>
-      <GridContainer tailoredFormModal={props.tailoredFormModal}>
+      <StyledFlexWrap tailoredFormModal={props.tailoredFormModal}>
         {EXPERIENCE_FILTERS_BOX.map((filter, i) => {
+          let clicked=false
           return (
-            <OptionContainer
+            <div
               key={i}
               is_selected={_isPreferenceAdded(filter.display)}
               className=" font-lexend hover-pointer"
               onClick={() => _handleClick(filter.display)}
             >
-              <div
-                className="center-div"
-                style={{ fontSize: "0.75rem", lineHeight: "1" }}
-              >
-                <YellowContainer
-                  className="center-div"
-                  is_selected={_isPreferenceAdded(filter.display)}
-                >
-                  {_isPreferenceAdded(filter.display) ? (
-                    <BsCheck></BsCheck>
-                  ) : null}
-                </YellowContainer>
-              </div>
-              <div
+              <StyledButton
                 style={{ lineHeight: "1.2", alignItems: "flex-start" }}
                 className="center-div"
+                clicked={_isPreferenceAdded(filter.display)}
               >
                 {filter.display}
-              </div>
-            </OptionContainer>
+              </StyledButton>
+            </div>
           );
         })}
-      </GridContainer>
+      </StyledFlexWrap>
     </Container>
   );
 };

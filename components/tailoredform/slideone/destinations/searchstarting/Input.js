@@ -19,7 +19,7 @@ const ResultsContainer = styled.div`
 `;
 
 const InputContainer = styled.input`
-  width: 9rem;
+  width: 12rem;
   &:focus {
     border: none;
     outline: none;
@@ -129,7 +129,7 @@ const SearchInput = (props) => {
           <InputContainer
             onFocus={props.onfocus}
             onBlur={_handleBlur}
-            placeholder="Departing from"
+            placeholder="Enter the start Location"
             className="font-lexend"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

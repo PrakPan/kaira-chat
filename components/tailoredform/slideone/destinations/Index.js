@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SelectedDestination from "./selecteddestination/Index";
 import { useRouter } from "next/router";
+import { StyledHeading } from "../../../styled-components/TailoredForm";
+import EndDestination from "./Destinations";
 
 const Container = styled.div`
   width: 100%;
@@ -33,26 +35,30 @@ const Destinations = (props) => {
     const des = [];
     for (let i = 0; i < props?.selectedCities?.length; i++) {
       des.push(
-        <SelectedDestination
-          autofocus={i == 0 && props.selectedCities[0].name && true}
-          _updateDestinationHandler={_updateDestinationHandler}
-          key={props.selectedCities[i].input_id}
-          setDeletedId={
-            (i != 0 || props.selectedCities.length > 1) && setDeletedId
-          }
-          inbox_id={props.selectedCities[i].input_id}
-          selectedCities={props.selectedCities}
-          destination={props.selectedCities[i].name}
-          CITIES={props.CITIES}
-          openCities={() => props.setShowCities(true)}
-          setDestination={props.setDestination}
-          setSelectedCities={props.setSelectedCities}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
-          eventDates={props.eventDates}
-          updatedData={updatedData}
-          tailoredFormModal={props.tailoredFormModal}
-        ></SelectedDestination>
+        <div>
+          <StyledHeading>Destination</StyledHeading>
+          <EndDestination
+            autofocus={i == 0 && props.selectedCities[0].name && true}
+            _updateDestinationHandler={_updateDestinationHandler}
+            key={props.selectedCities[i].input_id}
+            setDeletedId={
+              (i != 0 || props.selectedCities.length > 1) && setDeletedId
+            }
+            inbox_id={props.selectedCities[i].input_id}
+            selectedCities={props.selectedCities}
+            destination={props.selectedCities[i].name}
+            destinations={props.selectedCities}
+            CITIES={props.CITIES}
+            openCities={() => props.setShowCities(true)}
+            setDestination={props.setDestination}
+            setSelectedCities={props.setSelectedCities}
+            setValueStart={props.setValueStart}
+            setValueEnd={props.setValueEnd}
+            eventDates={props.eventDates}
+            updatedData={updatedData}
+            tailoredFormModal={props.tailoredFormModal}
+          ></EndDestination>
+        </div>
       );
     }
     setDestinations(des);
@@ -118,6 +124,7 @@ const Destinations = (props) => {
 
   return (
     <Container>
+      <StyledHeading>Start Location</StyledHeading>
       <SelectedDestination
         startingLocation={props.startingLocation}
         setStartingLocation={props.setStartingLocation}
@@ -141,7 +148,7 @@ const Destinations = (props) => {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "end",
           marginLeft: "33%",
           marginRight: "10px",
         }}

@@ -27,7 +27,7 @@ const RightContainer = styled.div`
   color: #1360d3;
 `;
 
-const SelectedDestination = (props) => {
+const EndDestination = (props) => {
   const [searchFinalized, setSearchFinalized] = useState(false);
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
@@ -186,4 +186,4 @@ const SelectedDestination = (props) => {
   );
 };
 
-export default SelectedDestination;
+export default EndDestination;
