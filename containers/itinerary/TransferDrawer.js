@@ -63,7 +63,7 @@ const TransferDrawer = ({
   booking_id,
   transferType
 }) => {
-  const handleClose=useHandleClose()
+  const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
   const [error,setError]=useState(false)
@@ -73,6 +73,7 @@ const TransferDrawer = ({
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
+  const [isDrawerOpen, setIsDrawerOpen] = useState(show);
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
       setExpandedIndexes([0]);
@@ -500,9 +501,15 @@ const TransferDrawer = ({
     );
   };
 
+
+  const handleClose = () => {
+    setIsDrawerOpen(false);
+  handleDrawerClose();
+  }
+
   return (
     <Drawer
-      show={show}
+      show={isDrawerOpen}
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
