@@ -927,7 +927,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
       pathname: `/itinerary/${router.query.id}`,
       query: {
         drawer: "Intracity",
-        bookingId: booking?.id || booking_id,
+        bookingId: booking_id || booking?.id || booking_id,
         oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
         dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },

@@ -1392,22 +1392,22 @@ export const DestinationPopUp = (props) => {
   };
 
   const handleSetNights = (minus = false) => {
-    if (minus) {
-      setNights((prev) => (prev === 1 ? prev : prev - 1));
-    } else {
-      setNights((prev) => prev + 1);
-    }
+  setNights((prev) => {
+    const newValue = minus ? Math.max(1, prev - 1) : prev + 1;
+    return newValue;
+  });
 
-    logEvent({
-      action: "Route Edit",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Update Destination",
-        event_label: minus ? "Decrease Nights" : "Increase Nights",
-        event_action: "Update Nights",
-      },
-    });
-  };
+  logEvent({
+    action: "Route Edit",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Update Destination",
+      event_label: minus ? "Decrease Nights" : "Increase Nights",
+      event_action: "Update Nights",
+    },
+  });
+};
+
 
  const handleUpdateDestination = () => {
   setDestinationChanges(true);

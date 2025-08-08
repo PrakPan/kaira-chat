@@ -219,7 +219,7 @@ const TransferEditDrawer = (props) => {
         (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : dayjs(selectedBooking.check_in).format("YYYY-MM-DD")),
-      start_time: `10:00`,
+      start_time: `00:00`,
       number_of_travellers:
         number_of_adults + number_of_children + number_of_infants,
     }
@@ -1250,38 +1250,41 @@ const TransferEditDrawer = (props) => {
           </div>
         )}
 
-        {transferType === "MULTICITYROUNDTRIP" &&
-          (roundTripSuggestions || multiCitySuggestions) && (
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
-              <div className="flex justify-center items-end p-4 md:p-0">
-                <button
-                  onClick={() => {
-                    const tripTypeIndex = selectedTripType === 'roundtrip' ? 1 : 0;
-                    handleMultiCitySelect(multicityRoundtripTraceId, tripTypeIndex, selectedCab?.result_index);
-                  }}
-                  className={`
-                  w-full max-w-md px-3 py-2 rounded-lg font-semibold text-base
-                  transition-all duration-200 ease-in-out
-                  flex items-center justify-center
-                  ${!selectedCab || updatingTransfer
-                      ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
-                      : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
-                    }
-                `}
-                  disabled={!selectedCab || updatingTransfer}
-                >
-                  {updatingTransfer ? (
-                    <div className="flex items-end gap-2">
-                      <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Updating...</span>
-                    </div>
-                  ) : (
-                    "Update Transfer"
-                  )}
-                </button>
-              </div>
+       {transferType === "MULTICITYROUNDTRIP" &&
+  (roundTripSuggestions || multiCitySuggestions) && (
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+      <div className="w-full flex justify-end items-end px-1 py-3 md:p-0">
+        <button
+          onClick={() => {
+            const tripTypeIndex = selectedTripType === 'roundtrip' ? 1 : 0;
+            handleMultiCitySelect(multicityRoundtripTraceId, tripTypeIndex, selectedCab?.result_index);
+          }}
+          className={`
+            px-3 py-2 rounded-lg font-semibold text-base
+            transition-all duration-200 ease-in-out
+            flex items-center justify-center
+            
+            ${!selectedCab || updatingTransfer
+              ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
+              : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
+            }
+          `}
+          disabled={!selectedCab || updatingTransfer}
+        >
+          {updatingTransfer ? (
+            <div className="flex items-end gap-2">
+              <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+              <span>Updating...</span>
             </div>
+          ) : (
+            "Update Transfer"
           )}
+        </button>
+      </div>
+    </div>
+)}
+
+
       </div>
 
       <FlightModal
@@ -1478,7 +1481,7 @@ const RouteContainer = (props) => {
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
+      calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
@@ -1489,7 +1492,7 @@ const RouteContainer = (props) => {
         const updatedStartDate = calculatedStartTime.format("YYYY-MM-DD");
         setComboStartDate(updatedStartDate);
       } else {
-        calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
+        calculatedStartTime = dayjs(`${baseStartDate} 00:00`);
       }
     }
     setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"));
@@ -2462,7 +2465,7 @@ const NewMultiModeContainer = ({
 
     if (currentStep === 1) {
       calculatedStartTime =
-        dayjs(`${baseStartDate} 12:00`)
+        dayjs(`${baseStartDate} 00:00`)
         ;
     }
     else {
