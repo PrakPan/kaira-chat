@@ -88,7 +88,7 @@ const Booking = (props) => {
     errorMsg: "",
   });
 
-  const router=useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -99,6 +99,7 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
+  const [hasUserSearched, setHasUserSearched] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
@@ -141,12 +142,20 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-
     if (
       props?.showBookingModal &&
-      currentBooking?.check_in &&
-      (debouncedSearch.length > 2 || debouncedSearch.length == 0)
+      currentBooking?.check_in 
     ) {
+      console.log("filters useEffect triggered", filters);
+      setMoreOptionsJSX([]);
+      fetchHotelsFilter();
+    }
+  }, [filters.applyFilter]);
+
+  useEffect(() => {
+    if (debouncedSearch.length > 2||hasUserSearched) {
+      console.log("searching in debounced search")
+       setHasUserSearched(true);
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
@@ -211,6 +220,7 @@ const Booking = (props) => {
   };
 
   const _addFilterHandler = (filter, heading) => {
+    console.log("add filter handler called")
     setFilters((prev) => ({
       ...prev,
       [heading]: filter,
@@ -284,7 +294,7 @@ const Booking = (props) => {
   };
 
   const fetchHotelsFilter = () => {
-    if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
+    if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -407,14 +417,14 @@ const Booking = (props) => {
               tags: res.data?.tags,
             });
           }
-          setFilters((prev) => ({
-            ...prev,
-            facilities: res?.data?.selected_filters?.facilities,
-            type: res?.data?.selected_filters?.type,
-            tags: res?.data?.selected_filters?.tags,
-            page: 1,
-            trace_id: null,
-          }));
+          // setFilters((prev) => ({
+          //   ...prev,
+          //   facilities: res?.data?.selected_filters?.facilities,
+          //   type: res?.data?.selected_filters?.type,
+          //   tags: res?.data?.selected_filters?.tags,
+          //   page: 1,
+          //   trace_id: null,
+          // }));
           // setTotalCount(res?.data?.count);
           setMoreOptionsJSX(options);
           setPaginationStatus({
@@ -442,7 +452,7 @@ const Booking = (props) => {
 
   const fetchHotels = () => {
     try {
-      if(props?.itinerary_city_id!=router?.query?.itineraryCityId) return
+      if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);
@@ -494,9 +504,9 @@ const Booking = (props) => {
             localStorage.setItem("trace_id", res?.data?.trace_details?.id);
           }
 
-        if (res.data?.data?.length) {
-          if (res.data?.count) setTotalCount(res.data.count);
-          setNoResults(false);
+          if (res.data?.data?.length) {
+            if (res.data?.count) setTotalCount(res.data.count);
+            setNoResults(false);
 
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
@@ -517,6 +527,7 @@ const Booking = (props) => {
                   options.push(
                     <AccommodationSearched
                       mercury
+                      itinerary_city_id={props.itinerary_city_id}
                       source={res?.data?.data?.[i]?.source}
                       handleClick={props?.handleClick}
                       payment={props.payment}
@@ -568,14 +579,14 @@ const Booking = (props) => {
             }
             // setTotalCount(res?.data?.count);
             setMoreOptionsJSX([...moreOptionsJSX, ...options]);
-            setFilters((prev) => ({
-              ...prev,
-              facilities: res?.data?.selected_filters?.facilities,
-              type: res?.data?.selected_filters?.type,
-              tags: res?.data?.selected_filters?.tags,
-              trace_id: paginationStatus?.traceId,
-              page: paginationStatus?.page,
-            }));
+            // setFilters((prev) => ({
+            //   ...prev,
+            //   facilities: res?.data?.selected_filters?.facilities,
+            //   type: res?.data?.selected_filters?.type,
+            //   tags: res?.data?.selected_filters?.tags,
+            //   trace_id: paginationStatus?.traceId,
+            //   page: paginationStatus?.page,
+            // }));
             setPaginationStatus({
               traceId: res?.data?.trace_details?.id,
               page: res?.data?.current_page,

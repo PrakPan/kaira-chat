@@ -9,6 +9,14 @@ export default function PriceRange(props) {
         props.setBudget(value);
         setMinPrice(value[0]);
         setMaxPrice(value[1]);
+        props?.handleBudgetChange()
+        props.setFilters((prev)=>({
+      ...prev,
+      budget:{
+        price_lower_range:value[0],
+        price_upper_range:value[1]
+      },
+    }))
     }
 
     const handleBudgetFocusChange = () => {

@@ -135,6 +135,7 @@ const ActivityAddDrawer = (props) => {
   const [error, setError] = useState(null);
 
   const dateObj = new Date(props.date);
+
 const pad = (n) => (n < 10 ? `0${n}` : n);
 const formattedDate =
   pad(dateObj.getDate()) +
@@ -414,7 +415,7 @@ const formattedDate =
               date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={props?.day_slab_index}
+              dayIndex={(new Date(startDate.split("/").reverse().join("-")) - new Date(props.start_date)) / (1000 * 60 * 60 * 24)}
               setShowLoginModal={props.setShowLoginModal}
             ></NewPoiBooking>
           );
@@ -429,7 +430,7 @@ const formattedDate =
               date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={props?.day_slab_index}
+              dayIndex={(new Date(startDate.split("/").reverse().join("-")) - new Date(props.start_date)) / (1000 * 60 * 60 * 24)}
               setShowLoginModal={props.setShowLoginModal}
             ></NewPoiBooking>
           );

@@ -87,6 +87,11 @@ const Section = (props) => {
         showFilters={props.showFilters}
         filters={props.filters}
         setFilters={props.setFilters}
+        handleFreeBreakfast={handleFreeBreakfast}
+        handleRefundable={handleRefundable}
+        handleBudgetChange={handleBudgetChange}
+        budget={budget}
+        setBudget={setBudget}
       ></FiltersMobile>
 
       <Drawer

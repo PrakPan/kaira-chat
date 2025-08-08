@@ -88,6 +88,8 @@ const ErrorContainer = styled.div`
 `;
 
 const ViewHotelDetails = (props) => {
+
+  console.log("plan is:",props?.currentBooking)
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const { drawer, booking_id, idx, city_id } = router.query;
@@ -223,9 +225,9 @@ const ViewHotelDetails = (props) => {
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
       source: props.provider,
-      booking_id: props?.bookingId,
+      booking_id: props?.bookingId!=""?props?.bookingId:null,
       itinerary_city: props?.itinerary_city_id,
-      city_id: props.plan[index].city_id,
+      city_id: props.currentBooking.city_id,
     };
 
     updateAccommodationBooking
@@ -252,8 +254,8 @@ const ViewHotelDetails = (props) => {
 
         try {
           stayBookings[index] = {
-            city_id: props.plan[index].city_id,
-            city_name: props.plan[index].city_name,
+            city_id: props.currentBooking.city_id,
+            city_name: props.currentBooking.city_name,
             ...response?.data,
             source: response?.data?.images?.[0]?.source,
             itinerary_city_id: props?.itinerary_city_id,

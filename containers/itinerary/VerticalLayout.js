@@ -815,7 +815,12 @@ const CityItem = ({
 
   useEffect(() => {
     setCurrentAirportBookings(airportBookings || []);
+
   }, [airportBookings]);
+
+  useEffect(() => {
+  setAirportBookingId(router.query?.airportBookingId || null);
+}, [router.query?.airportBookingId]);
 
   useEffect(() => {
     if (!booking_id) {
@@ -889,7 +894,9 @@ const CityItem = ({
     );
   };
 
+
   const handleIntracityBookings = async (combo, booking) => {
+    console.log("CityItem");
     setIsIntracity(true);
     setTransferType(booking?.booking_type);
     if (combo) {
@@ -1078,32 +1085,9 @@ const CityItem = ({
     booking => booking.is_airport_drop
   ) || [];
 
-  useEffect(() => {
-  if (drawer === "addPickupDrop" && drawerType && 
-      oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-      dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) {
-    setPickupDropShow(true);
-    setTransferDrawerType(drawerType);
-  }
-  
-  if (drawer === "Intracity" && bookingId && 
-      (oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) ||
-       dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id))) {
-    setAirportBookingId(bookingId);
-   
-  }
-
-  if(drawer == "editTransfer" &&
-        (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
-        oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) {
 
 
-        }
-}, [drawer, drawerType, bookingId, oItineraryCity, dItineraryCity]);
-
-
-console.log("Hi I'm CityItem")
+console.log("HandleEdit",airportBookingId,booking_id,bookingId)
 
   return (
     <Container>
