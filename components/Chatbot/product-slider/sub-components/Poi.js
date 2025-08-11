@@ -9,7 +9,7 @@ function Poi(props) {
                 <Image src={`${imgUrlEndPoint}${props.item.image}`} alt={props.item.name} />
             </ImageWrapper>
             <HeadingOne>{props.item.name}</HeadingOne>
-            <ChipsContainer>{props.item.experience_filters.map((ex, i) => <SingleChips className={i % 2 ? 'purple' : 'green'} key={i}>{ex}</SingleChips>)}</ChipsContainer>
+            <ChipsContainer>{props.item?.experience_filters?.map((ex, i) => <SingleChips className={i % 2 ? 'purple' : 'green'} key={i}>{ex}</SingleChips>)}</ChipsContainer>
 
         </>
     )

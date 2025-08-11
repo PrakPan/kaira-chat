@@ -174,17 +174,17 @@ const CityDay = (props) => {
           matchingIntracityBookings?.length > 0 && (
             <>
               <hr />
-              <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-                <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
-                </div>
-                <div className="flex flex-col gap-2 w-full">
+              <div className="">
+                <SectionHeading className="p-2">
+                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
+                </SectionHeading>
+                <div className="flex flex-col gap-2 w-full font-montserrat">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
                       <>
                         <div
                           key={item.id}
-                          className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
+                          className="flex gap-3 items-center bg-white border-radius-10 p-2 border-1 w-100 mb-2"
                         // onClick={() => handleTaxi(item.id)}
                         >
                           <div className="hidden hover:block cursor-pointer">
@@ -209,7 +209,7 @@ const CityDay = (props) => {
                             />
                           </div>
 
-                          <div>
+                          <div class="w-100">
                             <span className="font-semibold  text-[12px]">
                               {item.date}
                             </span>
