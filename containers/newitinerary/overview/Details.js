@@ -159,7 +159,7 @@ const Details = (props) => {
       ) : null}
 
       {props.travellerType != null ? (
-        <div className="border-l min-h-full pl-[24px] pr-[114px]">
+        <div className="border-l min-h-full pl-[24px] pr-[24px]">
         <DateContainer>
           {props.tripsPage ? (
             <div>

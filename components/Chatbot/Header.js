@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
+import HistoryIcon from '@mui/icons-material/History';
 
 
 const Heading = styled.p`
@@ -22,7 +23,7 @@ const SubText = styled.p`
 function Header() {
     return (
         <>
-            <Heading className='font-montserrat'> Hello, I m your TarzanWay AI, your travel guide</Heading>
+            <Heading className='font-montserrat'> Hello, I m your TarzanWay AI, your travel guide    <HistoryIcon className='float-right'></HistoryIcon></Heading>
             <SubText>I’m here to assist you in planning your experience. Ask me anything travel related.</SubText>
         </>
     )

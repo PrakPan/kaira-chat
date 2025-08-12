@@ -1087,8 +1087,6 @@ const CityItem = ({
 
 
 
-console.log("HandleEdit",airportBookingId,booking_id,bookingId)
-
   return (
     <Container>
       <PinWrapper>

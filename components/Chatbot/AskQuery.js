@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import useChat from './hook/UseChat';
+import Dictate from './Dictate';
 
 const Container = styled.div`
   background: #F7F5F5;
@@ -80,22 +81,30 @@ function AskQuery() {
     const { sendMessage, quickReplies, disableQuerySection } = useChat();
     const textareaRef = useRef(null);
     const [query, setQuery] = useState("");
-    const [isSubmitDisabled, setSubmitDisabled] = useState(true)
+    const [trackUserTyping, setUserTyping] = useState("");
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
+    const dictateRef = useRef();
 
     const handleSubmitQuery = (input) => {
         const userMsg = { sender: "user", msg: input || query.trim() };
         sendMessage(userMsg);
         setQuery("");
         setSubmitDisabled(true);
+        dictateRef.current.stop();
         if (textareaRef.current) {
             textareaRef.current.style.height = "1.5rem";
         }
     }
 
     const handleInput = (e) => {
-        const textarea = textareaRef.current;
         setQuery(e.target.value);
-        const queryValue = e.target.value;
+        setUserTyping(e.target.value);
+        changeTextareaSize();
+    };
+
+    const changeTextareaSize = () => {
+        const textarea = textareaRef.current;
+        const queryValue = query;
         setSubmitDisabled(queryValue.trim() === "");
 
         if (textarea) {
@@ -104,12 +113,22 @@ function AskQuery() {
             const lineHeight = 24;
             const maxHeight = lineHeight * 3;
             textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+            textarea.scrollTop = textarea.scrollHeight;
         }
-    };
+    }
 
+    const handleTranscriptChange = (transcript) => {
+        const newQuery = `${trackUserTyping} ${transcript}`
+        setQuery(newQuery);
+        changeTextareaSize();
+    }
 
     const handleQuickReplies = (item) => {
         handleSubmitQuery(item);
+    }
+
+    const stopDictation = () => {
+        setUserTyping(query);
     }
 
     return (
@@ -142,9 +161,9 @@ function AskQuery() {
                     </form>
                     <div className='flex items-center justify-between'>
                         <div> <img src="/assets/chatbot/add-icon.png" /> </div>
-                        <div className="flex items-center gap-4">
-                            <div><img src="/assets/chatbot/speech.png" /></div>
-                            <div>
+                        <div className="flex items-center gap-2">
+                            <div> <Dictate ref={dictateRef} stopDictation={stopDictation} onTranscriptChange={handleTranscriptChange} /> </div>
+                            <div className='flex'>
                                 <SubmitButton disabled={isSubmitDisabled || disableQuerySection} onClick={(e) => {
                                     e.preventDefault();
                                     handleSubmitQuery()

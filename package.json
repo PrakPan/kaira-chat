@@ -78,6 +78,7 @@
     "react-range-slider-input": "^3.0.7",
     "react-redux": "^7.2.5",
     "react-scroll": "^1.8.5",
+    "react-speech-recognition": "^4.0.1",
     "react-spinners": "^0.13.8",
     "react-spring": "^9.7.1",
     "react-toastify": "^11.0.3",
