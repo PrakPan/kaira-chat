@@ -138,27 +138,31 @@ export async function getStaticProps(context){
   })
 
  // mercury api
-  await axiosReccommendedCityInstance.get(
-    `/?city_id=${Id}`
-  ).then((res)=>{
-    const reccoData = res.data.data;
-    reccomendedCitiesData= reccoData.map((e) => ({
-      id: e.id,
-      image: e.image,
-      lat: e.latitude,
-      long: e.longitude,
-      most_popular_for: e.most_popular_for,
-      name: e.name,
-      path: e.path,
-      budget: e?.budget,
-    }));
-  }).catch((err)=>{
+ await axiosReccommendedCityInstance.get(`/?city_id=${Id}`)
+  .then((res) => {
+    const reccoData = res.data?.data ?? [];
+
+    reccomendedCitiesData = Array.isArray(reccoData)
+      ? reccoData.map((e) => ({
+          id: e?.id ?? null,
+          image: e?.image ?? null,
+          lat: e?.latitude ?? null,
+          long: e?.longitude ?? null,
+          most_popular_for: Array.isArray(e?.most_popular_for) ? e.most_popular_for : [],
+          name: e?.name ?? "",
+          path: e?.path ?? "",
+          budget: e?.budget ?? null,
+        }))
+      : [];
+  })
+  .catch((err) => {
     console.error(
       `[ERROR][cityPage:axiosReccommendedCityInstance][/?city_id=${Id}]: `,
       err.message
     );
-    return []
-  })
+    reccomendedCitiesData = [];
+  });
+
 
   //mercury api
   await axioslocationsinstance.get(
