@@ -126,7 +126,7 @@ function getDayOffset(checkIn, checkOut) {
           </div>
 
           <div className="w-full text-[12px] text-gray-600 truncate text-center">
-            ({origin?.city_code})
+            ({origin?.airport_code || origin?.city_code})
           </div>
         </div>
 
@@ -201,7 +201,7 @@ function getDayOffset(checkIn, checkOut) {
   </span>
   
   <div className="w-full text-[12px] text-gray-600 truncate text-center">
-            ({destination?.city_code})
+            ({destination?.airport_code || destination?.city_code})
           </div>
   </div>
   {getDayOffset(booking?.check_in,booking?.check_out) && (

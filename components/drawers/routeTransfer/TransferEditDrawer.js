@@ -1451,10 +1451,9 @@ const RouteContainer = (props) => {
     const currentTransfer = transfer[currentStep - 1];
 
     const baseStartDate =
-      dCityData?.start_date ??
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
+        :oCityData?.start_date);
 
     let calculatedStartTime;
 
@@ -2347,10 +2346,10 @@ const NewMultiModeContainer = ({
         });
 
         const baseStartDate =
-          dCityData?.start_date ??
+          
           (oCityData?.start_date && oCityData?.duration != null
             ? addDaysToDate(oCityData.start_date, oCityData.duration)
-            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
+            : oCityData?.start_date);
         const requestBody = {
           destination_itinerary_city: destination_itinerary_city_id,
           source_itinerary_city: origin_itinerary_city_id
@@ -2432,12 +2431,10 @@ const NewMultiModeContainer = ({
 
     const currentTransfer = transfer[currentStep - 1];
 
-    const baseStartDate = selectedBooking?.check_in
-      ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
+    const baseStartDate = 
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : null);
+        : oCityData?.start_date);
 
     let calculatedStartTime;
 
@@ -3277,286 +3274,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
   );
 };
 
-const MobileRouteContainer = (props) => {
-  const { transferIndex, transfer, handleSelect } = props;
-  const [viewMore, setViewMore] = useState(false);
-  const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
 
-  const handleViewMore = () => {
-    setViewMore((prev) => !prev);
-  };
-
-  const getHours = () => {
-    const from = Math.floor(singleTransfer.duration / 60);
-    const to = Math.ceil(singleTransfer.duration / 60);
-
-    if (from) {
-      return `${from}-${to} hours`;
-    }
-
-    return `${to} hour`;
-  };
-
-  return (
-    <div
-      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 ? "border-yellow-300" : ""
-        } border-x-2 border-t-2 border-b-4`}
-    >
-      {singleTransfer[0]?.recommended && (
-        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
-          Recommended
-        </ClippathComp>
-      )}
-
-      {transfer.length > 1 ? (
-        viewMore ? (
-          <div className="w-full flex flex-col items-center justify-center">
-            <MobileMultiModeContainer
-              transferIndex={transferIndex}
-              transfer={transfer}
-              handleSelect={handleSelect}
-            />
-            <ViewMoreButton
-              viewMore={viewMore}
-              handleViewMore={handleViewMore}
-            />
-          </div>
-        ) : (
-          <div className="w-full flex flex-col items-center justify-center">
-            <MobileMultiRoute
-              transferIndex={transferIndex}
-              transfer={singleTransfer}
-              handleSelect={handleSelect}
-              setViewMore={setViewMore}
-            />
-            <ViewMoreButton
-              viewMore={viewMore}
-              handleViewMore={handleViewMore}
-            />
-          </div>
-        )
-      ) : (
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-row items-center gap-2">
-            <div
-              className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
-            >
-              <TransfersIcon
-                TransportMode={singleTransfer.mode}
-                Instyle={{
-                  fontSize: singleTransfer.mode === "Bus" ? "2rem" : "2.5rem",
-                  color: "black",
-                }}
-                classname={{ width: 50, height: 50 }}
-              />
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <div className="text-[16px] font-[600] leading-3">
-                {singleTransfer.text}
-              </div>
-
-              <div className="text-sm text-gray-400">
-                {singleTransfer?.duration && `${getHours()}`}
-                {singleTransfer?.distance &&
-                  ` | ${singleTransfer.distance} Kms`}
-              </div>
-            </div>
-          </div>
-
-          <div className="w-full flex flex-col gap-4">
-            <div className="flex flex-row items-center justify-between">
-              {singleTransfer?.facilities?.length ? (
-                <div className="text-sm">
-                  Facilities:{" "}
-                  {singleTransfer.facilities?.map((facility, index) => (
-                    <span key={index}>
-                      <span key={index}>{facility}</span>
-                      {index < singleTransfer.facilities?.length - 1 && " | "}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            <div className="flex flex-row items-end justify-between mb-2">
-              <div className="flex flex-col gap-2 items-start">
-                <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
-              </div>
-
-              <SelectButton
-                transfer={singleTransfer}
-                transferIndex={transferIndex}
-                handleSelect={handleSelect}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const MobileMultiRoute = (props) => {
-  const { transferIndex, transfer, handleSelect, setViewMore } = props;
-
-  const getHours = () => {
-    const from = Math.floor(transfer.duration / 60);
-    const to = Math.ceil(transfer.duration / 60);
-
-    if (from) {
-      return `${from}-${to} hours`;
-    }
-
-    return `${to} hour`;
-  };
-
-  return (
-    <div className="flex flex-col gap-2 w-full">
-      <div className="flex flex-row items-center gap-2">
-        <div
-          className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
-        >
-          <TransfersIcon
-            TransportMode={transfer.mode}
-            Instyle={{
-              fontSize: transfer.mode === "Bus" ? "2rem" : "2.5rem",
-              color: "black",
-            }}
-            classname={{ width: 50, height: 50 }}
-          />
-        </div>
-        <div className="flex flex-col items-start gap-2">
-          <div className="flex flex-col items-start gap-2">
-            <div className="text-[16px] font-[600] leading-3">
-              {transfer.text}
-            </div>
-
-            <button
-              onClick={() => setViewMore((prev) => !prev)}
-              className="w-fit h-fit text-blue -mt-[0.5rem]"
-            >
-              +1 more
-            </button>
-          </div>
-
-          <div className="text-sm text-gray-400">
-            {transfer?.duration && `${getHours()}`}
-            {transfer?.distance && ` | ${transfer.distance} Kms`}
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full flex flex-col gap-4">
-        <div className="flex flex-row items-center justify-between">
-          {transfer?.facilities?.length ? (
-            <div className="text-sm">
-              Facilities:{" "}
-              {transfer.facilities?.map((facility, index) => (
-                <span key={index}>
-                  <span key={index}>{facility}</span>
-                  {index < transfer.facilities?.length - 1 && " | "}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="flex flex-row items-end justify-between mb-2">
-          <div className="flex flex-col gap-2 items-start">
-            <EstimatedCost cost={transfer?.prices[0]?.price} />
-          </div>
-          <SelectButton
-            transfer={transfer}
-            transferIndex={transferIndex}
-            handleSelect={handleSelect}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const MobileMultiModeContainer = ({
-  transferIndex,
-  transfer,
-  handleSelect,
-}) => {
-  return (
-    <div className="w-full flex flex-col gap-0">
-      {transfer.map((singleTransfer, index) => (
-        <div key={index} className="flex flex-col gap-0 w-full">
-          {index === 0 ? (
-            <div className="flex flex-row items-center justify-between">
-              <div className={`flex flex-row gap-3 items-center justify-start`}>
-                <div className="w-[50px] flex items-center justify-center">
-                  <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-yellow rounded-full"></div>
-                  </div>
-                </div>
-
-                <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-                  {singleTransfer?.source?.name}
-                </div>
-              </div>
-            </div>
-          ) : null}
-
-          <div className="w-full flex flex-row gap-3 items-center justify-start">
-            <div className="w-[55px] flex flex-col gap-1 items-center justify-center">
-              <div className="w-[2px] h-3 rounded-full bg-green-100"></div>
-              <div className="w-[2px] h-3 rounded-full bg-green-200"></div>
-              <div className="w-[2px] h-3 rounded-full bg-green-300"></div>
-              <div className="w-[50px] flex items-center justify-center">
-                <TransfersIcon
-                  TransportMode={singleTransfer?.mode}
-                  Instyle={{
-                    fontSize:
-                      singleTransfer?.mode === "Bus" ? "2rem" : "2.5rem",
-                    color: "black",
-                  }}
-                  classname={{ width: 40, height: 40 }}
-                  Multimode
-                />
-              </div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-500"></div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-600"></div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-700"></div>
-            </div>
-
-            <div className="w-full flex flex-col gap-2 items-center justify-center">
-              <div className="w-full flex flex-col items-start justify-start gap-0">
-                <TransferItem transfer={singleTransfer} transferIndex={index} />
-
-                <div className="w-full flex flex-row items-center justify-between">
-                  <div className="flex flex-col gap-2 items-start">
-                    <EstimatedCost cost={singleTransfer.prices[0]?.price} />
-                  </div>
-                  <SelectButton
-                    transfer={singleTransfer}
-                    transferIndex={transferIndex}
-                    handleSelect={handleSelect}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={`flex flex-row gap-3 items-center justify-start`}>
-            <div className="w-[50px] flex items-center justify-center">
-              <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-yellow rounded-full"></div>
-              </div>
-            </div>
-
-            <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-              {singleTransfer?.destination?.name}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
 
 const ViewMoreButton = ({ viewMore, handleViewMore }) => {
   return (
@@ -5001,74 +4719,6 @@ const OtherTransfer = ({
   );
 };
 
-const MercuryTransfer = ({ transfer, setShowMercuryTransfer }) => {
-  // const handleSelectPrice = (index) => {
-  //   setSelectedResult((prev) => {
-  //     return {
-  //       ...prev,
-  //       trace_id: traceId,
-  //       result_index: otherTransfer.prices[index].result_index,
-  //     };
-  //   });
 
-  //   setShowOtherTrasfer(false);
-  // };
 
-  return (
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-        setShowMercuryTransfer(false);
-      }}
-      className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
-    >
-      <div className="bg-white w-fit p-3 rounded-lg space-y-5">
-        <div className="text-lg">Select your seat</div>
 
-        <div className="w-full flex items-center justify-center">
-          <div className="flex flex-col gap-2">
-            {transfer &&
-              transfer.prices.map((price, i) => (
-                <div
-                  key={i}
-                  onClick={() => handleSelectPrice(i)}
-                  className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md"
-                >
-                  <div>{price.class ? price.class : "Seater"}</div>
-                  <div className="font-semibold">
-                    ₹{getIndianPrice(price.price)}/-{" "}
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const MercurySelectButton = ({
-  transfer,
-  setShowMercuryTransfer,
-  setSelectedMercuryTransfer,
-}) => {
-  const getLabel = () => {
-    return `Select a ${transfer.mode}`;
-  };
-
-  return (
-    <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
-      <button
-        onClick={() => {
-          setShowMercuryTransfer(true);
-          setSelectedMercuryTransfer(transfer);
-        }}
-        className="focus:outline-none"
-      >
-        {getLabel()}
-      </button>
-
-      <RiArrowRightSLine className="text-xl group-hover:scale-110 group-hover:translate-x-1 transition-all" />
-    </div>
-  );
-};

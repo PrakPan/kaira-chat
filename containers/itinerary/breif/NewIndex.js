@@ -174,6 +174,7 @@ const Details = (props) => {
               setShowDrawer={setShowDrawer}
               setShowDrawerData={setShowDrawerData}
               fetchData={props.fetchData}
+              resetRef={props?.resetRef}
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
