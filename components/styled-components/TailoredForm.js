@@ -4,7 +4,7 @@ export const StyledHeading = styled.div`
   color: var(--text-colors-text-focused, #000);
 
   /* Body/Body | Regular */
-  font-family: Inter;
+  // font-family: Inter;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

@@ -92,7 +92,7 @@ const LoadingText = styled.div`
 const useSourceParams = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const params = useParams(); 
+  const params = useParams();
 
   const source = useMemo(() => {
     const queryObj = {};
@@ -121,7 +121,7 @@ const Enquiry = (props) => {
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
-  const {token} = useSelector(state=>state.auth)
+  const { token } = useSelector(state => state.auth)
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
@@ -174,7 +174,9 @@ const Enquiry = (props) => {
     min_price: 0,
     max_price: 3000,
   });
-  
+
+  const headings=["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.","Route Overview — Customize Your Journey from Start to Finish!","Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?"]
+
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
 
@@ -186,10 +188,10 @@ const Enquiry = (props) => {
     let tempInfants = numberOfInfants;
     while (tempadults != 0) {
       if (tempadults >= 2) {
-        distribution.push({ adults: 2,children:0 });
+        distribution.push({ adults: 2, children: 0 });
         tempadults -= 2;
       } else {
-        distribution.push({ adults: tempadults,children:0  });
+        distribution.push({ adults: tempadults, children: 0 });
         tempadults = 0;
       }
     }
@@ -294,67 +296,67 @@ const Enquiry = (props) => {
   //   ];
   // }
 
-const queryType = router?.query?.type?.toLowerCase();
-const propType = props?.type?.toLowerCase();
+  const queryType = router?.query?.type?.toLowerCase();
+  const propType = props?.type?.toLowerCase();
 
-if (queryType === "page" || propType === "page") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Page",
-    },
-  ];
-} else if ((routerquery.state && !routerquery.city) || propType === "state") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "State",
-    },
-  ];
-} else if ((routerquery.city) || propType === "city" || queryType === "city") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "City",
-    },
-  ];
-} else if (routerquery.country || propType === "country") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Country",
-    },
-  ];
-} else if (routerquery.continent || queryType === "continent" || propType === "continent") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Continent",
-    },
-  ];
-} else {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: routerquery?.type || props?.destinationType,
-    },
-  ];
-}
+  if (queryType === "page" || propType === "page") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Page",
+      },
+    ];
+  } else if ((routerquery.state && !routerquery.city) || propType === "state") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "State",
+      },
+    ];
+  } else if ((routerquery.city) || propType === "city" || queryType === "city") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  } else if (routerquery.country || propType === "country") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Country",
+      },
+    ];
+  } else if (routerquery.continent || queryType === "continent" || propType === "continent") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Continent",
+      },
+    ];
+  } else {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: routerquery?.type || props?.destinationType,
+      },
+    ];
+  }
 
 
- 
+
 
   const _handleHideBlack = () => {
     setShowCities(false);
@@ -366,8 +368,8 @@ if (queryType === "page" || propType === "page") {
     const value_end = new Date(valueEnd);
 
     if (isSubmitting) {
-    return;
-  }
+      return;
+    }
 
     setLoading(true);
     setIsSubmitting(true);
@@ -403,7 +405,7 @@ if (queryType === "page" || propType === "page") {
             countryIds.push(selectedCities[i].id);
           else if (selectedCities[i].type?.toLowerCase() == "continent")
             continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location"){
+          else if (selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location") {
             cityids.push(selectedCities[i].id);
           }
           else {
@@ -412,10 +414,10 @@ if (queryType === "page" || propType === "page") {
           locations.push(selectedCities[i].name);
         }
       }
-    } catch {}
+    } catch { }
 
-  
-let dist=divideTravellers()
+
+    let dist = divideTravellers()
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
 
@@ -433,10 +435,10 @@ let dist=divideTravellers()
       number_of_infants = numberOfInfants;
     }
 
-//     const source = {
-//   path: router.pathname, 
-//   ...router.query,       
-// };
+    //     const source = {
+    //   path: router.pathname, 
+    //   ...router.query,       
+    // };
 
     let data = null;
     data = {
@@ -488,7 +490,7 @@ let dist=divideTravellers()
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
 
- 
+
 
   useEffect(() => {
     setShowPopup(popupObj);
@@ -572,7 +574,7 @@ let dist=divideTravellers()
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent"){
+          else if (selectedCities[i].type?.toLowerCase() == "continent") {
             continentIds.push(selectedCities[i].id);
             pageIds.push(selectedCities[i].id);
           }
@@ -582,9 +584,9 @@ let dist=divideTravellers()
           locations.push(selectedCities[i].name);
         }
       }
-    } catch {}
+    } catch { }
 
-    
+
 
     const data = {
       source,
@@ -641,7 +643,7 @@ let dist=divideTravellers()
     };
   }, [router]);
 
-  useEffect(() => {});
+  useEffect(() => { });
 
   const completeItineraryCreate = () => {
     let number_of_adults = 2;
@@ -671,7 +673,7 @@ let dist=divideTravellers()
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
-      room_configuration: slideIndex==1?dist:roomConfiguration,
+      room_configuration: slideIndex == 1 ? dist : roomConfiguration,
       add_hotels: addHotels,
       add_flights: addFlights,
     };
@@ -709,7 +711,7 @@ let dist=divideTravellers()
   };
 
   return (
-    <>
+    <div className="h-full">
       {showBlack && !props.tailoredFormModal ? (
         <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
       ) : null}
@@ -769,7 +771,7 @@ let dist=divideTravellers()
           }}
           className="w-full flex flex-row items-center"
         >
-          {slideIndex && !props.tailoredFormModal ? (
+          {slideIndex && props.tailoredFormModal ? (
             <div className="center-div">
               <BiArrowBack
                 onClick={_prevSlideHandler}
@@ -781,7 +783,7 @@ let dist=divideTravellers()
             <></>
           )}
 
-          <div className="w-full">
+          {/* <div className="w-full">
             {props.tailoredFormModal && (
               <CloseIcon>
                 {slideIndex ? (
@@ -814,223 +816,235 @@ let dist=divideTravellers()
             >
               {getHeading()}
             </Heading>
-          </div>
+          </div> */}
         </div>
+        <div className="flex flex-col items-center justify-center">
+          <div style={{ padding: "0 1rem", width: "100%" }} className="h-full max-w-[600px] ">
+            <Heading className="text-[40px] text-center">{headings[slideIndex]}</Heading>
 
-        <div style={{ padding: "0 1rem", width: "100%" }} className="h-full">
-          <div
-            style={{
-              borderStyle: "solid none none none",
-              borderWidth: "1px",
-              color: "#D3D3D3",
-              height: "1px",
-              width: "100%",
-              marginBottom: "1.5rem",
-            }}
-          ></div>
+            <div
+              style={{
+                borderStyle: "solid none none none",
+                borderWidth: "1px",
+                color: "#D3D3D3",
+                height: "1px",
+                width: "100%",
+                marginBottom: "1.5rem",
+              }}
+            ></div>
 
-          <Flickity
-            initialInputId={initialInputId}
-            focusedDate={focusedDate}
-            setFocusedDate={setFocusedDate}
-            tailoredFormModal={props.tailoredFormModal}
-            flexible={flexible}
-            setFlexible={setFlexible}
-            startingLocation={startingLocation}
-            setStartingLocation={setStartingLocation}
-            children_cities={props.children_cities}
-            showSearchStarting={showSearchStarting}
-            setShowSearchStarting={setShowSearchStarting}
-            showCities={showCities}
-            setShowCities={setShowCities}
-            destination={destination}
-            setDestination={setDestination}
-            token={props.token}
-            phone={props.phone}
-            slideIndex={slideIndex}
-            cities={props.cities}
-            selectedCities={selectedCities}
-            setSelectedCities={setSelectedCities}
-            valueStart={valueStart}
-            valueEnd={valueEnd}
-            setValueStart={setValueStart}
-            setValueEnd={setValueEnd}
-            groupType={groupType}
-            setGroupType={setGroupType}
-            numberOfAdults={numberOfAdults}
-            setNumberOfAdults={setNumberOfAdults}
-            numberOfChildren={numberOfChildren}
-            setNumberOfChildren={setNumberOfChildren}
-            numberOfInfants={numberOfInfants}
-            setNumberOfInfants={setNumberOfInfants}
-            setBudget={setBudget}
-            selectedPreferences={selectedPreferences}
-            setSelectedPreferences={setSelectedPreferences}
-            setSubmitSecondSlide={setSubmitSecondSlide}
-            eventDates={props.eventDates}
-            roomConfiguration={roomConfiguration}
-            setRoomConfiguration={setRoomConfiguration}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            addHotels={addHotels}
-            setAddHotels={setAddHotels}
-            addFlights={addFlights}
-            setAddFlights={setAddFlights}
-            setSlideIndex={setSlideIndex}
-            setLoginComplete={setLoginComplete}
-            defaultPriceRange={defaultPriceRange}
-          ></Flickity>
+            <Flickity
+              initialInputId={initialInputId}
+              focusedDate={focusedDate}
+              setFocusedDate={setFocusedDate}
+              tailoredFormModal={props.tailoredFormModal}
+              flexible={flexible}
+              setFlexible={setFlexible}
+              startingLocation={startingLocation}
+              setStartingLocation={setStartingLocation}
+              children_cities={props.children_cities}
+              showSearchStarting={showSearchStarting}
+              setShowSearchStarting={setShowSearchStarting}
+              showCities={showCities}
+              setShowCities={setShowCities}
+              destination={destination}
+              setDestination={setDestination}
+              token={props.token}
+              phone={props.phone}
+              slideIndex={slideIndex}
+              cities={props.cities}
+              selectedCities={selectedCities}
+              setSelectedCities={setSelectedCities}
+              valueStart={valueStart}
+              valueEnd={valueEnd}
+              setValueStart={setValueStart}
+              setValueEnd={setValueEnd}
+              groupType={groupType}
+              setGroupType={setGroupType}
+              numberOfAdults={numberOfAdults}
+              setNumberOfAdults={setNumberOfAdults}
+              numberOfChildren={numberOfChildren}
+              setNumberOfChildren={setNumberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfInfants={setNumberOfInfants}
+              setBudget={setBudget}
+              selectedPreferences={selectedPreferences}
+              setSelectedPreferences={setSelectedPreferences}
+              setSubmitSecondSlide={setSubmitSecondSlide}
+              eventDates={props.eventDates}
+              roomConfiguration={roomConfiguration}
+              setRoomConfiguration={setRoomConfiguration}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              addHotels={addHotels}
+              setAddHotels={setAddHotels}
+              addFlights={addFlights}
+              setAddFlights={setAddFlights}
+              setSlideIndex={setSlideIndex}
+              setLoginComplete={setLoginComplete}
+              defaultPriceRange={defaultPriceRange}
+            ></Flickity>
 
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-          {slideIndex === 0 ? (
-            <Button
-              fontSize="1rem"
-              width={!isPageWide ? "auto" : "100%"}
-              style={
-                !isPageWide && isPageLoaded
-                  ? {
+            {slideIndex === 0 ? (
+              <Button
+                fontSize="1rem"
+                width={!isPageWide ? "auto" : "100%"}
+                style={
+                  !isPageWide && isPageLoaded
+                    ? {
                       position: "fixed",
                       left: "1rem",
                       right: "1rem",
                       bottom: "0",
                     }
-                  : {}
-              }
-              padding="0.5rem 2rem"
-              fontWeight="500"
-              margin="1rem 0"
-              borderRadius="5px"
-              borderWidth="1px"
-              bgColor="#f7e700"
-              onclick={_SlideOneSubmitHandler}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              Continue
-            </Button>
-          ) : null}
+                    : {}
+                }
+                padding="0.5rem 2rem"
+                fontWeight="500"
+                margin="1rem 0"
+                borderRadius="5px"
+                borderWidth="1px"
+                bgColor="#07213A"
+                onclick={_SlideOneSubmitHandler}
+                loading={isLoading}
+                disabled={isLoading}
+                height="50px"
+                color="white"
+              >
+                Continue
+              </Button>
+            ) : null}
 
-          {slideIndex === 1 ? (
-            !props.token || props.phone === "null" || addHotels ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
+            {slideIndex === 1 ? (
+              !props.token || props.phone === "null" || addHotels ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
                           position: "fixed",
                           left: "1rem",
                           right: "1rem",
                           bottom: "0",
                         }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={_SlideTwoSubmitHandler}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    onclick={_SlideTwoSubmitHandler}
+                    loading={isLoading && submitted}
+                    height="50px"
+                    color="white"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
                           position: "fixed",
                           left: "1rem",
                           right: "1rem",
                           bottom: "0",
                         }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="8px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onclick={_submitDataHandler}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )
+            ) : null}
 
-          {slideIndex === 2 && addHotels ? (
-            !props.token || props.phone === "null" ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
+            {slideIndex === 2 && addHotels ? (
+              !props.token || props.phone === "null" ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
                           position: "fixed",
                           left: "1rem",
                           right: "1rem",
                           bottom: "0",
                         }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={_SlideThreeSubmitHandler}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    onclick={_SlideThreeSubmitHandler}
+                    loading={isLoading && submitted}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
                           position: "fixed",
                           left: "1rem",
                           right: "1rem",
                           bottom: "0",
                         }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onclick={_submitDataHandler}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )
+            ) : null}
+          </div>
         </div>
       </Container>
-    </>
+    </div>
   );
 };
 

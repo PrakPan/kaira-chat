@@ -47,7 +47,6 @@ const Destinations = (props) => {
             inbox_id={props.selectedCities[i].input_id}
             selectedCities={props.selectedCities}
             destination={props.selectedCities[i].name}
-            destinations={props.selectedCities}
             CITIES={props.CITIES}
             openCities={() => props.setShowCities(true)}
             setDestination={props.setDestination}
@@ -57,6 +56,7 @@ const Destinations = (props) => {
             eventDates={props.eventDates}
             updatedData={updatedData}
             tailoredFormModal={props.tailoredFormModal}
+            selectedCity={props.selectedCities[i]}
           ></EndDestination>
         </div>
       );
@@ -68,22 +68,25 @@ const Destinations = (props) => {
     let dest = destinations.slice();
     const id = Date.now();
     dest.push(
-      <SelectedDestination
-        autofocus
-        _updateDestinationHandler={_updateDestinationHandler}
-        setDeletedId={setDeletedId}
-        key={id}
-        inbox_id={id}
-        selectedCities={props.selectedCities}
-        CITIES={props.CITIES}
-        openCities={() => props.setShowCities(true)}
-        setDestination={props.setDestination}
-        setSelectedCities={props.setSelectedCities}
-        setValueStart={props.setValueStart}
-        setValueEnd={props.setValueEnd}
-        eventDates={props.eventDates}
-        tailoredFormModal={props.tailoredFormModal}
-      ></SelectedDestination>
+      <>
+        <StyledHeading>Destination</StyledHeading>
+        <SelectedDestination
+          autofocus
+          _updateDestinationHandler={_updateDestinationHandler}
+          setDeletedId={setDeletedId}
+          key={id}
+          inbox_id={id}
+          selectedCities={props.selectedCities}
+          CITIES={props.CITIES}
+          openCities={() => props.setShowCities(true)}
+          setDestination={props.setDestination}
+          setSelectedCities={props.setSelectedCities}
+          setValueStart={props.setValueStart}
+          setValueEnd={props.setValueEnd}
+          eventDates={props.eventDates}
+          tailoredFormModal={props.tailoredFormModal}
+        ></SelectedDestination>
+      </>
     );
     setDestinations(dest.slice());
     props.selectedCities.push({ input_id: id });
@@ -96,12 +99,13 @@ const Destinations = (props) => {
 
   useEffect(() => {
     if (updatedData.id) {
+      console.log("end destination data is: ", updatedData)
       const selected = props.selectedCities.map((e) => {
         if (e.input_id == updatedData.input_id)
           return {
             input_id: updatedData.input_id,
             ...updatedData.data,
-            id: updatedData.id,
+            id: updatedData.id
           };
         return e;
       });

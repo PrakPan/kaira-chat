@@ -1,9 +1,9 @@
 import styled, { keyframes } from "styled-components";
 import SlideOne from "./slideone/SlideOne";
-import SlideTwo from "./slidetwo/SlideTwo";
+import SlideThree from "./slidetwo/SlideThree";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
-import SlideThree from "./slidethree/SlideThree";
+import SlideFour from "./slidefour/SlideFour";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -15,7 +15,7 @@ const Card = styled.div`
 
 const FlickityComp = (props) => {
   return (
-    <div style={{ width: "100%" }} className="">
+    <div style={{ width: "100%" }} className="font-inter">
       {!props.slideIndex ? (
         <Card>
           <SlideOne
@@ -50,7 +50,8 @@ const FlickityComp = (props) => {
 
       {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
         <Card>
-          <SlideTwo
+          <SlideThree
+            roomConfiguration={props.roomConfiguration}
             numberOfAdults={props.numberOfAdults}
             tailoredFormModal={props.tailoredFormModal}
             setNumberOfAdults={props.setNumberOfAdults}
@@ -73,13 +74,13 @@ const FlickityComp = (props) => {
             setAddFlights={props.setAddFlights}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
-          ></SlideTwo>
+          ></SlideThree>
         </Card>
       ) : null}
 
       {props.slideIndex === 2 ? (
         props.addHotels ? (
-          <SlideThree
+          <SlideFour
             numberOfAdults={props.numberOfAdults}
             setNumberOfAdults={props.setNumberOfAdults}
             numberOfChildren={props.numberOfChildren}

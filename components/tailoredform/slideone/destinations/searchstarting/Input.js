@@ -95,6 +95,7 @@ const SearchInput = (props) => {
                     selectResult={_selectResult}
                     text={res.data[i].text}
                     place_id={res.data[i].place_id}
+                    image	={res.data[i].image}
                   ></SearchResult>
                 );
               }

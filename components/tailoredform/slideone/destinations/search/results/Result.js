@@ -1,6 +1,8 @@
 import { FaMapMarkerAlt } from "react-icons/fa";
 import styled from "styled-components";
 import moment from "moment";
+import ImageLoader from "../../../../../ImageLoader";
+import Image from "next/image";
 
 const Container = styled.div`
   display: grid;
@@ -8,9 +10,8 @@ const Container = styled.div`
   gap: 12px;
   align-items: center;
   margin-block: 1rem;
-  border-radius: 30px;
   &:hover {
-    background: #f0f0f0;
+    background: #FEFFC0;
   }
 `;
 
@@ -41,7 +42,7 @@ const Result = (props) => {
 
     const links = path.split("/");
     links.pop();
-    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" > ");
+    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" , ");
 
     return parent;
   };
@@ -66,14 +67,12 @@ const Result = (props) => {
           );
       }}
     >
-      <MarkerContainer>
-        <FaMapMarkerAlt />
-      </MarkerContainer>
-      <div className="">
-        <div className="font-[500]">{props.name}</div>
-        <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">
-          {getParent(props.result.path)}
-        </p>
+      {/* <MarkerContainer> */}
+        <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/"+props.result?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]"/>
+      {/* </MarkerContainer> */}
+      <div className="flex">
+        <div className="font-[500]">{props.name} </div>
+        <div className="font-normal">, {getParent(props.result.path)}</div>
       </div>
     </Container>
   );

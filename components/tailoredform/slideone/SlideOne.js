@@ -121,7 +121,7 @@ const SlideOne = (props) => {
       </Section>
 
       <Section>
-        <div
+        {/* <div
           onClick={() => setShowPreferences(!showPreferences)}
           className="w-fit flex"
         >
@@ -132,15 +132,15 @@ const SlideOne = (props) => {
               className="hover-pointer"
             />
           </div>
-        </div>
+        </div> */}
 
-        {showPreferences ? (
+        {/* {showPreferences ? ( */}
           <Preferences
             tailoredFormModal={props.tailoredFormModal}
             selectedPreferences={props.selectedPreferences}
             setSelectedPreferences={props.setSelectedPreferences}
           ></Preferences>
-        ) : null}
+        {/* ) : null} */}
       </Section>
     </Container>
   );

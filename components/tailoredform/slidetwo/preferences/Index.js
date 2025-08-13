@@ -18,40 +18,6 @@ const Container = styled.div`
   }
 `;
 
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: ${(props) =>
-    props.tailoredFormModal ? "1fr 1fr" : "1fr 1fr 1fr"};
-  grid-column-gap: 1rem;
-  grid-row-gap: 0.3rem;
-  width: 100%;
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-`;
-
-const OptionContainer = styled.div`
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-gap: 8px;
-  font-size: 0.8rem;
-`;
-
-const YellowContainer = styled.div`
-  background-color: ${(props) =>
-    props.is_selected ? "rgba(247,231,0,0.3)" : "transparent"};
-  height: 1rem;
-  width: 1rem;
-  border-radius: 2px;
-  border: 1px solid black;
-  &:hover {
-    background-color: ${(props) =>
-      props.is_selected ? "rgba(247,231,0,0.3)" : "rgba(247,231,0,0.1)"};
-    color: black;
-  }
-`;
 
 const GroupType = (props) => {
   const _isPreferenceAdded = (preference) => {

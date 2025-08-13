@@ -6,6 +6,7 @@ import SearchInput from "../search/Index";
 import { BiTargetLock } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { StyledContainer } from "../../../../styled-components/TailoredForm";
+import Image from "next/image";
 
 const Container = styled.div`
   margin-bottom: 0.25rem;
@@ -28,6 +29,7 @@ const RightContainer = styled.div`
 `;
 
 const EndDestination = (props) => {
+  console.log("end destination props are: ",props)
   const [searchFinalized, setSearchFinalized] = useState(false);
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
@@ -55,9 +57,9 @@ const EndDestination = (props) => {
             ? () => props.setShowCities(false)
             : () => _handleShowSearchStarting()
           : () => {
-              setShowDestination(false);
-              _handleFocusSearch();
-            }
+            setShowDestination(false);
+            _handleFocusSearch();
+          }
       }
       className="font-lexend hover-pointer"
       style={{
@@ -69,16 +71,20 @@ const EndDestination = (props) => {
       }}
     >
       <div
-        className="hover-pointer text-[0.85rem] flex flex-row items-center justify-between w-full"
+        className="hover-pointer text-[0.85rem] flex flex-row gap-[10px] items-center  w-full"
         selectlocation={props.selectlocation}
       >
         {!props.selectlocation ? (
-          <MdOutlineLocationOn
+          <>
+            {/* <MdOutlineLocationOn
             style={{
               lineHeight: "1",
               fontSize: "1.25rem",
             }}
-          ></MdOutlineLocationOn>
+          ></MdOutlineLocationOn> */}
+            <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
+
+          </>
         ) : (
           <BiTargetLock
             style={{
