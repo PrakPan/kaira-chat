@@ -4,6 +4,7 @@ import SlideThree from "./slidetwo/SlideThree";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
+import SlideTwo from "./slidetwo/SlideTwo";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -12,6 +13,71 @@ const Card = styled.div`
   margin: 0;
   animation: 1s ${fadeInAnimation};
 `;
+
+const dummyProps = {
+  itinerary: {
+    ItineraryId: "67890",
+    name: "Weekend Getaway",
+    start_date: "2025-10-15",
+    end_date: "2025-10-18",
+    duration: 3,
+    group_type: "Couple",
+    budget: "$1,500 - $2,000",
+    number_of_adults: 2,
+    number_of_children: 0,
+    number_of_infants: 0
+  },
+  routes: [
+    {
+      id: 1,
+      city_name: "Mumbai",
+      city_id: "mumbai_001",
+      place_id: "ChIJwe1EZjDG5zsRaYxkjY_tpF0",
+      latitude: 19.0760,
+      longitude: 72.8777,
+      duration: 0,
+      checkin_date: "2025-10-15",
+      checkout_date: "2025-10-15"
+    },
+    {
+      id: 2,
+      city_name: "Goa",
+      city_id: "goa_001",
+      place_id: "ChIJ4R4UHG4XuzkRUOFqI5hwGBk",
+      latitude: 15.2993,
+      longitude: 74.1240,
+      duration: 3,
+      nights: 3,
+      checkin_date: "2025-10-15",
+      checkout_date: "2025-10-18"
+    },
+    {
+      id: 3,
+      city_name: "Mumbai",
+      city_id: "mumbai_001",
+      place_id: "ChIJwe1EZjDG5zsRaYxkjY_tpF0",
+      latitude: 19.0760,
+      longitude: 72.8777,
+      duration: 0,
+      checkin_date: "2025-10-18",
+      checkout_date: "2025-10-18"
+    }
+  ],
+  editRoute: "editDestinations",
+  mercuryItinerary: false,
+  token: "dummy_auth_token_67890",
+  ItineraryId: "67890",
+  group_type: "Couple",
+  duration_time: 3,
+  travellerType: "Couple",
+  setEdit: (value) => console.log("setEdit called"),
+  fetchData: (refresh) => console.log("fetchData called"),
+  resetRef: () => console.log("resetRef called"),
+  setShowLoginModal: (show) => console.log("setShowLoginModal called"),
+  setLocationsLatLong: (locations) => console.log("setLocationsLatLong called"),
+  openNotification: (notification) => console.log("openNotification called"),
+  children: <div className="w-full h-full bg-blue-50 rounded-lg flex items-center justify-center"><p>Map View</p></div>
+};
 
 const FlickityComp = (props) => {
   return (
@@ -46,6 +112,14 @@ const FlickityComp = (props) => {
             setSelectedPreferences={props.setSelectedPreferences}
           ></SlideOne>
         </Card>
+      ) : null}
+
+      {props.slideIndex === 2 && props.token && props.phone !== "null" ? (
+        <Card>
+          <SlideTwo
+            {...dummyProps}
+            />
+          </Card>
       ) : null}
 
       {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
@@ -97,6 +171,7 @@ const FlickityComp = (props) => {
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
           />
+
         ) : (
           <Login
             nospacing

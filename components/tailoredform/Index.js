@@ -1009,7 +1009,7 @@ const Enquiry = (props) => {
                     Continue
                   </Button>
                 </div>
-              ) : (
+              ) : slideIndex === 4 ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"
@@ -1039,7 +1039,7 @@ const Enquiry = (props) => {
                     Continue
                   </Button>
                 </div>
-              )
+              ) :null 
             ) : null}
           </div>
         </div>
