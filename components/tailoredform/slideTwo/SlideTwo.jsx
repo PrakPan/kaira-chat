@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone } from "react-icons/md";
+import { MdDone, MdModeEditOutline, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
@@ -12,6 +12,7 @@ import {
     FaCircleMinus,
     FaCalendarDays,
 } from "react-icons/fa6";
+import { RiProgress2Line } from "react-icons/ri";
 import {
     startOfMonth,
     endOfMonth,
@@ -52,6 +53,7 @@ import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary from "../../../store/actions/itinerary";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 const Container = styled.div`
   position: relative;
@@ -609,52 +611,16 @@ const RouteEditSection = (props) => {
         <>
             <div
                 onClick={(e) => handleOutsideClick(e)}
-                className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
+                className="w-full h-full fixed inset-0 flex flex-col bg-[#ACACAC] items-center bg-white z-[1025] overflow-y-auto hide-scrollbar"
             >
                 {/* {loading && <Loader />} */}
-                <Header
-                    setEdit={props.setEdit}
-                    title={props?.itinerary.name}
-                    group_type={props?.group_type || props?.itinerary?.group_type}
-                    duration_time={props?.duration_time || props?.itinerary?.duration}
-                    travellerType={props?.travellerType}
-                    start_date={
-                        props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
-                    }
-                    end_date={
-                        props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
-                    }
-                    duration={
-                        props?.plan
-                            ? props?.plan.duration_number + " " + props?.plan.duration_unit
-                            : props?.itinerary?.duration +
-                            " " +
-                            `${props?.itinerary?.duration > 1 ? "Nights" : "Night"}`
-                    }
-                    budget={props?.plan ? props?.plan?.budget : props?.itinerary?.budget}
-                    number_of_adults={
-                        props?.plan
-                            ? props?.plan?.number_of_adults
-                            : props?.itinerary?.number_of_adults
-                    }
-                    number_of_children={
-                        props?.plan
-                            ? props?.plan?.number_of_children
-                            : props?.itinerary?.number_of_children
-                    }
-                    number_of_infants={
-                        props?.plan
-                            ? props?.plan?.number_of_infants
-                            : props?.itinerary?.number_of_infants
-                    }
-                    setEditDestination={setEditDestination}
-                />
-
+                <Header title={"Route Overview — Customize Your Journey from Start to Finish!"}></Header>
+              
                 {itineraryLoading && <Spinner isEdit={true} />}
 
-                <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
+                <div className="w-full h-full px-5 hide-scrollbar overflow-y-auto py-5">
                     {editDestination && !itineraryLoading ? (
-                        <div className="w-full flex flex-row justify-center gap-5">
+                        <div className="w-full h-full flex flex-row justify-start gap-5">
                             <EditDestinations
                                 destinations={destinations}
                                 setDestinations={setDestinations}
@@ -665,7 +631,7 @@ const RouteEditSection = (props) => {
                                 setDestinationChanges={setDestinationChanges}
                             />
                             {isDesktop && (
-                                <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                                <div className="sticky top-0 h-full w-[50%] flex flex-col gap-3 items-center">
                                     {props.children}
 
                                     {destinationChanges && (
@@ -690,19 +656,11 @@ const RouteEditSection = (props) => {
                         // />
                         ""
                     )}
+                 <ActionPanel/>
                 </div>
 
-                {!itineraryLoading && (
-                    <ActionPanel
-                        setEdit={props.setEdit}
-                        editDestination={editDestination}
-                        setEditDestination={setEditDestination}
-                        handleSaveButton={handleSaveButton}
-                        itineraryLoading={itineraryLoading}
-                        handleClose={handleClose}
-                    />
-                )}
-
+              
+               
                 {!isDesktop && (
                     <FloatingView>
                         <TbArrowBack
@@ -752,56 +710,13 @@ const Header = (props) => {
     };
 
     return (
-        <div className="w-full md:w-[85%] p-3 border-b-2 border-b-gray-200 space-y-5">
-            <h1 className="text-2xl md:text-3xl lg:text-3xl font-semibold">
+        <div className="w-full font-inter px-5 py-3  border-b-gray-200">
+            <div className="flex items-center justify-between">
+                <IoMdArrowRoundBack size={24}/>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold w-[50%] text-center">
                 {props?.title}
             </h1>
-            <div className="flex flex-row pb-3 gap-5 text-sm items-center justify-start overflow-x-auto text-nowrap">
-                <div className="flex flex-col gap-1">
-                    <div className="text-sm text-gray-500">Group Type</div>
-                    <div className="flex flex-row gap-2">
-                        {props?.group_type}
-                        <span>
-                            (
-                            {props.number_of_adults
-                                ? props.number_of_adults > 1
-                                    ? props.number_of_adults + " Adults"
-                                    : props.number_of_adults + " Adult"
-                                : null}
-                            {props.number_of_children
-                                ? `, ${props.number_of_children} Children`
-                                : null}
-                            {props.number_of_infants
-                                ? props.number_of_infants > 1
-                                    ? `, ${props.number_of_infants} Infants`
-                                    : `, ${props.number_of_infants} Infant`
-                                : null}
-                            )
-                        </span>
-                    </div>
-                </div>
-
-                {props?.budget && (
-                    <div className="flex flex-col gap-1">
-                        <div className="text-sm text-gray-500">Budget</div>
-                        <div>{props?.budget}</div>
-                    </div>
-                )}
-
-                <div className="flex flex-row gap-4 items-center">
-                    <div className="flex flex-col gap-1">
-                        <div className="flex flex-row gap-2 items-center">
-                            <div className="text-sm text-gray-500">
-                                Dates ({props?.duration})
-                            </div>
-                        </div>
-                        <div>
-                            {convertDFormat(props.start_date)}
-                            {" - "}
-                            {convertDFormat(props.end_date)}
-                        </div>
-                    </div>
-                </div>
+                <IoMdArrowRoundBack size={24}/>
             </div>
         </div>
     );
@@ -929,18 +844,18 @@ export const EditDestinations = (props) => {
     }
 
     return (
-        <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
-            <div className="w-full flex flex-row items-center justify-between">
-                <div className="text-[24px] font-semibold leading-6">Route</div>
+        <div className="w-full md:w-[50%] lg:w-[50%] font-inter  font-normal flex flex-col items-start justify-start  pb-[150px]  gap-3">
+            <div className="w-full flex flex-row items-start justify-between">
+                <div className="text-[24px] pb-3">Route Preview</div>
 
-                <div>
+                {/* <div>
                     <button
                         onClick={handleAddDestination}
                         className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
                     >
                         Add Destination
                     </button>
-                </div>
+                </div> */}
             </div>
 
             {props.destinations.length ? (
@@ -1178,7 +1093,7 @@ export const Destination = (props) => {
 
     return (
         <div
-            className={`relative w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-2 md:px-3 lg:px-3 py-2`}
+            className={`relative w-full flex py-2`}
         >
             {popUp && (
                 <DestinationPopUp
@@ -1199,7 +1114,7 @@ export const Destination = (props) => {
                 onClick={handleEditDestination}
                 className="w-full flex flex-row items-center justify-between gap-3"
             >
-                <div className="w-[60%] flex flex-row items-center gap-3">
+                <div className="w-[70%] flex flex-row items-center gap-3">
                     <div className={`text-3xl ${!(startingCity || endingCity)
                             ? "cursor-grab active:cursor-grabbing text-gray-400"
                             : "text-gray-300"
@@ -1212,33 +1127,30 @@ export const Destination = (props) => {
                     </div>
 
                     {startingCity || endingCity ? (
-                        <div className="relative w-6 h-6 flex items-center justify-center">
-                            <div className="absolute w-4 h-4 bg-yellow-400 rounded-full opacity-50"></div>
-                            <div className="absolute w-2 h-2 bg-yellow-400 rounded-full"></div>
-                            <div className="absolute w-6 h-0.5 bg-black"></div>
-                            <div className="absolute w-0.5 h-6 bg-black"></div>
-                            <div className="absolute w-6 h-6 border-2 border-black rounded-full"></div>
-                        </div>
-                    ) : (
-                        <div
+                       <div
                             className="w-6 h-6 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: pinColour }}
+                            style={{ backgroundColor: "black" }}
                         >
                             <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
+                    ) : (
+                        <IoLocationSharp
+                        className={`text-3xl`}
+                        style={{ color: cityData?.color }}
+                    />
                     )}
 
                     <div
                         onClick={handleEditDestination}
-                        className="text-sm lg:text-lg font-medium cursor-pointer flex flex-row gap-5"
+                        className="text-sm lg:text-lg  cursor-pointer flex flex-row gap-5 items-center justify-center"
                     >
-                        {cityData.city_name || cityData.name || cityData.text}{" "}
-                    </div>
-                </div>
+                        {cityData.city_name || cityData.name || cityData.text}{" "} 
+                         {!(startingCity || endingCity) && (
+                    <div className="w-full h-full flex flex-row items-center justify-center gap-2">
+                        <div className="h-8 flex items-center">
+  <div className="h-[80%] w-[2px] bg-gray-400"></div>
+</div>
 
-                {!(startingCity || endingCity) && (
-                    <div className="w-[30%] h-full flex flex-row items-center gap-2">
-                        <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
                         <div className="text-sm text-gray-500">
                             {!(startingCity || endingCity) && cityData?.nights
                                 ? `${cityData.nights} ${cityData.nights > 1
@@ -1253,27 +1165,49 @@ export const Destination = (props) => {
                         </div>
                     </div>
                 )}
+                    </div>
+                </div>
+
+                {/* {!(startingCity || endingCity) && (
+                    <div className="w-[30%] h-full flex flex-row items-center gap-2">
+                        <div className="h-[80%] w-[2px]  bg-gray-400"></div>
+                        <div className="text-sm text-gray-500">
+                            {!(startingCity || endingCity) && cityData?.nights
+                                ? `${cityData.nights} ${cityData.nights > 1
+                                    ? isPageWide
+                                        ? "Nights"
+                                        : "N"
+                                    : isPageWide
+                                        ? "Night"
+                                        : "N"
+                                }`
+                                : null}
+                        </div>
+                    </div>
+                )} */}
 
                 <div className="flex flex-row items-center gap-3 justify-self-end">
                     <div
                         onClick={handleEditDestination}
-                        className="w-8 h-8 rounded-full border-2 border-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-50"
+                        className="w-8 h-8   flex items-center justify-center cursor-pointer hover:bg-blue-50"
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2">
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>
+                        {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2">
+                            {/* <path d="M12 20h9" /> */}
+                            {/* <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                        </svg>  */}
+                        <MdOutlineEdit size={20} color={"blue"}/>
                     </div>
 
                     {!startingCity && !endingCity && (
                         <div
                             onClick={(e) => handleRemoveDestination(e)}
-                            className="w-8 h-8 rounded-full border-2 border-red-500 flex items-center justify-center cursor-pointer hover:bg-red-50"
+                            className="w-8 h-8 rounded-full   flex items-center justify-center cursor-pointer hover:bg-red-50"
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2">
+                            {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2">
                                 <polyline points="3,6 5,6 21,6" />
                                 <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2" />
-                            </svg>
+                            </svg> */}
+                            <MdOutlineDelete size={20} color="red"/>
                         </div>
                     )}
                 </div>
@@ -1488,7 +1422,7 @@ export const DestinationPopUp = (props) => {
                     className="text-2xl cursor-pointer absolute right-2 top-2"
                 />
 
-                <div className="text-sm font-semibold px-2">
+                <div className="text-sm  px-2">
                     {startingCity
                         ? "Where is your trip starting from?"
                         : endingCity
@@ -1590,8 +1524,8 @@ export const ActionPanel = (props) => {
     } = props;
 
     return (
-        <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
-            <div className="flex flex-row gap-4">
+        <div className="w-full mt-3 py-2 md:py-3 lg:py-3 flex  items-center justify-between border-t-2  px-2">
+            <div className="flex w-full justify-between flex-row p-4">
                 {!itineraryLoading && (
                     <button
                         onClick={
@@ -1599,20 +1533,21 @@ export const ActionPanel = (props) => {
                                 ? () => handleClose()
                                 : () => setEditDestination(true)
                         }
-                        className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
+                        className="px-3 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
                     >
-                        {editDestination ? "Cancel" : "Back"}
+                        {/* {editDestination ? "Cancel" : "Back"} */}
+                        Skip
                     </button>
                 )}
                 {
                     <button
                         onClick={handleSaveButton}
-                        className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
+                        className="bg-[#07213A] px-5 py-2 w-[30%] rounded-lg border-2 border-black text-white hover:bg-black transition ease-in-out duration-500"
                     >
                         {itineraryLoading ? (
-                            <PulseLoader size={14} speedMultiplier={0.6} color="black" />
+                            <PulseLoader size={14} speedMultiplier={0.6} color="white" />
                         ) : (
-                            "Save"
+                            "Continue"
                         )}
                     </button>
                 }

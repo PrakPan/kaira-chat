@@ -19,6 +19,7 @@ import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import Header from "../../components/navbar/Index";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -782,7 +783,7 @@ const Enquiry = (props) => {
           ) : (
             <></>
           )}
-
+         
           {/* <div className="w-full">
             {props.tailoredFormModal && (
               <CloseIcon>
@@ -971,7 +972,7 @@ const Enquiry = (props) => {
                     color="white"
                     loading={isSubmitting}
                     disabled={isSubmitting}
-                    onclick={_submitDataHandler}
+                    onclick={_SlideThreeSubmitHandler}
                     height="50px"
                   >
                     Continue

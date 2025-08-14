@@ -5,6 +5,8 @@ import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slidetwo/SlideTwo";
+import RoutesMap from "../../containers/itinerary/breif/RoutesMap";
+import Header from "../../components/navbar/Index";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -118,7 +120,10 @@ const FlickityComp = (props) => {
         <Card>
           <SlideTwo
             {...dummyProps}
-            />
+            >
+               <RoutesMap
+                          locations={dummyProps?.routes}
+                        /></SlideTwo>
           </Card>
       ) : null}
 
