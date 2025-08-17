@@ -4,13 +4,16 @@ import SelectedDestination from "./selecteddestination/Index";
 import { useRouter } from "next/router";
 import { StyledHeading } from "../../../styled-components/TailoredForm";
 import EndDestination from "./Destinations";
+import { Body2R_14 } from "../../../new-ui/Body";
 
 const Container = styled.div`
   width: 100%;
 
-  position: relative;
   @media screen and (min-width: 768px) {
   }
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 `;
 
 const Destinations = (props) => {
@@ -36,7 +39,7 @@ const Destinations = (props) => {
     for (let i = 0; i < props?.selectedCities?.length; i++) {
       des.push(
         <div>
-          <StyledHeading>Destination</StyledHeading>
+          <Body2R_14>Destination</Body2R_14>
           <EndDestination
             autofocus={i == 0 && props.selectedCities[0].name && true}
             _updateDestinationHandler={_updateDestinationHandler}
@@ -128,22 +131,23 @@ const Destinations = (props) => {
 
   return (
     <Container>
-      <StyledHeading>Start Location</StyledHeading>
-      <SelectedDestination
-        startingLocation={props.startingLocation}
-        setStartingLocation={props.setStartingLocation}
-        showSearchStarting={props.showSearchStarting}
-        setShowSearchStarting={props.setShowSearchStarting}
-        setShowCities={props.setShowCities}
-        selectlocation
-        selectedCities={props.selectedCities}
-        destination={props.destination}
-        CITIES={props.CITIES}
-        openCities={() => props.setShowCities(true)}
-        setDestination={props.setDestination}
-        setSelectedCities={props.setSelectedCities}
-      ></SelectedDestination>
-
+      <div>
+        <Body2R_14>Start Location</Body2R_14>
+        <SelectedDestination
+          startingLocation={props.startingLocation}
+          setStartingLocation={props.setStartingLocation}
+          showSearchStarting={props.showSearchStarting}
+          setShowSearchStarting={props.setShowSearchStarting}
+          setShowCities={props.setShowCities}
+          selectlocation
+          selectedCities={props.selectedCities}
+          destination={props.destination}
+          CITIES={props.CITIES}
+          openCities={() => props.setShowCities(true)}
+          setDestination={props.setDestination}
+          setSelectedCities={props.setSelectedCities}
+        ></SelectedDestination>
+      </div>
       {destinations.map((e, i) => (
         <div key={i}>{e}</div>
       ))}
@@ -155,6 +159,7 @@ const Destinations = (props) => {
           justifyContent: "end",
           marginLeft: "33%",
           marginRight: "10px",
+          marginTop:"-30px"
         }}
       >
         {!props?.selectedCities?.some((e) => !e.name) && (

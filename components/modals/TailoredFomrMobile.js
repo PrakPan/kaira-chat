@@ -18,7 +18,7 @@ const TailoredFormMobileModal = (props) => {
       animation={false}
       width={isPageWide ? "100%" : "100%"}
     >
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center h-full">
       <div className="w-full h-full">
         <TailoredForm
           tailoredFormModal

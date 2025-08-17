@@ -57,7 +57,7 @@ const GroupType = (props) => {
             <div
               key={i}
               is_selected={_isPreferenceAdded(filter.display)}
-              className=" font-lexend hover-pointer"
+              className="hover-pointer"
               onClick={() => _handleClick(filter.display)}
             >
               <StyledButton
@@ -71,6 +71,7 @@ const GroupType = (props) => {
           );
         })}
       </StyledFlexWrap>
+      <div className="mt-[30px] border-[1px]"></div>
     </Container>
   );
 };

@@ -106,7 +106,7 @@ export default function SlideThree(props) {
         groupType={props.groupType}
       ></Pax>
 
-      <div className="space-y-1">
+      {/* <div className="space-y-1">
         <BudgetSlider
           tailoredForm
           destination={props.destination}
@@ -114,7 +114,7 @@ export default function SlideThree(props) {
           setBudget={props.setBudget}
           setPriceRange={props.setPriceRange}
         ></BudgetSlider>
-      </div>
+      </div> */}
 
       <div>
         <Question>Meal Prefernces</Question>

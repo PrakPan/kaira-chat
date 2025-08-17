@@ -176,7 +176,7 @@ const Enquiry = (props) => {
     max_price: 3000,
   });
 
-  const headings=["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.","Route Overview — Customize Your Journey from Start to Finish!","Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?"]
+  const headings = ["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.", "Route Overview — Customize Your Journey from Start to Finish!", "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?"]
 
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
@@ -711,6 +711,9 @@ const Enquiry = (props) => {
       });
   };
 
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const progress = ((slideIndex + 1) / 3) * circumference;
   return (
     <div className="h-full">
       {showBlack && !props.tailoredFormModal ? (
@@ -783,140 +786,137 @@ const Enquiry = (props) => {
           ) : (
             <></>
           )}
-         
-          {/* <div className="w-full">
-            {props.tailoredFormModal && (
-              <CloseIcon>
-                {slideIndex ? (
-                  <BiArrowBack
-                    onClick={_prevSlideHandler}
-                    className="hover-pointer"
-                    style={{ marginTop: "2px", fontSize: "1.5rem" }}
-                  ></BiArrowBack>
-                ) : (
-                  <div></div>
-                )}
-                <RxCross2
-                  style={{
-                    fontSize: "1.75rem",
-                    textAlign: "right",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    if (!focusedDate) {
-                      props.onHide();
-                    }
-                  }}
-                />
-              </CloseIcon>
-            )}
-
-            <Heading
-              tailoredFormModal={props.tailoredFormModal}
-              style={{ textAlign: !slideIndex ? "left" : "center" }}
-            >
-              {getHeading()}
-            </Heading>
-          </div> */}
         </div>
-        <div className="flex flex-col items-center justify-center">
-          <div style={{ padding: "0 1rem", width: "100%" }} className="h-full max-w-[600px] ">
-            <Heading className="text-[40px] text-center">{headings[slideIndex]}</Heading>
+        <div className="flex flex-col items-center mt-[40px] h-full">
+          <div style={{ padding: "0 1rem", width: "100%" }} className="h-max  font-inter flex flex-col items-center gap-[46px]">
+            <div className="relative w-full flex justify-center">
+              <h1 className="text-black font-inter text-[40px] font-bold leading-[48px] text-center max-w-[724px]">
+                {headings[slideIndex]}
+              </h1>
 
-            <div
-              style={{
-                borderStyle: "solid none none none",
-                borderWidth: "1px",
-                color: "#D3D3D3",
-                height: "1px",
-                width: "100%",
-                marginBottom: "1.5rem",
-              }}
-            ></div>
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  {/* Background Circle */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#F0F0F0"
+                    strokeWidth="6"
+                  />
+                  {/* Progress Circle */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#5CBA66"
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - progress}
+                    strokeLinecap="round"
+                    transform="rotate(-90 32 32)"
+                  />
+                  {/* Text in Center */}
+                  <text
+                    x="32"
+                    y="32"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-sm font-bold fill-black"
+                  >
+                    {slideIndex+1}/3
+                  </text>
+                </svg>
+              </div>
 
-            <Flickity
-              initialInputId={initialInputId}
-              focusedDate={focusedDate}
-              setFocusedDate={setFocusedDate}
-              tailoredFormModal={props.tailoredFormModal}
-              flexible={flexible}
-              setFlexible={setFlexible}
-              startingLocation={startingLocation}
-              setStartingLocation={setStartingLocation}
-              children_cities={props.children_cities}
-              showSearchStarting={showSearchStarting}
-              setShowSearchStarting={setShowSearchStarting}
-              showCities={showCities}
-              setShowCities={setShowCities}
-              destination={destination}
-              setDestination={setDestination}
-              token={props.token}
-              phone={props.phone}
-              slideIndex={slideIndex}
-              cities={props.cities}
-              selectedCities={selectedCities}
-              setSelectedCities={setSelectedCities}
-              valueStart={valueStart}
-              valueEnd={valueEnd}
-              setValueStart={setValueStart}
-              setValueEnd={setValueEnd}
-              groupType={groupType}
-              setGroupType={setGroupType}
-              numberOfAdults={numberOfAdults}
-              setNumberOfAdults={setNumberOfAdults}
-              numberOfChildren={numberOfChildren}
-              setNumberOfChildren={setNumberOfChildren}
-              numberOfInfants={numberOfInfants}
-              setNumberOfInfants={setNumberOfInfants}
-              setBudget={setBudget}
-              selectedPreferences={selectedPreferences}
-              setSelectedPreferences={setSelectedPreferences}
-              setSubmitSecondSlide={setSubmitSecondSlide}
-              eventDates={props.eventDates}
-              roomConfiguration={roomConfiguration}
-              setRoomConfiguration={setRoomConfiguration}
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              addHotels={addHotels}
-              setAddHotels={setAddHotels}
-              addFlights={addFlights}
-              setAddFlights={setAddFlights}
-              setSlideIndex={setSlideIndex}
-              setLoginComplete={setLoginComplete}
-              defaultPriceRange={defaultPriceRange}
-            ></Flickity>
+            </div>
 
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            <div className="max-w-[600px] ">
+              <Flickity
+                initialInputId={initialInputId}
+                focusedDate={focusedDate}
+                setFocusedDate={setFocusedDate}
+                tailoredFormModal={props.tailoredFormModal}
+                flexible={flexible}
+                setFlexible={setFlexible}
+                startingLocation={startingLocation}
+                setStartingLocation={setStartingLocation}
+                children_cities={props.children_cities}
+                showSearchStarting={showSearchStarting}
+                setShowSearchStarting={setShowSearchStarting}
+                showCities={showCities}
+                setShowCities={setShowCities}
+                destination={destination}
+                setDestination={setDestination}
+                token={props.token}
+                phone={props.phone}
+                slideIndex={slideIndex}
+                cities={props.cities}
+                selectedCities={selectedCities}
+                setSelectedCities={setSelectedCities}
+                valueStart={valueStart}
+                valueEnd={valueEnd}
+                setValueStart={setValueStart}
+                setValueEnd={setValueEnd}
+                groupType={groupType}
+                setGroupType={setGroupType}
+                numberOfAdults={numberOfAdults}
+                setNumberOfAdults={setNumberOfAdults}
+                numberOfChildren={numberOfChildren}
+                setNumberOfChildren={setNumberOfChildren}
+                numberOfInfants={numberOfInfants}
+                setNumberOfInfants={setNumberOfInfants}
+                setBudget={setBudget}
+                selectedPreferences={selectedPreferences}
+                setSelectedPreferences={setSelectedPreferences}
+                setSubmitSecondSlide={setSubmitSecondSlide}
+                eventDates={props.eventDates}
+                roomConfiguration={roomConfiguration}
+                setRoomConfiguration={setRoomConfiguration}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                addHotels={addHotels}
+                setAddHotels={setAddHotels}
+                addFlights={addFlights}
+                setAddFlights={setAddFlights}
+                setSlideIndex={setSlideIndex}
+                setLoginComplete={setLoginComplete}
+                defaultPriceRange={defaultPriceRange}
+              ></Flickity>
 
-            {slideIndex === 0 ? (
-              <Button
-                fontSize="1rem"
-                width={!isPageWide ? "auto" : "100%"}
-                style={
-                  !isPageWide && isPageLoaded
-                    ? {
-                      position: "fixed",
-                      left: "1rem",
-                      right: "1rem",
-                      bottom: "0",
-                    }
-                    : {}
-                }
-                padding="0.5rem 2rem"
-                fontWeight="500"
-                margin="1rem 0"
-                borderRadius="5px"
-                borderWidth="1px"
-                bgColor="#07213A"
-                onclick={_SlideOneSubmitHandler}
-                loading={isLoading}
-                disabled={isLoading}
-                height="50px"
-                color="white"
-              >
-                Continue
-              </Button>
-            ) : null}
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+              {slideIndex === 0 ? (
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide && isPageLoaded
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="30px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  onclick={_SlideOneSubmitHandler}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  height="50px"
+                  color="white"
+                >
+                  Continue
+                </Button>
+              ) : null}
 
             {slideIndex === 1 ? (
               !props.token || props.phone === "null" || addHotels ? (
