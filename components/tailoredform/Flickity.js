@@ -4,7 +4,7 @@ import SlideThree from "./slidetwo/SlideThree";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
-import SlideTwo from "./slidetwo/SlideTwo";
+import SlideTwo from "./slideTwo/SlideTwo";
 import RoutesMap from "../../containers/itinerary/breif/RoutesMap";
 import Header from "../../components/navbar/Index";
 
@@ -116,18 +116,18 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 && props.token && props.phone !== "null" ? (
+      {props.slideIndex === 1 && props.token && props.phone !== "null" ? (
         <Card>
           <SlideTwo
             {...dummyProps}
-            >
-               <RoutesMap
-                          locations={dummyProps?.routes}
-                        /></SlideTwo>
-          </Card>
+          >
+            <RoutesMap
+              locations={dummyProps?.routes}
+            /></SlideTwo>
+        </Card>
       ) : null}
 
-      {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
+      {props.slideIndex === 2 && (props.token || props.phone !== "null") ? (
         <Card>
           <SlideThree
             roomConfiguration={props.roomConfiguration}
@@ -157,8 +157,7 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 ? (
-        props.addHotels ? (
+      {props.slideIndex === 3 ? 
           <SlideFour
             numberOfAdults={props.numberOfAdults}
             setNumberOfAdults={props.setNumberOfAdults}
@@ -175,36 +174,7 @@ const FlickityComp = (props) => {
             setPriceRange={props.setPriceRange}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
-          />
-
-        ) : (
-          <Login
-            nospacing
-            noheading
-            noicons
-            hideloginclose
-            noclose
-            onSuccess={() => {
-              props.setSlideIndex((prev) => prev - 1);
-              props.setLoginComplete(true);
-            }}
-          ></Login>
-        )
-      ) : null}
-
-      {props.slideIndex === 3 && (!props.token || props.phone === "null") ? (
-        <Login
-          nospacing
-          noheading
-          noicons
-          hideloginclose
-          noclose
-          onSuccess={() => {
-            props.setSlideIndex((prev) => prev - 1);
-            props.setLoginComplete(true);
-          }}
-        ></Login>
-      ) : null}
+          />:null}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import GroupType from "./GroupType";
 import Question from "../Question";
 import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
+import { Body1M_16 } from "../../new-ui/Body";
 
 const Container = styled.div`
   color: black;
@@ -70,7 +71,7 @@ const SlideThree = (props) => {
   return (
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
-        <Question>Group type</Question>
+        <Body1M_16>Group type</Body1M_16>
 
         <GroupComponent
           _handleShowPax={_handleShowPax}

@@ -4,9 +4,7 @@ import Question from "../Question.js";
 import styled from "styled-components";
 import { StyledButton, StyledFlexWrap } from "../../styled-components/TailoredForm.js";
 import { useState } from "react";
-const Section = styled.div`
-  margin-bottom: 1.5rem;
-`;
+import { Body1M_16, Body2R_14 } from "../../new-ui/Body.js";
 
 export const StyledTextarea = styled.textarea`
   width: 543px;
@@ -45,12 +43,11 @@ export default function SlideThree(props) {
     );
   };
   return (
-    <div className="my-3 space-y-5">
-      <Question>Hotel Type</Question>
-      <div>
-        <Question>Pick Your Inclusions</Question>
-        <Section className="flex  justify-between items-center ">
+    <div className="flex flex-col gap-[30px]">
+      <div className="flex flex-col gap-[12px]">
+        <Body1M_16>Hotel Type</Body1M_16>
 
+        <div className="flex justify-between ">
           <label
             htmlFor="add-hotels"
             className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
@@ -92,32 +89,25 @@ export default function SlideThree(props) {
             />
             <div className="text-sm">5-Stars</div>
           </label>
-        </Section>
+        </div>
       </div>
-      <Pax
-        numberOfAdults={props.numberOfAdults}
-        setNumberOfAdults={props.setNumberOfAdults}
-        numberOfChildren={props.numberOfChildren}
-        setNumberOfChildren={props.setNumberOfChildren}
-        numberOfInfants={props.numberOfInfants}
-        roomConfiguration={props.roomConfiguration}
-        setNumberOfInfants={props.setNumberOfInfants}
-        setRoomConfiguration={props.setRoomConfiguration}
-        groupType={props.groupType}
-      ></Pax>
-
-      {/* <div className="space-y-1">
-        <BudgetSlider
-          tailoredForm
-          destination={props.destination}
-          defaultValue={props.defaultPriceRange}
-          setBudget={props.setBudget}
-          setPriceRange={props.setPriceRange}
-        ></BudgetSlider>
-      </div> */}
+      <div>
+        <Body2R_14>Room Configuration</Body2R_14>
+        <Pax
+          numberOfAdults={props.numberOfAdults}
+          setNumberOfAdults={props.setNumberOfAdults}
+          numberOfChildren={props.numberOfChildren}
+          setNumberOfChildren={props.setNumberOfChildren}
+          numberOfInfants={props.numberOfInfants}
+          roomConfiguration={props.roomConfiguration}
+          setNumberOfInfants={props.setNumberOfInfants}
+          setRoomConfiguration={props.setRoomConfiguration}
+          groupType={props.groupType}
+        ></Pax>
+      </div>
 
       <div>
-        <Question>Meal Prefernces</Question>
+        <Body1M_16>Meal Prefernces</Body1M_16>
         <StyledFlexWrap >
           {MEAL_PREFERENCES.map((filter, i) => {
             let clicked = false
@@ -125,7 +115,7 @@ export default function SlideThree(props) {
               <div
                 key={i}
                 is_selected={_isPreferenceAdded(filter)}
-                className=" font-lexend hover-pointer"
+                className="  hover-pointer"
                 onClick={() => _handleClick(filter)}
               >
                 <StyledButton
@@ -141,9 +131,9 @@ export default function SlideThree(props) {
         </StyledFlexWrap>
       </div>
       <div>
-        <Question>Special Requests</Question>
-        <StyledTextarea placeholder="Write any special requests"/>
-        </div>
+        <Body2R_14>Special Requests</Body2R_14>
+        <StyledTextarea placeholder="Write any special requests" />
+      </div>
     </div>
   );
 }

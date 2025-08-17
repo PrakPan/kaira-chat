@@ -176,7 +176,7 @@ const Enquiry = (props) => {
     max_price: 3000,
   });
 
-  const headings = ["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.", "Route Overview — Customize Your Journey from Start to Finish!", "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?"]
+  const headings = ["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.", "Route Overview — Customize Your Journey from Start to Finish!", "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?","Almost There — Let's Personalize the Final Details of Your Trip."]
 
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
@@ -711,9 +711,10 @@ const Enquiry = (props) => {
       });
   };
 
+  const totalSlides=4;
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
-  const progress = ((slideIndex + 1) / 3) * circumference;
+  const progress = ((slideIndex + 1) / totalSlides) * circumference;
   return (
     <div className="h-full">
       {showBlack && !props.tailoredFormModal ? (
@@ -787,6 +788,7 @@ const Enquiry = (props) => {
             <></>
           )}
         </div>
+        
         <div className="flex flex-col items-center mt-[40px] h-full">
           <div style={{ padding: "0 1rem", width: "100%" }} className="h-max  font-inter flex flex-col items-center gap-[46px]">
             <div className="relative w-full flex justify-center">
@@ -826,7 +828,7 @@ const Enquiry = (props) => {
                     dominantBaseline="middle"
                     className="text-sm font-bold fill-black"
                   >
-                    {slideIndex+1}/3
+                    {(slideIndex+1)}/{totalSlides}
                   </text>
                 </svg>
               </div>
@@ -981,7 +983,7 @@ const Enquiry = (props) => {
               )
             ) : null}
 
-            {slideIndex === 2 && addHotels ? (
+            {slideIndex === 2  ? (
               !props.token || props.phone === "null" ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
@@ -1006,11 +1008,12 @@ const Enquiry = (props) => {
                     onclick={_SlideThreeSubmitHandler}
                     loading={isLoading && submitted}
                     height="50px"
+                    color="white"
                   >
                     Continue
                   </Button>
                 </div>
-              ) : slideIndex === 4 ? (
+              ) : slideIndex === 3 ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"
@@ -1042,7 +1045,35 @@ const Enquiry = (props) => {
                 </div>
               ) :null 
             ) : null}
+
+           { slideIndex === 3 ? (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? { position: "fixed", left: "1rem", right: "1rem", bottom: "0" }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onClick={_submitDataHandler}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : null}
           </div>
+        </div>
         </div>
       </Container>
     </div>

@@ -65,28 +65,19 @@ const Pax = (props) => {
   return (
     <div
       ref={containerRef}
-      className="relative  md:w-full h-fit border-2 flex flex-row items-center gap-2 bg-gray-50 p-2 rounded-lg cursor-pointer hover:border-black"
-    >
+      className="flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]"    >
       <div
         className="flex flex-col   rounded-lg cursor-pointer w-full"
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
       >
-        <div className="flex justify-between w-full">
-          <span className="text-gray-700">Room Configuration</span>
-          {isRoomExpanded ? (
-            <IoChevronUp size={18} />
-          ) : (
-            <IoChevronDown size={18} />
-          )}
-        </div>
         <span className="mr-2 text-gray-700">
-          {travelers} Travellers, {rooms.length} Room
+          {travelers} Travellers | {rooms.length} Room
           {rooms.length > 1 ? "s" : ""}
         </span>
       </div>
 
       {isRoomExpanded && (
-        <div className="absolute bg-white z-50 left-0 md:left-0 md:right-0 top-[70px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar shadow-2xl w-full">
+        <div className="absolute bg-white z-50 left-0 md:left-0 md:right-0 top-[70px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
           <div className="">
             {rooms.map((room, index) => (
               <Room
@@ -141,11 +132,11 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       prev.map((room, i) =>
         i === index
           ? {
-              ...room,
-              adults: adults,
-              children: children,
-              childAges: childAges,
-            }
+            ...room,
+            adults: adults,
+            children: children,
+            childAges: childAges,
+          }
           : room
       )
     );
@@ -189,9 +180,8 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
-            className={` flex items-center justify-center  ${
-              adults > 1 ? "text-blue " : "text-gray-300"
-            }`}
+            className={` flex items-center justify-center  ${adults > 1 ? "text-blue " : "text-gray-300"
+              }`}
             onClick={() => handleAdults(false)}
             disabled={adults <= 1}
           >
@@ -215,9 +205,8 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
-            className={`flex items-center justify-center ${
-              children > 0 ? "text-blue" : "text-gray-300"
-            }`}
+            className={`flex items-center justify-center ${children > 0 ? "text-blue" : "text-gray-300"
+              }`}
             onClick={() => handleChildren("minus")}
             disabled={children == 0}
           >
@@ -283,11 +272,10 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
     <div className="relative" ref={dropdownRef}>
       <div
         onClick={() => setOpenAges((prev) => !prev)}
-        className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${
-          showError && selectedAge === null
+        className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${showError && selectedAge === null
             ? "border-red-500"
             : "border-gray-300"
-        }`}
+          }`}
       >
         <span>Child {child} age*</span>
         <div className="flex items-center">
@@ -305,16 +293,16 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
       )}
 
       {openAges && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md  max-h-60 overflow-auto">
           {Array.from({ length: 13 }, (_, i) => (
             <>
-                <div
-                  key={i}
-                  onClick={() => handleChildAge(i)}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                >
-                  {i}
-                </div>
+              <div
+                key={i}
+                onClick={() => handleChildAge(i)}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {i}
+              </div>
             </>
           ))}
         </div>

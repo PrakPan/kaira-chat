@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import styled from "styled-components";
+import { Body2R_14 } from "../../new-ui/Body";
 
 export const StyledBox = styled.div`
   width: 170px;
@@ -29,9 +30,11 @@ const GroupComponent = (props) => {
             {groups.map((item) => (
                 <StyledBox is_selected={props.groupType === item}
                     onClick={() => props._handleShowPax(item)}>
+                        <div>
                     <Image src="/calendar.svg" width={20} height={20} />
-                    <div>
+                    <Body2R_14>
                         {item}
+                    </Body2R_14>
                     </div>
                 </StyledBox>
             ))}
