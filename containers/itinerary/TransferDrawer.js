@@ -87,7 +87,7 @@ const TransferDrawer = ({
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: data?.is_airport_drop || data?.is_airport_pickup ? "addPickupDrop" : "editTransfer",
-          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : "multicity",
+          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : data?.combo_type ==="multicity" ? "multicity" : null,
           bookingId: booking_id,
           oItineraryCity:origin_itinerary_city_id,
           dItineraryCity:destination_itinerary_city_id
@@ -100,7 +100,7 @@ const TransferDrawer = ({
     );
   };
 
-  console.log("BBK",booking_type,transferType);
+  console.log("BBK",booking_type,transferType,data);
 
 
   const toggleExpand = (index) => {
