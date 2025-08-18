@@ -1528,10 +1528,10 @@ export const ActionPanel = (props) => {
             <div className="flex w-full justify-between flex-row p-4">
                 {!itineraryLoading && (
                     <button
-                        onClick={
-                            editDestination
-                                ? () => handleClose()
-                                : () => setEditDestination(true)
+                        onClick={()=>{}
+                            // editDestination
+                            //     ? () => handleClose()
+                            //     : () => setEditDestination(true)
                         }
                         className="px-3 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
                     >
@@ -1541,7 +1541,9 @@ export const ActionPanel = (props) => {
                 )}
                 {
                     <button
-                        onClick={handleSaveButton}
+                        onClick={
+                            // handleSaveButton
+                            () => {}}
                         className="bg-[#07213A] px-5 py-2 w-[30%] rounded-lg border-2 border-black text-white hover:bg-black transition ease-in-out duration-500"
                     >
                         {itineraryLoading ? (
