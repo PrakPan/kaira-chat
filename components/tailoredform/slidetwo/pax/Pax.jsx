@@ -65,7 +65,7 @@ const Pax = (props) => {
   return (
     <div
       ref={containerRef}
-      className="flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]"    >
+      className="relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]"    >
       <div
         className="flex flex-col   rounded-lg cursor-pointer w-full"
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
@@ -77,7 +77,7 @@ const Pax = (props) => {
       </div>
 
       {isRoomExpanded && (
-        <div className="absolute bg-white z-50 left-0 md:left-0 md:right-0 top-[70px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
+        <div className="absolute border-[1px] bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
           <div className="">
             {rooms.map((room, index) => (
               <Room

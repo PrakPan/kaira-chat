@@ -30,7 +30,7 @@ const GroupComponent = (props) => {
             {groups.map((item) => (
                 <StyledBox is_selected={props.groupType === item}
                     onClick={() => props._handleShowPax(item)}>
-                        <div>
+                        <div className="flex flex-col gap-[4px]">
                     <Image src="/calendar.svg" width={20} height={20} />
                     <Body2R_14>
                         {item}

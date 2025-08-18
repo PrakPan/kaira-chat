@@ -92,7 +92,7 @@ export default function SlideThree(props) {
         </div>
       </div>
       <div>
-        <Body2R_14>Room Configuration</Body2R_14>
+        <Body2R_14 className="mb-[6px]">Room Configuration</Body2R_14>
         <Pax
           numberOfAdults={props.numberOfAdults}
           setNumberOfAdults={props.setNumberOfAdults}
@@ -107,7 +107,7 @@ export default function SlideThree(props) {
       </div>
 
       <div>
-        <Body1M_16>Meal Prefernces</Body1M_16>
+        <Body1M_16 className="mb-[6px]">Meal Prefernces</Body1M_16>
         <StyledFlexWrap >
           {MEAL_PREFERENCES.map((filter, i) => {
             let clicked = false
@@ -131,7 +131,7 @@ export default function SlideThree(props) {
         </StyledFlexWrap>
       </div>
       <div>
-        <Body2R_14>Special Requests</Body2R_14>
+        <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
         <StyledTextarea placeholder="Write any special requests" />
       </div>
     </div>

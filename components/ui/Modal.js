@@ -37,7 +37,6 @@ const ModalContainer = styled.div`
   z-index: ${(props) => props.zIndex || "1600"};
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
-  height:${(props)=>props?.height||"100%"};
   ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;
   ${(props) => !props.height && "max-height: 95vh;"}
@@ -140,7 +139,7 @@ export default function Modal(props) {
                       onClick={onCLose}
                     />
                   )}
-                  <div style={{height:props?.height||"100%"}}>{props.children}</div>
+                  <div>{props.children}</div>
                 </div>
               </ModalContainer>
             </div>

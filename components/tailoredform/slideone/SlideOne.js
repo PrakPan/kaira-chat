@@ -35,13 +35,6 @@ const formatShortDate = (date) => {
 const SlideOne = (props) => {
   const [showCalendar, setShowCalendar] = useState(false);
 
-  const getHeading = () => {
-    if (props.tailoredFormModal && props.focusedDate) {
-      if (props.focusedDate == "startDate") return "Please select start date.";
-      if (props.focusedDate == "endDate") return "Please select end date.";
-    } else return "What do you want to explore?";
-  };
-
   const CITIES = null;
 
   return (
@@ -97,11 +90,13 @@ const SlideOne = (props) => {
 
       <Section>
         <Body1M_16>Choose your experience</Body1M_16>
+        <div className="mt-[12px]">
         <Preferences
           tailoredFormModal={props.tailoredFormModal}
           selectedPreferences={props.selectedPreferences}
           setSelectedPreferences={props.setSelectedPreferences}
         ></Preferences>
+        </div>
       </Section>
       <ModalWithBackdrop
         centered

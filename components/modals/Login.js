@@ -40,17 +40,8 @@ const TagItem = styled.div`
 
 const TagsContent = [
   {
-    icon: "media/icons/login/free-travel.png",
-    text: "Unlimited travel plans for free!",
-  },
-  {
-    icon: "media/icons/login/discount.png",
-    text: "Exclusive deals: Upto 70% off!",
-  },
-  { icon: "media/icons/login/officer.png", text: "Expert support, 24x7!" },
-  {
-    icon: "media/icons/login/night-stay.png",
-    text: "Free night stay on selected properties!",
+    icon: "",
+    text: "Your Personalized Travel Journey Starts with a Tap",
   },
 ];
 
@@ -119,18 +110,7 @@ const Enquiry = (props) => {
             ></ImageLoader>
 
             <ImgTagsContainer>
-              {TagsContent.map((e, i) => (
-                <TagItem key={i}>
-                  <ImageLoader
-                    noLazy
-                    borderRadius={"0.4rem 0 0 0.4rem"}
-                    url={e.icon}
-                    dimensions={{ width: 200, height: 200 }}
-                    noPlaceholder={true}
-                  />
-                  <p className="font-lexend">{e.text}</p>
-                </TagItem>
-              ))}
+                  <div className="text-[32px] font-[700] leading-[40px] text-white">Your Personalized Travel Journey Starts with a Tap</div>
             </ImgTagsContainer>
           </ImgContainer>
 

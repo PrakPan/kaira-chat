@@ -186,7 +186,7 @@ const EnterPassenger = (props) => {
   console.log("room config new is: ",props?.roomConfiguration)
   return (
     <div>
-      <StyledText>Who's Going</StyledText>
+      <StyledText className="mb-[4px]">Who's Going</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
         {props.numberOfAdults+props.numberOfChildren+props.numberOfInfants} Travelers
       </StyledBox>

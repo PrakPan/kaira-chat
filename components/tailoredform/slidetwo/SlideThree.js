@@ -11,12 +11,11 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 30px;
 `;
 
 
 const Section = styled.div`
-  margin-bottom: 1.5rem;
 `;
 
 const SlideThree = (props) => {
@@ -70,8 +69,8 @@ const SlideThree = (props) => {
 
   return (
     <Container>
-      <Section style={{ marginBottom: "1.5rem" }}>
-        <Body1M_16>Group type</Body1M_16>
+      <Section>
+        <Body1M_16 className="mb-[4px]">Group type</Body1M_16>
 
         <GroupComponent
           _handleShowPax={_handleShowPax}
@@ -81,7 +80,7 @@ const SlideThree = (props) => {
 
       {props.groupType!=="Solo" && props.groupType!="Couple"&&<EnterPassenger roomConfiguration={props?.roomConfiguration} setRoomConfiguration={props.setRoomConfiguration} groupType={props.groupType} numberOfChildren={props.numberOfChildren} numberOfInfants={props.numberOfInfants} numberOfAdults={props.numberOfAdults} setNumberOfAdults={props.setNumberOfAdults} setNumberOfChildren={props.setNumberOfChildren} setNumberOfInfants={props.setNumberOfInfants} />}
       <div>
-        <Question>Pick Your Inclusions</Question>
+        <Body1M_16 className="mb-[12px]">Pick Your Inclusions</Body1M_16>
         <Section className="flex  justify-between items-center ">
 
           <label

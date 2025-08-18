@@ -20,6 +20,7 @@ import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Header from "../../components/navbar/Index";
+import { Body1M_16, Body3R_12 } from "../new-ui/Body";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -35,36 +36,11 @@ const Container = styled.div`
       : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
-  border-radius: ${(props) =>
-    props.tailoredFormModal ? "12px !important" : "8px !important"};
+
   @media screen and (min-width: 768px) {
     ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
     min-height: 500px;
-  }
-`;
-
-const CloseIcon = styled.div`
-  display: flex;
-  justify-content: space-between;
-  text-align: right;
-  border-bottom: 1px solid #0000004a;
-  padding-block: 1rem;
-`;
-
-const Heading = styled.p`
-  font-size: 1.35rem;
-  margin: 0.5rem 0 0.5rem 0;
-  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
-  text-align: left;
-  font-weight: 600;
-  color: black;
-  line-height: normal;
-
-  @media screen and (min-width: 815px) {
-    font-size: 1.4rem;
-    margin: 0.25rem 0 0.25rem 0;
-    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
   }
 `;
 
@@ -120,6 +96,7 @@ const useSourceParams = () => {
 
 const Enquiry = (props) => {
   const router = useRouter();
+  const [route,setRoute]=useState([]);
   const routerquery = router.query;
   const initialInputId = Date.now();
   const { token } = useSelector(state => state.auth)
@@ -176,7 +153,7 @@ const Enquiry = (props) => {
     max_price: 3000,
   });
 
-  const headings = ["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.", "Route Overview — Customize Your Journey from Start to Finish!", "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?","Almost There — Let's Personalize the Final Details of Your Trip."]
+  const headings = ["Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.", "Route Overview — Customize Your Journey from Start to Finish!", "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?", "Almost There — Let's Personalize the Final Details of Your Trip.", "Awesome! We've got your details."]
 
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
@@ -635,6 +612,20 @@ const Enquiry = (props) => {
         // setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
+        setRoute(data.basic_route);
+
+        const hotelsBudget = data?.hotels_budget;
+        if (hotelsBudget) {
+          const minPrice = parseInt(0.5 * hotelsBudget);
+          const maxPrice = parseInt(1.5 * hotelsBudget);
+          setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
+        }
+      })
+      .catch((err) => {
+        console.log("ERROR: ", err.message);
+        setError(err.message);
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -716,12 +707,12 @@ const Enquiry = (props) => {
       });
   };
 
-  const totalSlides=4;
+  const totalSlides = localStorage.getItem("access_token") ? 4 : 5;
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const progress = ((slideIndex + 1) / totalSlides) * circumference;
   return (
-    <div className="h-full">
+    <div className="flex h-full w-full justify-center items-center">
       {showBlack && !props.tailoredFormModal ? (
         <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
       ) : null}
@@ -730,10 +721,6 @@ const Enquiry = (props) => {
         showBlack={showBlack}
         tailoredFormModal={props.tailoredFormModal}
         slideIndex={slideIndex}
-        className={isPageWide ? "border" : "center-div"}
-        onClick={() => {
-          // setShowBlack(true);
-        }}
       >
         {showPopup.InputOne && (
           <Popup
@@ -781,7 +768,7 @@ const Enquiry = (props) => {
           }}
           className="w-full flex flex-row items-center"
         >
-          {slideIndex && props.tailoredFormModal ? (
+          {slideIndex ? (
             <div className="center-div">
               <BiArrowBack
                 onClick={_prevSlideHandler}
@@ -793,11 +780,12 @@ const Enquiry = (props) => {
             <></>
           )}
         </div>
-        
-        <div className="flex flex-col items-center mt-[40px] h-full">
+
+        {/* main block */}
+        <div className="flex flex-col items-center justify-center  h-full">
           <div style={{ padding: "0 1rem", width: "100%" }} className="h-max  font-inter flex flex-col items-center gap-[46px]">
             <div className="relative w-full flex justify-center">
-              <h1 className="text-black font-inter text-[40px] font-bold leading-[48px] text-center max-w-[724px]">
+              <h1 className="text-black font-inter text-[40px] font-bold leading-[48px] text-center max-w-[800px]">
                 {headings[slideIndex]}
               </h1>
 
@@ -831,10 +819,13 @@ const Enquiry = (props) => {
                     y="32"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="text-sm font-bold fill-black"
+                    fill="black"
                   >
-                    {(slideIndex+1)}/{totalSlides}
+                    <tspan fontSize="16" fontWeight="500">{slideIndex + 1}</tspan>
+                    <tspan fontSize="16" fontWeight="500" dy={"1"}>/</tspan>
+                    <tspan fontSize="12" fontWeight="400" dy="2">{totalSlides}</tspan>
                   </text>
+
                 </svg>
               </div>
 
@@ -891,11 +882,12 @@ const Enquiry = (props) => {
                 setSlideIndex={setSlideIndex}
                 setLoginComplete={setLoginComplete}
                 defaultPriceRange={defaultPriceRange}
+                route={route}
               ></Flickity>
 
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-              {slideIndex === 0 ? (
+              {slideIndex === 0 &&
                 <Button
                   fontSize="1rem"
                   width={!isPageWide ? "auto" : "100%"}
@@ -923,10 +915,42 @@ const Enquiry = (props) => {
                 >
                   Continue
                 </Button>
-              ) : null}
+              }
 
-            {slideIndex === 1 ? (
-              !props.token || props.phone === "null" || addHotels ? (
+              {slideIndex === 1 && (
+                (!props.token || props.phone === "null" || addHotels) && (
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      fontSize="1rem"
+                      width={!isPageWide ? "auto" : "100%"}
+                      style={
+                        !isPageWide
+                          ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                          : {}
+                      }
+                      padding="0.5rem 2rem"
+                      fontWeight="500"
+                      margin="1rem 0"
+                      borderRadius="5px"
+                      borderWidth="1px"
+                      bgColor="#07213A"
+                      onclick={() => setSlideIndex(2)}
+                      loading={isLoading && submitted}
+                      height="50px"
+                      color="white"
+                    >
+                      Continue
+                    </Button>
+                  </div>
+                )
+              )}
+
+              {slideIndex === 2 &&
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"
@@ -943,7 +967,7 @@ const Enquiry = (props) => {
                     }
                     padding="0.5rem 2rem"
                     fontWeight="500"
-                    margin="1rem 0"
+                    margin="30px 0"
                     borderRadius="5px"
                     borderWidth="1px"
                     bgColor="#07213A"
@@ -955,103 +979,9 @@ const Enquiry = (props) => {
                     Continue
                   </Button>
                 </div>
-              ) : (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="8px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onclick={_SlideThreeSubmitHandler}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )
-            ) : null}
+              }
 
-            {slideIndex === 2  ? (
-              !props.token || props.phone === "null" ? (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    onclick={_SlideThreeSubmitHandler}
-                    loading={isLoading && submitted}
-                    height="50px"
-                    color="white"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ) : slideIndex === 3 ? (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onclick={_submitDataHandler}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ) :null 
-            ) : null}
-
-           { slideIndex === 3 ? (
+              {slideIndex === 3 && (
                 <div className="flex justify-end">
                   <Button
                     fontSize="1rem"
@@ -1063,22 +993,55 @@ const Enquiry = (props) => {
                     }
                     padding="0.5rem 2rem"
                     fontWeight="500"
-                    margin="1rem 0"
+                    margin="40px 0"
                     borderRadius="5px"
                     borderWidth="1px"
                     bgColor="#07213A"
                     color="white"
                     loading={isSubmitting}
                     disabled={isSubmitting}
-                    onClick={_submitDataHandler}
+                    onclick={
+                      () => {
+                        setSlideIndex(4);
+                        _SlideThreeSubmitHandler;
+                      }
+                    }
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
+              {slideIndex === 4 ? (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? { position: "fixed", left: "1rem", right: "1rem", bottom: "0" }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="40px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onClick={
+                      _submitDataHandler
+                    }
                     height="50px"
                   >
                     Continue
                   </Button>
                 </div>
               ) : null}
+            </div>
           </div>
-        </div>
         </div>
       </Container>
     </div>

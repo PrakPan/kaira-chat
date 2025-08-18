@@ -7,6 +7,7 @@ import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
 import RoutesMap from "../../containers/itinerary/breif/RoutesMap";
 import Header from "../../components/navbar/Index";
+import SlideFive from "./slideFive/SlideFive";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -82,7 +83,7 @@ const dummyProps = {
 };
 
 const FlickityComp = (props) => {
-  console.log("SlideI",props.slideIndex);
+  console.log("props are: ",props)
   return (
     <div style={{ width: "100%" }} className="font-inter">
       {!props.slideIndex ? (
@@ -123,7 +124,7 @@ const FlickityComp = (props) => {
             {...dummyProps}
           >
             <RoutesMap
-              locations={dummyProps?.routes}
+              locations={props.route}
             /></SlideTwo>
         </Card>
       ) : null}
@@ -176,6 +177,9 @@ const FlickityComp = (props) => {
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
           />:null}
+
+          {props.slideIndex==4&&
+          <SlideFive/>}
     </div>
   );
 };
