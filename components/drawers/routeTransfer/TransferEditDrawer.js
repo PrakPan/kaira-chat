@@ -4289,7 +4289,7 @@ const OtherTransfer = ({
         } else if (transferItem.mode === "Taxi") {
           return {
             ...transferObj,
-            trace_id: item.trace_id || "",
+             trace_id: item.trace_id || traceId,
             result_index: item.result_index || 0,
             source: item.source || "",
           };
@@ -4302,6 +4302,8 @@ const OtherTransfer = ({
 
           return {
             ...transferObj,
+             trace_id: item.trace_id || traceId,
+            start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
             result_index: resultIndex,
           };
         }

@@ -435,6 +435,7 @@ const handleViewMore = async () => {
       arrival_time_period: filtersState.arrival_time_period || "",
       sort_by: filtersState.sort_by || "price",
       order: filtersState.order || "asc",
+      trace_id: traceId,
       ...(filtersState?.airlines && isTraceIdValid() && { trace_id: traceId })
     };
 
