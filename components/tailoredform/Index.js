@@ -566,50 +566,34 @@ const Enquiry = (props) => {
 
 
 
-    // const data = {
-    //   source,
-    //   experience_filters_selected: preferences,
-    //   start_location: {
-    //     gmaps_place_id: startingLocation
-    //       ? startingLocation.place_id
-    //       : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-    //   }, // Start location build itinerary from - Can be empty
-    //   cities: cityids, // City ids to build itinerary
-    //   pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
-    //   states: stateIds, // State ids to build itinerary
-    //   countries: countryIds, // Country ids to build itinerary
-    //   pages: pageIds,
-    //   end_location: {}, // If empty, it is same as start_location
-    //   start_date: start_date, // YYYY-MM-DD
-    //   end_date: end_date, // YYYY-MM-DD
-    //   flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
-    // };
+    const data = {
+      source,
+      experience_filters_selected: preferences,
+      start_location: {
+        gmaps_place_id: startingLocation
+          ? startingLocation.place_id
+          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+      }, // Start location build itinerary from - Can be empty
+      cities: cityids, // City ids to build itinerary
+      pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
+      states: stateIds, // State ids to build itinerary
+      countries: countryIds, // Country ids to build itinerary
+      pages: pageIds,
+      end_location: {}, // If empty, it is same as start_location
+      start_date: start_date, // YYYY-MM-DD
+      end_date: end_date, // YYYY-MM-DD
+      flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
+    };
 
-    // setIsLoading(true);
-    // itineraryInitiate
-    //   .post("", data)
-    //   .then((res) => {
-    //     const data = res.data;
-    //     setError(null);
-    //     setItineraryId(data.itinerary_id);
-    //     setIsLoading(false);
-    //     setSlideIndex(slideIndex + 1);
-
-    //     const hotelsBudget = data?.hotels_budget;
-    //     if (hotelsBudget) {
-    //       const minPrice = parseInt(0.5 * hotelsBudget);
-    //       const maxPrice = parseInt(1.5 * hotelsBudget);
-    //       setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("ERROR: ", err.message);
-    //     setError(err.message);
-    //     setIsLoading(false);
-    //   });
+    setIsLoading(true);
+    itineraryInitiate
+      .post("", data)
+      .then((res) => {
+        const data = res.data;
+        
 
        setError(null);
-        // setItineraryId(data.itinerary_id);
+        setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
         setRoute(data.basic_route);

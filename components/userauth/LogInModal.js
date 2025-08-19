@@ -21,11 +21,13 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
 import ImageLoader from "../../components/ImageLoader";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
+import { MediumIndigoButton } from "../new-ui/Buttons";
+import { Body2R_14 } from "../new-ui/Body";
 
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
-  gap: 0.5rem;
+  gap: 8px;
 `;
 
 const WhatsappCheckBox = styled.div`
@@ -70,7 +72,6 @@ const CountryImg = styled(Image)`
 `;
 
 const UpdatePhone = styled.p`
-  padding: 0 8px;
   &:hover {
     cursor: pointer;
   }
@@ -318,26 +319,27 @@ const LogIn = React.memo((props) => {
   //Mobile, name, email, password, JSX
   mobileInput = (
     <div>
-      <FloatingInput
+      <input
         required
         error={props.mobileFail ? true : false}
         helperText={props.mobileFail ? props.mobilefailmessage : null}
         disabled={props.otpSent ? true : false}
         key="mobile"
         name="mobile"
-        label="Mobile Number"
+        placeholder="Enter phone number"
         type="mobile"
         id="mobile"
         onKeyDown={(e) => {
-        if (e.key === "Enter") {
-        e.preventDefault(); 
-       }
-       }}
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
         value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
-        className="loginform"
+        className=" !border-[0px] h-[22px] focus:outline-none"
         ref={mobileRef}
+        height={"22px"}
       />
     </div>
   );
@@ -350,10 +352,10 @@ const LogIn = React.memo((props) => {
         error={props.emailFail ? true : false}
         helperText={props.emailFail ? props.emailfailmessage : null}
         onKeyDown={(e) => {
-        if (e.key === "Enter") {
-        e.preventDefault(); 
-       }
-       }}
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
         key="email"
         name="email"
         label="Email Address"
@@ -397,28 +399,27 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className="font-lexend">
+    <div className="font-inter">
       {!props.noheading ? (
         <h1
           style={{
-            fontSize: "24px",
+            fontSize: "32px",
             textAlign: "left",
             margin: isPageWide
               ? "1.2rem 0rem 1.2rem 0.5rem"
               : "0rem 0rem 1rem 0.5rem",
             fontWeight: "700",
           }}
-          className="font-lexend"
         >
-          {props.loginmessage ? props.loginmessage : "Login to your account"}
+          {props.loginmessage ? props.loginmessage : "Welcome to The Tarzan Way!"}
         </h1>
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+        (props.token && props.phone === "null") ? (
         <p
-          style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
-          className="font-lexend text-center"
+          style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
+          className="text-[32px] text-center"
         >
           This is where your experience captain can reach you to personalize
           your plan.
@@ -426,11 +427,12 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone == "null") ? (
+        (props.token && props.phone == "null") ? (
         <form noValidate>
-          <MobileNumberContainer className="relative">
+          <Body2R_14>Phone Number</Body2R_14>
+          <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
             <div
-              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
+              className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
               onClick={() => setOpenCountryCodeOption(true)}
             >
               <CountryImg
@@ -441,7 +443,7 @@ const LogIn = React.memo((props) => {
                   props.CountryCodes ? props.CountryCodes[extension].img : ""
                 }
               ></CountryImg>
-              <FiChevronDown />
+              {/* <FiChevronDown /> */}
             </div>
             {openCountryCodeOption && (
               <CountryCodeDropdown
@@ -480,21 +482,23 @@ const LogIn = React.memo((props) => {
         </form>
       ) : (
         <form noValidate>
-          <MobileNumberContainer>
+          <Body2R_14 className="mb-[2px]">Phone Number</Body2R_14>
+          <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
             <div
-              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg cursor-pointer"
+              className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
               onClick={() => setOpenCountryCodeOption(true)}
             >
-              <CountryImg
-                height="30"
-                width="30"
-                objectFit="cover"
-                src={
-                  props.CountryCodes ? props.CountryCodes[extension].img : ""
-                }
-              ></CountryImg>
-
-              <FiChevronDown />
+              <div className="flex gap-3">
+                <CountryImg
+                  height="30"
+                  width="30"
+                  objectFit="cover"
+                  src={
+                    props.CountryCodes ? props.CountryCodes[extension].img : ""
+                  }
+                ></CountryImg>
+                <Body2R_14>{props?.CountryCodes[extension].label || +91}</Body2R_14>
+              </div>
             </div>
 
             {openCountryCodeOption && (
@@ -505,14 +509,12 @@ const LogIn = React.memo((props) => {
                 setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
-
-            {mobileInput}
+            <Body2R_14>{mobileInput}</Body2R_14>
           </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}
-            Receive log in OTP on Whatsapp
-            <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
+            {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
+            <Body2R_14>Receive OTP on Whatsapp</Body2R_14>
           </WhatsappCheckBox>
 
           {props.newUser || (props.otpSent && !props.name) ? (
@@ -570,7 +572,8 @@ const LogIn = React.memo((props) => {
           ) : null}
 
           {!props.otpSent ? (
-            <Button
+            <MediumIndigoButton className="!text-white mt-[40px] !w-full" onClick={verifyRecaptchaHandler}>
+              {/* <Button
               onclick={verifyRecaptchaHandler}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
@@ -583,9 +586,10 @@ const LogIn = React.memo((props) => {
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
               loading={props.loading}
-            >
-              Request OTP
-            </Button>
+            > */}
+              Continue
+              {/* </Button> */}
+            </MediumIndigoButton>
           ) : (
             <Button
               onclick={submitOtpHandler}
@@ -605,89 +609,24 @@ const LogIn = React.memo((props) => {
             </Button>
           )}
 
-          {/* <div
-            style={{
-              position: "relative",
-              marginBlock: isPageWide ? "3rem" : "2rem",
-            }}
-          >
-            <hr></hr>
-            <p
-              style={{
-                position: "absolute",
-                background: "white",
-                top: "-12px",
-                left: "43%",
-                paddingInline: "10px",
-                fontSize: "16px",
-                fontWeight: "500",
-              }}
-            >
-              OR
-            </p>
-          </div>
-
-          <Button
-            onclick={() => _handleGoogleLogin()}
-            margin={"0"}
-            width="100%"
-            bgColor="#F9F9F9"
-            fontWeight="500"
-            fontSize="16px"
-            borderWidth="0px"
-            hoverColor="white"
-            hoverBgColor="black"
-            boxShadow="0px 2px 0px #ECEAEA"
-            borderRadius="8px"
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  height: "1.5rem",
-                  width: "1.5rem",
-                  margin: "0 0.5rem",
-                }}
-              >
-                <ImageLoader
-                  dimensions={{ height: 100, width: 100 }}
-                  url={"media/icons/login/google.svg"}
-                  height="1.5rem"
-                  width="1.5rem"
-                />
-              </div>
-              <p
-                style={{
-                  margin: "0",
-                  fontWeight: "500",
-                  fontSize: "1rem",
-                  display: "inline",
-                }}
-                className="font-lexend"
-              >
-                Sign in with Google
-              </p>
-            </div>
-          </Button> */}
-
-          <div
-            className="text-center font-lexend"
-            style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
-          >
-            By signing up you are agreeing with our{" "}
+          <Body2R_14 className="text-[#6E757A] mt-[60px]">
+            By continuing, you agree to our{" "}
             <Link
               href="/privacy-policy"
               style={{ textDecoration: "none" }}
               target="_blank"
             >
-              T&Cs and privacy policy
+              Terms of Service
             </Link>
-          </div>
+            {" "} and acknowlege you've read our{" "}
+            <Link
+              href="/privacy-policy"
+              style={{ textDecoration: "none" }}
+              target="_blank"
+            >
+              Privacy Policy.
+            </Link>
+          </Body2R_14>
 
           <ReCAPTCHA
             size="invisible"

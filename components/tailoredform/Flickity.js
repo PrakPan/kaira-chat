@@ -83,7 +83,6 @@ const dummyProps = {
 };
 
 const FlickityComp = (props) => {
-  console.log("props are: ",props)
   return (
     <div style={{ width: "100%" }} className="font-inter">
       {!props.slideIndex ? (
@@ -118,13 +117,14 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 1  && props.phone !== "null" ? (
+      {props.slideIndex === 1 ? (
         <Card>
           <SlideTwo
+          setSlideIndex={props?.setSlideIndex}
             {...dummyProps}
           >
             <RoutesMap
-              locations={props.route}
+              locations={dummyProps?.routes}
             /></SlideTwo>
         </Card>
       ) : null}

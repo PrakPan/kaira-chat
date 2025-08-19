@@ -615,7 +615,7 @@ const RouteEditSection = (props) => {
                 className="w-full h-full fixed inset-0 flex flex-col bg-[#ACACAC] items-center bg-white z-[1025] overflow-y-auto hide-scrollbar"
             >
                 {/* {loading && <Loader />} */}
-                <Header title={"Route Overview — Customize Your Journey from Start to Finish!"}></Header>
+                <Header title={"Route Overview — Customize Your Journey from Start to Finish!"} setSlideIndex={props.setSlideIndex}/>
               
                 {itineraryLoading && <Spinner isEdit={true} />}
 
@@ -659,7 +659,7 @@ const RouteEditSection = (props) => {
                         // />
                         ""
                     )}
-                 <ActionPanel/>
+                 <ActionPanel setSlideIndex={props.setSlideIndex}/>
                 </div>
 
               
@@ -669,10 +669,8 @@ const RouteEditSection = (props) => {
                         <TbArrowBack
                             style={{ height: "28px", width: "28px" }}
                             cursor={"pointer"}
-                            onClick={
-                                editDestination
-                                    ? () => handleClose()
-                                    : () => setEditDestination(true)
+                            onClick={()=>
+                                props.setSlideIndex(0)
                             }
                         />
                     </FloatingView>
@@ -715,7 +713,7 @@ const Header = (props) => {
     return (
         <div className="w-full font-inter px-5 py-3  border-b-gray-200">
             <div className="flex items-center justify-between">
-                <IoMdArrowRoundBack size={24}/>
+                <IoMdArrowRoundBack size={24} onClick={()=>props.setSlideIndex(0)}/>
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold w-[50%] text-center">
                 {props?.title}
             </h1>
@@ -1572,6 +1570,7 @@ export const DestinationPopUp = (props) => {
 
 
 export const ActionPanel = (props) => {
+    console.log("props are: ",props)
     const {
         setEdit,
         setEditDestination,
@@ -1579,6 +1578,7 @@ export const ActionPanel = (props) => {
         handleSaveButton,
         itineraryLoading,
         handleClose,
+        setSlideIndex
     } = props;
 
     return (
@@ -1586,11 +1586,10 @@ export const ActionPanel = (props) => {
             <div className="flex w-full justify-between flex-row p-4">
                 {!itineraryLoading && (
                     <button
-                        onClick={()=>{}
+                        onClick={()=>setSlideIndex(2)}
                             // editDestination
                             //     ? () => handleClose()
                             //     : () => setEditDestination(true)
-                        }
                         className="px-3 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
                     >
                         {/* {editDestination ? "Cancel" : "Back"} */}
