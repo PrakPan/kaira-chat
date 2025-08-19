@@ -147,7 +147,7 @@ const TransferEditDrawer = (props) => {
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
   const [transferType, setTransferType] = useState(
-  booking_type == "multicity" ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name : TRANSFER_TYPES.ONEWAYTRIP.name
+  booking_type == "multicity"  || drawerType == "multicity"? TRANSFER_TYPES.MULTICITYROUNDTRIP.name : TRANSFER_TYPES.ONEWAYTRIP.name
 );
   const [loadingRoundTrip, setLoadingRoundTrip] = useState(false);
   const [loadingMultiCity, setLoadingMultiCity] = useState(false);
@@ -180,7 +180,7 @@ const TransferEditDrawer = (props) => {
   const [taxiResults, setTaxiResults] = useState([]);
 
  useEffect(()=>{
- if(booking_type == "multicity"){
+ if(booking_type == "multicity" || drawerType == "multicity"){
   setTransferType(TRANSFER_TYPES.MULTICITYROUNDTRIP.name);
  }
 },[booking_type])
