@@ -11,6 +11,7 @@ import {
     FaCirclePlus,
     FaCircleMinus,
     FaCalendarDays,
+    FaLocationDot,
 } from "react-icons/fa6";
 import { RiProgress2Line } from "react-icons/ri";
 import {
@@ -54,6 +55,7 @@ import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/pr
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary from "../../../store/actions/itinerary";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { HiLocationMarker } from "react-icons/hi";
 
 const Container = styled.div`
   position: relative;
@@ -881,9 +883,9 @@ export const EditDestinations = (props) => {
     }
 
     return (
-        <div className="w-full md:w-[50%] lg:w-[50%] font-inter  font-normal flex flex-col items-start justify-start  pb-[150px]  gap-3">
+        <div className="w-full md:w-[50%] lg:w-[55%] lg:p-4 font-inter  font-normal flex flex-col items-start justify-start  pb-[150px]  gap-3">
             <div className="w-full flex flex-row items-start justify-between">
-                <div className="text-[24px] pb-3">Route Preview</div>
+                <div className="text-[20px] pb-3">Route Preview</div>
                 <div 
            onClick={() => props?.setIsEditMode(!props?.isEditMode)} 
     className="text-blue cursor-pointer underline text-sm"
@@ -1095,15 +1097,17 @@ export const DragDrop = (props) => {
 
 const DottedLine = styled.div`
   width: 2px;
-  height: 40px;
+  height: 55px;
   background-image: repeating-linear-gradient(
     to bottom,
     gray 0,
-    gray 1px,
+    gray 2px,
     transparent 1px,
     transparent 6px
   );
 `;
+
+
 
 export const Destination = (props) => {
     const {
@@ -1122,6 +1126,22 @@ export const Destination = (props) => {
     } = props;
 
   
+   const CustomMapPin = ({ color = '#FF0303', size = 32 }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 32 32"
+    fill="none"
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M16.0011 2.33331C16.0011 2.33331 16.0011 2.33331 15.9878 2.33331C11.2811 2.33331 5.89444 5.09331 4.49444 11.2533C2.93444 18.1333 7.14777 23.96 10.9611 27.6266C12.3744 28.9866 14.1878 29.6666 16.0011 29.6666C17.8144 29.6666 19.6278 28.9866 21.0278 27.6266C24.8411 23.96 29.0544 18.1466 27.4944 11.2666C26.0944 5.10665 20.7211 2.33331 16.0011 2.33331ZM11.8011 13.7466C11.8011 11.4266 13.6811 9.54665 16.0011 9.54665C18.3211 9.54665 20.2011 11.4266 20.2011 13.7466C20.2011 16.0666 18.3211 17.9466 16.0011 17.9466C13.6811 17.9466 11.8011 16.0666 11.8011 13.7466Z"
+      fill={color}
+    />
+  </svg>
+);
 
 
     const [popUp, setPopUp] = useState(false);
@@ -1188,7 +1208,7 @@ export const Destination = (props) => {
     </div>
 )} */}
 
- <div className="w-full flex flex-row items-center justify-between gap-3 relative z-10">
+ <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
             <div className="flex flex-row items-center gap-3">
                 {/* Show hamburger only in edit mode and for middle destinations - NO vertical lines */}
                 {isEditMode && !(startingCity || endingCity) && (
@@ -1207,26 +1227,23 @@ export const Destination = (props) => {
                 )}
 
                 {/* Pin section */}
-                <div className="relative flex flex-row items-center gap-3">
+                <div className="relative flex flex-row items-center gap-4">
                     {/* Pin design */}
                     {startingCity || endingCity ? (
-                        <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center relative z-10">
+                        <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
                             <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
                     ) : (
-                        <IoLocationSharp
-                            className="text-2xl relative z-10"
-                            style={{ color: cityData?.color }}
-                        />
+                        <CustomMapPin color={cityData?.color || pinColour}/>
                     )}
 
-                    <div className="flex flex-col">
-                        <div className="text-base lg:text-lg cursor-pointer font-medium">
-                            {cityData.city_name || cityData.name || cityData.text}
+                    <div className="flex flex-row items-center justify-center gap-3">
+                        <div className="text-base lg:text-[16px] cursor-pointer font-medium">
+                           {cityData.city_name || cityData.name || cityData.text}
                         </div>
                         {!(startingCity || endingCity) && cityData?.nights && (
                             <div className="text-sm text-gray-500">
-                                {`${cityData.nights} ${cityData.nights > 1 ? 'Nights' : 'Night'}`}
+                              <span className="text-[16px] text-gray-500">I</span> &nbsp; {`${cityData.nights} ${cityData.nights > 1 ? 'Nights' : 'Night'}`}
                             </div>
                         )}
                     </div>
@@ -1258,10 +1275,10 @@ export const Destination = (props) => {
         {/* Vertical dotted line connecting destinations */}
         {index < props?.totalDestinations - 1 && (
             <div 
-                className={`absolute top-[43px] z-0 ${
+                className={`absolute top-[42px] z-0 ${
                     isEditMode 
-                        ? 'left-[47px] top-[45px]'  // Shifted right when in edit mode (for all destinations)
-                        : 'left-[11px]'  // Normal position
+                        ? 'left-[51px] top-[45px]'  // Shifted right when in edit mode (for all destinations)
+                        : 'left-[15px]'  // Normal position
                 }`}
             >
                 {/* <div className="w-[2px] h-[40px] border-l-2 border-dotted border-gray-400"></div> */}
