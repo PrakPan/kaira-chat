@@ -137,6 +137,7 @@ export default function Modal(props) {
                         right: "15px",
                         fontSize: "1.5rem",
                         cursor: "pointer",
+                        zIndex: 999
                       }}
                       onClick={onCLose}
                     />

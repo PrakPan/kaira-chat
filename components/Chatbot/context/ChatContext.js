@@ -38,7 +38,7 @@ export const ChatProvider = ({ bookingId, children }) => {
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            // console.log(data);
+            console.log(data);
             handleStreamData(data);
         };
 

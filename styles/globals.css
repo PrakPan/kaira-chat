@@ -18,6 +18,7 @@
     --border-color-white-gray : #F5F5F5;
     --color-light-background: #FAFAFA;
     --color-text-dark-blue : #01202B;
+    --color-spanish-grey: #E5E5E5;
 
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
@@ -250,7 +251,7 @@ a.termsnavunderlinelink {
     font-size: 12px;
     font-weight: 500;
     width: fit-content;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-md);
     font-family: var(--font-family-montserrat);
 }
 
@@ -286,4 +287,16 @@ a.termsnavunderlinelink {
 
 .text-color-dark-blue {
     color : var(--color-text-dark-blue);
+}
+
+.list-menu-item {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 14px !important; 
+}
+
+.desktop-view-cart-fixed{
+    width: 43%;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-spanish-grey);
+    background: var(--color-pure-white);
 }

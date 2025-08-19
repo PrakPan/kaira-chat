@@ -149,6 +149,7 @@ const CityDay = (props) => {
                 date={props?.date}
                 cityID={props.city.id}
                 cityName={props.city.name}
+                totalElements={elements.length} 
               />
 
               {index !== elements.length - 1 ? <DivideSlabElement> 2h </DivideSlabElement> : null}

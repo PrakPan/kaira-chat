@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { MdOutlineStar, MdStarHalf } from "react-icons/md";
 import { FaLocationDot } from "react-icons/fa6";
 import ImageLoader from "../../ImageLoader";
@@ -9,6 +9,14 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FaEllipsis } from "react-icons/fa6";
 import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import axios from "axios";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { useDispatch, useSelector } from "react-redux";
+import setItinerary from "../../../store/actions/itinerary";
+import { openNotification } from "../../../store/actions/notification";
+import { MERCURY_HOST } from "../../../services/constants";
 
 export const getStars = (rating) => {
   const stars = [];
@@ -29,6 +37,7 @@ const SlabElement = (props) => {
           setShowLoginModal={props?.setShowLoginModal}
           cityID={props?.cityID}
           cityName={props?.cityName}
+          totalElements={props.totalElements}
         />
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation
@@ -50,11 +59,28 @@ export default SlabElement;
 const Activity = (props) => {
   let isPageWide = media("(min-width: 769px)");
   const router = useRouter();
+  const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const itinerary = useSelector((state) => state.Itinerary);
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+
+  const handleClick = (event) => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.setProperty("overflow", "visible", "important");
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenue = () => {
+    setAnchorEl(null);
+    document.documentElement.style.overflow = "auto";
+  };
+
   const { drawer, poi_id, type } = router?.query;
   const activityData = {
     id: poi_id,
     type: type,
   };
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     router.push(
@@ -83,16 +109,6 @@ const Activity = (props) => {
         scroll: false,
       }
     );
-    // setActivityData(() => ({
-    //   id: poi?.booking?.id
-    //     ? poi?.booking?.id
-    //     : poi?.poi
-    //     ? poi?.poi
-    //     : poi?.activity
-    //     ? poi?.activity
-    //     : null,
-    //   type: type,
-    // }));
 
     logEvent({
       action: "Details_View",
@@ -104,6 +120,101 @@ const Activity = (props) => {
       },
     });
   };
+
+
+  const handleDelete = async (e) => {
+    try {
+      let res;
+      if (props?.element?.poi != null) {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
+          {
+            data: {
+              itinerary_city_id: props?.itinerary_city_id,
+              day_by_day_index: props?.dayIndex,
+              poi_index: props?.slabIndex,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.element?.booking?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+      }
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+      let itineraryCities = [];
+
+      if ((props?.element?.poi != null && res?.status === 200) || (props?.element?.booking?.id && res?.status === 204)) {
+        if (props?.element?.poi != null) {
+          itineraryCities = newItinerary.cities.map((city) => {
+            const cityTemp = city;
+            if (city.id === props?.itinerary_city_id) {
+              cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+                props?.slabIndex,
+                1
+              );
+            }
+            return cityTemp;
+          });
+        }
+        else {
+          itineraryCities = newItinerary.cities.map((city) => {
+            if (city.id === props?.itinerary_city_id) {
+              city.day_by_day.forEach((day, index) => {
+                if (day?.slab_elements) {
+                  day.slab_elements = day.slab_elements.filter(
+                    (item) => item?.booking?.id !== props?.element?.booking?.id
+                  );
+                }
+              });
+
+              city.activities = city.activities?.filter(
+                (item) => item?.id !== props?.element?.booking?.id
+              );
+            }
+            return city;
+          });
+        }
+      }
+
+      newItinerary.cities = itineraryCities;
+      dispatch(setItinerary(newItinerary));
+      handleCloseMenue();
+      dispatch(
+        openNotification({
+          type: "success",
+          text: `${props.element.heading} has been removed from your itinerary`,
+          heading: "Success!",
+        })
+      );
+    } catch (error) {
+      handleCloseMenue();
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        })
+      );
+    }
+    // setLoading(false);
+  };
+
 
   return (
     <>
@@ -140,7 +251,7 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }
-              className="w-fit text-[14px] cursor-pointer font-montserrat mt-1"
+              className="w-fit text-[14px]  cursor-pointer font-medium font-montserrat mt-1"
             >
               {props.element.heading}
             </div>
@@ -155,10 +266,10 @@ const Activity = (props) => {
                 />
               </div>
 
-              <div className="opacity-[.4] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] font-normal text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
-              {props.element?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF]">
-                <div className="text-[12px] opacity-[.4]">
+              {props.element?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="text-[12px]">
                   {props.element?.rating}
                 </div>
                 <div className="flex items-center">
@@ -171,7 +282,38 @@ const Activity = (props) => {
         </div>
 
         <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[10px] flex-row-reverse justify-end' : ''}`}>
-          <div> <IconButton size="small" color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton> </div>
+          <div> <IconButton size="small" id="basic-button"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenue}
+              disableScrollLock
+              slotProps={{
+                list: {
+                  'aria-labelledby': 'basic-button',
+                },
+              }}
+              anchorOrigin={
+                isPageWide
+                  ? { horizontal: "right", }
+                  : undefined
+              }
+              transformOrigin={
+                isPageWide
+                  ? { horizontal: "right" }
+                  : undefined
+              }
+            >
+              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
+              {props.slabIndex != 0 && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Down</MenuItem>}
+            </Menu>
+          </div>
           <div>
             <button
               onClick={() =>
@@ -232,6 +374,19 @@ const Recommendation = (props) => {
     type: "",
   });
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.setProperty("overflow", "visible", "important");
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenue = () => {
+    setAnchorEl(null);
+    document.documentElement.style.overflow = "auto";
+  };
+
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDrawer(false);
@@ -289,7 +444,7 @@ const Recommendation = (props) => {
                   "restaurant"
                 )
               }
-              className="w-fit text-[14px] cursor-pointer font-montserrat"
+              className="w-fit text-[14px] font-medium cursor-pointer font-montserrat"
             >
               {props.element.heading}
             </div>
@@ -305,10 +460,10 @@ const Recommendation = (props) => {
                 />
               </div>
 
-              <div className="opacity-[.4] border-l pl-[8px] pr-[8px] border-[#BFBFBF]"> 12:30 - 1:30 PM</div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] font-normal text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
-              {props.element?.restaurants?.[0]?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF]">
-                <div className="text-[12px] opacity-[.4]">
+              {props.element?.restaurants?.[0]?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="text-[12px]">
                   {props.element?.restaurants?.[0]?.rating}
                 </div>
                 <div className="flex items-center">
@@ -322,13 +477,43 @@ const Recommendation = (props) => {
 
 
         <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[10px] flex-row-reverse justify-end' : ''}`}>
-          <div> <IconButton size="small" color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton> </div>
+          <div> <IconButton size="small" id="basic-button"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenue}
+              disableScrollLock
+              slotProps={{
+                list: {
+                  'aria-labelledby': 'basic-button',
+                },
+              }}
+              anchorOrigin={
+                isPageWide
+                  ? { horizontal: "right", }
+                  : undefined
+              }
+              transformOrigin={
+                isPageWide
+                  ? { horizontal: "right" }
+                  : undefined
+              }
+            >
+              {props.slabIndex != 0 && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Down</MenuItem>}
+            </Menu>
+          </div>
           <div>
             <button
               onClick={() =>
                 handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
               }
-             className="ttw-btn-secondary"
+              className="ttw-btn-secondary"
             >
               Details
             </button>
