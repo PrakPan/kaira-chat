@@ -209,6 +209,7 @@ const RouteEditSection = (props) => {
     const [polling, setPolling] = useState(false);
     const [pollingInterval, setPollingInterval] = useState(null);
     const destinationRef = useRef(null);
+    const [isEditMode, setIsEditMode] = useState(false);
     const itinerary = useSelector((state) => state.Itinerary);
     const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
     const { itinerary_status, transfers_status, pricing_status, hotels_status } =
@@ -629,6 +630,8 @@ const RouteEditSection = (props) => {
                                 setEndDate={setEndDate}
                                 setLocationsLatLong={props.setLocationsLatLong}
                                 setDestinationChanges={setDestinationChanges}
+                                isEditMode={isEditMode}
+                                setIsEditMode={setIsEditMode}
                             />
                             {isDesktop && (
                                 <div className="sticky top-0 h-full w-[50%] flex flex-col gap-3 items-center">
@@ -716,7 +719,43 @@ const Header = (props) => {
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold w-[50%] text-center">
                 {props?.title}
             </h1>
-                <IoMdArrowRoundBack size={24}/>
+
+            <div className="">
+                            <svg width="64" height="64" viewBox="0 0 64 64">
+                              {/* Background Circle */}
+                              <circle
+                                cx="32"
+                                cy="32"
+                                r={28}
+                                fill="none"
+                                stroke="#F0F0F0"
+                                strokeWidth="6"
+                              />
+                              {/* Progress Circle */}
+                              <circle
+                                cx="32"
+                                cy="32"
+                                r={28}
+                                fill="none"
+                                stroke="#5CBA66"
+                                strokeWidth="6"
+                                strokeDasharray={175}
+                                strokeDashoffset={70}
+                                strokeLinecap="round"
+                                transform="rotate(-90 32 32)"
+                              />
+                              {/* Text in Center */}
+                              <text
+                                x="32"
+                                y="32"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                className="text-sm font-bold fill-black"
+                              >
+                                2/5
+                              </text>
+                            </svg>
+                          </div>
             </div>
         </div>
     );
@@ -847,6 +886,12 @@ export const EditDestinations = (props) => {
         <div className="w-full md:w-[50%] lg:w-[50%] font-inter  font-normal flex flex-col items-start justify-start  pb-[150px]  gap-3">
             <div className="w-full flex flex-row items-start justify-between">
                 <div className="text-[24px] pb-3">Route Preview</div>
+                <div 
+           onClick={() => props?.setIsEditMode(!props?.isEditMode)} 
+    className="text-blue cursor-pointer underline text-sm"
+>
+    Edit Route
+</div>
 
                 {/* <div>
                     <button
@@ -881,6 +926,8 @@ export const DragDrop = (props) => {
         setPopUp,
         setDestinationChanges,
         destinationRef,
+        isEditMode,
+        setIsEditMode,
     } = props;
 
     const reorder = (list, startIndex, endIndex) => {
@@ -955,6 +1002,9 @@ export const DragDrop = (props) => {
                     updateDestinationsDates={updateDestinationsDates}
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
+                    isEditMode={isEditMode}
+                    setIsEditMode={setIsEditMode}
+                    totalDestinations={destinations.length}
                 />
             </div>
 
@@ -992,6 +1042,9 @@ export const DragDrop = (props) => {
                                                         updateDestinationsDates={updateDestinationsDates}
                                                         setDestinationChanges={setDestinationChanges}
                                                         destinationRef={destinationRef}
+                                                        isEditMode={isEditMode}
+                                                        setIsEditMode={setIsEditMode}
+                                                        totalDestinations={destinations.length}
                                                     />
                                                 </div>
                                             )}
@@ -1012,6 +1065,8 @@ export const DragDrop = (props) => {
                     updateDestinationsDates={updateDestinationsDates}
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
+                    isEditMode={isEditMode}
+                    setIsEditMode={setIsEditMode}
                 />
             )}
 
@@ -1032,10 +1087,25 @@ export const DragDrop = (props) => {
                 updateDestinationsDates={updateDestinationsDates}
                 setDestinationChanges={setDestinationChanges}
                 destinationRef={destinationRef}
+                isEditMode={isEditMode}
+                setIsEditMode={setIsEditMode}
+                totalDestinations={destinations.length}
             />
         </div>
     );
 };
+
+const DottedLine = styled.div`
+  width: 2px;
+  height: 40px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    gray 0,
+    gray 1px,
+    transparent 1px,
+    transparent 6px
+  );
+`;
 
 export const Destination = (props) => {
     const {
@@ -1049,10 +1119,16 @@ export const Destination = (props) => {
         updateDestinationsDates,
         setDestinationChanges,
         destinationRef,
+        isEditMode,
+        setIsEditMode
     } = props;
+
+  
+
 
     const [popUp, setPopUp] = useState(false);
     const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  
 
     const handleRemoveDestination = (e) => {
         e.stopPropagation();
@@ -1092,128 +1168,110 @@ export const Destination = (props) => {
     };
 
     return (
-        <div
-            className={`relative w-full flex py-2`}
-        >
-            {popUp && (
-                <DestinationPopUp
-                    index={index}
-                    cityData={cityData}
-                    startingCity={startingCity}
-                    endingCity={endingCity}
-                    setDestinations={props.setDestinations}
-                    updateLatLong={updateLatLong}
-                    setPopUp={setPopUp}
-                    updateDestinationsDates={updateDestinationsDates}
-                    setDestinationChanges={setDestinationChanges}
-                    destinationRef={destinationRef}
-                />
-            )}
+    <div className={`relative w-full flex py-2`}>
+        {popUp && (
+            <DestinationPopUp
+                index={index}
+                cityData={cityData}
+                startingCity={startingCity}
+                endingCity={endingCity}
+                setDestinations={props.setDestinations}
+                updateLatLong={updateLatLong}
+                setPopUp={setPopUp}
+                updateDestinationsDates={updateDestinationsDates}
+                setDestinationChanges={setDestinationChanges}
+                destinationRef={destinationRef}
+            />
+        )}
 
-            <div
-                onClick={handleEditDestination}
-                className="w-full flex flex-row items-center justify-between gap-3"
-            >
-                <div className="w-[70%] flex flex-row items-center gap-3">
-                    <div className={`text-3xl ${!(startingCity || endingCity)
-                            ? "cursor-grab active:cursor-grabbing text-gray-400"
-                            : "text-gray-300"
-                        } `}>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        {/* {index < props?.totalDestinations - 1 && (
+    <div className="absolute left-[11px] top-[40px] w-[2px] h-[40px] z-0">
+        <div className="w-full h-full border-l-2 border-dotted border-gray-400"></div>
+    </div>
+)} */}
+
+ <div className="w-full flex flex-row items-center justify-between gap-3 relative z-10">
+            <div className="flex flex-row items-center gap-3">
+                {/* Show hamburger only in edit mode and for middle destinations - NO vertical lines */}
+                {isEditMode && !(startingCity || endingCity) && (
+                    <div className="text-gray-400 cursor-grab active:cursor-grabbing">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <rect x="3" y="6" width="18" height="2" rx="1" />
                             <rect x="3" y="11" width="18" height="2" rx="1" />
                             <rect x="3" y="16" width="18" height="2" rx="1" />
                         </svg>
                     </div>
+                )}
 
+                {/* Empty space for alignment when in edit mode for start/end cities */}
+                {isEditMode && (startingCity || endingCity) && (
+                    <div className="w-[20px]"></div> // Same width as hamburger to maintain alignment
+                )}
+
+                {/* Pin section */}
+                <div className="relative flex flex-row items-center gap-3">
+                    {/* Pin design */}
                     {startingCity || endingCity ? (
-                       <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center"
-                            style={{ backgroundColor: "black" }}
-                        >
+                        <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center relative z-10">
                             <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
                     ) : (
                         <IoLocationSharp
-                        className={`text-3xl`}
-                        style={{ color: cityData?.color }}
-                    />
+                            className="text-2xl relative z-10"
+                            style={{ color: cityData?.color }}
+                        />
                     )}
 
-                    <div
-                        onClick={handleEditDestination}
-                        className="text-sm lg:text-lg  cursor-pointer flex flex-row gap-5 items-center justify-center"
-                    >
-                        {cityData.city_name || cityData.name || cityData.text}{" "} 
-                         {!(startingCity || endingCity) && (
-                    <div className="w-full h-full flex flex-row items-center justify-center gap-2">
-                        <div className="h-8 flex items-center">
-  <div className="h-[80%] w-[2px] bg-gray-400"></div>
-</div>
-
-                        <div className="text-sm text-gray-500">
-                            {!(startingCity || endingCity) && cityData?.nights
-                                ? `${cityData.nights} ${cityData.nights > 1
-                                    ? isPageWide
-                                        ? "Nights"
-                                        : "N"
-                                    : isPageWide
-                                        ? "Night"
-                                        : "N"
-                                }`
-                                : null}
+                    <div className="flex flex-col">
+                        <div className="text-base lg:text-lg cursor-pointer font-medium">
+                            {cityData.city_name || cityData.name || cityData.text}
                         </div>
-                    </div>
-                )}
+                        {!(startingCity || endingCity) && cityData?.nights && (
+                            <div className="text-sm text-gray-500">
+                                {`${cityData.nights} ${cityData.nights > 1 ? 'Nights' : 'Night'}`}
+                            </div>
+                        )}
                     </div>
                 </div>
+            </div>
 
-                {/* {!(startingCity || endingCity) && (
-                    <div className="w-[30%] h-full flex flex-row items-center gap-2">
-                        <div className="h-[80%] w-[2px]  bg-gray-400"></div>
-                        <div className="text-sm text-gray-500">
-                            {!(startingCity || endingCity) && cityData?.nights
-                                ? `${cityData.nights} ${cityData.nights > 1
-                                    ? isPageWide
-                                        ? "Nights"
-                                        : "N"
-                                    : isPageWide
-                                        ? "Night"
-                                        : "N"
-                                }`
-                                : null}
-                        </div>
-                    </div>
-                )} */}
-
-                <div className="flex flex-row items-center gap-3 justify-self-end">
+            {/* Show edit and delete icons only in edit mode */}
+            {isEditMode && (
+                <div className="flex flex-row items-center gap-2">
                     <div
                         onClick={handleEditDestination}
-                        className="w-8 h-8   flex items-center justify-center cursor-pointer hover:bg-blue-50"
+                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded"
                     >
-                        {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2">
-                            {/* <path d="M12 20h9" /> */}
-                            {/* <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                        </svg>  */}
-                        <MdOutlineEdit size={20} color={"blue"}/>
+                        <MdOutlineEdit size={18} color={"#3B82F6"}/>
                     </div>
 
                     {!startingCity && !endingCity && (
                         <div
                             onClick={(e) => handleRemoveDestination(e)}
-                            className="w-8 h-8 rounded-full   flex items-center justify-center cursor-pointer hover:bg-red-50"
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
                         >
-                            {/* <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2">
-                                <polyline points="3,6 5,6 21,6" />
-                                <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2" />
-                            </svg> */}
-                            <MdOutlineDelete size={20} color="red"/>
+                            <MdOutlineDelete size={18} color="#EF4444"/>
                         </div>
                     )}
                 </div>
-            </div>
+            )}
         </div>
-    );
+
+        {/* Vertical dotted line connecting destinations */}
+        {index < props?.totalDestinations - 1 && (
+            <div 
+                className={`absolute top-[43px] z-0 ${
+                    isEditMode 
+                        ? 'left-[47px] top-[45px]'  // Shifted right when in edit mode (for all destinations)
+                        : 'left-[11px]'  // Normal position
+                }`}
+            >
+                {/* <div className="w-[2px] h-[40px] border-l-2 border-dotted border-gray-400"></div> */}
+                <DottedLine />
+            </div>
+        )}
+    </div>
+);
 };
 
 export const DestinationPopUp = (props) => {

@@ -105,8 +105,8 @@ const useSourceParams = () => {
     }
 
     let resolvedPath = pathname;
-    for (const [key, val] of Object.entries(params)) {
-      resolvedPath = resolvedPath.replace(`[${key}]`, val);
+    for (const [key, val] of Object?.entries(params)) {
+      resolvedPath = resolvedPath?.replace(`[${key}]`, val);
     }
 
     return {
@@ -764,7 +764,7 @@ const Enquiry = (props) => {
           />
         )}
 
-        {showPopup.group && (
+        {/* {showPopup.group && (
           <Popup
             setShowPopup={setShowPopup}
             top={props.tailoredFormModal ? "16rem" : "190px"}
@@ -772,7 +772,7 @@ const Enquiry = (props) => {
             tipLeft="45%"
             text="Please select your group type!"
           />
-        )}
+        )} */}
 
         <div
           style={{
