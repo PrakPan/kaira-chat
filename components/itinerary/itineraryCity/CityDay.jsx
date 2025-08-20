@@ -76,13 +76,14 @@ const CityDay = (props) => {
     }
   }, [])
 
+const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => {
+  const checkIn = booking?.check_in?.split(" ")[0];
+  const checkOut = booking?.check_out?.split(" ")[0];
+  const allDates = getDatesInRange(checkIn, checkOut);
 
-  const matchingIntracityBookings = props?.intracityBookings?.filter(
-    (booking) => {
-      const checkInDate = booking?.check_in?.split(" ")[0];
-      return checkInDate === props?.day?.date;
-    }
-  );
+  const dayDate = new Date(props?.day?.date).toISOString().split("T")[0];
+  return allDates.includes(dayDate);
+});
 
   const formattedTaxiDetails = matchingIntracityBookings?.map(
     (booking, index) => {
@@ -101,10 +102,10 @@ const CityDay = (props) => {
       return {
         ...booking,
         id: booking.id,
-        date:
-          formattedCheckIn === formattedCheckOut
-            ? `Day ${index + 1}, ${formattedCheckIn}`
-            : `${formattedCheckIn} to ${formattedCheckOut}`,
+        currentDayLabel: `Day ${props.index + 1}, ${convertDateFormat(props?.day?.date)}`,
+          // date: formattedCheckIn === formattedCheckOut
+          //   ? `Day ${index + 1}, ${formattedCheckIn}`
+          //   : `${formattedCheckIn} to ${formattedCheckOut}`,
         fromLocation:
           booking.transfer_details?.source?.name || "Unknown Source",
         toLocation:
@@ -212,7 +213,7 @@ const CityDay = (props) => {
 
                           <div class="w-100">
                             <span className="font-semibold  text-[12px]">
-                              {item.date}
+                              {item.currentDayLabel}
                             </span>
                             <div className="w-full h-px bg-gray-200 mb-2" />
                             <div className="flex gap-1 relative">
