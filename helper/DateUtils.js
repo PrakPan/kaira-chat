@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import { convertDateFormat } from "./ConvertDateFormat";
+import dayjs from "dayjs";
 
 export const getDate = (dateString) => {
   try {
@@ -67,3 +68,39 @@ export const getCustomDateString = (date, offset) => {
 
   return convertDateFormat(format(newDate, "yyyy-MM-dd"));
 };
+
+export  const addDaysToDate = (dateString, numberOfDays) => {
+   console.log("props?.",dateString, numberOfDays);
+    const newDate = dayjs(dateString).add(numberOfDays, "day");
+    return newDate.format("YYYY-MM-DD");
+  };
+
+export function getDatesInRange(startDate, endDate) {
+  const date = new Date(startDate);
+  const end = new Date(endDate);
+  const dates = [];
+
+  while (date <= end) {
+    dates.push(date.toISOString().split("T")[0]);
+    date.setDate(date.getDate() + 1);
+  }
+
+  return dates;
+}
+
+export function getDateDifferenceInDays(checkIn, checkOut) {
+  // Get only the date part: "2025-09-30"
+  console.log("checkIn, checkOut", checkIn, checkOut);
+  const checkInDate = new Date(checkIn.split(" ")[0]);
+  const checkOutDate = new Date(checkOut.split(" ")[0]);
+
+  if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+    console.error("Invalid date:", { checkIn, checkOut, checkInDate, checkOutDate });
+    return 0;
+  }
+
+  const diffTime = checkOutDate - checkInDate;
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+

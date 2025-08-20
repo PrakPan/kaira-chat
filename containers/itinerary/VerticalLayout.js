@@ -321,8 +321,9 @@ const AirportBookingItem = ({
         //   ...pickupBookings[0],
         //   selectedType: "Airport Pickup",
         // });
+          // setTransferType("Taxi")
         handleEdit(false, pickupBookings[0]);
-        setTransferType("Taxi")
+       
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -334,8 +335,9 @@ const AirportBookingItem = ({
         //   ...dropBookings[0],
         //   selectedType: "Airport Drop",
         // });
+          // setTransferType("Taxi")
         handleEdit(false, dropBookings[0]);
-        setTransferType("Taxi")
+   
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -347,8 +349,9 @@ const AirportBookingItem = ({
         //   ...booking[0],
         //   selectedType: "Airport Transfer",
         // });
+          // setTransferType("Taxi")
         handleEdit(false, booking[0]);
-        setTransferType("Taxi")
+      
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -367,7 +370,7 @@ const AirportBookingItem = ({
     //   selectedType: type,
     // });
     handleEdit(false, bookingItem);
-    setTransferType("Taxi")
+    // setTransferType("Taxi")
   };
 
   const formatDate = (dateString) => {
@@ -829,32 +832,70 @@ const CityItem = ({
     }
   }, [booking_id]);
 
-  const handleEdit = async (combo, book) => {
-    setTransferType(book?.booking_type || booking_type);
+useEffect(() => {
+  // If URL has bookingId and transferType, set airportBookingId from URL
+  if (router.query.bookingId && router.query.transferType) {
+    setAirportBookingId(router.query.bookingId);
+    setTransferType(router.query.transferType);
+  } else if (!router.query.drawer) {
+    // Reset airportBookingId when drawer is closed
+    setAirportBookingId(null);
+    setTransferType(null);
+  }
+}, [router.query.bookingId, router.query.transferType, router.query.drawer]);
 
-    console.log()
-    setIsIntracity(false);
-    if (combo) {
-      setComboDetails(true);
-    }
-    setAirportBookingId(book?.id);
-    setLoading(true);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer: "Intracity",
-          bookingId: book?.id,
-          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
-        },
+
+  // const handleEdit = async (combo, book) => {
+  //   setTransferType(book?.booking_type || booking_type);
+  //   setIsIntracity(false);
+  //   if (combo) {
+  //     setComboDetails(true);
+  //   }
+  //   setAirportBookingId(book?.id);
+  //   setLoading(true);
+  //   router.push(
+  //     {
+  //       pathname: `/itinerary/${router.query.id}`,
+  //       query: {
+  //         drawer: "Intracity",
+  //         bookingId: book?.id,
+  //         oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+  //         dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+  //       },
+  //     },
+  //     undefined,
+  //     {
+  //       scroll: false,
+  //     }
+  //   );
+  // };
+const handleEdit = async (combo, book) => {
+  const bookingType = book?.booking_type || booking_type;
+  setTransferType(bookingType);
+  setIsIntracity(false);
+  if (combo) {
+    setComboDetails(true);
+  }
+  setLoading(true);
+  
+  // Navigate to the URL with bookingId and transferType
+  router.push(
+    {
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "Intracity",
+        bookingId: book?.id,
+        transferType: bookingType,
+        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
       },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
-  };
+    },
+    undefined,
+    {
+      scroll: false,
+    }
+  );
+};
 
   const handlePickupDropDrawer = (drawerType) => {
     console.log("Drawer Clicked", drawerType);
@@ -972,6 +1013,45 @@ const CityItem = ({
       setLoading(false);
     }
   };
+
+//   useEffect(() => {
+//   if (transferType !== null && airportBookingId) {
+//     router.push(
+//       {
+//         pathname: `/itinerary/${router.query.id}`,
+//         query: {
+//           drawer: "Intracity",
+//           bookingId: airportBookingId,
+//           transferType: transferType,
+//           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+//           dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+//         },
+//       },
+//       undefined,
+//       {
+//         scroll: false,
+//       }
+//     );
+//   }
+// }, [transferType, airportBookingId]);
+
+  useEffect(() => {
+  if (router.query.transferType || transferType !== null) {
+   
+  } else {
+    setAirportBookingId(null);
+  }
+}, [router.query.transferType, transferType]);
+
+useEffect(() => {
+  
+  if (!router.query.drawer) {
+    setTransferType(null);
+    setAirportBookingId(null);
+    setLoading(false);
+  }
+}, [router.query.drawer]);
+
 
   const extractMode = (text) => {
     const lowerText = text.toLowerCase();
@@ -1343,13 +1423,14 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
         )}
 
       {"Intracity" === drawer &&
-        (bookingId === airportBookingId || bookingId === booking_id) && (
+        (bookingId === airportBookingId || bookingId === booking_id) &&  oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) &&(
           <TransferDrawer
             show={
               "Intracity" === drawer && (bookingId === airportBookingId || bookingId === booking_id)
             }
             error={error}
-            transferType={transferType}
+            transferType={router.query.transferType || transferType}
             combo={booking_type?.includes(",")}
             booking_type={transferType || booking_type}
             handleDelete={handleDelete}

@@ -20,6 +20,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
+import { getDateDifferenceInDays } from "../../helper/DateUtils";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -86,7 +87,7 @@ const TransferDrawer = ({
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: data?.is_airport_drop || data?.is_airport_pickup ? "addPickupDrop" : "editTransfer",
-          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : "multicity",
+          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : data?.combo_type ==="multicity" ? "multicity" : null,
           bookingId: booking_id,
           oItineraryCity:origin_itinerary_city_id,
           dItineraryCity:destination_itinerary_city_id
@@ -99,7 +100,7 @@ const TransferDrawer = ({
     );
   };
 
-  console.log("BBK",booking_type,transferType);
+  console.log("BBK",booking_type,transferType,data);
 
 
   const toggleExpand = (index) => {
@@ -164,6 +165,8 @@ const TransferDrawer = ({
 
     const checkIn = formatDateTime(transferData.check_in);
     const checkOut = formatDateTime(transferData.check_out);
+
+    // const dateDiff = getDateDifferenceInDays(checkIn,checkOut)
 
     // Get route information
     const origin = transferData.transfer_details?.trips?.[0]?.origin;
@@ -373,6 +376,7 @@ const TransferDrawer = ({
                             <div>
                               <div className="text-gray-500 text-xs">
                                 Duration
+                                {/* : {dateDiff} {dateDiff ==1 ? "day" :"days"} */}
                               </div>
                               <div className="font-medium text-gray-900">
                                 {duration}

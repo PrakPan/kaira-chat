@@ -14,7 +14,7 @@ export default function PriceRange(props) {
       ...prev,
       budget:{
         price_lower_range:value[0],
-        price_upper_range:value[1]
+        price_upper_range:value[1] === 10000 ? null: value[1]
       },
     }))
     }
@@ -24,7 +24,7 @@ export default function PriceRange(props) {
             const min_price = parseInt(minPrice) < 700 ? 700 : parseInt(minPrice);
             const max_price = parseInt(maxPrice) > 10000 ? 10000 : parseInt(maxPrice);
 
-            props.setBudget([min_price, max_price])
+            props.setBudget([min_price,max_price])
             setMinPrice(min_price);
             setMaxPrice(max_price);
         } else {

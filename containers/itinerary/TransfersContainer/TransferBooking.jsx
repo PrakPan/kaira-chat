@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { getModeIcon } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
 import PickupDropDrawer from "../PickupDropDrawer";
+import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -116,12 +117,14 @@ const TransferBooking = ({
     // if(isAirport){
     //   setAirportBookingId(book?.id)
     // }
+
     router.push(
     {
       pathname: `/itinerary/${router.query.id}`,
       query: {
         drawer: book?.transfer_type=="sightseeing"?"SightSeeing":"Intracity",
         bookingId: book?.id || booking_id,
+        transferType: book?.booking_type || booking_type,
         oItineraryCity: oItineraryCityId || oCityData?.id || oCityData?.gmaps_place_id,
         dItineraryCity: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id
       },
@@ -129,6 +132,7 @@ const TransferBooking = ({
     undefined,
     {
       scroll: false,
+      shallow: false, 
     }
   );
   };
@@ -550,6 +554,8 @@ const TransferBooking = ({
                     booking_type={
                       booking?.booking_type
                     }
+                    oCityData={oCityData}
+                    dCityData={dCityData}
                   />
                 </>
               ) : (

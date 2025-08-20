@@ -390,6 +390,8 @@ const Route = (props) => {
                 : "Taxi"
             }
             hidemidsection={true}
+            fetchData={props.fetchData}
+            resetRef={props?.resetRef}
             icon={null}
             routesData={props?.routesData}
             cityTransferBookings={props?.cityTransferBookings?.intercity[key]}
