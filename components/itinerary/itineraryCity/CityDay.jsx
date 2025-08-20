@@ -7,18 +7,58 @@ import { BsPeopleFill } from "react-icons/bs";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { FaEdit } from "react-icons/fa";
 import ImageLoader from "../../ImageLoader";
+import { useRouter } from "next/router";
+import styled from "styled-components";
+import Image from "next/image";
+import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
+
+const SectionHeading = styled.div`
+   font-family: Montserrat;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 22px;
+`
+
+const DivideSlabElement = styled.div`
+    border-left: 1px dashed #A09E9E;
+    margin-left: 1rem;
+    padding: 10px 5px;
+    font-family: Montserrat;
+    font-weight: 500;
+    font-size: 12px;
+    color: #A09E9E;
+`
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [viewMore, setViewMore] = useState(false);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  console.log('props are:',props)
 
+  const router = useRouter()
+  const { drawer, idx, itinerary_city_id, date } =
+    router?.query;
+  const handleAddActivity = () => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "showAddActivity",
+          itinerary_city_id: props?.itinerary_city_id,
+          idx: props?.index,
+          date: props?.day?.date
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {
@@ -30,10 +70,12 @@ const CityDay = (props) => {
     setElements(elements);
   }, [props.day?.slab_elements]);
 
-  function convertDateFormat(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  }
+  useEffect(() => {
+    if (props?.index === 0) {
+      setViewMore(true);
+    }
+  }, [])
+
 
   const matchingIntracityBookings = props?.intracityBookings?.filter(
     (booking) => {
@@ -41,31 +83,6 @@ const CityDay = (props) => {
       return checkInDate === props?.day?.date;
     }
   );
-
-  const handleTaxi = async (id) => {
-    console.log("Innnn");
-    setHandleShowTaxi(true);
-    try {
-      setLoading(true);
-      setTaxiData(null);
-
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/${id}/`
-      );
-
-      setTaxiData(res?.data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      dispatch(
-        openNotification({
-          type: "error",
-          text: `${error.response?.data?.errors[0]?.message[0]}`,
-          heading: "Error!",
-        })
-      );
-    }
-  };
 
   const formattedTaxiDetails = matchingIntracityBookings?.map(
     (booking, index) => {
@@ -101,69 +118,75 @@ const CityDay = (props) => {
     }
   );
   return (
-    <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
-      <div
-        className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
-      >
-        {props?.day?.date &&
-          (isPageWide ? (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ) : (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ))}
-        <span className="text-[#ABABAB] font-normal">
-          {" "}
-          (Day {props.index + 1})
-        </span>
-      </div>
-
-      <div className="flex flex-col p-3 md:w-[85%]">
-        {elements.map((element, index) => (
-          <>
-            <SlabElement
-              itinerary_city_id={props?.itinerary_city_id}
-              key={index}
-              element={element}
-              dayIndex={props?.index}
-              slabIndex={index}
-              setShowLoginModal={props?.setShowLoginModal}
-              date={props?.date}
-              cityID={props.city.id}
-              cityName={props.city.name}
-            />
-
-            {index !== elements.length - 1 ? <hr /> : null}
-          </>
-        ))}
-
-        {finalized_status === "PENDING" ? (
-          <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
-        ) : (
+    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
+      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 border-l' : ''}`}>
+        <div className={`flex items-center justify-between p-2 ${!viewMore ? ' bg-white rounded-2xl shadow-sm' : ''}`} >
+          <SectionHeading > Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></SectionHeading>
           <button
-            onClick={() => setShowAddDrawer(true)}
-            className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+            onClick={() => setViewMore((prev) => !prev)}
+            className="flex items-center text-sm font-semibold"
           >
-            + Add activities on {convertDateFormat(props?.day?.date)}
+              <Image
+                src={'/assets/Itinerary/arrow-up.svg'}
+                alt="ticket"
+                width={12}
+                height={8}
+                className={`transition-200 ${viewMore ? '' : 'rotate-180'}`}
+              />
           </button>
-        )}
+        </div>
+
+        {viewMore ? <>
+          {elements.map((element, index) => (
+            <>
+              <SlabElement
+                itinerary_city_id={props?.itinerary_city_id}
+                key={index}
+                element={element}
+                dayIndex={props?.index}
+                slabIndex={index}
+                setShowLoginModal={props?.setShowLoginModal}
+                date={props?.date}
+                cityID={props.city.id}
+                cityName={props.city.name}
+                totalElements={elements.length} 
+              />
+
+              {index !== elements.length - 1 ? <DivideSlabElement> 2h </DivideSlabElement> : null}
+            </>
+          ))}
+
+          {finalized_status === "PENDING" ? (
+            <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+          ) : (
+            <button
+              onClick={handleAddActivity}
+              className="mt-3  w-fit text-[14px] text-blue underline font-medium font-montserrat"
+            >
+              + Add activities on {getHumanDateWithYearv2(props?.day?.date)}
+            </button>
+          )}
+        </>
+
+          : null}
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 && (
             <>
               <hr />
-              <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-                <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
-                </div>
-                <div className="flex flex-col gap-2 w-full">
+              <div className="">
+                <SectionHeading className="p-2">
+                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
+                </SectionHeading>
+                <div className="flex flex-col gap-2 w-full font-montserrat">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
                       <>
                         <div
                           key={item.id}
-                          className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
-                          // onClick={() => handleTaxi(item.id)}
+                          className="flex gap-3 items-center bg-white border-radius-10 p-2 border-1 w-100 mb-2"
+                        // onClick={() => handleTaxi(item.id)}
                         >
                           <div className="hidden hover:block cursor-pointer">
                             <FaEdit />
@@ -187,7 +210,7 @@ const CityDay = (props) => {
                             />
                           </div>
 
-                          <div>
+                          <div class="w-100">
                             <span className="font-semibold  text-[12px]">
                               {item.date}
                             </span>
@@ -211,72 +234,75 @@ const CityDay = (props) => {
                                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                               </svg>
                             </div> */}
-                                </div>
-                                <div className="flex gap-3 text-[12px] ">
-                                  <div className="w-auto flex items-center gap-1">
-                                    <BsPeopleFill />
-                                    <div>
-                                       {(() => {
-                                const pax =
-                                  item?.pax ??
-                                  item?.number_of_adults +
-                                    item?.number_of_children +
-                                    item?.number_of_infants;
-                                return `${pax} Passenger${pax > 1 ? "s" : ""}`;
-                              })()}
-                                    </div>
-                                  </div>
-                                  {item?.duration && item?.duration != "0 hours" && (
-                                    <div className="w-auto flex items-center gap-1">
-                                      <svg
-                                        width="13"
-                                        height="13"
-                                        viewBox="0 0 13 13"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                      >
-                                        <path
-                                          d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
-                                          fill="black"
-                                        />
-                                      </svg>
-                                      {item?.duration}
-                                    </div>
-                                  )}
+                            </div>
+                            <div className="flex gap-3 text-[12px] ">
+                              <div className="w-auto flex items-center gap-1">
+                                <BsPeopleFill />
+                                <div>
+                                  {(() => {
+                                    const pax =
+                                      item?.pax ??
+                                      item?.number_of_adults +
+                                      item?.number_of_children +
+                                      item?.number_of_infants;
+                                    return `${pax} Passenger${pax > 1 ? "s" : ""
+                                      }`;
+                                  })()}
                                 </div>
                               </div>
+                              {item?.duration &&
+                                item?.duration != "0 hours" && (
+                                  <div className="w-auto flex items-center gap-1">
+                                    <svg
+                                      width="13"
+                                      height="13"
+                                      viewBox="0 0 13 13"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                                        fill="black"
+                                      />
+                                    </svg>
+                                    {item?.duration}
+                                  </div>
+                                )}
                             </div>
-                          </>
-                        ))}
-                      </div>
-                    </div>
+                          </div>
+                        </div>
+                      </>
+                    ))}
                   </div>
-        </>
-      )}
+                </div>
+              </div>
+            </>
+          )}
         {/* <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
             + Add Sightseeing Taxi
           </button>
         </div> */}
       </div>
-
-      <ActivityAddDrawer
-        showDrawer={showAddDrawer}
-        mercuryItinerary={props?.mercuryItinerary}
-        setShowDrawer={setShowAddDrawer}
-        cityName={props.city.name}
-        cityID={props.city.id}
-        date={props?.day?.date}
-        setItinerary={props?.setItinerary}
-        itinerary_city_id={props?.itinerary_city_id}
-        day={`Day ${props.index + 1}`}
-        duration={props.duration}
-        start_date={props?.start_date}
-        day_slab_index={props?.index}
-        setShowLoginModal={props?.setShowLoginModal}
-        activityBookings={props?.activityBookings}
-        setActivityBookings={props?.setActivityBookings}
-      ></ActivityAddDrawer>
+      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx == props?.index && (
+        <ActivityAddDrawer
+          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx == props?.index}
+          mercuryItinerary={props?.mercuryItinerary}
+          setShowDrawer={setShowAddDrawer}
+          cityName={props.city.name}
+          cityID={props.city.id}
+          date={date}
+          setItinerary={props?.setItinerary}
+          itinerary_city_id={props?.itinerary_city_id}
+          day={`Day ${idx + 1}`}
+          duration={props.duration}
+          start_date={props?.start_date}
+          day_slab_index={idx}
+          setShowLoginModal={props?.setShowLoginModal}
+          activityBookings={props?.activityBookings}
+          setActivityBookings={props?.setActivityBookings}
+        ></ActivityAddDrawer>
+      )}
 
       {handleShowTaxi && (
         <TransferDrawer

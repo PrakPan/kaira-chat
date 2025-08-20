@@ -5,7 +5,6 @@ import Image from "next/image.js";
 
 const ThemeBackground = (props) =>{
 
-    console.log("Priority",props?.component?.priority,props?.slug);
     let isPageWide = media("(min-width: 768px)");
     return (
         <>

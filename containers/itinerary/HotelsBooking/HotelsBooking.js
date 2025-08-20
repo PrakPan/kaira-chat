@@ -117,7 +117,6 @@ const HotelsBooking = (props) => {
   };
 
   const _setImagesHandler = (images) => {
-    console.log("setting images:",images)
     setImages(images);
   };
 
@@ -125,7 +124,6 @@ const HotelsBooking = (props) => {
     setShowLoginModal(false);
   };
 
-  console.log("Stay",props?.stayBookings);
 
   const _SelectedBookingHandler = ({ index }) => {
     return new Promise((resolve, reject) => {

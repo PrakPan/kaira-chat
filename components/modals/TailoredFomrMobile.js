@@ -4,12 +4,11 @@ import media from "../media";
 import TailoredForm from "../tailoredform/Index";
 
 const TailoredFormMobileModal = (props) => {
-  console.log("TailoredFormMobile props:",props)
   let isPageWide = media("(min-width: 768px)");
 
   return (
     <Modal
-      height={!isPageWide && "100%"}
+      height={"100%"}
       borderRadius={"12px"}
       show={props.show}
       backdrop={true}
@@ -17,19 +16,23 @@ const TailoredFormMobileModal = (props) => {
       size="lg"
       onHide={props.onHide}
       animation={false}
-      width={isPageWide ? "400px" : "100%"}
+      width={isPageWide ? "100%" : "100%"}
     >
-      <TailoredForm
-        tailoredFormModal
-        destinationType={props.destinationType}
-        page_id={props.page_id}
-        type={props?.type}
-        children_cities={props.children_cities}
-        destination={props.destination}
-        cities={props.cities}
-        onHide={props.onHide}
-        eventDates={props.eventDates}
-      ></TailoredForm>
+      <div className="flex justify-center items-center h-full">
+      <div className="w-full h-full">
+        <TailoredForm
+          tailoredFormModal
+          destinationType={props.destinationType}
+          page_id={props.page_id}
+          type={props?.type}
+          children_cities={props.children_cities}
+          destination={props.destination}
+          cities={props.cities}
+          onHide={props.onHide}
+          eventDates={props.eventDates}
+        ></TailoredForm>
+      </div>
+      </div>
     </Modal>
   );
 };

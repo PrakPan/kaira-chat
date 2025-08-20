@@ -5,6 +5,7 @@ import SearchInputStarting from "../searchstarting/Input";
 import SearchInput from "../search/Index";
 import { BiTargetLock } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
+import { StyledContainer } from "../../../../styled-components/TailoredForm";
 
 const Container = styled.div`
   margin-bottom: 0.25rem;
@@ -47,7 +48,7 @@ const SelectedDestination = (props) => {
   };
 
   return (
-    <Container
+    <StyledContainer
       onClick={
         props.selectlocation
           ? props.showCities
@@ -58,7 +59,7 @@ const SelectedDestination = (props) => {
               _handleFocusSearch();
             }
       }
-      className="font-lexend hover-pointer"
+      className="hover-pointer"
       style={{
         borderRadius: "8px",
         border:
@@ -161,6 +162,7 @@ const SelectedDestination = (props) => {
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
             updatedData={props.updatedData}
+            tailoredFormModal={props.tailoredFormModal}
           ></SearchInput>
         )}
       </div>
@@ -180,7 +182,7 @@ const SelectedDestination = (props) => {
       ) : (
         <RightContainer className="hover-pointer"></RightContainer>
       )}
-    </Container>
+    </StyledContainer>
   );
 };
 

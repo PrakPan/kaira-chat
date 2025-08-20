@@ -49,6 +49,10 @@ import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 import { TopicSharp } from "@mui/icons-material";
 import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
+import ChatBot from "../../components/Chatbot";
+import Drawer from "../../components/ui/Drawer.js";
+import Image from "next/image";
+
 const useStyles = {
   root: `
     flex-grow-1
@@ -74,6 +78,7 @@ const SimpleTabsV2 = (props) => {
   const [loading, setLoading] = useState(false);
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
+  const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const transferBooking = useSelector(
@@ -82,6 +87,8 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
+
+  console.log("Itiii", stays, props?.activityBookings, props?.itinerary);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -184,31 +191,31 @@ const SimpleTabsV2 = (props) => {
   };
 
   const items = [
-    { id: 1, label: "Brief", link: "Brief" },
-    { id: 2, label: "Itinerary", link: "Itenary" },
+    // { id: 1, label: "Brief", link: "Brief" },
+    { id: 1, label: "Itinerary", link: "Itenary" },
+    { id: 2, label: "Bookings", link: "Booking" },
 
-    { id: 3, label: "Stays", link: "Stays" },
-    { id: 4, label: "Transfers", link: "Transfers" },
+    // { id: 3, label: "Stays", link: "Stays" },
+    // { id: 4, label: "Transfers", link: "Transfers" },
   ];
 
   // if (props.transferBookings || props?.routes?.length) {
   //   items.push({ id: 4, label: "Transfers", link: "Transfers" });
   // }
 
- const hasActivities =
-  Array.isArray(props?.itinerary?.cities) &&
-  props.itinerary.cities.some(
-    (city) => Array.isArray(city?.activities) && city.activities.length > 0
-  );
+  const hasActivities =
+    Array.isArray(props?.itinerary?.cities) &&
+    props.itinerary.cities.some(
+      (city) => Array.isArray(city?.activities) && city.activities.length > 0
+    );
 
-if (hasActivities) {
-  items.push({
-    id: 5,
-    label: "Activities",
-    link: "Activities",
-  });
-}
-
+  // if (hasActivities) {
+  //   items.push({
+  //     id: 5,
+  //     label: "Activities",
+  //     link: "Activities",
+  //   });
+  // }
 
   const _handlePoiEditModalOpen = (poi) => {
     {
@@ -249,7 +256,7 @@ if (hasActivities) {
         action: "Itinerary-tabs-" + tabName.toLowerCase(),
       });
     }
-    
+
     // Enhanced tracking using passed function
     if (props.handleTabClick) {
       props.handleTabClick(tabName);
@@ -285,6 +292,7 @@ if (hasActivities) {
   };
 
   const handleFooterBannerMobile = (lebel) => {
+    console.log("is this");
     setShowFooterBannerMobile(!showFooterBannerMobile);
 
     logEvent({
@@ -335,12 +343,66 @@ if (hasActivities) {
     <div
       className={classes.root}
       style={{
-      paddingTop: "20px",
-      paddingBottom:
-      isPageWide <= 768 ? "42px" : "20px"
-  }}
+        paddingTop: "20px",
+        paddingBottom: isPageWide <= 768 ? "42px" : "20px",
+      }}
     >
-      <div className="z-10 sticky z-2 md:top-[0px] top-[1px]">
+      {/* <div id={"Brief"}> */}
+      {props?.mercuryItinerary && citydatadone ? (
+        <Breif
+          mercuryItinerary={props?.mercuryItinerary}
+          loadbookings={props?.loadbookings}
+          plan={props.plan}
+          routesData={RoutesData}
+          transfersData={TransfersData}
+          cityTransferBookings={props.cityTransferBookings}
+          routes={props.routes}
+          payment={props.payment}
+          traveleritinerary={props.traveleritinerary}
+          CityData={CityData}
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          _updateFlightBookingHandler={props._updateFlightBookingHandler}
+          // CityData={props?.cities}
+          itinerary={props.itinerary}
+          breif={props.breif}
+          resetRef={props?.resetRef}
+          fetchData={props.fetchData}
+          getPaymentHandler={props.getPaymentHandler}
+          setShowLoginModal={setShowLoginModal}
+          _GetInTouch={_GetInTouch}
+          group_type={props.group_type}
+          duration_time={props.duration_time}
+          travellerType={props.travellerType}
+          editRoute={props.editRoute}
+          setEditRoute={props.setEditRoute}
+        ></Breif>
+      ) : (
+        citydatadone && (
+          <OldBreif
+            plan={props.plan}
+            routesData={RoutesData}
+            transfersData={TransfersData}
+            routes={props.routes}
+            payment={props.payment}
+            traveleritinerary={props.traveleritinerary}
+            CityData={CityData}
+            itinerary={props.itinerary}
+            breif={props.breif}
+            fetchData={props.fetchData}
+            getPaymentHandler={props.getPaymentHandler}
+            setShowLoginModal={setShowLoginModal}
+            _GetInTouch={_GetInTouch}
+            group_type={props.group_type}
+            duration_time={props.duration_time}
+            travellerType={props.travellerType}
+            editRoute={props.editRoute}
+            setEditRoute={props.setEditRoute}
+          ></OldBreif>
+        )
+      )}
+      {/* </div> */}
+
+      {/* <div className={`z-10 sticky z-2 md:top-[0px] top-[1px] ${isPageWide ? 'mb-[40px]' : ''}`}>
         {isPageWide ? (
           <Navigation
             items={items}
@@ -356,286 +418,237 @@ if (hasActivities) {
             scrollOffSet={-50}
           />
         )}
-      </div>
+      </div> */}
 
-      {isPageWide && (
+      {/* {isPageWide && (
 
-         
+
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
-            {props?.displayText ? <ItineraryStatusLoader 
-                displayText={props?.displayText}
-                isVisible={props?.shouldShowLoader()}
-              /> :
-            <div className="flex flex-row justify-between ">
-              
-              {pricing_status === "PENDING" ? (
-                <div className="flex flex-col animate-pulse w-full max-w-[120px]">
-                  <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
-                  <div className="h-5 w-24 bg-gray-400 rounded"></div>
-                </div>
-              ) : (
-                <div className="flex flex-col">
-                  <div className="text-[0.725rem]">
-                    {props?.payment?.pay_only_for_one ||
-                    props?.payment?.show_per_person_cost
-                      ? "Per Person"
-                      : props.payment?.is_estimated_price
-                      ? `${
-                          props.payment.total_cost === 0
+            {props?.displayText ? <ItineraryStatusLoader
+              displayText={props?.displayText}
+              isVisible={props?.shouldShowLoader()}
+            /> :
+              <div className="flex flex-row justify-between ">
+
+                {pricing_status === "PENDING" ? (
+                  <div className="flex flex-col animate-pulse w-full max-w-[120px]">
+                    <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
+                    <div className="h-5 w-24 bg-gray-400 rounded"></div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                     <div className="text-[0.725rem]">
+                      {props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                        ? "Per Person"
+                        : props.payment?.is_estimated_price
+                          ? `${props.payment.total_cost === 0
                             ? "No Bookings"
                             : "Estimated Price"
-                        }`
-                      : "Total Cost"}
-                  </div>
-                  {props.payment ? (
-                    <div>
-                      <span className="font-bold">
-                        ₹{" "}
-                        {!props?.mercuryItinerary
-                          ? props?.payment?.pay_only_for_one ||
-                            props?.payment?.show_per_person_cost
-                            ? getIndianPrice(
+                          }`
+                          : "Total Cost"}
+                    </div> 
+                    {props.payment ? (
+                      <div>
+                        <span className="font-bold">
+                          ₹{" "}
+                          {!props?.mercuryItinerary
+                            ? props?.payment?.pay_only_for_one ||
+                              props?.payment?.show_per_person_cost
+                              ? getIndianPrice(
                                 Math.round(
                                   Math.round(
                                     props.payment.per_person_discounted_cost
                                   ) / 100
                                 )
                               )
-                            : getIndianPrice(
+                              : getIndianPrice(
                                 Math.round(
                                   Math.round(props.payment.discounted_cost)
                                 )
                               )
-                          : props?.payment?.pay_only_for_one ||
-                            props?.payment?.show_per_person_cost
-                          ? getIndianPrice(
-                              Math.round(
+                            : props?.payment?.pay_only_for_one ||
+                              props?.payment?.show_per_person_cost
+                              ? getIndianPrice(
                                 Math.round(
-                                  props.payment.per_person_discounted_cost
+                                  Math.round(
+                                    props.payment.per_person_discounted_cost
+                                  )
                                 )
                               )
-                            )
-                          : getIndianPrice(
-                              Math.round(
-                                Math.round(props.payment.discounted_cost)
-                              )
-                            )}
-                        {"/-"}
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              )}
+                              : getIndianPrice(
+                                Math.round(
+                                  Math.round(props.payment.discounted_cost)
+                                )
+                              )}
+                          {"/-"}
+                        </span>
+                      </div>
+                    ) : null}
+                  </div>
+                )}
 
-              {props?.token && props?.payment?.paid_user && (
-                <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
-                  PAID
-                </div>
-              )}
+                {props?.token && props?.payment?.paid_user && (
+                  <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
+                    PAID
+                  </div>
+                )}
 
-              {props.tripsPage ? (
-                <Button
-                  color="#111"
-                  fontWeight="400"
-                  fontSize="0.45rem"
-                  borderWidth="1px"
-                  width="12rem"
-                  borderRadius="10px"
-                  bgColor="#F7E700"
-                  onclick={handleCreateTripButton}
-                >
-                  Craft a new trip!
-                </Button>
-              ) : (
-                <>
-                  {!props.token ? (
-                    <div>
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="1px"
-                        width="12rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={handleLoginButton}
-                      >
-                        Log in to proceed
-                      </Button>
-                    </div>
-                  ) : null}
+                {props.tripsPage ? (
+                  <Button
+                    color="#111"
+                    fontWeight="400"
+                    fontSize="0.45rem"
+                    borderWidth="1px"
+                    width="12rem"
+                    borderRadius="10px"
+                    bgColor="#F7E700"
+                    onclick={handleCreateTripButton}
+                  >
+                    Craft a new trip!
+                  </Button>
+                ) : (
+                  <>
+                    {!props.token ? (
+                      <div>
+                        <Button
+                          color="#111"
+                          fontWeight="400"
+                          fontSize="0.45rem"
+                          borderWidth="1px"
+                          width="12rem"
+                          borderRadius="10px"
+                          bgColor="#F7E700"
+                          onclick={handleLoginButton}
+                        >
+                          Log in to proceed
+                        </Button>
+                      </div>
+                    ) : null}
 
-                  {props.payment && props.token ? (
-                    props.payment.itinerary_status ===
-                      ITINERARY_STATUSES.itinerary_finalized &&
-                    !props.payment.paid_user &&
-                    props.payment.user_allowed_to_pay ? (
-                      props.payment.total_cost > 0 ? (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="13rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                            onclickparams={null}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="9rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("Add Hotels")}
-                          >
-                            Add Hotels
-                          </Button>
-                        </div>
-                      )
-                    ) : !props.payment.paid_user ? (
-                      props.payment.is_registration_needed ? (
-                        <div className="">
-                          <Button
-                            color="#111"
-                            fontWeight="600"
-                            fontSize="0.85rem"
-                            borderWidth="1px"
-                            width="11rem"
-                            borderRadius="8px"
-                            bgColor="#f8e000"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <GetInTouchContainer>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="1px"
-                            width="12rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={handleGetInTouch}
-                            loading={loading}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: "0.5rem",
-                                alignItems: "center",
-                              }}
+                    {props.payment && props.token ? (
+                      props.payment.itinerary_status ===
+                        ITINERARY_STATUSES.itinerary_finalized &&
+                        !props.payment.paid_user &&
+                        props.payment.user_allowed_to_pay ? (
+                        props.payment.total_cost > 0 ? (
+                          <div>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="13rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={() => handleButtonClick("View Inclusions")}
+                              onclickparams={null}
                             >
-                              <ImageLoader
-                                dimensions={{ height: 50, width: 50 }}
-                                dimensionsMobile={{ height: 50, width: 50 }}
-                                height={"20px"}
-                                width={"20px"}
-                                leftalign
-                                url={
-                                  "media/icons/login/customer-service-black.png"
-                                }
-                              />{" "}
-                              <span>Get in touch!</span>
-                            </div>
-                          </Button>
-                        </GetInTouchContainer>
+                              View Inclusions
+                            </Button>
+                          </div>
+                        ) : (
+                          <div>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="9rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={() => handleButtonClick("Add Hotels")}
+                            >
+                              Add Hotels
+                            </Button>
+                          </div>
+                        )
+                      ) : !props.payment.paid_user ? (
+                        props.payment.is_registration_needed ? (
+                          <div className="">
+                            <Button
+                              color="#111"
+                              fontWeight="600"
+                              fontSize="0.85rem"
+                              borderWidth="1px"
+                              width="11rem"
+                              borderRadius="8px"
+                              bgColor="#f8e000"
+                              onclick={() => handleButtonClick("View Inclusions")}
+                            >
+                              View Inclusions
+                            </Button>
+                          </div>
+                        ) : (
+                          <GetInTouchContainer>
+                            <Button
+                              color="#111"
+                              fontWeight="400"
+                              fontSize="0.45rem"
+                              borderWidth="1px"
+                              width="12rem"
+                              borderRadius="10px"
+                              bgColor="#F7E700"
+                              onclick={handleGetInTouch}
+                              loading={loading}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  gap: "0.5rem",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <ImageLoader
+                                  dimensions={{ height: 50, width: 50 }}
+                                  dimensionsMobile={{ height: 50, width: 50 }}
+                                  height={"20px"}
+                                  width={"20px"}
+                                  leftalign
+                                  url={
+                                    "media/icons/login/customer-service-black.png"
+                                  }
+                                />{" "}
+                                <span>Get in touch!</span>
+                              </div>
+                            </Button>
+                          </GetInTouchContainer>
+                        )
+                      ) : (
+                        <Button
+                          color="#111"
+                          fontWeight="400"
+                          fontSize="0.45rem"
+                          borderWidth="1px"
+                          width="9rem"
+                          borderRadius="10px"
+                          bgColor="#F7E700"
+                          onclick={() => handleButtonClick("View Bookings")}
+                        >
+                          View Bookings
+                        </Button>
                       )
-                    ) : (
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="1px"
-                        width="9rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={() => handleButtonClick("View Bookings")}
-                      >
-                        View Bookings
-                      </Button>
-                    )
-                  ) : null}
-                </>
-              )}
-            </div>}
+                    ) : null}
+                  </>
+                )}
+              </div>}
           </div>
         </div>
-      )}
-
-      <div id={"Brief"}>
-        {props?.mercuryItinerary && citydatadone ? (
-          <Breif
-            mercuryItinerary={props?.mercuryItinerary}
-            loadbookings={props?.loadbookings}
-            plan={props.plan}
-            routesData={RoutesData}
-            transfersData={TransfersData}
-            cityTransferBookings={props.cityTransferBookings}
-            routes={props.routes}
-            payment={props.payment}
-            traveleritinerary={props.traveleritinerary}
-            CityData={CityData}
-            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-            _updateFlightBookingHandler={props._updateFlightBookingHandler}
-            // CityData={props?.cities}
-            itinerary={props.itinerary}
-            breif={props.breif}
-            resetRef={props?.resetRef}
-            fetchData={props.fetchData}
-            getPaymentHandler={props.getPaymentHandler}
-            setShowLoginModal={setShowLoginModal}
-            _GetInTouch={_GetInTouch}
-            group_type={props.group_type}
-            duration_time={props.duration_time}
-            travellerType={props.travellerType}
-            editRoute={props.editRoute}
-            setEditRoute={props.setEditRoute}
-            handleMapInteraction={props.handleMapInteraction}
-          ></Breif>
-        ) : (
-          citydatadone && (
-            <OldBreif
-              plan={props.plan}
-              routesData={RoutesData}
-              transfersData={TransfersData}
-              routes={props.routes}
-              payment={props.payment}
-              traveleritinerary={props.traveleritinerary}
-              CityData={CityData}
-              itinerary={props.itinerary}
-              breif={props.breif}
-              fetchData={props.fetchData}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowLoginModal={setShowLoginModal}
-              _GetInTouch={_GetInTouch}
-              group_type={props.group_type}
-              duration_time={props.duration_time}
-              travellerType={props.travellerType}
-              editRoute={props.editRoute}
-              setEditRoute={props.setEditRoute}
-              handleMapInteraction={props.handleMapInteraction}
-            ></OldBreif>
-          )
-        )}
-      </div>
+      )} */}
 
       {isPageWide ? null : (
         <>
+          <div className={`z-10 sticky z-2 md:top-[0px] top-[1px]`}>
+            <ScrollableMenuTabs
+              icons={false}
+              offset={isDesktop ? "0px" : "0px"}
+              items={items}
+              BarName="TabsName"
+              scrollOffSet={-50}
+            />
+          </div>
           <div id={"Itenary"}>
             {props.mercuryItinerary ? (
               props?.itineraryDaybyDay && (
@@ -686,116 +699,68 @@ if (hasActivities) {
             )}
           </div>
 
-          <div id={"Stays"}>
-            {props.mercuryItinerary ? (
-              <StaysContainer
-                payment={props.payment}
-                _updateBookingHandler={props._updateBookingHandler}
-                _updateStayBookingHandler={props._updateStayBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                getPaymentHandler={props.getPaymentHandler}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                showBookingModal={props.showBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
-                setShowLoginModal={setShowLoginModal}
-                _GetInTouch={_GetInTouch}
-                stayBookings={stays}
-                setStayBookings={props.setStayBookings}
-                CityData={CityData}
-                cities={props?.cities}
-                handleAddToStaysClick={props.handleAddToStaysClick}
-              />
-            ) : (
-              <HotelsBooking
-                setShowLoginModal={setShowLoginModal}
-                plan={props.plan}
-                hasUserPaid={
-                  props.payment
-                    ? props.payment.paid_user
-                      ? true
-                      : false
-                    : false
-                }
-                budget={props.budget}
-                breif={props.breif}
-                stayBookings={props.stayBookings}
-                _updateBookingHandler={props._updateBookingHandler}
-                _updateStayBookingHandler={props._updateStayBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                getPaymentHandler={props.getPaymentHandler}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                showBookingModal={props.showBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
-                payment={props.payment}
-                booking={props.booking}
-              ></HotelsBooking>
-            )}
-          </div>
-
-          <div id={"Transfers"}>
-            {props?.transferBookings && !props?.mercuryItinerary ? (
-              <TransfersContainer
-                setShowLoginModal={setShowLoginModal}
-                plan={props.plan}
-                dayslab={props?.itinerary?.day_slabs}
-                breif={props?.breif}
-                routesData={RoutesData}
-                transfers={TransfersData}
-                routes={props.routes}
-                showTaxiModal={props.showTaxiModal}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateFlightBookingHandler={props._updateFlightBookingHandler}
-                setShowTaxiModal={props.setShowTaxiModal}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                _updateBookingHandler={props._updateBookingHandler}
-                showFlightModal={props.showFlightModal}
-                setShowFlightModal={_handleFlighModalShow}
-                setHideFlightModal={_handleFlightModalClose}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                setHideBookingModal={props.setHideBookingModal}
-                payment={props.payment}
-                transferBookings={props?.transferBookings}
-                itinerary_id={props.itinerary_id}
-                fetchData={props.fetchData}
-                _GetInTouch={_GetInTouch}
-                handleTransferComponentClick={props.handleTransferComponentClick}
-              />
-            ) : (
-              <>
-                {props.transferBookings && (
-                  <TransferBookings
-                    mercuryItinerary={props?.mercuryItinerary}
-                    setShowLoginModal={setShowLoginModal}
-                    showTaxiModal={props.showTaxiModal}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    setShowTaxiModal={props.setShowTaxiModal}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    showFlightModal={props.showFlightModal}
-                    setShowFlightModal={_handleFlighModalShow}
-                    setHideFlightModal={_handleFlightModalClose}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    setHideBookingModal={props.setHideBookingModal}
-                    payment={props.payment}
-                    fetchData={props.fetchData}
-                    _GetInTouch={_GetInTouch}
-                  />
-                )}
-                {/* {props.transferBookings && (
-                <TransferBookings
-                  mercuryItinerary={props?.mercuryItinerary}
+          <div id={"Booking"}>
+            <div id={"Stays"}>
+              {props.mercuryItinerary ? (
+                <StaysContainer
+                  payment={props.payment}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
                   setShowLoginModal={setShowLoginModal}
+                  _GetInTouch={_GetInTouch}
+                  stayBookings={stays}
+                  setStayBookings={props.setStayBookings}
+                  CityData={CityData}
+                  cities={props?.cities}
+                />
+              ) : (
+                <HotelsBooking
+                  setShowLoginModal={setShowLoginModal}
+                  plan={props.plan}
+                  hasUserPaid={
+                    props.payment
+                      ? props.payment.paid_user
+                        ? true
+                        : false
+                      : false
+                  }
+                  budget={props.budget}
+                  breif={props.breif}
+                  stayBookings={props.stayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  booking={props.booking}
+                ></HotelsBooking>
+              )}
+            </div>
+
+            <div id={"Transfers"}>
+              {props?.transferBookings && !props?.mercuryItinerary ? (
+                <TransfersContainer
+                  setShowLoginModal={setShowLoginModal}
+                  plan={props.plan}
+                  dayslab={props?.itinerary?.day_slabs}
+                  breif={props?.breif}
+                  routesData={RoutesData}
+                  transfers={TransfersData}
+                  routes={props.routes}
                   showTaxiModal={props.showTaxiModal}
+                  getPaymentHandler={props.getPaymentHandler}
                   _updateFlightBookingHandler={
                     props._updateFlightBookingHandler
                   }
                   setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
                   _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
                   _updateBookingHandler={props._updateBookingHandler}
@@ -805,141 +770,97 @@ if (hasActivities) {
                   setShowBookingModal={() => props.setShowBookingModal(true)}
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
+                  transferBookings={props?.transferBookings}
+                  itinerary_id={props.itinerary_id}
                   fetchData={props.fetchData}
                   _GetInTouch={_GetInTouch}
                 />
-              )} */}
-              </>
-            )}
-          </div>
-
-          <div id={"Activities"}>
-            <ActivityBookings
-              plan={props.plan}
-              hasUserPaid={
-                props.payment ? (props.payment.paid_user ? true : false) : false
-              }
-              budget={props.budget}
-              stayBookings={props.stayBookings}
-              _updateBookingHandler={props._updateBookingHandler}
-              _updateStayBookingHandler={props._updateStayBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              flightBookings={props.flightBookings}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowBookingModal={() => props.setShowBookingModal(true)}
-              showBookingModal={props.showBookingModal}
-              setHideBookingModal={props.setHideBookingModal}
-              activityBookings={props.activityBookings}
-              payment={props.payment}
-              booking={props.booking}
-              setShowLoginModal={setShowLoginModal}
-            />
-          </div>
-
-          <Modal
-            centered
-            show={showFooterBannerMobile}
-            mobileWidth="90%"
-            backdrop
-            closeIcon={true}
-            onCLose={() => setShowFooterBannerMobile(false)}
-            onHide={()=>{}}
-            borderRadius={"12px"}
-          >
-            {props.payment ? (
-              <>
-                {/* <RxCross2
-                  style={{
-                    position: "absolute",
-                    top: "15px",
-                    right: "15px",
-                    fontSize: "1.5rem",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setShowFooterBannerMobile(false)}
-                /> */}
-
-                {!props.payment.is_registration_needed ? (
-                  !props?.mercuryItinerary ? (
-                    <SummaryContainer
-                      setUserDetails={props.setUserDetails}
-                      id={props.id}
-                      stayBookings={stays || props.stayBookings}
-                      flightBookings={props.flightBookings}
-                      activityBookings={props.activityBookings}
-                      transferBookings={props.transferBookings}
-                      setShowFooterBannerMobile={() =>
-                        setShowFooterBannerMobile(true)
-                      }
-                      getPaymentHandler={props.getPaymentHandler}
-                      payment={props.payment}
-                      traveleritinerary={props.traveleritinerary}
-                      blur={props.blur}
-                      hide={_hidePaymentHandler}
-                      experienceId={props.experienceId}
-                      token={props.token}
-                      setShowLoginModal={setShowLoginModal}
-                      plan={props.plan}
-                      _GetInTouch={() => _GetInTouch()}
-                      handlePaymentComponentClick={props.handlePaymentComponentClick}
-                    ></SummaryContainer>
-                  ) : (
-                    <NewSummaryContainers
-                      id={props.itinerary_id}
-                      token={props.token}
-                      loadpricing={props?.loadpricing}
-                      payment={props?.payment}
-                      itineraryDate={props?.itineraryDate}
+              ) : (
+                <>
+                  {props.transferBookings && (
+                    <TransferBookings
                       mercuryItinerary={props?.mercuryItinerary}
-                      itinerary={props.itinerary}
-                      fetchData={props.fetchData}
-                      handlePaymentComponentClick={props.handlePaymentComponentClick}
-                      resetRef={props?.resetRef}
-                      _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
-                      loading={loading}
-                      social_title={props?.social_title}
-                      social_description={props?.social_description}
-                      itineraryName={props.itinerary.name}
-                      itineraryImage={props?.itinerary?.images?.[0]}
-                    />
-                  )
-                ) : (
-                  <div>
-                    <GITSummaryContainer
-                      hasUserPaid={
-                        props.payment
-                          ? props.payment.paid_user
-                            ? true
-                            : false
-                          : false
+                      showTaxiModal={props.showTaxiModal}
+                      _updateFlightBookingHandler={
+                        props._updateFlightBookingHandler
                       }
-                      payment_status={props.payment_status}
-                      plan={props.plan}
-                      itinerary={props.itinerary}
+                      setShowTaxiModal={props.setShowTaxiModal}
                       getPaymentHandler={props.getPaymentHandler}
-                      setUserDetails={props.setUserDetails}
-                      id={props.id}
-                      stayBookings={props.stayBookings}
-                      flightBookings={props.flightBookings}
-                      activityBookings={props.activityBookings}
-                      transferBookings={props.transferBookings}
-                      setShowFooterBannerMobile={() =>
-                        setShowFooterBannerMobile(true)
+                      _updateTaxiBookingHandler={
+                        props._updateTaxiBookingHandler
                       }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      showFlightModal={props.showFlightModal}
+                      setShowFlightModal={_handleFlighModalShow}
+                      setHideFlightModal={_handleFlightModalClose}
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      setHideBookingModal={props.setHideBookingModal}
                       payment={props.payment}
-                      traveleritinerary={props.traveleritinerary}
-                      blur={props.blur}
-                      hide={_hidePaymentHandler}
-                      experienceId={props.experienceId}
-                      token={props.token}
-                      setShowLoginModal={setShowLoginModal}
-                    ></GITSummaryContainer>
-                  </div>
-                )}
-              </>
-            ) : null}
-          </Modal>
+                      fetchData={props.fetchData}
+                      _GetInTouch={_GetInTouch}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+
+            <div id={"Activities"}>
+              <ActivityBookings
+                plan={props.plan}
+                hasUserPaid={
+                  props.payment
+                    ? props.payment.paid_user
+                      ? true
+                      : false
+                    : false
+                }
+                budget={props.budget}
+                stayBookings={props.stayBookings}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                flightBookings={props.flightBookings}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                activityBookings={props.activityBookings}
+                payment={props.payment}
+                booking={props.booking}
+                setShowLoginModal={setShowLoginModal}
+              />
+            </div>
+          </div>
+
+          <div className="fixed z-[999] bottom-[50px] right-[10px] ">
+            <Button borderWidth="0px" onclick={() => handleChatBotOpen(true)}>
+              <Image
+                src={"/assets/chatbot/chatbot-avaatar.svg"}
+                alt="ticket"
+                width={80}
+                height={80}
+              />
+            </Button>
+          </div>
+          {isChatBotEnable ? (
+            <Drawer
+              show={isChatBotEnable}
+              anchor={"right"}
+              backdrop
+              width={"50%"}
+              mobileWidth={"100%"}
+              style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
+              className="font-lexend pb-[20px]"
+              isCloseButtonEnable={true}
+              onHide={() => handleChatBotOpen(false)}
+            >
+              <ChatBot showAsPopup={true} />
+            </Drawer>
+          ) : null}
         </>
       )}
 
@@ -947,10 +868,15 @@ if (hasActivities) {
         <SplitScreen
           classStyle="min-h-[600px]"
           isPageWide
-          leftWidth={8}
-          rightWidth={0}
+          leftWidth={5}
+          rightWidth={5}
         >
-          <div>
+          <div className="mb-4">
+            <Navigation
+              items={items}
+              BarName="TabsName"
+              ClickHandler={_handleMenuTabsChange}
+            />
             <div id={"Itenary"}>
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
@@ -1011,68 +937,107 @@ if (hasActivities) {
                   )}
             </div>
 
-            {isGroup ? (
-              <div id={"Stays"}>
-                <Register></Register>
-              </div>
-            ) : (
-              <div id={"Stays"}>
+            <div id={"Booking"}>
+              {isGroup ? (
+                <div id={"Stays"}>
+                  <Register></Register>
+                </div>
+              ) : (
+                <div id={"Stays"}>
+                  {props.mercuryItinerary ? (
+                    <StaysContainer
+                      payment={props.payment}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setShowBookingModal={(value) =>
+                        props.setShowBookingModal(value)
+                      }
+                      showBookingModal={props.showBookingModal}
+                      setHideBookingModal={props.setHideBookingModal}
+                      setShowLoginModal={setShowLoginModal}
+                      _GetInTouch={_GetInTouch}
+                      stayBookings={stays}
+                      setStayBookings={props.setStayBookings}
+                      CityData={CityData}
+                      cities={props?.cities}
+                    />
+                  ) : (
+                    <HotelsBooking
+                      setShowLoginModal={setShowLoginModal}
+                      plan={props.plan}
+                      hasUserPaid={
+                        props.payment
+                          ? props.payment.paid_user
+                            ? true
+                            : false
+                          : false
+                      }
+                      breif={props.breif}
+                      budget={props.budget}
+                      stayBookings={props.stayBookings}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      showBookingModal={props.showBookingModal}
+                      setHideBookingModal={props.setHideBookingModal}
+                      payment={props.payment}
+                      booking={props.booking}
+                      _GetInTouch={_GetInTouch}
+                    ></HotelsBooking>
+                  )}
+                </div>
+              )}
+
+              <div id={"Transfers"}>
                 {props.mercuryItinerary ? (
-                  <StaysContainer
-                    payment={props.payment}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={(value) =>
-                      props.setShowBookingModal(value)
-                    }
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    setShowLoginModal={setShowLoginModal}
-                    _GetInTouch={_GetInTouch}
-                    stayBookings={stays}
-                    setStayBookings={props.setStayBookings}
-                    CityData={CityData}
-                    cities={props?.cities}
-                  />
+                  <>
+                    <TransferBookings
+                      mercuryItinerary={props?.mercuryItinerary}
+                      loadbookings={props?.loadbookings}
+                      setShowLoginModal={setShowLoginModal}
+                      showTaxiModal={props.showTaxiModal}
+                      _updateFlightBookingHandler={
+                        props._updateFlightBookingHandler
+                      }
+                      setShowTaxiModal={props.setShowTaxiModal}
+                      getPaymentHandler={props.getPaymentHandler}
+                      _updateTaxiBookingHandler={
+                        props._updateTaxiBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      showFlightModal={props.showFlightModal}
+                      setShowFlightModal={_handleFlighModalShow}
+                      setHideFlightModal={_handleFlightModalClose}
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      setHideBookingModal={props.setHideBookingModal}
+                      payment={props.payment}
+                      fetchData={props.fetchData}
+                      _GetInTouch={_GetInTouch}
+                    />
+                  </>
                 ) : (
-                  <HotelsBooking
+                  <TransfersContainer
                     setShowLoginModal={setShowLoginModal}
                     plan={props.plan}
-                    hasUserPaid={
-                      props.payment
-                        ? props.payment.paid_user
-                          ? true
-                          : false
-                        : false
-                    }
-                    breif={props.breif}
-                    budget={props.budget}
-                    stayBookings={props.stayBookings}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    payment={props.payment}
-                    booking={props.booking}
-                    _GetInTouch={_GetInTouch}
-                  ></HotelsBooking>
-                )}
-              </div>
-            )}
-
-            <div id={"Transfers"}>
-              {props.mercuryItinerary ? (
-                <>
-                  <TransferBookings
-                    mercuryItinerary={props?.mercuryItinerary}
-                    loadbookings={props?.loadbookings}
-                    setShowLoginModal={setShowLoginModal}
+                    dayslab={props?.itinerary?.day_slabs}
+                    breif={props?.breif}
                     showTaxiModal={props.showTaxiModal}
+                    routesData={RoutesData}
+                    transfers={TransfersData}
+                    routes={props.routes}
                     _updateFlightBookingHandler={
                       props._updateFlightBookingHandler
                     }
@@ -1087,75 +1052,19 @@ if (hasActivities) {
                     setShowBookingModal={() => props.setShowBookingModal(true)}
                     setHideBookingModal={props.setHideBookingModal}
                     payment={props.payment}
+                    transferBookings={props.transferBookings}
+                    itinerary_id={props.itinerary_id}
                     fetchData={props.fetchData}
+                    CityData={CityData}
                     _GetInTouch={_GetInTouch}
                   />
-                </>
-              ) : (
-                <TransfersContainer
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  dayslab={props?.itinerary?.day_slabs}
-                  breif={props?.breif}
-                  showTaxiModal={props.showTaxiModal}
-                  routesData={RoutesData}
-                  transfers={TransfersData}
-                  routes={props.routes}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  transferBookings={props.transferBookings}
-                  itinerary_id={props.itinerary_id}
-                  fetchData={props.fetchData}
-                  CityData={CityData}
-                  _GetInTouch={_GetInTouch}
-                />
-              )}
-            </div>
-
-            {props?.mercuryItinerary ? (
-              <div id={"Activities"} className="w-full">
-                <ActivityBookings
-                  mercuryItinerary={props?.mercuryItinerary}
-                  plan={props.plan}
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
-                        : false
-                      : false
-                  }
-                  budget={props.budget}
-                  stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  flightBookings={props.flightBookings}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  activityBookings={props.activityBookings}
-                  payment={props.payment}
-                  booking={props.booking}
-                  setShowLoginModal={setShowLoginModal}
-                />
+                )}
               </div>
-            ) : (
-              props.activityBookings && (
-                <div id={"Activities"}>
-                  <OldActivityBookings
+
+              {props?.mercuryItinerary ? (
+                <div id={"Activities"} className="w-full">
+                  <ActivityBookings
+                    mercuryItinerary={props?.mercuryItinerary}
                     plan={props.plan}
                     hasUserPaid={
                       props.payment
@@ -1177,10 +1086,43 @@ if (hasActivities) {
                     activityBookings={props.activityBookings}
                     payment={props.payment}
                     booking={props.booking}
+                    setShowLoginModal={setShowLoginModal}
                   />
                 </div>
-              )
-            )}
+              ) : (
+                props.activityBookings && (
+                  <div id={"Activities"}>
+                    <OldActivityBookings
+                      plan={props.plan}
+                      hasUserPaid={
+                        props.payment
+                          ? props.payment.paid_user
+                            ? true
+                            : false
+                          : false
+                      }
+                      budget={props.budget}
+                      stayBookings={props.stayBookings}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      flightBookings={props.flightBookings}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      showBookingModal={props.showBookingModal}
+                      setHideBookingModal={props.setHideBookingModal}
+                      activityBookings={props.activityBookings}
+                      payment={props.payment}
+                      booking={props.booking}
+                    />
+                  </div>
+                )
+              )}
+            </div>
           </div>
           {!props?.mercuryItinerary ? (
             <div
@@ -1210,187 +1152,128 @@ if (hasActivities) {
               ></SummaryContainer>
             </div>
           ) : props?.mercuryItinerary ? (
-            <NewSummaryContainers
-              id={props.itinerary_id}
-              token={props.token}
-              loadpricing={props?.loadpricing}
-              setLoadPricing={props?.setLoadPricing}
-              payment={props?.payment}
-              itineraryDate={props?.itineraryDate}
-              mercuryItinerary={props?.mercuryItinerary}
-              itinerary={props.itinerary}
-              fetchData={props.fetchData}
-              resetRef={props?.resetRef}
-              _GetInTouch={_GetInTouch}
-              setShowLoginModal={setShowLoginModal}
-              social_title={props?.social_title}
-              social_description={props?.social_description}
-              itineraryName={props.itinerary.name}
-              itineraryImage={props?.itinerary?.images?.[0]}
-            />
+            <>
+              <div className="sticky top-[4rem] ml-5">
+                <ChatBot />
+              </div>
+            </>
           ) : null}
         </SplitScreen>
       ) : null}
 
-      <div className="z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2 md:hidden">
-        {props?.displayText ? <ItineraryStatusLoader 
-                displayText={props?.displayText}
-                isVisible={props?.shouldShowLoader()}
-              /> :
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col">
-            <div className="flex justify-between">
-              {pricing_status === "FAILURE" ? (
-                <p className="text-red-600 text-sm">
-                  Get in touch to finalize the pricing!
-                </p>
-              ) : null}
-              {pricing_status === "FAILURE" ? (
-                <GetInTouchContainer className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    loading={loading}
-                    onclick={handleGetInTouch}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        widthmobile={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
-                </GetInTouchContainer>
-              ) : null}
-            </div>
-            {props?.payment && (
-              <div className="text-sm">
-                {props?.payment?.pay_only_for_one ||
-                props?.payment?.show_per_person_cost
-                  ? "Per Person"
-                  : props.payment?.is_estimated_price
-                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                  : "Total Cost"}
+      <Modal
+        centered
+        show={showFooterBannerMobile}
+        backdrop
+        closeIcon={true}
+        onCLose={() => setShowFooterBannerMobile(false)}
+        onHide={() => {}}
+        borderRadius={"12px"}
+      >
+        {props.payment ? (
+          <>
+            {!props.payment.is_registration_needed ? (
+              !props?.mercuryItinerary ? (
+                <SummaryContainer
+                  setUserDetails={props.setUserDetails}
+                  id={props.id}
+                  stayBookings={stays || props.stayBookings}
+                  flightBookings={props.flightBookings}
+                  activityBookings={props.activityBookings}
+                  transferBookings={props.transferBookings}
+                  setShowFooterBannerMobile={() =>
+                    setShowFooterBannerMobile(true)
+                  }
+                  getPaymentHandler={props.getPaymentHandler}
+                  payment={props.payment}
+                  traveleritinerary={props.traveleritinerary}
+                  blur={props.blur}
+                  hide={_hidePaymentHandler}
+                  experienceId={props.experienceId}
+                  token={props.token}
+                  setShowLoginModal={setShowLoginModal}
+                  plan={props.plan}
+                  _GetInTouch={() => _GetInTouch()}
+                ></SummaryContainer>
+              ) : (
+                <NewSummaryContainers
+                  id={props.itinerary_id}
+                  token={props.token}
+                  loadpricing={props?.loadpricing}
+                  payment={props?.payment}
+                  itineraryDate={props?.itineraryDate}
+                  mercuryItinerary={props?.mercuryItinerary}
+                  itinerary={props.itinerary}
+                  fetchData={props.fetchData}
+                  resetRef={props?.resetRef}
+                  _GetInTouch={() => _GetInTouch()}
+                  setShowLoginModal={setShowLoginModal}
+                  loading={loading}
+                  social_title={props?.social_title}
+                  social_description={props?.social_description}
+                  itineraryName={props.itinerary.name}
+                  itineraryImage={props?.itinerary?.images?.[0]}
+                />
+              )
+            ) : (
+              <div>
+                <GITSummaryContainer
+                  hasUserPaid={
+                    props.payment
+                      ? props.payment.paid_user
+                        ? true
+                        : false
+                      : false
+                  }
+                  payment_status={props.payment_status}
+                  plan={props.plan}
+                  itinerary={props.itinerary}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setUserDetails={props.setUserDetails}
+                  id={props.id}
+                  stayBookings={props.stayBookings}
+                  flightBookings={props.flightBookings}
+                  activityBookings={props.activityBookings}
+                  transferBookings={props.transferBookings}
+                  setShowFooterBannerMobile={() =>
+                    setShowFooterBannerMobile(true)
+                  }
+                  payment={props.payment}
+                  traveleritinerary={props.traveleritinerary}
+                  blur={props.blur}
+                  hide={_hidePaymentHandler}
+                  experienceId={props.experienceId}
+                  token={props.token}
+                  setShowLoginModal={setShowLoginModal}
+                ></GITSummaryContainer>
               </div>
             )}
-            {props.payment ? (
-              <div>
-                <span className="font-bold">
-                  ₹{" "}
-                  {!props?.mercuryItinerary
-                    ? props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
-                      ? getIndianPrice(
-                          Math.round(
-                            Math.round(
-                              props.payment.per_person_discounted_cost
-                            ) / 100
-                          )
-                        )
-                      : getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment.discounted_cost) / 100
-                          )
-                        )
-                    : props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
-                    ? getIndianPrice(
-                        Math.round(
-                          Math.round(props.payment.per_person_discounted_cost)
-                        )
-                      )
-                    : getIndianPrice(
-                        Math.round(Math.round(props.payment.discounted_cost))
-                      )}
-                  {"/-"}
-                </span>
-              </div>
-            ) : null}
-          </div>
-          {props?.token && props?.payment?.paid_user && (
-            <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
-              PAID
-            </div>
-          )}
+          </>
+        ) : null}
+      </Modal>
 
-          {props.tripsPage ? (
-            <Button
-              color="#111"
-              fontWeight="600"
-              fontSize="0.85rem"
-              borderWidth="1px"
-              width="10rem"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              onclick={handleCreateTripButton}
-            >
-              Craft a new trip!
-            </Button>
-          ) : (
-            <>
-              
-
-              {props.payment? (
-                (props.payment?.itinerary_status ===
-                  ITINERARY_STATUSES?.itinerary_finalized ||
-                  pricing_status === "SUCCESS") &&
-                !props.payment?.paid_user &&
-                // props.payment?.user_allowed_to_pay ? (
-                (props.payment.total_cost > 0 ||
-                  props?.payment?.discounted_cost > 0) ? (
-                  <div className="">
-                    <Button
-                      color="#111"
-                      fontWeight="600"
-                      fontSize="0.9rem"
-                      borderWidth="1px"
-                      width="10rem"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      onclick={() =>
-                        handleFooterBannerMobile("View Inclusions")
-                      }
-                    >
-                      View Inclusions
-                    </Button>
-                  </div>
-                ) : !props.payment.paid_user ? (
-                  // props.payment.is_registration_needed ? (
-                  <div className="">
-                    <Button
-                      color="#111"
-                      fontWeight="600"
-                      fontSize="0.9rem"
-                      borderWidth="2px"
-                      width="10rem"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      onclick={() =>
-                        handleFooterBannerMobile("View Inclusions")
-                      }
-                    >
-                      View Inclusions
-                    </Button>
-                  </div>
-                ) : (
+      <div
+        className={
+          isPageWide
+            ? "z-10  fixed bottom-0 shadow-lg bg-white px-4 py-2 desktop-view-cart-fixed"
+            : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2"
+        }
+      >
+        {props?.displayText ? (
+          <ItineraryStatusLoader
+            displayText={props?.displayText}
+            isVisible={props?.shouldShowLoader()}
+          />
+        ) : (
+          <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-col">
+              <div className="flex justify-between">
+                {pricing_status === "FAILURE" ? (
+                  <p className="text-red-600 text-sm">
+                    Get in touch to finalize the pricing!
+                  </p>
+                ) : null}
+                {pricing_status === "FAILURE" ? (
                   <GetInTouchContainer className="">
                     <Button
                       color="#111"
@@ -1424,11 +1307,149 @@ if (hasActivities) {
                       </div>
                     </Button>
                   </GetInTouchContainer>
-                )
+                ) : null}
+              </div>
+              {props?.payment && (
+                <div className="text-sm">
+                  {props?.payment?.pay_only_for_one ||
+                  props?.payment?.show_per_person_cost
+                    ? "Per Person"
+                    : props.payment?.is_estimated_price
+                      ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                      : "Total Cost"}
+                </div>
+              )}
+              {props.payment ? (
+                <div>
+                  <span className="font-bold">
+                    ₹{" "}
+                    {!props?.mercuryItinerary
+                      ? props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                            Math.round(
+                              Math.round(
+                                props.payment.per_person_discounted_cost
+                              ) / 100
+                            )
+                          )
+                        : getIndianPrice(
+                            Math.round(
+                              Math.round(props.payment.discounted_cost) / 100
+                            )
+                          )
+                      : props?.payment?.pay_only_for_one ||
+                          props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                            Math.round(
+                              Math.round(
+                                props.payment.per_person_discounted_cost
+                              )
+                            )
+                          )
+                        : getIndianPrice(
+                            Math.round(
+                              Math.round(props.payment.discounted_cost)
+                            )
+                          )}
+                    {"/-"}
+                  </span>
+                </div>
               ) : null}
-            </>
-          )}
-        </div>}
+            </div>
+            {props?.token && props?.payment?.paid_user && (
+              <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
+                PAID
+              </div>
+            )}
+
+            {props.tripsPage ? (
+              <Button
+                color="#111"
+                fontWeight="600"
+                fontSize="0.85rem"
+                borderWidth="1px"
+                width="10rem"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                onclick={handleCreateTripButton}
+              >
+                Craft a new trip!
+              </Button>
+            ) : (
+              <>
+                {props.payment ? (
+                  (props.payment?.itinerary_status ===
+                    ITINERARY_STATUSES?.itinerary_finalized ||
+                    pricing_status === "SUCCESS") &&
+                  !props.payment?.paid_user &&
+                  // props.payment?.user_allowed_to_pay ? (
+                  (props.payment.total_cost > 0 ||
+                    props?.payment?.discounted_cost > 0) ? (
+                    <div className="">
+                      <button
+                        className="ttw-btn-secondary-fill"
+                        onClick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Cart{" "}
+                        <span className="ttw-btn-count-white"> 2 </span>
+                      </button>
+                    </div>
+                  ) : !props.payment.paid_user ? (
+                    // props.payment.is_registration_needed ? (
+                    <div className="">
+                      <button
+                        className="ttw-btn-secondary-fill"
+                        onClick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Cart{" "}
+                        <span className="ttw-btn-count-white"> 2 </span>
+                      </button>
+                    </div>
+                  ) : (
+                    <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        loading={loading}
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  )
+                ) : null}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {isPageWide && (
@@ -1570,7 +1591,6 @@ function newFunction(
 
   async function processRoutes2(props) {
     if (props?.breif && !props.mercuryItinerary) {
-      console.log("Inside pr2");
       // CityDataTemp.push(props?.itinerary?.start_city);
       //  RoutesData.push(props?.itinerary?.start_city);
       for (var i = 0; i < props.breif.city_slabs.length; i++) {

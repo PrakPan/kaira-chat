@@ -12,6 +12,7 @@ export default function RoutesMap({
   setShowDrawerData,
   setEditRoute,
 }) {
+  console.log("locations are: ",locations)
   function scrollToTargetAdjusted(id) {
     if (setEditRoute) {
       setEditRoute(false);

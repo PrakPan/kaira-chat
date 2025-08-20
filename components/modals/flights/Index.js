@@ -21,6 +21,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import ComboFlight from "./ComboFlight";
 import BackArrow from "../../ui/BackArrow";
+import { useRouter } from "next/router";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -80,11 +81,8 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log(
-    "Flight Selected Booking",
-    props?.originCityId,
-    props?.destinationCityId
-  );
+  const router=useRouter()
+  const itinerary_id=router.query.id
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
@@ -129,21 +127,6 @@ const Booking = (props) => {
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 
-  // console.log("Ord",props?.originCityId,props?.destinationCityId);
-
-  // useEffect(() => {
-  //   if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  //   if (!props.showFlightModal) {
-  //     setOptionsJSX([]);
-  //     setLoading(true);
-  //   }
-  // }, [props.showFlightModal]);
-
-  // useEffect(() => {
-  //   if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  // }, [props.showFlightModal, props.token, filtersState, pax, classType]);
-
-  //console.log("Booking Data",props?.selectedBooking);
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
@@ -202,7 +185,7 @@ const Booking = (props) => {
             for (var i = 0; i < res.data.results.length; i++) {
               options.push(
                 <Flight
-                  itinerary_id={props.itinerary_id}
+                  itinerary_id={itinerary_id}
                   data={res.data.results[i]}
                   selectedBooking={props.selectedBooking}
                   _updateBookingHandler={_newUpdateBookingHandler}
@@ -251,7 +234,6 @@ const Booking = (props) => {
         trace_id: localStorage.getItem(`${provider}_trace_id`),
         result_index: result_index,
       });
-      // return;
     }
 
     setUpdateBookingState(true);
@@ -277,26 +259,6 @@ const Booking = (props) => {
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-    //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
-    console.log("Request Data", requestData);
-    // updateFlightBooking
-    //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
-    //     headers: {
-    //       Authorization: `Bearer ${props.token}`,
-    //     },
-    //   })
-    //   .then((res) => {
-    //     props._updateFlightBookingHandler([res.data]);
-    //     props.getPaymentHandler();
-    //     setUpdateBookingState(false);
-    //     const updatedTransferBookings = {
-    //       ...transferBookings,
-    //       intercity: {
-    //         ...transferBookings.intercity,
-    //         [originCityId + ":" + destinationCityId]: res?.data,
-    //       },
-    //     };
-    //     dispatch(setTransfersBookings(updatedTransferBookings));
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
         headers: {
@@ -409,7 +371,7 @@ const Booking = (props) => {
           for (var i = 0; i < res.data.Results.length; i++) {
             options.push(
               <Flight
-                itinerary_id={props.itinerary_id}
+                itinerary_id={itinerary_id}
                 data={res.data.Results[i]}
                 selectedBooking={props.selectedBooking}
                 _updateBookingHandler={_newUpdateBookingHandler}
@@ -444,6 +406,7 @@ const Booking = (props) => {
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
   };
+  
 
   if (props.token)
     return (
@@ -604,10 +567,9 @@ const Booking = (props) => {
             </GridContainer>
 
             <TransferEditDrawer
-              itinerary_id={props?.itinerary_id}
+              itinerary_id={itinerary_id}
               showDrawer={showTransferEditDrawer}
               setShowDrawer={setShowTransferEditDrawer}
-              selectedTransferHeading={props.selectedTransferHeading}
               origin={props.selectedBooking?.city}
               destination={props.selectedBooking?.destination_city}
               day_slab_index={props.daySlabIndex}
@@ -634,49 +596,8 @@ const Booking = (props) => {
             <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1">
               Changing {props.selectedBooking?.name}
             </div>
-
-            {/* <ComboFlight
-                                     combo={false}
-                                     edge={singleTransfer?.id}
-                                     handleFlightSelect={handleFlightSelect}
-                                     showComboFlightModal={showComboFlightModal}
-                                     setShowComboFlightModal={setShowComboFlightModal}
-                                     setHideFlightModal={hideDrawer}
-                                     setHideBookingModal={setHideBookingModal}
-                                     getPaymentHandler={getPaymentHandler}
-                                     _updatePaymentHandler={_updatePaymentHandler}
-                                     _updateFlightBookingHandler={_updateFlightBookingHandler}
-                                     _updateBookingHandler={_updateBookingHandler}
-                                     alternates={alternates}
-                                     tailored_id={tailored_id}
-                                     selectedBooking={selectedBooking}
-                                     itinerary_id={itinerary_id}
-                                     selectedTransferHeading={selectedTransferHeading}
-                                     fetchData={fetchData}
-                                     setShowLoginModal={setShowLoginModal}
-                                     check_in={check_in}
-                                     _GetInTouch={_GetInTouch}
-                                     daySlabIndex={daySlabIndex}
-                                     elementIndex={elementIndex}
-                                     routeId={routeId}
-                                     mercuryTransfer={mercuryTransfer}
-                                     individual={individual}
-                                     originCityId={originCityId}
-                                     destinationCityId={destinationCityId}
-                                     isSingleTransfer={true}
-                                     comboStartDate={currentModeDepartureDate}
-                                     comboStartTime={currentModeDepartureTime}
-                                     source_code={singleTransfer?.source?.code}
-                                     destination_code={singleTransfer?.destination?.code}
-                                     origin_itinerary_city_id={origin_itinerary_city_id}
-                                   destination_itinerary_city_id={destination_itinerary_city_id}
-                                   dCityData={dCityData}
-                                             oCityData={oCityData}
-                                   /> */}
             <ComboFlight
               combo={true}
-              //handleFlightSelect={handleFlightSelect}
-
               showComboFlightModal={props?.showFlightModal}
               setShowComboFlightModal={props?.setShowFlightModal}
               setHideFlightModal={props.setHideFlightModal}
@@ -685,11 +606,8 @@ const Booking = (props) => {
               _updatePaymentHandler={props?._updatePaymentHandler}
               _updateFlightBookingHandler={props?._updateFlightBookingHandler}
               _updateBookingHandler={props?._updateBookingHandler}
-              alternates={props?.selectedBooking.id}
-              tailored_id={props?.selectedBooking["tailored_itinerary"]}
               selectedBooking={props?.selectedBooking}
-              itinerary_id={props?.itinerary_id}
-              selectedTransferHeading={props?.route?.heading}
+              itinerary_id={itinerary_id}
               fetchData={props?.fetchData}
               setShowLoginModal={props?.setShowLoginModal}
               check_in={props?.route?.check_in}
@@ -697,11 +615,8 @@ const Booking = (props) => {
               daySlabIndex={props?.daySlabIndex}
               elementIndex={props?.elementIndex}
               routeId={props?.transferId}
-              // mercuryTransfer={mercuryTransfer}
-              //individual={individual}
               originCityId={props?.selectedBooking?.originCityId}
               destinationCityId={props?.selectedBooking?.destinationCityId}
-              // isSingleTransfer={true}
               comboStartDate={props?.selectedBooking?.start_date}
               comboStartTime={props?.selectedBooking?.start_date}
               source_code={
@@ -712,10 +627,6 @@ const Booking = (props) => {
                 props?.selectedBooking?.destination?.code ||
                 props.selectedBooking.destination_iata
               }
-              //   origin_itinerary_city_id={origin_itinerary_city_id}
-              // destination_itinerary_city_id={destination_itinerary_city_id}
-              // dCityData={dCityData}
-              //           oCityData={oCityData}
               token={props?.token}
               booking_id={props?.selectedBooking?.booking_id}
               edge={props?.selectedBooking?.edge}
@@ -752,36 +663,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);
-
-// {
-//   "booking_id": "7ad0b554-7efd-4d53-9ca6-eb21873950de",
-//   "trace_id": "aa92d7fc-2c68-459e-8063-7831dbc26a87",
-//   "result_indices": [
-//       "83e60545-1374-443a-ac16-d5cb510f1a9b"
-//   ],
-//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
-// }
-
-// {
-//   "trace_id": "ebeffef4-c015-400b-806f-ea8f066ee604",
-//   "result_indices": [
-//       "728b0185-38cf-41fd-a4dd-acac77715ac6"
-//   ],
-//   "source_itinerary_city": "a8593ec8-cd94-4ae9-8ae4-5f9f4f6fe484",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
-//   "edge": "abec3aef-d7fa-426d-b98b-0095b391f21f"
-// }
-
-// {
-//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
-//   "trace_id": "6088a073-0da2-4c4c-b058-3de4edf30834",
-//   "result_indices": [
-//       "2cee1c63-29e9-45b3-8e80-86a90993b6b8"
-//   ],
-//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
-// }

@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
+import Image from "next/image";
+import { useRouter } from "next/router";
 
 const ImgContainer = styled.div`
   height: 100%;
@@ -16,7 +18,7 @@ const ImgContainer = styled.div`
 
 const ImgTagsContainer = styled.div`
   position: absolute;
-  top: 50%;
+  bottom: -30px;
   transform: translateY(-43%);
   left: 10%;
   img {
@@ -24,41 +26,35 @@ const ImgTagsContainer = styled.div`
   }
 `;
 
-const TagItem = styled.div`
-  display: grid;
-  grid-template-columns: 40px 2fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  p {
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    margin-block: auto;
-  }
-`;
-
-const TagsContent = [
+const tags = [
   {
-    icon: "media/icons/login/free-travel.png",
-    text: "Unlimited travel plans for free!",
+    src: "/facebook.svg",
+    url: ""
   },
   {
-    icon: "media/icons/login/discount.png",
-    text: "Exclusive deals: Upto 70% off!",
+    src: "/instagram.svg",
+    url: ""
   },
-  { icon: "media/icons/login/officer.png", text: "Expert support, 24x7!" },
   {
-    icon: "media/icons/login/night-stay.png",
-    text: "Free night stay on selected properties!",
+    src: "/x.svg",
+    url: ""
   },
-];
+  {
+    src: "/linkedin.svg",
+    url: ""
+  },
+  {
+    src: "/pintrest.svg",
+    url: ""
+  },
+]
 
 const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
+  const router=useRouter();
 
   useEffect(() => {
     if (myref.current) {
@@ -115,23 +111,26 @@ const Enquiry = (props) => {
               height="100%"
               width="100%"
               onload={() => setShowImage(true)}
-              borderRadius="20px 0 0 20px"
+              borderRadius="20px"
             ></ImageLoader>
 
             <ImgTagsContainer>
-              {TagsContent.map((e, i) => (
-                <TagItem key={i}>
-                  <ImageLoader
-                    noLazy
-                    borderRadius={"0.4rem 0 0 0.4rem"}
-                    url={e.icon}
-                    dimensions={{ width: 200, height: 200 }}
-                    noPlaceholder={true}
-                  />
-                  <p className="font-lexend">{e.text}</p>
-                </TagItem>
-              ))}
+              <div className="text-[32px] font-[700] leading-[40px] text-white mb-4">
+                Your Personalized Travel Journey Starts with a Tap
+              </div>
+              <div className="flex gap-4">
+                {tags?.map((item, index) => (
+                  <div
+                    key={index}
+                    className="w-8 h-8 flex items-center justify-center rounded-[60px] border border-white/40 bg-[rgba(255,255,255,0.36)] backdrop-blur-[4px] cursor-pointer"
+                    onClick={()=>router.push(item.url)}
+                  >
+                    <Image src={item?.src} width={20} height={20} alt="social" />
+                  </div>
+                ))}
+              </div>
             </ImgTagsContainer>
+
           </ImgContainer>
 
           <div style={{ padding: "20px" }}>

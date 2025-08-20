@@ -6,6 +6,7 @@ import Ratings from "../../../components/itinerary/Ratings/Rating";
 import { connect } from "react-redux";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
+import SmallGallery from "./SmallGallery";
 
 const GridContainer = styled.div`
   display: grid;
@@ -19,9 +20,8 @@ const GridContainer = styled.div`
 `;
 
 const Heading = styled.h1`
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 600;
-  line-height: 34px;
 `;
 
 const toTitleCase = (str) => {
@@ -37,13 +37,13 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
-        <Heading className="font-lexend">
+        <Heading className="font-montserrat">
           {/* {toTitleCase(props.title)} */}
           {props.title}
           </Heading>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row">
         <Details
           mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
@@ -62,11 +62,14 @@ const Overview = (props) => {
           setEditRoute={props.setEditRoute}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
+        <SmallGallery maxShow={3} images={props.images}/>
       </div>
+    
 
-      {isDesktop && <div className="pt-3 pb-1">
+      {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-      </div>}
+      </div>
+      } */}
     </div>
   );
 };

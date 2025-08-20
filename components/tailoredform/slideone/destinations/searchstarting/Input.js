@@ -19,7 +19,7 @@ const ResultsContainer = styled.div`
 `;
 
 const InputContainer = styled.input`
-  width: 9rem;
+  width: 12rem;
   &:focus {
     border: none;
     outline: none;
@@ -95,6 +95,7 @@ const SearchInput = (props) => {
                     selectResult={_selectResult}
                     text={res.data[i].text}
                     place_id={res.data[i].place_id}
+                    image	={res.data[i].image}
                   ></SearchResult>
                 );
               }
@@ -129,7 +130,7 @@ const SearchInput = (props) => {
           <InputContainer
             onFocus={props.onfocus}
             onBlur={_handleBlur}
-            placeholder="Departing from"
+            placeholder="Enter the start Location"
             className="font-lexend"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

@@ -15,7 +15,6 @@ const Container = styled.div`
 `;
 
 export default function Poi1Carousel(props) {
-  console.log("pois are:", props);
   let isPageWide = media("(min-width: 768px)");
 
   return (

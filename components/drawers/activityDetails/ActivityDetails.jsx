@@ -538,7 +538,6 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   const handleSelect = () => {
-    console.log("here");
     handleAmenityChange(index, !included);
     setIncluded((prev) => !prev);
   };

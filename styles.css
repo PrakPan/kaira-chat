@@ -1,3 +1,9 @@
+
+/* Globally applied Inter font on priority */
+*:not(.fa):not(.glyphicon) {
+    font-family: Inter !important;
+}
+
 /* Freshchat bot */
 #fc_frame{
   z-index: 100 !important;

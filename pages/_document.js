@@ -35,10 +35,6 @@ export default class MyDocument extends Document {
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
           ></meta>
-          <link
-            rel="stylesheet"
-            href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
-          />
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
@@ -148,6 +144,11 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400;500;600;700;800;900&display=swap"
             rel="stylesheet"
           />
+          
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+            rel="stylesheet"
+          />
 
           {/* Step 5: Output the styles in the head  */}
           {this.props.styleTags}
@@ -163,7 +164,7 @@ export default class MyDocument extends Document {
             }}
           /> */}
           <style>
-          {`
+            {`
             #chatbot-iframe-container {
               bottom: 0;
               right: 0;
@@ -190,7 +191,7 @@ export default class MyDocument extends Document {
         
           }
         `}
-        </style>
+          </style>
 
 
           {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
@@ -270,8 +271,6 @@ export default class MyDocument extends Document {
                 ></iframe>
               </noscript>
             )}
-          {/* End Google Tag Manager (noscript) */}
-
           <Main />
           <div id="modal-portal" />
           <div id="popup-portal" />

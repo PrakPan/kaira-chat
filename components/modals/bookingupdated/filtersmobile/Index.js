@@ -61,26 +61,6 @@ export default function TemporaryDrawer(props) {
   //   };
   // }, []);
 
-  useEffect(() => {
-    let handler;
-    handler = setTimeout(() => {
-      props.setFilters((prev) => ({
-        ...prev,
-        free_breakfast: freeBreakfast,
-        is_refundable: refundable,
-        budget: {
-          price_lower_range: budget[0],
-          price_upper_range: budget[1],
-        },
-        applyFilter: !props.filters.applyFilter,
-      }));
-    }, 2000);
-    // }
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [budget, freeBreakfast, refundable]);
 
   useEffect(() => {
     if (
@@ -109,6 +89,7 @@ export default function TemporaryDrawer(props) {
       })
     );
     setRefundable((prev) => !prev);
+    props?.handleRefundable();
   };
 
   const handleFreeBreakfast = () => {
@@ -118,6 +99,7 @@ export default function TemporaryDrawer(props) {
       })
     );
     setFreeBreakfast((prev) => !prev);
+    props?.handleFreeBreakfast();
   };
 
   return (
@@ -126,7 +108,7 @@ export default function TemporaryDrawer(props) {
         {isPageWide && (
           <div className="w-[95%] mx-auto mt-4 flex flex-row justify-between gap-3 flex-wrap">
             <div className="w-[50%] flex flex-col gap-3">
-              <PriceRange budget={budget} setBudget={setBudget} />
+              <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange}/>
 
               <div className="w-fit flex flex-row gap-5">
                 <button
@@ -229,7 +211,6 @@ export default function TemporaryDrawer(props) {
                 <button
                   onClick={() => {
                     props.setShowFilters(true);
-                    console.log("filters pressed");
                   }}
                   className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all"
                 >

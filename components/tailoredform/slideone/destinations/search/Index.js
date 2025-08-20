@@ -100,6 +100,7 @@ const Search = (props) => {
       </div>
 
       {showResults && (
+        <>
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
           setFocusSearch={props.setFocusSearch}
@@ -113,6 +114,7 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
         ></SearchResults>
+        </>
       )}
 
       {showHotLocations && (
@@ -131,6 +133,7 @@ const Search = (props) => {
           selectedCities={props.selectedCities}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
+          tailoredFormModal={props.tailoredFormModal}
         ></SearchResults>
       )}
     </Container>

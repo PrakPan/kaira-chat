@@ -19,6 +19,8 @@ import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import Header from "../../components/navbar/Index";
+import { Body1M_16, Body3R_12 } from "../new-ui/Body";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -34,36 +36,11 @@ const Container = styled.div`
       : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
-  border-radius: ${(props) =>
-    props.tailoredFormModal ? "12px !important" : "8px !important"};
+
   @media screen and (min-width: 768px) {
     ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
     min-height: 500px;
-  }
-`;
-
-const CloseIcon = styled.div`
-  display: flex;
-  justify-content: space-between;
-  text-align: right;
-  border-bottom: 1px solid #0000004a;
-  padding-block: 1rem;
-`;
-
-const Heading = styled.p`
-  font-size: 1.35rem;
-  margin: 0.5rem 0 0.5rem 0;
-  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
-  text-align: left;
-  font-weight: 600;
-  color: black;
-  line-height: normal;
-
-  @media screen and (min-width: 815px) {
-    font-size: 1.4rem;
-    margin: 0.25rem 0 0.25rem 0;
-    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
   }
 `;
 
@@ -92,7 +69,7 @@ const LoadingText = styled.div`
 const useSourceParams = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const params = useParams(); 
+  const params = useParams();
 
   const source = useMemo(() => {
     const queryObj = {};
@@ -104,8 +81,8 @@ const useSourceParams = () => {
     }
 
     let resolvedPath = pathname;
-    for (const [key, val] of Object.entries(params)) {
-      resolvedPath = resolvedPath.replace(`[${key}]`, val);
+    for (const [key, val] of Object?.entries(params)) {
+      resolvedPath = resolvedPath?.replace(`[${key}]`, val);
     }
 
     return {
@@ -119,9 +96,10 @@ const useSourceParams = () => {
 
 const Enquiry = (props) => {
   const router = useRouter();
+  const [route, setRoute] = useState([]);
   const routerquery = router.query;
   const initialInputId = Date.now();
-  const {token} = useSelector(state=>state.auth)
+  const { token } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
@@ -174,7 +152,15 @@ const Enquiry = (props) => {
     min_price: 0,
     max_price: 3000,
   });
-  
+
+  const headings = [
+    "Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.",
+    "Route Overview — Customize Your Journey from Start to Finish!",
+    "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?",
+    "Almost There — Let's Personalize the Final Details of Your Trip.",
+    "Awesome! We've got your details.",
+  ];
+
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
 
@@ -186,10 +172,10 @@ const Enquiry = (props) => {
     let tempInfants = numberOfInfants;
     while (tempadults != 0) {
       if (tempadults >= 2) {
-        distribution.push({ adults: 2,children:0 });
+        distribution.push({ adults: 2, children: 0 });
         tempadults -= 2;
       } else {
-        distribution.push({ adults: tempadults,children:0  });
+        distribution.push({ adults: tempadults, children: 0 });
         tempadults = 0;
       }
     }
@@ -223,8 +209,17 @@ const Enquiry = (props) => {
     }
 
     return distribution;
-
   };
+
+  useEffect(() => {
+    if (props.tailoredFormModal) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [props.tailoredFormModal]);
 
   useEffect(() => {
     if (loginComplete && props.token && props.phone !== "null") {
@@ -284,67 +279,68 @@ const Enquiry = (props) => {
   //   ];
   // }
 
-const queryType = router?.query?.type?.toLowerCase();
-const propType = props?.type?.toLowerCase();
+  const queryType = router?.query?.type?.toLowerCase();
+  const propType = props?.type?.toLowerCase();
 
-if (queryType === "page" || propType === "page") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Page",
-    },
-  ];
-} else if ((routerquery.state && !routerquery.city) || propType === "state") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "State",
-    },
-  ];
-} else if ((routerquery.city) || propType === "city" || queryType === "city") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "City",
-    },
-  ];
-} else if (routerquery.country || propType === "country") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Country",
-    },
-  ];
-} else if (routerquery.continent || queryType === "continent" || propType === "continent") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Continent",
-    },
-  ];
-} else {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: routerquery?.type || props?.destinationType,
-    },
-  ];
-}
-
-
- 
+  if (queryType === "page" || propType === "page") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Page",
+      },
+    ];
+  } else if ((routerquery.state && !routerquery.city) || propType === "state") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "State",
+      },
+    ];
+  } else if (routerquery.city || propType === "city" || queryType === "city") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  } else if (routerquery.country || propType === "country") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Country",
+      },
+    ];
+  } else if (
+    routerquery.continent ||
+    queryType === "continent" ||
+    propType === "continent"
+  ) {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Continent",
+      },
+    ];
+  } else {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: routerquery?.type || props?.destinationType,
+      },
+    ];
+  }
 
   const _handleHideBlack = () => {
     setShowCities(false);
@@ -356,8 +352,8 @@ if (queryType === "page" || propType === "page") {
     const value_end = new Date(valueEnd);
 
     if (isSubmitting) {
-    return;
-  }
+      return;
+    }
 
     setLoading(true);
     setIsSubmitting(true);
@@ -383,7 +379,6 @@ if (queryType === "page" || propType === "page") {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        console.log("Selected ",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -394,10 +389,12 @@ if (queryType === "page" || propType === "page") {
             countryIds.push(selectedCities[i].id);
           else if (selectedCities[i].type?.toLowerCase() == "continent")
             continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location"){
+          else if (
+            selectedCities[i].type?.toLowerCase() == "city" ||
+            selectedCities[i].type?.toLowerCase() == "location"
+          ) {
             cityids.push(selectedCities[i].id);
-          }
-          else {
+          } else {
             continentIds.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
@@ -405,8 +402,7 @@ if (queryType === "page" || propType === "page") {
       }
     } catch {}
 
-  
-let dist=divideTravellers()
+    let dist = divideTravellers();
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
 
@@ -424,10 +420,10 @@ let dist=divideTravellers()
       number_of_infants = numberOfInfants;
     }
 
-//     const source = {
-//   path: router.pathname, 
-//   ...router.query,       
-// };
+    //     const source = {
+    //   path: router.pathname,
+    //   ...router.query,
+    // };
 
     let data = null;
     data = {
@@ -479,8 +475,6 @@ let dist=divideTravellers()
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
 
- 
-
   useEffect(() => {
     setShowPopup(popupObj);
   }, [
@@ -496,7 +490,6 @@ let dist=divideTravellers()
   ]);
 
   const _SlideOneSubmitHandler = () => {
-    console.log("Selected Cities",selectedCities)
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
@@ -564,19 +557,16 @@ let dist=divideTravellers()
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent"){
+          else if (selectedCities[i].type?.toLowerCase() == "continent") {
             continentIds.push(selectedCities[i].id);
             pageIds.push(selectedCities[i].id);
-          }
-          else {
+          } else {
             cityids.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
         }
       }
     } catch {}
-
-    
 
     const data = {
       source,
@@ -597,16 +587,17 @@ let dist=divideTravellers()
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
-    console.log("Selected",data);
     setIsLoading(true);
     itineraryInitiate
       .post("", data)
       .then((res) => {
         const data = res.data;
+
         setError(null);
         setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
+        setRoute(data.basic_route);
 
         const hotelsBudget = data?.hotels_budget;
         if (hotelsBudget) {
@@ -652,7 +643,6 @@ let dist=divideTravellers()
     }
     let dist = divideTravellers();
 
-
     const data = {
       source,
       // : {
@@ -664,7 +654,7 @@ let dist=divideTravellers()
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
-      room_configuration: slideIndex==1?dist:roomConfiguration,
+      room_configuration: slideIndex == 1 ? dist : roomConfiguration,
       add_hotels: addHotels,
       add_flights: addFlights,
     };
@@ -701,8 +691,12 @@ let dist=divideTravellers()
       });
   };
 
+  const totalSlides = localStorage.getItem("access_token") ? 4 : 5;
+  const radius = 28;
+  const circumference = 2 * Math.PI * radius;
+  const progress = ((slideIndex + 1) / totalSlides) * circumference;
   return (
-    <>
+    <div className="flex h-full w-full justify-center items-center">
       {showBlack && !props.tailoredFormModal ? (
         <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
       ) : null}
@@ -711,10 +705,6 @@ let dist=divideTravellers()
         showBlack={showBlack}
         tailoredFormModal={props.tailoredFormModal}
         slideIndex={slideIndex}
-        className={isPageWide ? "border" : "center-div"}
-        onClick={() => {
-          // setShowBlack(true);
-        }}
       >
         {showPopup.InputOne && (
           <Popup
@@ -745,7 +735,7 @@ let dist=divideTravellers()
           />
         )}
 
-        {showPopup.group && (
+        {/* {showPopup.group && (
           <Popup
             setShowPopup={setShowPopup}
             top={props.tailoredFormModal ? "16rem" : "190px"}
@@ -753,7 +743,7 @@ let dist=divideTravellers()
             tipLeft="45%"
             text="Please select your group type!"
           />
-        )}
+        )} */}
 
         <div
           style={{
@@ -762,7 +752,7 @@ let dist=divideTravellers()
           }}
           className="w-full flex flex-row items-center"
         >
-          {slideIndex && !props.tailoredFormModal ? (
+          {slideIndex ? (
             <div className="center-div">
               <BiArrowBack
                 onClick={_prevSlideHandler}
@@ -773,293 +763,284 @@ let dist=divideTravellers()
           ) : (
             <></>
           )}
+        </div>
 
-          <div className="w-full">
-            {props.tailoredFormModal && (
-              <CloseIcon>
-                {slideIndex ? (
-                  <BiArrowBack
-                    onClick={_prevSlideHandler}
-                    className="hover-pointer"
-                    style={{ marginTop: "2px", fontSize: "1.5rem" }}
-                  ></BiArrowBack>
-                ) : (
-                  <div></div>
+        {/* main block */}
+        <div className="flex flex-col items-center justify-center  h-full">
+          <div
+            style={{ padding: "0 1rem", width: "100%" }}
+            className="h-max  font-inter flex flex-col items-center gap-[46px]"
+          >
+            <div className="relative w-full flex justify-center">
+              <h1 className="text-black font-inter text-[40px] font-bold leading-[48px] text-center max-w-[800px]">
+                {headings[slideIndex]}
+              </h1>
+
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  {/* Background Circle */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#F0F0F0"
+                    strokeWidth="6"
+                  />
+                  {/* Progress Circle */}
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#5CBA66"
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - progress}
+                    strokeLinecap="round"
+                    transform="rotate(-90 32 32)"
+                  />
+                  {/* Text in Center */}
+                  <text
+                    x="32"
+                    y="32"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="black"
+                  >
+                    <tspan fontSize="16" fontWeight="500">
+                      {slideIndex + 1}
+                    </tspan>
+                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
+                      /
+                    </tspan>
+                    <tspan fontSize="12" fontWeight="400" dy="2">
+                      {totalSlides}
+                    </tspan>
+                  </text>
+                </svg>
+              </div>
+            </div>
+
+            <div className="max-w-[600px] ">
+              <Flickity
+                initialInputId={initialInputId}
+                focusedDate={focusedDate}
+                setFocusedDate={setFocusedDate}
+                tailoredFormModal={props.tailoredFormModal}
+                flexible={flexible}
+                setFlexible={setFlexible}
+                startingLocation={startingLocation}
+                setStartingLocation={setStartingLocation}
+                children_cities={props.children_cities}
+                showSearchStarting={showSearchStarting}
+                setShowSearchStarting={setShowSearchStarting}
+                showCities={showCities}
+                setShowCities={setShowCities}
+                destination={destination}
+                setDestination={setDestination}
+                token={props.token}
+                phone={props.phone}
+                slideIndex={slideIndex}
+                cities={props.cities}
+                selectedCities={selectedCities}
+                setSelectedCities={setSelectedCities}
+                valueStart={valueStart}
+                valueEnd={valueEnd}
+                setValueStart={setValueStart}
+                setValueEnd={setValueEnd}
+                groupType={groupType}
+                setGroupType={setGroupType}
+                numberOfAdults={numberOfAdults}
+                setNumberOfAdults={setNumberOfAdults}
+                numberOfChildren={numberOfChildren}
+                setNumberOfChildren={setNumberOfChildren}
+                numberOfInfants={numberOfInfants}
+                setNumberOfInfants={setNumberOfInfants}
+                setBudget={setBudget}
+                selectedPreferences={selectedPreferences}
+                setSelectedPreferences={setSelectedPreferences}
+                setSubmitSecondSlide={setSubmitSecondSlide}
+                eventDates={props.eventDates}
+                roomConfiguration={roomConfiguration}
+                setRoomConfiguration={setRoomConfiguration}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                addHotels={addHotels}
+                setAddHotels={setAddHotels}
+                addFlights={addFlights}
+                setAddFlights={setAddFlights}
+                setSlideIndex={setSlideIndex}
+                setLoginComplete={setLoginComplete}
+                defaultPriceRange={defaultPriceRange}
+                route={route}
+              ></Flickity>
+
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+              {slideIndex === 0 && (
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide && isPageLoaded
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="30px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  onclick={_SlideOneSubmitHandler}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  height="50px"
+                  color="white"
+                >
+                  Continue
+                </Button>
+              )}
+
+              {slideIndex === 1 &&
+                (!props.token || props.phone === "null" || addHotels) && (
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      fontSize="1rem"
+                      width={!isPageWide ? "auto" : "100%"}
+                      style={
+                        !isPageWide
+                          ? {
+                              position: "fixed",
+                              left: "1rem",
+                              right: "1rem",
+                              bottom: "0",
+                            }
+                          : {}
+                      }
+                      padding="0.5rem 2rem"
+                      fontWeight="500"
+                      margin="1rem 0"
+                      borderRadius="5px"
+                      borderWidth="1px"
+                      bgColor="#07213A"
+                      onclick={() => setSlideIndex(2)}
+                      loading={isLoading && submitted}
+                      height="50px"
+                      color="white"
+                    >
+                      Continue
+                    </Button>
+                  </div>
                 )}
-                <RxCross2
-                  style={{
-                    fontSize: "1.75rem",
-                    textAlign: "right",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    if (!focusedDate) {
-                      props.onHide();
-                    }
-                  }}
-                />
-              </CloseIcon>
-            )}
 
-            <Heading
-              tailoredFormModal={props.tailoredFormModal}
-              style={{ textAlign: !slideIndex ? "left" : "center" }}
-            >
-              {getHeading()}
-            </Heading>
+              {slideIndex === 2 && (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="30px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    onclick={_SlideTwoSubmitHandler}
+                    loading={isLoading && submitted}
+                    height="50px"
+                    color="white"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
+
+              {slideIndex === 3 && (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="40px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onclick={() => {
+                      setSlideIndex(4);
+                      _SlideThreeSubmitHandler;
+                    }}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
+              {slideIndex === 4 ? (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="40px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onClick={_submitDataHandler}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-
-        <div style={{ padding: "0 1rem", width: "100%" }} className="h-full">
-          <div
-            style={{
-              borderStyle: "solid none none none",
-              borderWidth: "1px",
-              color: "#D3D3D3",
-              height: "1px",
-              width: "100%",
-              marginBottom: "1.5rem",
-            }}
-          ></div>
-
-          <Flickity
-            initialInputId={initialInputId}
-            focusedDate={focusedDate}
-            setFocusedDate={setFocusedDate}
-            tailoredFormModal={props.tailoredFormModal}
-            flexible={flexible}
-            setFlexible={setFlexible}
-            startingLocation={startingLocation}
-            setStartingLocation={setStartingLocation}
-            children_cities={props.children_cities}
-            showSearchStarting={showSearchStarting}
-            setShowSearchStarting={setShowSearchStarting}
-            showCities={showCities}
-            setShowCities={setShowCities}
-            destination={destination}
-            setDestination={setDestination}
-            token={props.token}
-            phone={props.phone}
-            slideIndex={slideIndex}
-            cities={props.cities}
-            selectedCities={selectedCities}
-            setSelectedCities={setSelectedCities}
-            valueStart={valueStart}
-            valueEnd={valueEnd}
-            setValueStart={setValueStart}
-            setValueEnd={setValueEnd}
-            groupType={groupType}
-            setGroupType={setGroupType}
-            numberOfAdults={numberOfAdults}
-            setNumberOfAdults={setNumberOfAdults}
-            numberOfChildren={numberOfChildren}
-            setNumberOfChildren={setNumberOfChildren}
-            numberOfInfants={numberOfInfants}
-            setNumberOfInfants={setNumberOfInfants}
-            setBudget={setBudget}
-            selectedPreferences={selectedPreferences}
-            setSelectedPreferences={setSelectedPreferences}
-            setSubmitSecondSlide={setSubmitSecondSlide}
-            eventDates={props.eventDates}
-            roomConfiguration={roomConfiguration}
-            setRoomConfiguration={setRoomConfiguration}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            addHotels={addHotels}
-            setAddHotels={setAddHotels}
-            addFlights={addFlights}
-            setAddFlights={setAddFlights}
-            setSlideIndex={setSlideIndex}
-            setLoginComplete={setLoginComplete}
-            defaultPriceRange={defaultPriceRange}
-          ></Flickity>
-
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
-          {slideIndex === 0 ? (
-            <Button
-              fontSize="1rem"
-              width={!isPageWide ? "auto" : "100%"}
-              style={
-                !isPageWide && isPageLoaded
-                  ? {
-                      position: "fixed",
-                      left: "1rem",
-                      right: "1rem",
-                      bottom: "0",
-                    }
-                  : {}
-              }
-              padding="0.5rem 2rem"
-              fontWeight="500"
-              margin="1rem 0"
-              borderRadius="5px"
-              borderWidth="1px"
-              bgColor="#f7e700"
-              onclick={() => {
-                logEvent({
-                  action: "Form_Continue",
-                  params: {
-                    page: props.page || "Unknown",
-                    event_category: "Button Click",
-                    event_label: "Continue",
-                    event_action: "Tailored Form - Step 1",
-                    form_step: "destinations",
-                  },
-                });
-                _SlideOneSubmitHandler();
-              }}
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              Continue
-            </Button>
-          ) : null}
-
-          {slideIndex === 1 ? (
-            !props.token || props.phone === "null" || addHotels ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={() => {
-                    logEvent({
-                      action: "Form_Continue",
-                      params: {
-                        page: props.page || "Unknown",
-                        event_category: "Button Click",
-                        event_label: "Continue",
-                        event_action: "Tailored Form - Step 2",
-                        form_step: "preferences",
-                      },
-                    });
-                    _SlideTwoSubmitHandler();
-                  }}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={() => {
-                    logEvent({
-                      action: "Get_Itinerary",
-                      params: {
-                        page: props.page || "Unknown",
-                        event_category: "Button Click",
-                        event_label: "Get Itinerary!",
-                        event_action: "Tailored Form - Final Step",
-                        form_step: "complete",
-                      },
-                    });
-                    _submitDataHandler();
-                  }}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
-
-          {slideIndex === 2 && addHotels ? (
-            !props.token || props.phone === "null" ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={_SlideThreeSubmitHandler}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
-        </div>
       </Container>
-    </>
+    </div>
   );
 };
 

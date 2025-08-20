@@ -38,7 +38,10 @@ import { SocialShare } from "./SocialShare";
 import media from "../../../components/media";
 import SocialShareMobile from "./SocialShareMobile";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
-import { axiosGetItineraryStatus, axiosUpdateItineraryDates } from "../../../services/itinerary/daybyday/preview";
+import {
+  axiosGetItineraryStatus,
+  axiosUpdateItineraryDates,
+} from "../../../services/itinerary/daybyday/preview";
 import UpdateItineraryDates from "./UpdateItineraryDates";
 
 const GetInTouchContainer = styled.div`
@@ -100,14 +103,14 @@ const Details = (props) => {
     return dateString;
   };
 
- const convertDFormat = (dt) => {
-  if (dt) {
-    const date = parseISO(dt);
-    const formattedDate = format(date, "MMM dd, yyyy"); 
-    return formattedDate;
-  }
-  return "";
-};
+  const convertDFormat = (dt) => {
+    if (dt) {
+      const date = parseISO(dt);
+      const formattedDate = format(date, "MMM dd, yyyy");
+      return formattedDate;
+    }
+    return "";
+  };
 
   const [date, setDate] = useState(
     getCurrentDateIfOlder(props?.itinerary?.start_date)
@@ -349,7 +352,7 @@ const Details = (props) => {
   }
 
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
+    "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
   const _startRazorpayHandler = (data) => {

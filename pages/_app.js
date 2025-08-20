@@ -14,7 +14,6 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import styled from "styled-components";
 import Script from "next/script";
-import restartBot from "../helper/RestartBot";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 
@@ -48,7 +47,7 @@ function MyApp({ Component, pageProps, store }) {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-        restartBot()
+
       }, timeLeft);
     }
   }
@@ -171,16 +170,6 @@ function MyApp({ Component, pageProps, store }) {
           rel="stylesheet"
         />
       </Head>
-      <body>
-        <Script
-          src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-          strategy="afterInteractive"
-          onLoad={() => {
-            console.log("CRMOne bot script loaded");
-            restartBot(); // Start bot once script is ready
-          }}
-        />
-      </body>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

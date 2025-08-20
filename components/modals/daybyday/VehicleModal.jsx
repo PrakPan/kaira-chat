@@ -28,14 +28,14 @@ const BackText = styled.div`
 const VehicleDetailModal = ({
   data,
   setIsOpen,
-  setHandleShow,
   handleDelete,
   loading,
   booking,
   type,
   isEmbedded,
-  setShowDrawer,
   error,
+  handleClose,
+  handleEditRoute
 }) => {
   if (!data) return null;
 
@@ -56,7 +56,6 @@ const VehicleDetailModal = ({
     booking_type,
     cancellation_policies
   } = data;
-  console.log("day by day data is:", data, booking_type);
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -77,9 +76,7 @@ const VehicleDetailModal = ({
   };
 
   const addMinutesToDate = (dateString, minutes) => {
-    console.log("Date String", dateString);
     const date = new Date(dateString);
-    console.log("date is:");
     date.setMinutes(date?.getMinutes() + minutes);
     return formatDateTime(date?.toISOString());
   };
@@ -114,7 +111,7 @@ const VehicleDetailModal = ({
       <div className=" bg-gray-50 w-full h-full flex flex-col">
         {!isEmbedded && (
           <div className="p-4 flex items-center">
-            <BackArrow handleClick={() => setHandleShow(false)} />
+            <BackArrow handleClick={handleClose} />
           </div>
         )}
         <div className="flex justify-between">
@@ -158,8 +155,8 @@ const VehicleDetailModal = ({
                     fontSize={"1rem"}
                     padding={"7px 25px"}
                     onClick={() => {
-                      setHandleShow(false);
-                      setShowDrawer(true);
+                      handleClose()
+                      handleEditRoute(data)
                       //setShowTaxi(true);console.log("")
                     }}
                   >
@@ -326,7 +323,6 @@ const VehicleDetailModal = ({
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type != "combo" && (
           <div className="p-4 bg-white">
-            {console.log("type is:", type)}
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking || data)}

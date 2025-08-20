@@ -38,9 +38,10 @@ const ImageLoader = (props) => {
       },
     },
   });
-
-  let imageRequest, imageRequestMobile;
-
+  
+  let imageRequest;
+  let imageRequestMobile;
+  
   if (isPageWide) {
     if (props.dimensions) {
       smallImageRequest = JSON.stringify({
@@ -190,7 +191,6 @@ const ImageLoader = (props) => {
 
   const _handleError = () => {
     if (!error) {
-      console.log(`Image not found in S3: ${props.url}`);
       if (props.onfail) props.onfail();
       setError(true);
     }
@@ -437,8 +437,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? transparentImageUrl
                   : isPageLoaded
-                  ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
+                    : transparentImageUrl
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -506,8 +506,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? transparentImageUrl
                   : isPageLoaded
-                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : transparentImageUrl
                 : props.url
             }
             transparent={isTransparent}

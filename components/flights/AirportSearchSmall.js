@@ -94,13 +94,9 @@ const AirportSearchSmall = ({ input, setInput, name }) => {
     const getResponse=async()=>{
       const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/search/hubs/airport?q=`)
       setFilteredResults(res?.data?.results);
-      console.log(res?.data?.results)
     }
     getResponse();
   },[])
-  useEffect(()=>{
-    console.log(`input for ${name} is`,input)
-  },[input])
 
   // ✅ Close dropdown when clicking outside
   useEffect(() => {

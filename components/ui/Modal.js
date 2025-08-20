@@ -37,7 +37,6 @@ const ModalContainer = styled.div`
   z-index: ${(props) => props.zIndex || "1600"};
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
-
   ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;
   ${(props) => !props.height && "max-height: 95vh;"}
@@ -102,7 +101,6 @@ export default function Modal(props) {
         <div>
           {open && (
             <div
-              className="font-lexend"
               style={{ position: "relative", ...props.style }}
             >
               <BlackContainer
@@ -137,6 +135,7 @@ export default function Modal(props) {
                         right: "15px",
                         fontSize: "1.5rem",
                         cursor: "pointer",
+                        zIndex: 999
                       }}
                       onClick={onCLose}
                     />

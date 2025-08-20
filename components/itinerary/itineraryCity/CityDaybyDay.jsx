@@ -2,11 +2,6 @@ import { useSelector } from "react-redux";
 import CityDay from "./CityDay";
 
 const CityDaybyDay = (props) => {
-
-
-
-console.log("daaaaa",props?.day?.date)
-
   return (
     <div id="citydaybyday" className="flex flex-col">
       {props.city?.day_by_day.map((day, index) => (

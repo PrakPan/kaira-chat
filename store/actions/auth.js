@@ -7,7 +7,6 @@ import axiosuserinstance from "../../services/user/info";
 import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
-import restartBot from "../../helper/RestartBot";
 
 //Open login modal
 export const authShowLogin = () => {
@@ -196,7 +195,6 @@ export const checkAuthState = () => {
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
 
-        restartBot();
         dispatch(authLogout());
         //refresh token
       }
@@ -341,7 +339,6 @@ export const auth = (
             responseData.data.user?.oauth?.access_token
           );
           localStorage.setItem("expirationDate", expirationDate);
-          restartBot();
         }
       })
       .catch((err) => {

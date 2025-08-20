@@ -1,3 +1,4 @@
+import { axiosGetTransfers } from "../../services/itinerary/bookings";
 import * as actionTypes from "./actionsTypes";
 
 export const setTransfersBookings = (data) => {
@@ -15,14 +16,14 @@ export const updateTransferBookings = (bookingIdToDelete) => {
   console.log("Inside Redux", bookingIdToDelete);
   return (dispatch, getState) => {
     const state = getState();
-    const updatedData = { ...state.TransferBookings?.transferBookings }; 
+    const updatedData = { ...state.TransferBookings?.transferBookings };
     console.log("Updated Data", updatedData);
-    
+
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
-        
+
         if (category === 'intercity') {
-          
+
           Object.keys(updatedData[category]).forEach((key) => {
             if (updatedData[category][key]?.id === bookingIdToDelete) {
               updatedData[category][key] = {};
@@ -42,7 +43,7 @@ export const updateTransferBookings = (bookingIdToDelete) => {
         }
       }
     });
-    
+
     console.log("Updated Data ", updatedData);
 
     dispatch({
@@ -58,26 +59,26 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
-    console.log("Redux DBD",keyPath, data)
+    console.log("Redux DBD", keyPath, data)
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
     }
-  
+
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
 
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
-      try{
-      updatedData.intercity[keyPath] = data;
-      console.log("Redux DBD",updatedData);
-      
-      dispatch({
-        type: actionTypes.UPDATE_SINGLE_TRANSFER,
-        payload: updatedData,
-      });
-    }catch(err){
-      console.log("Redux DBD",err.message);
-    }
+      try {
+        updatedData.intercity[keyPath] = data;
+        console.log("Redux DBD", updatedData);
+
+        dispatch({
+          type: actionTypes.UPDATE_SINGLE_TRANSFER,
+          payload: updatedData,
+        });
+      } catch (err) {
+        console.log("Redux DBD", err.message);
+      }
     } else {
       console.error(`Key path ${keyPath} not found in intercity bookings`);
     }
@@ -114,4 +115,3 @@ export const updateAirportTransferBooking = (keyPath, data) => {
     });
   };
 };
-

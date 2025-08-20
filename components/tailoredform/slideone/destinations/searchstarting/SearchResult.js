@@ -1,6 +1,7 @@
 import React from "react";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import styled from "styled-components";
+import ImageLoader from "../../../../ImageLoader";
 
 const Container = styled.div`
   display: flex;

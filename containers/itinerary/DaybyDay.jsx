@@ -8,6 +8,7 @@ import BookingModal from "../../components/modals/bookingupdated/Index";
 import { format } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
 import * as ga from "../../services/ga/Index";
+import { useRouter } from "next/router";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -18,6 +19,23 @@ const CITY_COLOR_CODES = [
   "#008080", // shade of teal
   "#7d5e7d", // shade of purple
 ];
+
+let availableColors = [...CITY_COLOR_CODES];
+let usedColors = [];
+
+const getCityColor = (index) => {
+  if (availableColors.length === 0) {
+    availableColors = [...CITY_COLOR_CODES];
+    usedColors = [];
+  }
+  if (typeof index !== "number" || isNaN(index) || index < 0) {
+    index = 0;
+  }
+  const color = availableColors[index % availableColors.length];
+  usedColors.push(color);
+  availableColors = availableColors.filter(c => c !== color);
+  return color;
+};
 
 const DaybyDay = ({
   transferBookings,
@@ -34,9 +52,10 @@ const DaybyDay = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   setShowLoginModal,
+  index,
   ...props
 }) => {
-  console.log("transfer bookings is:", transferBookings);
+  const router = useRouter()
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
@@ -44,25 +63,14 @@ const DaybyDay = ({
     id: null,
     name: null,
   });
-  const [showDetails, setShowDetails] = useState(false);
-  const [AddHotel, setAddHotel] = useState(false);
-  const [bookingId, setBookingId] = useState(null);
-  const [images, setImages] = useState(null);
-  const [currentBooking, setCurrentBooking] = useState(null);
-  const [bookingFunData, setBookingFunData] = useState(null);
-  const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const [showFilter, setshowFilter] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
 
   let isPageWide = media("(min-width: 768px)");
-  console.log("Inside DaybyDay Itinerary", itineraryDaybyDay);
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
-  const[itineraryCityId,setItineraryCityId]=useState(null)
 
   useEffect(() => {
     let array = [];
@@ -77,115 +85,33 @@ const DaybyDay = ({
     }
   }, [itineraryDaybyDay]);
 
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
-
-  const _changeBookingHandler = (
-    name,
-    itinerary_id,
-    tailored_id,
-    accommodation,
-    id,
-    check_in,
-    check_out,
-    pax,
-    city,
-    cityId,
-    room_type,
-    itinerary_name,
-    cost,
-    costings_breakdown,
-    images,
-    clickType,
-    itinerary_city_id
-  ) => {
-    {
-      process.env.NODE_ENV === "production" &&
-        !CONTENT_SERVER_HOST.includes("dev") &&
-        ga.event({
-          action: "Itinerary-bookings-acc_change",
-          params: { name: name },
-        });
-    }
-
-    setSelectedBooking({
-      ...selectedBooking,
-      name: name,
-      itinerary_id: itinerary_id,
-      accommodation: accommodation,
-      id: id,
-      tailored_id: tailored_id,
-      check_in: format(new Date(check_in), "yyyy-MM-dd").replaceAll("-", "/"),
-      check_out: format(new Date(check_out), "yyyy-MM-dd").replaceAll("-", "/"),
-      pax: pax,
-      city: city,
-      cityId: cityId,
-      room_type: room_type,
-      itinerary_name: itinerary_name,
-      cost: Math.round(cost),
-      costings_breakdown: costings_breakdown,
-      images: images,
-      clickType: clickType,
-    });
-    props.setShowBookingModal(true);
-  };
-
-  function handleClickAc(i, data, city_id,itinerary_city_id, clickType) {
-    let name = stayBookings[i]?.["name"];
-    let itinerary_id = stayBookings[i]?.["itinerary_id"];
-    let itinerary_name = stayBookings[i]?.["itinerary_name"];
-    let accommodation = stayBookings[i]?.["accommodation"];
-    let tailored_id = stayBookings[i]?.["tailored_itinerary"];
-    let user_rating = stayBookings[i]?.star_category;
-    let number_of_reviews = stayBookings[i]?.user_ratings_total;
+  function handleClickAc(i, data, city_id, itinerary_city_id, clickType) {
     let id = stayBookings[i]?.["id"];
-    let check_in = stayBookings[i]?.["check_in"];
-    let check_out = stayBookings[i]?.["check_out"];
-    let pax = {
-      number_of_adults: stayBookings[i]?.["number_of_adults"],
-      number_of_children: stayBookings[i]?.["number_of_children"],
-      number_of_infants: stayBookings[i]?.["number_of_infants"],
-    };
-    let city = stayBookings[i]?.["city_name"];
     let cityId =
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
-    let room_type = stayBookings[i]?.["room"];
-    setItineraryCityId(itinerary_city_id)
-    _changeBookingHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      accommodation,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      cityId,
-      room_type,
-      user_rating,
-      number_of_reviews,
-      itinerary_name,
-      clickType,
-      itinerary_city_id
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "changeHotelBooking",
+          clickType: clickType,
+          itineraryCityId: itinerary_city_id,
+          booking_id: id,
+          check_in: stayBookings[i]["check_in"],
+          check_out: stayBookings[i]["check_out"],
+          duration: null,
+          city_id: cityId,
+          city_name: stayBookings[i]["city_name"],
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
     );
     data.clickType = clickType;
-    setCurrentBooking(data);
-    props.setShowBookingModal(true);
   }
 
-  function handleClick(i, id, data, city_id) {
-    let check_in = props?.itineraryFilter.check_in;
-    let check_out = props?.itineraryFilter.check_out;
-    setDates({ check_in, check_out });
-
-    setBookingId(id);
-    setCurrentBooking(data);
-    setBookingFunData({ index: i, booking: data, city_id: city_id });
-    setShowDetails(true);
-  }
-  console.log("component show modal1 is:", props?.showBookingModal);
 
   const parseDate = (dateString) => {
     if (!dateString) return null;
@@ -205,14 +131,13 @@ const DaybyDay = ({
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-5 ${
-          !isPageWide ? "" : "max-w-[54vw]"
-        }`}
+        className={`flex flex-col gap-3 mt-5 ${!isPageWide ? "" : "max-w-[54vw]"
+          }`}
       >
-        <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
+        {/* <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
           Day By Day Itinerary
           <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
-        </h1>
+        </h1> */}
 
         {/* to navigate between cities in frontend */}
         {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
@@ -222,14 +147,12 @@ const DaybyDay = ({
             setShowLoginModal={setShowLoginModal}
             key={startCity?.place_id}
             city={startCity?.city_name}
-            pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
             upPresent={false}
             width={width}
             length={itineraryDaybyDay?.cities?.length}
             oCityData={startCity}
-            dCityData={itineraryDaybyDay?.cities?.[0]}
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -242,13 +165,14 @@ const DaybyDay = ({
             loadbookings={loadbookings}
             hotelName={startCity?.city_name}
             sourceGmaps={startCity?.gmaps_place_id}
-            destinationHotelName={stay?.[0] ? stay[0]?.name :null }
+            destinationHotelName={stay?.[0]?.name ? stay[0]?.name : null}
             sourceLat={startCity?.latitude}
             sourceLong={startCity?.longitude}
-            destinationLat={stay?.[0] ? stay[0]?.lat: null}
-            destinationLong={stay?.[0] ? stay[0]?.long: null}
+            destinationLat={stay?.[0] ? stay[0]?.lat : null}
+            destinationLong={stay?.[0] ? stay[0]?.long : null}
             destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
             key={2}
+            pinColour={getCityColor(index)}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
               ":" +
@@ -257,58 +181,57 @@ const DaybyDay = ({
             city={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.name
             }
             booking={
               transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
               ]
             }
             duration={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.duration
             }
             booking_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
             }
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[
                 itineraryDaybyDay?.cities?.[0]?.id
-              ]?.filter((book)=> book?.is_airport_pickup) || []),
+              ]?.filter((book) => book?.is_airport_pickup) || []),
               ...(transferBooking?.airport?.[startCity?.gmaps_place_id]?.filter(
                 (book) =>
                   book?.is_airport_drop &&
                   book?.check_in?.split(" ")[0] <=
-                    itineraryDaybyDay?.cities?.[0]?.start_date
+                  itineraryDaybyDay?.cities?.[0]?.start_date
               ) || []),
             ])}
             transfer_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.transfer_type
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={true}
             upPresent={true}
             booking_id={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.id
             }
             width={width}
@@ -316,16 +239,16 @@ const DaybyDay = ({
             origin_city_id={startCity?.gmaps_place_id || startCity?.city_id}
             destination_city_id={itineraryDaybyDay?.cities?.[0]?.city?.id}
             origin_city_name={transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
-              ]?.transfer_details?.source?.name || startCity?.city_name}
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
+            ]?.transfer_details?.source?.name || startCity?.city_name}
             destination_city_name={transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
-              ]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[0]?.city?.name}
-            setBookingId={setBookingId}
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
+            ]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[0]?.city?.name}
+            // setBookingId={setBookingId}
             oCityData={startCity}
             dCityData={itineraryDaybyDay?.cities?.[0]}
             selectedBooking={selectedBooking}
@@ -340,14 +263,14 @@ const DaybyDay = ({
             var idMapping =
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
-            const cityHotels = stay?.filter(hotel => 
-    hotel?.itinerary_city_id === city?.id
-  ) || [];
+            const cityHotels = stay?.filter(hotel =>
+              hotel?.itinerary_city_id === city?.id
+            ) || [];
 
-  const totalDuration = cityHotels.reduce(
-    (total, hotel) => total + (hotel?.duration || 0), 
-    0
-  ) || city?.duration;
+            const totalDuration = cityHotels.reduce(
+              (total, hotel) => total + (hotel?.duration || 0),
+              0
+            ) || city?.duration;
 
             let sourceKey = city?.id;
             let airportBookings = [
@@ -380,9 +303,8 @@ const DaybyDay = ({
                   setItinerary={setItinerary}
                   activityBookings={activityBookings}
                   setActivityBookings={setActivityBookings}
-                  setBookingId={setBookingId}
+
                   idMapping={transferBookings?.intercity?.[idMapping]?.id}
-                  setShowDetails={setShowDetails}
                   setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
                   index={index}
@@ -400,14 +322,14 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
-                      hotelName={stay?.[index]?.name ? stay[index]?.name: null}
+                      hotelName={stay?.[index]?.name ? stay[index]?.name : null}
                       sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.city_gmaps_place_id: itineraryDaybyDay?.cities[index+1]?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
                       sourceLat={stay?.[index] ? stay[index]?.lat : null}
                       sourceLong={stay?.[index] ? stay[index]?.long : null}
-                      destinationLat={stay?.[index+ 1] ? stay[index+1]?.lat: null}
-                      destinationLong={stay?.[index+ 1] ? stay[index+1]?.long: null}
-                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name: null}
+                      destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}
+                      destinationLong={stay?.[index + 1] ? stay[index + 1]?.long : null}
+                      destinationHotelName={stay?.[index + 1]?.name ? stay[index + 1]?.name : null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -426,7 +348,7 @@ const DaybyDay = ({
                       transfer_type={
                         transferBookings?.intercity?.[idMapping]?.transfer_type
                       }
-                      pinColour={CITY_COLOR_CODES[index % 7]}
+                      pinColour={getCityColor(index)}
                       onClick={() => alert(`Clicked`)}
                       upPresent={true}
                       downPresent={true}
@@ -444,7 +366,7 @@ const DaybyDay = ({
                       destination_city_name={
                         transferBookings?.intercity?.[idMapping]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[index + 1]?.city?.name
                       }
-                      setBookingId={setBookingId}
+
                       oCityData={itineraryDaybyDay?.cities?.[index]}
                       dCityData={itineraryDaybyDay?.cities?.[index + 1]}
                       selectedBooking={selectedBooking}
@@ -468,7 +390,7 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name: null}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
             sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
             sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
             sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
@@ -481,15 +403,15 @@ const DaybyDay = ({
                 (booking) =>
                   booking?.is_airport_pickup &&
                   booking?.check_in?.split(" ")[0] >=
-                    itineraryDaybyDay?.cities?.[
-                      itineraryDaybyDay?.cities?.length - 1
-                    ]?.start_date
+                  itineraryDaybyDay?.cities?.[
+                    itineraryDaybyDay?.cities?.length - 1
+                  ]?.start_date
               ) || []),
               ...(transferBooking?.airport?.[
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id
-              ]?.filter((book)=>book?.is_airport_drop) || []),
+              ]?.filter((book) => book?.is_airport_drop) || []),
             ])}
             intracityBookings={
               transferBooking?.intracity[
@@ -498,12 +420,12 @@ const DaybyDay = ({
                 ]?.id
               ]
                 ? sortByCheckIn(
-                    transferBooking?.intracity[
-                      itineraryDaybyDay?.cities?.[
-                        itineraryDaybyDay?.cities?.length - 1
-                      ]?.id
-                    ]
-                  )
+                  transferBooking?.intracity[
+                  itineraryDaybyDay?.cities?.[
+                    itineraryDaybyDay?.cities?.length - 1
+                  ]?.id
+                  ]
+                )
                 : []
             }
             city={
@@ -511,24 +433,24 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.name
             }
             booking={transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
-              ]}
+              itineraryDaybyDay?.cities?.[
+                itineraryDaybyDay?.cities?.length - 1
+              ]?.id +
+              ":" +
+              endCity?.gmaps_place_id
+            ]}
             booking_type={
               transferBookings?.intercity?.[
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.booking_type
             }
             transfer_type={
@@ -536,8 +458,8 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.transfer_type
             }
             duration={
@@ -545,11 +467,11 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.duration
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
             upPresent={true}
             downPresent={true}
@@ -558,8 +480,8 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.id
             }
             width={width}
@@ -574,19 +496,19 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.transfer_details?.source?.name || itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                 ?.city?.name
             }
             destination_city_name={transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
-              ]?.transfer_details?.destination?.name || endCity?.city_name}
-            setBookingId={setBookingId}
+              itineraryDaybyDay?.cities?.[
+                itineraryDaybyDay?.cities?.length - 1
+              ]?.id +
+              ":" +
+              endCity?.gmaps_place_id
+            ]?.transfer_details?.destination?.name || endCity?.city_name}
+            // setBookingId={setBookingId}
             oCityData={
               itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
             }
@@ -603,7 +525,7 @@ const DaybyDay = ({
             setShowLoginModal={setShowLoginModal}
             key={endCity?.place_id}
             city={endCity?.city_name}
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
             upPresent={false}
@@ -618,37 +540,6 @@ const DaybyDay = ({
           />
         </div>
       </div>
-      <BookingModal
-        mercury
-        showFilter={showFilter}
-        setshowFilter={setshowFilter}
-        setShowLoginModal={setShowLoginModal}
-        payment={payment}
-        plan={stayBookings}
-        _setImagesHandler={_setImagesHandler}
-        getPaymentHandler={getPaymentHandler}
-        _updateStayBookingHandler={props._updateStayBookingHandler}
-        tailored_id={
-          stayBookings && stayBookings[0]
-            ? stayBookings[0]["tailored_itinerary"]
-            : null
-        }
-        _updatePaymentHandler={_updatePaymentHandler}
-        _updateBookingHandler={props?._updateBookingHandler}
-        selectedBooking={selectedBooking}
-        itinerary_city_id={itineraryCityId}
-        setShowBookingModal={props?.setShowBookingModal}
-        currentBooking={currentBooking}
-        showBookingModal={props?.showBookingModal}
-        setHideBookingModal={props?.setHideBookingModal}
-        AddHotel={AddHotel}
-        _GetInTouch={props._GetInTouch}
-        handleClick={handleClick}
-        stayBookings={stayBookings}
-        setStayBookings={setStayBookings}
-        itineraryDaybyDay={itineraryDaybyDay}
-        onHide={() => {}}
-      ></BookingModal>
     </>
   );
 };
