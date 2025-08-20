@@ -88,4 +88,19 @@ export function getDatesInRange(startDate, endDate) {
   return dates;
 }
 
+export function getDateDifferenceInDays(checkIn, checkOut) {
+  // Get only the date part: "2025-09-30"
+  console.log("checkIn, checkOut", checkIn, checkOut);
+  const checkInDate = new Date(checkIn.split(" ")[0]);
+  const checkOutDate = new Date(checkOut.split(" ")[0]);
+
+  if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+    console.error("Invalid date:", { checkIn, checkOut, checkInDate, checkOutDate });
+    return 0;
+  }
+
+  const diffTime = checkOutDate - checkInDate;
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
 
