@@ -100,6 +100,7 @@ const Search = (props) => {
       </div>
 
       {showResults && (
+        <>
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
           setFocusSearch={props.setFocusSearch}
@@ -113,6 +114,7 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
         ></SearchResults>
+        </>
       )}
 
       {showHotLocations && (

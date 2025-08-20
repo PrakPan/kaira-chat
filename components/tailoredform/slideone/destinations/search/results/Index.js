@@ -80,13 +80,13 @@ const SearchResults = (props) => {
 
   return (
     <AbsoluteContainer
-      className={props?.results?.length && "border"}
+      className={props?.results?.length && "border mt-2"}
       top={props.top}
       tailoredFormModal={props.tailoredFormModal}
     >
-      {props.hotLocations && props?.results?.length ? (
+      {/* {props.hotLocations && props?.results?.length ? (
         <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
-      ) : null}
+      ) : null} */}
       {props?.results?.length ? (
         props?.results?.map((result, i) => {
           if (i < 5)
