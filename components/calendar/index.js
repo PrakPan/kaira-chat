@@ -11,8 +11,8 @@ const AirbnbCalendar = (props) => {
   // State
   const [currentView, setCurrentView] = useState('calendar'); // default is Fixed-style calendar
   const [selectedDates, setSelectedDates] = useState({
-    start: props.valueStart,
-    end: props.valueEnd
+    start: new Date(props.valueStart),
+    end: new Date(props.valueEnd)
   });
   const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [dateType, setDateType] = useState('Fixed');
@@ -89,6 +89,12 @@ const AirbnbCalendar = (props) => {
       setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
     }
   };
+
+
+  const handleApplyDates = () => {
+    props.onChangeDate({start:selectedDates.start,end:selectedDates.end})
+    props.setShowCalendar(false)
+  }
 
   // Month Grid Renderer
   const renderMonthGrid = (days) => (
@@ -274,11 +280,7 @@ const AirbnbCalendar = (props) => {
                 Clear
               </MediumIndigoOutlinedButton>
               <MediumIndigoButton
-                onClick={() => {
-                  props.setValueStart(selectedDates.start)
-                  props.setValueEnd(selectedDates.end)
-                  props.setShowCalendar(false)
-                }}
+                onClick={handleApplyDates}
                 className="px-[26px] py-[8px] bg-gray-900 text-white font-medium rounded-[8px] hover:bg-gray-800 transition-colors"
               >
                 Apply
