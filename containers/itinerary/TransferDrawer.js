@@ -20,6 +20,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
+import { getDateDifferenceInDays } from "../../helper/DateUtils";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -165,6 +166,8 @@ const TransferDrawer = ({
 
     const checkIn = formatDateTime(transferData.check_in);
     const checkOut = formatDateTime(transferData.check_out);
+
+    // const dateDiff = getDateDifferenceInDays(checkIn,checkOut)
 
     // Get route information
     const origin = transferData.transfer_details?.trips?.[0]?.origin;
@@ -374,6 +377,7 @@ const TransferDrawer = ({
                             <div>
                               <div className="text-gray-500 text-xs">
                                 Duration
+                                {/* : {dateDiff} {dateDiff ==1 ? "day" :"days"} */}
                               </div>
                               <div className="font-medium text-gray-900">
                                 {duration}

@@ -1442,7 +1442,7 @@ const RouteContainer = (props) => {
   const [comboStartTime, setComboStartTime] = useState(null);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-  const { number_of_adults, number_of_children, number_of_infants } =
+  const { number_of_adults, number_of_children, number_of_infants,start_date} =
     useSelector((state) => state.Itinerary);
 
   const handleViewMore = () => {
@@ -1475,7 +1475,7 @@ const RouteContainer = (props) => {
     const baseStartDate =
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        :oCityData?.start_date);
+        : oCityData?.id ? oCityData?.start_date : start_date);
 
     let calculatedStartTime;
 
@@ -1859,7 +1859,7 @@ const NewMultiModeContainer = ({
   const [transferErrors, setTransferErrors] = useState({});
 
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
-  const { number_of_adults, number_of_children, number_of_infants } =
+  const { number_of_adults, number_of_children, number_of_infants,start_date } =
     useSelector((state) => state.Itinerary);
   const [pax, setPax] = useState({
     adults: number_of_adults,
@@ -2371,7 +2371,7 @@ const NewMultiModeContainer = ({
           
           (oCityData?.start_date && oCityData?.duration != null
             ? addDaysToDate(oCityData.start_date, oCityData.duration)
-            : oCityData?.start_date);
+            : oCityData?.id ? oCityData?.start_date : start_date);
         const requestBody = {
           destination_itinerary_city: destination_itinerary_city_id,
           source_itinerary_city: origin_itinerary_city_id
@@ -2456,7 +2456,7 @@ const NewMultiModeContainer = ({
     const baseStartDate = 
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : oCityData?.start_date);
+        :  oCityData?.id ? oCityData?.start_date : start_date);
 
     let calculatedStartTime;
 
