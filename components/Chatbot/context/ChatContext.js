@@ -23,38 +23,47 @@ export const ChatProvider = ({ bookingId, children }) => {
     useEffect(() => {
         if (!bookingId) return;
 
-        const socket = new WebSocket(`${BASE_WS_URL}`);
-        socketRef.current = socket;
+        let reconnectTimer;
 
-        socket.onopen = () => {
-            console.log("WebSocket connected");
-            setIsConnected(true);
-            setDisableQuerySection(true);
-            const initialpromt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} Explain my detailed plan.`;
-            if (socketRef.current?.readyState === WebSocket.OPEN) {
-                socketRef.current.send(JSON.stringify({ message: initialpromt, token: token }));
-            }
+        const connect = () => {
+            const socket = new WebSocket(BASE_WS_URL);
+            socketRef.current = socket;
+
+            socket.onopen = () => {
+                console.log("WebSocket connected");
+                setIsConnected(true);
+                setDisableQuerySection(true);
+
+                const initialPrompt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} Explain my detailed plan.`;
+                if (socketRef.current?.readyState === WebSocket.OPEN) {
+                    socketRef.current.send(JSON.stringify({ message: initialPrompt, token }));
+                }
+            };
+
+            socket.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                handleStreamData(data);
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket Error", error);
+            };
+
+            socket.onclose = () => {
+                console.log("WebSocket disconnected. Attempting reconnect...");
+                setIsConnected(false);
+                reconnectTimer = setTimeout(connect, 2000); 
+            };
         };
 
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log(data);
-            handleStreamData(data);
-        };
-
-        socket.onerror = (error) => {
-            console.error("WebSocket Error", error);
-        };
-
-        socket.onclose = () => {
-            console.log("WebSocket disconnected");
-            setIsConnected(false);
-        };
+        connect();
 
         return () => {
-            socket.close();
+            clearTimeout(reconnectTimer);
+            socketRef.current?.close();
         };
     }, [bookingId]);
+
 
     const handleStreamData = (data) => {
         switch (data.type) {

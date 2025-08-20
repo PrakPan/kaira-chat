@@ -56,6 +56,77 @@ const SlabElement = (props) => {
 
 export default SlabElement;
 
+
+const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_city_id, dayIndex, slabIndex, position, heading) => {
+  try {
+    const res = await axios.post(
+      `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/element/move/`,
+      {
+        itinerary_city_id: itinerary_city_id,
+        day_by_day_index: dayIndex,
+        element_index: slabIndex,
+        position: position
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
+
+    const newItinerary = JSON.parse(JSON.stringify(itinerary));
+    let itineraryCities = [];
+    if (res?.status === 200) {
+      itineraryCities = newItinerary.cities.map((city) => {
+        const cityTemp = { ...city };
+        if (city.id === itinerary_city_id) {
+          const day = cityTemp.day_by_day[dayIndex];
+          if (!day) return cityTemp;
+          const slabElements = [...day.slab_elements];
+          const fromIndex = slabIndex;
+          const toIndex = position;
+          if (
+            fromIndex >= 0 &&
+            fromIndex < slabElements.length &&
+            toIndex >= 0 &&
+            toIndex < slabElements.length
+          ) {
+            const [moved] = slabElements.splice(fromIndex, 1);
+            slabElements.splice(toIndex, 0, moved);
+          }
+          day.slab_elements = slabElements;
+        }
+        return cityTemp;
+      });
+    }
+
+    newItinerary.cities = itineraryCities;
+    dispatch(setItinerary(newItinerary));
+    // handleCloseMenue();
+    dispatch(
+      openNotification({
+        type: "success",
+        text: `${heading} has been moved successfully.`,
+        heading: "Success!",
+      })
+    );
+  } catch (error) {
+    // handleCloseMenue();
+    console.log("error is:", error);
+    const errorMsg =
+      error?.response?.data?.errors?.[0]?.message?.[0] ||
+      error.message ||
+      "Something went wrong! Please try after some time.";
+    dispatch(
+      openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      })
+    );
+  }
+}
+
 const Activity = (props) => {
   let isPageWide = media("(min-width: 769px)");
   const router = useRouter();
@@ -215,6 +286,11 @@ const Activity = (props) => {
     // setLoading(false);
   };
 
+  const handleMoveElement = async (position) => {
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    handleCloseMenue()
+  }
+
 
   return (
     <>
@@ -310,8 +386,8 @@ const Activity = (props) => {
               }
             >
               <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
-              {props.slabIndex != 0 && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Up</MenuItem>}
-              {props.slabIndex != (props.totalElements - 1) && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Down</MenuItem>}
+              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
             </Menu>
           </div>
           <div>
@@ -367,7 +443,10 @@ const Activity = (props) => {
 
 const Recommendation = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const itinerary = useSelector((state) => state.Itinerary);
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const [showDrawer, setShowDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
@@ -409,6 +488,76 @@ const Recommendation = (props) => {
       },
     });
   };
+
+  const handleDelete = async (e) => {
+    try {
+      let res;
+      res = await axios.delete(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/restaurant/delete/`,
+        {
+          data: {
+            itinerary_city_id: props?.itinerary_city_id,
+            day_by_day_index: props?.dayIndex,
+            restaurant_index: props?.slabIndex
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+
+      console.log(res);
+
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+      let itineraryCities = [];
+
+      if (res?.status === 200) {
+        itineraryCities = newItinerary.cities.map((city) => {
+          const cityTemp = city;
+          if (city.id === props?.itinerary_city_id) {
+            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+              props?.slabIndex,
+              1
+            );
+          }
+          return cityTemp;
+        });
+      }
+
+      newItinerary.cities = itineraryCities;
+      dispatch(setItinerary(newItinerary));
+      handleCloseMenue();
+      dispatch(
+        openNotification({
+          type: "success",
+          text: `${props.element.heading} has been removed from your itinerary`,
+          heading: "Success!",
+        })
+      );
+    } catch (error) {
+      handleCloseMenue();
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        })
+      );
+    }
+    // setLoading(false);
+  };
+
+
+  const handleMoveElement = async (position) => {
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    handleCloseMenue()
+  }
 
   if (props.element.type === "Meal Recommendation") {
     return <MealRecommendation element={props.element} />;
@@ -504,8 +653,9 @@ const Recommendation = (props) => {
                   : undefined
               }
             >
-              {props.slabIndex != 0 && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Up</MenuItem>}
-              {props.slabIndex != (props.totalElements - 1) && <MenuItem className="list-menu-item" onClick={handleCloseMenue}>Move Down</MenuItem>}
+              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
+              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
             </Menu>
           </div>
           <div>
