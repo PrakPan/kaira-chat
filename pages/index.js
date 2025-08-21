@@ -1,9 +1,27 @@
 import Head from "next/head";
-import { HeroSection } from "../components/v2/home";
-import Navigation from "../components/v2/home/NavigationMenu";
+// import HomepageContainer from "../containers/homepage/Index";
+import HeroSection from "../components/v2/home/HeroSection";
+import NavigationMenu from "../components/v2/home/NavigationMenu";
+// import Layout from "../components/Layout";
+import { connect } from "react-redux";
+import * as authaction from "../store/actions/auth";
+import setHotLocationSearch from "../store/actions/hotLocationSearch";
+import { useEffect } from "react";
 import styles from "../styles/pages/v2/home.module.scss";
+import axiospagelistinstance from "../services/pages/list";
+import axioscountrydetailsinstance from "../services/pages/country";
+import axiosCountInstance from "../services/itinerary/count";
+import axioslocationsinstance from "../services/search/search";
+import axios from "axios";
+import { MERCURY_HOST } from "../services/constants";
+import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 
-const Home = () => {
+const Home = (props) => {
+  useEffect(() => {
+    props.checkAuthState();
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <>
       <Head>
@@ -11,7 +29,7 @@ const Home = () => {
         <meta
           name="description"
           content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
-        />
+        ></meta>
         <meta
           property="og:title"
           content="Travel Company | India | The Tarzan Way"
@@ -24,8 +42,10 @@ const Home = () => {
         <meta
           property="keywords"
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
-        />
-        <link rel="canonical" href={`https://thetarzanway.com`} />
+        ></meta>
+
+        <link rel="canonical" href={`https://thetarzanway.com`}></link>
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -72,12 +92,129 @@ const Home = () => {
         />
       </Head>
 
+      {/* <HomepageContainer
+        asiaLocations={props.asiaLocations}
+        europeLocations={props.europeLocations}
+        token={props.token}
+        locations={props.locations}
+        ThemeData={props.ThemeData}
+        continetCarousel={props.continetCarousel}
+      ></HomepageContainer> */}
+
       <div className={styles.ttwRevamp}>
-        <Navigation />
+        <NavigationMenu />
         <HeroSection />
       </div>
     </>
   );
 };
 
-export default Home;
+const mapStateToPros = (state) => {
+  return {
+    token: state.auth.token,
+    showLogin: state.auth.showLogin,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    checkAuthState: () => dispatch(authaction.checkAuthState()),
+    authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(Home);
+
+export async function getStaticProps() {
+  var ThemeData = [];
+  var locations = [];
+  var asiaLocations = [];
+  var europeLocations = [];
+  var continetCarousel = [];
+  let Count = null;
+  let hotLocationSearch = [];
+  let pageId =
+    PagesToIdMapping["asia/india"] != undefined
+      ? PagesToIdMapping["asia/india"]
+      : "";
+  try {
+    const pageListResponse = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
+    );
+
+    locations = pageListResponse.data.data.country.states;
+  } catch (err) {
+    console.log("[ERROR][PageListResponse:getStaticProps]: ", err.message);
+  }
+
+  try {
+    const ThemeDataRes = await axiospagelistinstance.get(
+      "/?page_type=Theme&fields=id,page_type,slug,overview_image,tagline,path,image,name"
+    );
+    ThemeData = ThemeDataRes.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ThemeData]:", err.message);
+  }
+
+  let continetCarouselResponse = [];
+  try {
+    const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
+    );
+    continetCarouselResponse = continentData.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ContinentData]:", err.message);
+  }
+
+  for (let i = 0; i < continetCarouselResponse.length; i++) {
+    try {
+      const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `/?continent=${continetCarouselResponse[i].slug}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget&limit=100`
+      );
+
+      if (continetCarouselResponse[i].slug.toLowerCase() === "asia") {
+        asiaLocations = countrydetailsResponse.data.data.countries;
+      }
+
+      if (continetCarouselResponse[i].slug.toLowerCase() === "europe") {
+        europeLocations = countrydetailsResponse.data.data.countries;
+      }
+
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
+        (country) => country.is_hot_location
+      );
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continetCarouselResponse[i],
+        hot_destinations: hot_data,
+      });
+    } catch (err) {
+      console.log(
+        `[ERROR][CountryDetails for ${continetCarouselResponse[i].destination}]:`,
+        err.message
+      );
+    }
+  }
+
+  try {
+    const response = await axioslocationsinstance.get("hot_destinations/");
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(`[ERROR][HomePage][axioslocationsinstance:/hot_destinations]`);
+  }
+
+  return {
+    props: {
+      ThemeData,
+      locations,
+      asiaLocations,
+      europeLocations,
+      continetCarousel,
+      hotLocationSearch,
+    },
+  };
+}
