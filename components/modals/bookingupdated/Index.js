@@ -20,6 +20,7 @@ import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
+import axios from 'axios';
 
 const FloatingView = styled.div`
   position: sticky;
@@ -89,6 +90,7 @@ const Booking = (props) => {
   });
 
   const router = useRouter();
+  const cancelTokenRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -105,7 +107,7 @@ const Booking = (props) => {
     is_refundable: false,
     budget: {
       price_lower_range: 1000,
-      price_upper_range: 10000,
+      price_upper_range: 9000,
     },
     star_category: null,
     sort: "price: low to high",
@@ -151,6 +153,14 @@ const Booking = (props) => {
       fetchHotelsFilter();
     }
   }, [filters.applyFilter]);
+
+  useEffect(() => {
+  return () => {
+    if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel('Component unmounted');
+    }
+  };
+}, []);
 
   useEffect(() => {
     if (debouncedSearch.length > 2||hasUserSearched) {
@@ -295,6 +305,14 @@ const Booking = (props) => {
 
   const fetchHotelsFilter = () => {
     if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
+     setFetchingIsError({
+    error: false,
+    errorMsg: "",
+  });
+      if (cancelTokenRef.current) {
+    cancelTokenRef.current.cancel('New request initiated');
+  }
+ cancelTokenRef.current = axios.CancelToken.source();
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -337,6 +355,8 @@ const Booking = (props) => {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
+        cancelToken: cancelTokenRef.current.token,
+
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -439,20 +459,39 @@ const Booking = (props) => {
         setLoading(false);
       })
       .catch((err) => {
+        if (axios.isCancel(err)) {
+        console.log('Request cancelled:', err.message);
+        
+        return;
+      }
         setLoading(false);
         setUpdateLoadingState(false);
         setMoreOptionsJSX([]);
 
+       
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
+       
   };
 
   const fetchHotels = () => {
     try {
       if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
+
+       setFetchingIsError({
+    error: false,
+    errorMsg: "",
+  });
+
+      if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel('New request initiated');
+    }
+    
+    
+    cancelTokenRef.current = axios.CancelToken.source();
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);
@@ -495,6 +534,7 @@ const Booking = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
+          cancelToken: cancelTokenRef.current.token,
         })
         .then((res) => {
           setUpdateLoadingState(false);
@@ -599,8 +639,14 @@ const Booking = (props) => {
           setLoading(false);
         })
         .catch((err) => {
+          if (axios.isCancel(err)) {
+        console.log('Request cancelled:', err.message);
+        
+        return;
+      }
           setLoading(false);
           setUpdateLoadingState(false);
+          
           if (err?.response.status == 400) {
             setPaginationStatus(() => ({
               traceId: null,
@@ -608,6 +654,7 @@ const Booking = (props) => {
               totalPages: 1,
             }));
           }
+
           props.openNotification({
             text: "Sorry, No more hotels available!",
             heading: "Error!",
@@ -617,6 +664,7 @@ const Booking = (props) => {
             error: true,
             errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
+          
         });
     } catch (error) {
       console.log("error in accommodation search:", error);
