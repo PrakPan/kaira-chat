@@ -162,7 +162,7 @@ const HotelBookingContainer = ({
 
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
-              onClick={handleViewHotel}
+              // onClick={handleViewHotel}
               className={`relative flex lg:flex-row w-full flex-col gap-4`}
             >
               <div

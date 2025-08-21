@@ -184,12 +184,12 @@ const Details = (props) => {
         </RouteEditSection>
       )}
 
-      <Drawer
+      {/* <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
         city_id={showDrawerData.city_id}
         dayId={findDayIdByCityId(showDrawerData.city_id)}
-      ></Drawer>
+      ></Drawer> */}
 
       {props.traveleritinerary ? (
         <DesktopBanner

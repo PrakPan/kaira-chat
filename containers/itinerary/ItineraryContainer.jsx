@@ -256,7 +256,7 @@ const ItineraryContainer = (props) => {
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
 
-  const resetRef = () => {
+   const resetRef = () => {
     itinerarySuccessRef.current = false;
     pricingSuccessRef.current = false;
     transfersSuccessRef.current = false;
@@ -1572,3 +1572,5 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(ItineraryContainer);
+
+
