@@ -10,6 +10,7 @@ import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch
 import {  MERCURY_HOST } from "../../../../../services/constants";
 import axios from "axios";
 import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
+import ThemePage from "../../../../../containers/travelplanner/ThemePage";
 const Experience = (props) => {
   console.log("experience props are:",props)
   const router = useRouter();
@@ -68,13 +69,23 @@ const Experience = (props) => {
         ></link>
       </Head>
 
-      <CityPage
-        reccomendedCitiesData={props.reccomendedCitiesData}
-        cityData={props.cityData}
-        id={router.query.city}
-        page_id={props.page_id}
-        type={props?.Type}
-      ></CityPage>
+      {props.pageData ? (
+  <ThemePage
+    themePage
+    experienceData={props.cityData?.page_data}
+    slug={props.cityData?.page_data?.slug}
+    city={props.cityData}
+  />
+) : (
+  <CityPage
+    reccomendedCitiesData={props.reccomendedCitiesData}
+    cityData={props.cityData}
+    id={router.query.city}
+    page_id={props.page_id}
+    type={props?.Type}
+  />
+)}
+
     </Layout>
   );
 };
@@ -125,10 +136,17 @@ export async function getStaticProps(context){
   let data
   let reccomendedCitiesData
   let hotLocationSearch=[]
+   let isThemePage = false;
 
   //mercury api
   await axios.get(`${MERCURY_HOST}/api/v1/geos/city/${Id}/`).then((res)=>{
     data= res.data.data.city
+   
+
+if (data.page_data && Object.keys(data.page_data).length > 0) {
+  isThemePage = true;
+}
+
   }).catch((err)=>{
     console.error(
       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
@@ -143,17 +161,19 @@ export async function getStaticProps(context){
     const reccoData = res.data?.data ?? [];
 
     reccomendedCitiesData = Array.isArray(reccoData)
-      ? reccoData.map((e) => ({
-          id: e?.id ?? null,
-          image: e?.image ?? null,
-          lat: e?.latitude ?? null,
-          long: e?.longitude ?? null,
-          most_popular_for: Array.isArray(e?.most_popular_for) ? e.most_popular_for : [],
-          name: e?.name ?? "",
-          path: e?.path ?? "",
-          budget: e?.budget ?? null,
-        }))
-      : [];
+  ? reccoData
+      .filter(e => e && typeof e === "object")
+      .map(e => ({
+        id: e.id ?? null,
+        image: e.image ?? "",
+        lat: e.latitude ?? 0,
+        long: e.longitude ?? 0,
+        most_popular_for: Array.isArray(e.most_popular_for) ? e.most_popular_for : [],
+        name: e.name ?? "",
+        path: e.path ?? "",
+        budget: e.budget ?? 0,
+      }))
+  : [];
   })
   .catch((err) => {
     console.error(
@@ -195,7 +215,8 @@ export async function getStaticProps(context){
       path,
       hotLocationSearch,
       page_id:Id,
-      Type
+      Type,
+      pageData: isThemePage,
     },
   };
 }

@@ -107,7 +107,7 @@ const TravelPlanner = (props) => {
       </Head>
 
       {props.pageData ? (
-    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} FAQ={faq} state={props?.Data}/>
+    <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug} state={props?.Data}/>
   ) : (
     <StatePage
       experienceData={props.Data}
