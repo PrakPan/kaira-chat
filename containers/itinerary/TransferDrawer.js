@@ -75,6 +75,11 @@ const TransferDrawer = ({
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
+    const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+    router?.query;
+
+    console.log("DDD",drawer);
+
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
       setExpandedIndexes([0]);
@@ -141,7 +146,8 @@ const TransferDrawer = ({
   }, []);
 
   const renderDetailContent = (transferData, index) => {
-    const type = transferData?.booking_type;
+
+    const type = transferData?.transfer_type == "sightseeing" ? "Taxi" : transferData?.booking_type;
     const childTitle = `${index + 1}. ${
       transferData.name || `${transferData.booking_type} Transfer`
     }`;
@@ -604,7 +610,7 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {!isSightseeing && <div>
+              {(data?.transfer_type != "sightseeing" && drawer != "SightSeeing") && <div>
                 <Generalbuttonstyle
                   borderRadius={"7px"}
                   fontSize={"1rem"}

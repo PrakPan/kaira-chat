@@ -582,10 +582,16 @@ const CitySummary = (props) => {
                         show={drawer == "SightSeeing" && item?.id == bookingId}
                         setHandleShow={setHandleShowTaxi}
                         bookingData={taxiData}
-                        booking_type={"taxi"}
+                        booking_type={"Taxi"}
                         booking_id={item?.id}
                         loading={loading}
                         handleDelete={handleDelete}
+                        origin_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+                        destination_itinerary_city_id={
+                          props?.city?.id || props?.city?.gmaps_place_id
+                        }
+                        itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+                        
                         setShowDrawer={setHandleShowTaxi}
                         // city={city}
                         _updateFlightBookingHandler={

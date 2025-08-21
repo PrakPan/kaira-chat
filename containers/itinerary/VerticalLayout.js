@@ -800,6 +800,8 @@ const CityItem = ({
     }
   };
 
+    const handleClose=useHandleClose()
+
   const [data, setData] = useState({});
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -812,7 +814,7 @@ const CityItem = ({
   );
   const [pickupDropShow, setPickupDropShow] = useState(false);
   const [airportBookingId, setAirportBookingId] = useState(null);
-  const handleClose = useHandleClose()
+
 
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
@@ -989,6 +991,8 @@ const handleEdit = async (combo, book) => {
         } else {
           setVisible(true);
         }
+
+        handleClose();
 
         dispatch(
           openNotification({
