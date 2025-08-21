@@ -68,6 +68,7 @@ const DateRow = styled.div`
 };
 
 const Details = (props) => {
+  console.log("profil",props?.itinerary)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
   const dispatch = useDispatch();
@@ -175,7 +176,7 @@ const Details = (props) => {
               <Heading className="flex flex-row gap-2 items-center">
                 Dates ({props.duration})
               </Heading>
-              {isDesktop ? <DateRow>
+              {/* {isDesktop ? <DateRow>
                 <UpdateItineraryDates
                   itinerary={props?.itinerary}
                   token={props.token}
@@ -185,8 +186,8 @@ const Details = (props) => {
                   setShowEditDate={setShowEditDate}
                   showEditDate={showEditDate}
                 />
-              </DateRow> : 
-               convertDFormat(props?.itinerary?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date)}
+              </DateRow> :  */}
+               {convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }
               
             </div>
           )}

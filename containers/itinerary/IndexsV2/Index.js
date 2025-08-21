@@ -671,6 +671,7 @@ const Itinerary = (props) => {
       <Container>
         <Overview
           title={props.itinerary.name}
+          itinerary={props?.itinerary}
           group_type={group_type}
           duration_time={duration_time}
           images={props.itinerary.images}

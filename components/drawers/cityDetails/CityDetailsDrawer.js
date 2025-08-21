@@ -28,7 +28,7 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 
-const CityDetailsDrawer = () => {
+const CityDetailsDrawer = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
   const router = useRouter();
@@ -51,14 +51,14 @@ const CityDetailsDrawer = () => {
   }, []);
 
   useEffect(() => {
-    if (props.show) {
+    if (props?.show) {
       document.documentElement.style.overflow = "hidden";
     }
 
     return () => {
       document.documentElement.style.overflow = "auto";
     };
-  }, [props.show]);
+  }, [props?.show]);
 
   return (
     <Drawer
