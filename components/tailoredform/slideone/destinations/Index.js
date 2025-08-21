@@ -60,6 +60,7 @@ const Destinations = (props) => {
             updatedData={updatedData}
             tailoredFormModal={props.tailoredFormModal}
             selectedCity={props.selectedCities[i]}
+            index={i}
           ></EndDestination>
         </div>
       );
@@ -88,6 +89,10 @@ const Destinations = (props) => {
           setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
           tailoredFormModal={props.tailoredFormModal}
+          selectedCity={props.selectedCities[props.selectedCities.length-1]}
+          index={props?.selectedCities.length-1}
+          setDestinations={setDestinations}
+          destinations={destinations}
         ></SelectedDestination>
       </>
     );
@@ -112,6 +117,7 @@ const Destinations = (props) => {
           };
         return e;
       });
+      console.log("end destination props are: ",selected)
       props.setSelectedCities(selected);
     }
   }, [updatedData.id]);
