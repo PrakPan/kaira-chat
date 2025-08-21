@@ -9,10 +9,10 @@ import styles from "./NavigationMenu.module.scss";
 
 // Navigation items configuration - extracted for maintainability
 const NAVIGATION_ITEMS = [
-  { href: "/v2/home", label: "Home" },
-  { href: "/v2/about", label: "About" },
-  { href: "/v2/services", label: "Services" },
-  { href: "/v2/contact", label: "Contact" },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/services", label: "Services" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const NavigationMenu = () => {
