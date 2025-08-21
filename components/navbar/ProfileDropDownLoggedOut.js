@@ -72,7 +72,7 @@ const ProfileDropDown = (props) => {
       showProfileList={props.showDropDownProfileList}
       showProfileListMobile={props.showDropDownProfileListMobile}
     >
-      <ProfileList onClick={() => props.setShowLoginModal(true)}>
+      <ProfileList onClick={()=>{props.authShowLogin()}}>
         Login
       </ProfileList>
     </ProfileContainer>

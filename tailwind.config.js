@@ -76,6 +76,9 @@ module.exports = {
       dropShadow: {
         "3xl": "0px 0px 50px rgba(0, 0, 0, 0.25)",
       },
+      gap:{
+        "l":"12px"
+      }
     },
   },
   plugins: [],

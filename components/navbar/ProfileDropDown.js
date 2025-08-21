@@ -101,7 +101,7 @@ const ProfileDropDown = (props) => {
       showProfileList={props.showDropDownProfileList}
       showProfileListMobile={props.showDropDownProfileListMobile}
     >
-      <Link onClick={props.authShowLogin}>
+      <Link onClick={()=>{props.authShowLogin}}>
         <ProfileList>Login</ProfileList>
       </Link>
     </ProfileContainer>

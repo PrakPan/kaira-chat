@@ -10,6 +10,7 @@ import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 
 //Open login modal
 export const authShowLogin = () => {
+  console.log("login clicked autha")
   return {
     type: actionTypes.AUTH_SHOWLOGIN,
   };

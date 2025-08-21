@@ -190,6 +190,7 @@ const FloatingView = styled.div`
 `;
 
 const RouteEditSection = (props) => {
+    console.log("slide two props are: ",props)
     const isDesktop = useMediaQuery("(min-width:768px)");
     const dispatch = useDispatch();
     const handleClose = useHandleClose();

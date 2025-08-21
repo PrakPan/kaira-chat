@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { HiChevronLeft, HiChevronRight, HiX } from 'react-icons/hi';
-import { FaRegCalendarAlt } from 'react-icons/fa';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';

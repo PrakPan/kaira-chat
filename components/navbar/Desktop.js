@@ -321,6 +321,7 @@ const Navbar = (props) => {
                   notifications={props.notifications}
                   _handleNotifications={_handleNotifications}
                   notOpenedCount={props.notOpenCount}
+                  authShowLogin={props.authShowLogin}
                 />
               ) : (
                 <ProfileDropDownLoggedOut
@@ -332,6 +333,7 @@ const Navbar = (props) => {
                   setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}
+                  authShowLogin={props.authShowLogin}
                 />
               )}
             </div>

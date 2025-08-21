@@ -8,6 +8,7 @@ import SlideTwo from "./slideTwo/SlideTwo";
 import RoutesMap from "../../containers/itinerary/breif/RoutesMap";
 import Header from "../../components/navbar/Index";
 import SlideFive from "./slideFive/SlideFive";
+import LogInModal from "../userauth/LogInModal";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -147,10 +148,10 @@ const FlickityComp = (props) => {
         <Card>
           <SlideTwo
           setSlideIndex={props?.setSlideIndex}
-            {...dummyProps}
+            routes={props?.route}
           >
             <RoutesMap
-              locations={dummyProps?.routes}
+              locations={props?.route}
             /></SlideTwo>
         </Card>
       ) : null}
@@ -205,7 +206,12 @@ const FlickityComp = (props) => {
           />:null}
 
           {props.slideIndex==4&&
-          <SlideFive/>}
+          <div>
+          <Login 
+            show={props?.slideIndex==4}
+          />
+          </div>
+          }
     </div>
   );
 };

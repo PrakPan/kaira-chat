@@ -91,11 +91,11 @@ const SlideOne = (props) => {
       <Section>
         <Body1M_16>Choose your experience</Body1M_16>
         <div className="mt-[12px]">
-        <Preferences
-          tailoredFormModal={props.tailoredFormModal}
-          selectedPreferences={props.selectedPreferences}
-          setSelectedPreferences={props.setSelectedPreferences}
-        ></Preferences>
+          <Preferences
+            tailoredFormModal={props.tailoredFormModal}
+            selectedPreferences={props.selectedPreferences}
+            setSelectedPreferences={props.setSelectedPreferences}
+          ></Preferences>
         </div>
       </Section>
       <ModalWithBackdrop
@@ -109,10 +109,13 @@ const SlideOne = (props) => {
         animation={false}
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
-        <AirbnbCalendar valueStart={props.valueStart}
-          valueEnd={props.valueEnd} setValueStart={props.setValueStart}
+        <AirbnbCalendar
+          valueStart={props.valueStart}
+          valueEnd={props.valueEnd}
+          setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
-          setShowCalendar={setShowCalendar} />
+          setShowCalendar={setShowCalendar}
+        />
       </ModalWithBackdrop>
     </Container>
   );

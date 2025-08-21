@@ -2,11 +2,12 @@ import React, { useRef, useEffect, useState } from "react";
 import Modal from "../ui/Modal";
 import Login from "../userauth/LogInModal";
 import styled from "styled-components";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { authCloseLogin } from "../../store/actions/auth";
 
 const ImgContainer = styled.div`
   height: 100%;
@@ -29,23 +30,23 @@ const ImgTagsContainer = styled.div`
 const tags = [
   {
     src: "/facebook.svg",
-    url: ""
+    url: "https://www.facebook.com/thetarzanway/"
   },
   {
     src: "/instagram.svg",
-    url: ""
+    url: "https://www.instagram.com/thetarzanway/"
   },
   {
     src: "/x.svg",
-    url: ""
+    url: "https://x.com/TheTarzanWay"
   },
   {
     src: "/linkedin.svg",
-    url: ""
+    url: "https://www.linkedin.com/company/thetarzanway"
   },
   {
     src: "/pintrest.svg",
-    url: ""
+    url: "https://in.pinterest.com/thetarzanway/"
   },
 ]
 
@@ -54,8 +55,7 @@ const Enquiry = (props) => {
   const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
-  const router=useRouter();
-
+const dispatch=useDispatch();
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
@@ -88,7 +88,7 @@ const Enquiry = (props) => {
         closeIcon
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={props.hideloginclose ? null : props.onhide}
+        onHide={()=>dispatch(authCloseLogin())}
         borderRadius="20px"
         width={modalWidth + "%"}
         zIndex={props?.zIndex}
@@ -107,7 +107,7 @@ const Enquiry = (props) => {
           <ImgContainer style={{ display: showImage ? "block" : "none" }}>
             <ImageLoader
               noLazy
-              url={"media/website/login-background.png"}
+              url={"media/themes/auth.png"}
               height="100%"
               width="100%"
               onload={() => setShowImage(true)}
@@ -120,13 +120,15 @@ const Enquiry = (props) => {
               </div>
               <div className="flex gap-4">
                 {tags?.map((item, index) => (
-                  <div
+                  <a
                     key={index}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-8 h-8 flex items-center justify-center rounded-[60px] border border-white/40 bg-[rgba(255,255,255,0.36)] backdrop-blur-[4px] cursor-pointer"
-                    onClick={()=>router.push(item.url)}
                   >
                     <Image src={item?.src} width={20} height={20} alt="social" />
-                  </div>
+                  </a>
                 ))}
               </div>
             </ImgTagsContainer>
@@ -149,7 +151,7 @@ const Enquiry = (props) => {
         centered
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={props.hideloginclose ? null : props.onhide}
+        onHide={()=>dispatch(authCloseLogin())}
         width={modalWidth + "%"}
         borderRadius={"12px"}
         token={props.token}

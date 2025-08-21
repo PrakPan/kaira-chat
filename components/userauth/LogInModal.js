@@ -8,7 +8,6 @@ import Spinner from "../Spinner";
 import styled from "styled-components";
 import Link from "next/link";
 import CountryCodeDropdown from "./CountryDropdown";
-import { FiChevronDown } from "react-icons/fi";
 import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
@@ -19,11 +18,7 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
-import ImageLoader from "../../components/ImageLoader";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
-import { MediumIndigoButton } from "../new-ui/Buttons";
-import { Body2R_14 } from "../new-ui/Body";
-
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -103,9 +98,11 @@ const LogIn = React.memo((props) => {
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
   const [otp, setOtp] = useState("");
   const [userNameError, setUserNameError] = useState(false);
+  const [counter, setCounter] = useState(30);
   let email = null; //JSX for email
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
+  const [userDetailsRequired, setUserDetailsRequired] = useState(false);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -114,6 +111,25 @@ const LogIn = React.memo((props) => {
     document.body.appendChild(script);
     props.getCountryCodes();
   }, []);
+
+  useEffect(() => {
+    if (props.otpSent) {
+      const timer = setInterval(() => {
+        setCounter((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer); // stop at 0
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [props.otpSent])
+
+  const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
+  const seconds = String(counter % 60).padStart(2, "0");
 
   useEffect(() => {
     if (
@@ -185,6 +201,11 @@ const LogIn = React.memo((props) => {
   //Submit OTP
   const submitOtpHandler = () => {
     setUserNameError(false);
+
+    if (userDetailsRequired == false && props.newUser) {
+      setUserDetailsRequired(true);
+      return;
+    }
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
@@ -399,76 +420,208 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className="font-inter">
-      {!props.noheading ? (
-        <h1
-          style={{
-            fontSize: "32px",
-            textAlign: "left",
-            margin: isPageWide
-              ? "1.2rem 0rem 1.2rem 0.5rem"
-              : "0rem 0rem 1rem 0.5rem",
-            fontWeight: "700",
-          }}
-        >
-          {props.loginmessage ? props.loginmessage : "Welcome to The Tarzan Way!"}
-        </h1>
-      ) : null}
-
-      {(props.token && !props.phone) ||
-        (props.token && props.phone === "null") ? (
-        <p
-          style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
-          className="text-[32px] text-center"
-        >
-          This is where your experience captain can reach you to personalize
-          your plan.
-        </p>
-      ) : null}
-
-      {(props.token && !props.phone) ||
-        (props.token && props.phone == "null") ? (
-        <form noValidate>
-          <Body2R_14>Phone Number</Body2R_14>
-          <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
+    <div className=" pb-[32px] px-[40px] h-[560px]">
+      <div className="flex flex-col gap-[24px]">
+        {!props?.otpSent ? <div>
+          {!props.noheading && (
             <div
-              className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
-              onClick={() => setOpenCountryCodeOption(true)}
+              style={{
+                fontSize: "32px",
+                textAlign: "left",
+                margin: isPageWide
+                  ? "1.2rem 0rem 1.2rem 0.5rem"
+                  : "0rem 0rem 1rem 0.5rem",
+                fontWeight: "700",
+              }}
             >
-              <CountryImg
-                height="30"
-                width="30"
-                objectFit="cover"
-                src={
-                  props.CountryCodes ? props.CountryCodes[extension].img : ""
-                }
-              ></CountryImg>
-              {/* <FiChevronDown /> */}
+              <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
+              <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
             </div>
-            {openCountryCodeOption && (
-              <CountryCodeDropdown
-                onClose={() => setOpenCountryCodeOption(false)}
-                CountryCodes={props.CountryCodes}
-                handleExtensionChangeOption={handleExtensionChangeOption}
-                setOpenCountryCodeOption={setOpenCountryCodeOption}
-              />
+          )}
+
+          {(props.token && !props.phone) ||
+            (props.token && props.phone === "null") ? (
+            <p
+              style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
+              className="text-[32px] text-center"
+            >
+              This is where your experience captain can reach you to personalize
+              your plan.
+            </p>
+          ) : null}
+
+          {(props.token && !props.phone) ||
+            (props.token && props.phone == "null") ? (
+            <form noValidate>
+              <div className="Body2R_14">Phone Number</div>
+              <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
+                <div
+                  className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
+                  onClick={() => setOpenCountryCodeOption(true)}
+                >
+                  <CountryImg
+                    height="30"
+                    width="30"
+                    objectFit="cover"
+                    src={
+                      props.CountryCodes ? props.CountryCodes[extension].img : ""
+                    }
+                  ></CountryImg>
+                  {/* <FiChevronDown /> */}
+                </div>
+                {openCountryCodeOption && (
+                  <CountryCodeDropdown
+                    onClose={() => setOpenCountryCodeOption(false)}
+                    CountryCodes={props.CountryCodes}
+                    handleExtensionChangeOption={handleExtensionChangeOption}
+                    setOpenCountryCodeOption={setOpenCountryCodeOption}
+                  />
+                )}
+                {mobileInput}
+              </MobileNumberContainer>
+
+              <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+                {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
+                OTP on WhatsApp
+                <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
+              </WhatsappCheckBox>
+
+              <Button
+                onclick={_updatePhoneHandler}
+                error={props.mobileFail ? true : false}
+                loading={props.loading}
+                margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
+                width="100%"
+                bgColor="#F7E700"
+                fontWeight="500"
+                fontSize="16px"
+                borderWidth="1px"
+                hoverColor="white"
+                hoverBgColor="black"
+                boxShadow="0px 2px 0px #ECEAEA"
+                borderRadius="8px"
+              >
+                Complete Signup
+              </Button>
+            </form>
+          ) : (
+              <form noValidate>
+                <div className="Body2R_14 mb-[2px]">Phone Number</div>
+                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
+                  <div
+                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
+                    onClick={() => setOpenCountryCodeOption(true)}
+                  >
+                    <div className="flex gap-3">
+                      <CountryImg
+                        height="30"
+                        width="30"
+                        objectFit="cover"
+                        src={
+                          props.CountryCodes ? props.CountryCodes[extension].img : ""
+                        }
+                      ></CountryImg>
+                      <div className="Body2R_14">{props?.CountryCodes[extension].label || +91}</div>
+                    </div>
+                  </div>
+
+                  {openCountryCodeOption && (
+                    <CountryCodeDropdown
+                      onClose={() => setOpenCountryCodeOption(false)}
+                      CountryCodes={props.CountryCodes}
+                      handleExtensionChangeOption={handleExtensionChangeOption}
+                      setOpenCountryCodeOption={setOpenCountryCodeOption}
+                    />
+                  )}
+                  <div className="Body2R_14">{mobileInput}</div>
+                </MobileNumberContainer>
+
+                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+                  {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
+                  <div className="Body2R_14">Receive OTP on Whatsapp</div>
+                </WhatsappCheckBox>
+
+
+                <ReCAPTCHA
+                  size="invisible"
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  ref={recaptchaRef}
+                  onChange={onRecaptchaChange}
+                  className="hidden"
+                />
+              </form>
             )}
-            {mobileInput}
-          </MobileNumberContainer>
+        </div> :userDetailsRequired ?
+            <div className="flex flex-col gap-[24px]">
+              <div
+                style={{
+                  fontSize: "32px",
+                  textAlign: "left",
+                  fontWeight: "700",
+                }}
+              >
+                Just a Few Details to Get Started.
+              </div>
+              <div>
+                {props.newUser || (props.otpSent && !props.name) ? (
+                  <div className="flex flex-col gap-[6px]">
+                    <div className="Body2M_14">Name</div>
+                  <FloatingInput
+                    error={userNameError}
+                    helperText={"Please enter valid username"}
+                    placeholder={"Enter Your name"}
+                    key="userName"
+                    required
+                    id="userName"
+                    label="Enter Your Full Name"
+                    onChange={(event) => {
+                      _userDetailsOnChangeHandler(event, "userName");
+                    }}
+                  />
+                  </div>
+                ) : null}
 
-          <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            OTP on WhatsApp
-            <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
-          </WhatsappCheckBox>
+                {props.newUser || (props.otpSent && !props.email) ? 
+                  <div className="flex flex-col gap-[6px]">
+                  <div className="Body2M_14">Email</div>
+                {email}
+                </div> : null}
+              </div>
+            </div> :
+          <div>
+            {!props.noheading && (
+              <div
+                style={{
+                  fontSize: "32px",
+                  textAlign: "left",
+                  fontWeight: "700",
+                }}
+              >
+                OTP Verification
+              </div>
+            )}
 
+            <div className="flex flex-col gap-[24px]">
+
+              <div
+                className="Body1R_16 text-[#6E757A]"
+              >
+                We’ve sent a 4-digit OTP to your registered phone number.
+              </div>
+
+              {props.otpSent ? password : null}
+              <div className="Body1R_16"> You will get OTP in {minutes}:{seconds}</div>
+            </div>
+
+
+          </div>}
+
+        {!props.otpSent ? (
           <Button
-            onclick={_updatePhoneHandler}
-            error={props.mobileFail ? true : false}
-            loading={props.loading}
-            margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
+            onclick={verifyRecaptchaHandler}
+            margin={props.nospacing ? "0" : "40px 0"}
             width="100%"
-            bgColor="#F7E700"
+            bgColor="#07213A"
             fontWeight="500"
             fontSize="16px"
             borderWidth="1px"
@@ -476,126 +629,22 @@ const LogIn = React.memo((props) => {
             hoverBgColor="black"
             boxShadow="0px 2px 0px #ECEAEA"
             borderRadius="8px"
+            height="50px"
+            color="white"
+            loading={props.loading}
           >
-            Complete Signup
+            Continue
           </Button>
-        </form>
-      ) : (
-        <form noValidate>
-          <Body2R_14 className="mb-[2px]">Phone Number</Body2R_14>
-          <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
-            <div
-              className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
-              onClick={() => setOpenCountryCodeOption(true)}
-            >
-              <div className="flex gap-3">
-                <CountryImg
-                  height="30"
-                  width="30"
-                  objectFit="cover"
-                  src={
-                    props.CountryCodes ? props.CountryCodes[extension].img : ""
-                  }
-                ></CountryImg>
-                <Body2R_14>{props?.CountryCodes[extension].label || +91}</Body2R_14>
-              </div>
-            </div>
-
-            {openCountryCodeOption && (
-              <CountryCodeDropdown
-                onClose={() => setOpenCountryCodeOption(false)}
-                CountryCodes={props.CountryCodes}
-                handleExtensionChangeOption={handleExtensionChangeOption}
-                setOpenCountryCodeOption={setOpenCountryCodeOption}
-              />
-            )}
-            <Body2R_14>{mobileInput}</Body2R_14>
-          </MobileNumberContainer>
-
-          <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
-            <Body2R_14>Receive OTP on Whatsapp</Body2R_14>
-          </WhatsappCheckBox>
-
-          {props.newUser || (props.otpSent && !props.name) ? (
-            <FloatingInput
-              style={{ marginBottom: "0.7rem" }}
-              error={userNameError}
-              helperText={"Please enter valid username"}
-              placeholder={"Enter Your Full Name"}
-              key="userName"
-              required
-              id="userName"
-              label="Enter Your Full Name"
-              onChange={(event) => {
-                _userDetailsOnChangeHandler(event, "userName");
-              }}
-              margin="0.7rem 0rem"
-            />
-          ) : null}
-
-          {props.newUser || (props.otpSent && !props.email) ? email : null}
-
-          {props.otpSent && (
-            <div
-              style={{
-                height: "1.2rem",
-                marginLeft: "2px",
-                fontSize: "0.7rem",
-                marginTop: "10px",
-              }}
-            >
-              <p style={{ letterSpacing: "2px" }}>
-                {props.otpSent && !otpResent ? "OTP HAS BEEN SENT" : null}
-                {props.otpSent && otpResent ? "OTP HAS BEEN RESENT" : null}
-              </p>
-              <br></br>
-            </div>
-          )}
-
-          {props.otpSent ? password : null}
-
-          {props.otpSent ? (
-            <UpdatePhone
-              style={{
-                textAlign: "left",
-                width: "100%",
-                fontSize: "14px",
-                marginBlock: "0.5rem",
-              }}
-            >
-              <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              <ResendOtp onClick={verifyRecaptchaHandler}>
-                <u>Resend OTP</u>
-              </ResendOtp>
-            </UpdatePhone>
-          ) : null}
-
-          {!props.otpSent ? (
-            <MediumIndigoButton className="!text-white mt-[40px] !w-full" onClick={verifyRecaptchaHandler}>
-              {/* <Button
-              onclick={verifyRecaptchaHandler}
-              margin={props.nospacing ? "0" : "0.5rem 0"}
-              width="100%"
-              bgColor="#F7E700"
-              fontWeight="500"
-              fontSize="16px"
-              borderWidth="1px"
-              hoverColor="white"
-              hoverBgColor="black"
-              boxShadow="0px 2px 0px #ECEAEA"
-              borderRadius="8px"
-              loading={props.loading}
-            > */}
-              Continue
-              {/* </Button> */}
-            </MediumIndigoButton>
-          ) : (
+        ) : (
+          <div className={`flex flex-col gap-[16px] ${userDetailsRequired?"mt-[68px]":"mt-[80px]"}`}>
+            {counter == 0 && !userDetailsRequired && <div className="flex gap-[16px] justify-center">
+              <div className="Body1R_16">Didn’t received?</div>
+              <div className="Body1R_16 text-[#3A85FC] cursor-pointer" onClick={verifyRecaptchaHandler}>Resend OTP</div>
+            </div>}
             <Button
               onclick={submitOtpHandler}
-              margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
-              bgColor="#F7E700"
+              bgColor="#07213A"
               fontWeight="500"
               fontSize="16px"
               borderWidth="1px"
@@ -603,40 +652,34 @@ const LogIn = React.memo((props) => {
               hoverBgColor="black"
               boxShadow="0px 2px 0px #ECEAEA"
               borderRadius="8px"
+              height="50px"
+              color="white"
               loading={props.loading}
             >
-              Login
+              Continue
             </Button>
-          )}
+          </div>
+        )}
 
-          <Body2R_14 className="text-[#6E757A] mt-[60px]">
-            By continuing, you agree to our{" "}
-            <Link
-              href="/privacy-policy"
-              style={{ textDecoration: "none" }}
-              target="_blank"
-            >
-              Terms of Service
-            </Link>
-            {" "} and acknowlege you've read our{" "}
-            <Link
-              href="/privacy-policy"
-              style={{ textDecoration: "none" }}
-              target="_blank"
-            >
-              Privacy Policy.
-            </Link>
-          </Body2R_14>
-
-          <ReCAPTCHA
-            size="invisible"
-            sitekey={RECAPTCHA_SITE_KEY}
-            ref={recaptchaRef}
-            onChange={onRecaptchaChange}
-            className="hidden"
-          />
-        </form>
-      )}
+        <div className="Body2R_14 text-[#6E757A]">
+          By continuing, you agree to our{" "}
+          <Link
+            href="/privacy-policy"
+            style={{ textDecoration: "none" }}
+            target="_blank"
+          >
+            Terms of Service
+          </Link>
+          {" "} and acknowlege you've read our{" "}
+          <Link
+            href="/privacy-policy"
+            style={{ textDecoration: "none" }}
+            target="_blank"
+          >
+            Privacy Policy.
+          </Link>
+        </div>
+      </div>
 
       {props.loadingsocial ? (
         <div
