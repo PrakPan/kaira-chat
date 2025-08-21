@@ -142,7 +142,8 @@ const TransferDrawer = ({
   }, []);
 
   const renderDetailContent = (transferData, index) => {
-    const type = transferData?.booking_type;
+
+    const type = transferData?.transfer_type == "sightseeing" ? "Taxi" : transferData?.booking_type;
     const childTitle = `${index + 1}. ${
       transferData.name || `${transferData.booking_type} Transfer`
     }`;
@@ -611,7 +612,7 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {!isSightseeing && <div>
+              {(data?.transfer_type != "sightseeing" && drawer != "SightSeeing") && <div>
                 <Generalbuttonstyle
                   borderRadius={"7px"}
                   fontSize={"1rem"}
