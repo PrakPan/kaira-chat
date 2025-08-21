@@ -9,7 +9,7 @@ const StaysContainer = (props) => {
   // console.log("CITTT",props?.cities)
   const { hotels_status } = useSelector((state) => state.ItineraryStatus);
   return (
-    <div id="stays" className="mt-16">
+    <div id="stays" className="mt-5">
       <div
         id="staysBooking"
         className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit"

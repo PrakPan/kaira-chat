@@ -80,6 +80,7 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
+  const [countCartItems, setCountCartItems] = useState(0);
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
@@ -87,8 +88,7 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-
-  console.log("Itiii", stays, props?.activityBookings, props?.itinerary);
+  const [activeTab, setActiveTab] = useState("Itinerary");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -97,6 +97,12 @@ const SimpleTabsV2 = (props) => {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => { 
+   const totalCount = Object.values(props.payment.summary).reduce((sum, item) => sum + item.count, 0);
+   setCountCartItems(totalCount);
+
+  },[props.payment])
 
   const scrollToElement = (elementId) => {
     scroller?.scrollTo(elementId, {
@@ -139,6 +145,7 @@ const SimpleTabsV2 = (props) => {
       RoutesData,
       TransfersData
     );
+    console.log(totalcityslabs,"total city slabs");
   }, [props.breif, props.routes, props.cities]);
 
   const _GetInTouch = () => {
@@ -191,17 +198,9 @@ const SimpleTabsV2 = (props) => {
   };
 
   const items = [
-    // { id: 1, label: "Brief", link: "Brief" },
     { id: 1, label: "Itinerary", link: "Itenary" },
     { id: 2, label: "Bookings", link: "Booking" },
-
-    // { id: 3, label: "Stays", link: "Stays" },
-    // { id: 4, label: "Transfers", link: "Transfers" },
   ];
-
-  // if (props.transferBookings || props?.routes?.length) {
-  //   items.push({ id: 4, label: "Transfers", link: "Transfers" });
-  // }
 
   const hasActivities =
     Array.isArray(props?.itinerary?.cities) &&
@@ -209,13 +208,6 @@ const SimpleTabsV2 = (props) => {
       (city) => Array.isArray(city?.activities) && city.activities.length > 0
     );
 
-  // if (hasActivities) {
-  //   items.push({
-  //     id: 5,
-  //     label: "Activities",
-  //     link: "Activities",
-  //   });
-  // }
 
   const _handlePoiEditModalOpen = (poi) => {
     {
@@ -256,11 +248,7 @@ const SimpleTabsV2 = (props) => {
         action: "Itinerary-tabs-" + tabName.toLowerCase(),
       });
     }
-
-    // Enhanced tracking using passed function
-    if (props.handleTabClick) {
-      props.handleTabClick(tabName);
-    }
+    setActiveTab(tabName);
   };
 
   const handleLoginButton = () => {
@@ -877,9 +865,10 @@ const SimpleTabsV2 = (props) => {
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
             />
-            <div id={"Itenary"}>
-              {props.mercuryItinerary
-                ? props?.itineraryDaybyDay && (
+            {activeTab === "Itinerary" && (
+              <div id={"Itenary"}>
+                {props.mercuryItinerary
+                  ? props?.itineraryDaybyDay && (
                     <DaybyDay
                       mercuryItinerary={props?.mercuryItinerary}
                       activityBookings={props?.activityBookings}
@@ -913,7 +902,7 @@ const SimpleTabsV2 = (props) => {
                       _GetInTouch={_GetInTouch}
                     />
                   )
-                : props?.itinerary && (
+                  : props?.itinerary && (
                     <NewItenaryMain
                       setShowLoginModal={setShowLoginModal}
                       plan={props.plan}
@@ -935,9 +924,10 @@ const SimpleTabsV2 = (props) => {
                       _GetInTouch={_GetInTouch}
                     ></NewItenaryMain>
                   )}
-            </div>
+              </div>
+            )}
 
-            <div id={"Booking"}>
+         {activeTab === "Bookings" && ( <div id={"Booking"}>
               {isGroup ? (
                 <div id={"Stays"}>
                   <Register></Register>
@@ -1123,6 +1113,7 @@ const SimpleTabsV2 = (props) => {
                 )
               )}
             </div>
+         )}
           </div>
           {!props?.mercuryItinerary ? (
             <div
@@ -1252,19 +1243,11 @@ const SimpleTabsV2 = (props) => {
         ) : null}
       </Modal>
 
-      <div
-        className={
-          isPageWide
-            ? "z-10  fixed bottom-0 shadow-lg bg-white px-4 py-2 desktop-view-cart-fixed"
-            : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2"
-        }
-      >
-        {props?.displayText ? (
-          <ItineraryStatusLoader
-            displayText={props?.displayText}
-            isVisible={props?.shouldShowLoader()}
-          />
-        ) : (
+      <div className={isPageWide ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed" : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-[16px] py-[12px]"}>
+        {props?.displayText ? <ItineraryStatusLoader
+          displayText={props?.displayText}
+          isVisible={props?.shouldShowLoader()}
+        /> :
           <div className="flex flex-row justify-between items-center">
             <div className="flex flex-col">
               <div className="flex justify-between">
@@ -1310,7 +1293,7 @@ const SimpleTabsV2 = (props) => {
                 ) : null}
               </div>
               {props?.payment && (
-                <div className="text-sm">
+                <div className="text-[12px]">
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
                     ? "Per Person"
@@ -1321,7 +1304,7 @@ const SimpleTabsV2 = (props) => {
               )}
               {props.payment ? (
                 <div>
-                  <span className="font-bold">
+                  <span className="font-bold font-[18px]">
                     ₹{" "}
                     {!props?.mercuryItinerary
                       ? props?.payment?.pay_only_for_one ||
@@ -1393,12 +1376,10 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart{" "}
-                        <span className="ttw-btn-count-white"> 2 </span>
+                        View Cart  <span className="ttw-btn-count-white"> {countCartItems} </span>
                       </button>
                     </div>
                   ) : !props.payment.paid_user ? (
-                    // props.payment.is_registration_needed ? (
                     <div className="">
                       <button
                         className="ttw-btn-secondary-fill"
@@ -1406,8 +1387,7 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart{" "}
-                        <span className="ttw-btn-count-white"> 2 </span>
+                        View Cart <span className="ttw-btn-count-white"> {countCartItems} </span>
                       </button>
                     </div>
                   ) : (

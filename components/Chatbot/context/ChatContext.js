@@ -34,7 +34,7 @@ export const ChatProvider = ({ bookingId, children }) => {
                 setIsConnected(true);
                 setDisableQuerySection(true);
 
-                const initialPrompt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} Explain my detailed plan.`;
+                const initialPrompt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} summarize my trip.`;
                 if (socketRef.current?.readyState === WebSocket.OPEN) {
                     socketRef.current.send(JSON.stringify({ message: initialPrompt, token }));
                 }
