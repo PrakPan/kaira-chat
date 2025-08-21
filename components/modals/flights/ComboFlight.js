@@ -408,7 +408,7 @@ const handleViewMore = async () => {
   setMoreLoadingState(true);
   
   // Cancel any existing request
-  if (cancelTokenSourceRef.current) {
+  if (cancelTokenSourceRef.current) {       
     cancelTokenSourceRef.current.cancel("Operation cancelled due to new request");
   }
   cancelTokenSourceRef.current = axios.CancelToken.source();

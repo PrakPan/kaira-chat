@@ -76,6 +76,7 @@ const HotelBooking = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  
 
   const {
     drawer = null,
