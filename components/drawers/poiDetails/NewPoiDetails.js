@@ -503,9 +503,9 @@ export default function PoiDetails(props) {
                 </div>
               </div>
             )}
-            {props.data?.experience_filters && (
+            {props.data?.tags && (
               <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                {props.data.experience_filters?.map((e, i) => (
+                {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
                     className={`border-2 rounded-full px-2 py-1`}

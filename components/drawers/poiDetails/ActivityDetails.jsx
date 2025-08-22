@@ -246,9 +246,9 @@ const ActivityDetails = (props) => {
     }
   }
 
-  var experience_filters = (
+  var tags = (
     <div className="flex flex-wrap gap-2">
-      {props.data.experience_filters?.map((e, i) => (
+      {props.data?.tags?.map((e, i) => (
         <div
           key={i}
           className={`border-2 rounded-full px-2 py-1`}
@@ -262,7 +262,7 @@ const ActivityDetails = (props) => {
 
   var tips = (
     <ul style={{ paddingLeft: "0.5rem" }}>
-      {props.data.tips_tricks?.map((e, i) => (
+      {props.data.tips?.map((e, i) => (
         <li key={i}>- {e}</li>
       ))}
     </ul>
@@ -385,9 +385,9 @@ const ActivityDetails = (props) => {
             )}
           </>
           <div className="">
-            <Title>{props.data.name}</Title>
-            {props.data?.experience_filters && (
-              <Text>{experience_filters}</Text>
+            <Title>{props?.data?.display_name || props.data.name}</Title>
+            {props.data?.tags && (
+              <Text>{tags}</Text>
             )}
             {aboutText != null && aboutText != undefined && (
               <div>

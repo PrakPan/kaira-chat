@@ -212,9 +212,9 @@ export default function NewPoiBooking(props) {
                 )}
               </div>
 
-              {props.data?.experience_filters && (
+              {props.data?.tags && (
                 <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                  {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
+                  {props.data.tags?.slice(0, 2)?.map((e, i) => (
                     <span
                       key={i}
                       className={`border-2 rounded-full px-2 py-1`}
@@ -223,9 +223,9 @@ export default function NewPoiBooking(props) {
                       {e}
                     </span>
                   ))}
-                  {props?.data?.experience_filters?.length > 2 && (
+                  {props?.data?.tags?.length > 2 && (
                     <span className={`border-2 rounded-full px-2 py-1`}>
-                      +{props?.data?.experience_filters?.length - 2} more
+                      +{props?.data?.tags?.length - 2} more
                     </span>
                   )}
                 </div>

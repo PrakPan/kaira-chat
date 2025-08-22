@@ -158,17 +158,20 @@ const Homepage = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? "media/website/banners/ocean.jpg"
-            : "media/website/banners/ocean.jpg"
+           ? "media/website/HomeBanner.png"
+           : "media/website/HomeBanner.png"
+            // ? "media/website/banners/ocean.jpg"
+            // : "media/website/banners/ocean.jpg"
         }
         destinationType={"city-planner"}
         title={
           <p style={!isPageWide ? { fontSize: "22px" } : {}}>
-            Effortless Travel Planning!
+            Every Journey, One of a Kind – 
             <br />
-            Let AI Be Your Expert Guide.
+            Crafted with AI + Expert Care.
           </p>
         }
+        subheading={"No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates."}
         _startPlanningFunction={() => openTailoredModal(router)}
         resizeMode={"fill"}
         page={"Home Page"}
