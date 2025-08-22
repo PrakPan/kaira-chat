@@ -10,7 +10,7 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
 import { ITINERARY_STATUSES } from "../../../services/constants";
-import axiossalecreateinstance from "../../../services/sales/itinerary/SaleCreate";
+import axiossalecreateinstance, { myplansv2 } from "../../../services/sales/itinerary/SaleCreate";
 import axios from "axios";
 import Accordion from "./Accordion";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
@@ -49,6 +49,191 @@ const GetInTouchContainer = styled.div`
     filter: invert(100%);
   }
 `;
+
+
+const LivePriceTimer = ({ validFor = "47h 23m" }) => {
+  return (
+    <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium mb-3 inline-block">
+      Live prices valid for {validFor} ⏰
+    </div>
+  );
+};
+
+// 2. Payment Options Component (Add before the buttons)
+const PaymentOptions = ({ 
+  totalAmount = 37755, 
+  firstTimeDiscount = 500,
+  lockInAmount = 2000,
+  onPayFullAmount,
+  onLockInPrice 
+}) => {
+  const [selectedOption, setSelectedOption] = useState('full');
+
+  return (
+    <div className="mb-4">
+      <h3 className="font-medium text-base mb-3">Payment Options</h3>
+      
+      {/* Recommended - Pay Full Amount */}
+      <div 
+        className={`border-2 ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 mb-3 cursor-pointer relative`}
+        onClick={() => setSelectedOption('full')}
+      >
+        {selectedOption === 'full' && (
+          <div className="absolute top-3 right-3">
+            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+          </div>
+        )}
+        
+        <div className="bg-black text-white px-2 py-1 rounded text-xs font-medium mb-2 inline-block">
+          Recommended
+        </div>
+        
+        <div className="font-medium text-base mb-1">
+          Pay full amount now and save ₹{firstTimeDiscount}
+        </div>
+        <div className="text-sm text-gray-600 mb-2">
+          Get instant booking confirmation
+        </div>
+        <div className="text-xl font-semibold">
+          ₹{totalAmount.toLocaleString('en-IN')}
+        </div>
+      </div>
+
+      {/* Lock-in Price Option */}
+      <div 
+        className={`border-2 ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer relative`}
+        onClick={() => setSelectedOption('lockin')}
+      >
+        {selectedOption === 'lockin' && (
+          <div className="absolute top-3 right-3">
+            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+          </div>
+        )}
+        
+        <div className="font-medium text-base mb-1">
+          Lock-in today's price with ₹{lockInAmount.toLocaleString('en-IN')}
+        </div>
+        <div className="text-sm text-gray-600 mb-2">
+          Secure your itinerary and today's live price (amount adjusts in final booking).
+        </div>
+        <div className="text-xl font-semibold">
+          ₹{lockInAmount.toLocaleString('en-IN')}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 3. Coupon Section Component (Add after payment options)
+const CouponSection = ({ 
+  appliedCoupon = "FIRSTTIMEUSER",
+  savedAmount = 500,
+  onRemoveCoupon,
+  onViewCoupons 
+}) => {
+  return (
+    <div className="mb-4">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="font-medium text-base">Coupons</h3>
+        <button 
+          className="text-blue-500 text-sm font-medium"
+          onClick={onViewCoupons}
+        >
+          View Coupons
+        </button>
+      </div>
+      
+      {appliedCoupon && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex justify-between items-center">
+          <div>
+            <div className="font-medium text-green-700">{appliedCoupon}</div>
+            <div className="text-sm text-green-600">saved ₹{savedAmount}</div>
+          </div>
+          <button 
+            className="text-red-500 text-sm font-medium"
+            onClick={onRemoveCoupon}
+          >
+            Remove
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 4. Price Details Component (Add after coupon section)
+const PriceDetails = ({ 
+  itineraryCost = 38255,
+  lockInCost = 0,
+  couponDiscount = -500,
+  totalPayable = 37755 
+}) => {
+  return (
+    <div className="mb-4">
+      <h3 className="font-medium text-base mb-3">Price Details</h3>
+      
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <span>Itinerary Cost</span>
+          <span>₹{itineraryCost.toLocaleString('en-IN')}</span>
+        </div>
+        
+        <div className="flex justify-between">
+          <span>Lock-in Cost</span>
+          <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
+        </div>
+        
+        <div className="flex justify-between text-green-600">
+          <span>Coupon Discount</span>
+          <span>-₹500
+            {/* {couponDiscount} */}
+            </span>
+        </div>
+        
+        <div className="border-t pt-2 mt-2">
+          <div className="flex justify-between font-semibold text-lg">
+            <span>Total Payable</span>
+            <span>₹{totalPayable.toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 5. Main Payment Button Component (Replace existing pay button)
+const PaymentButton = ({ 
+  amount = 37755, 
+  isLoading = false, 
+  onClick 
+}) => {
+  return (
+     <Button
+                color="#111"
+                fontWeight="500"
+                fontSize="1rem"
+                borderWidth="2px"
+                width="100%"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                padding="12px"
+                onclick={onClick}
+              >
+      {isLoading ? (
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+          Processing...
+        </div>
+      ) : (
+        `Pay ₹${amount.toLocaleString('en-IN')} Now`
+      )}
+    </Button>
+  );
+};
 
 const Details = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -359,13 +544,13 @@ const Details = (props) => {
     // Razorpay payload
 
     let razorpayOptions = {
-      amount: data.amount,
+      amount: data.amount || data?.discounted_cost,
       // "currency": "INR",
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data.order_id,
+      order_id: data.order_id || data?.id,
       // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
@@ -559,6 +744,7 @@ const Details = (props) => {
             props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
           }  -mt-[1rem] -mx-[1rem] mb-0`}
         >
+          <LivePriceTimer />
           <div className=" mx-[1rem] mt-[1rem]">
             <div className="flex flex-row justify-between">
               {props.iscouponApplied &&
@@ -805,6 +991,27 @@ const Details = (props) => {
         </div>
       )}
 
+      <PaymentOptions 
+  totalAmount={props.payment?.discounted_cost}
+  onPayFullAmount={() => handlePayNow('_saleCreateHandler')}
+  onLockInPrice={() => handlePayNow('lockin')}
+/>
+
+
+<CouponSection 
+  appliedCoupon={props?.payment?.coupon?.code}
+  savedAmount={props?.payment?.coupon_usage?.discount}
+  onViewCoupons={() => {/* Your view coupons logic */}}
+  onRemoveCoupon={() => {/* Your remove coupon logic */}}
+/>
+
+
+<PriceDetails 
+  itineraryCost={props.payment?.total_cost}
+  couponDiscount={-props?.payment?.coupon_usage?.discount}
+  totalPayable={props.payment?.discounted_cost}
+/>
+
       <div className="px-0 pb-4">
         {props.couponJSX}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
@@ -893,7 +1100,15 @@ const Details = (props) => {
         </Button>
       ) : (
         <>
-          {props?.token && (
+          {props?.token ?
+          <PaymentButton 
+  amount={props.payment?.discounted_cost}
+  isLoading={paymentLoading}
+  onClick={() =>
+  handlePayNow()
+  // _startRazorpayHandler(props.payment)
+}
+/>:  (
             <GetInTouchContainer>
               <Button
                 color="#111"
@@ -1124,3 +1339,4 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Details);
+
