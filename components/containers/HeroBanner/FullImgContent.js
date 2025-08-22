@@ -191,12 +191,12 @@ const FullImgContent = (props) => {
             height="2.5rem"
             width="2.5rem"
             widthmobile="2.5rem"
-            url="media/icons/general/booking.png"
+            url="media/icons/general/favorite.png"
             noLazy
           />
           <IconText>
-            Affordable & <br />
-            Flexible Bookings
+            Curated <br />
+            Experiences
           </IconText>
         </div>
 
@@ -209,7 +209,7 @@ const FullImgContent = (props) => {
             noLazy
           />
           <IconText>
-            Zero Hidden <br /> Charges
+            Transparent <br /> Pricing
           </IconText>
         </div>
       </IconsContainer>
