@@ -471,7 +471,7 @@ export default function PoiDetails(props) {
             )}
           </>
           <div className="flex flex-col gap-3">
-            <div className="text-[20px] font-[800]">{props.data.name}</div>
+            <div className="text-[20px] font-[800]">{props?.data?.display_name || props.data.name}</div>
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
