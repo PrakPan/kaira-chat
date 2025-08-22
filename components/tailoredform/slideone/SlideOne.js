@@ -11,6 +11,7 @@ import { DummyContainer, StyledFigmaBox } from "../utils/ui";
 import Modal from "../../ui/Modal";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import { Body1M_16, Body2M_14, Body2R_14 } from "../../new-ui/Body";
+import moment from "moment";
 
 const Container = styled.div`
   color: black;
@@ -32,9 +33,13 @@ const formatShortDate = (date) => {
   return `${day} ${month}`;
 };
 
+
 const SlideOne = (props) => {
   const [showCalendar, setShowCalendar] = useState(false);
-
+  const handleOnCalenderApplyDates = (values) => {
+    props.setValueStart(values.start)
+    props.setValueEnd(values.end)
+  }
   const CITIES = null;
 
   return (
@@ -114,6 +119,7 @@ const SlideOne = (props) => {
           valueEnd={props.valueEnd}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
+          onChangeDate={handleOnCalenderApplyDates}
           setShowCalendar={setShowCalendar}
         />
       </ModalWithBackdrop>

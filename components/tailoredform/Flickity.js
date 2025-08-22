@@ -180,6 +180,8 @@ const FlickityComp = (props) => {
             setAddHotels={props.setAddHotels}
             addFlights={props.addFlights}
             setAddFlights={props.setAddFlights}
+            setAddInclusions={props.setAddInclusions}
+            addInclusions={props.addInclusions}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
           ></SlideThree>
@@ -203,12 +205,15 @@ const FlickityComp = (props) => {
             setPriceRange={props.setPriceRange}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
+            slideFour={props.slideFour}
+            setSlideFour={props.setSlideFour}
           />:null}
 
           {props.slideIndex==4&&
           <div>
           <Login 
             show={props?.slideIndex==4}
+            _submitDataHandler={props?._submitDataHandler}
           />
           </div>
           }

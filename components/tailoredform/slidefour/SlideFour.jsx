@@ -32,64 +32,56 @@ export default function SlideThree(props) {
   const [selectedPreferences, setSelectedPreferences] = useState([]);
 
   const _isPreferenceAdded = (pref) => {
-    return selectedPreferences.includes(pref);
+    return props?.slideFour?.mealPreferences.includes(pref);
   };
 
   const _handleClick = (pref) => {
-    setSelectedPreferences((prev) =>
-      prev.includes(pref)
-        ? prev.filter((p) => p !== pref) // remove if already selected
-        : [...prev, pref] // add if not selected
-    );
+    props.setSlideFour((prev) => ({
+      ...prev,
+      mealPreferences: props?.slideFour?.mealPreferences.includes(pref)
+        ? props?.slideFour?.mealPreferences.filter((p) => p !== pref)
+        : [...props?.slideFour?.mealPreferences, pref]
+    }))
   };
+
+  const handleSpecialRequest = (e) => {
+    props.setSlideFour((prev) => ({
+      ...prev,
+      specialRequests: e.target.value
+    }))
+  };
+
+  const handleHotelType = (e) => {
+    const { value, checked } = e.target;
+    props.setSlideFour((prev) => ({
+      ...prev,
+      hotelType: checked ? [...props?.slideFour?.hotelType, value] : props?.slideFour?.hotelType.filter((item) => item !== value)
+    }))
+  };
+
   return (
     <div className="flex flex-col gap-[30px]">
       <div className="flex flex-col gap-[12px]">
         <Body1M_16>Hotel Type</Body1M_16>
 
-        <div className="flex justify-between ">
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              // checked={props.addHotels}
-              // onChange={(e) => props.setAddHotels(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="text-sm">3-Stars</div>
-          </label>
-
-          <label
-            htmlFor="add-flights"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-flights"
-              type="checkbox"
-              // checked={props.addFlights}
-              // onChange={(e) => props.setAddFlights(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="text-sm">4-Stars</div>
-          </label>
-
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              // checked={props.addHotels}
-              // onChange={(e) => props.setAddHotels(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="text-sm">5-Stars</div>
-          </label>
+        <div className="flex justify-between">
+          {["3", "4", "5"].map((star) => (
+            <label
+              key={star}
+              className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                value={star}
+                checked={props?.slideFour?.hotelType.includes(star)}
+                onChange={handleHotelType}
+                className="focus:outline-none cursor-pointer"
+              />
+              <div className="text-sm">{star}-Stars</div>
+            </label>
+          ))}
         </div>
+
       </div>
       <div>
         <Body2R_14 className="mb-[6px]">Room Configuration</Body2R_14>
@@ -132,7 +124,7 @@ export default function SlideThree(props) {
       </div>
       <div>
         <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
-        <StyledTextarea placeholder="Write any special requests" />
+        <StyledTextarea placeholder="Write any special requests" onChange={handleSpecialRequest} value={props.specialRequests} />
       </div>
     </div>
   );

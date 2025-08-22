@@ -227,7 +227,7 @@ const LogIn = React.memo((props) => {
         phone,
         otp,
         userDetails.userName,
-        null,
+        null,setUserDetailsRequired,
         whatsapp,
         null,
         props.onSuccess
@@ -255,6 +255,10 @@ const LogIn = React.memo((props) => {
     } else {
       props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess);
     }
+    if(props?._submitDataHandler() && localStorage.getItem("access_token")){
+      props?._submitDataHandler();
+    }
+
   };
 
   //Store OTP

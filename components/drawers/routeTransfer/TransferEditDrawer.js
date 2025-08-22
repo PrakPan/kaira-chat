@@ -136,7 +136,6 @@ const TransferEditDrawer = (props) => {
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const dispatch = useDispatch();
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
