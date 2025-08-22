@@ -108,7 +108,7 @@ export default function NewActivityBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-[20px] font-semibold">
-                    {props.data?.name ? props.data.name : null}
+                    {(props?.data?.display_name || props.data?.name)? (props?.data?.display_name || props.data.name) : null}
                   </div>
                 </div>
                 {stars && (
@@ -131,8 +131,10 @@ export default function NewActivityBooking(props) {
                       {props.data.category}
                     </div>
                   )}
-                  {props.data.experience_filters
-                    ?.slice(0, props?.data?.category ? 1 : 2)
+                  {
+                  // props.data.experience_filters
+                    props?.data?.tags
+                    ?.slice(0, props?.data?.tags?.length == 1 ? 1 : 2)
                     ?.map((e, i) => (
                       <span
                         key={i}
@@ -142,13 +144,12 @@ export default function NewActivityBooking(props) {
                         {e}
                       </span>
                     ))}
-                  {props?.data?.experience_filters?.length > 2 && (
+                  {props?.data?.tags?.length > 2 && (
                     <span className={`border-2 rounded-full px-2 py-1`}>
                       +
-                      {props?.data?.experience_filters?.length -
-                      props?.data?.category
-                        ? 1
-                        : 2}{" "}
+                      {props?.data?.tags?.length -
+                      2
+                      }{" "}
                       more
                     </span>
                   )}
@@ -213,6 +214,14 @@ export default function NewActivityBooking(props) {
                     <span>Semi Guided</span>
                   </div>
                 )}
+
+                {/* One-Liner Description */}
+                {
+                  props?.data?.one_liner_description && 
+                   <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
+                    {props.data.one_liner_description}
+                    </div>
+                }
               </div>
             </div>
             <div className="flex flex-row items-center justify-between">

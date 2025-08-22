@@ -160,6 +160,7 @@ const TransferDrawer = ({
         date: date.toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
+          year: "numeric",
         }),
         time: date.toLocaleTimeString("en-US", {
           hour: "2-digit",
@@ -172,7 +173,7 @@ const TransferDrawer = ({
     const checkIn = formatDateTime(transferData.check_in);
     const checkOut = formatDateTime(transferData.check_out);
 
-    // const dateDiff = getDateDifferenceInDays(checkIn,checkOut)
+    const dateDiff = getDateDifferenceInDays(transferData.check_in,transferData.check_out) + 1;
 
     // Get route information
     const origin = transferData.transfer_details?.trips?.[0]?.origin;
@@ -272,7 +273,24 @@ const TransferDrawer = ({
                   <div className="text-xs md:text-sm text-gray-600">
                     {transferType === "sightseeing" ? (
                       <span>
-                        {duration} • {distance}
+                           <div className="w-auto flex items-center gap-1">
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 13 13"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                                  fill="black"
+                                />
+                              </svg>
+                              {dateDiff  && 
+                                <span className="text-gray-600">
+                                  {dateDiff <=1 ? 1 : dateDiff} {dateDiff <= 1 ? "day" : "days"} •
+                                </span>}
+                            {duration} • {distance} </div> 
                       </span>
                     ) : (
                       <span className="truncate">
@@ -302,11 +320,11 @@ const TransferDrawer = ({
 
               {/* Price and Arrow - Mobile */}
               <div className="flex md:hidden items-center space-x-2">
-                <div className="text-right">
+                {/* <div className="text-right">
                   <div className="text-sm font-bold text-gray-900">
                     ₹{(transferData.price / 1000).toFixed(0)}k
                   </div>
-                </div>
+                </div> */}
                 <div className="text-gray-400">
                   {isExpanded ? (
                     <AiOutlineUp className="w-4 h-4" />
@@ -320,10 +338,10 @@ const TransferDrawer = ({
             {/* Mobile Price Row */}
             <div className="md:hidden px-4 pb-2">
               <div className="flex justify-between items-center text-xs text-gray-500">
-                <span>
+                {/* <span>
                   {checkIn.date} - {checkOut.date}
-                </span>
-                <span>₹{transferData.price?.toLocaleString()}</span>
+                </span> */}
+                {/* <span>₹{transferData.price?.toLocaleString()}</span> */}
               </div>
             </div>
 
@@ -356,7 +374,8 @@ const TransferDrawer = ({
                             <div className="flex-1 flex flex-col items-center">
                               <div className="w-full border-t-2 border-dotted border-gray-300 mb-1"></div>
                               <div className="text-xs text-gray-500 whitespace-nowrap">
-                                {distance} • {duration}
+                                
+                             {distance} • {duration}
                               </div>
                             </div>
 
@@ -445,11 +464,11 @@ const TransferDrawer = ({
                     !(originName && destinationName) && (
                       <div className="bg-white rounded-lg p-3">
                         <h4 className="font-medium text-gray-900 mb-3 text-sm">
-                          Schedule
+                          Timings
                         </h4>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div>
-                            <div className="text-gray-500 text-xs">Start</div>
+                            <div className="text-gray-500 text-xs"> Start Date</div>
                             <div className="font-medium text-gray-900">
                               {checkIn.date}
                             </div>
@@ -458,7 +477,7 @@ const TransferDrawer = ({
                             </div>
                           </div>
                           <div>
-                            <div className="text-gray-500 text-xs">End</div>
+                            <div className="text-gray-500 text-xs">End Date</div>
                             <div className="font-medium text-gray-900">
                               {checkOut.date}
                             </div>

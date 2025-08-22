@@ -166,7 +166,7 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <div className="text-[20px] font-[800]">{props.data.name}</div>
+              <div className="text-[20px] font-[800]">{props.data?.display_name || props.data.name}</div>
             </div>
             <Pax pax={props?.filterState} setPax={props?.setFilterState} />
 
@@ -200,9 +200,9 @@ export default function ActivityDetails(props) {
               </div>
             )}
 
-            {props.data?.experience_filters && (
+            {props.data?.tags && (
               <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                {props.data.experience_filters?.map((e, i) => (
+                {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
                     className={`border-2 rounded-full px-2 py-1`}
