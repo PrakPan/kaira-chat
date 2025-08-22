@@ -118,8 +118,8 @@ const SlideThree = (props) => {
             <input
               id="add-hotels"
               type="checkbox"
-              // checked={props.addHotels}
-              // onChange={(e) => props.setAddHotels(e.target.checked)}
+              checked={props.addInclusions}
+              onChange={(e) => props.setAddInclusions(e.target.checked)}
               className="focus:outline-none cursor-pointer"
             />
             <div className="text-sm">Activities + Transfers</div>

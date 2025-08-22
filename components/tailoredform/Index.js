@@ -147,6 +147,12 @@ const Enquiry = (props) => {
   const [error, setError] = useState(null);
   const [addHotels, setAddHotels] = useState(false);
   const [addFlights, setAddFlights] = useState(false);
+  const [addInclusions,setAddInclusions]=useState(false);
+  const [slideFour,setSlideFour]=useState({
+    hotelType:[],
+    mealPreferences:[],
+    specialRequests:""
+  })
   const [loginComplete, setLoginComplete] = useState(false);
   const [defaultPriceRange, setDefaultPriceRange] = useState({
     min_price: 0,
@@ -597,7 +603,7 @@ const Enquiry = (props) => {
         setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
-        setRoute(data.basic_route);
+        setRoute([data.start_city,...data.basic_route,data.end_city]);
 
         const hotelsBudget = data?.hotels_budget;
         if (hotelsBudget) {
@@ -869,11 +875,16 @@ const Enquiry = (props) => {
                 addHotels={addHotels}
                 setAddHotels={setAddHotels}
                 addFlights={addFlights}
+                addInclusions={addInclusions}
                 setAddFlights={setAddFlights}
+                setAddInclusions={setAddInclusions}
+                slideFour={slideFour}
+                setSlideFour={setSlideFour}
                 setSlideIndex={setSlideIndex}
                 setLoginComplete={setLoginComplete}
                 defaultPriceRange={defaultPriceRange}
                 route={route}
+                _submitDataHandler={_submitDataHandler}
               ></Flickity>
 
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -996,8 +1007,7 @@ const Enquiry = (props) => {
                     loading={isSubmitting}
                     disabled={isSubmitting}
                     onclick={() => {
-                      setSlideIndex(4);
-                      _SlideThreeSubmitHandler;
+                      totalSlides==4?_SlideThreeSubmitHandler(): setSlideIndex(4)
                     }}
                     height="50px"
                   >
