@@ -20,7 +20,7 @@ import { authLogout } from "../store/actions/auth";
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -29,12 +29,12 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   function setupTokenExpiryWatcher() {
-    const expiry = localStorage.getItem('expirationDate');
-    console.log("expiry is:",expiry)
+    const expiry = localStorage.getItem("expirationDate");
+    console.log("expiry is:", expiry);
     if (!expiry) return;
-  
-    const timeLeft = new Date(expiry).getTime()- Date.now();
-    console.log("time left is:",timeLeft)
+
+    const timeLeft = new Date(expiry).getTime() - Date.now();
+    console.log("time left is:", timeLeft);
     if (timeLeft <= 0) {
     } else {
       setTimeout(() => {
@@ -47,14 +47,12 @@ function MyApp({ Component, pageProps, store }) {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-
       }, timeLeft);
     }
   }
-  
+
   // Run this once on app load
   setupTokenExpiryWatcher();
-  
 
   // useEffect(() => {
   //   const handleBrowserBack = (event) => {
@@ -154,20 +152,17 @@ function MyApp({ Component, pageProps, store }) {
     };
   }, [router.events]);
   // In a client-side context
-  
-  
-
 
   return (
     <>
       <Head>
         <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
+        />
+        <meta
           name="google-site-verification"
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
         />
       </Head>
       <div ref={ref}>
