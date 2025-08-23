@@ -1230,7 +1230,7 @@ const TransferEditDrawer = (props) => {
 
        {transferType === "MULTICITYROUNDTRIP" &&
   (roundTripSuggestions || multiCitySuggestions) && (
-    <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+    <div className="w-full  bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
       <div className="flex justify-end items-end px-1 py-3 md:p-0">
         <button
           onClick={() => {
@@ -3176,7 +3176,7 @@ const NewMultiModeContainer = ({
                               <PulseLoader
                                 size={15}
                                 speedMultiplier={0.6}
-                                color="#FFFFFF"
+                                color="#000000"
                               />
                             ) : (
                               "Update Transfer"
