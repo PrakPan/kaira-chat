@@ -61,11 +61,7 @@ const HeadingContent = ({ title, subtitle }) => {
       </div>
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
         <p className={styles.subtitle}>
-          Get trips that match your vibe, with AI-curated plans made just for
-          you. With{" "}
-        </p>
-        <p className={styles.subtitle}>
-          The Tarzan Way, travel feels easy, personal, and effortlessly cool.
+          Solo? Couple? Group? We Plan Like It’s Just for You — Because It Is.
         </p>
       </div>
       <button
