@@ -7,12 +7,12 @@ import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
 import styles from "./NavigationMenu.module.scss";
 import SearchInput from "../common/components/searchInput";
+import Button from "../common/components/button";
 
 const NAVIGATION_ITEMS = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/contact", label: "Contact" },
+  { href: "/blogs", label: "Blogs" },
+  { href: "/contactus", label: "Contact Us" },
+  { href: "/reviews", label: "Reviews" },
 ];
 
 const NavigationMenu = () => {
@@ -96,6 +96,7 @@ const NavigationMenu = () => {
           </li>
           {desktopMenuItems}
         </ul>
+        <Button onClick={handleCTAClick}>Login/Signup</Button>
 
         {/* Hamburger Menu Button */}
         <button
