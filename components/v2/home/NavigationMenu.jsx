@@ -6,8 +6,8 @@ import { TTW } from "../assets";
 import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
 import styles from "./NavigationMenu.module.scss";
+import SearchInput from "../common/components/searchInput";
 
-// Navigation items configuration - extracted for maintainability
 const NAVIGATION_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
@@ -91,18 +91,11 @@ const NavigationMenu = () => {
 
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
+          <li>
+            <SearchInput />
+          </li>
           {desktopMenuItems}
         </ul>
-
-        <div className={styles.desktopActions}>
-          <button
-            className="cta-button"
-            type="button"
-            onClick={(e) => menuAnimations.pulseCTA(e.target)}
-          >
-            Get Started
-          </button>
-        </div>
 
         {/* Hamburger Menu Button */}
         <button

@@ -4,8 +4,10 @@
   align-items: center;
   padding: 12px 20px;
   position: relative;
-  background: white;
   z-index: 100;
+  width: 100%;
+  max-width: 1440px;
+  padding-inline: 80px;
 }
 
 .menuList {
@@ -13,7 +15,7 @@
   display: flex;
   align-items: center;
   list-style: none;
-  gap: 20px;
+  gap: 24px;
 
   li {
     .menuItem {
