@@ -7,7 +7,7 @@ const StyledButton = styled.button`
   justify-content: center;
   padding: 12px 24px;
   border: 2px solid #333;
-  border-radius: 20px;
+  border-radius: 8px;
   background-color: ${(props) =>
     props.variant === "filled" ? "#333" : "transparent"};
   color: ${(props) => (props.variant === "filled" ? "#fff" : "#333")};

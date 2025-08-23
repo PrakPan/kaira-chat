@@ -91,12 +91,14 @@ const NavigationMenu = () => {
 
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
-          <li>
+          <li className="mr-4">
             <SearchInput />
           </li>
           {desktopMenuItems}
+          <li>
+            <Button onClick={handleCTAClick}>Login/Signup</Button>
+          </li>
         </ul>
-        <Button onClick={handleCTAClick}>Login/Signup</Button>
 
         {/* Hamburger Menu Button */}
         <button
