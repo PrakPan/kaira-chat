@@ -4,6 +4,9 @@
   text-align: center;
   margin-bottom: 2rem;
   z-index: 10;
+  @media (max-width: 768px) {
+    padding-inline: 16px;
+  }
 }
 
 .title {
@@ -19,11 +22,14 @@
   letter-spacing: 0%;
   text-align: center;
   vertical-align: middle;
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
 }
 
 .subtitle {
   font-size: 1rem;
-  line-height: 0.75rem;
+  line-height: 1.5rem;
 }
 
 .contentWrapper {

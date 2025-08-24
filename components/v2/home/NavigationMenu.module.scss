@@ -9,6 +9,9 @@
   max-width: 1440px;
   padding-inline: 80px;
   margin: 0 auto;
+  @media (max-width: 768px) {
+    padding-inline: 16px;
+  }
 }
 
 .menuList {
@@ -48,16 +51,18 @@
 
 // Hamburger Menu Styles
 .hamburger {
-  display: none;
+  display: none !important;
   flex-direction: column;
-  justify-content: space-around;
-  width: 24px;
-  height: 18px;
+  justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 0 !important;
   z-index: 110;
+  border-radius: 100% !important;
 
   @media (max-width: 768px) {
     display: flex;

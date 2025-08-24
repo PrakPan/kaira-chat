@@ -8,6 +8,8 @@ import { useMobileMenu } from "../common/hooks/useMobileMenu";
 import styles from "./NavigationMenu.module.scss";
 import SearchInput from "../common/components/searchInput";
 import Button from "../common/components/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
 
 const NAVIGATION_ITEMS = [
   { href: "/blogs", label: "Blogs" },
@@ -101,17 +103,20 @@ const NavigationMenu = () => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <button
+        <Button
           className={styles.hamburger}
           onClick={toggleMobileMenu}
-          aria-label="Toggle mobile menu"
-          aria-expanded={isMobileMenuOpen}
-          type="button"
+          variant="filled"
         >
-          <span className={`${styles.hamburgerLine} hamburgerLine`} />
-          <span className={`${styles.hamburgerLine} hamburgerLine`} />
-          <span className={`${styles.hamburgerLine} hamburgerLine`} />
-        </button>
+          <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
+        </Button>
+        <Button
+          className={styles.hamburger}
+          onClick={toggleMobileMenu}
+          variant="filled"
+        >
+          <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+        </Button>
       </nav>
 
       {/* Mobile Sidebar Overlay */}
