@@ -781,8 +781,8 @@ const Enquiry = (props) => {
               <h1
                 className="
                 text-black font-inter 
-                  text-[24px] leading-[32px] font-semibold text-start
-                  sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  
+                  text-[24px] leading-[32px] font-semibold 
+                  sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  sm:mx-auto 
                   max-w-[800px]
                 "
               >
