@@ -29,11 +29,11 @@ const RightContainer = styled.div`
 `;
 
 const EndDestination = (props) => {
-  console.log("end destination props are: ",props)
   const [searchFinalized, setSearchFinalized] = useState(false);
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
   const [showDestination, setShowDestination] = useState(true);
+  console.log("end destination props are: ", props,showDestination)
 
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
@@ -74,24 +74,12 @@ const EndDestination = (props) => {
         className="hover-pointer text-[0.85rem] flex flex-row gap-[10px] items-center  w-full"
         selectlocation={props.selectlocation}
       >
-        {!props.selectlocation ? (
+        {props.selectedCity?.name ? (
           <>
-            {/* <MdOutlineLocationOn
-            style={{
-              lineHeight: "1",
-              fontSize: "1.25rem",
-            }}
-          ></MdOutlineLocationOn> */}
             <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
-
           </>
         ) : (
-          <BiTargetLock
-            style={{
-              lineHeight: "1",
-              fontSize: "1.25rem",
-            }}
-          ></BiTargetLock>
+          <MdOutlineLocationOn style={{ lineHeight: "1", fontSize: "1.25rem" }} />
         )}
 
         {props.selectlocation ? (
@@ -146,30 +134,30 @@ const EndDestination = (props) => {
             )}
           </div>
         ) : (
-          <SearchInput
-            autofocus={props.autofocus}
-            _updateDestinationHandler={props._updateDestinationHandler}
-            CITIES={props.CITIES}
-            setShowDestination={setShowDestination}
-            showDestination={showDestination}
-            destination={props.destination}
-            setDestination={props.setDestination}
-            inbox_id={props.inbox_id}
-            setSearchFinalized={setSearchFinalized}
-            searchFinalized={searchFinalized}
-            onfocus={_handleFocusSearch}
-            onblur={() => {
-              setFocusSearch(false);
-            }}
-            setFocusSearch={setFocusSearch}
-            setSelectedCities={props.setSelectedCities}
-            selectedCities={props.selectedCities}
-            setValueStart={props.setValueStart}
-            setValueEnd={props.setValueEnd}
-            eventDates={props.eventDates}
-            updatedData={props.updatedData}
-            tailoredFormModal={props.tailoredFormModal}
-          ></SearchInput>
+            <SearchInput
+              autofocus={props.autofocus}
+              _updateDestinationHandler={props._updateDestinationHandler}
+              CITIES={props.CITIES}
+              setShowDestination={setShowDestination}
+              showDestination={showDestination}
+              destination={props.destination}
+              setDestination={props.setDestination}
+              inbox_id={props.inbox_id}
+              setSearchFinalized={setSearchFinalized}
+              searchFinalized={searchFinalized}
+              onfocus={_handleFocusSearch}
+              onblur={() => {
+                setFocusSearch(false);
+              }}
+              setFocusSearch={setFocusSearch}
+              setSelectedCities={props.setSelectedCities}
+              selectedCities={props.selectedCities}
+              setValueStart={props.setValueStart}
+              setValueEnd={props.setValueEnd}
+              eventDates={props.eventDates}
+              updatedData={props.updatedData}
+              tailoredFormModal={props.tailoredFormModal}
+            ></SearchInput>
         )}
       </div>
 

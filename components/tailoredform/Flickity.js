@@ -31,7 +31,7 @@ const dummyProps = {
     number_of_children: 0,
     number_of_infants: 0
   },
-routes: [
+  routes: [
     {
       id: 1,
       city_name: "Delhi, India",
@@ -111,7 +111,7 @@ routes: [
 
 const FlickityComp = (props) => {
   return (
-    <div style={{ width: "100%" }} className="font-inter">
+    <div style={{ width: "100%" }} className="font-inter h-full">
       {!props.slideIndex ? (
         <Card>
           <SlideOne
@@ -145,14 +145,14 @@ const FlickityComp = (props) => {
       ) : null}
 
       {props.slideIndex === 1 ? (
-        <Card>
+        <Card className="flex flex-col h-full">
           <SlideTwo
-          setSlideIndex={props?.setSlideIndex}
+            setSlideIndex={props?.setSlideIndex}
             routes={props?.route}
+            className="flex-1"
           >
-            <RoutesMap
-              locations={props?.route}
-            /></SlideTwo>
+
+          </SlideTwo>
         </Card>
       ) : null}
 
@@ -188,35 +188,35 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 3 ? 
-          <SlideFour
-            numberOfAdults={props.numberOfAdults}
-            setNumberOfAdults={props.setNumberOfAdults}
-            numberOfChildren={props.numberOfChildren}
-            setNumberOfChildren={props.setNumberOfChildren}
-            numberOfInfants={props.numberOfInfants}
-            setNumberOfInfants={props.setNumberOfInfants}
-            roomConfiguration={props.roomConfiguration}
-            setRoomConfiguration={props.setRoomConfiguration}
-            addHotels={props.addHotels}
-            setAddHotels={props.setAddHotels}
-            groupType={props.groupType}
-            setBudget={props.setBudget}
-            setPriceRange={props.setPriceRange}
-            destination={props.destination}
-            defaultPriceRange={props.defaultPriceRange}
-            slideFour={props.slideFour}
-            setSlideFour={props.setSlideFour}
-          />:null}
+      {props.slideIndex === 3 ?
+        <SlideFour
+          numberOfAdults={props.numberOfAdults}
+          setNumberOfAdults={props.setNumberOfAdults}
+          numberOfChildren={props.numberOfChildren}
+          setNumberOfChildren={props.setNumberOfChildren}
+          numberOfInfants={props.numberOfInfants}
+          setNumberOfInfants={props.setNumberOfInfants}
+          roomConfiguration={props.roomConfiguration}
+          setRoomConfiguration={props.setRoomConfiguration}
+          addHotels={props.addHotels}
+          setAddHotels={props.setAddHotels}
+          groupType={props.groupType}
+          setBudget={props.setBudget}
+          setPriceRange={props.setPriceRange}
+          destination={props.destination}
+          defaultPriceRange={props.defaultPriceRange}
+          slideFour={props.slideFour}
+          setSlideFour={props.setSlideFour}
+        /> : null}
 
-          {props.slideIndex==4&&
-          <div>
-          <Login 
-            show={props?.slideIndex==4}
-            _submitDataHandler={props?._submitDataHandler}
+      {props.slideIndex == 4 &&
+        <div>
+          <Login
+            show={props?.slideIndex == 4}
+            onSuccess={props?._submitDataHandler}
           />
-          </div>
-          }
+        </div>
+      }
     </div>
   );
 };

@@ -8,7 +8,7 @@ const Container = styled.input`
   top: 0;
   left: 0;
   bottom: 0;
-  padding-left: 2.6rem;
+  padding-left: 3.5rem;
   background-color: transparent;
   cursor: pointer;
   height: 100%;
