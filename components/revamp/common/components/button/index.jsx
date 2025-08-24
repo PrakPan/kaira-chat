@@ -48,7 +48,7 @@ const StyledButton = styled.button`
     padding: 8px 16px;
     font-size: 14px;
     min-height: 36px;
-    border-radius: 16px;
+    border-radius: 8px;
   `}
 
   ${(props) =>

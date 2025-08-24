@@ -98,7 +98,9 @@ const NavigationMenu = () => {
           </li>
           {desktopMenuItems}
           <li>
-            <Button onClick={handleCTAClick}>Login/Signup</Button>
+            <Button size="small" onClick={handleCTAClick}>
+              Login/Signup
+            </Button>
           </li>
         </ul>
 
