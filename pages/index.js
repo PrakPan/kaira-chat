@@ -1,13 +1,13 @@
 import Head from "next/head";
 // import HomepageContainer from "../containers/homepage/Index";
-import HeroSection from "../components/v2/home/HeroSection";
-import NavigationMenu from "../components/v2/home/NavigationMenu";
+import HeroSection from "../components/revamp/home/HeroSection";
+import NavigationMenu from "../components/revamp/home/NavigationMenu";
 // import Layout from "../components/Layout";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
 import { useEffect } from "react";
-import styles from "../styles/pages/v2/home.module.scss";
+import styles from "../styles/pages/revamp/home.module.scss";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
