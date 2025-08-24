@@ -1,6 +1,5 @@
 import Head from "next/head";
 // import HomepageContainer from "../containers/homepage/Index";
-import HeroSection from "../components/v2/home/HeroSection";
 import NavigationMenu from "../components/v2/home/NavigationMenu";
 // import Layout from "../components/Layout";
 import { connect } from "react-redux";
@@ -15,7 +14,6 @@ import axioslocationsinstance from "../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
-import styles from "../styles/pages/v2/home.module.scss";
 import { HeroSection } from "../components/v2/home";
 import Navigation from "../components/v2/home/NavigationMenu";
 const Home = (props) => {

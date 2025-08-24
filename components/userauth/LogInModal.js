@@ -255,9 +255,6 @@ const LogIn = React.memo((props) => {
     } else {
       props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess);
     }
-    if(props?._submitDataHandler() && localStorage.getItem("access_token")){
-      props?._submitDataHandler();
-    }
 
   };
 

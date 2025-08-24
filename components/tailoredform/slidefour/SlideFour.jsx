@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Body1M_16, Body2R_14 } from "../../new-ui/Body.js";
 
 export const StyledTextarea = styled.textarea`
-  width: 543px;
+  width: 100%;
   height: 111px;
   transform: rotate(0deg);
   opacity: 1;
@@ -29,8 +29,6 @@ export const StyledTextarea = styled.textarea`
 
 const MEAL_PREFERENCES = ["Vegetarian", "Non-Vegetarian", "Vegan", "Jain"]
 export default function SlideThree(props) {
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
-
   const _isPreferenceAdded = (pref) => {
     return props?.slideFour?.mealPreferences.includes(pref);
   };

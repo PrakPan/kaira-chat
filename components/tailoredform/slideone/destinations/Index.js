@@ -66,7 +66,7 @@ const Destinations = (props) => {
       );
     }
     setDestinations(des);
-  }, [JSON.stringify(props.selecftedCities)]);
+  }, [JSON.stringify(props.selectedCities)]);
 
   const _addDestinationHandler = () => {
     let dest = destinations.slice();
@@ -89,21 +89,38 @@ const Destinations = (props) => {
           setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
           tailoredFormModal={props.tailoredFormModal}
-          selectedCity={props.selectedCities[props.selectedCities.length-1]}
-          index={props?.selectedCities.length-1}
+          selectedCity={props.selectedCities[props.selectedCities.length - 1]}
+          index={props?.selectedCities.length - 1}
           setDestinations={setDestinations}
           destinations={destinations}
         ></SelectedDestination>
       </>
     );
     setDestinations(dest.slice());
-    props.selectedCities.push({ input_id: id });
-    props.setSelectedCities(props.selectedCities.slice());
   };
+function _updateDestinationHandler(id, input_id, data) {
+  setUpdatedData({ id, input_id, data });
 
-  function _updateDestinationHandler(id, input_id, data) {
-    setUpdatedData({ id, input_id, data });
+  let cityExists = false;
+
+  const newCities = props.selectedCities.map((item) => {
+    if (item.input_id === input_id) {
+      cityExists = true;
+      return { ...item, ...data };
+    }
+    return item;
+  });
+
+  // If it didn't exist, push it
+  if (!cityExists) {
+    newCities.push({ id, input_id, ...data });
   }
+
+  console.log("Updated cities: ", newCities);
+  props.setSelectedCities(newCities);
+}
+
+
 
   useEffect(() => {
     if (updatedData.id) {
@@ -117,7 +134,7 @@ const Destinations = (props) => {
           };
         return e;
       });
-      console.log("end destination props are: ",selected)
+      console.log("end destination props are: ", selected)
       props.setSelectedCities(selected);
     }
   }, [updatedData.id]);
@@ -165,7 +182,7 @@ const Destinations = (props) => {
           justifyContent: "end",
           marginLeft: "33%",
           marginRight: "10px",
-          marginTop:"-30px"
+          marginTop: "-30px"
         }}
       >
         {!props?.selectedCities?.some((e) => !e.name) && (

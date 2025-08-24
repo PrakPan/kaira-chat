@@ -29,19 +29,7 @@ const Dictate = forwardRef((props, ref) => {
         browserSupportsSpeechRecognition
     } = useSpeechRecognition();
 
-    useImperativeHandle(ref, () => ({
-        stop: stopListening
-    }));
 
-    useEffect(() => {
-        if (props.onTranscriptChange && listening) {
-            props.onTranscriptChange(transcript)
-        }
-    }, [transcript, props.onTranscriptChange])
-
-    if (!browserSupportsSpeechRecognition) {
-        return <span>Browser doesn't support speech recognition.</span>;
-    }
 
     const startListening = async () => {
         try {
@@ -73,6 +61,21 @@ const Dictate = forwardRef((props, ref) => {
         resetTranscript();
         props.stopDictation();
     }
+
+    useImperativeHandle(ref, () => ({
+        stop: stopListening
+    }));
+
+    useEffect(() => {
+        if (props.onTranscriptChange && listening) {
+            props.onTranscriptChange(transcript)
+        }
+    }, [transcript, props.onTranscriptChange])
+
+    if (!browserSupportsSpeechRecognition) {
+        return <span>Browser doesn't support speech recognition.</span>;
+    }
+
 
     return (
         <>

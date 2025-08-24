@@ -12,6 +12,9 @@ import Modal from "../../ui/Modal";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import { Body1M_16, Body2M_14, Body2R_14 } from "../../new-ui/Body";
 import moment from "moment";
+import useMediaQuery from "../../media";
+import BottomModal from "../../ui/LowerModal";
+import AirbnbCalendarMobile from "../../calendar/MobileCalendar";
 
 const Container = styled.div`
   color: black;
@@ -35,6 +38,7 @@ const formatShortDate = (date) => {
 
 
 const SlideOne = (props) => {
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const [showCalendar, setShowCalendar] = useState(false);
   const handleOnCalenderApplyDates = (values) => {
     props.setValueStart(values.start)
@@ -103,7 +107,7 @@ const SlideOne = (props) => {
           ></Preferences>
         </div>
       </Section>
-      <ModalWithBackdrop
+      {isDesktop ? <ModalWithBackdrop
         centered
         show={showCalendar}
         mobileWidth="100%"
@@ -122,7 +126,23 @@ const SlideOne = (props) => {
           onChangeDate={handleOnCalenderApplyDates}
           setShowCalendar={setShowCalendar}
         />
-      </ModalWithBackdrop>
+      </ModalWithBackdrop> : <>
+        <BottomModal
+          show={showCalendar}
+          onHide={() => setShowCalendar(false)}
+          width="100%"
+          height="max-content"
+        >
+          <AirbnbCalendarMobile
+            valueStart={props.valueStart}
+            valueEnd={props.valueEnd}
+            setValueStart={props.setValueStart}
+            setValueEnd={props.setValueEnd}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={setShowCalendar}
+          />
+        </BottomModal>
+      </>}
     </Container>
   );
 };
