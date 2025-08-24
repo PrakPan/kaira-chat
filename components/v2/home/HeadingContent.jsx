@@ -24,11 +24,7 @@ const HeadingContent = ({ title, subtitle }) => {
       // Set initial states using shared configuration
       gsap.set(wordElements, ANIMATION_CONFIG.initialStates.fromBottom);
       gsap.set(
-        contentWrapperRef.current,
-        ANIMATION_CONFIG.initialStates.fromBottomSmall
-      );
-      gsap.set(
-        buttonRef.current,
+        [contentWrapperRef.current, buttonRef.current],
         ANIMATION_CONFIG.initialStates.fromBottomSmall
       );
 
@@ -43,11 +39,14 @@ const HeadingContent = ({ title, subtitle }) => {
         })
       );
 
-      // Animate content wrapper and button sequentially
-      createSequentialContentAnimation(tl, [
-        contentWrapperRef.current,
-        buttonRef.current,
-      ]);
+      // Animate content wrapper and button together
+      tl.to([contentWrapperRef.current, buttonRef.current], {
+        opacity: 1,
+        y: 0,
+        duration: ANIMATION_CONFIG.duration.fast,
+        ease: ANIMATION_CONFIG.ease.backOut,
+        stagger: 0.05,
+      });
     },
     { scope: containerRef }
   );
@@ -60,7 +59,7 @@ const HeadingContent = ({ title, subtitle }) => {
         <h1 className={`${styles.title} heading-text`}>Our AI's on It.</h1>
       </div>
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
-        <p className={styles.subtitle}>
+        <p className={`${styles.subtitle} text-text-focused`}>
           Solo? Couple? Group? We Plan Like It’s Just for You — Because It Is.
         </p>
       </div>
@@ -75,7 +74,7 @@ const HeadingContent = ({ title, subtitle }) => {
           href="/new-trip"
           className="relative flex space-x-2 items-center z-10 rounded-full bg-zinc-950 py-2 px-6 ring-1 ring-white/10 text-white"
         >
-          <span>Create a Trip</span>
+          <span>Create a Trip in Seconds</span>
           <svg
             fill="none"
             height="16"
