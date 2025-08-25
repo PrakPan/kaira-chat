@@ -43,6 +43,7 @@ import {
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
 import UpdateItineraryDates from "./UpdateItineraryDates";
+import { paymentInitiate } from "../../../services/sales/itinerary/Purchase";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -61,13 +62,14 @@ const LivePriceTimer = ({ validFor = "47h 23m" }) => {
 
 // 2. Payment Options Component (Add before the buttons)
 const PaymentOptions = ({ 
-  totalAmount = 37755, 
+   totalAmount = 37755, 
   firstTimeDiscount = 500,
   lockInAmount = 2000,
   onPayFullAmount,
-  onLockInPrice 
+  onLockInPrice,
+  selectedOption,
+  setSelectedOption 
 }) => {
-  const [selectedOption, setSelectedOption] = useState('full');
 
   return (
     <div className="mb-4">
@@ -209,27 +211,30 @@ const PriceDetails = ({
 const PaymentButton = ({ 
   amount = 37755, 
   isLoading = false, 
-  onClick 
+  onClick,
+  paymentType = "full" // Add this prop
 }) => {
   return (
-     <Button
-                color="#111"
-                fontWeight="500"
-                fontSize="1rem"
-                borderWidth="2px"
-                width="100%"
-                borderRadius="8px"
-                bgColor="#f8e000"
-                padding="12px"
-                onclick={onClick}
-              >
+    <Button
+      color="#111"
+      fontWeight="500"
+      fontSize="1rem"
+      borderWidth="1px"
+      width="100%"
+      borderRadius="8px"
+      bgColor="#f8e000"
+      padding="12px"
+      onclick={onClick}
+    >
       {isLoading ? (
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
           Processing...
         </div>
       ) : (
-        `Pay ₹${amount.toLocaleString('en-IN')} Now`
+        paymentType === 'lockin' 
+          ? `Lock-in for ₹${amount?.toLocaleString('en-IN')}` 
+          : `Pay ₹${amount?.toLocaleString('en-IN')} Now`
       )}
     </Button>
   );
@@ -260,6 +265,10 @@ const Details = (props) => {
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
+
+   const [selectedOption, setSelectedOption] = useState('full');
 
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
@@ -518,6 +527,8 @@ const Details = (props) => {
     } catch {}
   };
 
+
+
   let bookingslist = [];
   let bookinglistwithcost = [];
   // Date on which agoda changes made to box
@@ -544,20 +555,21 @@ const Details = (props) => {
     // Razorpay payload
 
     let razorpayOptions = {
+      key:"rzp_test_FEKg5ZWGWl9i7c",
       amount: data.amount || data?.discounted_cost,
       // "currency": "INR",
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data.order_id || data?.id,
+      order_id: data?.sales[0]?.orders[0]?.order_id,
       // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
 
         axios
           .post(
-            "https://dev.suppliers.tarzanway.com/sales/verify/",
+            "https://dev.mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -585,6 +597,60 @@ const Details = (props) => {
       rzp1.open();
     } catch (error) {}
   };
+
+  const _lockInPaymentHandler = (id) => {
+  setPaymentLoading(true);
+  
+  const payload = {
+    payment_information_id: id,
+    payment_type: "lock_payment"
+  };
+  
+  paymentInitiate.post(
+    "", 
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+      },
+    }
+  )
+  .then((res) => {
+    setPaymentLoading(false);
+    _startRazorpayHandler(res.data);
+  })
+  .catch((err) => {
+    setPaymentLoading(false);
+    console.error("Lock-in payment error:", err);
+  });
+};
+
+const _fullPaymentHandler = (id) => {
+  setPaymentLoading(true);
+  
+  const payload = {
+    payment_information_id: id,
+    payment_type: "full_payment"
+  };
+  
+  paymentInitiate.post(
+    "", 
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+      },
+    }
+  )
+  .then((res) => {
+    setPaymentLoading(false);
+    _startRazorpayHandler(res.data);
+  })
+  .catch((err) => {
+    setPaymentLoading(false);
+    console.error("Lock-in payment error:", err);
+  });
+};
 
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
@@ -657,23 +723,27 @@ const Details = (props) => {
     });
   };
 
-  const handlePayNow = (label) => {
-    if (label === "_saleCreateHandler") {
-      _saleCreateHandler(props.id);
-    } else {
-      setShowVerification(true);
-    }
+ const handlePayNow = (label) => {
+  if (label === "_saleCreateHandler") {
+    _saleCreateHandler(props.id);
+  } else if (label === "lockin") {
+    _lockInPaymentHandler(props.payment?.id); //  payment.id as payment_information_id
+  } else if(label === "full"){
+    _lockInPaymentHandler(props.payment?.id); 
+  }else {
+    setShowVerification(true);
+  }
 
-    logEvent({
-      action: "Button_Click",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: "Pay Now & Book",
-        event_action: "Booking Slide",
-      },
-    });
-  };
+  logEvent({
+    action: "Button_Click",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: selectedPaymentOption === 'full' ? "Pay Full Amount" : "Lock-in Price",
+      event_action: "Booking Slide",
+    },
+  });
+};
 
   const handleTravellersDetails = () => {
     setShowRegistartion(true);
@@ -993,7 +1063,10 @@ const Details = (props) => {
 
       <PaymentOptions 
   totalAmount={props.payment?.discounted_cost}
-  onPayFullAmount={() => handlePayNow('_saleCreateHandler')}
+  lockInAmount={props.payment?.lock_in_fee}
+  selectedOption={selectedPaymentOption}
+  setSelectedOption={setSelectedPaymentOption}
+  onPayFullAmount={() => handlePayNow('full')}
   onLockInPrice={() => handlePayNow('lockin')}
 />
 
@@ -1089,7 +1162,7 @@ const Details = (props) => {
           color="#111"
           fontWeight="500"
           fontSize="1rem"
-          borderWidth="2px"
+          borderWidth="1px"
           width="100%"
           borderRadius="8px"
           bgColor="#f8e000"
@@ -1102,19 +1175,17 @@ const Details = (props) => {
         <>
           {props?.token ?
           <PaymentButton 
-  amount={props.payment?.discounted_cost}
+  amount={selectedPaymentOption === 'full' ? props.payment?.discounted_cost : props.payment?.lock_in_fee}
   isLoading={paymentLoading}
-  onClick={() =>
-  handlePayNow()
-  // _startRazorpayHandler(props.payment)
-}
+  paymentType={selectedPaymentOption}
+  onClick={() => handlePayNow(selectedPaymentOption === 'full' ? 'full' : 'lockin')}
 />:  (
             <GetInTouchContainer>
               <Button
                 color="#111"
                 fontWeight="500"
                 fontSize="1rem"
-                borderWidth="2px"
+                borderWidth="1px"
                 width="100%"
                 borderRadius="8px"
                 bgColor="#f8e000"
@@ -1153,7 +1224,7 @@ const Details = (props) => {
               color="#111"
               fontWeight="500"
               fontSize="1rem"
-              borderWidth="2px"
+              borderWidth="1px"
               width="100%"
               borderRadius="8px"
               bgColor="#f8e000"
@@ -1170,7 +1241,7 @@ const Details = (props) => {
                   color="#111"
                   fontWeight="500"
                   fontSize="1rem"
-                  borderWidth="2px"
+                  borderWidth="1px"
                   width="100%"
                   borderRadius="8px"
                   bgColor="#f8e000"
@@ -1214,6 +1285,7 @@ const Details = (props) => {
         hoverColor="white"
         fontWeight="400"
         padding="12px"
+        borderWidth="1px"
         onclick={handleWhatsappChat}
       >
         <div className="flex flex-row justify-center items-center">
