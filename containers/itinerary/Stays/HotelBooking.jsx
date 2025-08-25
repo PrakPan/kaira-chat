@@ -76,7 +76,7 @@ const HotelBooking = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  
+
 
   const {
     drawer = null,
@@ -451,8 +451,8 @@ const HotelBooking = ({
               {booking?.duration
                 ? booking.duration || cities[index]?.duration
                 : cities[index]?.duration
-                ? cities[index]?.duration
-                : 1}
+                  ? cities[index]?.duration
+                  : 1}
               N)
             </span>
           </div>
@@ -522,11 +522,10 @@ const HotelBooking = ({
                     </div>
 
                     <div
-                      className={`ml-auto text-md font-semibold ${
-                        booking?.user_selected
+                      className={`ml-auto text-md font-semibold ${booking?.user_selected
                           ? "text-[#277004]"
                           : "text-[#E00000]"
-                      }`}
+                        }`}
                     >
                       {/* {booking?.user_selected ? "Included" : "Excluded"} */}
                     </div>
@@ -578,7 +577,7 @@ const HotelBooking = ({
                     </div>
                   ) : booking?.check_in &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                      plan?.itinerary_status ? (
+                    plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking.check_in && (
                         <div className="flex flex-row gap-2 items-center">
@@ -624,7 +623,7 @@ const HotelBooking = ({
                   </RoomTypeGrid>
 
                   {booking?.number_of_extra_beds &&
-                  booking?.number_of_extra_beds > 0 ? (
+                    booking?.number_of_extra_beds > 0 ? (
                     <div className="flex flex-row items-center my-0">
                       <BsPlus className="text-md text-[#7A7A7A]" />
                       <div className="text-sm font-[400] line-clamp-1">
@@ -637,7 +636,7 @@ const HotelBooking = ({
                   ) : null}
 
                   {booking.hotel_details &&
-                  Addons(booking?.hotel_details?.pricing_type) ? (
+                    Addons(booking?.hotel_details?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
@@ -662,49 +661,35 @@ const HotelBooking = ({
                 </div>
 
                 <div
-                  className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${
-                    payment?.paid_user || !payment?.user_allowed_to_pay
+                  className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${payment?.paid_user || !payment?.user_allowed_to_pay
                       ? "lh:mb-0 mb-2"
                       : "lg:mb-0 mb-0"
-                  }`}
+                    }`}
                 >
                   {isPageWide && (
-                    <Button
-                      padding="0.6rem 2.2rem"
-                      borderRadius="8px"
-                      hoverColor="white"
-                      fontWeight="400"
-                      onclick={() => handleViewDetails(booking.name)}
+                    <button
+                         className="ttw-btn-secondary"
+                      onClick={() => handleViewDetails(booking.name)}
                     >
                       View Detail
-                    </Button>
+                    </button>
                   )}
 
                   {payment?.is_registration_needed ? null : (
                     // payment?.paid_user
                     // || !payment?.user_allowed_to_pay ? null
                     // :
-                    <div
-                      onClick={(e) =>
-                        handleChangeHotel(e, "Change", booking?.name)
-                      }
-                    >
-                      <Button
-                        padding="0.6rem 2.2rem"
-                        bgColor={"#F7E700"}
-                        borderRadius="8px"
-                        fontWeight="400"
-                        onclick={() => console.log("")}
-                      >
+                    <div>
+                    <button className="ttw-btn-fill-yellow ">
                         Change
-                      </Button>
+                      </button> 
                     </div>
                   )}
                 </div>
                 <div className="lg:hidden pr-2 w-full">
                   <button
                     onClick={() => handleViewDetails(booking.name)}
-                    className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                    className="ttw-btn-secondary"
                   >
                     View Details
                   </button>
@@ -749,8 +734,8 @@ const HotelBooking = ({
                   e,
                   "Change",
                   booking?.city_name ||
-                    booking?.city ||
-                    cities[index]?.city?.name,
+                  booking?.city ||
+                  cities[index]?.city?.name,
                   "Add"
                 )
               }

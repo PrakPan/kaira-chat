@@ -93,17 +93,15 @@ const SingleContainer = styled.div`
 
 
 const ClickableLink = styled.button`
-  font-family: Montserrat;
-font-weight: 600;
-font-size: 12px;
-color : #1889ED;
-border-bottom: 1px solid #1889ED;
+font-weight: 500;
+font-size: 14px;
+color : #3A85FC;
+border-bottom: 1px solid #3A85FC;
 cursor : ${(props) => props.isDisabled ? "not-allowed !important" : "pointer"};
 filter : ${(props) => props.isDisabled ? "grayscale(1)" : ""};
 `
 
 const Title = styled.p`
-font-family: Montserrat;
 font-weight: 600 !important;
 font-size: 20px !important;
 margin-bottom: 10px !important;

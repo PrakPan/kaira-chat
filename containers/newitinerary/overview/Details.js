@@ -28,16 +28,17 @@ const Container = styled.div`
 `;
 
 const Heading = styled.p`
-  font-size: 12px;
-  font-weight: 400;
-  color: #7a7a7a;
-  margin: 0;
-  
+font-size: 12px;
+font-weight: 400;
+line-height: 16px;
+margin-bottom:4px;
+color: #6E757A;
 `;
 
 const Text = styled.p`
-  font-size: 14px;
-  font-weight: 600;
+font-size: 14px;
+font-weight: 500;
+line-height: 22px;
   margin: 0;
 `;
 
@@ -125,7 +126,7 @@ const Details = (props) => {
   
 
   return (
-    <Container className="font-montserrat">
+    <Container>
       {props?.group_type !== null ? (
         <div className="pr-[24px]"  style={{ width: "max-content" }}>
           <Heading>Group Type</Heading>
@@ -190,7 +191,7 @@ const Details = (props) => {
                   showEditDate={showEditDate}
                 />
               </DateRow> :  */}
-               {convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }
+               <Text>{convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }</Text>
               
             </div>
           )}

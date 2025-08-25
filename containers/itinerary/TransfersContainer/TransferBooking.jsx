@@ -427,7 +427,7 @@ const TransferBooking = ({
                                 <div className="pr-2">
                                   <button
                                     onClick={()=>handleRoute(booking)}
-                                    className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                     className="hidden md:!block ttw-btn-secondary"
                                   >
                                     View Details
                                   </button>
@@ -500,7 +500,7 @@ const TransferBooking = ({
                               <div className="pr-2 w-full">
                                 <button
                                   onClick={()=>handleRoute(booking)}
-                                  className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                   className="md:hidden ttw-btn-secondary"
                                 >
                                   View Details
                                 </button>
@@ -799,7 +799,7 @@ const TransferBooking = ({
                                   ) : (
                                     <button
                                       onClick={()=>handleRoute(booking)}
-                                      className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                       className="ttw-btn-secondary"
                                     >
                                       {/* Add Taxi */}
                                       View Details
@@ -810,7 +810,7 @@ const TransferBooking = ({
                                 <div className="pr-2">
                                   <button
                                     onClick={()=>handleRoute(booking)}
-                                    className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                     className="ttw-btn-secondary"
                                   >
                                     {/* Add Taxi */}
                                     View Details
@@ -1010,7 +1010,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
               <div>
                 <button
                   onClick={()=>handleRoute(booking)}
-                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                  className="ttw-btn-secondary"
                 >
                   View Details
                 </button>
@@ -1048,7 +1048,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
             <div className="flex justify-end mt-4 pr-2 w-full">
               <button
                 onClick={()=>handleRoute(booking)}
-                className="w-full md:w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                 className="ttw-btn-secondary"
               >
                 View Details
               </button>

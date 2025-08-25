@@ -1304,7 +1304,7 @@ const SimpleTabsV2 = (props) => {
               )}
               {props.payment ? (
                 <div>
-                  <span className="font-bold font-[18px]">
+                  <span className="font-bold font-[20px] ">
                     ₹{" "}
                     {!props?.mercuryItinerary
                       ? props?.payment?.pay_only_for_one ||

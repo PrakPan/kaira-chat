@@ -135,25 +135,19 @@ const ActivitiesSummary = (props) => {
               <div className="pr-2 w-full">
                 <button
                   onClick={() => handleView(props?.item?.id, "activity")}
-                  className="lg:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                  className="lg:hidden ttw-btn-secondary"
                 >
                   View Details
                 </button>
               </div>
 
               <div className="hidden lg:!flex flex-row gap-3 items-center w-full justify-end">
-                <Button
-                  color="#111"
-                  fontWeight="600"
-                  fontSize="0.85rem"
-                  borderWidth="2px"
-                  width="10rem"
-                  borderRadius="8px"
-                  bgColor="#ffffff"
-                  onclick={() => handleView(props?.item?.id, "activity")}
+                <button
+                   className="ttw-btn-secondary"
+                  onClick={() => handleView(props?.item?.id, "activity")}
                 >
-                  <div>View Detail</div>
-                </Button>
+                View Detail
+                </button>
               </div>
             </div>
           </div>

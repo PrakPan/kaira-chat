@@ -11,6 +11,11 @@ import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect } from "react-redux";
+// import resolveConfig from 'tailwindcss/resolveConfig';
+// import tailwindConfig from './tailwind.config.js';
+taileindCon
+
+const fullConfig = resolveConfig(tailwindConfig);
 
 const starRating = (rating) => {
   var stars = [];

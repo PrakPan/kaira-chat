@@ -28,6 +28,8 @@ const DivideSlabElement = styled.div`
     font-size: 12px;
     color: #A09E9E;
 `
+import { getDatesInRange } from "../../../helper/DateUtils";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");

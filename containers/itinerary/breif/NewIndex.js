@@ -35,9 +35,15 @@ const RouteComponent = styled.div`
 `;
 
 const RoutesRow = styled.div`
-  background: rgba(147, 189, 255, 0.15);
-  border-radius : 30px;
-  padding : 10px 30px;
+border-radius: 6px;
+background: #FFF9EB;
+display: flex;
+padding: 8px;
+align-items: flex-start;
+align-self: stretch;
+font-size: 14px;
+font-weight: 500;
+line-height: 22px;
   
 `
 
@@ -149,9 +155,11 @@ const Details = (props) => {
     <div id="brief" className="mb-[40px] mt-[20px]">
       <DetailsContainer>
 
-        <RoutesRow className="flex w-full justify-between font-montserrat">
-          <div className="flex gap-[10px]"> <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />  <sapn className="font-[500] text-[20px] text-color-dark-blue">Routes</sapn></div> 
-          <button className="font-[400] text-[16px] text-color-dark-blue font-montserrat underline underline-offset-1">View</button>
+        <RoutesRow className="flex w-full justify-between">
+          <div className="flex gap-[10px]"> 
+            {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
+          <sapn >Routes</sapn></div>
+          <button className="underline underline-offset-1 color-[#3A85FC]">View</button>
         </RoutesRow>
         {/* <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"

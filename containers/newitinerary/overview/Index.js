@@ -20,8 +20,10 @@ const GridContainer = styled.div`
 `;
 
 const Heading = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
+font-size: 40px;
+font-style: normal;
+font-weight: 700;
+line-height: 48px;
 `;
 
 const toTitleCase = (str) => {
@@ -37,10 +39,10 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
-        <Heading className="font-montserrat">
+        <Heading>
           {/* {toTitleCase(props.title)} */}
           {props.title}
-          </Heading>
+        </Heading>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
       <div className="flex flex-row">
@@ -62,9 +64,9 @@ const Overview = (props) => {
           setEditRoute={props.setEditRoute}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
-        <SmallGallery maxShow={3} images={props.images}/>
+        <SmallGallery maxShow={3} images={props.images} />
       </div>
-    
+
 
       {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
