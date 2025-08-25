@@ -42,7 +42,7 @@ const SearchIcon = styled(FontAwesomeIcon)`
   transition: color 0.3s ease;
 
   ${SearchInputWrapper}:focus-within & {
-    color: #007bff;
+    // color: #007bff;
   }
 `;
 

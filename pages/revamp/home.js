@@ -1,6 +1,6 @@
-import { HeroSection } from "../../components/revamp/home";
-import Navigation from "../../components/revamp/home/NavigationMenu";
-import styles from "../../styles/pages/revamp/home.module.scss";
+import { HeroSection } from "../../components/v2/home";
+import Navigation from "../../components/v2/home/NavigationMenu";
+import styles from "../../styles/pages/v2/home.module.scss";
 
 const HomeV2 = () => {
   return (

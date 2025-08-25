@@ -65,7 +65,7 @@
   border-radius: 100% !important;
 
   @media (max-width: 768px) {
-    display: flex;
+    display: flex !important;
   }
 
   &:focus {
@@ -73,16 +73,9 @@
   }
 }
 
-.hamburgerLine {
-  width: 100%;
-  height: 2px;
-  background: #333;
-  border-radius: 2px;
-  transform-origin: center;
-}
-
 // Mobile Overlay
 .mobileOverlay {
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -96,6 +89,7 @@
 
 // Mobile Sidebar
 .mobileSidebar {
+  display: none !important;
   position: fixed;
   top: 0;
   right: 0;
