@@ -38,11 +38,11 @@ const Message = styled.div`
 `;
 
 const ChatMessage = React.memo(({ item }) => {
-    const isUser = item.sender === 'user';
+    const isUser = item.is_bot === false;
     return (
         <MessageWrapper isUser={isUser}>
             <Message isUser={isUser}>
-                <Markdown>{item.msg}</Markdown>
+                <Markdown>{item.message}</Markdown>
             </Message>
         </MessageWrapper>
     );
@@ -102,7 +102,7 @@ function ChatSection(props) {
                 ))}
 
                 {currentBotMessage && (
-                    < ChatMessage item={{ 'sender': 'bot', 'msg': currentBotMessage }}></ChatMessage>
+                    < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }}></ChatMessage>
                 )}
 
                 {isTyping && <div className={styles.typingIndicator}> <div className={styles.typingDots}>

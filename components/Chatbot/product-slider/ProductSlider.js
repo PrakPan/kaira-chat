@@ -122,7 +122,7 @@ const ProductSlider = (props) => {
   }
 
   const handleSubmitQuery = (query) => {
-    const userMsg = { sender: "user", msg: `View Details of ${query}` };
+    const userMsg = { is_bot: false, message: `View Details of ${query}` };
     sendMessage(userMsg);
   }
 

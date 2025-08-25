@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
-const BASE_WS_URL = "wss://chat.tarzanway.com/ws";
+import { CHATBOT_SOCKET_HOST, MERCURY_HOST } from "../../../services/constants";
 const ChatContext = createContext();
 import { useDispatch, useSelector } from 'react-redux';
 import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
 import setItinerary, { updateSinglePoiDetails } from "../../../store/actions/itinerary";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
+import axios from "axios";
 
-export const ChatProvider = ({ bookingId, children }) => {
+export const ChatProvider = ({ itinearyId, children }) => {
     const [conversations, setConversations] = useState([]);
     const [quickReplies, setQuickReplies] = useState([]);
     const [lastProductSliderPosition, setLastProductSliderPosition] = useState(0);
@@ -19,105 +20,119 @@ export const ChatProvider = ({ bookingId, children }) => {
     const token = localStorage.getItem('access_token');
     const itinerary = useSelector((state) => state.Itinerary);
     const dispatch = useDispatch();
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
+    const chatBotContainerRef = useRef(null);
+    const [chatHistoryList, setChatHistoryList] = useState([]);
+    const [sessionId, setSessionId] = useState(null);
+    let reconnecting = false;
 
     useEffect(() => {
-        if (!bookingId) return;
+        if (!itinearyId) return;
+        connect(sessionId);
+    }, [itinearyId, sessionId]);
 
-        let reconnectTimer;
 
-        const connect = () => {
-            const socket = new WebSocket(BASE_WS_URL);
-            socketRef.current = socket;
+    const connect = (id = null) => {
+        if (reconnecting) return;
+        reconnecting = true;
 
-            socket.onopen = () => {
-                console.log("WebSocket connected");
-                setIsConnected(true);
+        const wsUrl = id
+            ? `${CHATBOT_SOCKET_HOST}?session_id=${id}`
+            : CHATBOT_SOCKET_HOST;
+
+        const socket = new WebSocket(wsUrl);
+        socketRef.current = socket;
+
+        getAllChatHistory(itinearyId);
+
+        socket.onopen = () => {
+            console.log("is connection open ")
+            reconnecting = false;
+            console.log("WebSocket connected with session:", sessionId || "new", "Url:-",  wsUrl);
+            setIsConnected(true);
+
+
+            if (!sessionId) {
                 setDisableQuerySection(true);
-
-                const initialPrompt = `Help me with this itinerary - https://thetarzanway.com/itinerary/${bookingId} summarize my trip.`;
+                const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
                 if (socketRef.current?.readyState === WebSocket.OPEN) {
                     socketRef.current.send(JSON.stringify({ message: initialPrompt, token }));
                 }
-            };
-
-            socket.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                handleStreamData(data);
-            };
-
-            socket.onerror = (error) => {
-                console.error("WebSocket Error", error);
-            };
-
-            socket.onclose = () => {
-                console.log("WebSocket disconnected. Attempting reconnect...");
-                setIsConnected(false);
-                reconnectTimer = setTimeout(connect, 2000); 
-            };
+            }
         };
 
-        connect();
-
-        return () => {
-            clearTimeout(reconnectTimer);
-            socketRef.current?.close();
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            handleStreamData(data);
         };
-    }, [bookingId]);
+
+        socket.onerror = (error) => {
+            console.error("WebSocket Error", error);
+        };
+
+        socket.onclose = () => {
+            console.log("WebSocket disconnected. Attempting reconnect...");
+            setIsConnected(false);
+            setTimeout(() => {
+                reconnecting = false;
+                connect(id);
+            }, 2000);
+        };
+    };
+
 
 
     const handleStreamData = (data) => {
         switch (data.type) {
-            case 'typing_start':
+            case "typing_start":
                 setIsTyping(true);
                 break;
 
-            case 'typing_stop':
+            case "typing_stop":
                 setIsTyping(false);
                 break;
 
-            case 'text_chunk':
+            case "text_chunk":
                 setCurrentBotMessage(prev => prev + data.content);
                 break;
 
-            case 'text_complete':
+            case "text_complete":
                 setDisableQuerySection(false);
                 setIsTyping(false);
                 finalizeBotMessage(data.content);
                 break;
 
-            case 'render_action':
-                console.log('Logging render action with data:')
-                console.log(data.content);
-                if (data.content.length > 0) {
-                    data.content.map((item) => {
-                        updateProductSlider(item);
-                    })
+            case "render_action":
+                if (data.content?.length) {
+                    data.content.forEach(item => updateProductSlider(item));
                 }
                 break;
 
-            case 'refresh_action':
-                console.log('Logging refresh action with data:')
-                console.log(data.content);
-                if (data.content.length > 0) {
-                    data.content.map((item) => {
-                        if (item.data) {
-                            updateItineraryDetailsByaction(item);
-                        }
-                    })
+            case "refresh_action":
+                if (data.content?.length) {
+                    data.content.forEach(item => {
+                        if (item.data) updateItineraryDetailsByaction(item);
+                    });
                 }
                 break;
 
-            case 'quick_replies':
+            case "quick_replies":
                 setQuickReplies(data.content);
                 break;
 
-            case 'error':
+            case "error":
+                console.log("error in handledata:",data.error)
                 setDisableQuerySection(false);
                 setIsTyping(false);
                 setConversations(prev => [
                     ...prev,
-                    { msg: `${data.error}`, sender: 'bot' }
+                    { message: `${data.error}`, is_bot: true }
                 ]);
+                break;
+
+            case "session":
+                console.log("Session established:", data.session_id, "Reconnected:", data.reconnected);
                 break;
 
             default:
@@ -125,23 +140,140 @@ export const ChatProvider = ({ bookingId, children }) => {
         }
     };
 
+
+    // useEffect(() => {
+    //     if (!itinearyId) return;
+
+    //     let reconnectTimer;
+
+    //     const connect = () => {
+    //         const socket = new WebSocket(CHATBOT_SOCKET_HOST);
+    //         socketRef.current = socket;
+
+    //         getAllChatHistory(itinearyId);
+
+    //         socket.onopen = () => {
+    //             console.log("WebSocket connected");
+    //             setIsConnected(true);
+    //             setDisableQuerySection(true);
+
+    //             const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
+    //             if (socketRef.current?.readyState === WebSocket.OPEN) {
+    //                 socketRef.current.send(JSON.stringify({ message: initialPrompt, token }));
+    //             }
+    //         };
+
+    //         socket.onmessage = (event) => {
+    //             const data = JSON.parse(event.data);
+    //             handleStreamData(data);
+    //         };
+
+    //         socket.onerror = (error) => {
+    //             console.error("WebSocket Error", error);
+    //         };
+
+    //         socket.onclose = () => {
+    //             console.log("WebSocket disconnected. Attempting reconnect...");
+    //             setIsConnected(false);
+    //             reconnectTimer = setTimeout(connect, 2000);
+    //         };
+    //     };
+
+    //     connect();
+
+    //     return () => {
+    //         clearTimeout(reconnectTimer);
+    //         socketRef.current?.close();
+    //     };
+    // }, [itinearyId]);
+
+
+    // const handleStreamData = (data) => {
+    //     switch (data.type) {
+    //         case 'typing_start':
+    //             setIsTyping(true);
+    //             break;
+
+    //         case 'typing_stop':
+    //             setIsTyping(false);
+    //             break;
+
+    //         case 'text_chunk':
+    //             setCurrentBotMessage(prev => prev + data.content);
+    //             break;
+
+    //         case 'text_complete':
+    //             setDisableQuerySection(false);
+    //             setIsTyping(false);
+    //             finalizeBotMessage(data.content);
+    //             break;
+
+    //         case 'render_action':
+    //             console.log('Logging render action with data:')
+    //             console.log(data.content);
+    //             if (data.content.length > 0) {
+    //                 data.content.map((item) => {
+    //                     updateProductSlider(item);
+    //                 })
+    //             }
+    //             break;
+
+    //         case 'refresh_action':
+    //             console.log('Logging refresh action with data:')
+    //             console.log(data.content);
+    //             if (data.content.length > 0) {
+    //                 data.content.map((item) => {
+    //                     if (item.data) {
+    //                         updateItineraryDetailsByaction(item);
+    //                     }
+    //                 })
+    //             }
+    //             break;
+
+    //         case 'quick_replies':
+    //             setQuickReplies(data.content);
+    //             break;
+
+    //         case 'error':
+    //             setDisableQuerySection(false);
+    //             setIsTyping(false);
+    //             setConversations(prev => [
+    //                 ...prev,
+    //                 { message: `${data.error}`, is_bot: true }
+    //             ]);
+    //             break;
+
+    //         case 'error':
+    //             setDisableQuerySection(false);
+    //             setIsTyping(false);
+    //             setConversations(prev => [
+    //                 ...prev,
+    //                 { message: `${data.error}`, is_bot: true }
+    //             ]);
+    //             break;
+
+    //         default:
+    //             console.warn("Unhandled type:", data);
+    //     }
+    // };
+
     const finalizeBotMessage = (message) => {
         if (message.trim() !== "") {
             setConversations(prev => [
                 ...prev,
-                { msg: message, sender: 'bot' }
+                { message: message, is_bot: true }
             ]);
             setCurrentBotMessage('');
         }
     };
 
     const sendMessage = (msgObj) => {
+        console.log(msgObj);
         setDisableQuerySection(true);
         setQuickReplies([]);
         setConversations(prev => [...prev, msgObj]);
-        console.log(msgObj);
         if (socketRef.current?.readyState === WebSocket.OPEN) {
-            socketRef.current.send(JSON.stringify({ message: msgObj.msg, token: token }));
+            socketRef.current.send(JSON.stringify({ message: msgObj.message, token: token }));
         } else {
             console.warn("WebSocket is not open");
         }
@@ -165,7 +297,7 @@ export const ChatProvider = ({ bookingId, children }) => {
                 ...prevConvs,
                 {
                     data,
-                    sender: 'bot',
+                    is_bot: true,
                     type: payload.action_type,
                     position: newPosition,
                 }
@@ -182,18 +314,15 @@ export const ChatProvider = ({ bookingId, children }) => {
                 break;
 
             case "createActivityBooking":
-                console.log("createActivityBooking");
                 updateActivityBooking(payload.data);
                 break
 
             case "poiAdd":
-                console.log("poiAdd");
                 dispatch(updateSinglePoiDetails(payload.data));
                 break
 
             case "createFlightBooking":
-                console.log("createFlightBooking");
-                fetchAllTransferBooking(bookingId)
+                fetchAllTransferBooking(itinearyId)
                 break
 
             default:
@@ -267,6 +396,66 @@ export const ChatProvider = ({ bookingId, children }) => {
             });
     }
 
+
+    const handleOpenChatHistory = () => {
+        console.log(isOpenChatHistoryDrawer);
+        setOpenChatHistoryDrawer(prev => !prev);
+        console.log(isOpenChatHistoryDrawer);
+    }
+
+    const getAllChatHistory = async (itineraryId) => {
+        try {
+            const res = await axios.get(
+                `${MERCURY_HOST}/chat/sessions?itinerary_id=${itineraryId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                    },
+                }
+            );
+            if (res?.data.length) {
+                setChatHistoryList(res?.data);
+            }
+        } catch (err) {
+            console.error(
+                "Error fetching chat history:",
+                err.response?.data || err.message
+            );
+            return null;
+        }
+    };
+
+    const showChatHistoryById = async (id) => {
+        console.log("set sessioncall")
+        handleOpenChatHistory();
+        setSessionId(id);
+        try {
+            const res = await axios.get(
+                `${MERCURY_HOST}/chat/sessions/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                    },
+                }
+            );
+
+            if (res?.data) {
+                if (res.data?.chats?.length) {
+                    res.data.chats.shift();
+                }
+                setConversations(res.data.chats);
+            }
+
+        } catch (err) {
+            console.error(
+                "Error fetching chat session:",
+                err.response?.data || err.message
+            );
+            return null;
+        }
+    }
+
+
     return (
         <ChatContext.Provider
             value={{
@@ -277,7 +466,13 @@ export const ChatProvider = ({ bookingId, children }) => {
                 currentBotMessage,
                 quickReplies,
                 disableQuerySection,
-                lastProductSliderPosition
+                lastProductSliderPosition,
+                handleOpenChatHistory,
+                isOpenChatHistoryDrawer,
+                chatBotContainerRef,
+                chatHistoryList,
+                showChatHistoryById,
+                sessionId
             }}
         >
             {children}

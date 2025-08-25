@@ -7,7 +7,7 @@ function Hotel(props) {
     return (
         <>
             <ImageWrapper>
-                <Image src={`${props.item.images[0].image}`} alt={props.item.name} />
+                <Image src={`${props.item?.images[0]?.image}`} alt={props.item?.name} />
             </ImageWrapper>
             <HeadingOne>{props.item.name}</HeadingOne>
             <ChipsContainer >{uniqueAccommodations.map((type, i) => <SingleChips className={i % 2 ? 'purple' : 'green'} key={i}>{type}</SingleChips>)}

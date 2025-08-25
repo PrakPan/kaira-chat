@@ -86,7 +86,7 @@ function AskQuery() {
     const dictateRef = useRef();
 
     const handleSubmitQuery = (input) => {
-        const userMsg = { sender: "user", msg: input || query.trim() };
+        const userMsg = { is_bot: false, message: input || query.trim() };
         sendMessage(userMsg);
         setQuery("");
         setSubmitDisabled(true);

@@ -7,7 +7,7 @@ function Activity(props) {
     return (
         <>
             <ImageWrapper >
-                <Image src={`${imgUrlEndPoint}${props.item.image}`} alt={props.item.name} />
+                <Image src={`${imgUrlEndPoint}${props?.item?.image}`} alt={props?.item?.name} />
             </ImageWrapper>
             <HeadingOne>{props.item.name}</HeadingOne>
             <ChipsContainer>
