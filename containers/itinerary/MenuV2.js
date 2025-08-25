@@ -1144,7 +1144,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : props?.mercuryItinerary ? (
             <>
-              <div className="sticky top-[4rem] ml-5">
+              <div className="sticky top-[1rem] ml-5">
                 <ChatBot />
               </div>
             </>
