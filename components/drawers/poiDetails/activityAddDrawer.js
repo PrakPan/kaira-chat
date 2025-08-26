@@ -105,6 +105,7 @@ const ActivityAddDrawer = (props) => {
     },
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
+
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -122,6 +123,7 @@ const ActivityAddDrawer = (props) => {
   const prevPaxRef = useRef(pax);
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
+  const [nearby, setNearby] = useState(false);
   const [changed, setChanged] = useState(false);
   const [startDate, setStartDate] = useState(props?.date);
   const [showCalender, setShowCalender] = useState(false);
@@ -202,6 +204,7 @@ const formattedDate =
     debouncedSearch,
     filterState,
     startDate,
+    nearby
   ]);
 
   useEffect(() => {
@@ -334,6 +337,7 @@ const formattedDate =
                 : null,
           },
           sort_by: {},
+          load_nearby: nearby
         };
         activtySearch
           .post(`/?limit=30&offset=${offSet}`, requestData)
@@ -585,6 +589,10 @@ const formattedDate =
     }));
   };
 
+    const handleNearby = () => {
+    setNearby((prev) => !prev);
+  };
+
   const convertToISODate = (dateStr) => {
     if (!dateStr) return;
     const [day, month, year] = dateStr?.split("/");
@@ -794,6 +802,15 @@ const formattedDate =
                   >
                     <CheckboxFormComponent checked={recommended} />
                     Top Recommended
+                  </button>
+                </div>
+                <div className="max-[583px]:hidden">
+                  <button
+                    onClick={handleNearby}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={nearby} />
+                    Nearby Activities
                   </button>
                 </div>
               </div>

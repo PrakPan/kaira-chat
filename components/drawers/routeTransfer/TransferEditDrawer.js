@@ -3461,7 +3461,7 @@ const RoundTripSuggestion = ({
 
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-[#636366] text-[14px] font-normal">
-                    {price.transfer_details?.model_name}:{" "}
+                    {price.transfer_details?.model_name || price.transfer_details?.type}:{" "}
                     <span className="text-black font-bold">
                       ₹{getIndianPrice(Math.floor(price?.transfer_details?.total))}
                     </span>
@@ -3657,7 +3657,7 @@ const MultiCityTripSuggestion = ({
 
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-[#636366] text-[14px] font-normal">
-                    {price?.taxi_category?.model_name}:{" "}
+                    {price?.taxi_category?.model_name || price?.taxi_category?.type}:{" "}
                     <span className="text-black font-bold">
                       ₹{getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
