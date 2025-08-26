@@ -59,6 +59,9 @@ const AirbnbCalendarMobile = (props) => {
         if (!date || !selectedDates.start || !selectedDates.end) return false;
         return date > selectedDates.start && date < selectedDates.end;
     };
+    const isDateRangeStart = (date) => selectedDates.start && date && date.getTime() === selectedDates.start.getTime();
+    const isDateRangeEnd = (date) => selectedDates.end && date && date.getTime() === selectedDates.end.getTime();
+
 
     // Navigation
     const navigateMonth = (direction) => {
@@ -93,15 +96,21 @@ const AirbnbCalendarMobile = (props) => {
                 <div className="grid grid-cols-7 text-[10px] font-medium text-gray-500">
                     {dayNames.map(day => <div key={day} className="text-center">{day}</div>)}
                 </div>
-                <div className="grid grid-cols-7 gap-1 mt-1">
+                <div className="grid grid-cols-7 mt-1">
                     {days.map((date, idx) => (
-                        <div key={idx} className="aspect-square flex items-center justify-center">
+                        <div
+                            key={idx}
+                            className={`aspect-square flex items-center justify-center relative
+                            ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
+                            ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
+                            ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}`}
+                        >
                             {date && (
                                 <button
                                     onClick={() => handleDateClick(date)}
-                                    className={`w-[34px] h-[34px] rounded-full text-[12px] flex items-center justify-center 
-                    ${isDateSelected(date) ? 'bg-black text-white' :
-                                            isDateInRange(date) ? 'bg-gray-100 text-gray-900' :
+                                    className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
+                ${isDateSelected(date) ? 'bg-black text-white' :
+                                            isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
                                                 'hover:bg-gray-100 text-gray-900'}`}
                                 >
                                     {date.getDate()}
@@ -112,6 +121,8 @@ const AirbnbCalendarMobile = (props) => {
                 </div>
             </div>
         );
+
+
 
         return (
             <div className="space-y-6">
@@ -228,17 +239,18 @@ const AirbnbCalendarMobile = (props) => {
                         ? renderMonthView()
                         : renderAnyView()}
 
-                <div className="flex justify-end border-t border-gray-200 pt-4 gap-4">
+                <div className="flex justify-between gap-2 border-t border-gray-200 pt-4 gap-4">
                     <MediumIndigoOutlinedButton
                         onClick={() => {
                             setSelectedDates({ start: null, end: null });
                             setTripDuration(1);
                             props.setShowCalendar(false);
                         }}
+                        className='flex-1'
                     >
                         Clear
                     </MediumIndigoOutlinedButton>
-                    <MediumIndigoButton className='text-white' onClick={handleApplyDates}>
+                    <MediumIndigoButton className='text-white flex-1' onClick={handleApplyDates}>
                         Apply
                     </MediumIndigoButton>
                 </div>
