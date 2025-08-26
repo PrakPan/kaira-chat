@@ -51,6 +51,74 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const SimplePaymentOptions = ({ 
+  totalAmount = 37755, 
+  firstTimeDiscount = 500,
+  lockInAmount = 2000,
+  selectedOption,
+  setSelectedOption,
+  onProceed
+}) => {
+  return (
+    <div>
+      <div className="mb-4">
+        <h3 className="font-medium text-base mb-3">Payment Options</h3>
+        
+        {/* Pay Full Amount - Simple version */}
+        <div 
+          className={`border-2 ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 mb-3 cursor-pointer`}
+          onClick={() => setSelectedOption('full')}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+              {selectedOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+            </div>
+            <div className="flex-1">
+              <div className="font-medium text-base">
+                Pay full amount now and save ₹{firstTimeDiscount}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lock-in Option - Simple version */}
+        <div 
+          className={`border-2 ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}
+          onClick={() => setSelectedOption('lockin')}
+        >
+          <div className="flex items-center gap-3">
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+              {selectedOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+            </div>
+            <div className="flex-1">
+              <div className="font-medium text-base">
+                Lock-in today's price with ₹{lockInAmount.toLocaleString('en-IN')}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Button
+        color="#111"
+        fontWeight="500"
+        fontSize="1rem"
+        borderWidth="1px"
+        width="100%"
+        borderRadius="8px"
+        bgColor="#f8e000"
+        padding="12px"
+        onclick={onProceed}
+      >
+        Proceed to Payment
+      </Button>
+      
+      <div className="text-center text-sm text-gray-600 mt-3">
+        Apply your coupon code at checkout in the next step.
+      </div>
+    </div>
+  );
+};
 
 const LivePriceTimer = ({ validFor = "47h 23m" }) => {
   return (
@@ -60,70 +128,101 @@ const LivePriceTimer = ({ validFor = "47h 23m" }) => {
   );
 };
 
+const PaymentSuccess = ({ amount, onDownloadInvoice }) => {
+  return (
+    <div className="bg-white p-8 rounded-lg text-center">
+      <div className="mb-6">
+        {/* Confetti background could be added with CSS animation */}
+        <div className="w-16 h-16 bg-green-500 rounded-full mx-auto flex items-center justify-center mb-4">
+          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-semibold mb-2">Payment Successful!</h2>
+        <p className="text-gray-600">
+          Your full payment of ₹{amount?.toLocaleString('en-IN')} has been received. No pending balance.
+        </p>
+      </div>
+      
+      <Button
+        color="#111"
+        fontWeight="500"
+        fontSize="1rem"
+        borderWidth="1px"
+        width="100%"
+        borderRadius="8px"
+        bgColor="#f8e000"
+        padding="12px"
+        onclick={()=>{}}
+      >
+        Download Invoice
+      </Button>
+    </div>
+  );
+};
+
 // 2. Payment Options Component (Add before the buttons)
 const PaymentOptions = ({ 
-   totalAmount = 37755, 
+  totalAmount = 37755, 
   firstTimeDiscount = 500,
   lockInAmount = 2000,
-  onPayFullAmount,
-  onLockInPrice,
   selectedOption,
   setSelectedOption 
 }) => {
-
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Payment Options</h3>
       
-      {/* Recommended - Pay Full Amount */}
+      {/* Pay Full Amount Option */}
       <div 
-        className={`border-2 ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 mb-3 cursor-pointer relative`}
+        className={`border-2 ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 mb-3 cursor-pointer`}
         onClick={() => setSelectedOption('full')}
       >
-        {selectedOption === 'full' && (
-          <div className="absolute top-3 right-3">
-            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+              {selectedOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
             </div>
           </div>
-        )}
-        
-        <div className="bg-black text-white px-2 py-1 rounded text-xs font-medium mb-2 inline-block">
-          Recommended
-        </div>
-        
-        <div className="font-medium text-base mb-1">
-          Pay full amount now and save ₹{firstTimeDiscount}
-        </div>
-        <div className="text-sm text-gray-600 mb-2">
-          Get instant booking confirmation
-        </div>
-        <div className="text-xl font-semibold">
-          ₹{totalAmount.toLocaleString('en-IN')}
+          <div className="flex-1">
+            {/* <div className="bg-black text-white px-2 py-1 rounded text-xs font-medium mb-2 inline-block">
+              Recommended
+            </div> */}
+            <div className="font-medium text-base mb-1">
+              Pay full amount now and save ₹{firstTimeDiscount}
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              Get instant booking confirmation
+            </div>
+            <div className="text-xl font-semibold">
+              ₹{totalAmount.toLocaleString('en-IN')}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Lock-in Price Option */}
       <div 
-        className={`border-2 ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer relative`}
+        className={`border-2 ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 cursor-pointer`}
         onClick={() => setSelectedOption('lockin')}
       >
-        {selectedOption === 'lockin' && (
-          <div className="absolute top-3 right-3">
-            <div className="w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
+        <div className="flex items-start gap-3">
+          <div className="mt-1">
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+              {selectedOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
             </div>
           </div>
-        )}
-        
-        <div className="font-medium text-base mb-1">
-          Lock-in today's price with ₹{lockInAmount.toLocaleString('en-IN')}
-        </div>
-        <div className="text-sm text-gray-600 mb-2">
-          Secure your itinerary and today's live price (amount adjusts in final booking).
-        </div>
-        <div className="text-xl font-semibold">
-          ₹{lockInAmount.toLocaleString('en-IN')}
+          <div className="flex-1">
+            <div className="font-medium text-base mb-1">
+              Lock-in today's price with ₹{lockInAmount.toLocaleString('en-IN')}
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              Secure your itinerary and today's live price (amount adjusts in final booking).
+            </div>
+            <div className="text-xl font-semibold">
+              ₹{lockInAmount.toLocaleString('en-IN')}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -269,6 +368,11 @@ const Details = (props) => {
   const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
 
    const [selectedOption, setSelectedOption] = useState('full');
+   const [showExpandedPayment, setShowExpandedPayment] = useState(false);
+const [paymentCompleted, setPaymentCompleted] = useState(false);
+const [lockInCompleted, setLockInCompleted] = useState(false);
+const [paymentStep, setPaymentStep] = useState('initial'); // 'initial', 'options', 'detailed'
+const [showDetailedPayment, setShowDetailedPayment] = useState(false);
 
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
@@ -575,6 +679,11 @@ const Details = (props) => {
           )
           .then((res) => {
             setPaymentLoading(false);
+            if (selectedPaymentOption === 'full') {
+            setPaymentCompleted(true);
+           } else {
+          setLockInCompleted(true);
+        }
             props.getPaymentHandler();
           })
           .catch((err) => {
@@ -1061,7 +1170,7 @@ const _fullPaymentHandler = (id) => {
         </div>
       )}
 
-      <PaymentOptions 
+     {/* <PaymentOptions 
   totalAmount={props.payment?.discounted_cost}
   lockInAmount={props.payment?.lock_in_fee}
   selectedOption={selectedPaymentOption}
@@ -1074,16 +1183,16 @@ const _fullPaymentHandler = (id) => {
 <CouponSection 
   appliedCoupon={props?.payment?.coupon?.code}
   savedAmount={props?.payment?.coupon_usage?.discount}
-  onViewCoupons={() => {/* Your view coupons logic */}}
-  onRemoveCoupon={() => {/* Your remove coupon logic */}}
-/>
+  onViewCoupons={() => {/* Your view coupons logic */}
+  {/* onRemoveCoupon={() => {/* Your remove coupon logic */}
+{/* />
 
 
 <PriceDetails 
   itineraryCost={props.payment?.total_cost}
   couponDiscount={-props?.payment?.coupon_usage?.discount}
   totalPayable={props.payment?.discounted_cost}
-/>
+/>  */}
 
       <div className="px-0 pb-4">
         {props.couponJSX}
@@ -1173,13 +1282,136 @@ const _fullPaymentHandler = (id) => {
         </Button>
       ) : (
         <>
-          {props?.token ?
-          <PaymentButton 
-  amount={selectedPaymentOption === 'full' ? props.payment?.discounted_cost : props.payment?.lock_in_fee}
-  isLoading={paymentLoading}
-  paymentType={selectedPaymentOption}
-  onClick={() => handlePayNow(selectedPaymentOption === 'full' ? 'full' : 'lockin')}
-/>:  (
+          {props?.token ? (       <>
+        {!showDetailedPayment ? (
+          // STEP 1: Simple radio buttons + Proceed to Payment button
+          <div>
+            <div className="mb-4">
+              <h3 className="font-medium text-base mb-3">Payment Options</h3>
+              
+              {/* Pay Full Amount Option */}
+              <div 
+                className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
+                onClick={() => setSelectedPaymentOption('full')}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                    {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-base">
+                      Pay full amount now and save ₹500
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Lock-in Option */}
+              <div 
+                className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
+                onClick={() => setSelectedPaymentOption('lockin')}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                    {selectedPaymentOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-base">
+                      Lock-in today's price with ₹{props.payment?.lock_in_fee?.toLocaleString('en-IN')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="1rem"
+              borderWidth="1px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => setShowDetailedPayment(true)}
+            >
+              Proceed to Payment
+            </Button>
+            
+            <div className="text-center text-sm text-gray-600 mt-3">
+              Apply your coupon code at checkout in the next step.
+            </div>
+          </div>
+        ) : paymentCompleted ? (
+          <PaymentSuccess 
+            amount={props.payment?.discounted_cost}
+            onDownloadInvoice={() => {/* Add download invoice logic */}}
+          />
+        ) : (
+          // STEP 2: Detailed view with everything
+          <div>
+            <PaymentOptions 
+              totalAmount={props.payment?.discounted_cost}
+              lockInAmount={props.payment?.lock_in_fee}
+              selectedOption={selectedPaymentOption}
+              setSelectedOption={setSelectedPaymentOption}
+            />
+            
+            <CouponSection 
+              appliedCoupon={props?.payment?.coupon?.code}
+              savedAmount={props?.payment?.coupon_usage?.discount}
+              onViewCoupons={() => {}}
+              onRemoveCoupon={() => {}}
+            />
+            
+            <PriceDetails 
+              itineraryCost={props.payment?.total_cost}
+              couponDiscount={-props?.payment?.coupon_usage?.discount}
+              totalPayable={props.payment?.discounted_cost}
+            />
+            
+            {!lockInCompleted && (
+              <PaymentButton 
+                amount={selectedPaymentOption === 'full' ? props.payment?.discounted_cost : props.payment?.lock_in_fee}
+                isLoading={paymentLoading}
+                paymentType={selectedPaymentOption}
+                onClick={() => handlePayNow(selectedPaymentOption)}
+              />
+
+
+            )}
+
+                 <Button
+        width="100%"
+        margin="0.5rem 0 0 0"
+        borderRadius="8px"
+        hoverColor="white"
+        fontWeight="400"
+        padding="12px"
+        borderWidth="1px"
+        onclick={handleWhatsappChat}
+      >
+        <div className="flex flex-row justify-center items-center">
+          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+          <div>Chat on WhatsApp</div>
+        </div>
+      </Button>
+
+      <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+        <Link
+          href="/terms-conditions"
+          target="_blank"
+          onClick={handleTermsConditions}
+        >
+          <div>Terms & Conditions</div>
+        </Link>
+      </div>
+          </div>
+        )}
+
+   
+      </>
+):  (
             <GetInTouchContainer>
               <Button
                 color="#111"
@@ -1278,31 +1510,7 @@ const _fullPaymentHandler = (id) => {
         </>
       )}
 
-      <Button
-        width="100%"
-        margin="0.5rem 0 0 0"
-        borderRadius="8px"
-        hoverColor="white"
-        fontWeight="400"
-        padding="12px"
-        borderWidth="1px"
-        onclick={handleWhatsappChat}
-      >
-        <div className="flex flex-row justify-center items-center">
-          <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-          <div>Chat on WhatsApp</div>
-        </div>
-      </Button>
-
-      <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-        <Link
-          href="/terms-conditions"
-          target="_blank"
-          onClick={handleTermsConditions}
-        >
-          <div>Terms & Conditions</div>
-        </Link>
-      </div>
+      
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-4">
         {!isPageWide && (
           <SocialShareMobile
