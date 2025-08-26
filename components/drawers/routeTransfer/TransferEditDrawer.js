@@ -1231,7 +1231,9 @@ const TransferEditDrawer = (props) => {
        {transferType === "MULTICITYROUNDTRIP" &&
   (roundTripSuggestions || multiCitySuggestions) && (
     <div className="w-full  bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+      
       <div className="flex justify-end items-end px-1 py-3 md:p-0">
+        <div className="flex flex-col items-center gap-2">
         <button
           onClick={() => {
             const tripTypeIndex = selectedTripType === 'roundtrip' ? 1 : 0;
@@ -1258,6 +1260,9 @@ const TransferEditDrawer = (props) => {
             "Update Transfer"
           )}
         </button>
+
+         {!selectedCab && <p className="text-sm text-gray-500">Select any one cab option</p>}
+        </div>
       </div>
     </div>
 )}
@@ -3461,7 +3466,7 @@ const RoundTripSuggestion = ({
 
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-[#636366] text-[14px] font-normal">
-                    {price.transfer_details?.model_name}:{" "}
+                    {price.transfer_details?.model_name || price.transfer_details?.type}:{" "}
                     <span className="text-black font-bold">
                       ₹{getIndianPrice(Math.floor(price?.transfer_details?.total))}
                     </span>
@@ -3489,7 +3494,7 @@ const RoundTripSuggestion = ({
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent
@@ -3499,7 +3504,7 @@ const RoundTripSuggestion = ({
           <label className="text-center cursor-pointer">
             {selectedTripType === 'roundtrip' && selectedCab ? "Selected" : "Select"}
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -3657,7 +3662,7 @@ const MultiCityTripSuggestion = ({
 
                 <div className="flex flex-col items-start gap-1">
                   <div className="text-[#636366] text-[14px] font-normal">
-                    {price?.taxi_category?.model_name}:{" "}
+                    {price?.taxi_category?.model_name || price?.taxi_category?.type}:{" "}
                     <span className="text-black font-bold">
                       ₹{getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
@@ -3685,7 +3690,7 @@ const MultiCityTripSuggestion = ({
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent
@@ -3695,7 +3700,7 @@ const MultiCityTripSuggestion = ({
           <label className="text-center cursor-pointer">
             {selectedTripType === 'multicity' && selectedCab ? "Selected" : "Select"}
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
