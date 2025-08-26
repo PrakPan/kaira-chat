@@ -105,6 +105,7 @@ const ActivityAddDrawer = (props) => {
     },
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
+
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -122,6 +123,7 @@ const ActivityAddDrawer = (props) => {
   const prevPaxRef = useRef(pax);
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
+  const [nearby, setNearby] = useState(false);
   const [changed, setChanged] = useState(false);
   const [startDate, setStartDate] = useState(props?.date);
   const [showCalender, setShowCalender] = useState(false);
@@ -202,6 +204,7 @@ const formattedDate =
     debouncedSearch,
     filterState,
     startDate,
+    nearby
   ]);
 
   useEffect(() => {
@@ -334,6 +337,7 @@ const formattedDate =
                 : null,
           },
           sort_by: {},
+          load_nearby: nearby
         };
         activtySearch
           .post(`/?limit=30&offset=${offSet}`, requestData)
@@ -397,7 +401,7 @@ const formattedDate =
       setLoadingPoi(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,one_liner_description,display_name,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,display_name,one_liner_description,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
             props?.cityID
           }&name=${debouncedSearch}&is_very_popular=${
             filterState?.recommended_only
@@ -585,6 +589,10 @@ const formattedDate =
     }));
   };
 
+    const handleNearby = () => {
+    setNearby((prev) => !prev);
+  };
+
   const convertToISODate = (dateStr) => {
     if (!dateStr) return;
     const [day, month, year] = dateStr?.split("/");
@@ -744,13 +752,22 @@ const formattedDate =
               </div>
 
               <div className="min-[583px]:hidden flex justify-between w-full">
-                <button
+                {/* <button
                   onClick={handleRecommneded}
                   className="flex flex-row items-center gap-1 cursor-pointer"
                 >
                   <CheckboxFormComponent checked={recommended} />
                   Top Recommended
-                </button>
+                </button> */}
+                
+                  <button
+                    onClick={handleNearby}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={nearby} />
+                    Nearby Activities
+                  </button>
+               
                 <div className="flex gap-4">
                   <div
                     className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
@@ -783,17 +800,26 @@ const formattedDate =
               <div className="flex flex-row items-center justify-between w-full mb-[20px]">
                 <div>
                   Showing {options.length}
-                  {elementType === "POI" ? " attractions" : " activities"}
+                  {elementType === "POI" ? " attractions" : nearby ? " nearby activities" : " activities"}
                   {totalResults ? ` out of ${totalResults}` : null}
                   {props?.cityName ? ` in ${props?.cityName}` : null}
                 </div>
-                <div className="max-[583px]:hidden">
+                {/* <div className="max-[583px]:hidden">
                   <button
                     onClick={handleRecommneded}
                     className="flex flex-row items-center gap-1 cursor-pointer"
                   >
                     <CheckboxFormComponent checked={recommended} />
                     Top Recommended
+                  </button>
+                </div> */}
+                <div className="max-[583px]:hidden">
+                  <button
+                    onClick={handleNearby}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={nearby} />
+                    Nearby Activities
                   </button>
                 </div>
               </div>
