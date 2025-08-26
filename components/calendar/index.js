@@ -90,7 +90,7 @@ const AirbnbCalendar = (props) => {
 
 
   const handleApplyDates = () => {
-    props.onChangeDate({start:selectedDates.start,end:selectedDates.end})
+    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end })
     props.setShowCalendar(false)
   }
 
@@ -102,14 +102,15 @@ const AirbnbCalendar = (props) => {
           <div key={day} className="text-[10px] font-medium text-center ">{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-0">
+      <div className="grid grid-cols-7 gap-[1px]">
         {days.map((date, idx) => (
           <div
             key={idx}
-            className={`aspect-square flex items-center justify-center relative 
-              ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
-              ${date && isDateRangeStart(date) ? 'bg-gradient-to-r from-white to-gray-100' : ''}
-              ${date && isDateRangeEnd(date) ? 'bg-gradient-to-l from-white to-gray-100' : ''}`}>
+            className={` flex items-center justify-center relative
+            ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
+            ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
+            ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}`}
+          >
             {date && (
               <button
                 onClick={() => handleDateClick(date)}
@@ -167,7 +168,6 @@ const AirbnbCalendar = (props) => {
             key={month}
             onClick={() => {
               setCurrentMonth(new Date(today.getFullYear(), index, 1));
-              setCurrentView('calendar');
             }}
             className={`flex flex-col  justify-start p-[10px] text-start text-[14px] rounded-xl border transition-all ${currentMonth.getMonth() === index
               ? 'bg-yellow-400 border-yellow-400 text-black font-medium'
