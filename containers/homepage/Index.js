@@ -95,6 +95,19 @@ const Homepage = (props) => {
     }
   }, [props.token]);
 
+  const handlePlan = () => {
+    router.push("/dashboard");
+    logEvent({
+      action: "View_All_Trips",
+      params: {
+        page: "Home Page",
+        event_category: "Button Click",
+        event_label: "View All",
+        event_action: "My Trips Section",
+      },
+    });
+  };
+
   const handleButtonClick = (location) => {
     logEvent({
       action: "View_Destination",
@@ -273,7 +286,7 @@ const Homepage = (props) => {
             margin="2.5rem auto"
             padding="0.5rem 2rem"
             borderWidth="1px"
-            onclick={() => fetchTrips(true)}
+            onclick={handlePlan}
           >
             {"View all plans"}
           </Button>
