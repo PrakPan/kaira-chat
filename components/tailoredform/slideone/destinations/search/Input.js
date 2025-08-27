@@ -8,7 +8,7 @@ const Container = styled.input`
   top: 0;
   left: 0;
   bottom: 0;
-  padding-left: 2.6rem;
+  padding-left: 3.5rem;
   background-color: transparent;
   cursor: pointer;
   height: 100%;
@@ -67,7 +67,6 @@ const SearchInput = (props) => {
       onClick={props.searchFinalized ? _handleReset : _resetSelectedCities}
       readOnly={props.eventDates ? true : false}
       placeholder="Search destination"
-      className="font-lexend"
       value={value}
       onChange={(e) => setValue(e.target.value)}
     ></Container>

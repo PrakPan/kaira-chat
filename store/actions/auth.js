@@ -331,14 +331,14 @@ export const auth = (
           dispatch(setUserDetails(userdata)); //Store user name and email
           dispatch(checkAuthTimeout(responseData.data.user?.oauth?.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
           dispatch(authCloseLogin()); //close login modal
-          if (onSuccess) {
-            onSuccess();
-          }
           //store token details in local storage
           localStorage.setItem(
             "access_token",
             responseData.data.user?.oauth?.access_token
           );
+             if (onSuccess) {
+            onSuccess();
+          }
           localStorage.setItem("expirationDate", expirationDate);
         }
       })

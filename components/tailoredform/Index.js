@@ -147,6 +147,12 @@ const Enquiry = (props) => {
   const [error, setError] = useState(null);
   const [addHotels, setAddHotels] = useState(false);
   const [addFlights, setAddFlights] = useState(false);
+  const [addInclusions, setAddInclusions] = useState(false);
+  const [slideFour, setSlideFour] = useState({
+    hotelType: [],
+    mealPreferences: [],
+    specialRequests: ""
+  })
   const [loginComplete, setLoginComplete] = useState(false);
   const [defaultPriceRange, setDefaultPriceRange] = useState({
     min_price: 0,
@@ -400,7 +406,7 @@ const Enquiry = (props) => {
           locations.push(selectedCities[i].name);
         }
       }
-    } catch {}
+    } catch { }
 
     let dist = divideTravellers();
     const start_date = format(value_start, "yyyy-MM-dd");
@@ -566,7 +572,7 @@ const Enquiry = (props) => {
           locations.push(selectedCities[i].name);
         }
       }
-    } catch {}
+    } catch { }
 
     const data = {
       source,
@@ -597,7 +603,7 @@ const Enquiry = (props) => {
         setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
-        setRoute(data.basic_route);
+        setRoute([data.start_city, ...data.basic_route, data.end_city]);
 
         const hotelsBudget = data?.hotels_budget;
         if (hotelsBudget) {
@@ -625,7 +631,7 @@ const Enquiry = (props) => {
     };
   }, [router]);
 
-  useEffect(() => {});
+  useEffect(() => { });
 
   const completeItineraryCreate = () => {
     let number_of_adults = 2;
@@ -662,11 +668,11 @@ const Enquiry = (props) => {
     setLoading(true);
     setIsSubmitting(true);
     localStorage.removeItem("MyPlans");
-
+    console.log("access token is: ", localStorage.getItem("access_token"))
     itineraryComplete
       .post("", data, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then((response) => {
@@ -687,7 +693,7 @@ const Enquiry = (props) => {
         setLoading(false);
         setIsSubmitting(false);
         setError(err.message);
-        router.push("/thank-you");
+        // router.push("/thank-you");
       });
   };
 
@@ -771,12 +777,19 @@ const Enquiry = (props) => {
             style={{ padding: "0 1rem", width: "100%" }}
             className="h-max  font-inter flex flex-col items-center gap-[46px]"
           >
-            <div className="relative w-full flex justify-center">
-              <h1 className="text-black font-inter text-[40px] font-bold leading-[48px] text-center max-w-[800px]">
+            <div className="sm:relative w-full flex justify-center sm:justify-between">
+              <h1
+                className="
+                text-black font-inter 
+                  text-[24px] leading-[32px] font-semibold text-start
+                  sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  
+                  max-w-[800px]
+                "
+              >
                 {headings[slideIndex]}
               </h1>
 
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+              <div className=" sm:absolute sm:right-0 sm:top-1/2 sm:transform sm:-translate-y-1/2">
                 <svg width="64" height="64" viewBox="0 0 64 64">
                   {/* Background Circle */}
                   <circle
@@ -822,7 +835,7 @@ const Enquiry = (props) => {
               </div>
             </div>
 
-            <div className="max-w-[600px] ">
+            <div className={`${slideIndex == 1 ? "w-[100vw]" : "max-w-[600px]"}`}>
               <Flickity
                 initialInputId={initialInputId}
                 focusedDate={focusedDate}
@@ -869,11 +882,16 @@ const Enquiry = (props) => {
                 addHotels={addHotels}
                 setAddHotels={setAddHotels}
                 addFlights={addFlights}
+                addInclusions={addInclusions}
                 setAddFlights={setAddFlights}
+                setAddInclusions={setAddInclusions}
+                slideFour={slideFour}
+                setSlideFour={setSlideFour}
                 setSlideIndex={setSlideIndex}
                 setLoginComplete={setLoginComplete}
                 defaultPriceRange={defaultPriceRange}
                 route={route}
+                _submitDataHandler={_submitDataHandler}
               ></Flickity>
 
               {error ? <p className="text-sm text-red-600">{error}</p> : null}
@@ -885,11 +903,11 @@ const Enquiry = (props) => {
                   style={
                     !isPageWide && isPageLoaded
                       ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
                       : {}
                   }
                   padding="0.5rem 2rem"
@@ -910,18 +928,19 @@ const Enquiry = (props) => {
 
               {slideIndex === 1 &&
                 (!props.token || props.phone === "null" || addHotels) && (
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between",alignItems:"center",width:"100%" }} className="p-4">
+                    <button className="LargeIndigoOutlinedButton" onClick={()=>    setSlideIndex(slideIndex + 1)}>Skip</button>
                     <Button
                       fontSize="1rem"
                       width={!isPageWide ? "auto" : "100%"}
                       style={
                         !isPageWide
                           ? {
-                              position: "fixed",
-                              left: "1rem",
-                              right: "1rem",
-                              bottom: "0",
-                            }
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
                           : {}
                       }
                       padding="0.5rem 2rem"
@@ -934,113 +953,112 @@ const Enquiry = (props) => {
                       loading={isLoading && submitted}
                       height="50px"
                       color="white"
-                    >
+                      className="!z-20 max-w-[500px]"                    >
                       Continue
                     </Button>
                   </div>
                 )}
 
-              {slideIndex === 2 && (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="30px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    onclick={_SlideTwoSubmitHandler}
-                    loading={isLoading && submitted}
-                    height="50px"
-                    color="white"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
+            {slideIndex === 2 && (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="30px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  onclick={_SlideTwoSubmitHandler}
+                  loading={isLoading && submitted}
+                  height="50px"
+                  color="white"
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
 
-              {slideIndex === 3 && (
-                <div className="flex justify-end">
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="40px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onclick={() => {
-                      setSlideIndex(4);
-                      _SlideThreeSubmitHandler;
-                    }}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
-              {slideIndex === 4 ? (
-                <div className="flex justify-end">
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="40px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onClick={_submitDataHandler}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            {slideIndex === 3 && (
+              <div className="flex justify-end">
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="40px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  color="white"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onclick={() => {
+                    totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
+                  }}
+                  height="50px"
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
+            {slideIndex === 4 ? (
+              <div className="flex justify-end">
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="40px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  color="white"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onClick={_submitDataHandler}
+                  height="50px"
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
-      </Container>
     </div>
+      </Container >
+    </div >
   );
 };
 

@@ -1,44 +1,25 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { IoMenu, IoLocationSharp } from "react-icons/io5";
+import { IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone, MdModeEditOutline, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
+import { MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
-import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import {
-    FaLocationCrosshairs,
     FaCirclePlus,
-    FaCircleMinus,
     FaCalendarDays,
-    FaLocationDot,
 } from "react-icons/fa6";
-import { RiProgress2Line } from "react-icons/ri";
 import {
-    startOfMonth,
-    endOfMonth,
-    startOfWeek,
-    endOfWeek,
-    eachDayOfInterval,
-    format,
-    parseISO,
-    addMonths,
     isSameDay,
     addDays,
     differenceInDays,
 } from "date-fns";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-import moment from "moment";
-import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { getDate, getDateString } from "../../../helper/DateUtils";
-import { dateFormat } from "../../../helper/DateUtils";
-
-import { TbArrowBack } from "react-icons/tb";
-
 
 import { PulseLoader } from "react-spinners";
 
@@ -50,118 +31,12 @@ import { logEvent } from "../../../services/ga/Index";
 import axiossearchstartinginstance from "../../../services/search/startinglocation";
 import axiossearchinstance from "../../../services/search/searchsuggest";
 import axiosItineraryUpdateInstance, { axiosMercuryItineraryUpdateInstance } from "../../../services/itinerary/update";
-import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
 import { openNotification } from "../../../store/actions/notification";
 import setItinerary from "../../../store/actions/itinerary";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { HiLocationMarker } from "react-icons/hi";
-
-const Container = styled.div`
-  position: relative;
-  
-
-  .SingleDatePicker {
-    width: 100%;
-  }
-  .SingleDatePickerInput_1 {
-    border: none;
-    display: flex;
-    gap: 22px;
-    background: initial;
-  }
-  .DateInput {
-    width: 100%;
-    border: 1px solid #d0d5dd;
-    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .DateInput > input {
-    font-family: lexend;
-    font-weight: 450;
-    font-size: 0.9rem;
-    padding:5px;
-  }
-  .DayPicker__withBorder {
-    @media screen and (max-width: 768px) {
-      border: none;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-      width: 320px;
-      margin: auto;
-    }
-  }
-  .SingleDatePickerInput_arrow,
-  .DayPickerKeyboardShortcuts_buttonReset {
-    display: none !important;
-  }
-
-  .SingleDatePicker_picker_1 {
-    left: 0px;
-    top: 48px !important;
-    @media screen and (min-width: 768px) {
-      left: 0px !important;
-      right: 0px !important;
-      top: 55px !important;
-  }
-  .CalendarDay {
-    border: 0px;
-  }
-  .CalendarDay__selected,
-  .CalendarDay__selected:hover {
-    background-color: #f7e700;
-    border: 0px;
-    color: black;
-  }
-  .CalendarDay__selected_span,
-  .CalendarDay__hovered_span,
-  .CalendarDay__hovered_span_3 {
-    background-color: #f7e70033;
-    color: black;
-    &:active {
-      background-color: #f7e700;
-      opacity: 0.7;
-      border: none;
-    }
-    &:hover {
-      color: black;
-      background-color: #f7e7004a;
-      border: none;
-    }
-  }
-
-  .DateInput_input__focused {
-    
-  }
-  .DayPickerKeyboardShortcuts_show__topRight {
-    display: none;
-  }
-`;
-
-const CalenderIcons = styled.div`
-  position: absolute;
-  top: 0%;
-  right: 0%;
-  pointer-events: none;
-  font-size: 20px;
-  z-index: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const Icon = styled.div`
-  width: 100%;
-  text-align: right;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  margin-right: 5px;
-  margin-top: -5px;
-  color: gray;
-  font-weight: 600;
-`;
+import RoutesMap from "../../../containers/itinerary/breif/RoutesMap";
 
 const CITY_COLOR_CODES = [
     "#359EBF", // shade of blue
@@ -172,25 +47,9 @@ const CITY_COLOR_CODES = [
     "#008080", // shade of teal
     "#7d5e7d", // shade of purple
 ];
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 2;
-  cursor: pointer;
-`;
 
 const RouteEditSection = (props) => {
-    console.log("slide two props are: ",props)
+    console.log("slide two props are: ", props)
     const isDesktop = useMediaQuery("(min-width:768px)");
     const dispatch = useDispatch();
     const handleClose = useHandleClose();
@@ -228,8 +87,22 @@ const RouteEditSection = (props) => {
 
         return `${year}-${month}-${day}`;
     }
+    const containerRef = useRef(null);
+    const [containerHeight, setContainerHeight] = useState(0);
+
 
     useEffect(() => {
+        if (containerRef.current) {
+            setContainerHeight(containerRef.current.clientHeight);
+        }
+
+        const handleResize = () => {
+            if (containerRef.current) {
+                setContainerHeight(containerRef.current.clientHeight);
+            }
+        };
+        window.addEventListener("resize", handleResize);
+
         const cities = [];
         if (props?.routes) {
             for (let i = 0; i < props.routes.length; i += 1) {
@@ -308,6 +181,7 @@ const RouteEditSection = (props) => {
 
             setDestinations(cities);
         }
+        return () => window.removeEventListener("resize", handleResize)
     }, [props.routes]);
 
     useEffect(() => {
@@ -468,139 +342,7 @@ const RouteEditSection = (props) => {
         return true;
     };
 
-    const submitData = () => {
-        const data = {
-            itinerary_id: props.ItineraryId || props?.itinerary?.ItineraryId,
-            start_date: startDate,
-            basic_route: destinations
-                .map((dest) => {
-                    return {
-                        name:
-                            dest.cityData.city_name ||
-                            dest.cityData.name ||
-                            dest.cityData.text,
-                        city_id: dest.cityData.city_id || dest.cityData.resource_id,
-                        check_in: dest.cityData.checkin_date,
-                        check_out: dest.cityData.checkout_date,
-                        id: dest.cityData?.hasOwnProperty("id") ? dest.cityData?.id : null,
-                        duration: dest.cityData?.duration || dest.cityData?.nights,
-                        start_date: dest.cityData.checkin_date || startDate,
-                    };
-                })
-                .filter(
-                    (dest, index) => index !== 0 && index !== destinations.length - 1
-                ),
-            user_location: {
-                place_id: destinations[0].cityData.place_id,
-            },
-            end_location: {
-                place_id: destinations[destinations.length - 1].cityData.place_id,
-            },
-        };
 
-        console.log("New Request Data", data, destinations);
-
-        const headers = {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${props.token}`,
-        };
-
-        if (!props?.mercuryItinerary) {
-            axiosItineraryUpdateInstance
-                .post("", data, { headers })
-                .then((response) => {
-                    setLoading(false);
-                    const itineraryId =
-                        props.ItineraryId || props?.itinerary?.ItineraryId;
-                    startStatusPolling(itineraryId);
-                    handleClose()
-                })
-                .catch((err) => {
-                    setLoading(false);
-                    if (err?.response?.status === 403) {
-                        props.openNotification({
-                            text: "You are not allowed to make changes to this itinerary",
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    } else if (err?.response?.status === 400) {
-                        props.openNotification({
-                            text: err?.response?.data?.messages[0],
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    } else {
-                        props.openNotification({
-                            text: "There seems to be a problem, please try again!",
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    }
-                    console.log("[ERROR][Route Edit]: ", err.message);
-                });
-        } else {
-            axiosMercuryItineraryUpdateInstance
-                .post(`/${props.ItineraryId || props?.itinerary?.ItineraryId}/`, data, {
-                    headers,
-                })
-                .then((response) => {
-                    dispatch(setItinerary(response.data));
-                    setLoading(false);
-                    const itineraryId =
-                        props.ItineraryId || props?.itinerary?.ItineraryId;
-                    startStatusPolling(itineraryId);
-                    handleClose()
-                })
-                .catch((err) => {
-                    setLoading(false);
-                    setItineraryLoading(false);
-                    if (err?.response?.status === 403) {
-                        props.openNotification({
-                            text: "You are not allowed to make changes to this itinerary",
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    } else if (err?.response?.status === 400) {
-                        props.openNotification({
-                            text: err?.message,
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    } else {
-                        props.openNotification({
-                            text: "There seems to be a problem, please try again!",
-                            heading: "Error!",
-                            type: "error",
-                        });
-                    }
-                    console.log("[ERROR][Route Edit]: ", err.message);
-                });
-        }
-    };
-
-    const handleSaveButton = () => {
-        if (!props.token) {
-            props.setShowLoginModal(true);
-            return;
-        }
-
-        if (validateDates()) {
-            setLoading(true);
-            setItineraryLoading(true);
-            submitData();
-        } else {
-            setIsValidDates(false);
-        }
-        logEvent({
-            action: "Route Edit",
-            params: {
-                page: "Itinerary Page",
-                event_category: "Update Itinerary Routes",
-                event_label: "Save",
-                event_action: "Update Routes",
-            },
-        });
-    };
 
     const handleOutsideClick = (event) => {
         if (
@@ -612,74 +354,68 @@ const RouteEditSection = (props) => {
     };
 
     return (
-        <>
-            <div
-                onClick={(e) => handleOutsideClick(e)}
-                className="w-full h-full fixed inset-0 flex flex-col bg-[#ACACAC] items-center bg-white z-[1025] overflow-y-auto hide-scrollbar"
-            >
-                {/* {loading && <Loader />} */}
-                <Header title={"Route Overview — Customize Your Journey from Start to Finish!"} setSlideIndex={props.setSlideIndex}/>
-              
-                {itineraryLoading && <Spinner isEdit={true} />}
+        <div
+            ref={containerRef}
+            onClick={(e) => handleOutsideClick(e)}
+            className="w-full h-full relative  flex flex-col bg-white items-center  overflow-y-auto hide-scrollbar"
+        >
+            {/* {loading && <Loader />} */}
 
-                <div className="w-full h-full px-5 hide-scrollbar overflow-y-auto py-5">
-                    {editDestination && !itineraryLoading ? (
-                        <div className="w-full h-full flex flex-row justify-start gap-5">
-                            <EditDestinations
-                                destinations={destinations}
-                                setDestinations={setDestinations}
-                                destinationRef={destinationRef}
-                                startDate={startDate}
-                                setEndDate={setEndDate}
-                                setLocationsLatLong={props.setLocationsLatLong}
-                                setDestinationChanges={setDestinationChanges}
-                                isEditMode={isEditMode}
-                                setIsEditMode={setIsEditMode}
-                            />
-                            {isDesktop && (
-                                <div className="sticky top-0 h-full w-[50%] flex flex-col gap-3 items-center">
-                                    {props.children}
+            {itineraryLoading && <Spinner isEdit={true} />}
 
-                                    {destinationChanges && (
-                                        <div className="flex flex-row items-center gap-2">
-                                            <FaInfoCircle className="text-2xl text-yellow-500" />
-                                            <div className="text-sm">Changes to be saved</div>
-                                        </div>
-                                    )}
+            <div className="w-full h-full px-5 hide-scrollbar overflow-y-auto py-5">
+
+                {!isDesktop && <div className={`w-full sm:w-[50%] flex flex-col gap-3 items-center h-[300px] mb-4 sm:h-[${containerHeight}px]`}>
+                    <div className="flex-1 h-full w-full">
+                        <RoutesMap
+                            locations={props?.routes}
+                        />
+                    </div>
+
+                    {destinationChanges && (
+                        <div className="flex flex-row items-center gap-2">
+                            <FaInfoCircle className="text-2xl text-yellow-500" />
+                            <div className="text-sm">Changes to be saved</div>
+                        </div>
+                    )}
+                </div>}
+
+                {editDestination && !itineraryLoading ? (
+                    <div className="w-full h-full flex flex-col sm:flex-row justify-start gap-5">
+                        <EditDestinations
+                            destinations={destinations}
+                            setDestinations={setDestinations}
+                            destinationRef={destinationRef}
+                            startDate={startDate}
+                            setEndDate={setEndDate}
+                            setLocationsLatLong={props.setLocationsLatLong}
+                            setDestinationChanges={setDestinationChanges}
+                            isEditMode={isEditMode}
+                            setIsEditMode={setIsEditMode}
+                        />
+                        {/* {isDesktop && ( */}
+                        {isDesktop && <div className={`w-full sm:w-[50%] flex flex-col gap-3 items-center h-[300px] sm:h-[${containerHeight}px]`}>
+                            <div className="flex-1 h-full w-full">
+                                <RoutesMap
+                                    locations={props?.routes}
+                                />
+                            </div>
+
+                            {destinationChanges && (
+                                <div className="flex flex-row items-center gap-2">
+                                    <FaInfoCircle className="text-2xl text-yellow-500" />
+                                    <div className="text-sm">Changes to be saved</div>
                                 </div>
                             )}
-                        </div>
-                    ) : (
-                        // <EditDates
-                        //   destinations={destinations}
-                        //   setDestinations={setDestinations}
-                        //   startDate={startDate}
-                        //   setStartDate={setStartDate}
-                        //   endDate={endDate}
-                        //   setEndDate={setEndDate}
-                        //   isValidDates={isValidDates}
-                        //   invalidDateError={invalidDateError}
-                        // />
-                        ""
-                    )}
-                 <ActionPanel setSlideIndex={props.setSlideIndex}/>
-                </div>
-
-              
-               
-                {!isDesktop && (
-                    <FloatingView>
-                        <TbArrowBack
-                            style={{ height: "28px", width: "28px" }}
-                            cursor={"pointer"}
-                            onClick={()=>
-                                props.setSlideIndex(0)
-                            }
-                        />
-                    </FloatingView>
+                        </div>}
+                        {/* )} */}
+                    </div>
+                ) : (
+                    ""
                 )}
+                {/* <ActionPanel setSlideIndex={props.setSlideIndex} /> */}
             </div>
-        </>
+        </div>
     );
 };
 
@@ -702,65 +438,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);
 
-const Header = (props) => {
-    const convertDFormat = (dt) => {
-        try {
-            const date = parseISO(dt);
-            const formattedDate = format(date, "MMMM do");
-            return formattedDate;
-        } catch (e) {
-            return "";
-        }
-    };
-
-    return (
-        <div className="w-full font-inter px-5 py-3  border-b-gray-200">
-            <div className="flex items-center justify-between">
-                <IoMdArrowRoundBack size={24} onClick={()=>props.setSlideIndex(0)}/>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold w-[50%] text-center">
-                {props?.title}
-            </h1>
-
-            <div className="">
-                            <svg width="64" height="64" viewBox="0 0 64 64">
-                              {/* Background Circle */}
-                              <circle
-                                cx="32"
-                                cy="32"
-                                r={28}
-                                fill="none"
-                                stroke="#F0F0F0"
-                                strokeWidth="6"
-                              />
-                              {/* Progress Circle */}
-                              <circle
-                                cx="32"
-                                cy="32"
-                                r={28}
-                                fill="none"
-                                stroke="#5CBA66"
-                                strokeWidth="6"
-                                strokeDasharray={175}
-                                strokeDashoffset={70}
-                                strokeLinecap="round"
-                                transform="rotate(-90 32 32)"
-                              />
-                              {/* Text in Center */}
-                              <text
-                                x="32"
-                                y="32"
-                                textAnchor="middle"
-                                dominantBaseline="middle"
-                                className="text-sm font-bold fill-black"
-                              >
-                                2/5
-                              </text>
-                            </svg>
-                          </div>
-            </div>
-        </div>
-    );
-};
 
 export const EditPanel = ({ editDestination, setEditDestination }) => {
     function handleEditPanel(editDates = false) {
@@ -787,22 +464,12 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
                 <div
                     onClick={() => handleEditPanel()}
                     className={`cursor-pointer ${editDestination
-                            ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
-                            : "text-gray-500 px-3 py-2"
+                        ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
+                        : "text-gray-500 px-3 py-2"
                         } `}
                 >
                     Edit/Remove Destination
                 </div>
-                {/* <div
-          onClick={() => handleEditPanel(true)}
-          className={`cursor-pointer ${
-            !editDestination
-              ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
-              : "text-gray-500 px-3 py-2"
-          } `}
-        >
-          Edit Dates
-        </div> */}
             </div>
         </div>
     );
@@ -810,20 +477,6 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 
 export const EditDestinations = (props) => {
     const [popUp, setPopUp] = useState(false);
-
-    function handleAddDestination() {
-        setPopUp(true);
-
-        logEvent({
-            action: "Route Edit",
-            params: {
-                page: "Itinerary Page",
-                event_category: "Button Click",
-                event_label: "Add Destination",
-                event_action: "Add New Destination",
-            },
-        });
-    }
 
     function updateLatLong(items) {
         props.setLocationsLatLong((prev) => {
@@ -887,21 +540,12 @@ export const EditDestinations = (props) => {
         <div className="w-full md:w-[50%] lg:w-[55%] lg:p-4 font-inter  font-normal flex flex-col items-start justify-start  pb-[150px]  gap-3">
             <div className="w-full flex flex-row items-start justify-between">
                 <div className="text-[20px] pb-3">Route Preview</div>
-                <div 
-           onClick={() => props?.setIsEditMode(!props?.isEditMode)} 
-    className="text-blue cursor-pointer underline text-sm"
->
-    Edit Route
-</div>
-
-                {/* <div>
-                    <button
-                        onClick={handleAddDestination}
-                        className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
-                    >
-                        Add Destination
-                    </button>
-                </div> */}
+                <div
+                    onClick={() => props?.setIsEditMode(!props?.isEditMode)}
+                    className="text-blue cursor-pointer underline text-sm"
+                >
+                    Edit Route
+                </div>
             </div>
 
             {props.destinations.length ? (
@@ -940,7 +584,6 @@ export const DragDrop = (props) => {
     };
 
     function onDragEnd(result) {
-        // dropped outside the list
         if (!result.destination) {
             return;
         }
@@ -1126,28 +769,28 @@ export const Destination = (props) => {
         setIsEditMode
     } = props;
 
-  
-   const CustomMapPin = ({ color = '#FF0303', size = 32 }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 32 32"
-    fill="none"
-  >
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M16.0011 2.33331C16.0011 2.33331 16.0011 2.33331 15.9878 2.33331C11.2811 2.33331 5.89444 5.09331 4.49444 11.2533C2.93444 18.1333 7.14777 23.96 10.9611 27.6266C12.3744 28.9866 14.1878 29.6666 16.0011 29.6666C17.8144 29.6666 19.6278 28.9866 21.0278 27.6266C24.8411 23.96 29.0544 18.1466 27.4944 11.2666C26.0944 5.10665 20.7211 2.33331 16.0011 2.33331ZM11.8011 13.7466C11.8011 11.4266 13.6811 9.54665 16.0011 9.54665C18.3211 9.54665 20.2011 11.4266 20.2011 13.7466C20.2011 16.0666 18.3211 17.9466 16.0011 17.9466C13.6811 17.9466 11.8011 16.0666 11.8011 13.7466Z"
-      fill={color}
-    />
-  </svg>
-);
+
+    const CustomMapPin = ({ color = '#FF0303', size = 32 }) => (
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 32 32"
+            fill="none"
+        >
+            <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M16.0011 2.33331C16.0011 2.33331 16.0011 2.33331 15.9878 2.33331C11.2811 2.33331 5.89444 5.09331 4.49444 11.2533C2.93444 18.1333 7.14777 23.96 10.9611 27.6266C12.3744 28.9866 14.1878 29.6666 16.0011 29.6666C17.8144 29.6666 19.6278 28.9866 21.0278 27.6266C24.8411 23.96 29.0544 18.1466 27.4944 11.2666C26.0944 5.10665 20.7211 2.33331 16.0011 2.33331ZM11.8011 13.7466C11.8011 11.4266 13.6811 9.54665 16.0011 9.54665C18.3211 9.54665 20.2011 11.4266 20.2011 13.7466C20.2011 16.0666 18.3211 17.9466 16.0011 17.9466C13.6811 17.9466 11.8011 16.0666 11.8011 13.7466Z"
+                fill={color}
+            />
+        </svg>
+    );
 
 
     const [popUp, setPopUp] = useState(false);
     const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
-  
+
 
     const handleRemoveDestination = (e) => {
         e.stopPropagation();
@@ -1187,107 +830,96 @@ export const Destination = (props) => {
     };
 
     return (
-    <div className={`relative w-full flex py-2`}>
-        {popUp && (
-            <DestinationPopUp
-                index={index}
-                cityData={cityData}
-                startingCity={startingCity}
-                endingCity={endingCity}
-                setDestinations={props.setDestinations}
-                updateLatLong={updateLatLong}
-                setPopUp={setPopUp}
-                updateDestinationsDates={updateDestinationsDates}
-                setDestinationChanges={setDestinationChanges}
-                destinationRef={destinationRef}
-            />
-        )}
+        <div className={`relative w-full flex py-2`}>
+            {popUp && (
+                <DestinationPopUp
+                    index={index}
+                    cityData={cityData}
+                    startingCity={startingCity}
+                    endingCity={endingCity}
+                    setDestinations={props.setDestinations}
+                    updateLatLong={updateLatLong}
+                    setPopUp={setPopUp}
+                    updateDestinationsDates={updateDestinationsDates}
+                    setDestinationChanges={setDestinationChanges}
+                    destinationRef={destinationRef}
+                />
+            )}
 
-        {/* {index < props?.totalDestinations - 1 && (
-    <div className="absolute left-[11px] top-[40px] w-[2px] h-[40px] z-0">
-        <div className="w-full h-full border-l-2 border-dotted border-gray-400"></div>
-    </div>
-)} */}
-
- <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
-            <div className="flex flex-row items-center gap-3">
-                {/* Show hamburger only in edit mode and for middle destinations - NO vertical lines */}
-                {isEditMode && !(startingCity || endingCity) && (
-                    <div className="text-gray-400 cursor-grab active:cursor-grabbing">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <rect x="3" y="6" width="18" height="2" rx="1" />
-                            <rect x="3" y="11" width="18" height="2" rx="1" />
-                            <rect x="3" y="16" width="18" height="2" rx="1" />
-                        </svg>
-                    </div>
-                )}
-
-                {/* Empty space for alignment when in edit mode for start/end cities */}
-                {isEditMode && (startingCity || endingCity) && (
-                    <div className="w-[20px]"></div> // Same width as hamburger to maintain alignment
-                )}
-
-                {/* Pin section */}
-                <div className="relative flex flex-row items-center gap-4">
-                    {/* Pin design */}
-                    {startingCity || endingCity ? (
-                        <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
-                            <div className="w-2 h-2 bg-white rounded-full"></div>
+            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
+                <div className="flex flex-row items-center gap-3">
+                    {isEditMode && !(startingCity || endingCity) && (
+                        <div className="text-gray-400 cursor-grab active:cursor-grabbing">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="3" y="6" width="18" height="2" rx="1" />
+                                <rect x="3" y="11" width="18" height="2" rx="1" />
+                                <rect x="3" y="16" width="18" height="2" rx="1" />
+                            </svg>
                         </div>
-                    ) : (
-                        <CustomMapPin color={cityData?.color || pinColour}/>
                     )}
 
-                    <div className="flex flex-row items-center justify-center gap-3">
-                        <div className="text-base lg:text-[16px] cursor-pointer font-medium">
-                           {cityData.city_name || cityData.name || cityData.text}
+                    {isEditMode && (startingCity || endingCity) && (
+                        <div className="w-[20px]"></div> // Same width as hamburger to maintain alignment
+                    )}
+
+                    {/* Pin section */}
+                    <div className="relative flex flex-row items-center gap-4">
+                        {/* Pin design */}
+                        {startingCity || endingCity ? (
+                            <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
+                                <div className="w-2 h-2 bg-white rounded-full"></div>
+                            </div>
+                        ) : (
+                            <CustomMapPin color={cityData?.color || pinColour} />
+                        )}
+
+                        <div className="flex flex-row items-center justify-center gap-3">
+                            <div className="text-base lg:text-[16px] cursor-pointer font-medium">
+                                {cityData.city_name || cityData.name || cityData.text}
+                            </div>
+                            {!(startingCity || endingCity) && cityData?.nights && (
+                                <div className="text-sm text-gray-500">
+                                    <span className="text-[16px] text-gray-500">I</span> &nbsp; {`${cityData.nights} ${cityData.nights > 1 ? 'Nights' : 'Night'}`}
+                                </div>
+                            )}
                         </div>
-                        {!(startingCity || endingCity) && cityData?.nights && (
-                            <div className="text-sm text-gray-500">
-                              <span className="text-[16px] text-gray-500">I</span> &nbsp; {`${cityData.nights} ${cityData.nights > 1 ? 'Nights' : 'Night'}`}
+                    </div>
+                </div>
+
+                {/* Show edit and delete icons only in edit mode */}
+                {isEditMode && (
+                    <div className="flex flex-row items-center gap-2">
+                        <div
+                            onClick={handleEditDestination}
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded"
+                        >
+                            <MdOutlineEdit size={18} color={"#3B82F6"} />
+                        </div>
+
+                        {!startingCity && !endingCity && (
+                            <div
+                                onClick={(e) => handleRemoveDestination(e)}
+                                className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
+                            >
+                                <MdOutlineDelete size={18} color="#EF4444" />
                             </div>
                         )}
                     </div>
-                </div>
+                )}
             </div>
 
-            {/* Show edit and delete icons only in edit mode */}
-            {isEditMode && (
-                <div className="flex flex-row items-center gap-2">
-                    <div
-                        onClick={handleEditDestination}
-                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded"
-                    >
-                        <MdOutlineEdit size={18} color={"#3B82F6"}/>
-                    </div>
-
-                    {!startingCity && !endingCity && (
-                        <div
-                            onClick={(e) => handleRemoveDestination(e)}
-                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
-                        >
-                            <MdOutlineDelete size={18} color="#EF4444"/>
-                        </div>
-                    )}
+            {index < props?.totalDestinations - 1 && (
+                <div
+                    className={`absolute top-[42px] z-0 ${isEditMode
+                        ? 'left-[51px] top-[45px]'  // Shifted right when in edit mode (for all destinations)
+                        : 'left-[15px]'  // Normal position
+                        }`}
+                >
+                    <DottedLine />
                 </div>
             )}
         </div>
-
-        {/* Vertical dotted line connecting destinations */}
-        {index < props?.totalDestinations - 1 && (
-            <div 
-                className={`absolute top-[42px] z-0 ${
-                    isEditMode 
-                        ? 'left-[51px] top-[45px]'  // Shifted right when in edit mode (for all destinations)
-                        : 'left-[15px]'  // Normal position
-                }`}
-            >
-                {/* <div className="w-[2px] h-[40px] border-l-2 border-dotted border-gray-400"></div> */}
-                <DottedLine />
-            </div>
-        )}
-    </div>
-);
+    );
 };
 
 export const DestinationPopUp = (props) => {
@@ -1411,7 +1043,6 @@ export const DestinationPopUp = (props) => {
             const curDestination = destinations[index];
 
             const match = destinations.find((d, i) => {
-                // if (i === index) return false; 
                 const cd = d.cityData;
                 return (
                     (cd?.resource_id === destination?.resource_id ||
@@ -1484,8 +1115,8 @@ export const DestinationPopUp = (props) => {
         <div
             ref={destinationRef}
             className={`z-50 drop-shadow-xl w-[90%] lg:w-[70%] absolute ${index !== undefined
-                    ? `top-0 left-[10%] lg:left-[30%]`
-                    : "-bottom-[150px] left-[10%] lg:left-[15%]"
+                ? `top-0 left-[10%] lg:left-[30%]`
+                : "-bottom-[150px] left-[10%] lg:left-[15%]"
                 }  bg-gray-200 rounded-lg`}
         >
             <div className="relative flex flex-col gap-3 p-3">
@@ -1588,7 +1219,7 @@ export const DestinationPopUp = (props) => {
 
 
 export const ActionPanel = (props) => {
-    console.log("props are: ",props)
+    console.log("props are: ", props)
     const {
         setEdit,
         setEditDestination,
@@ -1604,10 +1235,10 @@ export const ActionPanel = (props) => {
             <div className="flex w-full justify-between flex-row p-4">
                 {!itineraryLoading && (
                     <button
-                        onClick={()=>setSlideIndex(2)}
-                            // editDestination
-                            //     ? () => handleClose()
-                            //     : () => setEditDestination(true)
+                        onClick={() => setSlideIndex(2)}
+                        // editDestination
+                        //     ? () => handleClose()
+                        //     : () => setEditDestination(true)
                         className="px-3 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
                     >
                         {/* {editDestination ? "Cancel" : "Back"} */}
@@ -1618,7 +1249,7 @@ export const ActionPanel = (props) => {
                     <button
                         onClick={
                             // handleSaveButton
-                            () => {}}
+                            () => { }}
                         className="bg-[#07213A] px-5 py-2 w-[30%] rounded-lg border-2 border-black text-white hover:bg-black transition ease-in-out duration-500"
                     >
                         {itineraryLoading ? (

@@ -11,7 +11,7 @@ const Index = (props) => {
     if (props.onclick) {
       setJSX(
         <Generalbutton
-          className={`font-lexend ${props?.className} `}
+          className={` ${props?.className} `}
           onclick={() => props.onclick(props.onclickparam)}
           color={props.color}
           borderRadius={props.borderRadius}

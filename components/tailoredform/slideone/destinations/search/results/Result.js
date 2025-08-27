@@ -3,6 +3,7 @@ import styled from "styled-components";
 import moment from "moment";
 import ImageLoader from "../../../../../ImageLoader";
 import Image from "next/image";
+import { getParent } from "../../../../../../utils/tailoredform";
 
 const Container = styled.div`
   display: grid;
@@ -37,24 +38,6 @@ const Result = (props) => {
     props.setFocusSearch(false);
   };
 
-  const getParent = (path) => {
-    if (!path) return "";
-
-    const links = path.split("/");
-    links.pop();
-    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" , ");
-
-    return parent;
-  };
-
-  const capitalizeFirstLetter = (string) => {
-    const words = string.split("_");
-    const newString = words
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-    return newString;
-  };
-
   return (
     <Container
       className="font-lexend p-2"
@@ -68,11 +51,11 @@ const Result = (props) => {
       }}
     >
       {/* <MarkerContainer> */}
-        <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/"+props.result?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]"/>
+      <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props.result?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
       {/* </MarkerContainer> */}
       <div className="flex">
         <div className="font-[500]">{props.name} </div>
-        <div className="font-normal">, {getParent(props.result.path)}</div>
+       {getParent(props.result.path)!=null&& <div className="font-normal">, {getParent(props.result.path)}</div>}
       </div>
     </Container>
   );
