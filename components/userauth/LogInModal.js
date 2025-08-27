@@ -435,8 +435,13 @@ const LogIn = React.memo((props) => {
                 fontWeight: "700",
               }}
             >
+              {!props?.onSuccess?<>
               <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
               <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
+              </>:
+              <>
+               <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
+              </>}
             </div>
           )}
 

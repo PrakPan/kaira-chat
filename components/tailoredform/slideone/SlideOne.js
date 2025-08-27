@@ -1,20 +1,15 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { BsCheck } from "react-icons/bs";
-import { AiFillCaretDown } from "react-icons/ai";
-import NewDatePicker from "./NewDatePicker";
 import Destinations from "./destinations/Index";
-import Question from "../Question";
 import Preferences from "../slidetwo/preferences/Index";
 import AirbnbCalendar from "../../calendar";
-import { DummyContainer, StyledFigmaBox } from "../utils/ui";
-import Modal from "../../ui/Modal";
+import { StyledFigmaBox } from "../utils/ui";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 import { Body1M_16, Body2M_14, Body2R_14 } from "../../new-ui/Body";
-import moment from "moment";
 import useMediaQuery from "../../media";
 import BottomModal from "../../ui/LowerModal";
 import AirbnbCalendarMobile from "../../calendar/MobileCalendar";
+import Image from "next/image";
 
 const Container = styled.div`
   color: black;
@@ -74,7 +69,28 @@ const SlideOne = (props) => {
         {/* <AirbnbCalendar /> */}
         <div>
           <Body2R_14>When</Body2R_14>
-          <StyledFigmaBox value={`${formatShortDate(props.valueStart)}-${formatShortDate(props.valueEnd)}`} className="cursor-pointer" placeholder="Select dates" onClick={() => setShowCalendar(true)} />
+          <div className="relative w-full">
+            <StyledFigmaBox
+              value={
+                props.valueStart && props.valueEnd
+                  ? `${formatShortDate(props.valueStart)} - ${formatShortDate(props.valueEnd)}`
+                  : ""
+              }
+              placeholder="Select dates"
+              className={`cursor-pointer w-full pr-10 ${!(props.valueStart && props.valueEnd) && "text-[#ACACAC] text-[14px]"
+                }`}
+              onClick={() => setShowCalendar(true)}
+              readOnly
+            />
+            <Image
+              src="/calendar.svg"
+              width={20}
+              height={20}
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              alt="calendar"
+            />
+          </div>
+
         </div>
         <div
           className="hover-pointer"

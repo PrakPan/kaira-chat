@@ -67,7 +67,6 @@ const SearchInput = (props) => {
       onClick={props.searchFinalized ? _handleReset : _resetSelectedCities}
       readOnly={props.eventDates ? true : false}
       placeholder="Search destination"
-      className="font-lexend"
       value={value}
       onChange={(e) => setValue(e.target.value)}
     ></Container>

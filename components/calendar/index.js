@@ -170,7 +170,7 @@ const AirbnbCalendar = (props) => {
               setCurrentMonth(new Date(today.getFullYear(), index, 1));
             }}
             className={`flex flex-col  justify-start p-[10px] text-start text-[14px] rounded-xl border transition-all ${currentMonth.getMonth() === index
-              ? 'bg-yellow-400 border-yellow-400 text-black font-medium'
+              ? 'bg-yellow border-yellow text-black font-medium'
               : 'border-gray-300 hover:border-gray-400 text-gray-700'
               }`}
           >
@@ -271,8 +271,7 @@ const AirbnbCalendar = (props) => {
               <MediumIndigoOutlinedButton
                 onClick={() => {
                   setSelectedDates({ start: null, end: null });
-                  setTripDuration(1);
-                  props.setShowCalendar(false)
+                  setTripDuration(0);
                 }}
               >
                 Clear

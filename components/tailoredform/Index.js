@@ -928,7 +928,8 @@ const Enquiry = (props) => {
 
               {slideIndex === 1 &&
                 (!props.token || props.phone === "null" || addHotels) && (
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between",alignItems:"center",width:"100%" }} className="p-4">
+                    <button className="LargeIndigoOutlinedButton" onClick={()=>    setSlideIndex(slideIndex + 1)}>Skip</button>
                     <Button
                       fontSize="1rem"
                       width={!isPageWide ? "auto" : "100%"}
@@ -952,112 +953,112 @@ const Enquiry = (props) => {
                       loading={isLoading && submitted}
                       height="50px"
                       color="white"
-                      className="!z-20"                    >
+                      className="!z-20 max-w-[500px]"                    >
                       Continue
                     </Button>
                   </div>
                 )}
 
-              {slideIndex === 2 && (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="30px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    onclick={_SlideTwoSubmitHandler}
-                    loading={isLoading && submitted}
-                    height="50px"
-                    color="white"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
+            {slideIndex === 2 && (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="30px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  onclick={_SlideTwoSubmitHandler}
+                  loading={isLoading && submitted}
+                  height="50px"
+                  color="white"
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
 
-              {slideIndex === 3 && (
-                <div className="flex justify-end">
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="40px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onclick={() => {
-                      totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
-                    }}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              )}
-              {slideIndex === 4 ? (
-                <div className="flex justify-end">
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="40px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    color="white"
-                    loading={isSubmitting}
-                    disabled={isSubmitting}
-                    onClick={_submitDataHandler}
-                    height="50px"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            {slideIndex === 3 && (
+              <div className="flex justify-end">
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="40px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  color="white"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onclick={() => {
+                    totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
+                  }}
+                  height="50px"
+                >
+                  Continue
+                </Button>
+              </div>
+            )}
+            {slideIndex === 4 ? (
+              <div className="flex justify-end">
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="40px 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  color="white"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onClick={_submitDataHandler}
+                  height="50px"
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : null}
           </div>
         </div>
-      </Container>
     </div>
+      </Container >
+    </div >
   );
 };
 

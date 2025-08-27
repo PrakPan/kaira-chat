@@ -97,6 +97,8 @@ const Destinations = (props) => {
       </>
     );
     setDestinations(dest.slice());
+    props.setSelectedCities((prev)=>[...prev,{id:null, input_id:id, data:null}])
+
   };
 function _updateDestinationHandler(id, input_id, data) {
   setUpdatedData({ id, input_id, data });

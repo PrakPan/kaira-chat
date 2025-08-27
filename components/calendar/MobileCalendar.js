@@ -96,11 +96,11 @@ const AirbnbCalendarMobile = (props) => {
                 <div className="grid grid-cols-7 text-[10px] font-medium text-gray-500">
                     {dayNames.map(day => <div key={day} className="text-center">{day}</div>)}
                 </div>
-                <div className="grid grid-cols-7 mt-1">
+                <div className="grid grid-cols-7 mt-1 gap-[1px]">
                     {days.map((date, idx) => (
                         <div
                             key={idx}
-                            className={`aspect-square flex items-center justify-center relative
+                            className={` flex items-center justify-center relative
                             ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
                             ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
                             ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}`}
@@ -158,10 +158,9 @@ const AirbnbCalendarMobile = (props) => {
                         key={month}
                         onClick={() => {
                             setCurrentMonth(new Date(today.getFullYear(), index, 1));
-                            setCurrentView('calendar');
                         }}
                         className={`flex flex-col justify-start p-3 text-start text-[14px] rounded-xl border transition-all
-                         ${currentMonth.getMonth() === index ? 'bg-yellow-400 border-yellow-400 text-black font-medium'
+                         ${currentMonth.getMonth() === index ? 'bg-yellow text-black font-medium'
                                 : 'border-gray-300 hover:border-gray-400 text-gray-700'}`}
                     >
                         <Image src="/calendar.svg" width={20} height={20} />
@@ -243,8 +242,7 @@ const AirbnbCalendarMobile = (props) => {
                     <MediumIndigoOutlinedButton
                         onClick={() => {
                             setSelectedDates({ start: null, end: null });
-                            setTripDuration(1);
-                            props.setShowCalendar(false);
+                            setTripDuration(0);
                         }}
                         className='flex-1'
                     >

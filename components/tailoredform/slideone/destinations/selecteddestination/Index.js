@@ -73,7 +73,7 @@ const SelectedDestination = (props) => {
         className="hover-pointer text-[0.85rem] flex flex-row items-center justify-between w-full"
         selectlocation={props.selectlocation}
       >
-        {!props.selectlocation ? (
+        {props.selectedCity?.name ? (
           <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
           
         ) : (

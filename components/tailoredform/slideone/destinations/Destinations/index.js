@@ -33,8 +33,7 @@ const EndDestination = (props) => {
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
   const [showDestination, setShowDestination] = useState(true);
-  console.log("end destination props are: ", props,showDestination)
-
+  console.log("props in end destinations is: ",props?.selectedCity?.name)
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
   };
@@ -164,13 +163,16 @@ const EndDestination = (props) => {
       {!props.selectlocation ? (
         <RightContainer className="hover-pointer">
           {props.setDeletedId ? (
-            <AiFillDelete
+            <Image
+            src="/close.svg"
+            width={18}
+            height={18}
               onClick={() => {
                 props.setDeletedId(props.inbox_id);
               }}
               className="hover-pointer"
               style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
-            ></AiFillDelete>
+            />
           ) : null}
         </RightContainer>
       ) : (

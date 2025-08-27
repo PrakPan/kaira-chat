@@ -413,7 +413,7 @@ const RouteEditSection = (props) => {
                 ) : (
                     ""
                 )}
-                <ActionPanel setSlideIndex={props.setSlideIndex} />
+                {/* <ActionPanel setSlideIndex={props.setSlideIndex} /> */}
             </div>
         </div>
     );
