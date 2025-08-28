@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { StyledHeading } from "../../../styled-components/TailoredForm";
 import EndDestination from "./Destinations";
 import { Body2R_14 } from "../../../new-ui/Body";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteSelectedCity, setSelectedCities, updateSelectedCity } from "../../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   width: 100%;
@@ -18,6 +20,7 @@ const Container = styled.div`
 
 const Destinations = (props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [deletedId, setDeletedId] = useState(null);
   const [isCountryId, setIsCountryId] = useState(false);
   const [updatedData, setUpdatedData] = useState({
@@ -26,47 +29,45 @@ const Destinations = (props) => {
     data: null,
   });
   const [destinations, setDestinations] = useState([]);
+  const selectedCities = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedCities);
 
   useEffect(() => {
-    var country_id = props?.selectedCities?.some((e) => e.type === "Country");
+    var country_id = selectedCities?.some((e) => e.type === "Country");
     setIsCountryId(country_id);
     if (router.query.country && !router.query.state && !router.query.city)
       setIsCountryId(true);
-  }, [props.selectedCities]);
+  }, [selectedCities]);
 
   useEffect(() => {
     const des = [];
-    for (let i = 0; i < props?.selectedCities?.length; i++) {
+    for (let i = 0; i < selectedCities?.length; i++) {
       des.push(
         <div>
           <Body2R_14>Destination</Body2R_14>
           <EndDestination
-            autofocus={i == 0 && props.selectedCities[0].name && true}
+            autofocus={i == 0 && selectedCities[0].name && true}
             _updateDestinationHandler={_updateDestinationHandler}
-            key={props.selectedCities[i].input_id}
+            key={selectedCities[i].input_id}
             setDeletedId={
-              (i != 0 || props.selectedCities.length > 1) && setDeletedId
+              (i != 0 || selectedCities.length > 1) && setDeletedId
             }
-            inbox_id={props.selectedCities[i].input_id}
-            selectedCities={props.selectedCities}
-            destination={props.selectedCities[i].name}
+            inbox_id={selectedCities[i].input_id}
+            selectedCities={selectedCities}
+            destination={selectedCities[i].name}
             CITIES={props.CITIES}
             openCities={() => props.setShowCities(true)}
             setDestination={props.setDestination}
-            setSelectedCities={props.setSelectedCities}
-            setValueStart={props.setValueStart}
-            setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
             updatedData={updatedData}
             tailoredFormModal={props.tailoredFormModal}
-            selectedCity={props.selectedCities[i]}
+            selectedCity={selectedCities[i]}
             index={i}
           ></EndDestination>
         </div>
       );
     }
     setDestinations(des);
-  }, [JSON.stringify(props.selectedCities)]);
+  }, [JSON.stringify(selectedCities)]);
 
   const _addDestinationHandler = () => {
     let dest = destinations.slice();
@@ -80,77 +81,40 @@ const Destinations = (props) => {
           setDeletedId={setDeletedId}
           key={id}
           inbox_id={id}
-          selectedCities={props.selectedCities}
+          selectedCities={selectedCities}
           CITIES={props.CITIES}
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
-          setSelectedCities={props.setSelectedCities}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
           tailoredFormModal={props.tailoredFormModal}
-          selectedCity={props.selectedCities[props.selectedCities.length - 1]}
-          index={props?.selectedCities.length - 1}
+          selectedCity={selectedCities[selectedCities.length - 1]}
+          index={selectedCities.length - 1}
           setDestinations={setDestinations}
           destinations={destinations}
         ></SelectedDestination>
       </>
     );
     setDestinations(dest.slice());
-    props.setSelectedCities((prev)=>[...prev,{id:null, input_id:id, data:null}])
-
+    dispatch(setSelectedCities(null, id, null));
   };
-function _updateDestinationHandler(id, input_id, data) {
-  setUpdatedData({ id, input_id, data });
-
-  let cityExists = false;
-
-  const newCities = props.selectedCities.map((item) => {
-    if (item.input_id === input_id) {
-      cityExists = true;
-      return { ...item, ...data };
-    }
-    return item;
-  });
-
-  // If it didn't exist, push it
-  if (!cityExists) {
-    newCities.push({ id, input_id, ...data });
+  function _updateDestinationHandler(id, input_id, data) {
+    dispatch(setSelectedCities(id, input_id, data));
   }
-
-  console.log("Updated cities: ", newCities);
-  props.setSelectedCities(newCities);
-}
 
 
 
   useEffect(() => {
     if (updatedData.id) {
-      console.log("end destination data is: ", updatedData)
-      const selected = props.selectedCities.map((e) => {
-        if (e.input_id == updatedData.input_id)
-          return {
-            input_id: updatedData.input_id,
-            ...updatedData.data,
-            id: updatedData.id
-          };
-        return e;
-      });
-      console.log("end destination props are: ", selected)
-      props.setSelectedCities(selected);
+      dispatch(updateSelectedCity(updatedData));
     }
   }, [updatedData.id]);
 
   useEffect(() => {
     if (deletedId) {
-      const newDestinations = destinations.filter(
-        (e) => e.props.inbox_id != deletedId
+      dispatch(deleteSelectedCity(deletedId));
+      setDestinations((prev) =>
+        prev.filter((e) => e.props.inbox_id !== deletedId)
       );
-      setDestinations(newDestinations.slice());
-      const selected = props.selectedCities.filter(
-        (e) => e.input_id != deletedId
-      );
-      props.setSelectedCities(selected.slice());
     }
   }, [deletedId]);
 
@@ -165,12 +129,10 @@ function _updateDestinationHandler(id, input_id, data) {
           setShowSearchStarting={props.setShowSearchStarting}
           setShowCities={props.setShowCities}
           selectlocation
-          selectedCities={props.selectedCities}
           destination={props.destination}
           CITIES={props.CITIES}
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
-          setSelectedCities={props.setSelectedCities}
         ></SelectedDestination>
       </div>
       {destinations.map((e, i) => (
@@ -187,7 +149,7 @@ function _updateDestinationHandler(id, input_id, data) {
           marginTop: "-30px"
         }}
       >
-        {!props?.selectedCities?.some((e) => !e.name) && (
+        {!selectedCities?.some((e) => !e.name) && (
           <p
             onClick={_addDestinationHandler}
             className="text-center font-lexend hover-pointer"

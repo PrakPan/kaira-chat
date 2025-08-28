@@ -149,7 +149,6 @@ const EndDestination = (props) => {
                 setFocusSearch(false);
               }}
               setFocusSearch={setFocusSearch}
-              setSelectedCities={props.setSelectedCities}
               selectedCities={props.selectedCities}
               setValueStart={props.setValueStart}
               setValueEnd={props.setValueEnd}

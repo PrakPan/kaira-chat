@@ -10,6 +10,8 @@ import useMediaQuery from "../../media";
 import BottomModal from "../../ui/LowerModal";
 import AirbnbCalendarMobile from "../../calendar/MobileCalendar";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { setAnytimeDate, setCalendarDates, setDateType, setFixedDate, setFlexibleDate } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -35,12 +37,26 @@ const formatShortDate = (date) => {
 const SlideOne = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [showCalendar, setShowCalendar] = useState(false);
+  const date=useSelector((state)=>state.tailoredInfoReducer.slideOne.date);
+  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
+  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
+  const dispatch = useDispatch();
   const handleOnCalenderApplyDates = (values) => {
-    props.setValueStart(values.start)
-    props.setValueEnd(values.end)
+    console.log("date type is: ",date.type)
+    if(date.type=="fixed"){
+          dispatch(setFixedDate(values.start, values.end));
+    }
+    else if(date.type=="flexible"){
+      dispatch(setFlexibleDate(values.month,'2025',values.duration));
+    }
+    else{
+      dispatch(setAnytimeDate(values.duration))
+    }
   }
   const CITIES = null;
-
+  const SetDateType=(value)=>{
+    dispatch(setDateType(value))
+  }
   return (
     <Container>
       <Section>
@@ -58,9 +74,6 @@ const SlideOne = (props) => {
           destination={props.destination}
           CITIES={props.cities ? props.cities : CITIES}
           selectedCities={props.selectedCities}
-          setSelectedCities={props.setSelectedCities}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
         ></Destinations>
       </Section>
@@ -72,12 +85,12 @@ const SlideOne = (props) => {
           <div className="relative w-full">
             <StyledFigmaBox
               value={
-                props.valueStart && props.valueEnd
-                  ? `${formatShortDate(props.valueStart)} - ${formatShortDate(props.valueEnd)}`
+                valueStart && valueEnd
+                  ? `${formatShortDate(valueStart)} - ${formatShortDate(valueEnd)}`
                   : ""
               }
               placeholder="Select dates"
-              className={`cursor-pointer w-full pr-10 ${!(props.valueStart && props.valueEnd) && "text-[#ACACAC] text-[14px]"
+              className={`cursor-pointer w-full pr-10 ${!(valueStart && valueEnd) && "text-[#ACACAC] text-[14px]"
                 }`}
               onClick={() => setShowCalendar(true)}
               readOnly
@@ -135,12 +148,13 @@ const SlideOne = (props) => {
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
         <AirbnbCalendar
-          valueStart={props.valueStart}
-          valueEnd={props.valueEnd}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
+          valueStart={valueStart}
+          valueEnd={valueEnd}
           onChangeDate={handleOnCalenderApplyDates}
           setShowCalendar={setShowCalendar}
+          setDateType={SetDateType}
+          dateType={date.type}
+          date={date}
         />
       </ModalWithBackdrop> : <>
         <BottomModal
@@ -150,10 +164,8 @@ const SlideOne = (props) => {
           height="max-content"
         >
           <AirbnbCalendarMobile
-            valueStart={props.valueStart}
-            valueEnd={props.valueEnd}
-            setValueStart={props.setValueStart}
-            setValueEnd={props.setValueEnd}
+            valueStart={valueStart}
+            valueEnd={valueEnd}
             onChangeDate={handleOnCalenderApplyDates}
             setShowCalendar={setShowCalendar}
           />

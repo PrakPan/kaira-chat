@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import useDebounce from "../../../../../hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { resetSelectedCity } from "../../../../../store/actions/slideOneActions";
 
 const Container = styled.input`
   width: 92%;
@@ -25,7 +27,8 @@ const Container = styled.input`
 const SearchInput = (props) => {
   const [value, setValue] = useState("");
   const debouncedSearch = useDebounce(value);
-
+  const selectedCities = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedCities);
+  const dispatch=useDispatch();
   useEffect(() => {
     props._handleKey(debouncedSearch);
   }, [debouncedSearch]);
@@ -35,12 +38,8 @@ const SearchInput = (props) => {
   }, [props.searchFinalized]);
 
   const _resetSelectedCities = () => {
-    if (props.inbox_id != props.selectedCities[0].input_id) {
-      const selected = props.selectedCities.map((e) => {
-        if (e.input_id == props.inbox_id) return { input_id: props.inbox_id };
-        return e;
-      });
-      props.setSelectedCities(selected);
+    if (props.inbox_id !== selectedCities[0]?.input_id) {
+      dispatch(resetSelectedCity(props.inbox_id));
     }
   };
 

@@ -92,8 +92,6 @@ const Search = (props) => {
           _handleKey={_handleKey}
           setSearchFinalized={props.setSearchFinalized}
           setResults={setResults}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
           setShowResults={setShowResults}
           eventDates={props.eventDates}
         ></SearchInput>
@@ -111,8 +109,6 @@ const Search = (props) => {
           top="2.75rem"
           results={results}
           setSearchFinalized={props.setSearchFinalized}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
         ></SearchResults>
         </>
       )}
@@ -129,8 +125,6 @@ const Search = (props) => {
           top="2.75rem"
           results={hotLocationsData}
           setSearchFinalized={props.setSearchFinalized}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
           tailoredFormModal={props.tailoredFormModal}

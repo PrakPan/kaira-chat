@@ -102,8 +102,6 @@ const SearchResults = (props) => {
                   result={result}
                   type={result.type}
                   setSearchFinalized={props.setSearchFinalized}
-                  setSelectedCities={props.setSelectedCities}
-                  selectedCities={props.selectedCities}
                   setValueStart={props.setValueStart}
                   setValueEnd={props.setValueEnd}
                 ></Result>

@@ -5,6 +5,8 @@ import Question from "../Question";
 import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
 import { Body1M_16 } from "../../new-ui/Body";
+import { useDispatch, useSelector } from "react-redux";
+import { setAddFlights, setAddHotels, setAddInclusions, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -19,51 +21,56 @@ const Section = styled.div`
 `;
 
 const SlideThree = (props) => {
-  useEffect(() => {
-    if (props.groupType) {
+  const dispatch = useDispatch();
+
+  const {
+    groupType,
+    numberOfAdults,
+    numberOfChildren,
+    numberOfInfants,
+    roomConfiguration,
+    addHotels,
+    addFlights,
+    addInclusions,
+  } = useSelector((state) => state.tailoredInfoReducer.slideThree);
+
+    useEffect(() => {
+    if (groupType) {
       props.setSubmitSecondSlide(true);
     }
   }, []);
 
   useEffect(() => {
-    props.setRoomConfiguration([
-      {
-        adults: props.numberOfAdults,
-        children: props.numberOfChildren,
-        infants: props.numberOfInfants,
-        childAges: Array.from({ length: props.numberOfChildren }, (_, i) => 0),
-      },
-    ]);
-  }, [props.numberOfAdults, props.numberOfChildren, props.numberOfInfants]);
+    dispatch(
+      setRoomConfiguration([
+        {
+          adults: numberOfAdults,
+          children: numberOfChildren,
+          infants: numberOfInfants,
+          childAges: Array.from({ length: numberOfChildren }, () => 0),
+        },
+      ])
+    );
+  }, [numberOfAdults, numberOfChildren, numberOfInfants, dispatch]);
+
 
   const _handleShowPax = (grouptype) => {
     if (grouptype === "Solo") {
-      props.setNumberOfAdults(1);
-      props.setNumberOfChildren(0);
-      props.setNumberOfInfants(0);
-      props.setRoomConfiguration([
-        {
-          adults: 1,
-          children: 0,
-          infants: 0,
-          childAges: [],
-        },
-      ]);
+      dispatch(setNumberOfAdults(1));
+      dispatch(setNumberOfChildren(0));
+      dispatch(setNumberOfInfants(0));
+      dispatch(
+        setRoomConfiguration([{ adults: 1, children: 0, infants: 0, childAges: [] }])
+      );
     } else {
-      props.setNumberOfAdults(2);
-      props.setNumberOfChildren(0);
-      props.setNumberOfInfants(0);
-
-      props.setRoomConfiguration([
-        {
-          adults: 2,
-          children: 0,
-          infants: 0,
-          childAges: [],
-        },
-      ]);
+      dispatch(setNumberOfAdults(2));
+      dispatch(setNumberOfChildren(0));
+      dispatch(setNumberOfInfants(0));
+      dispatch(
+        setRoomConfiguration([{ adults: 2, children: 0, infants: 0, childAges: [] }])
+      );
     }
-    props.setGroupType(grouptype);
+    dispatch(setGroupType(grouptype));
     props.setSubmitSecondSlide(true);
   };
 
@@ -74,11 +81,23 @@ const SlideThree = (props) => {
 
         <GroupComponent
           _handleShowPax={_handleShowPax}
-          groupType={props.groupType}
+          groupType={groupType}
         ></GroupComponent>
       </Section>
 
-      {props.groupType!=="Solo" && props.groupType!="Couple"&&<EnterPassenger roomConfiguration={props?.roomConfiguration} setRoomConfiguration={props.setRoomConfiguration} groupType={props.groupType} numberOfChildren={props.numberOfChildren} numberOfInfants={props.numberOfInfants} numberOfAdults={props.numberOfAdults} setNumberOfAdults={props.setNumberOfAdults} setNumberOfChildren={props.setNumberOfChildren} setNumberOfInfants={props.setNumberOfInfants} />}
+      {groupType !== "Solo" && groupType != "Couple" &&
+        <EnterPassenger
+          roomConfiguration={roomConfiguration}
+          setRoomConfiguration={(conf) => dispatch(setRoomConfiguration(conf))}
+          groupType={groupType}
+          numberOfChildren={numberOfChildren}
+          numberOfInfants={numberOfInfants}
+          numberOfAdults={numberOfAdults}
+          setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
+          setNumberOfChildren={(val) => dispatch(setNumberOfChildren(val))}
+          setNumberOfInfants={(val) => dispatch(setNumberOfInfants(val))}
+        />
+      }
       <div>
         <Body1M_16 className="mb-[12px]">Pick Your Inclusions</Body1M_16>
         <Section className="flex  justify-between items-center ">
@@ -90,8 +109,8 @@ const SlideThree = (props) => {
             <input
               id="add-hotels"
               type="checkbox"
-              checked={props.addHotels}
-              onChange={(e) => props.setAddHotels(e.target.checked)}
+              checked={addHotels}
+              onChange={(e) => dispatch(setAddHotels(e.target.checked))}
               className="focus:outline-none cursor-pointer"
             />
             <div className="text-sm">Stay</div>
@@ -104,8 +123,8 @@ const SlideThree = (props) => {
             <input
               id="add-flights"
               type="checkbox"
-              checked={props.addFlights}
-              onChange={(e) => props.setAddFlights(e.target.checked)}
+              checked={addFlights}
+              onChange={(e) => dispatch(setAddFlights(e.target.checked))}
               className="focus:outline-none cursor-pointer"
             />
             <div className="text-sm">Flights</div>
@@ -118,11 +137,11 @@ const SlideThree = (props) => {
             <input
               id="add-hotels"
               type="checkbox"
-              checked={props.addInclusions}
-              onChange={(e) => props.setAddInclusions(e.target.checked)}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="text-sm">Activities + Transfers</div>
+              checked={addInclusions}
+              onChange={(e) => dispatch(setAddInclusions(e.target.checked))}
+              className = "focus:outline-none cursor-pointer"
+                />
+                <div className="text-sm">Activities + Transfers</div>
           </label>
         </Section>
       </div>

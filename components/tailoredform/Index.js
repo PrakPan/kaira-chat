@@ -9,7 +9,7 @@ import axiostailoredinstance, {
 } from "../../services/leads/tailored";
 import LoadingLottie from "../ui/LoadingLottie";
 import { useRouter } from "next/router";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { BiArrowBack } from "react-icons/bi";
 import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
@@ -21,6 +21,7 @@ import { logEvent } from "../../services/ga/Index";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import Header from "../../components/navbar/Index";
 import { Body1M_16, Body3R_12 } from "../new-ui/Body";
+import { setItineraryInitiateData, setRoomConfiguration } from "../../store/actions/slideOneActions";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -96,35 +97,29 @@ const useSourceParams = () => {
 
 const Enquiry = (props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [route, setRoute] = useState([]);
   const routerquery = router.query;
   const initialInputId = Date.now();
-  const { token } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
-  const [valueStart, setValueStart] = useState(null);
-  const [valueEnd, setValueEnd] = useState(null);
   const [numberOfAdults, setNumberOfAdults] = useState(1);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
   const [isLoading, setIsLoading] = useState(false);
-  const [roomConfiguration, setRoomConfiguration] = useState([
-    {
-      adults: 1,
-      children: 0,
-      childAges: [],
-    },
-  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const slideOneData = useSelector((state) => state.tailoredInfoReducer.slideOne)
+  const itineraryInititateData = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData)
+  const slideThreeData = useSelector((state) => state.tailoredInfoReducer.slideThree)
 
   const [priceRange, setPriceRange] = useState({
     min_price: 0,
     max_price: 3000,
   });
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [focusedDate, setFocusedDate] = useState(null);
@@ -173,9 +168,9 @@ const Enquiry = (props) => {
   const divideTravellers = () => {
     let distribution = [];
 
-    let tempadults = numberOfAdults;
-    let tempChildren = numberOfChildren;
-    let tempInfants = numberOfInfants;
+    let tempadults = slideThreeData.numberOfAdults;
+    let tempChildren = slideThreeData.numberOfChildren;
+    let tempInfants = slideThreeData.numberOfInfants;
     while (tempadults != 0) {
       if (tempadults >= 2) {
         distribution.push({ adults: 2, children: 0 });
@@ -247,44 +242,6 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  // if (routerquery.state && !routerquery.city) {
-  //   selectedObj = [
-  //     {
-  //       destination_id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //     },
-  //   ];
-  // } else if (routerquery.country && !routerquery.city) {
-  //   selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: "Country",
-  //     },
-  //   ];
-  // }else if(routerquery.city){
-  //     selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: "City",
-  //     },
-  //   ];
-  // }
-  //  else {
-  //   selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: routerquery?.type ? routerquery.type : props?.destinationType,
-  //     },
-  //   ];
-  // }
-
   const queryType = router?.query?.type?.toLowerCase();
   const propType = props?.type?.toLowerCase();
 
@@ -354,8 +311,8 @@ const Enquiry = (props) => {
   };
 
   const _submitDataHandler = () => {
-    const value_start = new Date(valueStart);
-    const value_end = new Date(valueEnd);
+    const value_start = new Date(slideOneData.date.start_date);
+    const value_end = new Date(slideOneData.date.end_date);
 
     if (isSubmitting) {
       return;
@@ -372,9 +329,9 @@ const Enquiry = (props) => {
     let preferences = [];
     let pageIds = [];
 
-    for (var i = 0; i < selectedPreferences.length; i++) {
+    for (var i = 0; i < slideOneData.selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
-        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+        if (slideOneData.selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
           for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
             preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
           }
@@ -472,20 +429,13 @@ const Enquiry = (props) => {
     if (slideIndex) setSlideIndex(slideIndex - 1);
   };
 
-  const getHeading = () => {
-    if (props.tailoredFormModal && focusedDate) {
-      if (focusedDate == "startDate") return "Please select start date.";
-      if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get your free travel plan now";
-  };
-
-  const [selectedCities, setSelectedCities] = useState(selectedObj);
+  const selectedCities = slideOneData.selectedCities;
 
   useEffect(() => {
     setShowPopup(popupObj);
   }, [
-    valueStart,
-    valueEnd,
+    slideOneData.date.start_date,
+    slideOneData.date.end_date,
     startingLocation,
     destination,
     showSearchStarting,
@@ -499,12 +449,12 @@ const Enquiry = (props) => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
-    if (!valueStart && !flexible) {
-      return setShowPopup({ ...showPopup, dateStart: true });
-    }
-    if (!valueEnd && !flexible) {
-      return setShowPopup({ ...showPopup, dateEnd: true });
-    }
+    // if (!slideOneData.date.start_date && !flexible) {
+    //   return setShowPopup({ ...showPopup, dateStart: true });
+    // }
+    // if (!slideOneData.date.end_date && !flexible) {
+    //   return setShowPopup({ ...showPopup, dateEnd: true });
+    // }
 
     setShowPopup(popupObj);
     if (props.HeroBanner && isPageWide) {
@@ -514,23 +464,37 @@ const Enquiry = (props) => {
     initiateItineraryCreate();
   };
 
-  const _SlideTwoSubmitHandler = () => {
+  const _SlideThreeSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
     let dist = divideTravellers();
-    setRoomConfiguration(dist);
+    dispatch(setRoomConfiguration(dist))
+    router.push({
+      pathname: '/new-trip',
+      query: {
+        slideIndex: slideIndex + 1,
+        initiateId: itineraryInititateData?.itinerary_id,
+      },
+    });
   };
 
-  const _SlideThreeSubmitHandler = () => {
+  const _slideTwoSkip = () => {
     setSlideIndex(slideIndex + 1);
-  };
+    router.push({
+      pathname: '/new-trip',
+      query: {
+        slideIndex: slideIndex + 1,
+        initiateId: itineraryInititateData?.itinerary_id,
+      },
+    });
+  }
 
   const initiateItineraryCreate = () => {
-    const start_date = valueStart
-      ? format(new Date(valueStart), "yyyy-MM-dd")
+    const start_date = slideOneData.date.start_date
+      ? format(new Date(slideOneData.date.start_date), "yyyy-MM-dd")
       : null;
-    const end_date = valueEnd ? format(new Date(valueEnd), "yyyy-MM-dd") : null;
+    const end_date = slideOneData.date.end_date ? format(new Date(slideOneData.date.end_date), "yyyy-MM-dd") : null;
 
     let cityids = [];
     let locations = [];
@@ -540,9 +504,9 @@ const Enquiry = (props) => {
     let preferences = [];
     let pageIds = [];
 
-    for (var i = 0; i < selectedPreferences.length; i++) {
+    for (var i = 0; i < slideOneData.selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
-        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+        if (slideOneData.selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
           for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
             preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
           }
@@ -588,8 +552,14 @@ const Enquiry = (props) => {
       countries: countryIds, // Country ids to build itinerary
       pages: pageIds,
       end_location: {}, // If empty, it is same as start_location
-      start_date: start_date, // YYYY-MM-DD
-      end_date: end_date, // YYYY-MM-DD
+      dates: {
+        type: slideOneData.date.type,
+        month: new Date(slideOneData.date.month).getMonth(),
+        year: slideOneData.date.year,
+        duration: slideOneData.date.duration,
+        start_date: slideOneData.date.start_date,
+        end_date: slideOneData.date.end_date
+      },
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
@@ -604,6 +574,7 @@ const Enquiry = (props) => {
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
         setRoute([data.start_city, ...data.basic_route, data.end_city]);
+        dispatch(setItineraryInitiateData(data));
 
         const hotelsBudget = data?.hotels_budget;
         if (hotelsBudget) {
@@ -611,6 +582,14 @@ const Enquiry = (props) => {
           const maxPrice = parseInt(1.5 * hotelsBudget);
           setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
         }
+
+        router.push({
+          pathname: '/new-trip',
+          query: {
+            slideIndex: slideIndex,
+            initiateId: data?.itinerary_id,
+          },
+        });
       })
       .catch((err) => {
         console.log("ERROR: ", err.message);
@@ -777,11 +756,11 @@ const Enquiry = (props) => {
             style={{ padding: "0 1rem", width: "100%" }}
             className="h-max  font-inter flex flex-col items-center gap-[46px]"
           >
-            <div className="sm:relative w-full flex justify-center sm:justify-between">
+            <div className="sm:relative sm:text-center w-full flex justify-between sm:justify-center">
               <h1
                 className="
                 text-black font-inter 
-                  text-[24px] leading-[32px] font-semibold text-start
+                  text-[24px] leading-[32px] font-semibold
                   sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  
                   max-w-[800px]
                 "
@@ -857,11 +836,6 @@ const Enquiry = (props) => {
                 slideIndex={slideIndex}
                 cities={props.cities}
                 selectedCities={selectedCities}
-                setSelectedCities={setSelectedCities}
-                valueStart={valueStart}
-                valueEnd={valueEnd}
-                setValueStart={setValueStart}
-                setValueEnd={setValueEnd}
                 groupType={groupType}
                 setGroupType={setGroupType}
                 numberOfAdults={numberOfAdults}
@@ -871,12 +845,8 @@ const Enquiry = (props) => {
                 numberOfInfants={numberOfInfants}
                 setNumberOfInfants={setNumberOfInfants}
                 setBudget={setBudget}
-                selectedPreferences={selectedPreferences}
-                setSelectedPreferences={setSelectedPreferences}
                 setSubmitSecondSlide={setSubmitSecondSlide}
                 eventDates={props.eventDates}
-                roomConfiguration={roomConfiguration}
-                setRoomConfiguration={setRoomConfiguration}
                 priceRange={priceRange}
                 setPriceRange={setPriceRange}
                 addHotels={addHotels}
@@ -890,7 +860,7 @@ const Enquiry = (props) => {
                 setSlideIndex={setSlideIndex}
                 setLoginComplete={setLoginComplete}
                 defaultPriceRange={defaultPriceRange}
-                route={route}
+                route={itineraryInititateData?.start_city ? [itineraryInititateData?.start_city, ...itineraryInititateData?.basic_route, itineraryInititateData?.end_city] : []}
                 _submitDataHandler={_submitDataHandler}
               ></Flickity>
 
@@ -928,8 +898,8 @@ const Enquiry = (props) => {
 
               {slideIndex === 1 &&
                 (!props.token || props.phone === "null" || addHotels) && (
-                  <div style={{ display: "flex", justifyContent: "space-between",alignItems:"center",width:"100%" }} className="p-4">
-                    <button className="LargeIndigoOutlinedButton" onClick={()=>    setSlideIndex(slideIndex + 1)}>Skip</button>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className="p-4">
+                    <Button className="LargeIndigoOutlinedButton" onclick={_slideTwoSkip}>Skip</Button>
                     <Button
                       fontSize="1rem"
                       width={!isPageWide ? "auto" : "100%"}
@@ -959,104 +929,104 @@ const Enquiry = (props) => {
                   </div>
                 )}
 
-            {slideIndex === 2 && (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                        position: "fixed",
-                        left: "1rem",
-                        right: "1rem",
-                        bottom: "0",
-                      }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="30px 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#07213A"
-                  onclick={_SlideTwoSubmitHandler}
-                  loading={isLoading && submitted}
-                  height="50px"
-                  color="white"
-                >
-                  Continue
-                </Button>
-              </div>
-            )}
+              {slideIndex === 2 && (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="30px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    onclick={_SlideThreeSubmitHandler}
+                    loading={isLoading && submitted}
+                    height="50px"
+                    color="white"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
 
-            {slideIndex === 3 && (
-              <div className="flex justify-end">
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                        position: "fixed",
-                        left: "1rem",
-                        right: "1rem",
-                        bottom: "0",
-                      }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="40px 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#07213A"
-                  color="white"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={() => {
-                    totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
-                  }}
-                  height="50px"
-                >
-                  Continue
-                </Button>
-              </div>
-            )}
-            {slideIndex === 4 ? (
-              <div className="flex justify-end">
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                        position: "fixed",
-                        left: "1rem",
-                        right: "1rem",
-                        bottom: "0",
-                      }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="40px 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#07213A"
-                  color="white"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onClick={_submitDataHandler}
-                  height="50px"
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : null}
+              {slideIndex === 3 && (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="40px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onclick={() => {
+                      totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
+                    }}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              )}
+              {slideIndex === 4 ? (
+                <div className="flex justify-end">
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="40px 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#07213A"
+                    color="white"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                    onClick={_submitDataHandler}
+                    height="50px"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
-    </div>
       </Container >
     </div >
   );

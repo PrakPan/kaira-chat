@@ -96,11 +96,11 @@ const AirbnbCalendarMobile = (props) => {
                 <div className="grid grid-cols-7 text-[10px] font-medium text-gray-500">
                     {dayNames.map(day => <div key={day} className="text-center">{day}</div>)}
                 </div>
-                <div className="grid grid-cols-7 mt-1 gap-[1px]">
+                <div className="grid grid-cols-7 mt-1 gap-y-[1px]">
                     {days.map((date, idx) => (
                         <div
                             key={idx}
-                            className={` flex items-center justify-center relative
+                            className={`aspect-square flex items-center justify-center relative
                             ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
                             ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
                             ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}`}
@@ -108,8 +108,8 @@ const AirbnbCalendarMobile = (props) => {
                             {date && (
                                 <button
                                     onClick={() => handleDateClick(date)}
-                                    className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
-                ${isDateSelected(date) ? 'bg-black text-white' :
+                                    className={`w-full h-full rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
+                                ${isDateSelected(date) ? 'bg-black text-white' :
                                             isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
                                                 'hover:bg-gray-100 text-gray-900'}`}
                                 >

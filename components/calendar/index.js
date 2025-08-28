@@ -2,6 +2,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
+import { useSelector } from 'react-redux';
+import { capitalizeFirstLetter } from '../../utils/tailoredform';
 
 const AirbnbCalendar = (props) => {
   const today = new Date();
@@ -12,9 +14,8 @@ const AirbnbCalendar = (props) => {
     start: new Date(props.valueStart),
     end: new Date(props.valueEnd)
   });
-  const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [dateType, setDateType] = useState('Fixed');
-  const [tripDuration, setTripDuration] = useState(1);
+  const [currentMonth, setCurrentMonth] = useState(props.date.month || new Date(today.getFullYear(), today.getMonth(), 1));
+  const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
 
   // Constants
   const months = [
@@ -90,7 +91,7 @@ const AirbnbCalendar = (props) => {
 
 
   const handleApplyDates = () => {
-    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end })
+    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration })
     props.setShowCalendar(false)
   }
 
@@ -244,17 +245,17 @@ const AirbnbCalendar = (props) => {
           {/* Tabs */}
           <div className="">
             <div className="flex bg-gray-100 rounded-full px-[12px] py-[6px] w-fit mx-auto">
-              {['Fixed', 'Flexible', 'Anytime'].map(type => (
+              {['fixed', 'flexible', 'anytime'].map(type => (
                 <button
                   key={type}
                   onClick={() => {
-                    setDateType(type);
-                    setCurrentView(type === 'Fixed' ? 'calendar' : type === "Flexible" ? 'months' : "any");
+                    props.setDateType(type);
+                    setCurrentView(type === 'fixed' ? 'calendar' : type === "flexible" ? 'months' : "any");
                   }}
-                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all ${dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all ${props.dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
-                  {type}
+                  {capitalizeFirstLetter(type)}
                 </button>
               ))}
             </div>
@@ -262,7 +263,7 @@ const AirbnbCalendar = (props) => {
 
           {/* Calendar / Month selector */}
           <div className="">
-            {currentView === 'calendar' ? renderCalendarView() : currentView == "any" ? renderAnyView() : renderMonthView()}
+            {props.dateType === 'fixed' ? renderCalendarView() : props.dateType == "any" ? renderAnyView() : renderMonthView()}
           </div>
 
           {/* Footer */}

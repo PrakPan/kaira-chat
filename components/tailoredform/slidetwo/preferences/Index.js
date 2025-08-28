@@ -3,7 +3,9 @@ import styled, { keyframes } from "styled-components";
 import { fadeIn } from "react-animations";
 import { BsCheck } from "react-icons/bs";
 import { EXPERIENCE_FILTERS_BOX } from "../../../../services/constants";
-import { StyledButton,StyledFlexWrap } from "../../../styled-components/TailoredForm";
+import { StyledButton, StyledFlexWrap } from "../../../styled-components/TailoredForm";
+import { useDispatch, useSelector } from "react-redux";
+import { togglePreference } from "../../../../store/actions/slideOneActions";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -20,39 +22,18 @@ const Container = styled.div`
 
 
 const GroupType = (props) => {
-  const _isPreferenceAdded = (preference) => {
-    for (var i = 0; i < props.selectedPreferences.length; i++) {
-      if (props.selectedPreferences[i] === preference) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
+  const dispatch = useDispatch();
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)
+  const _isPreferenceAdded = (preference) => selectedPreferences.includes(preference);
   const _handleClick = (preference) => {
-    let is_preference_added = _isPreferenceAdded(preference);
-    if (!is_preference_added) {
-      let selected_preferences = props.selectedPreferences.slice();
-      selected_preferences.push(preference);
-      props.setSelectedPreferences(selected_preferences);
-    } else {
-      let selected_preferences = [];
-      for (var i = 0; i < props.selectedPreferences.length; i++) {
-        if (props.selectedPreferences[i] !== preference)
-          selected_preferences.push(props.selectedPreferences[i]);
-        else {
-        }
-      }
-      props.setSelectedPreferences(selected_preferences);
-    }
+    dispatch(togglePreference(preference));
   };
 
   return (
     <Container>
       <StyledFlexWrap tailoredFormModal={props.tailoredFormModal}>
         {EXPERIENCE_FILTERS_BOX.map((filter, i) => {
-          let clicked=false
+          let clicked = false
           return (
             <div
               key={i}

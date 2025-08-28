@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { StyledButton, StyledFlexWrap } from "../../styled-components/TailoredForm.js";
 import { useState } from "react";
 import { Body1M_16, Body2R_14 } from "../../new-ui/Body.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration } from "../../../store/actions/slideOneActions.js";
 
 export const StyledTextarea = styled.textarea`
   width: 100%;
@@ -29,6 +31,17 @@ export const StyledTextarea = styled.textarea`
 
 const MEAL_PREFERENCES = ["Vegetarian", "Non-Vegetarian", "Vegan", "Jain"]
 export default function SlideThree(props) {
+
+  const {
+    groupType,
+    numberOfAdults,
+    numberOfChildren,
+    numberOfInfants,
+    roomConfiguration,
+  } = useSelector((state) => state.tailoredInfoReducer.slideThree);
+
+  const dispatch = useDispatch();
+
   const _isPreferenceAdded = (pref) => {
     return props?.slideFour?.mealPreferences.includes(pref);
   };
@@ -84,16 +97,16 @@ export default function SlideThree(props) {
       <div>
         <Body2R_14 className="mb-[6px]">Room Configuration</Body2R_14>
         <Pax
-          numberOfAdults={props.numberOfAdults}
-          setNumberOfAdults={props.setNumberOfAdults}
-          numberOfChildren={props.numberOfChildren}
-          setNumberOfChildren={props.setNumberOfChildren}
-          numberOfInfants={props.numberOfInfants}
-          roomConfiguration={props.roomConfiguration}
-          setNumberOfInfants={props.setNumberOfInfants}
-          setRoomConfiguration={props.setRoomConfiguration}
-          groupType={props.groupType}
-        ></Pax>
+          numberOfAdults={numberOfAdults}
+          setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
+          numberOfChildren={numberOfChildren}
+          setNumberOfChildren={(val) => dispatch(setNumberOfChildren(val))}
+          numberOfInfants={numberOfInfants}
+          setNumberOfInfants={(val) => dispatch(setNumberOfInfants(val))}
+          roomConfiguration={roomConfiguration}
+          setRoomConfiguration={(val) => dispatch(setRoomConfiguration(val))}
+          groupType={groupType}
+        />
       </div>
 
       <div>
