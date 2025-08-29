@@ -206,7 +206,7 @@ const MidSectionV2 = (props) => {
             {props.version == "v2" ? (
               <Text>
                 {props.cityTransferBookings &&
-                props.cityTransferBookings?.duration ? (
+                props.cityTransferBookings?.id ? (
                   <></>
                 ) : (
                   <button
@@ -217,7 +217,7 @@ const MidSectionV2 = (props) => {
                   </button>
                 )}
 
-                {props.cityTransferBookings 
+                {props.cityTransferBookings && props.cityTransferBookings?.id
                  ? (
                   <div
                     className={`inline-flex items-center gap-2 ${

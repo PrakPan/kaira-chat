@@ -37,6 +37,7 @@ import { toast, ToastContainer } from "react-toastify";
 import SetPassengers from "../../store/actions/passengers";
 import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
+import setCart from "../../store/actions/Cart";
 
 const Container = styled.div`
   width: 90%;
@@ -368,11 +369,13 @@ const ItineraryContainer = (props) => {
               .ClaimItinary(props.id, props.token)
               .then((res) => {
                 setPayment(res); //
+                dispatch(setCart(res));
                 setPaymentLoading(false);
               })
               .catch((err) => {});
           } else {
             setPayment(res.data);
+            dispatch(setCart(res.data));
             setPaymentLoading(false);
           }
           let email = localStorage.getItem("email");
@@ -474,6 +477,7 @@ const ItineraryContainer = (props) => {
 
       let data = res.data;
       setPayment(data);
+      dispatch(setCart(data));
       dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
 
       for (let category in data.summary) {
