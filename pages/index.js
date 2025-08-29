@@ -2,6 +2,7 @@ import Head from "next/head";
 // import HomepageContainer from "../containers/homepage/Index";
 import HeroSection from "../components/revamp/home/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
+import JourneySimplified from "../components/revamp/home/JourneySimplified";
 // import Layout from "../components/Layout";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -104,6 +105,7 @@ const Home = (props) => {
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
         <HeroSection />
+        <JourneySimplified />
       </div>
     </>
   );

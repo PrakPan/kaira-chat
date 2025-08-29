@@ -57,7 +57,7 @@ const StyledButton = styled.button`
     padding: 16px 32px;
     font-size: 18px;
     min-height: 56px;
-    border-radius: 24px;
+    border-radius: 8px;
   `}
   
   /* Color variations */
