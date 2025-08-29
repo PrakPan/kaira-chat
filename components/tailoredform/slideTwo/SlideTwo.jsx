@@ -8,6 +8,7 @@ import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import {
     FaCirclePlus,
     FaCalendarDays,
+    FaCircleMinus,
 } from "react-icons/fa6";
 import {
     isSameDay,
@@ -37,6 +38,7 @@ import setItinerary from "../../../store/actions/itinerary";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { HiLocationMarker } from "react-icons/hi";
 import RoutesMap from "../../../containers/itinerary/breif/RoutesMap";
+import Spinner from "../../Spinner";
 
 const CITY_COLOR_CODES = [
     "#359EBF", // shade of blue
@@ -49,7 +51,6 @@ const CITY_COLOR_CODES = [
 ];
 
 const RouteEditSection = (props) => {
-    console.log("slide two props are: ", props)
     const isDesktop = useMediaQuery("(min-width:768px)");
     const dispatch = useDispatch();
     const handleClose = useHandleClose();
@@ -66,17 +67,10 @@ const RouteEditSection = (props) => {
     const [destinationChanges, setDestinationChanges] = useState(false);
     const [isValidDates, setIsValidDates] = useState(true);
     const [invalidDateError, setInvalidDateError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [itineraryLoading, setItineraryLoading] = useState(false);
-    const [polling, setPolling] = useState(false);
-    const [pollingInterval, setPollingInterval] = useState(null);
+    const itineraryLoading = false;
     const destinationRef = useRef(null);
     const [isEditMode, setIsEditMode] = useState(false);
-    const itinerary = useSelector((state) => state.Itinerary);
-    const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
-    const { itinerary_status, transfers_status, pricing_status, hotels_status } =
-        useSelector((state) => state.ItineraryStatus);
-
+    const itinerary = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData);
     function addDaysToDate(dateString, daysToAdd) {
         const date = new Date(dateString);
 
@@ -194,79 +188,6 @@ const RouteEditSection = (props) => {
         }
     }, [destinations, startDate, endDate]);
 
-    useEffect(() => {
-        if (waitingForStatusUpdate) {
-            const allStatusesCompleted = [
-                itinerary_status,
-                transfers_status,
-                pricing_status,
-                hotels_status,
-            ].every((status) => status === "SUCCESS" || status === "FAILURE");
-
-            if (allStatusesCompleted) {
-                console.log(
-                    "Status update complete",
-                    itinerary_status,
-                    transfers_status,
-                    pricing_status,
-                    hotels_status
-                );
-                dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-                setItineraryLoading(false);
-                setWaitingForStatusUpdate(false);
-                dispatch(
-                    openNotification({
-                        type: "success",
-                        text: "Itinerary has been updated successfully.",
-                        heading: "Sucess!",
-                    })
-                );
-                handleClose();
-            }
-        }
-    }, [
-        itinerary_status,
-        transfers_status,
-        pricing_status,
-        hotels_status,
-        itineraryLoading,
-        waitingForStatusUpdate,
-    ]);
-
-    const fetchItineraryStatus = async (itineraryId) => {
-        try {
-            const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
-            const status = res.data?.celery;
-            dispatch(
-                setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
-            );
-            dispatch(
-                setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
-            );
-            dispatch(
-                setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
-            );
-            dispatch(
-                setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
-            );
-            fetchItinerary();
-        } catch (err) {
-            console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
-        }
-    };
-
-    const fetchItinerary = async () => {
-        props?.resetRef();
-        setWaitingForStatusUpdate(true);
-        props.fetchData(true);
-    };
-
-    const startStatusPolling = (itineraryId) => {
-        setItineraryLoading(true);
-        setPolling(true);
-
-        fetchItineraryStatus(itineraryId);
-    };
 
     const validateDates = () => {
         const today = new Date();
@@ -382,6 +303,7 @@ const RouteEditSection = (props) => {
 
                 {editDestination && !itineraryLoading ? (
                     <div className="w-full h-full flex flex-col sm:flex-row justify-start gap-5">
+                        {/* redux state error was here */}
                         <EditDestinations
                             destinations={destinations}
                             setDestinations={setDestinations}
@@ -413,22 +335,19 @@ const RouteEditSection = (props) => {
                 ) : (
                     ""
                 )}
-                {/* <ActionPanel setSlideIndex={props.setSlideIndex} /> */}
             </div>
         </div>
     );
 };
 
-const mapStateToPros = (state) => {
-    return {
-        notificationText: state.Notification.text,
-        token: state.auth.token,
-        ItineraryId: state.ItineraryId,
-        itinerary: state.Itinerary,
-        plan: state.Plan,
-        // routes: state.ItineraryRoutes,
-    };
-};
+const mapStateToPros = (state) => ({
+    notificationText: state.Notification?.text ?? "",
+    token: state.auth?.token ?? "",
+    ItineraryId: state.ItineraryId ?? null,
+    itinerary: state.Itinerary ?? {},
+    plan: state.Plan ?? {},
+});
+
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -652,51 +571,57 @@ export const DragDrop = (props) => {
                 />
             </div>
 
-            <DragDropContext onDragEnd={onDragEnd}>
+            <DragDropContext 
+            onDragEnd={onDragEnd}
+            >
                 <Droppable droppableId="droppable">
                     {(provided, snapshot) => (
-                        <div {...provided.droppableProps} ref={provided.innerRef}>
-                            {destinations.map((item, index) => {
-                                if (index !== 0 && index !== destinations.length - 1)
-                                    return (
-                                        <Draggable
-                                            key={`item-${index}`}
-                                            draggableId={`item-${index}`}
-                                            index={index}
-                                        >
-                                            {(provided, snapshot) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    style={getItemStyle(
-                                                        snapshot.isDragging,
-                                                        provided.draggableProps.style
-                                                    )}
+                        <>
+                            <div {...provided.droppableProps} ref={provided.innerRef}>
+                                {destinations.map((item, index) => {
+                                    if (index !== 0 && index !== destinations.length - 1)
+                                        return (
+                                            <>
+                                                <Draggable
+                                                    key={item.city_id}
+                                                    draggableId={item.city_id}
+                                                    index={index}
                                                 >
-                                                    <Destination
-                                                        index={index}
-                                                        startingCity={item.startingCity}
-                                                        endingCity={item.endingCity}
-                                                        cityData={item?.cityData}
-                                                        pinColour={item?.cityData?.color}
-                                                        setDestinations={props.setDestinations}
-                                                        updateLatLong={updateLatLong}
-                                                        setPopUp={setPopUp}
-                                                        updateDestinationsDates={updateDestinationsDates}
-                                                        setDestinationChanges={setDestinationChanges}
-                                                        destinationRef={destinationRef}
-                                                        isEditMode={isEditMode}
-                                                        setIsEditMode={setIsEditMode}
-                                                        totalDestinations={destinations.length}
-                                                    />
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    );
-                            })}
-                            {provided.placeholder}
-                        </div>
+                                                    {(provided, snapshot) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            style={getItemStyle(
+                                                                snapshot.isDragging,
+                                                                provided.draggableProps.style
+                                                            )}
+                                                        >
+                                                            <Destination
+                                                                index={index}
+                                                                startingCity={item.startingCity}
+                                                                endingCity={item.endingCity}
+                                                                cityData={item?.cityData}
+                                                                pinColour={item?.cityData?.color}
+                                                                setDestinations={props.setDestinations}
+                                                                updateLatLong={updateLatLong}
+                                                                setPopUp={setPopUp}
+                                                                updateDestinationsDates={updateDestinationsDates}
+                                                                setDestinationChanges={setDestinationChanges}
+                                                                destinationRef={destinationRef}
+                                                                isEditMode={isEditMode}
+                                                                setIsEditMode={setIsEditMode}
+                                                                totalDestinations={destinations.length}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            </>
+                                        );
+                                })}
+                                {provided.placeholder}
+                            </div>
+                        </>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -1217,52 +1142,6 @@ export const DestinationPopUp = (props) => {
 
 
 
-
-export const ActionPanel = (props) => {
-    console.log("props are: ", props)
-    const {
-        setEdit,
-        setEditDestination,
-        editDestination,
-        handleSaveButton,
-        itineraryLoading,
-        handleClose,
-        setSlideIndex
-    } = props;
-
-    return (
-        <div className="w-full mt-3 py-2 md:py-3 lg:py-3 flex  items-center justify-between border-t-2  px-2">
-            <div className="flex w-full justify-between flex-row p-4">
-                {!itineraryLoading && (
-                    <button
-                        onClick={() => setSlideIndex(2)}
-                        // editDestination
-                        //     ? () => handleClose()
-                        //     : () => setEditDestination(true)
-                        className="px-3 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
-                    >
-                        {/* {editDestination ? "Cancel" : "Back"} */}
-                        Skip
-                    </button>
-                )}
-                {
-                    <button
-                        onClick={
-                            // handleSaveButton
-                            () => { }}
-                        className="bg-[#07213A] px-5 py-2 w-[30%] rounded-lg border-2 border-black text-white hover:bg-black transition ease-in-out duration-500"
-                    >
-                        {itineraryLoading ? (
-                            <PulseLoader size={14} speedMultiplier={0.6} color="white" />
-                        ) : (
-                            "Continue"
-                        )}
-                    </button>
-                }
-            </div>
-        </div>
-    );
-};
 
 export const ErrorMessage = ({ error, setError }) => {
     return (

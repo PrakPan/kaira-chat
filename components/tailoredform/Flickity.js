@@ -45,7 +45,6 @@ const FlickityComp = (props) => {
       {props.slideIndex === 1 ? (
         <Card className="flex flex-col h-full">
           <SlideTwo
-            setSlideIndex={props?.setSlideIndex}
             routes={props?.route}
             className="flex-1"
           >
@@ -65,6 +64,7 @@ const FlickityComp = (props) => {
       {props.slideIndex === 3 ?
         <SlideFour
           setSlideFour={props.setSlideFour}
+          slideFour={props.slideFour}
         /> : null}
 
       {props.slideIndex == 4 &&

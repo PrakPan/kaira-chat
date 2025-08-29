@@ -28,6 +28,11 @@ const initialReducer = {
         addFlights: false,
         addInclusions: false,
     },
+    slideFour: {
+        hotelType: [],
+        mealPreferences: [],
+        specialRequests: ""
+    }
 }
 
 const reducer = (state = initialReducer, action) => {
@@ -208,6 +213,7 @@ const reducer = (state = initialReducer, action) => {
             };
 
         case actionTypes.SET_ITINERARY_INITIATE_DATA:
+            console.log("itinerary initiate data is:2  ", action.payload)
             return {
                 ...state,
                 itineraryInititateData: action.payload,
@@ -329,6 +335,49 @@ const reducer = (state = initialReducer, action) => {
                 };
             }
         }
+
+        case actionTypes.SET_HOTEL_TYPE:
+            return state.slideFour.hotelType.includes(action.payload)
+                ? {
+                    ...state,
+                    slideFour: {
+                        ...state.slideFour,
+                        hotelType: state.slideFour.hotelType.filter((h) => h !== action.payload)
+                    }
+                }
+                : {
+                    ...state,
+                    slideFour: {
+                        ...state.slideFour,
+                        hotelType: [...state.slideFour.hotelType, action.payload]
+                    }
+                };
+        case actionTypes.SET_MEAL_PREFERENCE:
+            return state.slideFour.mealPreferences.includes(action.payload)
+                ? {
+                    ...state,
+                    slideFour: {
+                        ...state.slideFour,
+                        mealPreferences: state.slideFour.mealPreferences.filter((p) => p !== action.payload)
+                    }
+                }
+                :
+                {
+                    ...state,
+                    slideFour: {
+                        ...state.slideFour,
+                        mealPreferences: [...state.slideFour.mealPreferences, action.payload]
+                    }
+                }
+
+        case actionTypes.SET_SPECIAL_REQUESTS:
+            return {
+                ...state,
+                slideFour: {
+                    ...state.slideFour,
+                    specialRequests: action.payload
+                }
+            };
         default:
             return state;
     }

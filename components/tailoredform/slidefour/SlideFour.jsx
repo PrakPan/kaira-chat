@@ -1,12 +1,9 @@
 import Pax from "../slidetwo/pax/Pax.jsx";
-import BudgetSlider from "../slidetwo/preferences/BudgetSlider.jsx";
-import Question from "../Question.js";
 import styled from "styled-components";
 import { StyledButton, StyledFlexWrap } from "../../styled-components/TailoredForm.js";
-import { useState } from "react";
 import { Body1M_16, Body2R_14 } from "../../new-ui/Body.js";
 import { useDispatch, useSelector } from "react-redux";
-import { setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration } from "../../../store/actions/slideOneActions.js";
+import { setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, setSpecialRequests, toggleHotelType, toggleMealPreference } from "../../../store/actions/slideOneActions.js";
 
 export const StyledTextarea = styled.textarea`
   width: 100%;
@@ -40,35 +37,16 @@ export default function SlideThree(props) {
     roomConfiguration,
   } = useSelector((state) => state.tailoredInfoReducer.slideThree);
 
+  const { specialRequests, hotelType, mealPreferences } = useSelector(
+    (state) => state.tailoredInfoReducer.slideFour
+  );
+
   const dispatch = useDispatch();
 
-  const _isPreferenceAdded = (pref) => {
-    return props?.slideFour?.mealPreferences.includes(pref);
-  };
-
-  const _handleClick = (pref) => {
-    props.setSlideFour((prev) => ({
-      ...prev,
-      mealPreferences: props?.slideFour?.mealPreferences.includes(pref)
-        ? props?.slideFour?.mealPreferences.filter((p) => p !== pref)
-        : [...props?.slideFour?.mealPreferences, pref]
-    }))
-  };
-
   const handleSpecialRequest = (e) => {
-    props.setSlideFour((prev) => ({
-      ...prev,
-      specialRequests: e.target.value
-    }))
+    dispatch(setSpecialRequests(e.target.value));
   };
 
-  const handleHotelType = (e) => {
-    const { value, checked } = e.target;
-    props.setSlideFour((prev) => ({
-      ...prev,
-      hotelType: checked ? [...props?.slideFour?.hotelType, value] : props?.slideFour?.hotelType.filter((item) => item !== value)
-    }))
-  };
 
   return (
     <div className="flex flex-col gap-[30px]">
@@ -84,8 +62,8 @@ export default function SlideThree(props) {
               <input
                 type="checkbox"
                 value={star}
-                checked={props?.slideFour?.hotelType.includes(star)}
-                onChange={handleHotelType}
+                checked={hotelType.includes(star)}
+                onChange={() => dispatch(toggleHotelType(star))}
                 className="focus:outline-none cursor-pointer"
               />
               <div className="text-sm">{star}-Stars</div>
@@ -115,27 +93,31 @@ export default function SlideThree(props) {
           {MEAL_PREFERENCES.map((filter, i) => {
             let clicked = false
             return (
-              <div
-                key={i}
-                is_selected={_isPreferenceAdded(filter)}
-                className="  hover-pointer"
-                onClick={() => _handleClick(filter)}
+             <div
+              key={i}
+              is_selected={mealPreferences.includes(filter)}
+              className="hover-pointer"
+              onClick={() => dispatch(toggleMealPreference(filter))}
+            >
+              <StyledButton
+                style={{ lineHeight: "1.2", alignItems: "flex-start" }}
+                className="center-div"
+                clicked={mealPreferences.includes(filter)}
               >
-                <StyledButton
-                  style={{ lineHeight: "1.2", alignItems: "flex-start" }}
-                  className="center-div"
-                  clicked={_isPreferenceAdded(filter)}
-                >
-                  {filter}
-                </StyledButton>
-              </div>
+                {filter}
+              </StyledButton>
+            </div>
             );
           })}
         </StyledFlexWrap>
       </div>
       <div>
-        <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
-        <StyledTextarea placeholder="Write any special requests" onChange={handleSpecialRequest} value={props.specialRequests} />
+          <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
+          <StyledTextarea
+            placeholder="Write any special requests"
+            onChange={handleSpecialRequest}
+            value={specialRequests}
+          />
       </div>
     </div>
   );

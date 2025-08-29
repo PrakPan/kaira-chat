@@ -104,7 +104,6 @@ const Enquiry = (props) => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
-  const [slideIndex, setSlideIndex] = useState(0);
   const [numberOfAdults, setNumberOfAdults] = useState(1);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
@@ -115,7 +114,7 @@ const Enquiry = (props) => {
   const slideOneData = useSelector((state) => state.tailoredInfoReducer.slideOne)
   const itineraryInititateData = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData)
   const slideThreeData = useSelector((state) => state.tailoredInfoReducer.slideThree)
-
+  const slideFourData = useSelector((state) => state.tailoredInfoReducer.slideFour)
   const [priceRange, setPriceRange] = useState({
     min_price: 0,
     max_price: 3000,
@@ -154,6 +153,9 @@ const Enquiry = (props) => {
     max_price: 3000,
   });
 
+
+  const slideIndex = Number(router.query.slideIndex) || 0;
+  console.log("slide index is: ",slideIndex)
   const headings = [
     "Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.",
     "Route Overview — Customize Your Journey from Start to Finish!",
@@ -311,122 +313,124 @@ const Enquiry = (props) => {
   };
 
   const _submitDataHandler = () => {
-    const value_start = new Date(slideOneData.date.start_date);
-    const value_end = new Date(slideOneData.date.end_date);
+    // const value_start = new Date(slideOneData.date.start_date);
+    // const value_end = new Date(slideOneData.date.end_date);
 
-    if (isSubmitting) {
-      return;
-    }
+    // if (isSubmitting) {
+    //   return;
+    // }
 
-    setLoading(true);
-    setIsSubmitting(true);
+    // setLoading(true);
+    // setIsSubmitting(true);
 
-    let cityids = [];
-    let locations = [];
-    let stateIds = [];
-    let countryIds = [];
-    let continentIds = [];
-    let preferences = [];
-    let pageIds = [];
+    // let cityids = [];
+    // let locations = [];
+    // let stateIds = [];
+    // let countryIds = [];
+    // let continentIds = [];
+    // let preferences = [];
+    // let pageIds = [];
 
-    for (var i = 0; i < slideOneData.selectedPreferences.length; i++) {
-      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
-        if (slideOneData.selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
-          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
-            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
-          }
-          break;
-        }
-      }
-    }
+    // for (var i = 0; i < slideOneData.selectedPreferences.length; i++) {
+    //   for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
+    //     if (slideOneData.selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+    //       for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
+    //         preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
+    //       }
+    //       break;
+    //     }
+    //   }
+    // }
 
-    try {
-      for (var i = 0; i < selectedCities.length; i++) {
-        if (
-          cityids.indexOf(selectedCities[i].id) == -1 &&
-          selectedCities[i].id
-        ) {
-          if (selectedCities[i].type?.toLowerCase() == "state")
-            stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "country")
-            countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent")
-            continentIds.push(selectedCities[i].id);
-          else if (
-            selectedCities[i].type?.toLowerCase() == "city" ||
-            selectedCities[i].type?.toLowerCase() == "location"
-          ) {
-            cityids.push(selectedCities[i].id);
-          } else {
-            continentIds.push(selectedCities[i].id);
-          }
-          locations.push(selectedCities[i].name);
-        }
-      }
-    } catch { }
+    // try {
+    //   for (var i = 0; i < selectedCities.length; i++) {
+    //     if (
+    //       cityids.indexOf(selectedCities[i].id) == -1 &&
+    //       selectedCities[i].id
+    //     ) {
+    //       if (selectedCities[i].type?.toLowerCase() == "state")
+    //         stateIds.push(selectedCities[i].id);
+    //       else if (selectedCities[i].type?.toLowerCase() == "country")
+    //         countryIds.push(selectedCities[i].id);
+    //       else if (selectedCities[i].type?.toLowerCase() == "continent")
+    //         continentIds.push(selectedCities[i].id);
+    //       else if (
+    //         selectedCities[i].type?.toLowerCase() == "city" ||
+    //         selectedCities[i].type?.toLowerCase() == "location"
+    //       ) {
+    //         cityids.push(selectedCities[i].id);
+    //       } else {
+    //         continentIds.push(selectedCities[i].id);
+    //       }
+    //       locations.push(selectedCities[i].name);
+    //     }
+    //   }
+    // } catch { }
 
-    let dist = divideTravellers();
-    const start_date = format(value_start, "yyyy-MM-dd");
-    const end_date = format(value_end, "yyyy-MM-dd");
+    // let dist = divideTravellers();
+    // const start_date = format(value_start, "yyyy-MM-dd");
+    // const end_date = format(value_end, "yyyy-MM-dd");
 
-    let number_of_adults = 2,
-      number_of_children = 0,
-      number_of_infants = 0;
+    // let number_of_adults = 2,
+    //   number_of_children = 0,
+    //   number_of_infants = 0;
 
-    if (groupType === "Solo") {
-      number_of_adults = 1;
-    } else if (groupType === "Couple") {
-      number_of_adults = 2;
-    } else {
-      number_of_adults = numberOfAdults;
-      number_of_children = numberOfChildren;
-      number_of_infants = numberOfInfants;
-    }
+    // if (groupType === "Solo") {
+    //   number_of_adults = 1;
+    // } else if (groupType === "Couple") {
+    //   number_of_adults = 2;
+    // } else {
+    //   number_of_adults = numberOfAdults;
+    //   number_of_children = numberOfChildren;
+    //   number_of_infants = numberOfInfants;
+    // }
 
-    //     const source = {
-    //   path: router.pathname,
-    //   ...router.query,
+    // let data = null;
+    // data = {
+    //   source,
+    //   experience_filters_selected: preferences,
+    //   budget: budget,
+    //   start_date: start_date,
+    //   end_date: end_date,
+    //   group_type: groupType || "Solo",
+    //   number_of_adults: number_of_adults,
+    //   number_of_children: number_of_children,
+    //   number_of_infants: number_of_infants,
+    //   flexible_dates: flexible,
+    //   user_location: {
+    //     place_id: startingLocation
+    //       ? startingLocation.place_id
+    //       : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+    //   },
+    //   room_configuration: dist,
+    //   price_range: priceRange,
     // };
 
-    let data = null;
-    data = {
-      source,
-      experience_filters_selected: preferences,
-      budget: budget,
-      start_date: start_date,
-      end_date: end_date,
-      group_type: groupType || "Solo",
-      number_of_adults: number_of_adults,
-      number_of_children: number_of_children,
-      number_of_infants: number_of_infants,
-      flexible_dates: flexible,
-      user_location: {
-        place_id: startingLocation
-          ? startingLocation.place_id
-          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-      },
-      room_configuration: dist,
-      price_range: priceRange,
-    };
-
-    if (selectedCities[0].destination_id) {
-      data.destination_id = [selectedCities[0].destination_id];
-    }
-    if (continentIds.length) data.destination_id = continentIds;
-    if (stateIds.length) data.state_id = stateIds;
-    if (countryIds.length) data.country_id = countryIds;
-    if (pageIds.length) data.page_id = pageIds;
-    if (cityids.length) data.city_id = cityids;
-    if (locations.length) data.locations = locations;
-    if (start_date === "1970-01-01") data.start_date = "";
-    if (end_date === "1970-01-01") data.end_date = "";
-    if (startingLocation) data;
+    // if (selectedCities[0].destination_id) {
+    //   data.destination_id = [selectedCities[0].destination_id];
+    // }
+    // if (continentIds.length) data.destination_id = continentIds;
+    // if (stateIds.length) data.state_id = stateIds;
+    // if (countryIds.length) data.country_id = countryIds;
+    // if (pageIds.length) data.page_id = pageIds;
+    // if (cityids.length) data.city_id = cityids;
+    // if (locations.length) data.locations = locations;
+    // if (start_date === "1970-01-01") data.start_date = "";
+    // if (end_date === "1970-01-01") data.end_date = "";
+    // if (startingLocation) data;
 
     completeItineraryCreate();
   };
 
   const _prevSlideHandler = () => {
-    if (slideIndex) setSlideIndex(slideIndex - 1);
+    if (slideIndex) {
+      router.push({
+        pathname: '/new-trip',
+        query: {
+          slideIndex: slideIndex - 1,
+        },
+      })
+    }
   };
 
   const selectedCities = slideOneData.selectedCities;
@@ -467,25 +471,21 @@ const Enquiry = (props) => {
   const _SlideThreeSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
-    setSlideIndex(slideIndex + 1);
     let dist = divideTravellers();
     dispatch(setRoomConfiguration(dist))
     router.push({
       pathname: '/new-trip',
       query: {
         slideIndex: slideIndex + 1,
-        initiateId: itineraryInititateData?.itinerary_id,
       },
     });
   };
 
   const _slideTwoSkip = () => {
-    setSlideIndex(slideIndex + 1);
     router.push({
       pathname: '/new-trip',
       query: {
         slideIndex: slideIndex + 1,
-        initiateId: itineraryInititateData?.itinerary_id,
       },
     });
   }
@@ -572,7 +572,6 @@ const Enquiry = (props) => {
         setError(null);
         setItineraryId(data.itinerary_id);
         setIsLoading(false);
-        setSlideIndex(slideIndex + 1);
         setRoute([data.start_city, ...data.basic_route, data.end_city]);
         dispatch(setItineraryInitiateData(data));
 
@@ -586,7 +585,7 @@ const Enquiry = (props) => {
         router.push({
           pathname: '/new-trip',
           query: {
-            slideIndex: slideIndex,
+            slideIndex: slideIndex + 1,
             initiateId: data?.itinerary_id,
           },
         });
@@ -613,35 +612,23 @@ const Enquiry = (props) => {
   useEffect(() => { });
 
   const completeItineraryCreate = () => {
-    let number_of_adults = 2;
-    let number_of_children = 0;
-    let number_of_infants = 0;
-
-    if (groupType === "Solo") {
-      number_of_adults = 1;
-    } else if (groupType === "Couple") {
-      number_of_adults = 2;
-    } else {
-      number_of_adults = numberOfAdults;
-      number_of_children = numberOfChildren;
-      number_of_infants = numberOfInfants;
-    }
-    let dist = divideTravellers();
-
     const data = {
       source,
       // : {
       //   path: router.asPath,
       // },
       itinerary_id: itineraryId,
-      group_type: groupType || "Solo",
-      price_range: priceRange,
-      number_of_adults: number_of_adults,
-      number_of_children: number_of_children,
-      number_of_infants: number_of_infants,
-      room_configuration: slideIndex == 1 ? dist : roomConfiguration,
-      add_hotels: addHotels,
-      add_flights: addFlights,
+      group_type: slideThreeData.groupType || "Solo",
+      number_of_adults: slideThreeData.numberOfAdults,
+      number_of_children: slideThreeData.numberOfChildren,
+      number_of_infants: slideThreeData.numberOfInfants,
+      room_configuration: slideThreeData.roomConfiguration,
+      add_flights: slideThreeData.addHotels,
+      add_hotels: slideThreeData.addFlights,
+      add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType,
+      meal_preferences: slideFourData.mealPreferences,
+      special_request: slideFourData.specialRequests
     };
 
     setLoading(true);
@@ -857,10 +844,9 @@ const Enquiry = (props) => {
                 setAddInclusions={setAddInclusions}
                 slideFour={slideFour}
                 setSlideFour={setSlideFour}
-                setSlideIndex={setSlideIndex}
                 setLoginComplete={setLoginComplete}
                 defaultPriceRange={defaultPriceRange}
-                route={itineraryInititateData?.start_city ? [itineraryInititateData?.start_city, ...itineraryInititateData?.basic_route, itineraryInititateData?.end_city] : []}
+                route={itineraryInititateData?.start_city ? [itineraryInititateData?.start_city, ...itineraryInititateData?.basic_route, itineraryInititateData?.end_city] : route}
                 _submitDataHandler={_submitDataHandler}
               ></Flickity>
 
@@ -919,7 +905,12 @@ const Enquiry = (props) => {
                       borderRadius="5px"
                       borderWidth="1px"
                       bgColor="#07213A"
-                      onclick={() => setSlideIndex(2)}
+                      onclick={() => router.push({
+                        pathname: '/new-trip',
+                        query: {
+                          slideIndex: slideIndex + 1,
+                        },
+                      })}
                       loading={isLoading && submitted}
                       height="50px"
                       color="white"
@@ -985,7 +976,12 @@ const Enquiry = (props) => {
                     loading={isSubmitting}
                     disabled={isSubmitting}
                     onclick={() => {
-                      totalSlides == 4 ? _submitDataHandler() : setSlideIndex(4)
+                      totalSlides == 4 ? _submitDataHandler() : router.push({
+                        pathname: '/new-trip',
+                        query: {
+                          slideIndex: slideIndex + 1,
+                        },
+                      })
                     }}
                     height="50px"
                   >

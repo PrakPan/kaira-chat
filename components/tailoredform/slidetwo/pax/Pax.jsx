@@ -11,7 +11,6 @@ const Pax = (props) => {
     props?.numberOfAdults || 1 + props?.numberOfChildren || 0
   );
   const [rooms, setRooms] = useState(props.roomConfiguration);
-  props?.setRoomConfiguration(rooms);
 
   const [showError, setShowError] = useState(false);
 

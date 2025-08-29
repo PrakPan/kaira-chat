@@ -65,10 +65,13 @@ export const resetDate = () => ({
   type: actionTypes.RESET_DATE,
 });
 
-export const setItineraryInitiateData = (payload) => ({
+export const setItineraryInitiateData = (data) => {
+  console.log("itinerary initiate data is: ",data)
+  return {
   type: actionTypes.SET_ITINERARY_INITIATE_DATA,
-  payload,
-});
+  payload:data,
+}
+};
 
 export const setGroupType = (groupType) => ({
   type: actionTypes.SET_GROUP_TYPE,
@@ -115,4 +118,19 @@ export const setAddFlights = (value) => ({
 export const setAddInclusions = (value) => ({
   type: actionTypes.SET_ADD_INCLUSIONS,
   payload: value, // boolean
+});
+
+export const toggleHotelType = (value) => ({
+  type: actionTypes.SET_HOTEL_TYPE,
+  payload: value,
+});
+
+export const toggleMealPreference = (value) => ({
+  type: actionTypes.SET_MEAL_PREFERENCE,
+  payload: value,
+});
+
+export const setSpecialRequests = (value) => ({
+  type: actionTypes.SET_SPECIAL_REQUESTS,
+  payload: value,
 });
