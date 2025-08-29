@@ -25,6 +25,7 @@ import ItineraryStatus from './itineraryStatus';
 import Passengers from "./Passengers"
 import CallPaymentInfo from "./callPaymentInfo"
 import uiReducer from "./ui";
+import Cart from "./Cart";
 import tailoredInfoReducer from "./tailoredInfo"
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -53,6 +54,7 @@ const rootReducer = combineReducers({
   Passengers,
   CallPaymentInfo,  
   UIState: uiReducer,
+  Cart,
   tailoredInfoReducer:tailoredInfoReducer,
 });
 

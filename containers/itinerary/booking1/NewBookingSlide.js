@@ -46,6 +46,7 @@ import UpdateItineraryDates from "./UpdateItineraryDates";
 import { applyCoupon, fetchCoupons, paymentInitiate, removeCoupon } from "../../../services/sales/itinerary/Purchase";
 import { LuClock4 } from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
+import setCart from "../../../store/actions/Cart";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -58,10 +59,14 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [applyingCouponId, setApplyingCouponId] = useState(null);
+  const ItineraryId = useSelector((state) => state.ItineraryId);
+
+  const Cart = useSelector((state) => state.Cart);  
+
+
 
   useEffect(() => {
     if (show) {
-      // Reset coupons and show loading immediately when modal opens
       setAvailableCoupons([]);
       fetchAvailableCoupons();
     }
@@ -70,7 +75,6 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   // Auto-apply coupon from payment props if available
   useEffect(() => {
     if (payment?.coupon_usage && payment.coupon_usage.status === 'COUPON_APPLIED') {
-      // Set applied coupon from payment data
       if (!appliedCoupon) {
         setAppliedCoupon(payment.coupon_usage.id);
       }
@@ -80,7 +84,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   const fetchAvailableCoupons = async () => {
     try {
       setLoading(true);
-      const response = await fetchCoupons.get('/', {
+      const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -91,7 +95,11 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
         description: coupon.description,
         expiry: new Date(coupon.end_time).toLocaleDateString('en-IN'),
         type: coupon.discount_type.toLowerCase(),
-        discount: coupon.discount_value
+        discount: coupon.discount_value,
+        is_applicable: coupon.is_applicable,
+        message: coupon.message,
+        usage_description: coupon.usage_description,
+        applicability_error: coupon.applicability_error,
       }));
       
       setAvailableCoupons(formattedCoupons);
@@ -114,38 +122,6 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
       setApplyingCouponId(null);
     }
   };
-
- useEffect(() => {
-  if (show) {
-    const paymentDrawer = document.querySelector('.payment-drawer');
-    if (paymentDrawer) {
-      // Scroll the DRAWER to top, not the window
-      paymentDrawer.scrollTo(0, 0);
-      // OR use scrollTop
-      // paymentDrawer.scrollTop = 0;
-      
-      paymentDrawer.style.overflow = 'hidden';
-      paymentDrawer.style.height = '100vh';
-    }
-    document.body.style.overflow = 'hidden';
-  } else {
-    const paymentDrawer = document.querySelector('.payment-drawer');
-    if (paymentDrawer) {
-      paymentDrawer.style.overflow = 'auto';
-      paymentDrawer.style.height = 'auto';
-    }
-    document.body.style.overflow = 'unset';
-  }
-
-  return () => {
-    const paymentDrawer = document.querySelector('.payment-drawer');
-    if (paymentDrawer) {
-      paymentDrawer.style.overflow = 'auto';
-      paymentDrawer.style.height = 'auto';
-    }
-    document.body.style.overflow = 'unset';
-  };
-}, [show]);
 
   // Skeleton loader component
   const CouponSkeleton = () => (
@@ -174,7 +150,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   return (
     <div className="fixed inset-0 z-[1502] flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
+      <div className="absolute  inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
 
       {/* Modal */}
       <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
@@ -213,10 +189,10 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
                           appliedCoupon === coupon.code || 
                           appliedCoupon === coupon.id || 
                           applyingCouponId === coupon.id ||
-                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
+                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id) || payment?.is_applicable
                         }
                         className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
-                          appliedCoupon === coupon.code || 
+                          appliedCoupon === coupon.code ||
                           appliedCoupon === coupon.id ||
                           (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
                             ? 'bg-green-100 text-green-700 cursor-not-allowed'
@@ -236,8 +212,10 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
                         )}
                       </button>
                     </div>
+                    {coupon?.is_applicable ? <div>
                     <div className="text-gray-600 text-sm mb-2">{coupon.description}</div>
                     <div className="text-gray-500 text-xs">Expires on: {coupon.expiry}</div>
+                    </div> : <div className="text-gray-600 text-sm mb-2">{coupon?.applicability_error}</div>}
                   </div>
                 ))
               )}
@@ -345,9 +323,9 @@ const PaymentSuccess = ({ amount, onDownloadInvoice }) => {
 
 // 2. Payment Options Component (Add before the buttons)
 const PaymentOptions = ({
-  totalAmount = 37755,
-  firstTimeDiscount = 500,
-  lockInAmount = 2000,
+  totalAmount,
+  firstTimeDiscount,
+  lockInAmount,
   selectedOption,
   setSelectedOption,
   lockInFeePaid,
@@ -453,7 +431,9 @@ const CouponSection = ({
         code: appliedCoupon || `Coupon Applied`,
         savings: payment.discount,
         message: payment.message,
-        usage_description: payment.usage_description,
+        usage_description: payment?.usage_description,
+        applicability_error: payment?.applicability_error,
+        is_applicable: payment?.is_applicable
       };
     }
     return {
@@ -490,7 +470,7 @@ const CouponSection = ({
                   ? 'text-red-400 cursor-not-allowed' 
                   : 'text-red-500 hover:text-red-600'
               }`}
-              onClick={onRemoveCoupon}
+              onClick={()=>onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
               {isRemoving ? <PulseLoader /> : 'Remove'}
@@ -526,19 +506,21 @@ const CouponSection = ({
 
 // 4. Price Details Component (Add after coupon section)
 const PriceDetails = ({
-  itineraryCost = 38255,
-  lockInCost = 2000,
-  couponDiscount = -500,
-  totalPayable = 37755,
+  itineraryCost,
+  lockInCost,
+  couponDiscount,
+  totalPayable,
   surchargesTaxes,
+  selectedPaymentOption
 }) => {
+  const Cart = useSelector((state) => state.Cart);
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Price Details</h3>
 
-      <div className="space-y-2">
+      {!(selectedPaymentOption === 'lockin') && <div className="space-y-2">
         <div className="flex justify-between">
-          <span>Discounted Cost</span>
+          <span>Total Itinerary Cost</span>
           <span>₹{itineraryCost.toLocaleString('en-IN')}</span>
         </div>
 
@@ -547,15 +529,15 @@ const PriceDetails = ({
           <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
         </div>
 
-        <div className="flex justify-between">
+        {!Cart?.are_prices_hidden  &&  <div className="flex justify-between">
           <span>Surcharges and Taxes</span>
           <span>{surchargesTaxes === 0 ? '00' : `₹${surchargesTaxes.toLocaleString('en-IN')}`}</span>
-        </div>
+        </div>}
 
         <div className="flex justify-between text-green-600">
           <span>Coupon Discount</span>
           <span>
-            {couponDiscount}
+            {couponDiscount ? "-₹" + Math.abs(couponDiscount).toLocaleString('en-IN') : '₹0'}
           </span>
         </div>
 
@@ -565,14 +547,19 @@ const PriceDetails = ({
             <span>₹{totalPayable}</span>
           </div>
         </div>
-      </div>
+      </div>}
+
+      {selectedPaymentOption === 'lockin' &&  <div className="flex justify-between">
+          <span>Lock-in Cost</span>
+          <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
+        </div>}
     </div>
   );
 };
 
 // 5. Main Payment Button 
 const PaymentButton = ({
-  amount = 37755,
+  amount,
   isLoading = false,
   onClick,
   paymentType = "full" 
@@ -596,11 +583,11 @@ const PaymentButton = ({
         </div>
       ) : (
         paymentType === 'lockin'
-          ? `Lock-in for ₹${getIndianPrice(
+          ? `Pay ₹${getIndianPrice(
                           Math.round(
                             Math.round(amount)
                           )
-                        )}`
+                        )} Now`
           : `Pay ₹${getIndianPrice(
                           Math.round(
                             Math.round(amount)
@@ -640,6 +627,7 @@ const Details = (props) => {
     (state) => state.ItineraryStatus
   );
 
+  const Cart = useSelector((state) => state.Cart); 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
 
   const [selectedOption, setSelectedOption] = useState('full');
@@ -651,19 +639,21 @@ const Details = (props) => {
 
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
 
+
   // Add these new state variables after your existing useState declarations
   const [appliedCoupon, setAppliedCoupon] = useState(
-  props?.payment?.coupon_usage ? props?.payment?.coupon?.code : null
+  Cart?.coupon_usage ? Cart?.coupon?.code : null
 );
 const [couponSavedAmount, setCouponSavedAmount] = useState(
-  props?.payment?.coupon_usage?.discount || 0
+  Cart?.coupon_usage?.discount || 0
 );
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
-  const [couponUsageData,setCouponUsageData] = useState(props?.payment?.coupon_usage || null);
+  const [couponUsageData,setCouponUsageData] = useState(Cart?.coupon_usage || null);
 
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
+
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -773,7 +763,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
  const handleApplyCoupon = async (couponId, couponCode) => {
   try {
     const response = await applyCoupon.post('/', {
-      payment_information_id: props.payment?.id,
+      payment_information_id: Cart?.id,
       coupon_id: couponId
     }, {
       headers: { Authorization: `Bearer ${props.token}` }
@@ -783,6 +773,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
       setAppliedCoupon(couponCode);
       setCouponUsageData(response.data.coupon_usage)
       setCouponSavedAmount(response.data.coupon_usage.discount);
+      dispatch(setCart(response.data)); 
       // Show success message
       // alert(response.data.coupon_usage.message);
       dispatch(
@@ -809,21 +800,25 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
   }
 };
 
- const handleRemoveCoupon = async () => {
+ const handleRemoveCoupon = async (couponId) => {
   setIsRemovingCoupon(true);
   try {
-    await removeCoupon.post('/', {
-      payment_information_id: props.payment?.id
+     const response = await removeCoupon.post('/', {
+      payment_information_id: Cart?.id,
+      coupon_id: couponId
     }, {
       headers: { Authorization: `Bearer ${props.token}` }
     });
 
-    setAppliedCoupon(null);
+    if(response.data)
+    {  setAppliedCoupon(null);
     setCouponUsageData(null);
+    dispatch(setCart(response.data)); 
     setCouponSavedAmount(0);
     setIsRemovingCoupon(false)
     // Refresh payment data
     props.fetchData(true);
+    }
   } catch (error) {
     setIsRemovingCoupon(false)
     console.error('Error removing coupon:', error);
@@ -844,12 +839,12 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
 
   const setBookingSummary = () => {
     try {
-      if (props.payment) {
-        if (props.payment?.costings_breakdown)
-          for (const booking in props.payment?.costings_breakdown) {
-            if (props.payment?.costings_breakdown[booking].user_selected) {
+      if (Cart) {
+        if (Cart?.costings_breakdown)
+          for (const booking in Cart?.costings_breakdown) {
+            if (Cart?.costings_breakdown[booking].user_selected) {
               if (
-                props.payment?.costings_breakdown[booking].booking_type ===
+                Cart?.costings_breakdown[booking].booking_type ===
                 "Accommodation"
               ) {
                 bookingslist.push(
@@ -866,11 +861,11 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                         : "font-lexend text-enter"
                     }
                   >
-                    {props.payment?.costings_breakdown[booking].detail[
+                    {Cart?.costings_breakdown[booking].detail[
                       "duration"
                     ] +
                       "N at " +
-                      props.payment?.costings_breakdown[booking].detail["name"]}
+                      Cart?.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
@@ -895,11 +890,11 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                           : "font-lexend text-enter"
                       }
                     >
-                      {props.payment?.costings_breakdown[booking].detail[
+                      {Cart?.costings_breakdown[booking].detail[
                         "duration"
                       ] +
                         "N at " +
-                        props.payment?.costings_breakdown[booking].detail[
+                        Cart?.costings_breakdown[booking].detail[
                         "name"
                         ]}
                     </p>
@@ -919,7 +914,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                       {"₹ " +
                         getIndianPrice(
                           Math.ceil(
-                            props.payment?.costings_breakdown[booking][
+                            Cart?.costings_breakdown[booking][
                             "booking_cost"
                             ]
                           )
@@ -942,7 +937,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                         : "font-lexend text-enter"
                     }
                   >
-                    {props.payment?.costings_breakdown[booking].detail["name"]}
+                    {Cart?.costings_breakdown[booking].detail["name"]}
                   </p>
                 );
                 bookinglistwithcost.push(
@@ -968,7 +963,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                       }
                     >
                       {
-                        props.payment?.costings_breakdown[booking].detail[
+                        Cart?.costings_breakdown[booking].detail[
                         "name"
                         ]
                       }
@@ -989,7 +984,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
                       {"₹ " +
                         getIndianPrice(
                           Math.ceil(
-                            props.payment?.costings_breakdown[booking][
+                            Cart?.costings_breakdown[booking][
                             "booking_cost"
                             ]
                           )
@@ -1039,7 +1034,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
       description: " data.data.description",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data?.sales[0]?.orders[0]?.order_id,
+      order_id: data[0]?.orders[0]?.order_id,
       // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
@@ -1080,17 +1075,46 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
     } catch (error) { }
   };
 
-  const _lockInPaymentHandler = (id) => {
+const _lockInPaymentHandler = async (id) => {
   setPaymentLoading(true);
 
+  try {
+    const response = await paymentInitiate.post('', {
+      payment_information_id: Cart?.id,
+      payment_type: 'lock_payment'
+    }, {
+      headers: { Authorization: `Bearer ${props.token}` }
+    });
+
+    if (response.data) {
+      dispatch(setCart(response.data)); 
+      props.fetchData(true);
+    }
+  } catch (error) {
+    console.error('Error initiating lock payment:', error);
+    dispatch(
+      openNotification({
+        text: "Something went wrong",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+    return;
+  }
+
   // Find the lock_payment order from sales array
-  const lockPaymentSale = props.payment?.sales?.find(sale => 
+  const lockPaymentSale = Cart?.sales?.find(sale => 
     sale.payment_type === "lock_payment" && sale.status === "Created"
   );
   
   if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
     setPaymentLoading(false);
-    alert('Payment order not found. Please refresh and try again.');
+    dispatch(openNotification({        
+      text: "Payment order not found. Please refresh and try again.",
+      heading: "Error!",
+      type: "error",
+    }));
     return;
   }
 
@@ -1102,17 +1126,46 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
   _startRazorpayHandler(razorpayData);
 };
 
-const _fullPaymentHandler = (id) => {
+const _fullPaymentHandler = async (id) => {
   setPaymentLoading(true);
 
+  try {
+    const response = await paymentInitiate.post('', {
+      payment_information_id: Cart?.id,
+      payment_type: 'full_payment'
+    }, {
+      headers: { Authorization: `Bearer ${props.token}` }
+    });
+
+    if (response.data) {
+      dispatch(setCart(response.data)); 
+      props.fetchData(true);
+    }
+  } catch (error) {
+    console.error('Error initiating full payment:', error);
+    dispatch(
+      openNotification({
+        text: "Something went wrong",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+    return;
+  }
+
   // Find the full_payment order from sales array
-  const fullPaymentSale = props.payment?.sales?.find(sale => 
+  const fullPaymentSale = Cart?.sales?.find(sale => 
     sale.payment_type === "full_payment" && sale.status === "Created"
   );
   
   if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
     setPaymentLoading(false);
-    alert('Payment order not found. Please refresh and try again.');
+    dispatch(openNotification({        
+      text: "Payment order not found. Please refresh and try again.",
+      heading: "Error!",
+      type: "error",
+    }));
     return;
   }
 
@@ -1199,9 +1252,9 @@ const _fullPaymentHandler = (id) => {
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else if (label === "lockin") {
-      _lockInPaymentHandler(props.payment?.id); //  payment.id as payment_information_id
+      _lockInPaymentHandler(Cart?.id); //  payment.id as payment_information_id
     } else if (label === "full") {
-      _fullPaymentHandler(props.payment?.id);
+      _fullPaymentHandler(Cart?.id);
     } else {
       setShowVerification(true);
     }
@@ -1300,25 +1353,25 @@ const _fullPaymentHandler = (id) => {
         </div>
       ) : (
         <div
-          className={`${props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+          className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
             }  -mt-[1rem] -mx-[1rem] mb-0`}
         >
-          <LivePriceTimer priceValidUntil={props?.payment?.price_valid_until || "2025-08-28 23:30:00"} />
+          <LivePriceTimer priceValidUntil={Cart?.price_valid_until || "2025-08-28 23:30:00"} />
           <div className=" mx-[1rem] mt-[1rem]">
             <div className="flex flex-row justify-between">
               {props.iscouponApplied &&
-                props.payment?.discounted_cost != props.payment?.total_cost &&
-                props.payment?.show_per_person_cost !=
-                props.payment?.per_person_discounted_cost ? (
+                Cart?.discounted_cost != Cart?.total_cost &&
+                Cart?.show_per_person_cost !=
+                Cart?.per_person_discounted_cost ? (
                 <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                   <span>₹</span>
                   <div>
-                    {props.payment?.show_per_person_cost ||
-                      props.payment?.pay_only_for_one
+                    {Cart?.show_per_person_cost ||
+                      Cart?.pay_only_for_one
                       ? getIndianPrice(
-                        Math.round(props.payment?.per_person_total_cost)
+                        Math.round(Cart?.per_person_total_cost)
                       )
-                      : getIndianPrice(Math.round(props.payment?.total_cost))}
+                      : getIndianPrice(Math.round(Cart?.total_cost))}
                     {"/-"}
                   </div>
                 </div>
@@ -1326,37 +1379,37 @@ const _fullPaymentHandler = (id) => {
                 <div></div>
               )}
 
-              {props.iscouponApplied && props?.payment?.coupon_usage && (
+              {props.iscouponApplied && Cart?.coupon_usage && (
                 <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                  <div>{props?.payment?.coupon_usage?.usage_description}</div>
+                  <div>{Cart?.coupon_usage?.usage_description}</div>
                 </div>
               )}
             </div>
             <div className="flex flex-col">
               <div className="flex flex-row gap-1">
                 <div
-                  show_per_person_cost={props.payment?.show_per_person_cost}
+                  show_per_person_cost={Cart?.show_per_person_cost}
                   className={
                     props.blur
                       ? "font-lexend blurry-text"
                       : "font-lexend text-3xl flex flex-row items-center font-semibold"
                   }
                 >
-                  {props?.payment && <span>₹</span>}
-                  {props?.payment && (
+                  {Cart && <span>₹</span>}
+                  {Cart && (
                     <div>
-                      {props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      {Cart?.pay_only_for_one ||
+                        Cart?.show_per_person_cost
                         ? getIndianPrice(
                           Math.round(
                             Math.round(
-                              props.payment?.per_person_discounted_cost
+                              Cart?.per_person_discounted_cost
                             )
                           )
                         )
                         : getIndianPrice(
                           Math.round(
-                            Math.round(props.payment?.discounted_cost)
+                            Math.round(Cart?.discounted_cost)
                           )
                         )}
                       {"/-"}
@@ -1364,19 +1417,19 @@ const _fullPaymentHandler = (id) => {
                   )}
                 </div>
 
-                {props.payment?.paid_user ? (
+                {Cart?.paid_user ? (
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
-                    {props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
+                    {Cart?.pay_only_for_one ||
+                      Cart?.show_per_person_cost
                       ? "Per Person Cost"
-                      : props.payment?.is_estimated_price
-                        ? `${props.payment?.total_cost == 0
+                      : Cart?.is_estimated_price
+                        ? `${Cart?.total_cost == 0
                           ? ""
                           : "Estimated Price"
                         }`
-                        : props?.payment
+                        : Cart
                           ? "Total Cost"
                           : ""}
                   </div>
@@ -1389,9 +1442,9 @@ const _fullPaymentHandler = (id) => {
                 </p>
               ) : null}
 
-              {props?.payment && pricing_status === "SUCCESS" && (
+              {Cart && pricing_status === "SUCCESS" && (
                 <div className="text-[#7A7A7A] text-sm">
-                  {props?.payment?.total_cost == 0
+                  {Cart?.total_cost == 0
                     ? "No bookings added yet"
                     : "Inclusive of applicable taxes"}
                 </div>
@@ -1409,13 +1462,13 @@ const _fullPaymentHandler = (id) => {
                 gridColumnGap: "1rem",
               }}
             >
-              {props.payment?.itinerary_status ===
+              {Cart?.itinerary_status ===
                 ITINERARY_STATUSES?.itinerary_finalized ||
                 props?.plan?.featured ? null : (
                 <div></div>
               )}
 
-              {props.payment?.itinerary_status ===
+              {Cart?.itinerary_status ===
                 ITINERARY_STATUSES.itinerary_finalized ||
                 props?.plan?.featured ? null : (
                 <div></div>
@@ -1423,14 +1476,14 @@ const _fullPaymentHandler = (id) => {
             </div>
           ) : null}
 
-          {props?.payment && (
+          {Cart && (
             <div
               className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
               onClick={() => setAcordianOpen(!acoordianceOpen)}
             >
               <div>
                 {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-                {!props.payment?.are_prices_hidden ? "breakup" : "inclusions"}
+                {!Cart?.are_prices_hidden ? "breakup" : "inclusions"}
               </div>
 
               <RiArrowDropDownLine
@@ -1444,18 +1497,18 @@ const _fullPaymentHandler = (id) => {
             className={`mb-[0.8rem] mx-[1rem] Transition-Height-${acoordianceOpen ? "in" : "out"
               } `}
           >
-            {props?.payment && acoordianceOpen && (
+            {Cart && acoordianceOpen && (
               <div className="">
                 <Accordion
                   stayBookings={props.stayBookings}
                   flightBookings={props.flightBookings}
                   activityBookings={props.activityBookings}
                   transferBookings={props.transferBookings}
-                  payment={props.payment}
+                  payment={Cart}
                   mercuryItinerary={props?.mercuryItinerary}
                 ></Accordion>
 
-                {!oldaccommodation && !props.payment?.are_prices_hidden ? (
+                {!oldaccommodation && !Cart?.are_prices_hidden ? (
                   <div className="flex flex-row justify-between">
                     <div
                       className={
@@ -1475,15 +1528,15 @@ const _fullPaymentHandler = (id) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.round(props.payment?.surcharges_and_taxes)
+                          Math.round(Cart?.surcharges_and_taxes)
                         )}
                     </div>
                   </div>
                 ) : null}
 
-                {props.payment ? (
-                  props.payment?.coupon && props.iscouponApplied ? (
-                    props.payment?.coupon.code ? (
+                {Cart ? (
+                  Cart?.coupon && props.iscouponApplied ? (
+                    Cart?.coupon.code ? (
                       <div className="flex flex-row justify-between pt-2">
                         <div
                           className={
@@ -1495,21 +1548,21 @@ const _fullPaymentHandler = (id) => {
                           {"Coupon Discount"}
                           <div className="flex flex-row gap-1">
                             <div className="text-[#02BF2B]">
-                              {props.payment?.coupon.code}
+                              {Cart?.coupon.code}
                             </div>
                             <div className="font-normal ">
-                              {props?.payment?.coupon?.discount_type == "Flat"
+                              {Cart?.coupon?.discount_type == "Flat"
                                 ? "(Flat  OFF!)"
-                                : props?.payment?.coupon?.discount_type ==
+                                : Cart?.coupon?.discount_type ==
                                   "1 Night Free Stay"
-                                  ? props?.payment?.coupon_usage?.discount
+                                  ? Cart?.coupon_usage?.discount
                                     ? `(INR ${getIndianPrice(
                                       Math.round(
-                                        props?.payment?.coupon_usage?.discount
+                                        Cart?.coupon_usage?.discount
                                       )
                                     )}  OFF!)`
-                                    : props.payment?.coupon.discount_value
-                                      ? props.payment?.coupon.discount_value +
+                                    : Cart?.coupon.discount_value
+                                      ? Cart?.coupon.discount_value +
                                       "%  OFF!"
                                       : null
                                   : null}
@@ -1523,13 +1576,13 @@ const _fullPaymentHandler = (id) => {
                               : "font-lexend text-enter font-bold"
                           }
                         >
-                          {props?.payment?.coupon_usage?.discount ? (
+                          {Cart?.coupon_usage?.discount ? (
                             <div>
                               (-){" "}
                               {"₹" +
                                 getIndianPrice(
                                   Math.round(
-                                    props?.payment?.coupon_usage?.discount
+                                    Cart?.coupon_usage?.discount
                                   )
                                 )}
                             </div>
@@ -1643,7 +1696,8 @@ const _fullPaymentHandler = (id) => {
               <>
                 {!showDetailedPayment ? (
                   // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
-                  <div>
+                  
+                     <div>
                     <div className="mb-4">
                       <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
@@ -1665,7 +1719,7 @@ const _fullPaymentHandler = (id) => {
                       </div>
 
                       {/* Lock-in Option */}
-                      {!props?.payment?.lock_in_fee_paid && <div
+                      {!Cart?.lock_in_fee_paid && <div
                         className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
                         onClick={() => setSelectedPaymentOption('lockin')}
                       >
@@ -1675,7 +1729,7 @@ const _fullPaymentHandler = (id) => {
                           </div>
                           <div className="flex-1">
                             <div className="font-medium text-base">
-                              Lock-in today's price with ₹{props.payment?.lock_in_fee?.toLocaleString('en-IN')}
+                              Lock-in today's price with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')}
                             </div>
                           </div>
                         </div>
@@ -1697,16 +1751,16 @@ const _fullPaymentHandler = (id) => {
               </Button> */}
 
                     <PaymentButton
-                      amount={selectedPaymentOption === 'full' ? props.payment?.discounted_cost : props.payment?.lock_in_fee}
+                      amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
                       isLoading={paymentLoading}
                       paymentType={selectedPaymentOption}
                       onClick={handleProceedToPayment}
                     />
-                    {props?.payment?.lock_in_fee_paid && (
+                    {Cart?.lock_in_fee_paid && (
                       <div className="text-sm mt-2">
                         <span>
                           <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
-                          {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${props?.payment?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
+                          {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
                         </span>
                       </div>
                     )}
@@ -1770,7 +1824,7 @@ const _fullPaymentHandler = (id) => {
           width={"50%"}
           mobileWidth={"100%"}
           style={{ zIndex: 1501 }}
-          className={`font-lexend ${showCouponModal ? "overflow-hidden" :" !overflow-y-auto"}  `}
+          className={`font-lexend ${showCouponModal ? "overflow-hidden" :" !overflow-y-auto"}`}
           onHide={handleCloseDrawer}
         >
           {/* Close button */}
@@ -1783,10 +1837,10 @@ const _fullPaymentHandler = (id) => {
             </div>
           ) : (
             <div
-              className={`${props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+              className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
                 }  mb-0`}
             >
-              <LivePriceTimer priceValidUntil={props?.payment?.price_valid_until || "2025-08-28 23:30:00"} />
+              <LivePriceTimer priceValidUntil={Cart?.price_valid_until || "2025-08-28 23:30:00"} />
               <div className="flex justify-end -mt-[1.8rem] mr-2">
                 <IoMdClose
                   className="hover:cursor-pointer text-2xl hover:text-gray-600 transition-colors"
@@ -1796,18 +1850,18 @@ const _fullPaymentHandler = (id) => {
               <div className="p-3">
                 <div className="flex flex-row justify-between">
                   {props.iscouponApplied &&
-                    props.payment?.discounted_cost != props.payment?.total_cost &&
-                    props.payment?.show_per_person_cost !=
-                    props.payment?.per_person_discounted_cost ? (
+                    Cart?.discounted_cost != Cart?.total_cost &&
+                    Cart?.show_per_person_cost !=
+                    Cart?.per_person_discounted_cost ? (
                     <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                       <span>₹</span>
                       <div>
-                        {props.payment?.show_per_person_cost ||
-                          props.payment?.pay_only_for_one
+                        {Cart?.show_per_person_cost ||
+                          Cart?.pay_only_for_one
                           ? getIndianPrice(
-                            Math.round(props.payment?.per_person_total_cost)
+                            Math.round(Cart?.per_person_total_cost)
                           )
-                          : getIndianPrice(Math.round(props.payment?.total_cost))}
+                          : getIndianPrice(Math.round(Cart?.total_cost))}
                         {"/-"}
                       </div>
                     </div>
@@ -1815,37 +1869,37 @@ const _fullPaymentHandler = (id) => {
                     <div></div>
                   )}
 
-                  {props.iscouponApplied && props?.payment?.coupon_usage && (
+                  {props.iscouponApplied && Cart?.coupon_usage && (
                     <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                      <div>{props?.payment?.coupon_usage?.usage_description}</div>
+                      <div>{Cart?.coupon_usage?.usage_description}</div>
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col">
                   <div className="flex flex-row gap-1">
                     <div
-                      show_per_person_cost={props.payment?.show_per_person_cost}
+                      show_per_person_cost={Cart?.show_per_person_cost}
                       className={
                         props.blur
                           ? "font-lexend blurry-text"
                           : "font-lexend text-3xl flex flex-row items-center font-semibold"
                       }
                     >
-                      {props?.payment && <span>₹</span>}
-                      {props?.payment && (
+                      {Cart && <span>₹</span>}
+                      {Cart && (
                         <div>
-                          {props?.payment?.pay_only_for_one ||
-                            props?.payment?.show_per_person_cost
+                          {Cart?.pay_only_for_one ||
+                            Cart?.show_per_person_cost
                             ? getIndianPrice(
                               Math.round(
                                 Math.round(
-                                  props.payment?.per_person_discounted_cost
+                                  Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost
                                 )
                               )
                             )
                             : getIndianPrice(
                               Math.round(
-                                Math.round(props.payment?.discounted_cost)
+                                Math.round(Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost)
                               )
                             )}
                           {"/-"}
@@ -1853,19 +1907,19 @@ const _fullPaymentHandler = (id) => {
                       )}
                     </div>
 
-                    {props.payment?.paid_user ? (
+                    {Cart?.paid_user ? (
                       <div className="font-[400] pl-2 text-base self-end">PAID</div>
                     ) : (
                       <div className="font-medium text-base self-end">
-                        {props?.payment?.pay_only_for_one ||
-                          props?.payment?.show_per_person_cost
+                        {Cart?.pay_only_for_one ||
+                          Cart?.show_per_person_cost
                           ? "Per Person Cost"
-                          : props.payment?.is_estimated_price
-                            ? `${props.payment?.total_cost == 0
+                          : Cart?.is_estimated_price
+                            ? `${Cart?.total_cost == 0
                               ? ""
                               : "Estimated Price"
                             }`
-                            : props?.payment
+                            : Cart
                               ? "Total Cost"
                               : ""}
                       </div>
@@ -1878,9 +1932,9 @@ const _fullPaymentHandler = (id) => {
                     </p>
                   ) : null}
 
-                  {props?.payment && pricing_status === "SUCCESS" && (
+                  {Cart && pricing_status === "SUCCESS" && (
                     <div className="text-[#7A7A7A] text-sm">
-                      {props?.payment?.total_cost == 0
+                      {Cart?.total_cost == 0
                         ? "No bookings added yet"
                         : "Inclusive of applicable taxes"}
                     </div>
@@ -1888,14 +1942,14 @@ const _fullPaymentHandler = (id) => {
                 </div>
               </div>
 
-              {props?.payment && (
+              {Cart && (
                 <div
                   className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
                   onClick={() => setAcordianOpen(!acoordianceOpen)}
                 >
                   <div>
                     {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-                    {!props.payment?.are_prices_hidden ? "breakup" : "inclusions"}
+                    {!Cart?.are_prices_hidden ? "breakup" : "inclusions"}
                   </div>
 
                   <RiArrowDropDownLine
@@ -1909,14 +1963,14 @@ const _fullPaymentHandler = (id) => {
                 className={`mb-[0.8rem] mx-[1rem] Transition-Height-${acoordianceOpen ? "in" : "out"
                   } `}
               >
-                {props?.payment && acoordianceOpen && (
+                {Cart && acoordianceOpen && (
                   <div className="">
                     <Accordion
                       stayBookings={props.stayBookings}
                       flightBookings={props.flightBookings}
                       activityBookings={props.activityBookings}
                       transferBookings={props.transferBookings}
-                      payment={props.payment}
+                      payment={Cart}
                       mercuryItinerary={props?.mercuryItinerary}
                     ></Accordion>
                   </div>
@@ -1973,18 +2027,18 @@ const _fullPaymentHandler = (id) => {
 
             {paymentCompleted ? (
               <PaymentSuccess
-                amount={props.payment?.discounted_cost}
+                amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
                 onDownloadInvoice={() => {/* Add download invoice logic */ }}
               />
             ) : (
               // Detailed payment view
               <div>
                 <PaymentOptions
-                  totalAmount={props.payment?.discounted_cost}
-                  lockInAmount={props.payment?.lock_in_fee}
+                  totalAmount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                  lockInAmount={Cart?.lock_in_fee}
                   selectedOption={selectedPaymentOption}
                   setSelectedOption={setSelectedPaymentOption}
-                  lockInFeePaid={props?.payment?.lock_in_fee_paid}
+                  lockInFeePaid={Cart?.lock_in_fee_paid}
                   lockInCompleted={lockInCompleted}
                 />
 
@@ -2005,22 +2059,23 @@ const _fullPaymentHandler = (id) => {
                 <PriceDetails
                   itineraryCost={getIndianPrice(
                     Math.round(
-                      Math.round(props.payment?.discounted_cost)
+                      Math.round(Cart?.discounted_cost)
                     )
                   )}
-                  lockInCost={props?.payment?.lock_in_fee || 2000}
+                  lockInCost={Cart?.lock_in_fee || 2000}
                   couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
-                  surchargesTaxes={props?.payment?.surcharges_and_taxes || 0}
+                  surchargesTaxes={Cart?.surcharges_and_taxes || 0}
                   totalPayable={getIndianPrice(
                     Math.round(
-                      Math.round(props.payment?.discounted_cost - couponSavedAmount)
+                      Math.round(Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost)
                     )
                   )}
+                  selectedPaymentOption={selectedPaymentOption}
                 />
 
                 {!lockInCompleted && (
                   <PaymentButton
-                    amount={selectedPaymentOption === 'full' ? props.payment?.discounted_cost : props.payment?.lock_in_fee}
+                    amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
                     isLoading={paymentLoading}
                     paymentType={selectedPaymentOption}
                     onClick={() => handlePayNow(selectedPaymentOption)}
@@ -2063,7 +2118,7 @@ const _fullPaymentHandler = (id) => {
   appliedCoupon={appliedCoupon ? true : false}
   setAppliedCoupon={setAppliedCoupon}
   token={props?.token}
-  payment={props.payment} // Pass payment data
+  payment={Cart} // Pass payment data
 />
 
         </Drawer>
@@ -2087,7 +2142,7 @@ const _fullPaymentHandler = (id) => {
         number_of_adults={
           props?.itinerary ? props?.itinerary?.number_of_adults : 5
         }
-        payment={props.payment}
+        payment={Cart}
         plan={props.plan}
         date={date}
         id={props.id}
@@ -2106,7 +2161,7 @@ const _fullPaymentHandler = (id) => {
 
       <RegisteredUsersModal
         registered_users={
-          props.payment ? props.payment?.registered_users : null
+          Cart ? Cart?.registered_users : null
         }
         show={showRegisteredUsers}
         hide={() => setShowRegisteredUsers(false)}
@@ -2119,7 +2174,7 @@ const _fullPaymentHandler = (id) => {
 
       {props.token && Newitinerary && (
         <MakeYourPersonalised
-          date={props?.payment?.meta_info?.start_date}
+          date={Cart?.meta_info?.start_date}
           onHide={() => setNewitinerary(false)}
           show={Newitinerary}
         />
