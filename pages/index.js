@@ -3,6 +3,7 @@ import Head from "next/head";
 import HeroSection from "../components/revamp/home/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
+import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 // import Layout from "../components/Layout";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -106,6 +107,7 @@ const Home = (props) => {
         <NavigationMenu />
         <HeroSection />
         <JourneySimplified />
+        <PlacesBragSection />
       </div>
     </>
   );
