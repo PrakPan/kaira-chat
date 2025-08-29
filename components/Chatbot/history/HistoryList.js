@@ -3,6 +3,8 @@ import { Modal, Box, Backdrop, IconButton } from "@mui/material";
 import useChat from "../hook/UseChat";
 import styled from "styled-components";
 import moment from "moment";
+import NoDataLayouteOne from "../../NoDataLayouts/NoDataLayouteOne";
+import LoadingLayoutsOne from "../../LoadingLayouts/LoadingLayoutsOne";
 
 const Container = styled.div`
 padding:20px;
@@ -40,8 +42,17 @@ const SingleItem = styled.li`
     }
 `
 
+const noDataObj = {
+    "message": "No Chat History Found !",
+    "class": "center"
+}
+
+const loadingObj = {
+    "message": "Please wait, fetching chat history..."
+}
+
 function HistoryList() {
-    const { chatBotContainerRef, handleOpenChatHistory, isOpenChatHistoryDrawer, chatHistoryList, showChatHistoryById, sessionId } = useChat();
+    const { chatBotContainerRef, handleOpenChatHistory, isOpenChatHistoryDrawer, chatHistoryList, showChatHistoryById, sessionId, isloadingChatHistory } = useChat();
 
     return (
         <Modal
@@ -79,12 +90,13 @@ function HistoryList() {
                         </svg>
                     </IconButton></Heading>
                     <ListContainer>
-                        {chatHistoryList.map((item, idx) =>
+                        {isloadingChatHistory && <LoadingLayoutsOne {...loadingObj} />}
+                        {(!isloadingChatHistory && chatHistoryList.length === 0) && <NoDataLayouteOne {...noDataObj} />}
+                        {(!isloadingChatHistory && chatHistoryList.length > 0) && chatHistoryList.map((item, idx) =>
                             <>
-                                <SingleItem onClick={() => showChatHistoryById(item.id)} className={sessionId === item.id ? 'active' : ''} key={idx} >{moment(item.created_at).format("Do MMM, YYYY hh:mm A")} </SingleItem>
+                                <SingleItem onClick={() => showChatHistoryById(item.id)} className={sessionId === item.id ? 'active' : ''} key={idx} >{item?.name || moment(item.created_at).format("Do MMM, YYYY hh:mm A")} </SingleItem>
                             </>
                         )}
-
                     </ListContainer>
                 </Container>
             </Box>

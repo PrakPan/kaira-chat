@@ -729,7 +729,10 @@ const HotelBooking = ({
               )}
             </div>
             <div
-              onClick={(e) =>
+            >
+              <button
+               className="ttw-btn-fill-yellow "
+                onClick={(e) =>
                 handleChangeHotel(
                   e,
                   "Change",
@@ -738,22 +741,12 @@ const HotelBooking = ({
                   cities[index]?.city?.name,
                   "Add"
                 )
-              }
-            >
-              <Button
-                bgColor={"#F7E700"}
-                borderRadius="8px"
-                fontWeight="400"
-                padding="0.6rem 2.2rem"
-                hoverColor="white"
-                margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                onclick={() => console.log("")}
-              >
+              }>
                 Add Stay in{" "}
                 {booking?.city_name ||
                   booking?.city ||
                   cities[index]?.city?.name}
-              </Button>
+              </button>
             </div>
           </div>
         </div>

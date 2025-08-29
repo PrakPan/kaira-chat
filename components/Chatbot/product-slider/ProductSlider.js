@@ -119,7 +119,26 @@ const ProductSlider = (props) => {
     "poi_search": "Suggested Places"
   }
 
-  const handleSubmitQuery = (query) => {
+  const handleSubmitQuery = (item, type) => {
+    let query = "";
+
+    switch (type) {
+      case 'hotel_search':
+        query = item?.name
+        break;
+      case 'flights_search':
+        query = `${item.segments[0].airline.name} ${item.segments[0]?.airline.code} - ${item.segments[0]?.airline.flight_number}`
+        break;
+      case 'activity_search':
+        query = item?.name
+        break;
+      case 'poi_search':
+        query = item?.name
+        break;
+      default:
+        break;
+    }
+
     const userMsg = { is_bot: false, message: `View Details of ${query}` };
     sendMessage(userMsg);
   }
@@ -156,7 +175,7 @@ const ProductSlider = (props) => {
                   {props.type === 'hotel_search' && <Hotel item={item} />}
                   {props.type === 'activity_search' && <Activity item={item} />}
                   {props.type === 'poi_search' && <Poi item={item} />}
-                  <ClickableLink data-position={props.position} data-last-position={lastProductSliderPosition} isDisabled={props.isDisabled} disabled={props.isDisabled} onClick={() => props.isDisabled ? null : handleSubmitQuery(item.name)}>View Details</ClickableLink>
+                  <ClickableLink data-position={props.position} data-last-position={lastProductSliderPosition} isDisabled={props.isDisabled} disabled={props.isDisabled} onClick={() => props.isDisabled ? null : handleSubmitQuery(item, props.type)}>View Details</ClickableLink>
                 </SingleContainer>
               </LazyLoad>
             </SwiperSlide>

@@ -7,6 +7,9 @@ import setItinerary, { updateSinglePoiDetails } from "../../../store/actions/iti
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import axios from "axios";
+import moment from "moment";
+
+const localStorageKeyForSessionIds = 'chatbotSessionIds';
 
 export const ChatProvider = ({ itinearyId, children }) => {
     const [conversations, setConversations] = useState([]);
@@ -20,22 +23,45 @@ export const ChatProvider = ({ itinearyId, children }) => {
     const token = localStorage.getItem('access_token');
     const itinerary = useSelector((state) => state.Itinerary);
     const dispatch = useDispatch();
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    // const origin = " https://thetarzanway.com";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
     const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
     const chatBotContainerRef = useRef(null);
     const [chatHistoryList, setChatHistoryList] = useState([]);
-    const [sessionId, setSessionId] = useState(null);
+    const [isloadingChatHistory, setIsLoadingOfChatHistory] = useState(false);
+    const [sessionId, setSessionId] = useState(() => {
+        const oldSessionIds = JSON.parse(localStorage.getItem(localStorageKeyForSessionIds) || "{}");
+        return oldSessionIds[itinearyId] || null;
+    });
     let reconnecting = false;
 
     useEffect(() => {
         if (!itinearyId) return;
-        connect(sessionId);
-    }, [itinearyId, sessionId]);
+        // console.log("initial run bot")
+        getAllChatHistory(itinearyId);
+        if (sessionId) {
+            showChatHistoryById(sessionId, true);
+        } else {
+            connect(sessionId);
+        }
+    }, [itinearyId]);
 
 
     const connect = (id = null) => {
         if (reconnecting) return;
         reconnecting = true;
+
+        if (socketRef?.current) {
+            socketRef.current.onopen = null;
+            socketRef.current.onmessage = null;
+            socketRef.current.onerror = null;
+            socketRef.current.onclose = null;
+            socketRef.current.close();
+            socketRef.current = null;
+            setCurrentBotMessage('');
+            setIsTyping(false);
+            setDisableQuerySection(false);
+        }
 
         const wsUrl = id
             ? `${CHATBOT_SOCKET_HOST}?session_id=${id}`
@@ -44,18 +70,16 @@ export const ChatProvider = ({ itinearyId, children }) => {
         const socket = new WebSocket(wsUrl);
         socketRef.current = socket;
 
-        getAllChatHistory(itinearyId);
-
         socket.onopen = () => {
-            console.log("is connection open ")
             reconnecting = false;
-            console.log("WebSocket connected with session:", sessionId || "new", "Url:-",  wsUrl);
+            console.log("WebSocket connected with session:", id || "new", "Url:-", wsUrl);
             setIsConnected(true);
 
 
-            if (!sessionId) {
+            if (!id) {
                 setDisableQuerySection(true);
                 const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
+                // console.log(initialPrompt)
                 if (socketRef.current?.readyState === WebSocket.OPEN) {
                     socketRef.current.send(JSON.stringify({ message: initialPrompt, token }));
                 }
@@ -64,11 +88,17 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            handleStreamData(data);
+            handleStreamData(data, id);
         };
 
         socket.onerror = (error) => {
             console.error("WebSocket Error", error);
+            setIsConnected(false);
+            setDisableQuerySection(false);
+            setConversations(prev => [
+                ...prev,
+                { message: "Oops! Looks like we lost connection. Try again in a bit, or hit ‘New Chat’ to keep the conversation continue.", is_bot: true }
+            ]);
         };
 
         socket.onclose = () => {
@@ -81,9 +111,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         };
     };
 
-
-
-    const handleStreamData = (data) => {
+    const handleStreamData = (data, id) => {
         switch (data.type) {
             case "typing_start":
                 setIsTyping(true);
@@ -122,7 +150,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
                 break;
 
             case "error":
-                console.log("error in handledata:",data.error)
+                console.log("error in handledata:", data.error)
                 setDisableQuerySection(false);
                 setIsTyping(false);
                 setConversations(prev => [
@@ -132,7 +160,15 @@ export const ChatProvider = ({ itinearyId, children }) => {
                 break;
 
             case "session":
-                console.log("Session established:", data.session_id, "Reconnected:", data.reconnected);
+                console.log(data, "Session established:", data.session_id, "Reconnected:", data.reconnected, "Last assing Id", id);
+                let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
+                oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
+                oldSessionIds[itinearyId] = data.session_id;
+                localStorage.setItem(localStorageKeyForSessionIds, JSON.stringify(oldSessionIds));
+                if (!data.reconnected) {
+                    setChatHistoryList(prev => [{ id: data.session_id, date: moment().format("YYYY-MM-DD HH:mm:ss"), name: (data.name || null) }, ...prev]);
+                    setSessionId(data.session_id);
+                }
                 break;
 
             default:
@@ -151,17 +187,24 @@ export const ChatProvider = ({ itinearyId, children }) => {
     };
 
     const sendMessage = (msgObj) => {
-        console.log(msgObj);
+        if (!msgObj?.message || !msgObj.message.trim()) {
+            return;
+        }
         setDisableQuerySection(true);
         setQuickReplies([]);
-        setConversations(prev => [...prev, msgObj]);
+
         if (socketRef.current?.readyState === WebSocket.OPEN) {
-            socketRef.current.send(JSON.stringify({ message: msgObj.message, token: token }));
+            setConversations(prev => [...prev, msgObj]);
+            socketRef.current.send(JSON.stringify({ message: msgObj.message.trim(), token }));
         } else {
-            console.warn("WebSocket is not open");
+            setConversations(prev => [
+                ...prev,
+                msgObj,
+                { message: "Uh-oh! Message stuck Connection lost. Give it another try or hit ‘New Chat’ to keep the conversation continue.", is_bot: true }
+            ]);
+            setDisableQuerySection(false);
         }
     };
-
 
     const updateProductSlider = (payload) => {
         setLastProductSliderPosition(prev => {
@@ -214,7 +257,6 @@ export const ChatProvider = ({ itinearyId, children }) => {
         }
     }
 
-
     const updateActivityBooking = (res) => {
 
         const newItinerary = {
@@ -243,7 +285,6 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
                     const date = res?.check_in.split(" ")[0];
                     const updatedDayByDay = city?.day_by_day?.map((day) => {
-                        console.log(day?.date === date);
                         if (day?.date === date) {
                             return {
                                 ...day,
@@ -266,7 +307,6 @@ export const ChatProvider = ({ itinearyId, children }) => {
         dispatch(setItinerary(newItinerary));
     }
 
-
     const fetchAllTransferBooking = (id) => {
         axiosGetTransfers
             .get(`/${id}/bookings/transfers/`)
@@ -279,15 +319,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
             });
     }
 
-
     const handleOpenChatHistory = () => {
-        console.log(isOpenChatHistoryDrawer);
         setOpenChatHistoryDrawer(prev => !prev);
-        console.log(isOpenChatHistoryDrawer);
     }
 
     const getAllChatHistory = async (itineraryId) => {
         try {
+            setIsLoadingOfChatHistory(true);
             const res = await axios.get(
                 `${MERCURY_HOST}/chat/sessions?itinerary_id=${itineraryId}`,
                 {
@@ -299,7 +337,9 @@ export const ChatProvider = ({ itinearyId, children }) => {
             if (res?.data.length) {
                 setChatHistoryList(res?.data);
             }
+            setIsLoadingOfChatHistory(false);
         } catch (err) {
+            setIsLoadingOfChatHistory(false)
             console.error(
                 "Error fetching chat history:",
                 err.response?.data || err.message
@@ -308,10 +348,12 @@ export const ChatProvider = ({ itinearyId, children }) => {
         }
     };
 
-    const showChatHistoryById = async (id) => {
-        console.log("set sessioncall")
-        handleOpenChatHistory();
+    const showChatHistoryById = async (id, isCallOnloading = false) => {
+        if (!isCallOnloading) {
+            handleOpenChatHistory();
+        }
         setSessionId(id);
+        connect(id);
         try {
             const res = await axios.get(
                 `${MERCURY_HOST}/chat/sessions/${id}`,
@@ -322,13 +364,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
                 }
             );
 
+
             if (res?.data) {
                 if (res.data?.chats?.length) {
                     res.data.chats.shift();
                 }
                 setConversations(res.data.chats);
             }
-
         } catch (err) {
             console.error(
                 "Error fetching chat session:",
@@ -336,6 +378,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
             );
             return null;
         }
+    }
+
+    const newSessionStart = async () => {
+        setConversations([]);
+        setQuickReplies([]);
+        setSessionId(null);
+        connect(null);
     }
 
 
@@ -355,7 +404,9 @@ export const ChatProvider = ({ itinearyId, children }) => {
                 chatBotContainerRef,
                 chatHistoryList,
                 showChatHistoryById,
-                sessionId
+                sessionId,
+                newSessionStart,
+                isloadingChatHistory
             }}
         >
             {children}

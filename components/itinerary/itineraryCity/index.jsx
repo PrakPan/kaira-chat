@@ -235,14 +235,14 @@ const ItineraryCity = (props) => {
               })}
             </div>
           ) : (
-            <div
-              className="text-blue cursor-pointer text-[14px] font-medium hover:underline font-montserrat"
+            <button
+              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add")
               }
             >
               + Add Stay in {props?.city?.city?.name}
-            </div>
+            </button>
           )}
         </div>
 

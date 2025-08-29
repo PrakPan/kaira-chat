@@ -1293,7 +1293,7 @@ const SimpleTabsV2 = (props) => {
                 ) : null}
               </div>
               {props?.payment && (
-                <div className="text-[12px]">
+                <div className="text-[12px] text-[#6E757A]">
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
                     ? "Per Person"
