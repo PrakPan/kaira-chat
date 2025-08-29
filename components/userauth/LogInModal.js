@@ -227,7 +227,7 @@ const LogIn = React.memo((props) => {
         phone,
         otp,
         userDetails.userName,
-        null,
+        null,setUserDetailsRequired,
         whatsapp,
         null,
         props.onSuccess
@@ -255,6 +255,7 @@ const LogIn = React.memo((props) => {
     } else {
       props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess);
     }
+
   };
 
   //Store OTP
@@ -434,8 +435,13 @@ const LogIn = React.memo((props) => {
                 fontWeight: "700",
               }}
             >
+              {!props?.onSuccess?<>
               <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
               <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
+              </>:
+              <>
+               <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
+              </>}
             </div>
           )}
 

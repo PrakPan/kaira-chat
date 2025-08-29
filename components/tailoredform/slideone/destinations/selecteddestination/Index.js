@@ -6,6 +6,7 @@ import SearchInput from "../search/Index";
 import { BiTargetLock } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { StyledContainer } from "../../../../styled-components/TailoredForm";
+import Image from "next/image";
 
 const Container = styled.div`
   margin-bottom: 0.25rem;
@@ -72,13 +73,9 @@ const SelectedDestination = (props) => {
         className="hover-pointer text-[0.85rem] flex flex-row items-center justify-between w-full"
         selectlocation={props.selectlocation}
       >
-        {!props.selectlocation ? (
-          <MdOutlineLocationOn
-            style={{
-              lineHeight: "1",
-              fontSize: "1.25rem",
-            }}
-          ></MdOutlineLocationOn>
+        {props.selectedCity?.name ? (
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
+          
         ) : (
           <BiTargetLock
             style={{

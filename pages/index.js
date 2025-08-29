@@ -18,7 +18,8 @@ import axioslocationsinstance from "../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
-
+import { HeroSection } from "../components/v2/home";
+import Navigation from "../components/v2/home/NavigationMenu";
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
@@ -26,7 +27,7 @@ const Home = (props) => {
   }, []);
 
   return (
-    <>
+    <div className={styles.ttwRevamp}>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta
@@ -94,7 +95,8 @@ const Home = (props) => {
           }}
         />
       </Head>
-
+      <Navigation />
+      <HeroSection />
       {/* <HomepageContainer
         asiaLocations={props.asiaLocations}
         europeLocations={props.europeLocations}
@@ -140,10 +142,7 @@ export async function getStaticProps() {
   var continetCarousel = [];
   let Count = null;
   let hotLocationSearch = [];
-  let pageId =
-    PagesToIdMapping["asia/india"] != undefined
-      ? PagesToIdMapping["asia/india"]
-      : "";
+  let pageId = PagesToIdMapping["asia/india"] != undefined ? PagesToIdMapping["asia/india"] : "";
   try {
     const pageListResponse = await axios.get(
       `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
@@ -203,6 +202,8 @@ export async function getStaticProps() {
       );
     }
   }
+
+
 
   try {
     const response = await axioslocationsinstance.get("hot_destinations/");

@@ -49,7 +49,7 @@ import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 import { TopicSharp } from "@mui/icons-material";
 import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
-import ChatBot from "../../components/Chatbot";
+import ChatBot from "../../components/Chatbot/Index.js"
 import Drawer from "../../components/ui/Drawer.js";
 import Image from "next/image";
 

@@ -131,7 +131,6 @@ const SearchInput = (props) => {
             onFocus={props.onfocus}
             onBlur={_handleBlur}
             placeholder="Enter the start Location"
-            className="font-lexend"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           ></InputContainer>
