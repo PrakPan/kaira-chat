@@ -231,7 +231,7 @@ export default function NewPoiBooking(props) {
                 </div>
               )}
               <div>
-                <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
+                <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px] py-2">
                   {props.data?.one_liner_description}
                   {/* {props.data.short_description
                     .split(" ")
@@ -282,15 +282,13 @@ export default function NewPoiBooking(props) {
               ) : (
                 <div className=" w-full flex justify-end">
                   <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                    className="p-[12px]"
+                    bgColor={"#F7E700"}
+                  borderRadius="8px"
+                  fontWeight="400"
+                  hoverColor="white"
+                  height={"full"}
+                  className="p-[12px]"
+                  borderWidth={"1px"}
                     onclick={() => handleClick(props.data?.id)}
                   >
                     View Details
@@ -395,17 +393,39 @@ export default function NewPoiBooking(props) {
         </div>
 
         {stars && (
-          <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+          <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a] py-1">
             <span className="flex flex-row text-[#FFD201] text-[12px]">
               {stars}
             </span>
           </span>
         )}
 
-        <div className="my-2">
-          <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
+        {props.data?.tags && (
+                <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap py-2">
+                  {props.data.tags?.slice(0, 2)?.map((e, i) => (
+                    <span
+                      key={i}
+                      className={`border-2 rounded-full px-2 py-1`}
+                      style={{ backgroundColor: colors[i % colors.length] }}
+                    >
+                      {e}
+                    </span>
+                  ))}
+                  {props?.data?.tags?.length > 2 && (
+                    <span className={`border-2 rounded-full px-2 py-1`}>
+                      +{props?.data?.tags?.length - 2} more
+                    </span>
+                  )}
+                </div>
+              )}
+
+        <div className="my-1">
+          {/* <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
             {props.data.short_description.split(" ").slice(0, 40).join(" ")}
             <span className="font-bold text-gray-500"> ...more</span>
+          </div> */}
+          <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px] py-2">
+            {props.data?.one_liner_description}
           </div>
         </div>
         <div className="flex flex-row items-center justify-between">
@@ -455,23 +475,30 @@ export default function NewPoiBooking(props) {
           </div>
         ) : (
           <Button
-            color="#111"
-            fontWeight="500"
-            fontSize="1rem"
-            borderWidth="2px"
-            width="100%"
-            borderRadius="8px"
-            bgColor="#f8e000"
-            padding="12px"
+            bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              hoverColor="white"
+              height={"full"}
+              className="p-[12px] !w-full"
+              width={"100%"}
+              borderWidth={"1px"}
             onclick={() => handleClick(props.data?.id)}
           >
-            View Detail
+            View Details
           </Button>
         )}
       </div>
       {props.data?.is_very_popular && (
-        <div className="absolute top-6 -left-2 z-[1]">
-          <RecommendedBadge />
+        // <div className="absolute top-6 -left-2 z-[1]">
+        //   <RecommendedBadge />
+        // </div>
+        <div className="absolute top-6 left-5 z-[1]">
+          {/* <RecommendedBadge /> */}
+          <div className="flex items-center gap-1 bg-[#5CBA66] text-white text-13px px-3 py-2 rounded-xl text-[12px]">
+
+            <span>Recommended</span>
+          </div>
         </div>
       )}
     </div>

@@ -53,7 +53,7 @@ const POIDetailsSkeleton = (props) => {
   const MobileSkeleton = (
     <Container>
       <ImageSkeleton>
-        <SkeletonCard width={"100%"} height={"12rem"} borderRadius="1rem" />
+        <SkeletonCard width={"90%"} height={"12rem"} borderRadius="1rem" />
       </ImageSkeleton>
       <DetailsSkeleton>
         <SkeletonCard

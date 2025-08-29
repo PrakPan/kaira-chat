@@ -205,8 +205,7 @@ const MidSectionV2 = (props) => {
           <>
             {props.version == "v2" ? (
               <Text>
-                {props.cityTransferBookings &&
-                props.cityTransferBookings?.duration ? (
+                {props.cityTransferBookings && props.cityTransferBookings?.id ? (
                   <></>
                 ) : (
                   <button
@@ -217,8 +216,7 @@ const MidSectionV2 = (props) => {
                   </button>
                 )}
 
-                {props.cityTransferBookings &&
-                props.cityTransferBookings?.duration ? (
+                {props.cityTransferBookings && props.cityTransferBookings?.id ? (
                   <div
                     className={`inline-flex items-center gap-2 ${
                       !isPageWide ? "w-max" : ""
@@ -226,15 +224,14 @@ const MidSectionV2 = (props) => {
                   >
                     <div className="text-base text-[#01202B]">
                       {" "}
-                      {props.modes}: {props.cityTransferBookings?.duration}
+                      {props.modes} {props.cityTransferBookings?.duration ? ": " + props.cityTransferBookings?.duration : null}
                     </div>
                   </div>
                 ) : (
                   <></>
                 )}
 
-                {props.cityTransferBookings &&
-                  props.cityTransferBookings?.duration && (
+                {props.cityTransferBookings && props.cityTransferBookings?.id && (
                     <div
                       id="transferEdit"
                       onClick={(e) => {
@@ -264,7 +261,7 @@ const MidSectionV2 = (props) => {
               </Text>
             ) : (
               <div className="font-normal text-base text-[#01202B]">
-                {props.modes ? `${props.modes} :` : null} {props.duration}
+                {props.modes ? `${props.modes} :` : null} {props?.duration}
               </div>
             )}
           </>

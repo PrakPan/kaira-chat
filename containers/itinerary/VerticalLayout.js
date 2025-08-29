@@ -61,7 +61,9 @@ const AirportBookingItem = ({
   onDropClick, // Add this prop
   handleEdit,
   handlePickupDropDrawer,
-  setTransferType
+  setTransferType,
+  firstCity,
+  lastCity
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -119,7 +121,7 @@ const AirportBookingItem = ({
         tooltipTimeoutRef.current = setTimeout(() => {
           setShowTooltip(false);
           tooltipTimeoutRef.current = null;
-        }, 2000);
+        }, 1100);
       }
     }
   };
@@ -136,7 +138,7 @@ const AirportBookingItem = ({
     tooltipTimeoutRef.current = setTimeout(() => {
       setShowTooltip(false);
       tooltipTimeoutRef.current = null;
-    }, 2000);
+    }, 1100);
   };
 
   const handleTooltipBookingClick = (e, bookingItem, type) => {
@@ -286,7 +288,10 @@ const AirportBookingItem = ({
         setShowDetails(false);
         setShowClickTooltip(false);
       }
-    };
+      if(tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+        tooltipTimeoutRef.current = null;
+    }
 
     if (showDetails || showClickTooltip) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -295,7 +300,7 @@ const AirportBookingItem = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDetails, showClickTooltip]);
+  }}, [showDetails, showClickTooltip]);
 
   const handleClick = () => {
     // If no bookings and supports transfers, show tooltip below text
@@ -417,23 +422,23 @@ const AirportBookingItem = ({
       return (
         <div className="flex flex-col gap-1">
           {/* Show Drop first */}
-          <div className="flex items-center gap-2">
+          {!firstCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
               onClick={() => handlePickupDropDrawer("drop")}
             >
               {getTransferLocationText(bookingMode, "drop")}
             </span>
-          </div>
+          </div>}
           {/* Then Pickup */}
-          <div className="flex items-center gap-2">
+         {!lastCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
               onClick={() => handlePickupDropDrawer("pickup")}
             >
               {getTransferLocationText(bookingMode, "pickup")}
             </span>
-          </div>
+          </div>}
         </div>
       );
     }
@@ -747,7 +752,8 @@ const CityItem = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const { transfers_status,finalized_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
+
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -1307,7 +1313,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
             )
           )}
           {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
-          <div
+          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && <div
             className={`flex flex-col gap-1 mb-3 ${!(upPresent && downPresent) ||
                 (!booking_id &&
                   !(currentAirportBookings && currentAirportBookings.length > 0))
@@ -1336,8 +1342,10 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
               handlePickupDropDrawer={handlePickupDropDrawer}
               setAirportBookingId={setAirportBookingId}
               setTransferType={setTransferType}
+              firstCity={firstCity}
+              lastCity={lastCity} 
             />
-          </div>
+          </div>}
           {/* )} */}
         </div>
       </div>
