@@ -11,12 +11,6 @@ import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
 
-const NAVIGATION_ITEMS = [
-  { href: "/blogs", label: "Blogs" },
-  { href: "/contactus", label: "Contact Us" },
-  { href: "/reviews", label: "Reviews" },
-];
-
 const NavigationMenu = () => {
   const router = useRouter();
   const {
@@ -49,40 +43,12 @@ const NavigationMenu = () => {
 
   // Memoized menu items to prevent unnecessary re-renders
   const desktopMenuItems = useMemo(
-    () =>
-      NAVIGATION_ITEMS.map((item) => (
-        <li key={item.href}>
-          <Link
-            className={`${styles.menuItem} ${
-              isActive(item.href) ? styles.active : ""
-            }`}
-            href={item.href}
-          >
-            {item.label}
-          </Link>
-        </li>
-      )),
+    () => [], // Empty array since navigation items are removed
     [isActive]
   );
 
   const mobileMenuItems = useMemo(
-    () =>
-      NAVIGATION_ITEMS.map((item, index) => (
-        <li key={item.href} ref={(el) => (menuItemsRef.current[index] = el)}>
-          <Link
-            className={`${styles.mobileMenuItem} ${
-              isActive(item.href) ? styles.active : ""
-            }`}
-            href={item.href}
-            onClick={closeMobileMenu}
-            onMouseEnter={(e) => handleMenuItemHover(e.target, true)}
-            onMouseLeave={(e) => handleMenuItemHover(e.target, false)}
-            role="menuitem"
-          >
-            {item.label}
-          </Link>
-        </li>
-      )),
+    () => [], // Empty array since navigation items are removed
     [isActive, closeMobileMenu, handleMenuItemHover]
   );
 
@@ -157,7 +123,7 @@ const NavigationMenu = () => {
         </ul>
 
         <div
-          ref={(el) => (menuItemsRef.current[NAVIGATION_ITEMS.length] = el)}
+          ref={(el) => (menuItemsRef.current[0] = el)}
           className={styles.sidebarActions}
         >
           <button
