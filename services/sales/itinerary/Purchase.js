@@ -8,4 +8,17 @@ const myplans = axios.create({
 export const paymentInitiate = axios.create({
   baseURL: MERCURY_HOST + "/payment/initiate/",
 });
+
+
+export const fetchCoupons = axios.create({
+  baseURL: `${MERCURY_HOST}/payment/coupons`,
+});
+
+export const applyCoupon = axios.create({
+  baseURL: `${MERCURY_HOST}/payment/coupons/apply`,
+});
+
+export const removeCoupon = axios.create({
+  baseURL: `${MERCURY_HOST}/payment/coupons/remove`,
+});
 export default myplans;

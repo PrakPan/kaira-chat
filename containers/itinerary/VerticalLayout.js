@@ -60,7 +60,9 @@ const AirportBookingItem = ({
   onDropClick, // Add this prop
   handleEdit,
   handlePickupDropDrawer,
-  setTransferType
+  setTransferType,
+  firstCity,
+  lastCity,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -411,28 +413,28 @@ const AirportBookingItem = ({
       !hasPickup &&
       !hasDrop &&
       noPickupDropBookings.length === 0 &&
-      supportsTransfers(bookingMode)
+      supportsTransfers(bookingMode) 
     ) {
       return (
         <div className="flex flex-col gap-1">
           {/* Show Drop first */}
-          <div className="flex items-center gap-2">
+         { !firstCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
               onClick={() => handlePickupDropDrawer("drop")}
             >
               {getTransferLocationText(bookingMode, "drop")}
             </span>
-          </div>
+          </div>}
           {/* Then Pickup */}
-          <div className="flex items-center gap-2">
+          {!lastCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
               onClick={() => handlePickupDropDrawer("pickup")}
             >
               {getTransferLocationText(bookingMode, "pickup")}
             </span>
-          </div>
+          </div>}
         </div>
       );
     }
@@ -1334,6 +1336,8 @@ useEffect(() => {
               handlePickupDropDrawer={handlePickupDropDrawer}
               setAirportBookingId={setAirportBookingId}
               setTransferType={setTransferType}
+              firstCity={firstCity}
+              lastCity={lastCity} 
             />
           </div>
           {/* )} */}

@@ -752,13 +752,13 @@ const formattedDate =
               </div>
 
               <div className="min-[583px]:hidden flex justify-between w-full">
-                <button
+                {/* <button
                   onClick={handleRecommneded}
                   className="flex flex-row items-center gap-1 cursor-pointer"
                 >
                   <CheckboxFormComponent checked={recommended} />
                   Top Recommended
-                </button>
+                </button> */}
                 <div className="flex gap-4">
                   <div
                     className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
@@ -795,7 +795,7 @@ const formattedDate =
                   {totalResults ? ` out of ${totalResults}` : null}
                   {props?.cityName ? ` in ${props?.cityName}` : null}
                 </div>
-                <div className="max-[583px]:hidden">
+                {/* <div className="max-[583px]:hidden">
                   <button
                     onClick={handleRecommneded}
                     className="flex flex-row items-center gap-1 cursor-pointer"
@@ -803,7 +803,7 @@ const formattedDate =
                     <CheckboxFormComponent checked={recommended} />
                     Top Recommended
                   </button>
-                </div>
+                </div> */}
                 <div className="max-[583px]:hidden">
                   <button
                     onClick={handleNearby}
