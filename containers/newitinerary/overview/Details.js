@@ -176,7 +176,7 @@ const Details = (props) => {
               <Heading className="flex flex-row gap-2 items-center">
                 Dates ({props.duration})
               </Heading>
-              {isDesktop ? <DateRow>
+              {isDesktop && !props?.v1 ? <DateRow>
                 <UpdateItineraryDates
                   itinerary={props?.itinerary}
                   token={props.token}

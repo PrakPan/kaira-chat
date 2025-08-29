@@ -60,6 +60,7 @@ const Overview = (props) => {
           number_of_children={props?.number_of_children}
           number_of_infants={props?.number_of_infants}
           setEditRoute={props.setEditRoute}
+          v1={props?.v1}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
       </div>

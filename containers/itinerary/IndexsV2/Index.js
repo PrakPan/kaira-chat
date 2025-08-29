@@ -690,6 +690,7 @@ const Itinerary = (props) => {
           }
           number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
           setEditRoute={setEditRoute}
+          v1={true}
         ></Overview>
 
         <div id="itinerary-anchor">
