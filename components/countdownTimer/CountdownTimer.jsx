@@ -17,7 +17,7 @@ export default function CountdownTimer({ priceValidUntil }) {
       const now = Date.now();
 
       if (now - lastUpdateRef.current > 2000) {
-        setTimeLeft(calculateTimeLeft()); // force re-sync on tab sleep/wake
+        setTimeLeft(calculateTimeLeft()); 
       }
 
       lastUpdateRef.current = now;

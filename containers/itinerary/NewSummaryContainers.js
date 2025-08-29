@@ -280,6 +280,7 @@ const NewSummaryContainer = (props) => {
         <NewBookingSlide
           {...props}
           loadpricing={props?.loadpricing}
+          getPaymentHandler={props.getPaymentHandler}
           setLoadPricing={props?.setLoadPricing}
           itinerary={props?.itinerary}
           openCouponSlide={() => setCouponSlide(true)}

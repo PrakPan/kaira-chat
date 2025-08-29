@@ -888,6 +888,7 @@ if (hasActivities) {
                   ) : (
                     <NewSummaryContainers
                       id={props.itinerary_id}
+                      getPaymentHandler={props.getPaymentHandler}
                       token={props.token}
                       loadpricing={props?.loadpricing}
                       payment={props?.payment}
@@ -1214,6 +1215,7 @@ if (hasActivities) {
           ) : props?.mercuryItinerary ? (
             <NewSummaryContainers
               id={props.itinerary_id}
+              getPaymentHandler={props.getPaymentHandler}
               token={props.token}
               loadpricing={props?.loadpricing}
               setLoadPricing={props?.setLoadPricing}

@@ -90,6 +90,66 @@ export default function NewActivityBooking(props) {
                   setImageLoaded(true);
                 }}
               ></ImageLoader>
+
+              {/* Tour Type and Guide badges positioned on image */}
+              <div className="absolute bottom-3 left-3 flex gap-2">
+                {props?.data?.guide === "Self Guided" && (
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px]">
+                    <Image
+                      src="/selfGuided.svg"
+                      alt="self-guided"
+                      width={16}
+                      height={16}
+                    />
+                    <span>Self Guided</span>
+                  </div>
+                )}
+                {props?.data?.guide === "Guided" && (
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px]">
+                    <Image
+                      src="/guided.svg"
+                      alt="guided"
+                      width={16}
+                      height={16}
+                    />
+                    <span>Guided</span>
+                  </div>
+                )}
+                {props?.data?.guide === "Semi Guided" && (
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                    <Image
+                      src="/semiGuided.svg"
+                      alt="semi-guided"
+                      width={16}
+                      height={16}
+                    />
+                    <span>Semi Guided</span>
+                  </div>
+                )}
+
+                {props?.data?.tour_type === "Private Tour" && (
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                    <Image
+                      src="/privateTour.svg"
+                      alt="private-tour"
+                      width={16}
+                      height={16}
+                    />
+                    <span>Private Tour</span>
+                  </div>
+                )}
+                {props?.data?.tour_type === "Shared Tour" && (
+                  <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                    <Image
+                      src="/sharedTour.svg"
+                      alt="shared-tour"
+                      width={16}
+                      height={16}
+                    />
+                    <span>Shared Tour</span>
+                  </div>
+                )}
+              </div>
             </div>
             <div
               style={{
@@ -108,7 +168,7 @@ export default function NewActivityBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-[20px] font-semibold">
-                    {(props?.data?.display_name || props.data?.name)? (props?.data?.display_name || props.data.name) : null}
+                    {(props?.data?.display_name || props.data?.name) ? (props?.data?.display_name || props.data.name) : null}
                   </div>
                 </div>
                 {stars && (
@@ -124,109 +184,51 @@ export default function NewActivityBooking(props) {
                 )}
               </div>
 
-              {props.data?.experience_filters?.length > 0 && (
+              {props.data?.tags?.length > 0 && (
                 <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                  {props?.data?.category && (
+                  {/* {props?.data?.category && (
                     <div className="w-max items-center bg-gray-100 text-[14px] text-gray-800  font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
                       {props.data.category}
                     </div>
-                  )}
+                  )} */}
                   {
-                  // props.data.experience_filters
+                    // props.data.experience_filters
                     props?.data?.tags
-                    ?.slice(0, props?.data?.tags?.length == 1 ? 1 : 2)
-                    ?.map((e, i) => (
-                      <span
-                        key={i}
-                        className={`border-2 rounded-full px-2 py-1`}
-                        style={{ backgroundColor: colors[i % colors.length] }}
-                      >
-                        {e}
-                      </span>
-                    ))}
+                      ?.slice(0, props?.data?.tags?.length == 1 ? 1 : 2)
+                      ?.map((e, i) => (
+                        <span
+                          key={i}
+                          className={`rounded-full px-2 py-1`}
+                          style={{ backgroundColor: colors[i % colors.length] }}
+                        >
+                          {e}
+                        </span>
+                      ))}
                   {props?.data?.tags?.length > 2 && (
-                    <span className={`border-2 rounded-full px-2 py-1`}>
+                    <span className={`border-1 rounded-full px-2 py-1`}>
                       +
                       {props?.data?.tags?.length -
-                      2
+                        2
                       }{" "}
                       more
                     </span>
                   )}
+
+                  {/* One-Liner Description */}
+                  {
+                    props?.data?.one_liner_description &&
+                    <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px]">
+                      {props.data.one_liner_description}
+                    </div>
+                  }
                 </div>
               )}
 
-              <div className="flex gap-2 flex-col  text-[14px] text-gray-800">
-                {props?.data?.tour_type === "Private Tour" && (
-                  <div className="flex items-center gap-1">
-                    <Image
-                      src="/privateTour.svg"
-                      alt="private-tour"
-                      width={20}
-                      height={20}
-                    />
-                    <span>Private Tour</span>
-                  </div>
-                )}
-                {props?.data?.tour_type === "Shared Tour" && (
-                  <div className="flex items-center gap-1">
-                    <Image
-                      src="/sharedTour.svg"
-                      alt="shared-tour"
-                      width={20}
-                      height={20}
-                    />
-                    <span>Shared Tour</span>
-                  </div>
-                )}
 
-                {/* Guide Type */}
-                {props?.data?.guide === "Guided" && (
-                  <div className="flex items-center gap-1">
-                    <Image
-                      src="/guided.svg"
-                      alt="guided"
-                      width={20}
-                      height={20}
-                    />
-                    <span>Guided</span>
-                  </div>
-                )}
-                {props?.data?.guide === "Self Guided" && (
-                  <div className="flex items-center gap-1">
-                    <Image
-                      src="/selfGuided.svg"
-                      alt="self-guided"
-                      width={20}
-                      height={20}
-                    />
-                    <span>Self Guided</span>
-                  </div>
-                )}
-                {props?.data?.guide === "Semi Guided" && (
-                  <div className="flex items-center gap-1">
-                    <Image
-                      src="/semiGuided.svg"
-                      alt="semi-guided"
-                      width={20}
-                      height={20}
-                    />
-                    <span>Semi Guided</span>
-                  </div>
-                )}
-
-                {/* One-Liner Description */}
-                {
-                  props?.data?.one_liner_description && 
-                   <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-                    {props.data.one_liner_description}
-                    </div>
-                }
-              </div>
             </div>
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
-                <div className="flex flex-col md:flex-row gap-1">
+                <div className="flex flex-col md:flex-row gap-2">
                   <div className="text-[24px] font-bold">
                     <span
                       className="!font-[lexend]"
@@ -236,7 +238,7 @@ export default function NewActivityBooking(props) {
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
-                  <div className="text-[14px] self-end">
+                  <div className="text-[14px] text-[#6E757A] self-end mb-1">
                     for {props.data.pricing.total_pax} people*
                   </div>
                 </div>
@@ -254,8 +256,8 @@ export default function NewActivityBooking(props) {
                     Added
                     {props?.data?.added_in_itinerary?.added_on
                       ? ` on ${convertDateFormat(
-                          props?.data?.added_in_itinerary?.added_on
-                        )}`
+                        props?.data?.added_in_itinerary?.added_on
+                      )}`
                       : null}
                   </TransparentButton>
                 </div>
@@ -267,6 +269,7 @@ export default function NewActivityBooking(props) {
                   hoverColor="white"
                   height={"full"}
                   className="p-[12px]"
+                  borderWidth={"1px"}
                   onclick={() => handleClick(props.data?.id)}
                 >
                   View Details
@@ -306,6 +309,67 @@ export default function NewActivityBooking(props) {
                 setImageLoaded(true);
               }}
             ></ImageLoader>
+
+            <div className="absolute bottom-3 left-3 flex gap-2">
+              {props?.data?.guide === "Self Guided" && (
+                <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px]">
+                  <Image
+                    src="/selfGuided.svg"
+                    alt="self-guided"
+                    width={16}
+                    height={16}
+                  />
+                  <span>Self Guided</span>
+                </div>
+              )}
+              {props?.data?.guide === "Guided" && (
+                <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px]">
+                  <Image
+                    src="/guided.svg"
+                    alt="guided"
+                    width={16}
+                    height={16}
+                  />
+                  <span>Guided</span>
+                </div>
+              )}
+              {props?.data?.guide === "Semi Guided" && (
+                <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                  <Image
+                    src="/semiGuided.svg"
+                    alt="semi-guided"
+                    width={16}
+                    height={16}
+                  />
+                  <span>Semi Guided</span>
+                </div>
+              )}
+
+              {props?.data?.tour_type === "Private Tour" && (
+                <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                  <Image
+                    src="/privateTour.svg"
+                    alt="private-tour"
+                    width={16}
+                    height={16}
+                  />
+                  <span>Private Tour</span>
+                </div>
+              )}
+              {props?.data?.tour_type === "Shared Tour" && (
+                <div className="flex items-center gap-1 bg-[#f7e700] text-black px-[0.7rem] py-2 rounded-2xl text-[12px] ">
+                  <Image
+                    src="/sharedTour.svg"
+                    alt="shared-tour"
+                    width={16}
+                    height={16}
+                  />
+                  <span>Shared Tour</span>
+                </div>
+              )}
+            </div>
+
+
           </div>
           <div
             style={{
@@ -320,49 +384,58 @@ export default function NewActivityBooking(props) {
         </div>
 
         <div className="text-[20px] font-semibold">
-          {props.data?.name ? props.data.name : null}
+          {props.data?.name || props?.display_name ? props.data.name : null}
         </div>
 
         {stars && (
-          <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+          <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a] mt-1">
             <span className="flex flex-row text-[#FFD201] text-[12px]">
               {stars}
             </span>
           </span>
         )}
 
-        {props.data?.experience_filters?.length > 0 && (
-          <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-            {props?.data?.category && (
+        {props.data?.tags?.length > 0 && (
+          <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap py-2">
+            {/* {props?.data?.category && (
               <div className="w-max items-center bg-gray-100 text-[14px] text-gray-800  font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
                 {props.data.category}
               </div>
-            )}
-            {props.data.experience_filters
-              ?.slice(0, props?.data?.category ? 1 : 2)
+            )} */}
+            {props.data.tags
+              ?.slice(0, props?.data?.tags.length < 2 ? props?.data?.tags.length : 2)
               ?.map((e, i) => (
                 <span
                   key={i}
-                  className={`border-2 rounded-full px-2 py-1`}
+                  className={` rounded-full px-2 py-1`}
                   style={{ backgroundColor: colors[i % colors.length] }}
                 >
                   {e}
                 </span>
               ))}
-            {props?.data?.experience_filters?.length > 2 && (
-              <span className={`border-2 rounded-full px-2 py-1`}>
+            {props?.data?.tags?.length > 2 && (
+              <span className={` rounded-full px-2 py-1`}>
                 +
-                {props?.data?.experience_filters?.length - props?.data?.category
+                {props?.data?.tags?.length - 2
                   ? 1
                   : 2}{" "}
                 more
               </span>
             )}
+
+
           </div>
         )}
 
+        {
+          props?.data?.one_liner_description &&
+          <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px] py-2">
+            {props.data.one_liner_description}
+          </div>
+        }
+        {/* 
         <div className="flex gap-2 flex-col  mt-2 text-[14px] text-gray-800">
-          {/* Tour Type */}
+         
           {props?.data?.tour_type === "Private Tour" && (
             <div className="flex items-center gap-1">
               <Image
@@ -386,7 +459,7 @@ export default function NewActivityBooking(props) {
             </div>
           )}
 
-          {/* Guide Type */}
+          
           {props?.data?.guide === "Guided" && (
             <div className="flex items-center gap-1">
               <Image src="/guided.svg" alt="guided" width={20} height={20} />
@@ -415,9 +488,9 @@ export default function NewActivityBooking(props) {
               <span>Semi Guided</span>
             </div>
           )}
-        </div>
+        </div> */}
 
-        <div className="flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center justify-between py-1">
           {props.data?.pricing?.total_price ? (
             <div className="flex gap-1">
               <div className="text-[24px] font-bold">
@@ -443,8 +516,8 @@ export default function NewActivityBooking(props) {
               Added
               {props?.data?.added_in_itinerary?.added_on
                 ? ` on ${convertDateFormat(
-                    props?.data?.added_in_itinerary?.added_on
-                  )}`
+                  props?.data?.added_in_itinerary?.added_on
+                )}`
                 : null}
             </TransparentButton>
           </div>
@@ -458,9 +531,10 @@ export default function NewActivityBooking(props) {
               height={"full"}
               className="p-[12px] !w-full"
               width={"100%"}
+              borderWidth={"1px"}
               onclick={() => handleClick(props.data?.id)}
             >
-              View Detail
+              View Details
             </Button>
           </div>
           // <div
@@ -495,8 +569,13 @@ export default function NewActivityBooking(props) {
         setShowDrawer={props?.setShowDrawer}
       />
       {props.data?.is_recommended && (
-        <div className="absolute top-6 -left-2 z-[1]">
-          <RecommendedBadge />
+        // <div className="absolute top-6 -left-2 z-[1]">
+        <div className="absolute top-6 left-5 z-[1]">
+          {/* <RecommendedBadge /> */}
+          <div className="flex items-center gap-1 bg-[#5CBA66] text-white text-13px px-3 py-2 rounded-xl text-[12px]">
+
+            <span>Recommended</span>
+          </div>
         </div>
       )}
     </div>
