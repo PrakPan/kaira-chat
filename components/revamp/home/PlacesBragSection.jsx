@@ -38,14 +38,17 @@ const PlacesBragSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-gray-100">
       <div className="w-full sm:max-w-7xl sm:mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6 leading-tight">
             Places You'll Brag About Forever.
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-2 sm:px-0">
+          <p
+            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0"
+            style={{ fontSize: "16px" }}
+          >
             From jaw-dropping landmarks to hidden gems, these are the kind of
             spots that turn into stories, selfies, and serious travel envy.
           </p>
