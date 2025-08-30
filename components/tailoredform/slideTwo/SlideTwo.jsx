@@ -71,6 +71,42 @@ const RouteEditSection = (props) => {
     const destinationRef = useRef(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const itinerary = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData);
+    console.log("itinerary in route edit section", itinerary);
+    const startCity = itinerary?.start_city;
+    const endCity = itinerary?.end_city;
+    const basicRoute = itinerary?.basic_route || [];
+
+    const routes = [];
+
+    // Add start city
+    if (startCity) {
+        routes.push({
+            name: startCity.name || startCity.city_name,
+            latitude: startCity.latitude,
+            longitude: startCity.longitude,
+            type: "start",
+        });
+    }
+
+    // Add basic_route cities
+    basicRoute.forEach((route) => {
+        routes.push({
+            ...route,
+            type: "stop", // intermediate point
+        });
+    });
+
+    // Add end city
+    if (endCity) {
+        routes.push({
+            name: endCity.name || endCity.city_name,
+            latitude: endCity.latitude,
+            longitude: endCity.longitude,
+            type: "end",
+        });
+
+    }
+
     function addDaysToDate(dateString, daysToAdd) {
         const date = new Date(dateString);
 
@@ -98,75 +134,75 @@ const RouteEditSection = (props) => {
         window.addEventListener("resize", handleResize);
 
         const cities = [];
-        if (props?.routes) {
-            for (let i = 0; i < props.routes.length; i += 1) {
+        if (routes) {
+            for (let i = 0; i < routes.length; i += 1) {
                 cities.push({
                     startingCity: i === 0,
-                    endingCity: i === props.routes.length - 1,
+                    endingCity: i === routes.length - 1,
                     cityData: {
-                        ...props.routes[i],
+                        ...routes[i],
                         city_name:
-                            props.routes[i]?.city_name || props.routes[i]?.city?.name,
+                            routes[i]?.city_name || routes[i]?.city?.name,
                         checkin_date:
                             (i === 0
                                 ? itinerary?.start_date
-                                : i === props.routes.length - 1
+                                : i === routes.length - 1
                                     ? itinerary?.end_date
                                     : getDate(
-                                        props.routes[i].checkin_date ||
-                                        props.routes[i]?.start_date ||
+                                        routes[i].checkin_date ||
+                                        routes[i]?.start_date ||
                                         (i === 0
                                             ? itinerary?.start_date
-                                            : i === props.routes.length - 1
+                                            : i === routes.length - 1
                                                 ? itinerary?.end_date
                                                 : null)
                                     )) || null,
                         checkout_date:
                             (i === 0
                                 ? itinerary?.start_date
-                                : i === props.routes.length - 1
+                                : i === routes.length - 1
                                     ? itinerary?.end_date
                                     : getDate(
-                                        props.routes[i].checkout_date ||
+                                        routes[i].checkout_date ||
                                         addDaysToDate(
-                                            props.routes[i]?.start_date,
-                                            props.routes[i]?.duration
+                                            routes[i]?.start_date,
+                                            routes[i]?.duration
                                         )
                                     )) || null,
-                        city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+                        city_id: routes[i]?.city_id || routes[i]?.city?.id,
                         place_id:
-                            props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-                        duration: props?.routes[i]?.duration,
-                        id: props?.routes[i]?.hasOwnProperty("id")
-                            ? props?.routes[i]?.id
+                            routes[i]?.place_id || routes[i]?.gmaps_place_id,
+                        duration: routes[i]?.duration,
+                        id: routes[i]?.hasOwnProperty("id")
+                            ? routes[i]?.id
                             : null,
                         color: CITY_COLOR_CODES[i % 7],
                         lat:
-                            props?.routes[i]?.lat ||
-                            props?.routes[i]?.latitude ||
-                            props?.routes[i]?.city?.latitude,
+                            routes[i]?.lat ||
+                            routes[i]?.latitude ||
+                            routes[i]?.city?.latitude,
                         long:
-                            props?.routes[i]?.long ||
-                            props?.routes[i]?.longitude ||
-                            props?.routes[i]?.city?.longitude,
-                        nights: props?.routes[i]?.nights || props?.routes[i]?.duration,
+                            routes[i]?.long ||
+                            routes[i]?.longitude ||
+                            routes[i]?.city?.longitude,
+                        nights: routes[i]?.nights || routes[i]?.duration,
                     },
                 });
 
-                if (i !== 0 && i !== props.routes.length - 1) {
+                if (i !== 0 && i !== routes.length - 1) {
                     cities[cities.length - 1].cityData.nights = differenceInDays(
                         new Date(
                             getDate(
-                                props.routes[i].checkout_date ||
+                                routes[i].checkout_date ||
                                 addDaysToDate(
-                                    props.routes[i]?.start_date,
-                                    props.routes[i]?.duration
+                                    routes[i]?.start_date,
+                                    routes[i]?.duration
                                 )
                             )
                         ),
                         new Date(
                             getDate(
-                                props.routes[i].checkin_date || props.routes[i]?.start_date
+                                routes[i].checkin_date || routes[i]?.start_date
                             )
                         )
                     );
@@ -176,7 +212,7 @@ const RouteEditSection = (props) => {
             setDestinations(cities);
         }
         return () => window.removeEventListener("resize", handleResize)
-    }, [props.routes]);
+    }, [routes]);
 
     useEffect(() => {
         if (destinations.length) {
@@ -289,7 +325,7 @@ const RouteEditSection = (props) => {
                 {!isDesktop && <div className={`w-full sm:w-[50%] flex flex-col gap-3 items-center h-[300px] mb-4 sm:h-[${containerHeight}px]`}>
                     <div className="flex-1 h-full w-full">
                         <RoutesMap
-                            locations={props?.routes}
+                            locations={routes}
                         />
                     </div>
 
@@ -319,7 +355,7 @@ const RouteEditSection = (props) => {
                         {isDesktop && <div className={`w-full sm:w-[50%] flex flex-col gap-3 items-center h-[300px] sm:h-[${containerHeight}px]`}>
                             <div className="flex-1 h-full w-full">
                                 <RoutesMap
-                                    locations={props?.routes}
+                                    locations={routes}
                                 />
                             </div>
 
@@ -570,6 +606,56 @@ export const DragDrop = (props) => {
                     totalDestinations={destinations.length}
                 />
             </div>
+
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="droppable">
+                    {(provided, snapshot) => (
+                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                            {destinations.map((item, index) => {
+                                if (index !== 0 && index !== destinations.length - 1)
+                                    return (
+                                        <Draggable
+                                            key={item.cityData.city_id || index}
+                                            draggableId={String(item.cityData.city_id || index)}
+                                            index={index}
+                                        >
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    style={getItemStyle(
+                                                        snapshot.isDragging,
+                                                        provided.draggableProps.style
+                                                    )}
+                                                >
+                                                    <Destination
+                                                        index={index}
+                                                        startingCity={item.startingCity}
+                                                        endingCity={item.endingCity}
+                                                        cityData={item?.cityData}
+                                                        pinColour={item?.cityData?.color}
+                                                        setDestinations={props.setDestinations}
+                                                        updateLatLong={updateLatLong}
+                                                        setPopUp={setPopUp}
+                                                        updateDestinationsDates={updateDestinationsDates}
+                                                        setDestinationChanges={setDestinationChanges}
+                                                        destinationRef={destinationRef}
+                                                        isEditMode={isEditMode}
+                                                        setIsEditMode={setIsEditMode}
+                                                        totalDestinations={destinations.length}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    );
+                                return null;
+                            })}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
 
             {/* <DragDropContext 
             onDragEnd={onDragEnd}
