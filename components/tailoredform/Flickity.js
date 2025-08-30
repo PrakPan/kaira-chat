@@ -5,6 +5,7 @@ import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
+import { useRouter } from "next/router";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Card = styled.div`
@@ -13,20 +14,18 @@ const Card = styled.div`
   animation: 1s ${fadeInAnimation};
 `;
 const FlickityComp = (props) => {
+  const router=useRouter()
+    const slideIndex = Number(router.query.slideIndex) || 0;
+  console.log("flickity props are: ",slideIndex)
   return (
     <div style={{ width: "100%" }} className="font-inter h-full">
-      {!props.slideIndex ? (
+      {(!slideIndex || slideIndex==0) ? (
         <Card>
           <SlideOne
             initialInputId={props.initialInputId}
-            focusedDate={props.focusedDate}
-            flexible={props.flexible}
-            setFlexible={props.setFlexible}
-            setFocusedDate={props.setFocusedDate}
             tailoredFormModal={props.tailoredFormModal}
             startingLocation={props.startingLocation}
             setStartingLocation={props.setStartingLocation}
-            children_cities={props.children_cities}
             showSearchStarting={props.showSearchStarting}
             setShowSearchStarting={props.setShowSearchStarting}
             destination={props.destination}
@@ -42,7 +41,7 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 1 ? (
+      {slideIndex === 1 ? (
         <Card className="flex flex-col h-full">
           <SlideTwo
             routes={props?.route}
@@ -53,7 +52,7 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 && (props.token || props.phone !== "null") ? (
+      {slideIndex === 2 ? (
         <Card>
           <SlideThree
             setSubmitSecondSlide={props.setSubmitSecondSlide}
@@ -61,13 +60,10 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 3 ?
-        <SlideFour
-          setSlideFour={props.setSlideFour}
-          slideFour={props.slideFour}
-        /> : null}
+      {slideIndex === 3 ?
+        <SlideFour/> : null}
 
-      {props.slideIndex == 4 &&
+      {slideIndex == 4 &&
         <div>
           <Login
             show={props?.slideIndex == 4}

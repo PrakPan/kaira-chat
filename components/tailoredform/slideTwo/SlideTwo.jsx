@@ -612,7 +612,7 @@ export const DragDrop = (props) => {
                 />
             </div>
 
-            <DragDropContext onDragEnd={onDragEnd}>
+            {/* <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="droppable">
                     {(provided, snapshot) => (
                         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -660,7 +660,7 @@ export const DragDrop = (props) => {
                         </div>
                     )}
                 </Droppable>
-            </DragDropContext>
+            </DragDropContext> */}
 
             {/* <DragDropContext 
             onDragEnd={onDragEnd}

@@ -66,7 +66,6 @@ const SlideOne = (props) => {
           initialInputId={props.initialInputId}
           setStartingLocation={props.setStartingLocation}
           showSearchStarting={props.showSearchStarting}
-          children_cities={props.children_cities}
           setDestination={props.setDestination}
           setShowSearchStarting={props.setShowSearchStarting}
           showCities={props.showCities}
