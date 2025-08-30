@@ -191,7 +191,7 @@ const FullImgContent = (props) => {
             height="2.5rem"
             width="2.5rem"
             widthmobile="2.5rem"
-            url="media/icons/general/favorite.png"
+            url="media/icons/general/booking.png"
             noLazy
           />
           <IconText>
