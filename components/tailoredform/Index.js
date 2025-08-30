@@ -110,6 +110,7 @@ const Enquiry = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
   const slideOneData = useSelector((state) => state.tailoredInfoReducer.slideOne)
   const itineraryInititateData = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData)
   const slideThreeData = useSelector((state) => state.tailoredInfoReducer.slideThree)
