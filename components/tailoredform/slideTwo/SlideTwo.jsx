@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo} from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
@@ -76,36 +76,41 @@ const RouteEditSection = (props) => {
     const endCity = itinerary?.end_city;
     const basicRoute = itinerary?.basic_route || [];
 
-    const routes = [];
+  
+
+  const routes = useMemo(() => {
+    const routesArray = [];
 
     // Add start city
     if (startCity) {
-        routes.push({
-            name: startCity.name || startCity.city_name,
-            latitude: startCity.latitude,
-            longitude: startCity.longitude,
-            type: "start",
-        });
+      routesArray.push({
+        name: startCity.name || startCity.city_name,
+        latitude: startCity.latitude,
+        longitude: startCity.longitude,
+        type: "start",
+      });
     }
 
     // Add basic_route cities
     basicRoute.forEach((route) => {
-        routes.push({
-            ...route,
-            type: "stop", // intermediate point
-        });
+      routesArray.push({
+        ...route,
+        type: "stop",
+      });
     });
 
     // Add end city
     if (endCity) {
-        routes.push({
-            name: endCity.name || endCity.city_name,
-            latitude: endCity.latitude,
-            longitude: endCity.longitude,
-            type: "end",
-        });
-
+      routesArray.push({
+        name: endCity.name || endCity.city_name,
+        latitude: endCity.latitude,
+        longitude: endCity.longitude,
+        type: "end",
+      });
     }
+
+    return routesArray;
+  }, [startCity, endCity, basicRoute]);
 
     function addDaysToDate(dateString, daysToAdd) {
         const date = new Date(dateString);
