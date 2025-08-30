@@ -571,7 +571,7 @@ export const DragDrop = (props) => {
                 />
             </div>
 
-            <DragDropContext 
+            {/* <DragDropContext 
             onDragEnd={onDragEnd}
             >
                 <Droppable droppableId="droppable">
@@ -624,7 +624,7 @@ export const DragDrop = (props) => {
                         </>
                     )}
                 </Droppable>
-            </DragDropContext>
+            </DragDropContext> */}
 
             {popUp && (
                 <DestinationPopUp

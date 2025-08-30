@@ -85,9 +85,9 @@ const SlideOne = (props) => {
           <div className="relative w-full">
             <StyledFigmaBox
               value={
-                valueStart && valueEnd
+                date.type==="fixed"?(valueStart && valueEnd
                   ? `${formatShortDate(valueStart)} - ${formatShortDate(valueEnd)}`
-                  : ""
+                  : ""):date.type==="flexible"?(new Date(date.month).toLocaleString("default", { month: "long" })+", "+date.duration+" days"):date.duration+" days"
               }
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10 ${!(valueStart && valueEnd) && "text-[#ACACAC] text-[14px]"

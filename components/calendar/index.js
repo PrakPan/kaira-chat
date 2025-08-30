@@ -263,7 +263,7 @@ const AirbnbCalendar = (props) => {
 
           {/* Calendar / Month selector */}
           <div className="">
-            {props.dateType === 'fixed' ? renderCalendarView() : props.dateType == "any" ? renderAnyView() : renderMonthView()}
+            {props.dateType === 'fixed' ? renderCalendarView() : props.dateType == "anytime" ? renderAnyView() : renderMonthView()}
           </div>
 
           {/* Footer */}

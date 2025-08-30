@@ -51,9 +51,8 @@ const BlackContainer = styled.div`
   top: 0;
   left: 0;
   z-index: 1005;
-  width: 100vw;
+  width: 100%;
   display: none;
-  height: 100vh;
   animation: 0.5s ${fadeInAnimation};
   @media screen and (min-width: 768px) {
     display: initial;
@@ -155,7 +154,7 @@ const Enquiry = (props) => {
 
 
   const slideIndex = Number(router.query.slideIndex) || 0;
-  console.log("slide index is: ",slideIndex)
+  console.log("slide index is: ", slideIndex)
   const headings = [
     "Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.",
     "Route Overview — Customize Your Journey from Start to Finish!",
@@ -557,8 +556,8 @@ const Enquiry = (props) => {
         month: new Date(slideOneData.date.month).getMonth(),
         year: slideOneData.date.year,
         duration: slideOneData.date.duration,
-        start_date: slideOneData.date.start_date,
-        end_date: slideOneData.date.end_date
+        start_date: new Date(slideOneData.date.start_date).toISOString().split("T")[0],
+        end_date: new Date(slideOneData.date.end_date).toISOString().split("T")[0]
       },
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
@@ -717,25 +716,7 @@ const Enquiry = (props) => {
           />
         )} */}
 
-        <div
-          style={{
-            padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
-            marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-          }}
-          className="w-full flex flex-row items-center"
-        >
-          {slideIndex ? (
-            <div className="center-div">
-              <BiArrowBack
-                onClick={_prevSlideHandler}
-                className="hover-pointer"
-                style={{ marginTop: "2px", fontSize: "1.5rem" }}
-              ></BiArrowBack>
-            </div>
-          ) : (
-            <></>
-          )}
-        </div>
+
 
         {/* main block */}
         <div className="flex flex-col items-center justify-center  h-full">
@@ -743,19 +724,39 @@ const Enquiry = (props) => {
             style={{ padding: "0 1rem", width: "100%" }}
             className="h-max  font-inter flex flex-col items-center gap-[46px]"
           >
-            <div className="sm:relative sm:text-center w-full flex justify-between sm:justify-center">
-              <h1
-                className="
+            <div className="w-full flex items-center justify-between mt-[20px]">
+              <div
+                style={{
+                  padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
+                  marginBottom: slideIndex === 2 ? "0rem" : "0rem",
+                }}
+                className="w-max flex flex-row items-center"
+              >
+                {slideIndex ? (
+                  <div className="center-div">
+                    <BiArrowBack
+                      onClick={_prevSlideHandler}
+                      className="hover-pointer"
+                      style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                    ></BiArrowBack>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div className="">
+                <h1
+                  className="
                 text-black font-inter 
                   text-[24px] leading-[32px] font-semibold
                   sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  
                   max-w-[800px]
                 "
-              >
-                {headings[slideIndex]}
-              </h1>
-
-              <div className=" sm:absolute sm:right-0 sm:top-1/2 sm:transform sm:-translate-y-1/2">
+                >
+                  {headings[slideIndex]}
+                </h1>
+              </div>
+              <div className=" ">
                 <svg width="64" height="64" viewBox="0 0 64 64">
                   {/* Background Circle */}
                   <circle
@@ -800,8 +801,7 @@ const Enquiry = (props) => {
                 </svg>
               </div>
             </div>
-
-            <div className={`${slideIndex == 1 ? "w-[100vw]" : "max-w-[600px]"}`}>
+            <div className={`${slideIndex == 1 ? "w-[100%]" : "max-w-[600px]"}`}>
               <Flickity
                 initialInputId={initialInputId}
                 focusedDate={focusedDate}

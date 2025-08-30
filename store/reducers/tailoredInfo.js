@@ -18,8 +18,8 @@ const initialReducer = {
     },
     itineraryInititateData: null,
     slideThree: {
-        groupType: null,
-        numberOfAdults: 0,
+        groupType: "Solo",
+        numberOfAdults: 1,
         numberOfChildren: 0,
         numberOfInfants: 0,
         roomConfiguration: [],
