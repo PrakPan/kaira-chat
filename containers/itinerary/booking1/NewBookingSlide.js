@@ -72,6 +72,19 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
     }
   }, [show]);
 
+  // Add this useEffect to prevent body scrolling when modal is open
+useEffect(() => {
+  if (show) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = 'unset';
+  }
+  
+  // Cleanup function
+  return () => {
+    document.body.style.overflow = 'unset';
+  };
+}, [show]);
   // Auto-apply coupon from payment props if available
   useEffect(() => {
     if (payment?.coupon_usage && payment.coupon_usage.status === 'COUPON_APPLIED') {
@@ -148,22 +161,22 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-[1502] flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute  inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
+    <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4"> {/* Changed z-index from 1502 to 1600 */}
+    {/* Backdrop */}
+    <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
 
-      {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white">
-          <h2 className="text-lg font-semibold">Apply Coupons</h2>
-          <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
-            <IoMdClose className="text-2xl" />
-          </button>
-        </div>
+    {/* Modal */}
+    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col"> {/* Changed max-h from 90vh to 80vh */}
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0"> {/* Removed sticky top-0 */}
+        <h2 className="text-lg font-semibold">Apply Coupons</h2>
+        <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
+          <IoMdClose className="text-2xl" />
+        </button>
+      </div>
 
-        {/* Content */}
-        <div className="p-4">
+      {/* Content */}
+      <div className="p-4 overflow-y-auto flex-1">
           <div>
             <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
 
@@ -224,6 +237,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
         </div>
       </div>
     </div>
+  
   );
 };
 
@@ -524,10 +538,10 @@ const PriceDetails = ({
           <span>₹{itineraryCost.toLocaleString('en-IN')}</span>
         </div>
 
-        <div className="flex justify-between">
+        {/*<div className="flex justify-between">
           <span>Lock-in Cost</span>
           <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
-        </div>
+        </div> */}
 
         {!Cart?.are_prices_hidden  &&  <div className="flex justify-between">
           <span>Surcharges and Taxes</span>
@@ -1028,13 +1042,18 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
 
     let razorpayOptions = {
       key: "rzp_test_FEKg5ZWGWl9i7c",
-      amount: data.amount || data?.discounted_cost,
+      amount: data.amount*100 || data?.discounted_cost*100,
       // "currency": "INR",
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data[0]?.orders[0]?.order_id,
+      modal: {
+      ondismiss: function() {
+        setPaymentLoading(false); // Reset loading state when modal is dismissed
+      }
+    },
       // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
@@ -1824,7 +1843,7 @@ const _fullPaymentHandler = async (id) => {
           width={"50%"}
           mobileWidth={"100%"}
           style={{ zIndex: 1501 }}
-          className={`font-lexend ${showCouponModal ? "overflow-hidden" :" !overflow-y-auto"}`}
+           className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`} 
           onHide={handleCloseDrawer}
         >
           {/* Close button */}

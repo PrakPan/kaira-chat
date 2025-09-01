@@ -238,7 +238,7 @@ const MidSectionV2 = (props) => {
                   <></>
                 )}
 
-                {props.cityTransferBookings && (
+                {props.cityTransferBookings && props.cityTransferBookings?.id && (
                     <div
                       id="transferEdit"
                       onClick={(e) => {
