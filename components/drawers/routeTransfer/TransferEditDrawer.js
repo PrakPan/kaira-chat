@@ -2337,11 +2337,11 @@ const NewMultiModeContainer = ({
               ...transferObj,
               trace_id: item.trace_id,
               result_index: item.selectedPrice
-                ? transfer[index].prices.findIndex(
+                ?  Array.isArray(transfer[index]?.prices) ? transfer[index]?.prices?.findIndex(
                   (p) =>
                     p.price === item.selectedPrice.price &&
                     p.currency === item.selectedPrice.currency
-                )
+                ): 0
                 : 0,
               start_time:
                 item.departure_time ||

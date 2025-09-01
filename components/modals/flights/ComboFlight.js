@@ -373,22 +373,23 @@ const isTraceIdValid = () => {
     filtersState,
   ]);
 
-  useEffect(() => {
-    if (
-      props?.flightResults?.length &&
-      props?.selectedData?.resultIndex !== undefined
-    ) {
-      const selectedIndex = props.flightResults.findIndex(
-        (flight) =>
-          flight?.result_index ===
-          (props.selectedData?.resultIndex || props.selectedData?.result_index)
-      );
+ useEffect(() => {
+  if (
+    Array.isArray(props?.flightResults) &&
+    props?.flightResults?.length &&
+    props?.selectedData?.resultIndex !== undefined
+  ) {
+    const selectedIndex = props.flightResults.findIndex(
+      (flight) =>
+        flight?.result_index ===
+        (props.selectedData?.resultIndex || props.selectedData?.result_index)
+    );
 
-      if (selectedIndex !== -1) {
-        setSelectedFlightIndex(selectedIndex);
-      }
+    if (selectedIndex !== -1) {
+      setSelectedFlightIndex(selectedIndex);
     }
-  }, [props.flightResults, props.selectedData]);
+  }
+}, [props.flightResults, props.selectedData]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
     setPreferredDepartureTime(newDateTime);
