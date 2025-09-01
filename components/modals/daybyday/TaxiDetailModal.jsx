@@ -67,7 +67,7 @@ const TaxiDetailModal = ({
   } = data;
 
   const [showTaxi, setShowTaxi] = useState(false);
-  console.log("Taxi Dataaa", data);
+
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -87,9 +87,9 @@ const TaxiDetailModal = ({
   };
 
   const addMinutesToDate = (dateString, minutes) => {
-    console.log("Date String", dateString);
+  
     const date = new Date(dateString);
-    console.log("date is:");
+
     date.setMinutes(date.getMinutes() + minutes);
     return formatDateTime(date.toISOString());
   };

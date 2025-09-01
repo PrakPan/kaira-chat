@@ -63,7 +63,7 @@ const SetWidthContainer = styled.div`
 `;
 
 export default function ThemePage(props) {
-  console.log("ladakh props are: ", props);
+
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -829,7 +829,6 @@ export const PlanYourTripLadakhButton = (props) => {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
 
-  console.log("props in plan your trip is: ", props);
   const handlePlanButton = () => {
     openTailoredModal(router, props.page_id, props.destination, props.type);
 

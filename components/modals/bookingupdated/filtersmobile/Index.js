@@ -33,7 +33,6 @@ const SortItem = styled.div`
 `;
 
 export default function TemporaryDrawer(props) {
-  console.log("props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [SelectedSort, setSelectedSort] = useState(props.FILTERS.sort[0]);

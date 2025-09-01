@@ -20,7 +20,6 @@ const points = [
 ];
 
 export default function OverviewThailand(props) {
-  console.log("overview data is:", props);
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();

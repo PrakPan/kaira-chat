@@ -12,11 +12,11 @@ export const clearTransferBookings = () => ({
 });
 
 export const updateTransferBookings = (bookingIdToDelete) => {
-  console.log("Inside Redux", bookingIdToDelete);
+
   return (dispatch, getState) => {
     const state = getState();
     const updatedData = { ...state.TransferBookings?.transferBookings }; 
-    console.log("Updated Data", updatedData);
+    
     
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
@@ -43,7 +43,7 @@ export const updateTransferBookings = (bookingIdToDelete) => {
       }
     });
     
-    console.log("Updated Data ", updatedData);
+   
 
     dispatch({
       type: actionTypes.UPDATE_TRANSFER_BOOKINGS,
@@ -58,7 +58,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
-    console.log("Redux DBD",keyPath, data)
+  
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
@@ -69,7 +69,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
       try{
       updatedData.intercity[keyPath] = data;
-      console.log("Redux DBD",updatedData);
+      
       
       dispatch({
         type: actionTypes.UPDATE_SINGLE_TRANSFER,
@@ -106,7 +106,6 @@ export const updateAirportTransferBooking = (keyPath, data) => {
       updatedData.airport[keyPath] = [data];
     }
 
-    console.log("Redux DBD - updatedData:", updatedData);
 
     dispatch({
       type: actionTypes.UPDATE_AIRPORT_TRANSFER,

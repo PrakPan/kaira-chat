@@ -77,7 +77,6 @@ const TransferBooking = ({
   oItineraryCityId
 }) => {
 
-  console.log("BKing",booking);
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");

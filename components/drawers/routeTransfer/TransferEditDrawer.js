@@ -1554,7 +1554,7 @@ const RouteContainer = (props) => {
           )
         ) : (
           <>
-            {console.log("current step is:", currentStep)}
+           
             {
               !(currentStep === 1 && singleTransfer?.mode === "Flight") && <div
                 className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"

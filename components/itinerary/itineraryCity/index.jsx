@@ -87,7 +87,6 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
-    console.log("Hii I'm there")
 
 
     

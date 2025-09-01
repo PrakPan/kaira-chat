@@ -201,13 +201,13 @@ if (data.page_data && Object.keys(data.page_data).length > 0) {
   })
 
   if (!data) {
-    console.log("here")
+   
     return {
       notFound: true,
     };
   }
 
-  console.log("data :",data.name)
+
   return {
     props: {
       cityData: data,

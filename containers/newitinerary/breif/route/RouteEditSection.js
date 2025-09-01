@@ -1318,6 +1318,8 @@ export const DestinationPopUp = (props) => {
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 1);
   const [searchResults, setSearchResults] = useState(null);
+  const [skipSearch, setSkipSearch] = useState(false);
+
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1342,6 +1344,10 @@ export const DestinationPopUp = (props) => {
     setSearch(e.target.value);
   };
   useEffect(() => {
+    if (skipSearch) {   
+      setSkipSearch(false);
+      return;
+    }
     handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
@@ -1368,6 +1374,7 @@ export const DestinationPopUp = (props) => {
   };
 
   const handleSetDestination = (i) => {
+     setSkipSearch(true);
     setSearch(searchResults[i].name || searchResults[i].text);
 
     setDestination((prev) => {
