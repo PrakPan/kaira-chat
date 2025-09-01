@@ -11,6 +11,10 @@ export const updateFlightBooking = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });
 
+export const updateFlightBookingWarning = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/",
+});
+
 export const updateAccommodationBooking = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });

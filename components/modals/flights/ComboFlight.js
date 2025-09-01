@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
+import { updateFlightBooking, updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 import { connect, useDispatch, useSelector } from "react-redux";
 import axiosflightsearch, {
   axiosFlightHubSearch,
@@ -203,6 +203,11 @@ const [previousUrl, setPreviousUrl] = useState(null);
 const [traceId, setTraceId] = useState(null);
 const [traceIdTimestamp, setTraceIdTimestamp] = useState(null);
 const [remainingTime, setRemainingTime] = useState(900);
+
+
+const [showWarningModal, setShowWarningModal] = useState(false);
+const [warningMessage, setWarningMessage] = useState("");
+const [pendingBookingData, setPendingBookingData] = useState(null);
 
 
 const isTraceIdValid = () => {
@@ -711,24 +716,181 @@ const handleViewMore = async () => {
     };
 
 
-    updateFlightBooking
-      .post(`${itinerary_id}/bookings/flight/`, requestData, {
+    updateFlightBookingWarning
+      .post(`${itinerary_id}/transfers/flight/warning/`, requestData, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
       })
       .then((res) => {
-        props._updateFlightBookingHandler([res.data]);
-        props.getPaymentHandler();
-        setMoreLoadingState(false);
-        setUpdateBookingState(false);
+        if(res.data.warning){
+      // Store the warning message and booking data for later use
+      setWarningMessage(res.data.warning);
+      setPendingBookingData({
+        booking_id,
+        itinerary_id,
+        result_index,
+        flightProvider,
+        edge,
+        requestData
+      });
+      setShowWarningModal(true);
+      setUpdateBookingState(false); 
+      return; 
+    }
+    
+    proceedWithBooking({
+      booking_id,
+      itinerary_id,
+      result_index,
+      flightProvider,
+      edge,
+      requestData
+    });
+  })
+      .catch((err) => {
+        const errorMsg =
+          err?.response?.data?.errors?.[0]?.message?.[0] ||
+          err.message ||
+          `This flight is currently not available at the moment.`;
+        
+        props.openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        });
+       
+      });
 
-        const updatedTransferBookings = JSON.parse(
-          JSON.stringify(transferBookings?.transferBookings)
-        );
-        const bookingIdToUpdate = requestData?.booking_id;
+    // updateFlightBooking
+    //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
+    //     headers: {
+    //       Authorization: `Bearer ${props.token}`,
+    //     },
+    //   })
+    //   .then((res) => {
+    //     props._updateFlightBookingHandler([res.data]);
+    //     props.getPaymentHandler();
+    //     setMoreLoadingState(false);
+    //     setUpdateBookingState(false);
 
-        if (props?.combo) {
+    //     const updatedTransferBookings = JSON.parse(
+    //       JSON.stringify(transferBookings?.transferBookings)
+    //     );
+    //     const bookingIdToUpdate = requestData?.booking_id;
+
+    //     if (props?.combo) {
+    //       Object.keys(updatedTransferBookings).forEach((category) => {
+    //         if (updatedTransferBookings[category]) {
+    //           Object.keys(updatedTransferBookings[category]).forEach((key) => {
+    //             const booking = updatedTransferBookings[category][key];
+
+    //             if (!booking || Object.keys(booking).length === 0) {
+    //               return;
+    //             }
+
+    //             if (booking?.id === bookingIdToUpdate) {
+    //               updatedTransferBookings[category][key] = {
+    //                 ...booking,
+    //                 ...res.data,
+    //               };
+    //             } else if (
+    //               booking?.children &&
+    //               Array.isArray(booking.children) &&
+    //               booking.children.length > 0
+    //             ) {
+    //               let foundMatch = false;
+    //               const updatedChildren = booking.children.map(
+    //                 (childBooking) => {
+    //                   if (
+    //                     childBooking &&
+    //                     childBooking.id === bookingIdToUpdate
+    //                   ) {
+    //                     foundMatch = true;
+    //                     return {
+    //                       ...childBooking,
+    //                       ...res.data,
+    //                     };
+    //                   }
+    //                   return childBooking;
+    //                 }
+    //               );
+
+    //               if (foundMatch) {
+    //                 updatedTransferBookings[category][key] = {
+    //                   ...booking,
+    //                   children: updatedChildren,
+    //                 };
+    //               }
+    //             }
+    //           });
+    //         }
+    //       });
+
+    //       dispatch(setTransfersBookings(updatedTransferBookings));
+    //       props?.getPaymentHandler();
+    //       if(res?.data?.is_refresh_needed){
+    //         window.location.reload(); 
+    //       }
+    //     } else {
+    //       dispatch(
+    //         updateSingleTransferBooking(
+    //           `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+    //           res.data
+    //         )
+    //       );
+    //       props?.getPaymentHandler();
+    //        if(res?.data?.is_refresh_needed){
+    //         window.location.reload(); 
+    //       }
+    //     }
+
+    //     props.openNotification({
+    //       type: "success",
+    //       text: "Flight updated successfully.",
+    //       heading: "Success!",
+    //     });
+    //     props.setHideFlightModal();
+    //   })
+    //   .catch((err) => {
+    //     const errorMsg =
+    //       err?.response?.data?.errors?.[0]?.message?.[0] ||
+    //       err.message ||
+    //       `This flight is currently not available at the moment.`;
+    //     setUpdateBookingState(false);
+    //     setMoreLoadingState(false);
+    //     setUnauthorized(true);
+    //     props.openNotification({
+    //       type: "error",
+    //       text: errorMsg,
+    //       heading: "Error!",
+    //     });
+    //     props.setHideFlightModal();
+    //   });
+  };
+
+  const proceedWithBooking = ({ booking_id, itinerary_id, result_index, flightProvider, edge, requestData }) => {
+  setUpdateBookingState(true);
+  
+  updateFlightBooking
+    .post(`${itinerary_id}/bookings/flight/`, requestData, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+      },
+    })
+    .then((res) => {
+      // All your existing success logic here
+      props._updateFlightBookingHandler([res.data]);
+      props.getPaymentHandler();
+      setMoreLoadingState(false);
+      setUpdateBookingState(false);
+
+      const updatedTransferBookings = JSON.parse(
+        JSON.stringify(transferBookings?.transferBookings)
+      );
+      const bookingIdToUpdate = requestData?.booking_id;
+
+      if (props?.combo) {
           Object.keys(updatedTransferBookings).forEach((category) => {
             if (updatedTransferBookings[category]) {
               Object.keys(updatedTransferBookings[category]).forEach((key) => {
@@ -794,30 +956,29 @@ const handleViewMore = async () => {
           }
         }
 
-        props.openNotification({
-          type: "success",
-          text: "Flight updated successfully.",
-          heading: "Success!",
-        });
-        props.setHideFlightModal();
-      })
-      .catch((err) => {
-        const errorMsg =
-          err?.response?.data?.errors?.[0]?.message?.[0] ||
-          err.message ||
-          `This flight is currently not available at the moment.`;
-        setUpdateBookingState(false);
-        setMoreLoadingState(false);
-        setUnauthorized(true);
-        props.openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
-        });
-        props.setHideFlightModal();
+      props.openNotification({
+        type: "success",
+        text: "Flight updated successfully.",
+        heading: "Success!",
       });
-  };
-
+      props.setHideFlightModal();
+    })
+    .catch((err) => {
+      const errorMsg =
+        err?.response?.data?.errors?.[0]?.message?.[0] ||
+        err.message ||
+        `This flight is currently not available at the moment.`;
+      setUpdateBookingState(false);
+      setMoreLoadingState(false);
+      setUnauthorized(true);
+      props.openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      });
+      props.setHideFlightModal();
+    });
+};
   const _loadAccommodationsHandler = () => {
     setViewMoreStatus(false);
     setMoreLoadingState(true);
@@ -999,6 +1160,23 @@ const handleViewMore = async () => {
     return isValid;
   };
 
+  const handleWarningConfirm = () => {
+  if (pendingBookingData) {
+    proceedWithBooking(pendingBookingData);
+  }
+  setShowWarningModal(false);
+  setWarningMessage("");
+  setPendingBookingData(null);
+};
+
+const handleWarningCancel = () => {
+  setShowWarningModal(false);
+  setWarningMessage("");
+  setPendingBookingData(null);
+  setSelectedFlightIndex(null); // Deselect the flight
+  setUpdateBookingState(false);
+};
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if click is outside both input containers
@@ -1138,6 +1316,29 @@ const handleViewMore = async () => {
       <div className="w-full">
         <ToastContainer />
 
+         {/* Warning Confirmation Modal */}
+{showWarningModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+      <h3 className="text-lg font-semibold mb-4">Warning</h3>
+      <p className="text-gray-700 mb-6">{warningMessage}</p>
+      <div className="flex gap-4 justify-end">
+        <button
+          onClick={handleWarningCancel}
+          className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleWarningConfirm}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         <SearchSection
           sourceInput={sourceInput}
           destinationInput={destinationInput}
