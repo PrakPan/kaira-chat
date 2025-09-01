@@ -178,7 +178,7 @@ const Homepage = (props) => {
         }
         destinationType={"city-planner"}
         title={
-          <p style={!isPageWide ? { fontSize: "22px" } : {}}>
+          <p style={!isPageWide ? { fontSize: "18px" } : {}}>
             Every Journey, One of a Kind – 
             <br />
             Crafted with AI + Expert Care.

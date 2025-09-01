@@ -891,9 +891,9 @@ const ItineraryContainer = (props) => {
   };
 
   const _updateStayBookingHandler = (json) => {
-    setShowBookingModal(false);
-    setShowStayBookingModal(false);
-    setShowFlightModal(false);
+    // setShowBookingModal(false);
+    // setShowStayBookingModal(false);
+    // setShowFlightModal(false);
     // setStayBookings(_updateTransferBooking(stayBookings, json));
     // props.setBookings({
     //   ...props.bookings,

@@ -256,6 +256,9 @@ const PickupDropDrawer = ({
 
   const [formData, setFormData] = useState(initialFormState);
 
+
+  console.log("AirForm",formData)
+
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return "";
 

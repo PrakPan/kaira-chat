@@ -225,7 +225,7 @@ const AirportBookingItem = ({
     ) {
       return (
         <div className="flex items-center gap-1">
-          <span>+ Add Pickup and Drop</span>
+          <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
         </div>
       );
     }
