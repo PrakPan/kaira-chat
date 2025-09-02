@@ -3,7 +3,7 @@ import * as actionTypes from "../actions/actionsTypes";
 const initialReducer = {
     slideOne: {
         startingLocation: null,
-        selectedCities: [],
+        selectedCities: [{id: null,input_id: Date.now(),data: null,}],
         valueStart: null,
         valueEnd: null,
         selectedPreferences: [],

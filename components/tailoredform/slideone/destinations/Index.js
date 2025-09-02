@@ -134,9 +134,19 @@ const Destinations = (props) => {
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
         ></SelectedDestination>
+        {props.errors.startLocation !== null && <p className="mt-1 text-sm text-red-600 font-medium">
+          {props.errors.startLocation}
+        </p>}
       </div>
       {destinations.map((e, i) => (
-        <div key={i}>{e}</div>
+        <div key={i}>
+          <>{e}</>
+          {i == 0 && props.errors.destination1 &&
+            props.errors.destination1 !== null && <p className="mt-1 text-sm text-red-600 font-medium">
+              {props.errors.destination1}
+            </p>
+          }
+        </div>
       ))}
 
       <div

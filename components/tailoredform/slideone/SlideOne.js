@@ -37,24 +37,24 @@ const formatShortDate = (date) => {
 const SlideOne = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [showCalendar, setShowCalendar] = useState(false);
-  const date=useSelector((state)=>state.tailoredInfoReducer.slideOne.date);
+  const date = useSelector((state) => state.tailoredInfoReducer.slideOne.date);
   const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
   const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
   const dispatch = useDispatch();
   const handleOnCalenderApplyDates = (values) => {
-    console.log("date type is: ",date.type)
-    if(date.type=="fixed"){
-          dispatch(setFixedDate(values.start, values.end));
+    console.log("date type is: ", date.type)
+    if (date.type == "fixed") {
+      dispatch(setFixedDate(values.start, values.end));
     }
-    else if(date.type=="flexible"){
-      dispatch(setFlexibleDate(values.month,'2025',values.duration));
+    else if (date.type == "flexible") {
+      dispatch(setFlexibleDate(values.month, '2025', values.duration));
     }
-    else{
+    else {
       dispatch(setAnytimeDate(values.duration))
     }
   }
   const CITIES = null;
-  const SetDateType=(value)=>{
+  const SetDateType = (value) => {
     dispatch(setDateType(value))
   }
   return (
@@ -74,6 +74,7 @@ const SlideOne = (props) => {
           CITIES={props.cities ? props.cities : CITIES}
           selectedCities={props.selectedCities}
           eventDates={props.eventDates}
+          errors={props.errors}
         ></Destinations>
       </Section>
 
@@ -84,9 +85,9 @@ const SlideOne = (props) => {
           <div className="relative w-full">
             <StyledFigmaBox
               value={
-                date.type==="fixed"?(valueStart && valueEnd
+                date.type === "fixed" ? (valueStart && valueEnd
                   ? `${formatShortDate(valueStart)} - ${formatShortDate(valueEnd)}`
-                  : ""):date.type==="flexible"?(new Date(date.month).toLocaleString("default", { month: "long" })+", "+date.duration+" days"):date.duration+" days"
+                  : "") : date.type === "flexible" ? (new Date(date.month).toLocaleString("default", { month: "long" }) + ", " + date.duration + " days") : date.duration + " days"
               }
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10 ${!(valueStart && valueEnd) && "text-[#ACACAC] text-[14px]"
@@ -102,7 +103,9 @@ const SlideOne = (props) => {
               alt="calendar"
             />
           </div>
-
+          {props.errors.when !== null && <p className="mt-1 text-sm text-red-600 font-medium">
+            {props.errors.when}
+          </p>}
         </div>
         <div
           className="hover-pointer"
@@ -167,6 +170,9 @@ const SlideOne = (props) => {
             valueEnd={valueEnd}
             onChangeDate={handleOnCalenderApplyDates}
             setShowCalendar={setShowCalendar}
+            setDateType={SetDateType}
+            dateType={date.type}
+            date={date}
           />
         </BottomModal>
       </>}

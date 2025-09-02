@@ -1,57 +1,58 @@
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { fadeIn } from "react-animations";
+import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
-export  const divideTravellers = () => {
-    let distribution = [];
+export const divideTravellers = (slideThreeData) => {
+  let distribution = [];
 
-    let tempadults = slideThreeData.numberOfAdults;
-    let tempChildren = slideThreeData.numberOfChildren;
-    let tempInfants = slideThreeData.numberOfInfants;
-    while (tempadults != 0) {
-      if (tempadults >= 2) {
-        distribution.push({ adults: 2, children: 0 });
-        tempadults -= 2;
-      } else {
-        distribution.push({ adults: tempadults, children: 0 });
-        tempadults = 0;
-      }
+  let tempadults = slideThreeData.numberOfAdults;
+  let tempChildren = slideThreeData.numberOfChildren;
+  let tempInfants = slideThreeData.numberOfInfants;
+  while (tempadults != 0) {
+    if (tempadults >= 2) {
+      distribution.push({ adults: 2, children: 0 });
+      tempadults -= 2;
+    } else {
+      distribution.push({ adults: tempadults, children: 0 });
+      tempadults = 0;
     }
+  }
 
-    let childIdx = 0;
+  let childIdx = 0;
 
-    while (tempChildren != 0) {
-      if (!distribution[childIdx % distribution.length].children) {
-        distribution[childIdx % distribution.length].children = 0;
-      }
-      distribution[childIdx % distribution.length].children += 1;
-      tempChildren -= 1;
-      if (!distribution[childIdx % distribution.length].childAges) {
-        distribution[childIdx % distribution.length].childAges = [];
-      }
-      distribution[childIdx % distribution.length].childAges.push(10);
-      childIdx += 1;
+  while (tempChildren != 0) {
+    if (!distribution[childIdx % distribution.length].children) {
+      distribution[childIdx % distribution.length].children = 0;
     }
-
-    while (tempInfants != 0) {
-      if (!distribution[childIdx % distribution.length].children) {
-        distribution[childIdx % distribution.length].children = 0;
-      }
-      distribution[childIdx % distribution.length].children += 1;
-      tempInfants -= 1;
-      if (!distribution[childIdx % distribution.length].childAges) {
-        distribution[childIdx % distribution.length].childAges = [];
-      }
-      distribution[childIdx % distribution.length].childAges.push(1);
-      childIdx += 1;
+    distribution[childIdx % distribution.length].children += 1;
+    tempChildren -= 1;
+    if (!distribution[childIdx % distribution.length].childAges) {
+      distribution[childIdx % distribution.length].childAges = [];
     }
+    distribution[childIdx % distribution.length].childAges.push(10);
+    childIdx += 1;
+  }
 
-    return distribution;
-  };
-  
+  while (tempInfants != 0) {
+    if (!distribution[childIdx % distribution.length].children) {
+      distribution[childIdx % distribution.length].children = 0;
+    }
+    distribution[childIdx % distribution.length].children += 1;
+    tempInfants -= 1;
+    if (!distribution[childIdx % distribution.length].childAges) {
+      distribution[childIdx % distribution.length].childAges = [];
+    }
+    distribution[childIdx % distribution.length].childAges.push(1);
+    childIdx += 1;
+  }
+
+  return distribution;
+};
+
 export function buildPreferences(selectedPreferences, EXPERIENCE_FILTERS_BOX) {
   let preferences = [];
   for (let pref of selectedPreferences) {
@@ -85,7 +86,7 @@ export function classifyLocations(selectedCities) {
         break;
       case "continent":
         continentIds.push(city.id);
-        pageIds.push(city.id); 
+        pageIds.push(city.id);
         break;
       default:
         cityids.push(city.id);

@@ -37,6 +37,7 @@ const FlickityComp = (props) => {
             eventDates={props.eventDates}
             selectedPreferences={props.selectedPreferences}
             setSelectedPreferences={props.setSelectedPreferences}
+            errors={props.errors}
           ></SlideOne>
         </Card>
       ) : null}
@@ -45,6 +46,8 @@ const FlickityComp = (props) => {
         <Card className="flex flex-col h-full">
           <SlideTwo
             routes={props?.route}
+            setLocationsLatLong={props.setLocationsLatLong}
+            locationsLatLong={props.locationsLatLong}
             className="flex-1"
           >
 

@@ -5,10 +5,18 @@ import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Button
 import { useSelector } from 'react-redux';
 import { capitalizeFirstLetter } from '../../utils/tailoredform';
 
+const isBeforeToday = (date) => {
+  if (!date) return false;
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0); // strip time
+  return date < todayMidnight;
+};
+
 const AirbnbCalendar = (props) => {
   const today = new Date();
 
   // State
+  const [dateType,setDateType]=useState(props.dateType)
   const [currentView, setCurrentView] = useState('calendar'); // default is Fixed-style calendar
   const [selectedDates, setSelectedDates] = useState({
     start: new Date(props.valueStart),
@@ -91,6 +99,7 @@ const AirbnbCalendar = (props) => {
 
 
   const handleApplyDates = () => {
+        props.setDateType(dateType)
     props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration })
     props.setShowCalendar(false)
   }
@@ -103,27 +112,35 @@ const AirbnbCalendar = (props) => {
           <div key={day} className="text-[10px] font-medium text-center ">{day}</div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-[1px]">
-        {days.map((date, idx) => (
-          <div
+      <div className="grid grid-cols-7 gap-y-[1px]">
+        {days.map((date, idx) => {
+          const isRowStart = idx % 7 === 0; 
+          const isRowEnd = idx % 7 === 6;
+          return (<div
             key={idx}
-            className={` flex items-center justify-center relative
-            ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
-            ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
-            ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}`}
+            className={`flex items-center justify-center relative
+    ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
+    ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
+    ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}
+    ${date && isDateInRange(date) && isRowStart ? 'rounded-l-full' : ''}
+    ${date && isDateInRange(date) && isRowEnd ? 'rounded-r-full' : ''}
+  `}
           >
             {date && (
               <button
-                onClick={() => handleDateClick(date)}
-                className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors 
-                  ${isDateSelected(date) ? 'bg-black text-white' :
+                onClick={() => !isBeforeToday(date) && handleDateClick(date)}
+                disabled={isBeforeToday(date)}
+                className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
+      ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' : ''}
+      ${isDateSelected(date) ? 'bg-black text-white' :
                     isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
-                      'hover:bg-gray-100 text-gray-900'}`}>
+                      !isBeforeToday(date) ? 'hover:bg-gray-100 text-gray-900' : ''}`}
+              >
                 {date.getDate()}
               </button>
             )}
-          </div>
-        ))}
+          </div>)
+        })}
       </div>
     </div>
   );
@@ -249,10 +266,10 @@ const AirbnbCalendar = (props) => {
                 <button
                   key={type}
                   onClick={() => {
-                    props.setDateType(type);
+                    setDateType(type);
                     setCurrentView(type === 'fixed' ? 'calendar' : type === "flexible" ? 'months' : "any");
                   }}
-                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all ${props.dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all ${dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   {capitalizeFirstLetter(type)}
@@ -263,7 +280,7 @@ const AirbnbCalendar = (props) => {
 
           {/* Calendar / Month selector */}
           <div className="">
-            {props.dateType === 'fixed' ? renderCalendarView() : props.dateType == "anytime" ? renderAnyView() : renderMonthView()}
+            {dateType === 'fixed' ? renderCalendarView() : dateType == "anytime" ? renderAnyView() : renderMonthView()}
           </div>
 
           {/* Footer */}
