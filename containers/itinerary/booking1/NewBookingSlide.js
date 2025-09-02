@@ -1361,6 +1361,10 @@ const _fullPaymentHandler = async (id) => {
         );
   };
 
+  const hasFullPaymentCompleted = Cart?.sales?.some(
+  (sale) => sale.payment_type === 'full_payment' && sale.status === 'Completed'
+);
+
 
   return (
 
@@ -1713,10 +1717,10 @@ const _fullPaymentHandler = async (id) => {
           <>
             {props?.token ? (
               <>
-                {!showDetailedPayment ? (
+                {!hasFullPaymentCompleted && !showDetailedPayment ? (
                   // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
                   
-                     <div>
+                    <div>
                     <div className="mb-4">
                       <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
@@ -1790,7 +1794,12 @@ const _fullPaymentHandler = async (id) => {
                       Apply your coupon code at checkout in next step.
                     </div>}
                   </div>
-                ) : null}
+                ) :
+                 <PaymentSuccess
+                amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                onDownloadInvoice={() => {/* Add download invoice logic */ }}
+              />
+              }
               </>
             ) : (
               // Existing login/get in touch buttons remain the same
