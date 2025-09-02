@@ -29,6 +29,7 @@ import axios from "axios";
 import { PulseLoader } from "react-spinners";
 import Generalbutton from "../../ui/button/Generallinkbutton";
 import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
+import { FaX } from "react-icons/fa6";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -1317,7 +1318,7 @@ const handleWarningCancel = () => {
         <ToastContainer />
 
          {/* Warning Confirmation Modal */}
-{showWarningModal && (
+{/* {showWarningModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div className="bg-white rounded-lg p-6 max-w-md mx-4">
       <h3 className="text-lg font-semibold mb-4">Warning</h3>
@@ -1334,11 +1335,49 @@ const handleWarningCancel = () => {
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Confirm
+
         </button>
       </div>
     </div>
   </div>
-)}
+)} */}
+
+ {showWarningModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-[80%] mx-4 relative">
+            {/* Close button */}
+            <button
+              onClick={handleWarningCancel}
+              className="absolute top-4 right-4 p-2 text-black-400 hover:text-gray-600 cursor-pointer"
+            >
+              <FaX size={16} />
+            </button>
+
+            {/* Header */}
+            <h2 className="text-xl font-semibold border-mb-6 pr-8">Warning</h2>
+
+
+            {/* Content */}
+            <p className="text-gray-700 mb-6 ">{warningMessage}</p>
+
+            {/* Buttons */}
+            <div className="flex gap-4 justify-end border-t-2 pt-4">
+              <button
+                onClick={handleWarningCancel}
+                className="px-6 py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+              Cancel
+               </button>
+              <button
+                onClick={handleWarningConfirm}
+                className="px-6 py-2 bg-[#07213A] text-white rounded transition-colors cursor-pointer"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
         <SearchSection
           sourceInput={sourceInput}
           destinationInput={destinationInput}

@@ -204,10 +204,10 @@ function getDayOffset(checkIn, checkOut) {
             ({destination?.airport_code || destination?.city_code})
           </div>
   </div>
-  {getDayOffset(booking?.check_in,booking?.check_out) && (
+  {getDayOffset(booking?.check_in || segments?.[0]?.origin?.departure_time,booking?.check_out || segments?.[segments?.length - 1]?.destination?.arrival_time) && (
    <div className="flex flex-col items-center text-red-600 text-[8px]" style={{ marginTop: "0.1rem" }}>
   <span className="font-semibold leading-none">
-    {getDayOffset(booking?.check_in, booking?.check_out)}
+    {getDayOffset(booking?.check_in || segments?.[0]?.origin?.departure_time,booking?.check_out || segments?.[segments?.length - 1]?.destination?.arrival_time)}
   </span>
   <span className="text-[8px] leading-none">Day</span>
 </div>

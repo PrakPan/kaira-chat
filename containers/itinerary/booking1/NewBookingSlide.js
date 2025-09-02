@@ -61,7 +61,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   const [applyingCouponId, setApplyingCouponId] = useState(null);
   const ItineraryId = useSelector((state) => state.ItineraryId);
 
-  const Cart = useSelector((state) => state.Cart);  
+  const Cart = useSelector((state) => state.Cart);
 
 
 
@@ -73,18 +73,18 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   }, [show]);
 
   // Add this useEffect to prevent body scrolling when modal is open
-useEffect(() => {
-  if (show) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = 'unset';
-  }
-  
-  // Cleanup function
-  return () => {
-    document.body.style.overflow = 'unset';
-  };
-}, [show]);
+  useEffect(() => {
+    if (show) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [show]);
   // Auto-apply coupon from payment props if available
   useEffect(() => {
     if (payment?.coupon_usage && payment.coupon_usage.status === 'COUPON_APPLIED') {
@@ -100,7 +100,7 @@ useEffect(() => {
       const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       const formattedCoupons = response.data.map(coupon => ({
         id: coupon.id,
         code: coupon.code,
@@ -114,7 +114,7 @@ useEffect(() => {
         usage_description: coupon.usage_description,
         applicability_error: coupon.applicability_error,
       }));
-      
+
       setAvailableCoupons(formattedCoupons);
     } catch (error) {
       console.error('Error fetching coupons:', error);
@@ -162,21 +162,21 @@ useEffect(() => {
 
   return (
     <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4"> {/* Changed z-index from 1502 to 1600 */}
-    {/* Backdrop */}
-    <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
 
-    {/* Modal */}
-    <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col"> {/* Changed max-h from 90vh to 80vh */}
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0"> {/* Removed sticky top-0 */}
-        <h2 className="text-lg font-semibold">Apply Coupons</h2>
-        <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
-          <IoMdClose className="text-2xl" />
-        </button>
-      </div>
+      {/* Modal */}
+      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col"> {/* Changed max-h from 90vh to 80vh */}
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0"> {/* Removed sticky top-0 */}
+          <h2 className="text-lg font-semibold">Apply Coupons</h2>
+          <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
+            <IoMdClose className="text-2xl" />
+          </button>
+        </div>
 
-      {/* Content */}
-      <div className="p-4 overflow-y-auto flex-1">
+        {/* Content */}
+        <div className="p-4 overflow-y-auto flex-1">
           <div>
             <h3 className="font-semibold text-base mb-4">Available Coupons</h3>
 
@@ -189,7 +189,7 @@ useEffect(() => {
                   <CouponSkeleton />
                 </>
               ) : (
-                availableCoupons.map((coupon, index) => (
+                availableCoupons?.length > 0 ? availableCoupons.map((coupon, index) => (
                   <div key={index} className="border-b-2 border-gray-200 rounded-lg p-2 hover:border-blue-300 transition-colors">
                     <div className="flex justify-between items-start gap-3 mb-2">
                       <div className="flex-1">
@@ -199,26 +199,25 @@ useEffect(() => {
                       <button
                         onClick={() => handleApplyCoupon(coupon)}
                         disabled={
-                          appliedCoupon === coupon.code || 
-                          appliedCoupon === coupon.id || 
+                          appliedCoupon === coupon.code ||
+                          appliedCoupon === coupon.id ||
                           applyingCouponId === coupon.id ||
                           (payment?.coupon_usage && payment.coupon_usage.id === coupon.id) || payment?.is_applicable
                         }
-                        className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
-                          appliedCoupon === coupon.code ||
-                          appliedCoupon === coupon.id ||
-                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
+                        className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${appliedCoupon === coupon.code ||
+                            appliedCoupon === coupon.id ||
+                            (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
                             ? 'bg-green-100 text-green-700 cursor-not-allowed'
                             : applyingCouponId === coupon.id
-                            ? 'bg-blue-400  cursor-not-allowed'
-                            : 'bg-blue-500  hover:bg-blue-600'
-                        }`}
+                              ? 'bg-blue-400  cursor-not-allowed'
+                              : 'bg-blue-500  hover:bg-blue-600'
+                          }`}
                       >
                         {applyingCouponId === coupon.id ? (
                           <PulseLoader />
-                        ) : (appliedCoupon === coupon.code || 
-                             appliedCoupon === coupon.id ||
-                             (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)) ? (
+                        ) : (appliedCoupon === coupon.code ||
+                          appliedCoupon === coupon.id ||
+                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)) ? (
                           'Applied'
                         ) : (
                           'Apply'
@@ -226,18 +225,18 @@ useEffect(() => {
                       </button>
                     </div>
                     {coupon?.is_applicable ? <div>
-                    <div className="text-gray-600 text-sm mb-2">{coupon.description}</div>
-                    <div className="text-gray-500 text-xs">Expires on: {coupon.expiry}</div>
+                      <div className="text-gray-600 text-sm mb-2">{coupon.description}</div>
+                      <div className="text-gray-500 text-xs">Expires on: {coupon.expiry}</div>
                     </div> : <div className="text-gray-600 text-sm mb-2">{coupon?.applicability_error}</div>}
                   </div>
                 ))
-              )}
+                  : "No coupons available at the moment.")}
             </div>
           </div>
         </div>
       </div>
     </div>
-  
+
   );
 };
 
@@ -412,11 +411,11 @@ const PaymentOptions = ({
       </div>}
 
       {lockInCompleted && <div className="text-sm mt-2">
-                        <span>
-                          <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
-                          {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${totalAmount} now or before 5 Sept 2025 to confirm your trip.`}
-                        </span>
-                      </div>}
+        <span>
+          <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
+          {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${totalAmount} now or before 5 Sept 2025 to confirm your trip.`}
+        </span>
+      </div>}
     </div>
   );
 };
@@ -458,7 +457,7 @@ const CouponSection = ({
 
   const couponData = getCouponDisplayData();
   const hasCouponApplied = appliedCoupon;
-  console.log("Coupon",couponData)
+  console.log("Coupon", couponData)
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Coupons</h3>
@@ -466,25 +465,24 @@ const CouponSection = ({
       {hasCouponApplied ? (
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           {/* Show message from payment if available */}
-         
-          {(couponData.usage_description ) && (
+
+          {(couponData.usage_description) && (
             <div className=" text-green-600 mb-2 font-medium">
               {couponData.usage_description}
             </div>
           )}
-          
+
           <div className="flex justify-between items-center">
             <div>
               <div className="text-sm font-medium text-green-600">{couponData?.message}</div>
               {/* <div className="text-sm text-green-600">saved ₹{couponData.savings}</div> */}
             </div>
             <button
-              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${
-                isRemoving 
-                  ? 'text-red-400 cursor-not-allowed' 
+              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${isRemoving
+                  ? 'text-red-400 cursor-not-allowed'
                   : 'text-red-500 hover:text-red-600'
-              }`}
-              onClick={()=>onRemoveCoupon(couponData?.code || appliedCoupon)}
+                }`}
+              onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
               {isRemoving ? <PulseLoader /> : 'Remove'}
@@ -543,7 +541,7 @@ const PriceDetails = ({
           <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
         </div> */}
 
-        {!Cart?.are_prices_hidden  &&  <div className="flex justify-between">
+        {!Cart?.are_prices_hidden && <div className="flex justify-between">
           <span>Surcharges and Taxes</span>
           <span>{surchargesTaxes === 0 ? '00' : `₹${surchargesTaxes.toLocaleString('en-IN')}`}</span>
         </div>}
@@ -563,10 +561,10 @@ const PriceDetails = ({
         </div>
       </div>}
 
-      {selectedPaymentOption === 'lockin' &&  <div className="flex justify-between">
-          <span>Lock-in Cost</span>
-          <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
-        </div>}
+      {selectedPaymentOption === 'lockin' && <div className="flex justify-between">
+        <span>Lock-in Cost</span>
+        <span>{lockInCost === 0 ? '00' : `₹${lockInCost.toLocaleString('en-IN')}`}</span>
+      </div>}
     </div>
   );
 };
@@ -576,7 +574,7 @@ const PaymentButton = ({
   amount,
   isLoading = false,
   onClick,
-  paymentType = "full" 
+  paymentType = "full"
 }) => {
   return (
     <Button
@@ -598,22 +596,22 @@ const PaymentButton = ({
       ) : (
         paymentType === 'lockin'
           ? `Pay ₹${getIndianPrice(
-                          Math.round(
-                            Math.round(amount)
-                          )
-                        )} Now`
+            Math.round(
+              Math.round(amount)
+            )
+          )} Now`
           : `Pay ₹${getIndianPrice(
-                          Math.round(
-                            Math.round(amount)
-                          )
-                        )} Now`
+            Math.round(
+              Math.round(amount)
+            )
+          )} Now`
       )}
     </Button>
   );
 };
 
 
-                    
+
 
 const Details = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -641,7 +639,7 @@ const Details = (props) => {
     (state) => state.ItineraryStatus
   );
 
-  const Cart = useSelector((state) => state.Cart); 
+  const Cart = useSelector((state) => state.Cart);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
 
   const [selectedOption, setSelectedOption] = useState('full');
@@ -656,14 +654,14 @@ const Details = (props) => {
 
   // Add these new state variables after your existing useState declarations
   const [appliedCoupon, setAppliedCoupon] = useState(
-  Cart?.coupon_usage ? Cart?.coupon?.code : null
-);
-const [couponSavedAmount, setCouponSavedAmount] = useState(
-  Cart?.coupon_usage?.discount || 0
-);
+    Cart?.coupon_usage ? Cart?.coupon?.code : null
+  );
+  const [couponSavedAmount, setCouponSavedAmount] = useState(
+    Cart?.coupon_usage?.discount || 0
+  );
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
-  const [couponUsageData,setCouponUsageData] = useState(Cart?.coupon_usage || null);
+  const [couponUsageData, setCouponUsageData] = useState(Cart?.coupon_usage || null);
 
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
@@ -721,12 +719,12 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
     setShowPaymentDrawer(false);
     setShowDetailedPayment(false);
     router.push(
-          {
-            pathname: `/itinerary/${router.query.id}`,
-          },
-          undefined,
-          { scroll: false }
-        );
+      {
+        pathname: `/itinerary/${router.query.id}`,
+      },
+      undefined,
+      { scroll: false }
+    );
   };
 
   const scrollToElement = (elementId) => {
@@ -774,78 +772,78 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
   };
 
 
- const handleApplyCoupon = async (couponId, couponCode) => {
-  try {
-    const response = await applyCoupon.post('/', {
-      payment_information_id: Cart?.id,
-      coupon_id: couponId
-    }, {
-      headers: { Authorization: `Bearer ${props.token}` }
-    });
+  const handleApplyCoupon = async (couponId, couponCode) => {
+    try {
+      const response = await applyCoupon.post('/', {
+        payment_information_id: Cart?.id,
+        coupon_id: couponId
+      }, {
+        headers: { Authorization: `Bearer ${props.token}` }
+      });
 
-    if (response.data.coupon_usage) {
-      setAppliedCoupon(couponCode);
-      setCouponUsageData(response.data.coupon_usage)
-      setCouponSavedAmount(response.data.coupon_usage.discount);
-      dispatch(setCart(response.data)); 
-      // Show success message
-      // alert(response.data.coupon_usage.message);
+      if (response.data.coupon_usage) {
+        setAppliedCoupon(couponCode);
+        setCouponUsageData(response.data.coupon_usage)
+        setCouponSavedAmount(response.data.coupon_usage.discount);
+        dispatch(setCart(response.data));
+        // Show success message
+        // alert(response.data.coupon_usage.message);
+        dispatch(
+          openNotification({
+            text: response.data.coupon_usage.message || "Coupon applied",
+            heading: "Success",
+            type: "success",
+          })
+        );
+        // Refresh payment data
+        props.fetchData(true);
+      }
+    } catch (error) {
+      console.error('Error applying coupon:', error);
       dispatch(
-              openNotification({
-                text: response.data.coupon_usage.message || "Coupon applied",
-                heading: "Success",
-                type: "success",
-              })
-            );
-      // Refresh payment data
-      props.fetchData(true);
+        openNotification({
+          text: "Something went wrong",
+          heading: "Error!",
+          type: "error",
+        })
+      );
+      // alert('Failed to apply coupon. Please try again.');
+
     }
-  } catch (error) {
-    console.error('Error applying coupon:', error);
+  };
+
+  const handleRemoveCoupon = async (couponId) => {
+    setIsRemovingCoupon(true);
+    try {
+      const response = await removeCoupon.post('/', {
+        payment_information_id: Cart?.id,
+        coupon_id: couponId
+      }, {
+        headers: { Authorization: `Bearer ${props.token}` }
+      });
+
+      if (response.data) {
+        setAppliedCoupon(null);
+        setCouponUsageData(null);
+        dispatch(setCart(response.data));
+        setCouponSavedAmount(0);
+        setIsRemovingCoupon(false)
+        // Refresh payment data
+        props.fetchData(true);
+      }
+    } catch (error) {
+      setIsRemovingCoupon(false)
+      console.error('Error removing coupon:', error);
+      // alert('Failed to remove coupon. Please try again.');
       dispatch(
-              openNotification({
-                text:  "Something went wrong",
-                heading: "Error!",
-                type: "error",
-              })
-            );
-    // alert('Failed to apply coupon. Please try again.');
-    
-  }
-};
-
- const handleRemoveCoupon = async (couponId) => {
-  setIsRemovingCoupon(true);
-  try {
-     const response = await removeCoupon.post('/', {
-      payment_information_id: Cart?.id,
-      coupon_id: couponId
-    }, {
-      headers: { Authorization: `Bearer ${props.token}` }
-    });
-
-    if(response.data)
-    {  setAppliedCoupon(null);
-    setCouponUsageData(null);
-    dispatch(setCart(response.data)); 
-    setCouponSavedAmount(0);
-    setIsRemovingCoupon(false)
-    // Refresh payment data
-    props.fetchData(true);
+        openNotification({
+          text: "Something went wrong",
+          heading: "Error!",
+          type: "error",
+        })
+      );
     }
-  } catch (error) {
-    setIsRemovingCoupon(false)
-    console.error('Error removing coupon:', error);
-    // alert('Failed to remove coupon. Please try again.');
-    dispatch(
-              openNotification({        
-                text:  "Something went wrong",
-                heading: "Error!",
-                type: "error",
-              })
-            );
-  }
-};
+  };
 
   const handleViewCoupons = () => {
     setShowCouponModal(true);
@@ -1042,7 +1040,7 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
 
     let razorpayOptions = {
       key: "rzp_test_FEKg5ZWGWl9i7c",
-      amount: data.amount*100 || data?.discounted_cost*100,
+      amount: data.amount * 100 || data?.discounted_cost * 100,
       // "currency": "INR",
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
@@ -1050,10 +1048,10 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data[0]?.orders[0]?.order_id,
       modal: {
-      ondismiss: function() {
-        setPaymentLoading(false); // Reset loading state when modal is dismissed
-      }
-    },
+        ondismiss: function () {
+          setPaymentLoading(false); // Reset loading state when modal is dismissed
+        }
+      },
       // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
@@ -1094,107 +1092,107 @@ const [couponSavedAmount, setCouponSavedAmount] = useState(
     } catch (error) { }
   };
 
-const _lockInPaymentHandler = async (id) => {
-  setPaymentLoading(true);
+  const _lockInPaymentHandler = async (id) => {
+    setPaymentLoading(true);
 
-  try {
-    const response = await paymentInitiate.post('', {
-      payment_information_id: Cart?.id,
-      payment_type: 'lock_payment'
-    }, {
-      headers: { Authorization: `Bearer ${props.token}` }
-    });
+    try {
+      const response = await paymentInitiate.post('', {
+        payment_information_id: Cart?.id,
+        payment_type: 'lock_payment'
+      }, {
+        headers: { Authorization: `Bearer ${props.token}` }
+      });
 
-    if (response.data) {
-      dispatch(setCart(response.data)); 
-      props.fetchData(true);
+      if (response.data) {
+        dispatch(setCart(response.data));
+        props.fetchData(true);
+
+
+        const lockPaymentSale = response.data?.sales?.find(sale =>
+          sale.payment_type === "lock_payment" && sale.status === "Created"
+        );
+
+        if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
+          setPaymentLoading(false);
+          dispatch(openNotification({
+            text: "Payment order not found. Please refresh and try again.",
+            heading: "Error!",
+            type: "error",
+          }));
+          return;
+        }
+
+        const razorpayData = {
+          amount: lockPaymentSale.remaining_amount,
+          sales: [lockPaymentSale]
+        };
+
+        _startRazorpayHandler(razorpayData);
+      }
+    } catch (error) {
+      console.error('Error initiating lock payment:', error);
+      dispatch(
+        openNotification({
+          text: "Something went wrong",
+          heading: "Error!",
+          type: "error",
+        })
+      );
+      setPaymentLoading(false);
+      return;
     }
-  } catch (error) {
-    console.error('Error initiating lock payment:', error);
-    dispatch(
-      openNotification({
-        text: "Something went wrong",
-        heading: "Error!",
-        type: "error",
-      })
-    );
-    setPaymentLoading(false);
-    return;
-  }
-
-  // Find the lock_payment order from sales array
-  const lockPaymentSale = Cart?.sales?.find(sale => 
-    sale.payment_type === "lock_payment" && sale.status === "Created"
-  );
-  
-  if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
-    setPaymentLoading(false);
-    dispatch(openNotification({        
-      text: "Payment order not found. Please refresh and try again.",
-      heading: "Error!",
-      type: "error",
-    }));
-    return;
-  }
-
-  const razorpayData = {
-    amount: lockPaymentSale.remaining_amount,
-    sales: [lockPaymentSale]
   };
 
-  _startRazorpayHandler(razorpayData);
-};
+  const _fullPaymentHandler = async (id) => {
+    setPaymentLoading(true);
 
-const _fullPaymentHandler = async (id) => {
-  setPaymentLoading(true);
+    try {
+      const response = await paymentInitiate.post('', {
+        payment_information_id: Cart?.id,
+        payment_type: 'full_payment'
+      }, {
+        headers: { Authorization: `Bearer ${props.token}` }
+      });
 
-  try {
-    const response = await paymentInitiate.post('', {
-      payment_information_id: Cart?.id,
-      payment_type: 'full_payment'
-    }, {
-      headers: { Authorization: `Bearer ${props.token}` }
-    });
+      if (response.data) {
+        dispatch(setCart(response.data));
+        props.fetchData(true);
 
-    if (response.data) {
-      dispatch(setCart(response.data)); 
-      props.fetchData(true);
+
+        const fullPaymentSale = response.data?.sales?.find(sale =>
+          sale.payment_type === "full_payment" && sale.status === "Created"
+        );
+
+        if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
+          setPaymentLoading(false);
+          dispatch(openNotification({
+            text: "Payment order not found. Please refresh and try again.",
+            heading: "Error!",
+            type: "error",
+          }));
+          return;
+        }
+
+        const razorpayData = {
+          amount: fullPaymentSale.remaining_amount,
+          sales: [fullPaymentSale]
+        };
+
+        _startRazorpayHandler(razorpayData);
+      }
+    } catch (error) {
+      console.error('Error initiating full payment:', error);
+      dispatch(
+        openNotification({
+          text: "Something went wrong",
+          heading: "Error!",
+          type: "error",
+        })
+      );
+      setPaymentLoading(false);
+      return;
     }
-  } catch (error) {
-    console.error('Error initiating full payment:', error);
-    dispatch(
-      openNotification({
-        text: "Something went wrong",
-        heading: "Error!",
-        type: "error",
-      })
-    );
-    setPaymentLoading(false);
-    return;
-  }
-
-  // Find the full_payment order from sales array
-  const fullPaymentSale = Cart?.sales?.find(sale => 
-    sale.payment_type === "full_payment" && sale.status === "Created"
-  );
-  
-  if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
-    setPaymentLoading(false);
-    dispatch(openNotification({        
-      text: "Payment order not found. Please refresh and try again.",
-      heading: "Error!",
-      type: "error",
-    }));
-    return;
-  }
-
-  const razorpayData = {
-    amount: fullPaymentSale.remaining_amount,
-    sales: [fullPaymentSale]
   };
-
-  _startRazorpayHandler(razorpayData);
-};
 
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
@@ -1350,20 +1348,20 @@ const _fullPaymentHandler = async (id) => {
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
     router.push(
-          {
-            pathname: `/itinerary/${router.query.id}/`,
-            query: {
-            drawer: "payment",
-          },
-          },
-          undefined,
-          { scroll: false }
-        );
+      {
+        pathname: `/itinerary/${router.query.id}/`,
+        query: {
+          drawer: "payment",
+        },
+      },
+      undefined,
+      { scroll: false }
+    );
   };
 
   const hasFullPaymentCompleted = Cart?.sales?.some(
-  (sale) => sale.payment_type === 'full_payment' && sale.status === 'Completed'
-);
+    (sale) => sale.payment_type === 'full_payment' && sale.status === 'Completed'
+  );
 
 
   return (
@@ -1719,8 +1717,8 @@ const _fullPaymentHandler = async (id) => {
               <>
                 {!hasFullPaymentCompleted && !showDetailedPayment ? (
                   // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
-                  
-                    <div>
+
+                  <div>
                     <div className="mb-4">
                       <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
@@ -1795,11 +1793,11 @@ const _fullPaymentHandler = async (id) => {
                     </div>}
                   </div>
                 ) :
-                 <PaymentSuccess
-                amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
-                onDownloadInvoice={() => {/* Add download invoice logic */ }}
-              />
-              }
+                  <PaymentSuccess
+                    amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                    onDownloadInvoice={() => {/* Add download invoice logic */ }}
+                  />
+                }
               </>
             ) : (
               // Existing login/get in touch buttons remain the same
@@ -1852,7 +1850,7 @@ const _fullPaymentHandler = async (id) => {
           width={"50%"}
           mobileWidth={"100%"}
           style={{ zIndex: 1501 }}
-           className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`} 
+          className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`}
           onHide={handleCloseDrawer}
         >
           {/* Close button */}
@@ -2070,19 +2068,19 @@ const _fullPaymentHandler = async (id) => {
                   lockInCompleted={lockInCompleted}
                 />
 
-             
+
 
 
 
                 {!(selectedPaymentOption === 'lockin') && <CouponSection
-  appliedCoupon={appliedCoupon}
-  savedAmount={couponSavedAmount}
-  onRemoveCoupon={handleRemoveCoupon}
-  onApplyCoupon={handleApplyCoupon}
-  onViewCoupons={() => setShowCouponModal(true)}
-  isRemoving={isRemovingCoupon}
-  payment={couponUsageData} // Pass payment data
-/>}
+                  appliedCoupon={appliedCoupon}
+                  savedAmount={couponSavedAmount}
+                  onRemoveCoupon={handleRemoveCoupon}
+                  onApplyCoupon={handleApplyCoupon}
+                  onViewCoupons={() => setShowCouponModal(true)}
+                  isRemoving={isRemovingCoupon}
+                  payment={couponUsageData} // Pass payment data
+                />}
 
                 <PriceDetails
                   itineraryCost={getIndianPrice(
@@ -2140,14 +2138,14 @@ const _fullPaymentHandler = async (id) => {
           </div>
 
           <CouponModal
-  show={showCouponModal}
-  onHide={() => setShowCouponModal(false)}
-  onApplyCoupon={handleApplyCoupon}
-  appliedCoupon={appliedCoupon ? true : false}
-  setAppliedCoupon={setAppliedCoupon}
-  token={props?.token}
-  payment={Cart} // Pass payment data
-/>
+            show={showCouponModal}
+            onHide={() => setShowCouponModal(false)}
+            onApplyCoupon={handleApplyCoupon}
+            appliedCoupon={appliedCoupon ? true : false}
+            setAppliedCoupon={setAppliedCoupon}
+            token={props?.token}
+            payment={Cart} // Pass payment data
+          />
 
         </Drawer>
 
