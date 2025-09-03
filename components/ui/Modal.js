@@ -80,7 +80,13 @@ export default function Modal(props) {
   function onCLose() {
     setFade("out");
     setTimeout(() => {
-      if (props.onHide) props.onHide();
+      if (props.onHide) {
+        console.log('on close 2 is clicked')
+
+        props.onHide();
+      }
+      console.log('on close is clicked')
+
       setOpen(false);
     }, 800);
   }
@@ -98,55 +104,55 @@ export default function Modal(props) {
 
   return _document
     ? ReactDOM.createPortal(
-        <div>
-          {open && (
-            <div
-              style={{ position: "relative", ...props.style }}
-            >
-              <BlackContainer
-                fade={fade}
-                onClick={props.backdrop && onCLose}
-                zIndex={props.zIndex ? props.zIndex - 1 : 1599}
-              ></BlackContainer>
+      <div>
+        {open && (
+          <div
+            style={{ position: "relative", ...props.style }}
+          >
+            <BlackContainer
+              fade={fade}
+              onClick={props.backdrop && onCLose}
+              zIndex={props.zIndex ? props.zIndex - 1 : 1599}
+            ></BlackContainer>
 
-              <ModalContainer
-                fade={fade}
-                className="modalContainer"
-                style={{ ...props.style }}
-                overflow={props.overflow}
-                top={props.top}
-                left={props.left}
-                mobileTop={props.mobileTop}
-                mobileLeft={props.mobileLeft}
-                borderRadius={props.borderRadius}
-                width={props.width}
-                mobileWidth={props.mobileWidth || props.width}
-                height={props.height}
-                bgColor={props.bgColor}
-                centered={props.centered}
-                zIndex={props.zIndex ? props.zIndex : 1600}
-              >
-                <div style={{ position: "relative", height: "100%" }}>
-                  {props.closeIcon && (
-                    <RxCross2
-                      style={{
-                        position: "absolute",
-                        top: "15px",
-                        right: "15px",
-                        fontSize: "1.5rem",
-                        cursor: "pointer",
-                        zIndex: 999
-                      }}
-                      onClick={onCLose}
-                    />
-                  )}
-                  <div>{props.children}</div>
-                </div>
-              </ModalContainer>
-            </div>
-          )}
-        </div>,
-        _document.getElementById("modal-portal")
-      )
+            <ModalContainer
+              fade={fade}
+              className="modalContainer"
+              style={{ ...props.style }}
+              overflow={props.overflow}
+              top={props.top}
+              left={props.left}
+              mobileTop={props.mobileTop}
+              mobileLeft={props.mobileLeft}
+              borderRadius={props.borderRadius}
+              width={props.width}
+              mobileWidth={props.mobileWidth || props.width}
+              height={props.height}
+              bgColor={props.bgColor}
+              centered={props.centered}
+              zIndex={props.zIndex ? props.zIndex : 1600}
+            >
+              <div style={{ position: "relative", height: "100%" }}>
+                {props.closeIcon && (
+                  <RxCross2
+                    style={{
+                      position: "absolute",
+                      top: "15px",
+                      right: "15px",
+                      fontSize: "1.5rem",
+                      cursor: "pointer",
+                      zIndex: 999
+                    }}
+                    onClick={onCLose}
+                  />
+                )}
+                <div>{props.children}</div>
+              </div>
+            </ModalContainer>
+          </div>
+        )}
+      </div>,
+      _document.getElementById("modal-portal")
+    )
     : null;
 }
