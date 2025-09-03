@@ -30,6 +30,7 @@ import { PulseLoader } from "react-spinners";
 import Generalbutton from "../../ui/button/Generallinkbutton";
 import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 import { FaX } from "react-icons/fa6";
+import ReactDOM from "react-dom";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -754,6 +755,7 @@ const handleViewMore = async () => {
           err?.response?.data?.errors?.[0]?.message?.[0] ||
           err.message ||
           `This flight is currently not available at the moment.`;
+           setUpdateBookingState(false); 
         
         props.openNotification({
           type: "error",
@@ -1317,32 +1319,7 @@ const handleWarningCancel = () => {
       <div className="w-full">
         <ToastContainer />
 
-         {/* Warning Confirmation Modal */}
-{/* {showWarningModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-      <h3 className="text-lg font-semibold mb-4">Warning</h3>
-      <p className="text-gray-700 mb-6">{warningMessage}</p>
-      <div className="flex gap-4 justify-end">
-        <button
-          onClick={handleWarningCancel}
-          className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleWarningConfirm}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          Confirm
-
-        </button>
-      </div>
-    </div>
-  </div>
-)} */}
-
- {showWarningModal && (
+ {showWarningModal && ReactDOM.createPortal((
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-[80%] mx-4 relative">
             {/* Close button */}
@@ -1377,7 +1354,9 @@ const handleWarningCancel = () => {
             </div>
           </div>
         </div>
-      )}
+      ),
+    document.body
+  )}
         <SearchSection
           sourceInput={sourceInput}
           destinationInput={destinationInput}
