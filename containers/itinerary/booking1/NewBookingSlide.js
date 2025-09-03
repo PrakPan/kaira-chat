@@ -47,6 +47,7 @@ import { applyCoupon, fetchCoupons, paymentInitiate, removeCoupon } from "../../
 import { LuClock4 } from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
+import ReactDOM from "react-dom";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -63,8 +64,6 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
 
   const Cart = useSelector((state) => state.Cart);
 
-
-
   useEffect(() => {
     if (show) {
       setAvailableCoupons([]);
@@ -72,19 +71,51 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
     }
   }, [show]);
 
-  // Add this useEffect to prevent body scrolling when modal is open
+  // Enhanced useEffect to prevent body scrolling and handle modal positioning
   useEffect(() => {
     if (show) {
+      // Store the current scroll position
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+      // Prevent scrolling on the body
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollTop}px`;
+      document.body.style.left = `-${scrollLeft}px`;
+      document.body.style.width = '100%';
     } else {
-      document.body.style.overflow = 'unset';
+      // Restore the scroll position
+      const scrollTop = Math.abs(parseInt(document.body.style.top || '0'));
+      const scrollLeft = Math.abs(parseInt(document.body.style.left || '0'));
+
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.width = '';
+
+      // Restore scroll position
+      window.scrollTo(scrollLeft, scrollTop);
     }
 
     // Cleanup function
     return () => {
-      document.body.style.overflow = 'unset';
+      if (show) {
+        const scrollTop = Math.abs(parseInt(document.body.style.top || '0'));
+        const scrollLeft = Math.abs(parseInt(document.body.style.left || '0'));
+
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.width = '';
+
+        window.scrollTo(scrollLeft, scrollTop);
+      }
     };
   }, [show]);
+
   // Auto-apply coupon from payment props if available
   useEffect(() => {
     if (payment?.coupon_usage && payment.coupon_usage.status === 'COUPON_APPLIED') {
@@ -160,15 +191,19 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
 
   if (!show) return null;
 
-  return (
-    <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4"> {/* Changed z-index from 1502 to 1600 */}
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onHide}></div>
+  return ReactDOM.createPortal(
+    <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+      {/* Enhanced Backdrop with proper positioning */}
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
+        onClick={onHide}
+      ></div>
 
-      {/* Modal */}
-      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col"> {/* Changed max-h from 90vh to 80vh */}
+      {/* Modal with enhanced centering */}
+      <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col mx-auto my-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0"> {/* Removed sticky top-0 */}
+        <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0">
           <h2 className="text-lg font-semibold">Apply Coupons</h2>
           <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
             <IoMdClose className="text-2xl" />
@@ -205,12 +240,12 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
                           (payment?.coupon_usage && payment.coupon_usage.id === coupon.id) || payment?.is_applicable
                         }
                         className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${appliedCoupon === coupon.code ||
-                            appliedCoupon === coupon.id ||
-                            (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
-                            ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                            : applyingCouponId === coupon.id
-                              ? 'bg-blue-400  cursor-not-allowed'
-                              : 'bg-blue-500  hover:bg-blue-600'
+                          appliedCoupon === coupon.id ||
+                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
+                          ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                          : applyingCouponId === coupon.id
+                            ? 'bg-blue-400  cursor-not-allowed'
+                            : 'bg-blue-500  hover:bg-blue-600'
                           }`}
                       >
                         {applyingCouponId === coupon.id ? (
@@ -236,7 +271,8 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
         </div>
       </div>
     </div>
-
+    ,
+    document.body
   );
 };
 
@@ -301,7 +337,7 @@ const LivePriceTimer = ({ priceValidUntil }) => {
   );
 };
 
-const PaymentSuccess = ({ amount, onDownloadInvoice }) => {
+const PaymentSuccess = ({ amount, onDownloadInvoice,loading }) => {
   return (
     <div className="bg-white p-2 rounded-lg text-center">
       <div className="mb-2">
@@ -317,19 +353,43 @@ const PaymentSuccess = ({ amount, onDownloadInvoice }) => {
         </p>
       </div>
 
-      <Button
-        color="#111"
-        fontWeight="500"
-        fontSize="1rem"
-        borderWidth="1px"
-        width="100%"
-        borderRadius="8px"
-        bgColor="#f8e000"
-        padding="12px"
-        onclick={() => { }}
-      >
-        Download Invoice
-      </Button>
+        <GetInTouchContainer>
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="1px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={onDownloadInvoice}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      widthmobile={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    {loading ? (
+                      <PulseLoader />
+                    ) : (
+                      <span>Get in touch!</span>
+                    )}
+                  </div>
+                </Button>
+              </GetInTouchContainer>
     </div>
   );
 };
@@ -479,8 +539,8 @@ const CouponSection = ({
             </div>
             <button
               className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${isRemoving
-                  ? 'text-red-400 cursor-not-allowed'
-                  : 'text-red-500 hover:text-red-600'
+                ? 'text-red-400 cursor-not-allowed'
+                : 'text-red-500 hover:text-red-600'
                 }`}
               onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
@@ -594,7 +654,7 @@ const PaymentButton = ({
           Processing...
         </div>
       ) : (
-        paymentType === 'lockin'
+        paymentType === 'lockin' 
           ? `Pay ₹${getIndianPrice(
             Math.round(
               Math.round(amount)
@@ -662,7 +722,7 @@ const Details = (props) => {
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
   const [couponUsageData, setCouponUsageData] = useState(Cart?.coupon_usage || null);
-
+  const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
 
@@ -1035,24 +1095,19 @@ const Details = (props) => {
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
-  const _startRazorpayHandler = (data) => {
-    // Razorpay payload
-
+  const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
       key: "rzp_test_FEKg5ZWGWl9i7c",
       amount: data.amount * 100 || data?.discounted_cost * 100,
-      // "currency": "INR",
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
-      image:
-        "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data[0]?.orders[0]?.order_id,
+      image: "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
+      order_id: data?.sales[0]?.orders[0]?.order_id,
       modal: {
         ondismiss: function () {
-          setPaymentLoading(false); // Reset loading state when modal is dismissed
+          setPaymentLoading(false);
         }
       },
-      // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
 
@@ -1064,18 +1119,22 @@ const Details = (props) => {
           )
           .then((res) => {
             setPaymentLoading(false);
-            if (selectedPaymentOption === 'full') {
+
+            // Set session completion based on payment type
+            if (paymentType === 'full') {
+              setSessionPaymentCompleted(true);
               setPaymentCompleted(true);
             } else {
               setLockInCompleted(true);
+              setSelectedPaymentOption('full');
             }
+
             props.getPaymentHandler();
           })
           .catch((err) => {
             setPaymentLoading(false);
           });
       },
-      // User details will be present as user is logged in
       prefill: {
         name: props.name,
         email: props.email,
@@ -1092,57 +1151,6 @@ const Details = (props) => {
     } catch (error) { }
   };
 
-  const _lockInPaymentHandler = async (id) => {
-    setPaymentLoading(true);
-
-    try {
-      const response = await paymentInitiate.post('', {
-        payment_information_id: Cart?.id,
-        payment_type: 'lock_payment'
-      }, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
-
-      if (response.data) {
-        dispatch(setCart(response.data));
-        props.fetchData(true);
-
-
-        const lockPaymentSale = response.data?.sales?.find(sale =>
-          sale.payment_type === "lock_payment" && sale.status === "Created"
-        );
-
-        if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
-          setPaymentLoading(false);
-          dispatch(openNotification({
-            text: "Payment order not found. Please refresh and try again.",
-            heading: "Error!",
-            type: "error",
-          }));
-          return;
-        }
-
-        const razorpayData = {
-          amount: lockPaymentSale.remaining_amount,
-          sales: [lockPaymentSale]
-        };
-
-        _startRazorpayHandler(razorpayData);
-      }
-    } catch (error) {
-      console.error('Error initiating lock payment:', error);
-      dispatch(
-        openNotification({
-          text: "Something went wrong",
-          heading: "Error!",
-          type: "error",
-        })
-      );
-      setPaymentLoading(false);
-      return;
-    }
-  };
-
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
@@ -1157,7 +1165,6 @@ const Details = (props) => {
       if (response.data) {
         dispatch(setCart(response.data));
         props.fetchData(true);
-
 
         const fullPaymentSale = response.data?.sales?.find(sale =>
           sale.payment_type === "full_payment" && sale.status === "Created"
@@ -1178,13 +1185,64 @@ const Details = (props) => {
           sales: [fullPaymentSale]
         };
 
-        _startRazorpayHandler(razorpayData);
+        // Update the Razorpay handler to set session completion
+        _startRazorpayHandler(razorpayData, 'full');
       }
     } catch (error) {
       console.error('Error initiating full payment:', error);
       dispatch(
         openNotification({
           text: "Something went wrong",
+          heading: "Error!",
+          type: "error",
+        })
+      );
+      setPaymentLoading(false);
+      return;
+    }
+  };
+
+  const _lockInPaymentHandler = async (id) => {
+    setPaymentLoading(true);
+
+    try {
+      const response = await paymentInitiate.post('', {
+        payment_information_id: Cart?.id,
+        payment_type: 'lock_payment'
+      }, {
+        headers: { Authorization: `Bearer ${props.token}` }
+      });
+
+      if (response.data) {
+        dispatch(setCart(response.data));
+        props.fetchData(true);
+
+        const lockPaymentSale = response.data?.sales?.find(sale =>
+          sale.payment_type === "lock_payment" && sale.status === "Created"
+        );
+
+        if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
+          setPaymentLoading(false);
+          dispatch(openNotification({
+            text: "Payment order not found. Please refresh and try again.",
+            heading: "Error!",
+            type: "error",
+          }));
+          return;
+        }
+
+        const razorpayData = {
+          amount: lockPaymentSale.remaining_amount,
+          sales: [lockPaymentSale]
+        };
+
+        _startRazorpayHandler(razorpayData, 'lockin');
+      }
+    } catch (error) {
+      console.error('Error initiating lock payment:', error);
+      dispatch(
+        openNotification({
+          text: error?.response?.data?.errors?.[0]?.detail?.[0] || "Something went wrong",
           heading: "Error!",
           type: "error",
         })
@@ -1362,6 +1420,7 @@ const Details = (props) => {
   const hasFullPaymentCompleted = Cart?.sales?.some(
     (sale) => sale.payment_type === 'full_payment' && sale.status === 'Completed'
   );
+
 
 
   return (
@@ -1715,49 +1774,57 @@ const Details = (props) => {
           <>
             {props?.token ? (
               <>
-                {!hasFullPaymentCompleted && !showDetailedPayment ? (
-                  // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
+                {(sessionPaymentCompleted || hasFullPaymentCompleted) && !showDetailedPayment ? (
+                  <PaymentSuccess
+                    amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                    onDownloadInvoice={handleGetInTouch}
+                    loading={props?.loading}
+                  />
+                ) :
 
-                  <div>
-                    <div className="mb-4">
-                      <h3 className="font-medium text-base mb-3">Payment Options</h3>
+                  (
+                    // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
 
-                      {/* Pay Full Amount Option */}
-                      <div
-                        className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
-                        onClick={() => setSelectedPaymentOption('full')}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-                            {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-base">
-                              Pay full amount now to get discounts
+                    <div>
+                      <div className="mb-4">
+                        <h3 className="font-medium text-base mb-3">Payment Options</h3>
+
+                        {/* Pay Full Amount Option */}
+                        <div
+                          className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
+                          onClick={() => setSelectedPaymentOption('full')}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                              {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-base">
+                                Pay full amount now to get discounts
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        {/* Lock-in Option */}
+                        {!Cart?.lock_in_fee_paid && <div
+                          className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
+                          onClick={() => setSelectedPaymentOption('lockin')}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                              {selectedPaymentOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                            </div>
+                            <div className="flex-1">
+                              <div className="font-medium text-base">
+                                Lock-in today's price with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')}
+                              </div>
+                            </div>
+                          </div>
+                        </div>}
                       </div>
 
-                      {/* Lock-in Option */}
-                      {!Cart?.lock_in_fee_paid && <div
-                        className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
-                        onClick={() => setSelectedPaymentOption('lockin')}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-                            {selectedPaymentOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-base">
-                              Lock-in today's price with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')}
-                            </div>
-                          </div>
-                        </div>
-                      </div>}
-                    </div>
-
-                    {/* <Button
+                      {/* <Button
                 color="#111"
                 fontWeight="500"
                 fontSize="1rem"
@@ -1771,32 +1838,28 @@ const Details = (props) => {
                 Proceed to Payment
               </Button> */}
 
-                    <PaymentButton
-                      amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
-                      isLoading={paymentLoading}
-                      paymentType={selectedPaymentOption}
-                      onClick={handleProceedToPayment}
-                    />
-                    {Cart?.lock_in_fee_paid && (
-                      <div className="text-sm mt-2">
-                        <span>
-                          <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
-                          {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
-                        </span>
-                      </div>
-                    )}
+                      <PaymentButton
+                        amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
+                        isLoading={paymentLoading}
+                        paymentType={selectedPaymentOption}
+                        onClick={handleProceedToPayment}
+                      />
+                      {Cart?.lock_in_fee_paid && (
+                        <div className="text-sm mt-2">
+                          <span>
+                            <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
+                            {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
+                          </span>
+                        </div>
+                      )}
 
 
 
-                    {selectedPaymentOption === 'full' && <div className="text-center text-sm text-gray-600 mt-3">
-                      Apply your coupon code at checkout in next step.
-                    </div>}
-                  </div>
-                ) :
-                  <PaymentSuccess
-                    amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
-                    onDownloadInvoice={() => {/* Add download invoice logic */ }}
-                  />
+                      {selectedPaymentOption === 'full' && <div className="text-center text-sm text-gray-600 mt-3">
+                        Apply your coupon code at checkout in next step.
+                      </div>}
+                    </div>
+                  )
                 }
               </>
             ) : (
@@ -2099,14 +2162,14 @@ const Details = (props) => {
                   selectedPaymentOption={selectedPaymentOption}
                 />
 
-                {!lockInCompleted && (
+                {/* {!lockInCompleted && ( */}
                   <PaymentButton
                     amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
                     isLoading={paymentLoading}
                     paymentType={selectedPaymentOption}
                     onClick={() => handlePayNow(selectedPaymentOption)}
                   />
-                )}
+                {/* )} */}
 
                 <Button
                   width="100%"
