@@ -34,6 +34,14 @@ export default function ActivityDetails(props) {
     Amenities: false,
   });
   const [loading, setLoading] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState(null);
+
+  useEffect(() => {
+  if (props.data?.prices?.length > 0) {
+    setSelectedPackage(props.data.prices[0]);
+  }
+}, [props.data?.prices]);
+
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
@@ -67,10 +75,15 @@ export default function ActivityDetails(props) {
       props?.setShowLoginModal(true);
       return;
     }
-    props.updatedActivityBooking(e).then(() => {
-      setLoading(false);
-      props?.handleCloseDrawer(e);
-    });
+    const bookingData = {
+    ...e,
+    result_index: selectedPackage?.result_index
+  };
+  
+  props.updatedActivityBooking(bookingData).then(() => {
+    setLoading(false);
+    props?.handleCloseDrawer(e);
+  });
   };
 
   const handleAmenityChange = async (index, included) => {
@@ -445,6 +458,58 @@ export default function ActivityDetails(props) {
               </div>
             </div>
           ) : null}
+
+         {props?.data?.prices && props?.data?.prices?.length && (
+  <div className="mb-4">
+    <h3 className="font-medium text-base mb-3">Package Options</h3>
+    
+    <div className="flex flex-col gap-3">
+      {props.data.prices.map((packageItem, index) => (
+        <div
+          key={packageItem.result_index}
+          className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
+            selectedPackage?.result_index === packageItem.result_index
+              ? 'border-yellow-400 bg-yellow-50'
+              : 'border-gray-200 bg-white hover:border-gray-300'
+          }`}
+          onClick={() => setSelectedPackage(packageItem)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div 
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedPackage?.result_index === packageItem.result_index
+                    ? 'border-yellow-400 bg-yellow-400'
+                    : 'border-gray-300'
+                }`}
+              >
+                {selectedPackage?.result_index === packageItem.result_index && (
+                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <div className="font-medium text-gray-900">
+                  {packageItem.description}
+                </div>
+                <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="font-bold text-lg">
+                ₹{getIndianPrice(Math.round(packageItem.total_price))}
+              </div>
+              <div className="text-sm text-gray-600">
+                per package
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
         </div>
         {props?.data?.cancellation_policies && (
           <>
@@ -466,7 +531,7 @@ export default function ActivityDetails(props) {
       >
         <div className="flex justify-between items-center">
           <>
-            {props.data?.prices?.total_price && (
+            {/* {props.data?.prices?.total_price && (
               <div className="font-bold">
                 <span className="text-[34px]">
                   ₹
@@ -476,7 +541,17 @@ export default function ActivityDetails(props) {
                     : props.data.prices.total_price}
                 </span>
               </div>
-            )}
+            )} */}
+            {selectedPackage?.total_price && (
+        <div className="font-bold">
+          <span className="text-[34px]">
+            ₹
+            {selectedPackage?.total_price && selectedPackage?.total_price > 0
+              ? getIndianPrice(Math.round(selectedPackage.total_price))
+              : selectedPackage.total_price}
+          </span>
+        </div>
+      )}
           </>
           <Button
             onclick={handleUpdate}
