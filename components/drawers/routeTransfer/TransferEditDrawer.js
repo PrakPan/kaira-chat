@@ -3489,7 +3489,7 @@ const RoundTripSuggestion = ({
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent
@@ -3499,7 +3499,7 @@ const RoundTripSuggestion = ({
           <label className="text-center cursor-pointer">
             {selectedTripType === 'roundtrip' && selectedCab ? "Selected" : "Select"}
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -3685,7 +3685,7 @@ const MultiCityTripSuggestion = ({
           </div>
         </div>
 
-        <div
+        {/* <div
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent
@@ -3695,7 +3695,7 @@ const MultiCityTripSuggestion = ({
           <label className="text-center cursor-pointer">
             {selectedTripType === 'multicity' && selectedCab ? "Selected" : "Select"}
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );
