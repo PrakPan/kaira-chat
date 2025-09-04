@@ -472,7 +472,7 @@ const PaymentOptions = ({
 
       {lockInCompleted && <div className="text-sm mt-2">
         <span>
-          <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
+          <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
           {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${totalAmount} now or before 5 Sept 2025 to confirm your trip.`}
         </span>
       </div>}
@@ -1776,7 +1776,9 @@ const Details = (props) => {
               <>
                 {(sessionPaymentCompleted || hasFullPaymentCompleted) && !showDetailedPayment ? (
                   <PaymentSuccess
-                    amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                    amount={getIndianPrice(
+                            Math.round(Cart?.discounted_cost)
+                          )}
                     onDownloadInvoice={handleGetInTouch}
                     loading={props?.loading}
                   />
@@ -1785,7 +1787,7 @@ const Details = (props) => {
                   (
                     // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
 
-                    <div>
+                   pricing_status == "SUCCESS" && <div>
                       <div className="mb-4">
                         <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
@@ -1847,7 +1849,7 @@ const Details = (props) => {
                       {Cart?.lock_in_fee_paid && (
                         <div className="text-sm mt-2">
                           <span>
-                            <LuClock4 color="red" className="inline align-middle mr-1 font-semibold" />
+                            <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
                             {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
                           </span>
                         </div>
@@ -1855,7 +1857,7 @@ const Details = (props) => {
 
 
 
-                      {selectedPaymentOption === 'full' && <div className="text-center text-sm text-gray-600 mt-3">
+                      {selectedPaymentOption === 'full' && Cart?.lock_in_fee_paid && <div className="text-center text-sm text-gray-600 mt-3">
                         Apply your coupon code at checkout in next step.
                       </div>}
                     </div>
@@ -1912,7 +1914,7 @@ const Details = (props) => {
           backdrop
           width={"50%"}
           mobileWidth={"100%"}
-          style={{ zIndex: 1501 }}
+          style={{ zIndex: 1600 }}
           className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`}
           onHide={handleCloseDrawer}
         >
@@ -2116,7 +2118,9 @@ const Details = (props) => {
 
             {paymentCompleted ? (
               <PaymentSuccess
-                amount={Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost}
+                amount={getIndianPrice(
+                            Math.round(Cart?.discounted_cost)
+                          )}
                 onDownloadInvoice={() => {/* Add download invoice logic */ }}
               />
             ) : (

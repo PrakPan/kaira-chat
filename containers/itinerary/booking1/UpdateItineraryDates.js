@@ -384,8 +384,8 @@ const UpdateItineraryDates = ({
       })
       .catch((error) => {
         setIsLoading(false);
-        let errorMsg = error.response.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
-        console.log("ERROR:UPDATING ITINERARY DATES", error.message);
+        let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
+        console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
         dispatch(openNotification({
                   type: "error",
                   text: errorMsg,

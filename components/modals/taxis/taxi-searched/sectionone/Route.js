@@ -12,6 +12,7 @@ import {
   updateAirportTransferBooking,
   updateSingleTransferBooking,
 } from "../../../../../store/actions/transferBookingsStore";
+import { useGenericAPIModal } from "../../../warning/Index";
 
 const Container = styled.div`
   flex: 1;
@@ -86,6 +87,7 @@ const Section = (props) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId);
+   const { openModal, ModalComponent } = useGenericAPIModalIModal();
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -121,18 +123,33 @@ const Section = (props) => {
       edge: props?.edge,
     };
 
-    axiosTaxiBooking
+
+     const warningApiCall = (data) => {
+          return updateFlightBookingWarning.post(`${itineraryId || props.selectedBooking.itinerary_id}/transfers/taxi/warning/`, data, {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          });
+        };
+    
+        // Define the booking API call
+        const bookingApiCall = (data) => {
+          return axiosTaxiBooking
       .post(
         `${itineraryId || props.selectedBooking.itinerary_id}/bookings/taxi/`,
-        requestData,
+        data,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
-      )
-      .then((res) => {
-        setLoading(false);
+      );
+        };
+    
+        // Define success handler
+        const handleSuccess = (responseData, message) => {
+         
+          setLoading(false);
         dispatch(
           openNotification({
             type: "success",
@@ -144,18 +161,21 @@ const Section = (props) => {
           dispatch(
             updateSingleTransferBooking(
               `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
-              res.data
+              responseData
             )
           );
         } else {
-          dispatch(updateAirportTransferBooking(`${props?.cityId}`, res.data));
+          dispatch(updateAirportTransferBooking(`${props?.cityId}`, responseData));
         }
-        props._updateTaxiBookingHandler([res.data]);
+        props._updateTaxiBookingHandler([responseData]);
         props.getPaymentHandler();
         props.setHideBookingModal();
-      })
-      .catch((err) => {
-        setLoading(false);
+      
+        };
+    
+        // Define error handler
+        const handleError = (errorMessage) => {
+           setLoading(false);
         const errorMsg =
           err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
         dispatch(
@@ -168,7 +188,69 @@ const Section = (props) => {
           })
         );
         props.setHideBookingModal();
-      });
+        };
+    
+        // Open the modal with configuration
+        openModal({
+          title: "Update Taxi Booking",
+          message: "Are you sure you want to update this Taxi booking?",
+          warningApiCall,
+          bookingApiCall,
+          requestData,
+          onSuccess: handleSuccess,
+          onError: handleError,
+          successMessage: "Taxi updated successfully.",
+          loadingMessage: "Please wait while we update your flight...",
+        });
+
+    // axiosTaxiBooking
+    //   .post(
+    //     `${itineraryId || props.selectedBooking.itinerary_id}/bookings/taxi/`,
+    //     requestData,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setLoading(false);
+    //     dispatch(
+    //       openNotification({
+    //         type: "success",
+    //         text: "Taxi changed successfully.",
+    //         heading: "Sucess!",
+    //       })
+    //     );
+    //     if (!props?.airportBooking) {
+    //       dispatch(
+    //         updateSingleTransferBooking(
+    //           `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+    //           res.data
+    //         )
+    //       );
+    //     } else {
+    //       dispatch(updateAirportTransferBooking(`${props?.cityId}`, res.data));
+    //     }
+    //     props._updateTaxiBookingHandler([res.data]);
+    //     props.getPaymentHandler();
+    //     props.setHideBookingModal();
+    //   })
+    //   .catch((err) => {
+    //     setLoading(false);
+    //     const errorMsg =
+    //       err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
+    //     dispatch(
+    //       openNotification({
+    //         type: "error",
+    //         text:
+    //           errorMsg ||
+    //           "There seems to be a problem, please try again after some time!",
+    //         heading: "Error!",
+    //       })
+    //     );
+    //     props.setHideBookingModal();
+    //   });
   };
 
   if (props.data)

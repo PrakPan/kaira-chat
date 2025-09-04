@@ -31,6 +31,7 @@ import Generalbutton from "../../ui/button/Generallinkbutton";
 import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 import { FaX } from "react-icons/fa6";
 import ReactDOM from "react-dom";
+import { useGenericAPIModal } from "../warning/Index";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -64,6 +65,20 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+
+const BottomSheet = styled.div`
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}`;
 
 const Floating = styled.div`
   position: sticky;
@@ -210,6 +225,8 @@ const [remainingTime, setRemainingTime] = useState(900);
 const [showWarningModal, setShowWarningModal] = useState(false);
 const [warningMessage, setWarningMessage] = useState("");
 const [pendingBookingData, setPendingBookingData] = useState(null);
+
+ const { openModal, ModalComponent } = useGenericAPIModal();
 
 
 const isTraceIdValid = () => {
@@ -694,20 +711,6 @@ const handleViewMore = async () => {
       });
     }
 
-    setUpdateBookingState(true);
-    setUnauthorized(false);
-    let updated_bookings_arr = [];
-
-    updated_bookings_arr.push({
-      trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
-      id: booking_id,
-      user_selected: true,
-      booking_type: "Flight",
-      itinerary_id: itinerary_id,
-      result_index: result_index,
-      itinerary_type: "Tailored",
-    });
-
     const requestData = {
       booking_id,
       trace_id: traceId || localStorage.getItem(`${flightProvider}_trace_id`),
@@ -717,160 +720,223 @@ const handleViewMore = async () => {
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-
-    updateFlightBookingWarning
-      .post(`${itinerary_id}/transfers/flight/warning/`, requestData, {
+    // Define the warning API call
+    const warningApiCall = (data) => {
+      return updateFlightBookingWarning.post(`${itinerary_id}/transfers/flight/warning/`, data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
-      })
-      .then((res) => {
-        if(res.data.warning){
-      // Store the warning message and booking data for later use
-      setWarningMessage(res.data.warning);
-      setPendingBookingData({
-        booking_id,
-        itinerary_id,
-        result_index,
-        flightProvider,
-        edge,
-        requestData
       });
-      setShowWarningModal(true);
-      setUpdateBookingState(false); 
-      return; 
-    }
-    
-    proceedWithBooking({
-      booking_id,
-      itinerary_id,
-      result_index,
-      flightProvider,
-      edge,
-      requestData
-    });
-  })
-      .catch((err) => {
-        const errorMsg =
-          err?.response?.data?.errors?.[0]?.message?.[0] ||
-          err.message ||
-          `This flight is currently not available at the moment.`;
-           setUpdateBookingState(false); 
-        
-        props.openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
+    };
+
+    // Define the booking API call
+    const bookingApiCall = (data) => {
+      return updateFlightBooking.post(`${itinerary_id}/bookings/flight/`, data, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+    };
+
+    // Define success handler
+    const handleSuccess = (responseData, message) => {
+
+      props._updateFlightBookingHandler([responseData]);
+      props.getPaymentHandler();
+      setMoreLoadingState(false);
+      setUpdateBookingState(false);
+
+      const updatedTransferBookings = JSON.parse(
+        JSON.stringify(transferBookings?.transferBookings)
+      );
+      const bookingIdToUpdate = requestData?.booking_id;
+
+      if (props?.combo) {
+        // ... existing combo logic
+        Object.keys(updatedTransferBookings).forEach((category) => {
+          if (updatedTransferBookings[category]) {
+            Object.keys(updatedTransferBookings[category]).forEach((key) => {
+              const booking = updatedTransferBookings[category][key];
+
+              if (!booking || Object.keys(booking).length === 0) {
+                return;
+              }
+
+              if (booking?.id === bookingIdToUpdate) {
+                updatedTransferBookings[category][key] = {
+                  ...booking,
+                  ...responseData,
+                };
+              } else if (
+                booking?.children &&
+                Array.isArray(booking.children) &&
+                booking.children.length > 0
+              ) {
+                let foundMatch = false;
+                const updatedChildren = booking.children.map(
+                  (childBooking) => {
+                    if (
+                      childBooking &&
+                      childBooking.id === bookingIdToUpdate
+                    ) {
+                      foundMatch = true;
+                      return {
+                        ...childBooking,
+                        ...responseData,
+                      };
+                    }
+                    return childBooking;
+                  }
+                );
+
+                if (foundMatch) {
+                  updatedTransferBookings[category][key] = {
+                    ...booking,
+                    children: updatedChildren,
+                  };
+                }
+              }
+            });
+          }
         });
-       
+
+        dispatch(setTransfersBookings(updatedTransferBookings));
+        props?.getPaymentHandler();
+        if(responseData?.is_refresh_needed){
+          window.location.reload(); 
+        }
+      } else {
+        dispatch(
+          updateSingleTransferBooking(
+            `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+            responseData
+          )
+        );
+        props?.getPaymentHandler();
+        if(responseData?.is_refresh_needed){
+          window.location.reload(); 
+        }
+      }
+
+      props.openNotification({
+        type: "success",
+        text: message,
+        heading: "Success!",
       });
+      props.setHideFlightModal();
+    };
 
-    // updateFlightBooking
-    //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
-    //     headers: {
-    //       Authorization: `Bearer ${props.token}`,
-    //     },
-    //   })
-    //   .then((res) => {
-    //     props._updateFlightBookingHandler([res.data]);
-    //     props.getPaymentHandler();
-    //     setMoreLoadingState(false);
-    //     setUpdateBookingState(false);
+    // Define error handler
+    const handleError = (errorMessage) => {
+      setUpdateBookingState(false);
+      setMoreLoadingState(false);
+      setUnauthorized(true);
+      props.openNotification({
+        type: "error",
+        text: errorMessage,
+        heading: "Error!",
+      });
+      props.setHideFlightModal();
+    };
 
-    //     const updatedTransferBookings = JSON.parse(
-    //       JSON.stringify(transferBookings?.transferBookings)
-    //     );
-    //     const bookingIdToUpdate = requestData?.booking_id;
-
-    //     if (props?.combo) {
-    //       Object.keys(updatedTransferBookings).forEach((category) => {
-    //         if (updatedTransferBookings[category]) {
-    //           Object.keys(updatedTransferBookings[category]).forEach((key) => {
-    //             const booking = updatedTransferBookings[category][key];
-
-    //             if (!booking || Object.keys(booking).length === 0) {
-    //               return;
-    //             }
-
-    //             if (booking?.id === bookingIdToUpdate) {
-    //               updatedTransferBookings[category][key] = {
-    //                 ...booking,
-    //                 ...res.data,
-    //               };
-    //             } else if (
-    //               booking?.children &&
-    //               Array.isArray(booking.children) &&
-    //               booking.children.length > 0
-    //             ) {
-    //               let foundMatch = false;
-    //               const updatedChildren = booking.children.map(
-    //                 (childBooking) => {
-    //                   if (
-    //                     childBooking &&
-    //                     childBooking.id === bookingIdToUpdate
-    //                   ) {
-    //                     foundMatch = true;
-    //                     return {
-    //                       ...childBooking,
-    //                       ...res.data,
-    //                     };
-    //                   }
-    //                   return childBooking;
-    //                 }
-    //               );
-
-    //               if (foundMatch) {
-    //                 updatedTransferBookings[category][key] = {
-    //                   ...booking,
-    //                   children: updatedChildren,
-    //                 };
-    //               }
-    //             }
-    //           });
-    //         }
-    //       });
-
-    //       dispatch(setTransfersBookings(updatedTransferBookings));
-    //       props?.getPaymentHandler();
-    //       if(res?.data?.is_refresh_needed){
-    //         window.location.reload(); 
-    //       }
-    //     } else {
-    //       dispatch(
-    //         updateSingleTransferBooking(
-    //           `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
-    //           res.data
-    //         )
-    //       );
-    //       props?.getPaymentHandler();
-    //        if(res?.data?.is_refresh_needed){
-    //         window.location.reload(); 
-    //       }
-    //     }
-
-    //     props.openNotification({
-    //       type: "success",
-    //       text: "Flight updated successfully.",
-    //       heading: "Success!",
-    //     });
-    //     props.setHideFlightModal();
-    //   })
-    //   .catch((err) => {
-    //     const errorMsg =
-    //       err?.response?.data?.errors?.[0]?.message?.[0] ||
-    //       err.message ||
-    //       `This flight is currently not available at the moment.`;
-    //     setUpdateBookingState(false);
-    //     setMoreLoadingState(false);
-    //     setUnauthorized(true);
-    //     props.openNotification({
-    //       type: "error",
-    //       text: errorMsg,
-    //       heading: "Error!",
-    //     });
-    //     props.setHideFlightModal();
-    //   });
+    // Open the modal with configuration
+    openModal({
+      title: "Update Flight Booking",
+      message: "Are you sure you want to update this flight booking?",
+      warningApiCall,
+      bookingApiCall,
+      requestData,
+      onSuccess: handleSuccess,
+      onError: handleError,
+      successMessage: "Flight updated successfully.",
+      loadingMessage: "Please wait while we update your flight...",
+    });
   };
+  // const _newUpdateBookingHandler = ({
+  //   booking_id,
+  //   itinerary_id,
+  //   result_index,
+  //   flightProvider,
+  //   edge,
+  // }) => {
+  //   if (props.handleFlightSelect) {
+  //     props.handleFlightSelect({
+  //       trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
+  //       result_index: result_index,
+  //     });
+  //   }
+
+  //   setUpdateBookingState(true);
+  //   setUnauthorized(false);
+  //   let updated_bookings_arr = [];
+
+  //   updated_bookings_arr.push({
+  //     trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
+  //     id: booking_id,
+  //     user_selected: true,
+  //     booking_type: "Flight",
+  //     itinerary_id: itinerary_id,
+  //     result_index: result_index,
+  //     itinerary_type: "Tailored",
+  //   });
+
+  //   const requestData = {
+  //     booking_id,
+  //     trace_id: traceId || localStorage.getItem(`${flightProvider}_trace_id`),
+  //     result_indices: [result_index],
+  //     source_itinerary_city: props?.source_itinerary_city_id,
+  //     destination_itinerary_city: props?.destination_itinerary_city_id,
+  //     edge: props?.edge || props?.selectedBooking?.edge,
+  //   };
+
+
+  //   updateFlightBookingWarning
+  //     .post(`${itinerary_id}/transfers/flight/warning/`, requestData, {
+  //       headers: {
+  //         Authorization: `Bearer ${props.token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       if(res.data.warning){
+  //     // Store the warning message and booking data for later use
+  //     setWarningMessage(res.data.warning);
+  //     setPendingBookingData({
+  //       booking_id,
+  //       itinerary_id,
+  //       result_index,
+  //       flightProvider,
+  //       edge,
+  //       requestData
+  //     });
+  //     setShowWarningModal(true);
+  //     setUpdateBookingState(false); 
+  //     return; 
+  //   }
+    
+  //   proceedWithBooking({
+  //     booking_id,
+  //     itinerary_id,
+  //     result_index,
+  //     flightProvider,
+  //     edge,
+  //     requestData
+  //   });
+  // })
+  //     .catch((err) => {
+  //       const errorMsg =
+  //         err?.response?.data?.errors?.[0]?.message?.[0] ||
+  //         err.message ||
+  //         `This flight is currently not available at the moment.`;
+  //          setUpdateBookingState(false); 
+        
+  //       props.openNotification({
+  //         type: "error",
+  //         text: errorMsg,
+  //         heading: "Error!",
+  //       });
+       
+  //     });
+  // };
 
   const proceedWithBooking = ({ booking_id, itinerary_id, result_index, flightProvider, edge, requestData }) => {
   setUpdateBookingState(true);
@@ -1319,44 +1385,51 @@ const handleWarningCancel = () => {
       <div className="w-full">
         <ToastContainer />
 
- {showWarningModal && ReactDOM.createPortal((
-        <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-[80%] mx-4 relative">
-            {/* Close button */}
-            <button
-              onClick={handleWarningCancel}
-              className="absolute top-4 right-4 p-2 text-black-400 hover:text-gray-600 cursor-pointer"
-            >
-              <FaX size={16} />
-            </button>
+        <ModalComponent />
 
-            {/* Header */}
-            <h2 className="text-xl font-semibold border-mb-6 pr-8">Dates Change Warning!</h2>
+ {/* {showWarningModal && ReactDOM.createPortal((
+  <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
+    <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
+      {/* Mobile handle bar */}
+      {/* <div className="md:hidden flex justify-center py-2">
+        <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+      </div> */}
 
+      {/* Close button - positioned differently on mobile */}
+      {/* <button
+        onClick={handleWarningCancel}
+        className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+      >
+        <FaX size={16} />
+      </button> */}
 
-            {/* Content */}
-            <p className="text-gray-700 mb-6 ">{warningMessage}</p>
+      {/* Content container with scrollable content */}
+      {/* <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto"> */}
+        {/* Header */}
+        {/* <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">Dates Change Warning!</h2> */}
 
-            {/* Buttons */}
-            <div className="flex gap-4 justify-end border-t-2 pt-4">
-              <button
-                onClick={handleWarningCancel}
-                className="px-6 py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-              Cancel
-               </button>
-              <button
-                onClick={handleWarningConfirm}
-                className="px-6 py-2 bg-[#07213A] text-white rounded transition-colors cursor-pointer"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
+        {/* Content */}
+        {/* <p className="text-gray-700 mb-6">{warningMessage}</p> */}
+
+        {/* Buttons - stack vertically on mobile */}
+        {/* <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4"> */}
+          {/* <button
+            onClick={handleWarningCancel}
+            className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleWarningConfirm}
+            className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
+          >
+            Confirm
+          </button>
         </div>
-      ),
-    document.body
-  )}
+      </div>
+    </div>
+  </div>
+), document.body)}  */}
         <SearchSection
           sourceInput={sourceInput}
           destinationInput={destinationInput}
