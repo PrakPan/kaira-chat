@@ -2,8 +2,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { capitalizeFirstLetter } from '../../utils/tailoredform';
+import { setAnytimeDate, setFixedDate, setFlexibleDate } from '../../store/actions/slideOneActions';
 
 const isBeforeToday = (date) => {
   if (!date) return false;
@@ -16,7 +17,7 @@ const AirbnbCalendar = (props) => {
   const today = new Date();
 
   // State
-  const [dateType,setDateType]=useState(props.dateType)
+  const [dateType, setDateType] = useState(props.dateType)
   const [currentView, setCurrentView] = useState('calendar'); // default is Fixed-style calendar
   const [selectedDates, setSelectedDates] = useState({
     start: new Date(props.valueStart),
@@ -76,6 +77,7 @@ const AirbnbCalendar = (props) => {
   const isDateRangeEnd = (date) => selectedDates.end && date && date.getTime() === selectedDates.end.getTime();
 
   // Navigation
+  const dispatch=useDispatch()
   const navigateMonth = (direction) => {
     setCurrentMonth(prev => {
       const newDate = new Date(prev);
@@ -99,8 +101,17 @@ const AirbnbCalendar = (props) => {
 
 
   const handleApplyDates = () => {
-        props.setDateType(dateType)
+    props.setDateType(dateType)
     props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration })
+    if (dateType == "fixed") {
+      dispatch(setFixedDate(selectedDates.start, selectedDates.end));
+    }
+    else if (dateType == "flexible") {
+      dispatch(setFlexibleDate(currentMonth, '2025', tripDuration));
+    }
+    else {
+      dispatch(setAnytimeDate(tripDuration))
+    }
     props.setShowCalendar(false)
   }
 
@@ -114,7 +125,7 @@ const AirbnbCalendar = (props) => {
       </div>
       <div className="grid grid-cols-7 gap-y-[1px]">
         {days.map((date, idx) => {
-          const isRowStart = idx % 7 === 0; 
+          const isRowStart = idx % 7 === 0;
           const isRowEnd = idx % 7 === 6;
           return (<div
             key={idx}

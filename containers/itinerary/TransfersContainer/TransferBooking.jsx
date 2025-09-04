@@ -72,40 +72,18 @@ const ComboContainer = styled.div`
 `;
 
 const TransferBooking = ({
-  index,
   booking,
-  plan,
   payment,
-  token,
-  tripsPage,
-  notificationText,
-  openNotification,
-  setShowLoginModal,
-  _changeTaxiHandler,
-  _changeFlightHandler,
   origin,
   destination,
-  id,
-  check_in,
-  end,
   Transfer,
-  selectedBooking,
-  setSelectedBooking,
   oCityData,
   dCityData,
-  originCityId,
-  destinationCityId,
-  loadbookings,
   mercuryItinerary,
   pinColour1,
   pinColour2,
-  _updateFlightBookingHandler,
-  _updateTaxiBookingHandler,
-  _updatePaymentHandler,
-  getPaymentHandler,
   isIntracity,
   isAirport,
-  AirportTransferType,
   booking_id,
   dItineraryCityId,
   oItineraryCityId
@@ -113,26 +91,14 @@ const TransferBooking = ({
 
   console.log("BKing",booking);
   const router = useRouter();
-  const dispatch = useDispatch();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
-  const [loading, setLoading] = useState(true);
-  const [transferImageFailed, setTransferImageFailed] = useState(null);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
-  const [vehicleDetails, setVehicleDetails] = useState(null);
-  const [handleShow, setHandleShow] = useState(false);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
-  const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
 
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
-
-  const handleTransferImageFailed = () => {
-    setTransferImageFailed(true);
-  };
 
   function truncateString(str, maxLength) {
     if (str.length > maxLength) {
@@ -140,197 +106,6 @@ const TransferBooking = ({
     }
     return str;
   }
-
-  const handleViewDetails = async (itineraryId, id, mode) => {
-    try {
-      setLoading(true);
-      setVehicleDetails(null);
-
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
-      );
-
-      setVehicleDetails(res?.data);
-      setHandleShow(true);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      dispatch(
-        openNotification({
-          type: "error",
-          text: `${error.response?.data?.errors[0]?.message[0]}`,
-          heading: "Error!",
-        })
-      );
-    }
-  };
-
-  const handleDelete = async (book) => {
-    if (!localStorage.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${
-          book?.id
-        }/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(book?.id));
-        getPaymentHandler();
-        setLoading(false);
-        openNotification({
-          type: "success",
-          text: "Booking deleted successfully",
-          heading: "Success!",
-        });
-      }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
-      openNotification({
-        type: "error",
-        text: errorMsg,
-        heading: "Error!",
-      });
-      setLoading(false);
-    }
-  };
-
-  const handleComboDelete = async (val) => {
-    if (!localStorage?.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    const dataPassed = val != null ? val : booking;
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${
-          dataPassed?.booking_type?.includes(",")
-            ? `combo`
-            : dataPassed?.booking_type?.toLowerCase()
-        }/${dataPassed?.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(dataPassed?.id));
-        setLoading(false);
-        getPaymentHandler();
-
-        setHandleShow(false);
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `Transfer deleted successfully`,
-            heading: "Success!",
-          })
-        );
-      }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] ||
-        err.response?.data?.errors[0]?.detail ||
-        err.message;
-      dispatch(
-        openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
-        })
-      );
-      setLoading(false);
-    }
-  };
-
-  const handleTransferSubmit = async (transferData) => {
-    try {
-      console.log("TransferDD", transferData);
-
-      const bookingPayload = {
-        transfer_type: "airport",
-        source_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : transferData?.sourceGmapsId,
-        destination_itinerary_city:
-          transferData.transferType === "pickup"
-            ? transferData?.destinationGmapsId
-            : oCityData?.id || oCityData?.gmaps_place_id,
-        is_pickup: transferData.transferType === "pickup",
-        is_drop: transferData.transferType === "drop",
-        source: transferData?.source,
-        trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index,
-      };
-
-      const response = await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
-        bookingPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        dispatch(
-          updateAirportTransferBooking(
-            `${
-              transferData.transferType === "pickup"
-                ? dCityData?.id || dCityData?.gmaps_place_id
-                : oCityData?.id || oCityData?.gmaps_place_id
-            }`,
-            response.data
-          )
-        );
-
-        if (_updatePaymentHandler) _updatePaymentHandler();
-        if (getPaymentHandler) getPaymentHandler();
-
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${
-              transferData.transferType === "pickup" ? "Pickup" : "Drop"
-            } transfer added successfully`,
-            heading: "Success!",
-          })
-        );
-      }
-      setIsTransferDrawerOpen(false);
-    } catch (error) {
-      const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] ||
-        error?.response?.data?.message ||
-        error?.response?.data?.errors?.[0]?.detail
-          ? error?.response?.data?.errors?.[0]?.detail?.[0]
-          : null || error.message;
-      dispatch(
-        openNotification({
-          text: errorMsg,
-          heading: "Error!",
-          type: "error",
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleAddTransfer = () => {
     router.push(

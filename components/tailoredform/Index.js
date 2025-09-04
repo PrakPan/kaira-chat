@@ -251,7 +251,6 @@ const Enquiry = (props) => {
 
     setIsSubmitting(true);
     localStorage.removeItem("MyPlans");
-    console.log("access token is: ", localStorage.getItem("access_token"))
     itineraryComplete
       .post("", data, {
         headers: {
@@ -261,7 +260,7 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        window.location.href = `/itinerary/${itineraryId}`;
+        router.push(`/itinerary/${itineraryId}`)
         window.scrollTo(0, 0);
 
         logEvent({
@@ -436,6 +435,7 @@ const Enquiry = (props) => {
                   setLocationsLatLong={setLocationsLatLong}
                   locationsLatLong={locationsLatLong?.length > 0 ? locationsLatLong : route}
                   errors={errors}
+                  completeItineraryCreate={completeItineraryCreate}
                 ></Flickity>
 
                 {error ? <p className="text-sm text-red-600">{error}</p> : null}

@@ -6,7 +6,7 @@ import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 // import Layout from "../components/Layout";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
 import { useEffect } from "react";
@@ -18,12 +18,14 @@ import axioslocationsinstance from "../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
+import { useRouter } from "next/router";
+import Login from "../components/modals/Login";
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
-
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -110,6 +112,14 @@ const Home = (props) => {
         <PlacesBragSection />
         <TravelVibeSection />
       </div>
+       <div id="login" className="width-[100%] z-[1650]">
+          <Login
+            show={props.showLogin}
+            onhide={props.authCloseLogin}
+            itinary_id={props?.itinary_id}
+            zIndex={"3300"}
+          />
+        </div>
     </>
   );
 };

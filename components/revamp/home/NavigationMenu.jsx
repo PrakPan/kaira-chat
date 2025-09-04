@@ -10,6 +10,8 @@ import SearchInput from "../common/components/searchInput";
 import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { authShologinwLogin, authShowLogin } from "../../../store/actions/auth";
 
 const NavigationMenu = () => {
   const router = useRouter();
@@ -22,6 +24,7 @@ const NavigationMenu = () => {
     menuItemsRef,
   } = useMobileMenu();
 
+  const dispatch=useDispatch()
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
     (path) => router.pathname.startsWith(path),
@@ -36,6 +39,7 @@ const NavigationMenu = () => {
   const handleCTAClick = useCallback(
     (e) => {
       menuAnimations.pulseCTA(e.target);
+      dispatch(authShowLogin());
       closeMobileMenu();
     },
     [closeMobileMenu]

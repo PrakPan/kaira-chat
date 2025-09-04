@@ -55,7 +55,7 @@ const Enquiry = (props) => {
   const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
-const dispatch=useDispatch();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
@@ -88,12 +88,12 @@ const dispatch=useDispatch();
         closeIcon
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={()=>dispatch(authCloseLogin())}
+        onHide={props.onhide}
         borderRadius="20px"
         width={modalWidth + "%"}
         zIndex={props?.zIndex}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+        <div id="login-modal" style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
           <div
             style={{
               backgroundColor: "#2C2C2C",
@@ -151,7 +151,7 @@ const dispatch=useDispatch();
         centered
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={()=>dispatch(authCloseLogin())}
+        onHide={props.onhide}
         width={modalWidth + "%"}
         borderRadius={"12px"}
         token={props.token}
@@ -159,7 +159,7 @@ const dispatch=useDispatch();
         zIndex={props?.zIndex}
       >
         <div style={{ padding: "20px" }}>
-          <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
+          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess}></Login>
         </div>
       </Modal>
     );

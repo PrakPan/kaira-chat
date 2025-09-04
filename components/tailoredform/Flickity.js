@@ -6,6 +6,7 @@ import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
 import { useRouter } from "next/router";
+import SlideFive from "./slideFive/SlideFive";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Card = styled.div`
@@ -68,10 +69,7 @@ const FlickityComp = (props) => {
 
       {slideIndex == 4 &&
         <div>
-          <Login
-            show={props?.slideIndex == 4}
-            onSuccess={props?._submitDataHandler}
-          />
+          <SlideFive completeItineraryCreate={props.completeItineraryCreate}/>
         </div>
       }
     </div>
