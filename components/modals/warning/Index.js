@@ -17,28 +17,32 @@ const GenericAPIModal = ({
   loadingMessage = "Processing your request...",
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [pendingBookingData, setPendingBookingData] = useState(null);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
 
   useEffect(() => {
-   handleConfirm();
-  }, []);
+    if (isOpen) {
+      handleInitialRequest();
+    }
+  }, [isOpen]);
 
-  const handleConfirm = async () => {
+  const handleInitialRequest = async () => {
     setIsLoading(true);
     
     try {
-      // First call the warning API
+      // Always call the warning API first
       const warningResponse = await warningApiCall(requestData);
       
-      if (warningResponse.data.warning) {
-        // If there's a warning, store the data and show warning modal
-        setPendingBookingData(requestData);
+      // Check if we should show warning based on show_warning field
+      if (warningResponse.data.show_warning === true) {
+        // Show warning modal with the warning message
+        setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
+        setShowWarningModal(true);
         setIsLoading(false);
-        return;
+      } else {
+        // Proceed directly with booking if show_warning is false
+        await proceedWithBooking(requestData);
       }
-      
-      // If no warning, proceed directly with booking
-      await proceedWithBooking(requestData);
       
     } catch (error) {
       setIsLoading(false);
@@ -51,6 +55,7 @@ const GenericAPIModal = ({
 
   const proceedWithBooking = async (data) => {
     try {
+      setIsLoading(true);
       const response = await bookingApiCall(data);
       setIsLoading(false);
       onSuccess(response.data, successMessage);
@@ -65,16 +70,21 @@ const GenericAPIModal = ({
   };
 
   const handleWarningConfirm = async () => {
-    if (pendingBookingData) {
-      setIsLoading(true);
-      await proceedWithBooking(pendingBookingData);
-      setPendingBookingData(null);
-    }
+    setShowWarningModal(false);
+    await proceedWithBooking(requestData);
   };
 
   const handleWarningCancel = () => {
-    setPendingBookingData(null);
+    setShowWarningModal(false);
     onClose();
+  };
+
+  const handleCancel = () => {
+    if (showWarningModal) {
+      handleWarningCancel();
+    } else {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -90,7 +100,7 @@ const GenericAPIModal = ({
 
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleCancel}
           disabled={isLoading}
           className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10 disabled:opacity-50"
         >
@@ -102,7 +112,7 @@ const GenericAPIModal = ({
           
           {/* Header */}
           <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">
-            {/* {pendingBookingData ? "Warning!" : title} */}Dates Change Warning!
+            {showWarningModal ? "Warning Confirmation" : title}
           </h2>
 
           {/* Message */}
@@ -112,28 +122,30 @@ const GenericAPIModal = ({
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
                 {loadingMessage}
               </div>
+            ) : showWarningModal ? (
+              warningMessage
             ) : (
               message
             )}
           </div>
 
-          {/* Buttons */}
-          <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-            <button
-              onClick={pendingBookingData ? handleWarningCancel : onClose}
-              disabled={isLoading}
-              className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={pendingBookingData ? proceedWithBooking : handleConfirm}
-              disabled={isLoading}
-              className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
-            >
-              {isLoading ? "Processing..." : "Confirm"}
-            </button>
-          </div>
+          {/* Buttons - Only show if not loading and there's a warning to confirm */}
+          {!isLoading && showWarningModal && (
+            <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
+              <button
+                onClick={handleWarningCancel}
+                className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleWarningConfirm}
+                className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
+              >
+                Confirm
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>,

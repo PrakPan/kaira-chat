@@ -13,6 +13,8 @@ import {
   updateSingleTransferBooking,
 } from "../../../../../store/actions/transferBookingsStore";
 import { useGenericAPIModal } from "../../../warning/Index";
+import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
+
 
 const Container = styled.div`
   flex: 1;
@@ -87,7 +89,7 @@ const Section = (props) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId);
-   const { openModal, ModalComponent } = useGenericAPIModalIModal();
+   const { openModal, ModalComponent } = useGenericAPIModal();
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -176,13 +178,11 @@ const Section = (props) => {
         // Define error handler
         const handleError = (errorMessage) => {
            setLoading(false);
-        const errorMsg =
-          err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
         dispatch(
           openNotification({
             type: "error",
             text:
-              errorMsg ||
+              errorMessage ||
               "There seems to be a problem, please try again after some time!",
             heading: "Error!",
           })
@@ -256,6 +256,7 @@ const Section = (props) => {
   if (props.data)
     return (
       <Container>
+        <ModalComponent />
         <TaxiHeading>
           {/* <Heading> */}
           {props.data?.taxi_category?.model_name ? (
