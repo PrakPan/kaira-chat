@@ -7,7 +7,8 @@
     "prebuild": "cross-env BUILD_NUMBER=330420252277 node scripts/sitemap.xml.js",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
     "start": "next start -p 3002",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "npm install --force && next build"
   },
   "dependencies": {
     "@builder.io/partytown": "^0.8.0",
@@ -68,7 +69,6 @@
     "react-facebook-pixel": "^1.0.4",
     "react-flickity-component": "^4.0.5",
     "react-google-recaptcha": "^2.1.0",
-    "react-hook-form": "^7.62.0",
     "react-hotjar": "^5.0.0",
     "react-icons": "^4.8.0",
     "react-infinite-scroll-component": "^6.1.0",
