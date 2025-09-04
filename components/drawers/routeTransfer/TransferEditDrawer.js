@@ -99,7 +99,6 @@ const TRANSFER_TYPES = {
 
 const TransferEditDrawer = (props) => {
   const {
-    ItineraryId,
     showDrawer,
     origin,
     destination,
@@ -166,6 +165,7 @@ const TransferEditDrawer = (props) => {
   const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
+    const ItineraryId = useSelector((state) => state.ItineraryId);
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
@@ -218,7 +218,7 @@ const TransferEditDrawer = (props) => {
       mercury || props?.isMercury ?
         fetchMulticityRoundtrip
           .get(
-            `/${props?.ItineraryId}/`,
+            `/${router.query.id || ItineraryId}/`,
             // multiCityRoundtripRequestData
           )
           .then((response) => {
