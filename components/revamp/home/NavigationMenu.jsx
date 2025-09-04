@@ -57,17 +57,15 @@ const NavigationMenu = () => {
       <nav className={styles.navigationMenu} role="navigation">
         <Image src={TTW} alt="TTW Logo" priority />
 
+        <SearchInput />
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
-          <li className="mr-4">
-            <SearchInput />
-          </li>
+          <li className="mr-4"></li>
           {desktopMenuItems}
-          <li>
-            <Button size="small" onClick={handleCTAClick}>
-              Login/Signup
-            </Button>
-          </li>
+          <li></li>
+          <Button size="small" onClick={handleCTAClick}>
+            Login/Signup
+          </Button>
         </ul>
 
         {/* Hamburger Menu Button */}
