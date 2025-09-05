@@ -5,6 +5,7 @@ import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
+import WhereNextSection from "../components/revamp/home/WhereNextSection";
 // import Layout from "../components/Layout";
 import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -111,15 +112,16 @@ const Home = (props) => {
         <JourneySimplified />
         <PlacesBragSection />
         <TravelVibeSection />
+        <WhereNextSection />
       </div>
-       <div id="login" className="width-[100%] z-[1650]">
-          <Login
-            show={props.showLogin}
-            onhide={props.authCloseLogin}
-            itinary_id={props?.itinary_id}
-            zIndex={"3300"}
-          />
-        </div>
+      <div id="login" className="width-[100%] z-[1650]">
+        <Login
+          show={props.showLogin}
+          onhide={props.authCloseLogin}
+          itinary_id={props?.itinary_id}
+          zIndex={"3300"}
+        />
+      </div>
     </>
   );
 };
