@@ -6,6 +6,8 @@ import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
+import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
+
 // import Layout from "../components/Layout";
 import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -113,6 +115,7 @@ const Home = (props) => {
         <PlacesBragSection />
         <TravelVibeSection />
         <WhereNextSection />
+        <WhatMakesUsSection />
       </div>
       <div id="login" className="width-[100%] z-[1650]">
         <Login
