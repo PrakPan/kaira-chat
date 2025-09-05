@@ -23,7 +23,7 @@ const Section = (props) => {
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
   const [refundable, setRefundable] = useState(false)
-  const [freeBreakfast, setFreeBreakfast] = useState(true)
+  const [freeBreakfast, setFreeBreakfast] = useState(false)
   const [selectedFacilities, setSelectedFacilities] = useState(props?.filters?.facilities);
   const [selectedTags, setSelectedTags] = useState(props?.facilities?.tags);
   const [budget, setBudget] = useState([props.filters.budget.price_lower_range, props.filters.budget.price_upper_range])
@@ -50,7 +50,7 @@ const Section = (props) => {
   const handleFreeBreakfast = () => {
     props.setFilters((prev)=>({
       ...prev,
-      "free_breakfast": freeBreakfast,
+      free_breakfast: freeBreakfast,
       applyFilter:!props.filters.applyFilter
     }))
   }
@@ -92,7 +92,9 @@ const Section = (props) => {
         handleBudgetChange={handleBudgetChange}
         budget={budget}
         setBudget={setBudget}
-      ></FiltersMobile>
+        freeBreakfast={freeBreakfast}
+        setFreeBreakfast={setFreeBreakfast}
+        ></FiltersMobile>
 
       <Drawer
         show={props.showFilter}

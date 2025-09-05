@@ -106,11 +106,11 @@ const Booking = (props) => {
     free_breakfast: false,
     is_refundable: false,
     budget: {
-      price_lower_range: 1000,
-      price_upper_range: 9000,
+      price_lower_range: null,
+      price_upper_range: null,
     },
     star_category: null,
-    sort: "price: low to high",
+    sort: null,
     type: null,
     user_ratings: null,
     facilities: null,
@@ -272,11 +272,11 @@ const Booking = (props) => {
       free_breakfast: false,
       is_refundable: false,
       budget: {
-        price_lower_range: 1000,
-        price_upper_range: 10000,
+        price_lower_range: null,
+        price_upper_range: null,
       },
       star_category: null,
-      sort: "price: low to high",
+      sort: null,
       type: null,
       user_ratings: null,
       facilities: null,
@@ -345,7 +345,7 @@ const Booking = (props) => {
         };
       }),
       sort_by: {
-        price_order: filters.sort === "price: high to low" ? "desc" : "asc",
+        price_order: filters.sort === "price: high to low" ? "desc" : filters.sort === "price: low to high" ? "asc" : null,
       },
       trace_id: null,
     };

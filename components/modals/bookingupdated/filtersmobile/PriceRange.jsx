@@ -1,75 +1,69 @@
 import React, { useState } from "react";
-import RangeSliderInput from "./RangeSlider";
+import CheckboxFormComponent from "../../../FormComponents/CheckboxFormComponent";
 
 export default function PriceRange(props) {
-    const [minPrice, setMinPrice] = useState(props.budget[0])
-    const [maxPrice, setMaxPrice] = useState(props.budget[1])
+    const [selectedPriceRange, setSelectedPriceRange] = useState('all');
 
-    const handleBudgetChange = (value) => {
-        props.setBudget(value);
-        setMinPrice(value[0]);
-        setMaxPrice(value[1]);
-        props?.handleBudgetChange()
-        props.setFilters((prev)=>({
-      ...prev,
-      budget:{
-        price_lower_range:value[0],
-        price_upper_range:value[1] === 10000 ? null: value[1]
-      },
-    }))
-    }
+    const priceRanges = [
+        { id: 'all', label: 'All' },
+        { id: 'under3k', label: 'Under ₹3K' },
+        { id: 'under6k', label: 'Under ₹6K' },
+        { id: 'under10k', label: 'Under ₹10K' },
+        { id: '10kplus', label: '₹10K+' }
+    ];
 
-    const handleBudgetFocusChange = () => {
-        if (!isNaN(parseInt(minPrice)) && !isNaN(parseInt(maxPrice))) {
-            const min_price = parseInt(minPrice) < 700 ? 700 : parseInt(minPrice);
-            const max_price = parseInt(maxPrice) > 10000 ? 10000 : parseInt(maxPrice);
+    const handlePriceRangeSelect = (rangeId) => {
+        setSelectedPriceRange(rangeId);
+        
+        const rangeMap = {
+            'all': { lower: null, upper: null }, 
+            'under3k': { lower: 0, upper: 3000 },
+            'under6k': { lower: 0, upper: 6000 },
+            'under10k': { lower: 0, upper: 10000 },
+            '10kplus': { lower: 10000, upper: 50000 }
+        };
 
-            props.setBudget([min_price,max_price])
-            setMinPrice(min_price);
-            setMaxPrice(max_price);
-        } else {
-            setMinPrice(props.budget[0]);
-            setMaxPrice(props.budget[1]);
-        }
-    }
+        const selectedRange = rangeMap[rangeId];
+        
+        
+        // props.setBudget([selectedRange.lower, selectedRange.upper]);
+        
+       
+        props.setFilters((prevFilters) => ({
+            ...prevFilters,
+            budget: {
+                price_lower_range: selectedRange.lower,
+                price_upper_range: selectedRange.upper
+            },
+            applyFilter: !prevFilters.applyFilter 
+        }));
+
+     
+        // if (props.handleBudgetChange) {
+        //     props.handleBudgetChange();
+        // }
+    };
 
     return (
-        <div className="flex flex-col gap-3 justify-start items-baseline">
-            <div className="font-normal">Price range <span className="text-sm">(per night)</span></div>
+        <div className="flex flex-col gap-3 justify-start items-baseline w-full">
+            <div className="font-medium text-gray-800 text-base">
+                Price range 
+                <span className="text-sm text-gray-500 font-normal ml-1">(per night)</span>
+            </div>
 
-            <div className="w-full flex flex-col gap-4">
-                <RangeSliderInput
-                    defaultValue={props.budget}
-                    value={props.budget}
-                    onChange={handleBudgetChange}
-                />
-
-                <div className="flex flex-row items-center justify-between">
-                    <div className="flex flex-col items-center gap-1">
-                        <label className="text-sm">Minimum</label>
-                        <div className="flex flex-row items-center border-2 px-4 py-2 rounded-full">
-                            <div>₹</div>
-                            <input
-                                value={minPrice}
-                                onChange={(e) => setMinPrice(e.target.value)}
-                                onBlur={handleBudgetFocusChange}
-                                className="text-sm font-normal focus:outline-none min-w-6 max-w-[45px] w-fit"></input>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col items-center gap-1">
-                        <label className="text-sm">Maximum</label>
-                        <div className="flex flex-row items-center border-2 px-4 py-2 rounded-full">
-                            <div>₹</div>
-                            <input
-                                value={parseInt(maxPrice) === 10000 ? `${maxPrice}+` : maxPrice}
-                                onChange={(e) => setMaxPrice(e.target.value)}
-                                onBlur={handleBudgetFocusChange}
-                                className="text-sm font-normal focus:outline-none min-w-6 max-w-[50px] w-fit">
-                            </input>
-                        </div>
-                    </div>
-                </div>
+            <div className="w-full flex flex-wrap gap-x-4 gap-y-2">
+                {priceRanges.map((range) => (
+                    <button
+                        key={range.id}
+                        onClick={() => handlePriceRangeSelect(range.id)}
+                        className="flex items-center gap-2 text-left hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors duration-200"
+                    >
+                        <CheckboxFormComponent checked={selectedPriceRange === range.id} />
+                        <span className="text-sm font-medium text-gray-700 select-none whitespace-nowrap">
+                            {range.label}
+                        </span>
+                    </button>
+                ))}
             </div>
         </div>
     );
