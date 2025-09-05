@@ -609,7 +609,7 @@ const TransferEditDrawer = (props) => {
         setSelectedCab(null);
       }}
     >
-      <ModalComponent />
+      {/* <ModalComponent /> */}
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
@@ -2436,7 +2436,7 @@ const NewMultiModeContainer = ({
         message: "Are you sure you want to update this Taxi booking?",
         warningApiCall,
         bookingApiCall,
-        requestBody,
+        requestData : requestBody,
         onSuccess: handleSuccess,
         onError: handleError,
         successMessage: "Taxi updated successfully.",
@@ -4488,7 +4488,7 @@ const OtherTransfer = ({
         message: "Are you sure you want to update this Taxi booking?",
         warningApiCall,
         bookingApiCall,
-        requestData,
+        requestData: newRequestBody,
         onSuccess: handleSuccess,
         onError: handleError,
         successMessage: "Taxi updated successfully.",

@@ -552,7 +552,7 @@ const handleViewMore = async () => {
 
     if (props.token) {
       const hasAirlineFilterChanged = filtersState?.airlines !== previousAirlineFilter;
-      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid();
+      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || preferredDepartureTime && isTraceIdValid();
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -722,6 +722,7 @@ const handleViewMore = async () => {
 
   // Define the warning API call
   const warningApiCall = (data) => {
+
     return updateFlightBookingWarning.post(`${itinerary_id}/transfers/flight/warning/`, data, {
       headers: {
         Authorization: `Bearer ${props.token}`,

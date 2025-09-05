@@ -646,6 +646,16 @@ const ItineraryContainer = (props) => {
 
         if (allStatusesCompleted) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+           [
+          "ITINERARY",
+          "TRANSFERS",
+          "PRICING",
+          "HOTELS",
+           ].forEach((key) => {
+    const statusValue = status?.[key];
+    const statusField = `${key.toLowerCase()}_status`;
+    dispatch(setItineraryStatus(statusField, statusValue));
+  });
           setPolling(false);
         } else {
           setPolling(true);

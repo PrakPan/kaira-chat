@@ -20,7 +20,7 @@ const StaysContainer = (props) => {
 
       <div className="mt-4 space-y-6">
         {hotels_status === "SUCCESS" ? (
-          props.stayBookings.map((booking, index) => (
+          props?.stayBookings?.map((booking, index) => (
             <>
               <HotelBooking
                 key={booking?.id}
