@@ -89,6 +89,46 @@ export const createFloatingSequence = (timeline, elements, config = {}) => {
   return timeline;
 };
 
+// Utility function for creating floating icon animations (for WhatMakesUsSection)
+export const createFloatingIconAnimations = (iconRefs) => {
+  const icons = iconRefs.map((ref) => ref.current).filter(Boolean);
+
+  icons.forEach((icon, index) => {
+    if (icon) {
+      // Create floating animation with different parameters for each icon
+      gsap.to(icon, {
+        y: `${10 + index * 3}px`, // Different floating heights
+        x: `${5 + index * 2}px`, // Slight horizontal movement
+        rotation: `${2 + index}deg`, // Slight rotation
+        duration: 2 + index * 0.3, // Different durations
+        ease: "power2.inOut",
+        yoyo: true,
+        repeat: -1,
+        delay: index * 0.2, // Staggered start times
+      });
+
+      // Add a secondary floating motion
+      gsap.to(icon, {
+        scale: 1.05,
+        duration: 1.5 + index * 0.2,
+        ease: "power2.inOut",
+        yoyo: true,
+        repeat: -1,
+        delay: index * 0.1,
+      });
+    }
+  });
+
+  // Return cleanup function
+  return () => {
+    icons.forEach((icon) => {
+      if (icon) {
+        gsap.killTweensOf(icon);
+      }
+    });
+  };
+};
+
 // Utility function for splitting text into animated words
 export const splitTextIntoWords = (container, selector = ".heading-text") => {
   const headings = container.querySelectorAll(selector);
