@@ -6,7 +6,7 @@ export default function PriceRange(props) {
     const dropdownRef = useRef(null);
 
     const priceRanges = [
-        { id: 'all', label: 'All' },
+        { id: 'all', label: 'Any' },
         { id: '0-3000', label: '₹0 - ₹3,000' },
         { id: '3000-6000', label: '₹3,000 - ₹6,000' },
         { id: '6000-10000', label: '₹6,000 - ₹10,000' },
