@@ -175,13 +175,13 @@ const GenericAPIModal = ({
           {showWarningModal && (
             <>
               {/* Header */}
-              <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">
+              <h2 className="text-xl font-semibold mb-1 pr-8">
                 Dates Change Warning!
               </h2>
 
               {/* Warning Message */}
               <div className="text-gray-700 mb-6">
-                <div className="rounded-lg p-4">
+                <div className="rounded-lg p-2">
                   {warningMessage}
                 </div>
               </div>
