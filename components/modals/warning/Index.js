@@ -144,7 +144,8 @@ const GenericAPIModal = ({
     }
   };
 
-  if (!isOpen) return null;
+   if (!isOpen || !showWarningModal) return null;
+
 
   return ReactDOM.createPortal(
     <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">

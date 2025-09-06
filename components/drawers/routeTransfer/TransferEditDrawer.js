@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback} from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown, IoMdClose } from "react-icons/io";
@@ -174,7 +174,6 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-   const { openModal, ModalComponent } = useGenericAPIModal();
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -609,7 +608,7 @@ const TransferEditDrawer = (props) => {
         setSelectedCab(null);
       }}
     >
-      {/* <ModalComponent /> */}
+      
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
@@ -1678,6 +1677,7 @@ const RouteContainer = (props) => {
                   number_of_travellers={
                     number_of_adults + number_of_children + number_of_infants
                   }
+                  mode={singleTransfer?.mode}
                   check_in={check_in}
                   currentStep={currentStep}
                   currentModeDepartureDate={currentModeDepartureDate}
@@ -3886,6 +3886,924 @@ const Cost = styled.p`
     font-size: 1.25rem;
   }
 `;
+// const OtherTransfer = ({
+//   getPaymentHandler,
+//   setShowOtherTrasfer,
+//   selectedResult,
+//   setSelectedResult,
+//   number_of_travellers,
+//   check_in,
+//   showOtherTransfer,
+//   mercuryTransfer,
+//   currentModeDepartureDate,
+//   currentModeDepartureTime,
+//   selectedBooking,
+//   setSelectedBooking,
+//   transferIndex,
+//   setSelectedData,
+//   currentStep,
+//   handleSelect,
+//   transfer,
+//   totalSteps,
+//   hideDrawer,
+//   token,
+//   origin_itinerary_city_id,
+//   destination_itinerary_city_id,
+//   oCityData,
+//   dCityData,
+//   city,
+//   dcity,
+//   mercury,
+//   booking_id,
+//   mode
+// }) => {
+//   const ref = useRef(null);
+//   const dateRef = useRef(null);
+//   const dispatch = useDispatch();
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [otherTransfer, setOtherTransfer] = useState(null);
+//   const [traceId, setTraceId] = useState(null);
+//   const [isSelected, setIsSelected] = useState(false);
+//   const [updateLoading, setUpdateLoading] = useState(false);
+//   const [loadingOptionId, setLoadingOptionId] = useState(null);
+
+//   const [dynamicTransferData, setDynamicTransferData] = useState({});
+//   const [loadingTransfers, setLoadingTransfers] = useState({});
+//   const [lastPaxState, setLastPaxState] = useState(null);
+//   const [lastTimeState, setLastTimeState] = useState(null);
+//   const [lastDateState, setLastDateState] = useState(null);
+
+//   const { number_of_adults, number_of_children, number_of_infants } =
+//     useSelector((state) => state.Itinerary);
+//   const [showPax, setShowPax] = useState(false);
+//   const [showLoginModal, setShowLoginModal] = useState(false);
+//   const [localSelectedData, setLocalSelectedData] = useState([]);
+//   const [isResultSelected, setIsResultSelected] = useState(false);
+//   const itinerary_id = useSelector((state) => state.ItineraryId);
+
+//   // Initialize with props values directly
+//   const [departureTime, setDepartureTime] = useState(currentModeDepartureTime);
+//   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+//   const [departureDate, setDepartureDate] = useState(currentModeDepartureDate);
+//   const { openModal, ModalComponent } = useGenericAPIModal();
+
+//   const [lastRequestData, setLastRequestData] = useState(null);
+
+//   const [pax, setPax] = useState({
+//     adults: selectedBooking?.pax?.number_of_adults
+//       ? selectedBooking.pax.number_of_adults
+//       : number_of_adults,
+//     children: selectedBooking?.pax?.number_of_children
+//       ? selectedBooking.pax.number_of_children
+//       : number_of_children,
+//     infants: selectedBooking?.pax?.number_of_infants
+//       ? selectedBooking.pax.number_of_infants
+//       : number_of_infants,
+//   });
+
+//   // Update state when props change
+//   useEffect(() => {
+//     if (
+//       currentModeDepartureDate &&
+//       currentModeDepartureDate !== departureDate
+//     ) {
+//       setDepartureDate(currentModeDepartureDate);
+//     }
+//   }, [currentModeDepartureDate]);
+
+//   useEffect(() => {
+//     if (
+//       currentModeDepartureTime &&
+//       currentModeDepartureTime !== departureTime
+//     ) {
+//       setDepartureTime(currentModeDepartureTime);
+//     }
+//   }, [currentModeDepartureTime]);
+
+//   const generateTimeOptions = () => {
+//     const options = [];
+//     for (let hour = 0; hour < 24; hour++) {
+//       for (let minute = 0; minute < 60; minute += 30) {
+//         const hour12 = hour % 12 || 12;
+//         const period = hour < 12 ? "AM" : "PM";
+//         const formattedHour = hour12.toString().padStart(2, "0");
+//         const formattedMinute = minute.toString().padStart(2, "0");
+//         const display = `${formattedHour}:${formattedMinute} ${period}`;
+//         const value = `${hour.toString().padStart(2, "0")}:${formattedMinute}`;
+
+//         options.push({ display, value });
+//       }
+//     }
+//     return options;
+//   };
+
+//   const handleDateChange = (event) => {
+//     const selectedDate = dayjs(event.target.value).format("YYYY-MM-DD");
+//     setDepartureDate(selectedDate);
+//   };
+
+//   const timeOptions = generateTimeOptions();
+
+//   const loadTransfers = async (transferData, paxData, departureDateTime) => {
+//     if (!transferData?.id) return;
+
+//     const transferKey = `${transferData.id}-${currentStep}`;
+//     setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+//     setError(null);
+
+//     try {
+//       const requestBody = {
+//         edge_id: transferData.id,
+//         start_datetime: departureDateTime,
+//         number_of_travellers:
+//           paxData.adults + paxData.children + paxData.infants,
+//       };
+
+//       const response = await loadOtherTransfers.post(`/search/`, requestBody, {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//       });
+
+//       const data = response.data;
+
+//       if (data.success && data.data) {
+//         setTraceId(data.trace_id);
+
+//         // Update the dynamic transfer data
+//         setDynamicTransferData((prev) => ({
+//           ...prev,
+//           [transferKey]: data.data,
+//         }));
+
+//         setOtherTransfer(data.data);
+//         setError(null); // Clear error on success
+//       } else {
+//         const errorMessage =
+//           data?.errors?.[0]?.message?.[0] ||
+//           data?.message ||
+//           "No transfer options available";
+//         setError(errorMessage);
+//         // Don't clear otherTransfer here - keep previous data visible
+//         // setOtherTransfer(null);
+
+//         // Clear dynamic transfer data for this key on error
+//         setDynamicTransferData((prev) => {
+//           const newData = { ...prev };
+//           delete newData[transferKey];
+//           return newData;
+//         });
+//       }
+//     } catch (error) {
+//       console.error("Error loading transfers:", error);
+//       const errorMsg =
+//         error?.response?.data?.errors?.[0]?.message?.[0] ||
+//         error?.response?.data?.message ||
+//         error?.response?.data?.error ||
+//         error?.message ||
+//         "Failed to load transfer options";
+//       setError(errorMsg);
+
+//       setDynamicTransferData((prev) => {
+//         const newData = { ...prev };
+//         delete newData[transferKey];
+//         return newData;
+//       });
+//     } finally {
+//       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+//     }
+//   };
+
+//   useEffect(() => {
+//     const currentPaxString = JSON.stringify(pax);
+//     const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
+//     const timeChanged = lastTimeState && lastTimeState !== departureTime;
+//     const dateChanged = lastDateState && lastDateState !== departureDate;
+
+//     // Call API if any parameter changed AND we have selectedResult.transfer
+//     // Also call if we had an error (to retry)
+//     if (
+//       (paxChanged || timeChanged || dateChanged) &&
+//       selectedResult?.transfer && !isResultSelected
+//     ) {
+//       // Use props values as fallback
+//       const finalDate = departureDate || currentModeDepartureDate;
+//       const finalTime = departureTime || currentModeDepartureTime;
+
+//       if (finalDate && finalTime) {
+//         const departureDateTime = `${finalDate}T${finalTime}:00`;
+
+//         // Clear error before making new request but don't clear otherTransfer yet
+//         setError(null);
+
+//         // Always use selectedResult.transfer as the source of truth
+//         loadTransfers(selectedResult.transfer, pax, departureDateTime);
+//       }
+//     }
+
+//     // Update last states
+//     setLastPaxState(currentPaxString);
+//     setLastTimeState(departureTime);
+//     setLastDateState(departureDate);
+//   }, [
+//     pax,
+//     departureTime,
+//     departureDate,
+//     selectedResult?.transfer,
+//     error,
+//     currentModeDepartureDate,
+//     currentModeDepartureTime,
+//   ]);
+
+//   useEffect(() => {
+//     if (selectedResult?.transfer && !otherTransfer && !error) {
+//       setOtherTransfer(selectedResult.transfer);
+//     }
+//   }, [selectedResult?.transfer]);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (ref.current && !ref.current.contains(event.target)) {
+//         setShowTimeDropdown(false);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, [ref]);
+
+//   useEffect(() => {
+//     if (setSelectedData && Array.isArray(transfer)) {
+//       const initialData = Array(transfer.length).fill(undefined);
+
+//       if (selectedResult) {
+//         const index = currentStep - 1;
+//         initialData[index] = selectedResult;
+//       }
+
+//       setLocalSelectedData(initialData);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     if (selectedResult) {
+//       setSelectedResult(selectedResult);
+//       getOtherTrasfer(selectedResult?.transfer);
+//     }
+
+//     if (selectedResult?.selectedPrice) {
+//       const index = currentStep - 1;
+
+//       if (setSelectedData) {
+//         setSelectedData((prev) => {
+//           const newData = Array.isArray(prev) ? [...prev] : [];
+//           newData[index] = selectedResult;
+//           return newData;
+//         });
+
+//         setLocalSelectedData((prev) => {
+//           const newData = Array.isArray(prev) ? [...prev] : [];
+//           newData[index] = selectedResult;
+//           return newData;
+//         });
+//       }
+//     }
+//   }, [selectedResult]);
+
+//   useEffect(() => {
+//     if (selectedResult?.transfer && !isResultSelected) {
+//       // Use props values as fallback
+//       const finalDate = departureDate || currentModeDepartureDate;
+//       const finalTime = departureTime || currentModeDepartureTime;
+
+//       if (finalDate && finalTime) {
+//         const departureDateTime = `${finalDate}T${finalTime}:00`;
+//         loadTransfers(selectedResult.transfer, pax, departureDateTime);
+//       }
+//     }
+//   }, [selectedResult?.transfer, token]);
+
+//   const isValidUUID = (uuid) => {
+//     const regex =
+//       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+//     return regex.test(uuid);
+//   };
+
+//   const handleClose = (e) => {
+//     e.stopPropagation();
+//     if (ref.current && !ref.current.contains(e.target)) {
+//       setShowOtherTrasfer(false);
+//     }
+//   };
+
+//   const handleSelectPrice = (index) => {
+//     setSelectedResult((prev) => {
+//       return {
+//         ...prev,
+//         trace_id: traceId,
+//         result_index: otherTransfer.prices[index].result_index,
+//       };
+//     });
+
+//     setShowOtherTrasfer(false);
+//   };
+
+//   const getOtherTrasfer = (transfer) => {
+//     setLoading(false);
+//     setOtherTransfer(transfer);
+//   };
+
+//   const isPriceOptionSelected = (transferId, priceIndex) => {
+//     const currentSelection = localSelectedData[currentStep - 1];
+
+//     if (!currentSelection) return false;
+
+//     return (
+//       currentSelection.id === transferId &&
+//       currentSelection.selectedPrice?.result_index === priceIndex
+//     );
+//   };
+
+//   const handleUpdateTransfer = async () => {
+//     handleUpdateTransferWithData(localSelectedData);
+//   };
+
+//   const handleModeSelect = (index, priceOptionId, selectedPriceData, mode) => {
+//     if (updateLoading) {
+//       return;
+//     }
+
+//     const [transferId, priceIndex] = priceOptionId.split("-");
+
+//     const isDeselecting = isPriceOptionSelected(
+//       selectedPriceData.id,
+//       parseInt(priceIndex)
+//     );
+
+//     setLoadingOptionId(priceOptionId);
+
+//     if (isDeselecting) {
+//       setLocalSelectedData((prev) => {
+//         const newData = [...prev];
+//         newData[index] = undefined;
+//         return newData;
+//       });
+
+//       if (setSelectedData) {
+//         setSelectedData((prev) => {
+//           const newData = [...prev];
+//           newData[index] = undefined;
+//           return newData;
+//         });
+//       }
+
+//       setLoadingOptionId(null);
+
+//       if (handleSelect) {
+//         handleSelect(transferIndex, null, transfer, mode);
+//       }
+//     } else {
+//       const newLocalData = [...localSelectedData];
+//       newLocalData[index] = selectedPriceData;
+//       setLocalSelectedData(newLocalData);
+
+//       if (setSelectedData) {
+//         const newParentData = Array.isArray(setSelectedData)
+//           ? [...setSelectedData]
+//           : [];
+//         newParentData[index] = selectedPriceData;
+//         setSelectedData(newParentData);
+//       }
+//       if (handleSelect) {
+//         handleSelect(transferIndex, selectedPriceData, transfer, mode);
+//       }
+
+//       // setTimeout(() => {
+//       //   handleUpdateTransferWithData(newLocalData);
+//       // }, 50);
+
+//       handleUpdateTransferWithData(newLocalData)
+//     }
+//   };
+
+//   const addDaysToDate = (dateString, numberOfDays) => {
+//     const newDate = dayjs(dateString).add(numberOfDays, "day");
+//     return newDate.format("YYYY-MM-DD");
+//   };
+
+//   const handleTimeSelect = (time) => {
+//     setDepartureTime(time.value);
+//     setShowTimeDropdown(false);
+//   };
+
+//   const buildRequestPayload = (updatedData, newTime = null, newDate = null) => {
+//     if (!Array.isArray(transfer) || transfer.length === 0) {
+//       throw new Error("Transfer data is missing");
+//     }
+
+//     const transfersPayload = updatedData
+//       .filter(Boolean)
+//       .map((item, arrayIndex) => {
+//         const transferItem = transfer[arrayIndex] || transfer[0];
+
+//         if (!transferItem) {
+//           console.error(`Transfer item for index ${arrayIndex} is missing`);
+//           return null;
+//         }
+
+//         const transferObj = {
+//           booking_type: transferItem.mode,
+//           edge_id: transferItem.id,
+//         };
+
+//         if (transferItem.mode === "Flight") {
+//           return {
+//             ...transferObj,
+//             result_index: item.resultIndex || item.result_index || 0,
+//             trace_id:
+//               item?.trace_id || localStorage.getItem("Travclan_trace_id") || "",
+//           };
+//         } else if (transferItem.mode === "Taxi") {
+//           return {
+//             ...transferObj,
+//             trace_id: item.trace_id || traceId,
+//             result_index: item.result_index || 0,
+//             source: item.source || "",
+//           };
+//         } else {
+//           let resultIndex = 0;
+
+//           if (item.selectedPrice) {
+//             resultIndex = item.selectedPrice.result_index || 0;
+//           }
+
+//           return {
+//             ...transferObj,
+//             trace_id: item.trace_id || traceId,
+//             start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
+//             result_index: resultIndex,
+//           };
+//         }
+//       })
+//       .filter(Boolean);
+
+//     if (transfersPayload.length === 0 && !newTime && !newDate) {
+//       throw new Error("No valid transfer options selected");
+//     }
+
+//     // Use props values as fallback, ensuring we have valid values
+//     const dateToUse = newDate || departureDate || currentModeDepartureDate;
+//     const timeToUse = newTime || departureTime || currentModeDepartureTime;
+
+//     const requestBody = {
+//       destination_itinerary_city: destination_itinerary_city_id
+//         ? destination_itinerary_city_id
+//         : null,
+//       source_itinerary_city: origin_itinerary_city_id
+//         ? origin_itinerary_city_id
+//         : null,
+//       number_of_adults: pax.adults,
+//       number_of_children: pax.children,
+//       number_of_infants: pax.infants,
+//       start_datetime: `${dateToUse}T${timeToUse}:00`,
+//       transfers: transfersPayload,
+//     };
+
+//     if (selectedBooking?.id || booking_id) {
+//       requestBody.booking_id = selectedBooking.id || booking_id;
+//     }
+
+//     return requestBody;
+//   };
+
+//   const handleUpdateTransferWithData = async (
+//   updatedData,
+//   newTime = null,
+//   newDate = null
+// ) => {
+//   try {
+//     const newRequestBody = buildRequestPayload(updatedData, newTime, newDate);
+
+//     if (
+//       lastRequestData &&
+//       newTime === null &&
+//       newDate === null &&
+//       JSON.stringify(lastRequestData.transfers) ===
+//         JSON.stringify(newRequestBody.transfers) &&
+//       lastRequestData.start_datetime === newRequestBody.start_datetime &&
+//       (lastRequestData.number_of_adults !== newRequestBody.number_of_adults ||
+//         lastRequestData.number_of_children !==
+//           newRequestBody.number_of_children ||
+//         lastRequestData.number_of_infants !==
+//           newRequestBody.number_of_infants)
+//     ) {
+//       setLastRequestData(newRequestBody);
+//       return;
+//     }
+
+//     // Set loading state immediately when update is triggered
+//     setUpdateLoading(true);
+
+//     const warningApiCall = (data) => {
+//       return updateFlightBookingWarning.post(`${itinerary_id}/transfers/${mode?.toLowerCase()}/warning/`, data, {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Fixed: use token prop, not props.token
+//         },
+//       });
+//     };
+
+//     // Define the booking API call
+//     const bookingApiCall = (data) => {
+//       return UpdateTransferMode.post(
+//         `${itinerary_id}/bookings/transfer/`,
+//         data, // Use the data passed to this function, not newRequestBody
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("access_token")}`, // Fixed: use token prop
+//           },
+//         }
+//       );
+//     };
+
+//     // Define success handler
+//     const handleSuccess = (responseData, message) => {
+//       setUpdateLoading(false);
+//       setIsResultSelected(true);
+
+//       dispatch(
+//         updateSingleTransferBooking(
+//           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+//           responseData
+//         )
+//       );
+
+//       getPaymentHandler();
+
+//       if (!newTime && !newDate) {
+//         hideDrawer();
+
+//         dispatch(
+//           openNotification({
+//             text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${
+//               dcity || transfer[0]?.destination?.city_name
+//             } has been updated successfully!`,
+//             heading: "Success!",
+//             type: "success",
+//           })
+//         );
+//       } else {
+//         const message = newDate
+//           ? "Departure date updated successfully!"
+//           : "Departure time updated successfully!";
+//         dispatch(
+//           openNotification({
+//             text: message,
+//             heading: "Success!",
+//             type: "success",
+//           })
+//         );
+//       }
+
+//       setUpdateLoading(false);
+//       setLoadingOptionId(null);
+//     };
+
+//     // Define error handler
+//     const handleError = (errorMessage) => {
+//       console.error("Error updating transfer:", errorMessage);
+//       dispatch(
+//         openNotification({
+//           text: errorMessage,
+//           heading: "Error!",
+//           type: "error",
+//         })
+//       );
+//       setUpdateLoading(false);
+//       setLoadingOptionId(null);
+//     };
+
+//     // Open the modal with configuration
+//     openModal({
+//       title: "Update Taxi Booking",
+//       message: "Are you sure you want to update this Taxi booking?",
+//       warningApiCall,
+//       bookingApiCall,
+//       requestData: newRequestBody,
+//       onSuccess: handleSuccess,
+//       onError: handleError,
+//       successMessage: "Taxi updated successfully.",
+//       loadingMessage: "Please wait while we update your transfer...",
+//     });
+
+//     setLastRequestData(newRequestBody);
+//   } catch (error) {
+//     console.error("Error building request payload:", error);
+//     setUpdateLoading(false);
+//     setLoadingOptionId(null);
+//     dispatch(
+//       openNotification({
+//         text: error.message || "Failed to update transfer booking",
+//         heading: "Error!",
+//         type: "error",
+//       })
+//     );
+//   }
+// };
+
+//   const formatTimeForDisplay = (timeValue) => {
+//     if (!timeValue) return "";
+
+//     const timeOption = timeOptions.find((option) => option.value === timeValue);
+//     if (timeOption) {
+//       return timeOption.display;
+//     }
+
+//     const [hours, minutes] = timeValue.split(":");
+//     const hour = parseInt(hours, 10);
+//     const hour12 = hour % 12 || 12;
+//     const period = hour < 12 ? "AM" : "PM";
+//     return `${hour12}:${minutes} ${period}`;
+//   };
+
+//   const formatDateForDisplay = (dateValue) => {
+//     if (!dateValue) return "";
+//     const date = dayjs(dateValue);
+//     return date.format("MMM DD, YYYY");
+//   };
+
+//   const handlePaxChange = (newPax) => {
+//     setPax(newPax);
+//   };
+
+//   const getCurrentTransferKey = () => {
+//     return otherTransfer?.id ? `${otherTransfer.id}-${currentStep}` : null;
+//   };
+
+//   const isCurrentTransferLoading = () => {
+//     const transferKey = getCurrentTransferKey();
+//     return transferKey ? loadingTransfers[transferKey] : false;
+//   };
+
+//   const retryLoadTransfers = () => {
+//     if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
+//       setError(null);
+//       // Use props values as fallback
+//       const finalDate = departureDate || currentModeDepartureDate;
+//       const finalTime = departureTime || currentModeDepartureTime;
+
+//       if (finalDate && finalTime) {
+//         const departureDateTime = `${finalDate}T${finalTime}:00`;
+//         const transferToUse =
+//           otherTransfer || Object.values(dynamicTransferData)[0];
+//         loadTransfers(transferToUse, pax, departureDateTime);
+//       }
+//     }
+//   };
+
+//   return (
+//     <Container>
+//       <ModalComponent />
+//       <div className="w-full">
+//         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+//           {/* Date Dropdown */}
+//           <div className="w-full sm:w-auto">
+//             <label className="block text-sm font-medium mb-1">
+//               Departure Date:
+//             </label>
+//             <DatePicker
+//               id="departureDate"
+//               date={departureDate || currentModeDepartureDate}
+//               defaultDate={currentModeDepartureDate}
+//               onDateChange={handleDateChange}
+//               isOutsideRange={() => false}
+//               enableOutsideDays={true}
+//             />
+//           </div>
+
+//           {/* Time Dropdown */}
+//           <div
+//             className="time-dropdown-container relative w-full sm:w-auto"
+//             ref={ref}
+//           >
+//             <div className="text-sm font-medium text-gray-700 mb-2">
+//               Departure Time
+//             </div>
+//             <div
+//               className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+//               onClick={() => setShowTimeDropdown((prev) => !prev)}
+//             >
+//               <span className="text-sm font-medium">
+//                 {formatTimeForDisplay(departureTime)}
+//               </span>
+//               <button>
+//                 <svg
+//                   className={`w-5 h-5 text-gray-600 transition-transform`}
+//                   fill="none"
+//                   stroke="currentColor"
+//                   viewBox="0 0 24 24"
+//                   xmlns="http://www.w3.org/2000/svg"
+//                 >
+//                   <path
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                     strokeWidth="2"
+//                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+//                   />
+//                 </svg>
+//               </button>
+//             </div>
+
+//             {showTimeDropdown && (
+//               <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+//                 {timeOptions.map((time, index) => (
+//                   <div
+//                     key={index}
+//                     className={`p-2 hover:bg-gray-100 cursor-pointer text-sm
+//                       ${time.value === departureTime
+//                         ? "bg-yellow-100 font-medium"
+//                         : ""
+//                       }
+//                     `}
+//                     onClick={() => handleTimeSelect(time)}
+//                   >
+//                     {time.display}
+//                   </div>
+//                 ))}
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         <div className="flex justify-end ">
+//           <Pax
+//             setShowPax={setShowPax}
+//             pax={pax}
+//             setPax={handlePaxChange}
+//             showPax={showPax}
+//             combo={true}
+//           />
+//         </div>
+//       </div>
+
+//       {/* Loading indicator for dynamic transfer loading */}
+//       {isCurrentTransferLoading() && (
+//         <div className="flex justify-center items-center py-8">
+//           <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
+//           <span className="ml-3 text-sm text-gray-600">
+//             Loading transfer options...
+//           </span>
+//         </div>
+//       )}
+
+//       {/* Error message display */}
+//       {error && !isCurrentTransferLoading() && (
+//         <div className="flex justify-center items-center py-8">
+//           <div className="text-center">
+//             <div className="text-red-500 text-lg mb-2">⚠️</div>
+//             <div className="text-red-600 font-medium mb-1">
+//               Error Loading Transfers
+//             </div>
+//             <div className="text-gray-600 text-sm mb-3">{error}</div>
+//             <button
+//               onClick={retryLoadTransfers}
+//               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+//             >
+//               Retry
+//             </button>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Transfer options display */}
+//       {otherTransfer &&
+//         otherTransfer.prices &&
+//         otherTransfer.prices.length > 0 &&
+//         !isCurrentTransferLoading() &&
+//         !error &&
+//         otherTransfer.prices.map((priceOption, priceIndex) => {
+//           const price = priceOption.price || 0;
+//           const currency =
+//             priceOption.currency === "INR" ? "₹" : priceOption.currency;
+//           const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+
+//           const isOptionSelected = isPriceOptionSelected(
+//             otherTransfer.id,
+//             priceIndex
+//           );
+
+//           const isOptionLoading = loadingOptionId === priceOptionId;
+
+//           return (
+//             <div
+//               key={`${otherTransfer.id}-price-${priceIndex}`}
+//               className={`flex w-full flex-col  justify-between bg-white p-3 md:p-4 border-b
+//                 ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}`}
+//             >
+//               <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+//                 <div className="text-gray-500 mt-1">
+//                   {getModeIcon(otherTransfer.mode)}
+//                 </div>
+//                 <div className="w-full">
+//                   <div className="font-semibold text-sm md:text-base w-full">
+//                     {otherTransfer.text}{" "}
+//                     {priceOption.name ? `- ${priceOption.name}` : ""}
+//                   </div>
+//                   <div className="text-xs md:text-sm text-gray-600">
+//                     {Math.floor(otherTransfer?.duration / 60) +
+//                       "-" +
+//                       Math.ceil(otherTransfer?.duration / 60)}{" "}
+//                     hours | {otherTransfer.distance} kms
+//                   </div>
+//                   {priceOption?.class && (
+//                     <div className="text-xs md:text-sm">
+//                       <span className="font-semibold">Facilities:</span>{" "}
+//                       {priceOption?.class}
+//                     </div>
+//                   )}
+//                   {priceOption.description && (
+//                     <div className="text-xs md:text-sm text-gray-700 mt-1">
+//                       {priceOption.description}
+//                     </div>
+//                   )}
+
+//                   <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between w-full">
+//                     <div className="text-md font-bold flex flex-col">
+//                       <span
+//                         className="!font-[lexend]"
+//                         style={{ fontFamily: "Lexend" }}
+//                       >
+//                         {currency} {price} {`/-`}{" "}
+//                         <span className="font-normal">
+//                           {" "}
+//                           for {pax?.adults + pax?.children + pax?.infants}{" "}
+//                           people
+//                         </span>
+//                       </span>
+//                     </div>
+
+//                     <div
+//                       className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
+//                         }`}
+//                       onClick={() => {
+//                         if (updateLoading && !isOptionLoading) return;
+//                         const selectedPriceData = {
+//                           ...otherTransfer,
+//                           selectedPrice: {
+//                             ...priceOption,
+//                             result_index: priceIndex,
+//                           },
+//                         };
+
+//                         handleModeSelect(
+//                           currentStep - 1,
+//                           priceOptionId,
+//                           selectedPriceData,
+//                           otherTransfer.mode
+//                         );
+//                       }}
+//                     >
+//                       {isOptionLoading ||
+//                         (updateLoading && isOptionSelected) ? (
+//                         <div className="flex items-center gap-1">
+//                           <PulseLoader
+//                             size={15}
+//                             speedMultiplier={0.6}
+//                             color="#000000"
+//                           />
+//                         </div>
+//                       ) : isOptionSelected && isResultSelected ? (
+//                         <div className="flex items-center gap-1">
+//                           <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+//                           <span className="text-sm"></span>
+//                         </div>
+//                       ) : (
+//                         <div className="flex items-center gap-1">
+//                           <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+//                           <span className="text-sm"></span>
+//                         </div>
+//                       )}
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//           );
+//         })}
+//       {showLoginModal && (
+//         <LoginModal
+//           show={showLoginModal}
+//           onClose={() => setShowLoginModal(false)}
+//         />
+//       )}
+//     </Container>
+//   );
+// };
+
+
 const OtherTransfer = ({
   getPaymentHandler,
   setShowOtherTrasfer,
@@ -3933,6 +4851,11 @@ const OtherTransfer = ({
   const [lastTimeState, setLastTimeState] = useState(null);
   const [lastDateState, setLastDateState] = useState(null);
 
+  // ADD: Flags to prevent multiple API calls
+  const [isBookingInProgress, setIsBookingInProgress] = useState(false);
+  const [loadingRequestKey, setLoadingRequestKey] = useState(null);
+  const abortControllerRef = useRef(null);
+
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -3961,24 +4884,26 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
-  // Update state when props change
+  // FIXED: Update state when props change with proper guards
   useEffect(() => {
     if (
       currentModeDepartureDate &&
-      currentModeDepartureDate !== departureDate
+      currentModeDepartureDate !== departureDate &&
+      !isBookingInProgress
     ) {
       setDepartureDate(currentModeDepartureDate);
     }
-  }, [currentModeDepartureDate]);
+  }, [currentModeDepartureDate, isBookingInProgress]);
 
   useEffect(() => {
     if (
       currentModeDepartureTime &&
-      currentModeDepartureTime !== departureTime
+      currentModeDepartureTime !== departureTime &&
+      !isBookingInProgress
     ) {
       setDepartureTime(currentModeDepartureTime);
     }
-  }, [currentModeDepartureTime]);
+  }, [currentModeDepartureTime, isBookingInProgress]);
 
   const generateTimeOptions = () => {
     const options = [];
@@ -3998,16 +4923,34 @@ const OtherTransfer = ({
   };
 
   const handleDateChange = (event) => {
+    if (isBookingInProgress) return;
     const selectedDate = dayjs(event.target.value).format("YYYY-MM-DD");
     setDepartureDate(selectedDate);
   };
 
   const timeOptions = generateTimeOptions();
 
-  const loadTransfers = async (transferData, paxData, departureDateTime) => {
+  // FIXED: Add request deduplication and abort previous requests
+  const loadTransfers = useCallback(async (transferData, paxData, departureDateTime) => {
     if (!transferData?.id) return;
 
     const transferKey = `${transferData.id}-${currentStep}`;
+    const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(paxData)}`;
+    
+    // Prevent duplicate requests
+    if (loadingRequestKey === requestKey) {
+      return;
+    }
+
+    // Abort previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
+
+    setLoadingRequestKey(requestKey);
     setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
     setError(null);
 
@@ -4024,31 +4967,26 @@ const OtherTransfer = ({
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        signal: abortControllerRef.current.signal,
       });
 
       const data = response.data;
 
       if (data.success && data.data) {
         setTraceId(data.trace_id);
-
-        // Update the dynamic transfer data
         setDynamicTransferData((prev) => ({
           ...prev,
           [transferKey]: data.data,
         }));
-
         setOtherTransfer(data.data);
-        setError(null); // Clear error on success
+        setError(null);
       } else {
         const errorMessage =
           data?.errors?.[0]?.message?.[0] ||
           data?.message ||
           "No transfer options available";
         setError(errorMessage);
-        // Don't clear otherTransfer here - keep previous data visible
-        // setOtherTransfer(null);
 
-        // Clear dynamic transfer data for this key on error
         setDynamicTransferData((prev) => {
           const newData = { ...prev };
           delete newData[transferKey];
@@ -4056,6 +4994,11 @@ const OtherTransfer = ({
         });
       }
     } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Request aborted');
+        return;
+      }
+
       console.error("Error loading transfers:", error);
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
@@ -4072,40 +5015,42 @@ const OtherTransfer = ({
       });
     } finally {
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+      setLoadingRequestKey(null);
     }
-  };
+  }, [token, currentStep]);
 
+  // FIXED: Debounced useEffect to prevent cascading API calls
   useEffect(() => {
-    const currentPaxString = JSON.stringify(pax);
-    const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
-    const timeChanged = lastTimeState && lastTimeState !== departureTime;
-    const dateChanged = lastDateState && lastDateState !== departureDate;
+    const timeoutId = setTimeout(() => {
+      const currentPaxString = JSON.stringify(pax);
+      const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
+      const timeChanged = lastTimeState && lastTimeState !== departureTime;
+      const dateChanged = lastDateState && lastDateState !== departureDate;
 
-    // Call API if any parameter changed AND we have selectedResult.transfer
-    // Also call if we had an error (to retry)
-    if (
-      (paxChanged || timeChanged || dateChanged) &&
-      selectedResult?.transfer && !isResultSelected
-    ) {
-      // Use props values as fallback
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
+      // Only call API if parameters changed AND we're not already processing
+      if (
+        (paxChanged || timeChanged || dateChanged) &&
+        selectedResult?.transfer && 
+        !isResultSelected &&
+        !isBookingInProgress &&
+        !loadingRequestKey
+      ) {
+        const finalDate = departureDate || currentModeDepartureDate;
+        const finalTime = departureTime || currentModeDepartureTime;
 
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-
-        // Clear error before making new request but don't clear otherTransfer yet
-        setError(null);
-
-        // Always use selectedResult.transfer as the source of truth
-        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+        if (finalDate && finalTime) {
+          const departureDateTime = `${finalDate}T${finalTime}:00`;
+          loadTransfers(selectedResult.transfer, pax, departureDateTime);
+        }
       }
-    }
 
-    // Update last states
-    setLastPaxState(currentPaxString);
-    setLastTimeState(departureTime);
-    setLastDateState(departureDate);
+      // Update last states
+      setLastPaxState(currentPaxString);
+      setLastTimeState(departureTime);
+      setLastDateState(departureDate);
+    }, 300); // Debounce for 300ms
+
+    return () => clearTimeout(timeoutId);
   }, [
     pax,
     departureTime,
@@ -4114,13 +5059,33 @@ const OtherTransfer = ({
     error,
     currentModeDepartureDate,
     currentModeDepartureTime,
+    isResultSelected,
+    isBookingInProgress,
+    loadingRequestKey,
+    loadTransfers
   ]);
 
+  // FIXED: Remove the second useEffect that was causing duplicate calls
+  // This was the main culprit - commenting it out
+  /*
   useEffect(() => {
-    if (selectedResult?.transfer && !otherTransfer && !error) {
+    if (selectedResult?.transfer && !isResultSelected) {
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
+
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      }
+    }
+  }, [selectedResult?.transfer, token]);
+  */
+
+  useEffect(() => {
+    if (selectedResult?.transfer && !otherTransfer && !error && !isBookingInProgress) {
       setOtherTransfer(selectedResult.transfer);
     }
-  }, [selectedResult?.transfer]);
+  }, [selectedResult?.transfer, otherTransfer, error, isBookingInProgress]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -4173,19 +5138,6 @@ const OtherTransfer = ({
     }
   }, [selectedResult]);
 
-  useEffect(() => {
-    if (selectedResult?.transfer && !isResultSelected) {
-      // Use props values as fallback
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
-
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-        loadTransfers(selectedResult.transfer, pax, departureDateTime);
-      }
-    }
-  }, [selectedResult?.transfer, token]);
-
   const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -4231,8 +5183,9 @@ const OtherTransfer = ({
     handleUpdateTransferWithData(localSelectedData);
   };
 
+  // FIXED: Add guards to prevent multiple simultaneous booking calls
   const handleModeSelect = (index, priceOptionId, selectedPriceData, mode) => {
-    if (updateLoading) {
+    if (updateLoading || isBookingInProgress) {
       return;
     }
 
@@ -4277,13 +5230,17 @@ const OtherTransfer = ({
         newParentData[index] = selectedPriceData;
         setSelectedData(newParentData);
       }
+      
       if (handleSelect) {
         handleSelect(transferIndex, selectedPriceData, transfer, mode);
       }
 
+      // FIXED: Use setTimeout to prevent immediate execution during state updates
       setTimeout(() => {
-        handleUpdateTransferWithData(newLocalData);
-      }, 50);
+        if (!isBookingInProgress) {
+          handleUpdateTransferWithData(newLocalData);
+        }
+      }, 100);
     }
   };
 
@@ -4293,6 +5250,7 @@ const OtherTransfer = ({
   };
 
   const handleTimeSelect = (time) => {
+    if (isBookingInProgress) return;
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
   };
@@ -4352,7 +5310,6 @@ const OtherTransfer = ({
       throw new Error("No valid transfer options selected");
     }
 
-    // Use props values as fallback, ensuring we have valid values
     const dateToUse = newDate || departureDate || currentModeDepartureDate;
     const timeToUse = newTime || departureTime || currentModeDepartureTime;
 
@@ -4377,55 +5334,66 @@ const OtherTransfer = ({
     return requestBody;
   };
 
+  // FIXED: Add comprehensive duplicate call prevention
   const handleUpdateTransferWithData = async (
     updatedData,
     newTime = null,
     newDate = null
   ) => {
+    // Prevent multiple simultaneous booking calls
+    if (isBookingInProgress) {
+      console.log("Booking already in progress, ignoring duplicate call");
+      return;
+    }
+
     try {
       const newRequestBody = buildRequestPayload(updatedData, newTime, newDate);
 
+      // Enhanced duplicate request prevention
       if (
         lastRequestData &&
         newTime === null &&
         newDate === null &&
         JSON.stringify(lastRequestData.transfers) ===
-        JSON.stringify(newRequestBody.transfers) &&
+          JSON.stringify(newRequestBody.transfers) &&
         lastRequestData.start_datetime === newRequestBody.start_datetime &&
         (lastRequestData.number_of_adults !== newRequestBody.number_of_adults ||
           lastRequestData.number_of_children !==
-          newRequestBody.number_of_children ||
+            newRequestBody.number_of_children ||
           lastRequestData.number_of_infants !==
-          newRequestBody.number_of_infants)
+            newRequestBody.number_of_infants)
       ) {
         setLastRequestData(newRequestBody);
         return;
       }
 
+      // Set flags to prevent duplicate calls
+      setIsBookingInProgress(true);
+      setUpdateLoading(true);
+
       const warningApiCall = (data) => {
         return updateFlightBookingWarning.post(`${itinerary_id}/transfers/taxi/warning/`, data, {
           headers: {
-            Authorization: `Bearer ${props.token}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         });
       };
 
-      // Define the booking API call
       const bookingApiCall = (data) => {
         return UpdateTransferMode.post(
           `${itinerary_id}/bookings/transfer/`,
-          newRequestBody,
+          data,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
           }
-        )
+        );
       };
 
-      // Define success handler
       const handleSuccess = (responseData, message) => {
         setUpdateLoading(false);
+        setIsBookingInProgress(false);
         setIsResultSelected(true);
 
         dispatch(
@@ -4442,8 +5410,9 @@ const OtherTransfer = ({
 
           dispatch(
             openNotification({
-              text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${dcity || transfer[0]?.destination?.city_name
-                } has been updated successfully!`,
+              text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${
+                dcity || transfer[0]?.destination?.city_name
+              } has been updated successfully!`,
               heading: "Success!",
               type: "success",
             })
@@ -4461,15 +5430,10 @@ const OtherTransfer = ({
           );
         }
 
-        setUpdateLoading(false);
         setLoadingOptionId(null);
-
       };
 
-      // Define error handler
       const handleError = (errorMessage) => {
-
-
         console.error("Error updating transfer:", errorMessage);
         dispatch(
           openNotification({
@@ -4479,10 +5443,10 @@ const OtherTransfer = ({
           })
         );
         setUpdateLoading(false);
+        setIsBookingInProgress(false);
         setLoadingOptionId(null);
       };
 
-      // Open the modal with configuration
       openModal({
         title: "Update Taxi Booking",
         message: "Are you sure you want to update this Taxi booking?",
@@ -4492,13 +5456,15 @@ const OtherTransfer = ({
         onSuccess: handleSuccess,
         onError: handleError,
         successMessage: "Taxi updated successfully.",
-        loadingMessage: "Please wait while we update your flight...",
+        loadingMessage: "Please wait while we update your transfer...",
       });
-
 
       setLastRequestData(newRequestBody);
     } catch (error) {
       console.error("Error building request payload:", error);
+      setUpdateLoading(false);
+      setIsBookingInProgress(false);
+      setLoadingOptionId(null);
       dispatch(
         openNotification({
           text: error.message || "Failed to update transfer booking",
@@ -4531,6 +5497,7 @@ const OtherTransfer = ({
   };
 
   const handlePaxChange = (newPax) => {
+    if (isBookingInProgress) return;
     setPax(newPax);
   };
 
@@ -4544,9 +5511,10 @@ const OtherTransfer = ({
   };
 
   const retryLoadTransfers = () => {
+    if (isBookingInProgress) return;
+    
     if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
       setError(null);
-      // Use props values as fallback
       const finalDate = departureDate || currentModeDepartureDate;
       const finalTime = departureTime || currentModeDepartureTime;
 
@@ -4559,8 +5527,18 @@ const OtherTransfer = ({
     }
   };
 
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   return (
     <Container>
+      <ModalComponent />
       <div className="w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
           {/* Date Dropdown */}
@@ -4575,6 +5553,7 @@ const OtherTransfer = ({
               onDateChange={handleDateChange}
               isOutsideRange={() => false}
               enableOutsideDays={true}
+              disabled={isBookingInProgress}
             />
           </div>
 
@@ -4587,8 +5566,10 @@ const OtherTransfer = ({
               Departure Time
             </div>
             <div
-              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-              onClick={() => setShowTimeDropdown((prev) => !prev)}
+              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${
+                isBookingInProgress ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              onClick={() => !isBookingInProgress && setShowTimeDropdown((prev) => !prev)}
             >
               <span className="text-sm font-medium">
                 {formatTimeForDisplay(departureTime)}
@@ -4611,7 +5592,7 @@ const OtherTransfer = ({
               </button>
             </div>
 
-            {showTimeDropdown && (
+            {showTimeDropdown && !isBookingInProgress && (
               <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {timeOptions.map((time, index) => (
                   <div
@@ -4639,6 +5620,7 @@ const OtherTransfer = ({
             setPax={handlePaxChange}
             showPax={showPax}
             combo={true}
+            disabled={isBookingInProgress}
           />
         </div>
       </div>
@@ -4664,7 +5646,8 @@ const OtherTransfer = ({
             <div className="text-gray-600 text-sm mb-3">{error}</div>
             <button
               onClick={retryLoadTransfers}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm disabled:opacity-50"
+              disabled={isBookingInProgress}
             >
               Retry
             </button>
@@ -4695,7 +5678,8 @@ const OtherTransfer = ({
             <div
               key={`${otherTransfer.id}-price-${priceIndex}`}
               className={`flex w-full flex-col  justify-between bg-white p-3 md:p-4 border-b
-                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}`}
+                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+                ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
             >
               <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
                 <div className="text-gray-500 mt-1">
@@ -4741,9 +5725,11 @@ const OtherTransfer = ({
 
                     <div
                       className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
-                        }`}
+                        } ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
                       onClick={() => {
                         if (updateLoading && !isOptionLoading) return;
+                        if (isBookingInProgress && !isOptionLoading) return;
+                        
                         const selectedPriceData = {
                           ...otherTransfer,
                           selectedPrice: {
@@ -4796,7 +5782,6 @@ const OtherTransfer = ({
     </Container>
   );
 };
-
 
 
 
