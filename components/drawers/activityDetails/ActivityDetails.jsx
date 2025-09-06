@@ -459,7 +459,7 @@ export default function ActivityDetails(props) {
             </div>
           ) : null}
 
-         {props?.data?.prices && props?.data?.prices?.length && (
+         {props?.data?.prices && props?.data?.prices?.length && props?.data?.is_package && (
   <div className="mb-4">
     <h3 className="font-medium text-base mb-3">Package Options</h3>
     
