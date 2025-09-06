@@ -133,24 +133,22 @@ export default function TemporaryDrawer(props) {
         {isPageWide && (
           <div className="w-[95%] mx-auto mt-4 flex flex-row justify-between gap-3 flex-wrap">
 
-            <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
-
-
             <div className="w-full flex flex-row justify-between">
-              <StarCategory
+
+            <div className="w-[40%]">
+            <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
+            </div>
+             <StarCategory
                 starCategory={props.FILTERS.star_category}
                 selectedStarCategory={selectedStarCategory}
                 setSelectedStarCategory={setSelectedStarCategory}
               />
-              <div className="w-fit">
-                <Travelers
-                  filters={props.filters}
-                  setFilters={props.setFilters}
-                />
-              </div>
-            </div>
 
-            <div className="w-[50%] flex flex-col gap-3">
+              </div>
+
+            <div className="w-full flex flex-row justify-between">
+
+               <div className="w-[50%] flex flex-col gap-3 justify-center">
 
 
               <div className="w-fit flex flex-row gap-5">
@@ -171,6 +169,16 @@ export default function TemporaryDrawer(props) {
                 </button>
               </div>
             </div>
+             
+              <div className="w-fit">
+                <Travelers
+                  filters={props.filters}
+                  setFilters={props.setFilters}
+                />
+              </div>
+            </div>
+
+           
 
 
           </div>

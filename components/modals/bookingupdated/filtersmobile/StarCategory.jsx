@@ -17,7 +17,7 @@ export default function StarCategory(props) {
     return (
         <div className="flex flex-col justify-start items-baseline">
             <div className="mb-2 font-normal">Star category</div>
-            <div className="flex flex-row gap-1">
+            <div className="flex flex-row gap-1 mt-[0.65rem]">
                 {props.starCategory.map((star, i) => (
                     <button
                         onClick={() => handleStarCategory(star)}
