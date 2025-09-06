@@ -33,12 +33,11 @@ const SortItem = styled.div`
 `;
 
 export default function TemporaryDrawer(props) {
-  console.log("props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
-  const [SelectedSort, setSelectedSort] = useState(props.FILTERS.sort[0]);
+  const [SelectedSort, setSelectedSort] = useState(null);
   const [refundable, setRefundable] = useState(false);
-  const [freeBreakfast, setFreeBreakfast] = useState(true);
+  const [freeBreakfast, setFreeBreakfast] = useState(false);
   const [budget, setBudget] = useState([
     props.filtersState.budget.price_lower_range,
     props.filtersState.budget.price_upper_range,
@@ -46,6 +45,27 @@ export default function TemporaryDrawer(props) {
   const [sortShow, setSortShow] = useState(false);
   const dispatch = useDispatch();
   const filtersRef = useRef(null);
+
+  const sortRef = useRef(null);
+
+
+  useEffect(() => {
+    const handleClickOutsideSort = (event) => {
+      if (sortRef.current && !sortRef.current.contains(event.target)) {
+        setSortShow(false);
+      }
+    };
+
+    if (sortShow) {
+      document.addEventListener("mousedown", handleClickOutsideSort);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideSort);
+    };
+  }, [sortShow]);
+
+
 
   // useEffect(() => {
   //   const handleClickOutside = (event) => {
@@ -99,7 +119,12 @@ export default function TemporaryDrawer(props) {
       })
     );
     setFreeBreakfast((prev) => !prev);
-    props?.handleFreeBreakfast();
+    props.setFilters((prev) => ({
+      ...prev,
+      free_breakfast: !freeBreakfast,
+      applyFilter: !props.filters.applyFilter
+    }))
+    // props?.handleFreeBreakfast();
   };
 
   return (
@@ -107,8 +132,24 @@ export default function TemporaryDrawer(props) {
       <React.Fragment key={"bottom"}>
         {isPageWide && (
           <div className="w-[95%] mx-auto mt-4 flex flex-row justify-between gap-3 flex-wrap">
-            <div className="w-[50%] flex flex-col gap-3">
-              <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange}/>
+
+            <div className="w-full flex flex-row justify-between">
+
+            <div className="w-[40%]">
+            <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
+            </div>
+             <StarCategory
+                starCategory={props.FILTERS.star_category}
+                selectedStarCategory={selectedStarCategory}
+                setSelectedStarCategory={setSelectedStarCategory}
+              />
+
+              </div>
+
+            <div className="w-full flex flex-row justify-between">
+
+               <div className="w-[50%] flex flex-col gap-3 justify-center">
+
 
               <div className="w-fit flex flex-row gap-5">
                 <button
@@ -128,24 +169,24 @@ export default function TemporaryDrawer(props) {
                 </button>
               </div>
             </div>
-
-            <div className="flex flex-col justify-between">
-              <StarCategory
-                starCategory={props.FILTERS.star_category}
-                selectedStarCategory={selectedStarCategory}
-                setSelectedStarCategory={setSelectedStarCategory}
-              />
-
-              <Travelers
-                filters={props.filters}
-                setFilters={props.setFilters}
-              />
+             
+              <div className="w-fit">
+                <Travelers
+                  filters={props.filters}
+                  setFilters={props.setFilters}
+                />
+              </div>
             </div>
+
+           
+
+
           </div>
         )}
 
         {!isPageWide && (
           <div className="w-[90%] mx-auto">
+
             <Travelers filters={props.filters} setFilters={props.setFilters} />
           </div>
         )}
@@ -156,6 +197,58 @@ export default function TemporaryDrawer(props) {
               Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
               stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
               <div
+                style={{
+                  display: "inline",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setSortShow(!sortShow);
+                }}
+              >
+                <b>
+                  {SelectedSort || "Select"}
+                  {sortShow ? (
+                    <FiChevronUp
+                      style={{
+                        display: "inline",
+                        fontWeight: 900,
+                        fontSize: "1.2rem",
+                      }}
+                    />
+                  ) : (
+                    <FiChevronDown
+                      style={{
+                        display: "inline",
+                        fontWeight: 900,
+                        fontSize: "1.2rem",
+                      }}
+                    />
+                  )}
+                </b>
+
+                {sortShow && (
+                  <div ref={sortRef}>
+                    <SortContainer>
+                      {props.FILTERS["sort"].map((e, i) => (
+                        <SortItem
+                          key={i}
+                          onClick={() => {
+                            setSelectedSort(e);
+                            props._addFilterHandler(e.toLowerCase(), "sort");
+                            setSortShow(false);
+                          }}
+                          selected={e === SelectedSort}
+                        >
+                          {e}
+                        </SortItem>
+                      ))}
+                    </SortContainer>
+                  </div>
+                )}
+              </div>
+
+              {/* <div
                 style={{
                   display: "inline",
                   position: "relative",
@@ -203,7 +296,7 @@ export default function TemporaryDrawer(props) {
                 ) : (
                   <></>
                 )}
-              </div>
+              </div> */}
             </div>
 
             {(

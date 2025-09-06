@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 
+
 // Generic API Modal Component
 const GenericAPIModal = ({
   isOpen,
@@ -16,7 +17,6 @@ const GenericAPIModal = ({
   successMessage = "Operation completed successfully",
   loadingMessage = "Processing your request...",
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningMessage, setWarningMessage] = useState("");
   const [warningApiCalled, setWarningApiCalled] = useState(false);
@@ -30,7 +30,7 @@ const GenericAPIModal = ({
   // Reset states when modal closes
   useEffect(() => {
     if (!isOpen) {
-      setIsLoading(false);
+     
       setShowWarningModal(false);
       setWarningMessage("");
       setWarningApiCalled(false);
@@ -44,12 +44,11 @@ const GenericAPIModal = ({
       return;
     }
 
-    setIsLoading(true);
     setWarningApiCalled(true);
     
     try {
-      // Call the warning API first
-        console.log("Calling warning API with:", requestData);
+      // Call the warning API without showing any loader
+      console.log("Calling warning API with:", requestData);
       console.log("Warning API function:", warningApiCall);
       const warningResponse = await warningApiCall(requestData);
       
@@ -58,14 +57,12 @@ const GenericAPIModal = ({
         // Show warning modal with the warning message
         setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
         setShowWarningModal(true);
-        setIsLoading(false);
       } else {
         // Proceed directly with booking if show_warning is false
         await proceedWithBooking();
       }
       
     } catch (error) {
-      setIsLoading(false);
       console.error("Warning API failed:", error);
       
       // Extract error message with better error handling
@@ -83,8 +80,9 @@ const GenericAPIModal = ({
         errorMsg = error.message;
       }
       
+      // Show error as notification and close modal
       onError(errorMsg);
-      onClose(); // Close modal on warning API failure
+      onClose(); 
     }
   };
 
@@ -96,16 +94,15 @@ const GenericAPIModal = ({
     }
 
     try {
-      setIsLoading(true);
+     
       setShowWarningModal(false); // Hide warning modal if it was showing
       
       const response = await bookingApiCall(requestData);
       
-      setIsLoading(false);
+   
       onSuccess(response?.data, successMessage);
       onClose();
     } catch (error) {
-      setIsLoading(false);
       console.error("Booking API failed:", error);
       
       // Extract error message with better error handling
@@ -124,6 +121,7 @@ const GenericAPIModal = ({
       }
       
       onError(errorMsg);
+      onClose();
     }
   };
 
@@ -137,9 +135,7 @@ const GenericAPIModal = ({
   };
 
   const handleCancel = () => {
-    if (isLoading) {
-      return; // Don't allow closing while loading
-    }
+    
     
     if (showWarningModal) {
       handleWarningCancel();
@@ -159,8 +155,8 @@ const GenericAPIModal = ({
           <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
         </div>
 
-        {/* Close button - only show when not loading */}
-        {!isLoading && (
+        {/* Close button - only show when not loading booking */}
+        { (
           <button
             onClick={handleCancel}
             className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
@@ -172,43 +168,40 @@ const GenericAPIModal = ({
         {/* Content */}
         <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
           
-          {/* Header */}
-          <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">
-            {showWarningModal ? "Warning Confirmation" : title}
-          </h2>
+          {/* Show booking loader */}
+         
 
-          {/* Message */}
-          <div className="text-gray-700 mb-6">
-            {isLoading ? (
-              <div className="flex items-center gap-3">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                {loadingMessage}
-              </div>
-            ) : showWarningModal ? (
-              <div className="text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                {warningMessage}
-              </div>
-            ) : (
-              message
-            )}
-          </div>
+          {/* Show warning modal content */}
+          {showWarningModal && (
+            <>
+              {/* Header */}
+              <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">
+                Dates Change Warning!
+              </h2>
 
-          {/* Buttons - Only show when there's a warning to confirm and not loading */}
-          {!isLoading && showWarningModal && (
-            <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-              <button
-                onClick={handleWarningCancel}
-                className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleWarningConfirm}
-                className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
-              >
-                Confirm
-              </button>
-            </div>
+              {/* Warning Message */}
+              <div className="text-gray-700 mb-6">
+                <div className="rounded-lg p-4">
+                  {warningMessage}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
+                <button
+                  onClick={handleWarningCancel}
+                  className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleWarningConfirm}
+                  className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
+                >
+                  Confirm
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -217,7 +210,6 @@ const GenericAPIModal = ({
   );
 };
 
-// Hook for using the modal
 export const useGenericAPIModal = () => {
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,

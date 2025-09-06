@@ -2397,7 +2397,7 @@ const NewMultiModeContainer = ({
 
       const handleSuccess = (responseData, message) => {
 
-        const data = response.data;
+        const data = responseData;
         dispatch(
           updateSingleTransferBooking(
             `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
