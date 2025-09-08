@@ -2033,7 +2033,7 @@ const Details = (props) => {
                   fontWeight="400"
                   fontSize="0.45rem"
                   borderWidth="1px"
-                  width="12rem"
+                  width="100%"
                   borderRadius="10px"
                   bgColor="#F7E700"
                   onclick={handleLoginButton}

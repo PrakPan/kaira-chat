@@ -24,7 +24,7 @@ export const dateIsValid = (dateStr) => {
 
 export function getDaysDifference(date1, date2) {
 
-  if(!date1 || date2){
+  if(!date1 || !date2){
     return null;
   }
   const d1 = new Date(date1);

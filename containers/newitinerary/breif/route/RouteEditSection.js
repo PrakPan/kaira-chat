@@ -222,88 +222,121 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  console.log("Route Editt",props.routes)
+  console.log("Route Edittt",props.routes)
 
   useEffect(() => {
-    const cities = [];
-    if (props?.routes) {
-      for (let i = 0; i < props.routes.length; i += 1) {
-        cities.push({
-          startingCity: i === 0,
-          endingCity: i === props.routes.length - 1,
-          cityData: {
-            ...props.routes[i],
-            city_name:
-              props.routes[i]?.city_name || props.routes[i]?.city?.name,
-            checkin_date:
-              (i === 0
-                ? itinerary?.start_date
-                : i === props.routes.length - 1
-                ? itinerary?.end_date
-                : getDate(
-                    props.routes[i].checkin_date ||
-                      props.routes[i]?.start_date ||
-                      (i === 0
-                        ? itinerary?.start_date
-                        : i === props.routes.length - 1
-                        ? itinerary?.end_date
-                        : null)
-                  )) || null,
-            checkout_date:
-              (i === 0
-                ? itinerary?.start_date
-                : i === props.routes.length - 1
-                ? itinerary?.end_date
-                : getDate(
-                    props.routes[i].checkout_date ||
-                      addDaysToDate(
-                        props.routes[i]?.start_date,
-                        props.routes[i]?.duration
-                      )
-                  )) || null,
-            city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
-            place_id:
-              props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-            duration: props?.routes[i]?.duration,
-            id: props?.routes[i]?.hasOwnProperty("id")
-              ? props?.routes[i]?.id
-              : null,
-            color: CITY_COLOR_CODES[i % 7],
-            lat:
-              props?.routes[i]?.lat ||
-              props?.routes[i]?.latitude ||
-              props?.routes[i]?.city?.latitude,
-            long:
-              props?.routes[i]?.long ||
-              props?.routes[i]?.longitude ||
-              props?.routes[i]?.city?.longitude,
-            nights: getDaysDifference(props?.routes[i].end_date - props?.routes[i-1]?.start_date) || props?.routes[i]?.nights || props?.routes[i]?.duration,
-          },
-        });
-
-        if (i !== 0 && i !== props.routes.length - 1) {
-          cities[cities.length - 1].cityData.nights = differenceInDays(
-            new Date(
-              getDate(
-                props.routes[i].checkout_date ||
-                  addDaysToDate(
-                    props.routes[i]?.start_date,
-                    props.routes[i]?.duration
-                  )
-              )
-            ),
-            new Date(
-              getDate(
-                props.routes[i].checkin_date || props.routes[i]?.start_date
-              )
-            )
-          );
-        }
-      }
-
-      setDestinations(cities);
+  const cities = [];
+  if (props?.routes) {
+    for (let i = 0; i < props.routes.length; i += 1) {
+      cities.push({
+        startingCity: i === 0,
+        endingCity: i === props.routes.length - 1,
+        cityData: {
+          ...props.routes[i],
+          city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
+          checkin_date: i === 0 ? itinerary?.start_date : props.routes[i]?.start_date,
+          checkout_date: i === props.routes.length - 1 ? itinerary?.end_date : props.routes[i]?.end_date,
+          city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+          place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+          duration: props?.routes[i]?.duration,
+          id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
+          color: CITY_COLOR_CODES[i % 7],
+          lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
+          long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
+          nights: (() => {
+            if (i === 0 || i === props.routes.length - 1) {
+              return props?.routes[i]?.duration || 0;
+            }
+            
+            const endDate = props?.routes[i]?.start_date;
+            const startDate = props?.routes[i-1]?.start_date;
+            
+            if (startDate && endDate) {
+              return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+            }
+            
+            return props?.routes[i]?.duration || 1;
+          })(),
+        },
+      });
     }
-  }, [props.routes]);
+    setDestinations(cities);
+  }
+}, [props.routes]);
+
+  // useEffect(() => {
+  //   const cities = [];
+  //   if (props?.routes) {
+  //     for (let i = 0; i < props.routes.length; i += 1) {
+  //       cities.push({
+  //         startingCity: i === 0,
+  //         endingCity: i === props.routes.length - 1,
+  //         cityData: {
+  //           ...props.routes[i],
+  //           city_name:
+  //             props.routes[i]?.city_name || props.routes[i]?.city?.name,
+  //           checkin_date:
+  //             (i === 0
+  //               ? itinerary?.start_date
+  //               : i === props.routes.length - 1
+  //               ? itinerary?.end_date
+  //               : getDate(
+  //                   props.routes[i].checkin_date ||
+  //                     props.routes[i]?.start_date ||
+  //                     (i === 0
+  //                       ? itinerary?.start_date
+  //                       : i === props.routes.length - 1
+  //                       ? itinerary?.end_date
+  //                       : null)
+  //                 )) || null,
+  //           checkout_date:
+  //             (i === 0
+  //               ? itinerary?.start_date
+  //               : i === props.routes.length - 1
+  //               ? itinerary?.end_date
+  //               : getDate(
+  //                   props.routes[i].checkout_date ||
+  //                     addDaysToDate(
+  //                       props.routes[i]?.start_date,
+  //                       props.routes[i]?.duration
+  //                     )
+  //                 )) || null,
+  //           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+  //           place_id:
+  //             props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+  //           duration: props?.routes[i]?.duration,
+  //           id: props?.routes[i]?.hasOwnProperty("id")
+  //             ? props?.routes[i]?.id
+  //             : null,
+  //           color: CITY_COLOR_CODES[i % 7],
+  //           lat:
+  //             props?.routes[i]?.lat ||
+  //             props?.routes[i]?.latitude ||
+  //             props?.routes[i]?.city?.latitude,
+  //           long:
+  //             props?.routes[i]?.long ||
+  //             props?.routes[i]?.longitude ||
+  //             props?.routes[i]?.city?.longitude,
+  //           nights: (i < props?.routes?.length - 1)  && i >= 1? 
+  // getDaysDifference(props?.routes[i]?.end_date, props?.routes[i-1]?.end_date) || 
+  // props?.routes[i]?.nights || 
+  // props?.routes[i]?.duration 
+  // : props?.routes[i]?.nights || props?.routes[i]?.duration,
+  //         },
+  //       });
+
+  //       if (i !== 0 && i !== props.routes.length - 1) {
+  //         cities[cities.length - 1].cityData.nights = getDaysDifference(
+  //          props?.routes[i]?.start_date, props?.routes[i-1]?.start_date
+  //         );
+  //       }
+  //     }
+
+  //     setDestinations(cities);
+  //   }
+  // }, [props.routes]);
+
+  console.log("Route Editt",destinations)
 
   useEffect(() => {
     if (destinations.length) {
