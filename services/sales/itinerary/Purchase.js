@@ -21,4 +21,9 @@ export const applyCoupon = axios.create({
 export const removeCoupon = axios.create({
   baseURL: `${MERCURY_HOST}/payment/coupons/remove`,
 });
+
+export const repriceBookings = axios.create({
+  baseURL: `${MERCURY_HOST}/api/v1/itinerary`,
+});
+
 export default myplans;
