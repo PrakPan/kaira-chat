@@ -98,11 +98,12 @@ const SimpleTabsV2 = (props) => {
     return () => clearTimeout(timeout);
   }, []);
 
-  useEffect(() => { 
-   const totalCount = Object.values(props.payment.summary).reduce((sum, item) => sum + item.count, 0);
-   setCountCartItems(totalCount);
-
-  },[props.payment])
+  useEffect(() => {
+    if (props?.payment?.summary && Object.keys(props?.payment?.summary).length) {
+      const totalCount = Object.values(props.payment.summary).reduce((sum, item) => sum + item.count, 0);
+      setCountCartItems(totalCount);
+    }
+  }, [props?.payment])
 
   const scrollToElement = (elementId) => {
     scroller?.scrollTo(elementId, {
@@ -1429,7 +1430,7 @@ const SimpleTabsV2 = (props) => {
               </>
             )}
           </div>
-        )}
+        }
       </div>
 
       {isPageWide && (

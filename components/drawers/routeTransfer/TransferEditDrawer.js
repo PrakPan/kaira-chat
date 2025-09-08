@@ -522,13 +522,6 @@ const TransferEditDrawer = (props) => {
     }
     setUpdatingTransfer(true);
     setSelectLoading(true);
-    const access_token = localStorage.getItem("access_token");
-    if (!props.token) {
-      setShowLoginModal(true);
-      return;
-    }
-    setUpdatingTransfer(true);
-    setSelectLoading(true);
 
     const data = {
       trace_id,
@@ -1592,7 +1585,7 @@ const RouteContainer = (props) => {
                 </div>
                 <AiOutlineRight size={16} className="md:text-20" />
               </div>
-            )}
+            }
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
