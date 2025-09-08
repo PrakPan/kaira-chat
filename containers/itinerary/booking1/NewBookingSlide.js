@@ -322,7 +322,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   if (!Cart?.lock_in_fee_paid && (!targetTime || timeLeft <= 0)) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
-        Lock this trip with ₹{lockInAmount?.toLocaleString('en-IN')} to refresh prices - Prices Expired
+        Prices Expired! -Lock this trip with ₹{lockInAmount?.toLocaleString('en-IN')} to refresh prices
       </div>
     );
   }
@@ -1496,7 +1496,7 @@ const Details = (props) => {
           className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
             }  -mt-[1rem] -mx-[1rem] mb-0`}
         >
-          <LivePriceTimer priceValidUntil={"2025-09-08 16:28:00" || Cart?.price_valid_until} />
+          <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
           <div className=" mx-[1rem] mt-[1rem]">
             <div className="flex flex-row justify-between">
               {props.iscouponApplied &&
