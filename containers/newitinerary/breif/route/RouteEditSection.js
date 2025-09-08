@@ -248,8 +248,8 @@ const RouteEditSection = (props) => {
               return props?.routes[i]?.duration || 0;
             }
             
-            const endDate = props?.routes[i]?.start_date;
-            const startDate = props?.routes[i-1]?.start_date;
+            const endDate = props?.routes[i]?.end_date;
+            const startDate = props?.routes[i-1]?.end_date;
             
             if (startDate && endDate) {
               return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
