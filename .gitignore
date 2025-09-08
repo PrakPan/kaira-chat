@@ -105,3 +105,5 @@ public/sitemap.xml
 pm2-deploy.sh
 s3-deploy.sh
 index_path.py
+
+vercel.json

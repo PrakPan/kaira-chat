@@ -92,21 +92,21 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  return {
-    paths:paths,
-    fallback:false
-  }
   // return {
-  //   paths: [
-  //     {
-  //       params: {
-  //         continent: "europe",
-  //         country: "portugal",
-  //       },
-  //     },
-  //   ],
-  //   fallback: false,
-  // };
+  //   paths:paths,
+  //   fallback:false
+  // }
+  return {
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+        },
+      },
+    ],
+    fallback: false,
+  };
 }
 
 
