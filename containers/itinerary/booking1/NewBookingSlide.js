@@ -283,14 +283,26 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+  const Cart = useSelector(state => state.Cart);
 
-  const calculateTimeLeft = () => Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const calculateTimeLeft = () => {
+    if (!targetTime) return 0;
+    return Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
+  };
+
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft()); 
+  const [isInitialized, setIsInitialized] = useState(false); 
   const lastUpdateRef = useRef(Date.now());
-  const Cart = useSelector(state => state.Cart)
 
   useEffect(() => {
-    if (!targetTime || targetTime <= Date.now()) return;
+    
+    setIsInitialized(true);
+    
+    if (!targetTime) return;
+
+    setTimeLeft(calculateTimeLeft());
+
+    if (targetTime <= Date.now()) return;
 
     let animationFrameId;
     let intervalId;
@@ -318,7 +330,9 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
     };
   }, [targetTime]);
 
-  // Check if timer expired - only show message if lock-in fee is NOT paid
+
+  if (!isInitialized) return null;
+
   if (!Cart?.lock_in_fee_paid && (!targetTime || timeLeft <= 0)) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
