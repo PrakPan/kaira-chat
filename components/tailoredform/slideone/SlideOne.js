@@ -42,15 +42,15 @@ const SlideOne = (props) => {
   const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
   const dispatch = useDispatch();
   const handleOnCalenderApplyDates = (values) => {
-    // if (date.type == "fixed") {
-    //   dispatch(setFixedDate(values.start, values.end));
-    // }
-    // else if (date.type == "flexible") {
-    //   dispatch(setFlexibleDate(values.month, '2025', values.duration));
-    // }
-    // else {
-    //   dispatch(setAnytimeDate(values.duration))
-    // }
+    if (values.dateType == "fixed") {
+      dispatch(setFixedDate(values.start, values.end));
+    }
+    else if (values.dateType == "flexible") {
+      dispatch(setFlexibleDate(values.month, '2025', values.duration));
+    }
+    else {
+      dispatch(setAnytimeDate(values.duration))
+    }
   }
   const CITIES = null;
   const SetDateType = (value) => {

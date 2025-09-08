@@ -17,7 +17,6 @@ const Card = styled.div`
 const FlickityComp = (props) => {
   const router=useRouter()
     const slideIndex = Number(router.query.slideIndex) || 0;
-  console.log("flickity props are: ",slideIndex)
   return (
     <div style={{ width: "100%" }} className="font-inter h-full">
       {(!slideIndex || slideIndex==0) ? (

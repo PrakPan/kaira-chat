@@ -62,19 +62,12 @@ const RouteEditSection = (props) => {
     const [isAddMode, setIsAddMode] = useState(false);
     const destinationRef = useRef(null);
 
-    const containerRef = useRef(null);
     const [containerHeight, setContainerHeight] = useState(0);
 
-    useEffect(() => {
-        if (containerRef.current) setContainerHeight(containerRef.current.clientHeight);
 
-        const handleResize = () => {
-            if (containerRef.current) setContainerHeight(containerRef.current.clientHeight);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    useEffect(()=>{
+        console.log("close add destination called ",isAddMode)
+    },[isAddMode])
 
     useEffect(() => {
         if (routes.length) {
@@ -89,19 +82,12 @@ const RouteEditSection = (props) => {
         }
     }, [destinations, startDate, endDate]);
 
-    const handleOutsideClick = (event) => {
-        if (destinationRef.current && !destinationRef.current.contains(event.target)) {
-            destinationRef.current.setPopUp();
-        }
-    };
     return (
         <div
-            ref={containerRef}
-            onClick={(e) => handleOutsideClick(e)}
             className="w-full h-full relative  flex flex-col bg-white items-center  overflow-y-auto hide-scrollbar"
         >
 
-            <div className="w-full h-full px-5 hide-scrollbar overflow-y-auto py-5">
+            <div className="w-full h-full md:px-5 hide-scrollbar overflow-y-auto py-5">
 
                 {!isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges })}
 
@@ -187,11 +173,11 @@ export const EditDestinations = (props) => {
             <div className="w-full flex flex-row items-start justify-between">
                 <div className="text-[20px] pb-3">Route Preview</div>
                 <div
-                    onClick={() => props?.setIsAddMode(!props?.isEditMode)}
+                    onClick={() => props?.setIsAddMode(true)}
                     className="relative text-blue cursor-pointer underline text-sm"
                 >
                     + Add Destination
-                    {props.isAddMode && (
+                    {props.isAddMode == true && (
                         <div className="text-black absolute top-[100px] -left-[200px] w-[300px]">
                             <DestinationPopUp
                                 destinationRef={props.destinationRef}
@@ -203,7 +189,10 @@ export const EditDestinations = (props) => {
                                 updateDestinationsDates={updateDestinationsDates}
                                 setDestinationChanges={props.setDestinationChanges}
                                 onSetDestination={(dest) => setNewDestination(dest)}
-                                onClose={() => props.setIsAddMode(false)}
+                                onClose={() => {
+                                    props.setIsAddMode(false)
+                                    console.log("close add destination called close")
+                                }}
                             />
                         </div>
                     )}
@@ -330,7 +319,7 @@ export const DragDrop = (props) => {
                     updateDestinationsDates={updateDestinationsDates}
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
-                    onClose={()=>setPopUp(false)}
+                    onClose={() => setPopUp(false)}
                 />
             )}
 
@@ -384,7 +373,7 @@ export const Destination = (props) => {
                     updateDestinationsDates={updateDestinationsDates}
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
-                    onClose={()=>setPopUp(false)}
+                    onClose={() => setPopUp(false)}
                 />
             )}
 
@@ -432,8 +421,12 @@ export const Destination = (props) => {
                 {(
                     <div className="flex flex-row items-center gap-2">
                         <div
-                            onClick={() => handleEditDestination(setPopUp)}
-                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded"
+                            onClick={(e) => {
+                                 e.stopPropagation();  
+                                handleEditDestination(setPopUp)
+                            }
+                            }
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
                         >
                             <MdOutlineEdit size={18} color={"#3B82F6"} />
                         </div>

@@ -19,6 +19,8 @@ import useMediaQuery from "../media";
 
 const Enquiry = (props) => {
   const router = useRouter();
+    if(!router.isReady) return;
+
   const dispatch = useDispatch();
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [route, setRoute] = useState([]);
@@ -71,12 +73,21 @@ const Enquiry = (props) => {
     };
   }, [props.tailoredFormModal]);
 
+  useEffect(()=>{
+ if(slideIndex && slideIndex!=0){
+    console.log("inside slide index")
+    if(!itineraryInititateData) router.push({
+        pathname: '/new-trip'
+      })
+  }
+  },[router.isReady,slideIndex])
+
   useEffect(() => {
     if (props.token && props.phone !== "null") {
       _submitDataHandler();
     }
     setShowPopup(popupObj);
-  }, [slideIndex, props.token, props.phone]);
+  }, [ props.token, props.phone]);
 
   useEffect(() => {
     if (props.userLocation) {
@@ -134,7 +145,7 @@ const Enquiry = (props) => {
       })
       return;
     }
-    if (!(slideOneData.date.type === "fixed" && slideOneData.date.start_date && slideOneData.date.end_date)) {
+    if (slideOneData.date.type === "fixed" && !(slideOneData.date.start_date && slideOneData.date.end_date)) {
       setErrors({
         startLocation:null,
         destination1:null,
@@ -337,14 +348,14 @@ const Enquiry = (props) => {
               <></>
             )}
             <div className="w-full flex items-center justify-between mt-[20px]">
-              <div
+              {isDesktop&&<div
                 style={{
                   padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
                   marginBottom: slideIndex === 2 ? "0rem" : "0rem",
                 }}
                 className="w-max flex flex-row items-center"
               >
-                {slideIndex && isDesktop ? (
+                {slideIndex ? (
                   <div className="center-div">
                     <BiArrowBack
                       onClick={_prevSlideHandler}
@@ -355,7 +366,7 @@ const Enquiry = (props) => {
                 ) : (
                   <></>
                 )}
-              </div>
+              </div>}
               <div className="">
                 <h1
                   className="
@@ -471,9 +482,8 @@ const Enquiry = (props) => {
                 )}
 
                 {slideIndex === 1 &&
-                  (!props.token || props.phone === "null") && (
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className="p-4">
-                      <button className="LargeIndigoOutlinedButton" onClick={_slideTwoSkip}>Skip</button>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`p-4 ${!isDesktop&&"gap-2"}`}>
+                      <button className={`LargeIndigoOutlinedButton ${!isDesktop&&"w-1/2"}`} onClick={_slideTwoSkip}>Skip</button>
                       <Button
                         fontSize="1rem"
                         padding="0.5rem 2rem"
@@ -497,13 +507,13 @@ const Enquiry = (props) => {
                         height="50px"
                         color="white"
                         style={{
-                          maxWidth: "500px",
+                          maxWidth: isDesktop?"500px":"50%",
                           width: "100%",
                         }}                    >
                         Continue
                       </Button>
                     </div>
-                  )}
+                  }
 
                 {slideIndex === 2 && (
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>

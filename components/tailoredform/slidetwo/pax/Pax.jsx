@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import { IoChevronDown, IoChevronUp, IoPerson } from "react-icons/io5";
+import { useState, useRef, useEffect } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Button from "../../../ui/button/Index";

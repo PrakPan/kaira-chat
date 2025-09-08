@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import Modal from "../../ui/Modal";
 import useMediaQuery from "../../media";
+import BottomModal from "../../ui/LowerModal";
 
 export const StyledText = styled.div`
   font-family: "Inter", sans-serif;
@@ -183,14 +184,15 @@ const EnterPassenger = (props) => {
     setShowPassenger(false);
   };
 
-  console.log("room config new is: ",props?.roomConfiguration)
+  console.log("room config new is: ", props?.roomConfiguration)
   return (
     <div>
       <StyledText className="mb-[4px]">Who's Going</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
-        {props.numberOfAdults+props.numberOfChildren+props.numberOfInfants} Travelers
+        {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers
       </StyledBox>
 
+      {isPageWide ? 
       <Modal
         height={isPageWide ? "436px" : "100%"}
         borderRadius={"12px"}
@@ -234,33 +236,33 @@ const EnterPassenger = (props) => {
                   <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={children > 12}>+</CounterButton>
                 </CounterBox>
               </div>
-              
+
             </PassengerRow>
 
             {children > 0 && (
-                <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
-                  {Array.from({ length: children }).map((_, idx) => (
-                    <PassengerRow className="w-full text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                      <div className="flex justify-between items-center w-full">
-                        <div className="title">Age of Child {idx}</div>
-                        <AgeInput
-                          key={idx}
-                          type="number"
-                          min="2"
-                          max="12"
-                          value={childAges[idx] || ""}
-                          onChange={(e) => {
-                            const updated = [...childAges];
-                            updated[idx] = e.target.value;
-                            setChildAges(updated);
-                          }}
-                        />
-                      </div>
-                    </PassengerRow>
-                  ))}
-                </div>
-              )}
+              <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
+                {Array.from({ length: children }).map((_, idx) => (
+                  <PassengerRow className="w-full text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                    <div className="flex justify-between items-center w-full">
+                      <div className="title">Age of Child {idx}</div>
+                      <AgeInput
+                        key={idx}
+                        type="number"
+                        min="2"
+                        max="12"
+                        value={childAges[idx] || ""}
+                        onChange={(e) => {
+                          const updated = [...childAges];
+                          updated[idx] = e.target.value;
+                          setChildAges(updated);
+                        }}
+                      />
+                    </div>
+                  </PassengerRow>
+                ))}
+              </div>
+            )}
 
             {/* Infants */}
             <PassengerRow>
@@ -282,7 +284,96 @@ const EnterPassenger = (props) => {
             <ApplyButton className="w-1/2" onClick={handleApply}>Apply</ApplyButton>
           </div>
         </div>
-      </Modal>
+      </Modal> :
+        <BottomModal
+          show={showPassengers}
+          onHide={() => setShowPassenger(false)}
+          width="100%"
+          height="max-content"
+          >
+          <div className="flex flex-col justify-between items-center h-[436px] p-[20px] overflow-y-auto">
+            <PassengerRow className="flex flex-col p-2 !w-[100%]">
+              <div className="text-[20px]">Who's Going?</div>
+              <div>{adults + children + infants} Travelers</div>
+            </PassengerRow>
+
+            <Section className="w-full">
+              {/* Adults */}
+              <PassengerRow className="!w-[100%]">
+                <PassengerLabel>
+                  <div className="title">Adults</div>
+                  <div className="subtitle">Ages 13 or above</div>
+                </PassengerLabel>
+                <CounterBox>
+                  <CounterButton onClick={() => setAdults((p) => p - 1)} disabled={adults <= 1}>−</CounterButton>
+                  <CounterValue>{adults}</CounterValue>
+                  <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={adults >= 14}>+</CounterButton>
+                </CounterBox>
+              </PassengerRow>
+
+              {/* Children */}
+              <PassengerRow className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+                  <PassengerLabel>
+                    <div className="title">Children</div>
+                    <div className="subtitle">Ages 2 to 12</div>
+                  </PassengerLabel>
+                  <CounterBox>
+                    <CounterButton onClick={() => handleChildrenChange(children - 1)} disabled={children <= 0}>−</CounterButton>
+                    <CounterValue>{children}</CounterValue>
+                    <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={children > 12}>+</CounterButton>
+                  </CounterBox>
+                </div>
+
+              </PassengerRow>
+
+              {children > 0 && (
+                <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
+                  {Array.from({ length: children }).map((_, idx) => (
+                    <PassengerRow className="!w-full text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                      <div className="flex justify-between items-center w-full">
+                        <div className="title">Age of Child {idx}</div>
+                        <AgeInput
+                          key={idx}
+                          type="number"
+                          min="2"
+                          max="12"
+                          value={childAges[idx] || ""}
+                          onChange={(e) => {
+                            const updated = [...childAges];
+                            updated[idx] = e.target.value;
+                            setChildAges(updated);
+                          }}
+                        />
+                      </div>
+                    </PassengerRow>
+                  ))}
+                </div>
+              )}
+
+              {/* Infants */}
+              <PassengerRow className="!w-[100%]">
+                <PassengerLabel>
+                  <div className="title">Infants</div>
+                  <div className="subtitle">Under age 2</div>
+                </PassengerLabel>
+                <CounterBox>
+                  <CounterButton onClick={() => setInfants((p) => p - 1)} disabled={infants <= 0}>−</CounterButton>
+                  <CounterValue>{infants}</CounterValue>
+                  <CounterButton onClick={() => setInfants((p) => p + 1)} disabled={infants > 4}>+</CounterButton>
+                </CounterBox>
+              </PassengerRow>
+            </Section>
+
+            {/* Buttons */}
+            <div className="flex justify-between w-full gap-2">
+              <ClearButton className="w-1/2" onClick={() => { setAdults(2); setChildren(0); setInfants(0); setChildAges([]); setShowPassenger(false); }}>Clear</ClearButton>
+              <ApplyButton className="w-1/2" onClick={handleApply}>Apply</ApplyButton>
+            </div>
+          </div>
+        </BottomModal>
+      }
     </div>
   );
 };

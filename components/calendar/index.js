@@ -102,16 +102,7 @@ const AirbnbCalendar = (props) => {
 
   const handleApplyDates = () => {
     props.setDateType(dateType)
-    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration })
-    if (dateType == "fixed") {
-      dispatch(setFixedDate(selectedDates.start, selectedDates.end));
-    }
-    else if (dateType == "flexible") {
-      dispatch(setFlexibleDate(currentMonth, '2025', tripDuration));
-    }
-    else {
-      dispatch(setAnytimeDate(tripDuration))
-    }
+    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration ,dateType:dateType})
     props.setShowCalendar(false)
   }
 

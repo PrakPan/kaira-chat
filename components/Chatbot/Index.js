@@ -4,7 +4,7 @@ import AskQuery from './AskQuery';
 import ChatSection from './ChatSection';
 import { ChatProvider } from './context/ChatContext';
 import { useRouter } from "next/router";
-import HistoryList from './history/historyList';
+import HistoryList from './history/HistoryList';
 import useChat from './hook/UseChat';
 
 const Container = styled.div`

@@ -2,20 +2,29 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
+
 const isBeforeToday = (date) => {
   if (!date) return false;
   const todayMidnight = new Date();
-  todayMidnight.setHours(0, 0, 0, 0); // strip time
+  todayMidnight.setHours(0, 0, 0, 0);
   return date < todayMidnight;
 };
+
 const AirbnbCalendarMobile = (props) => {
   const today = new Date();
 
-  // State synced with props
+  // ✅ State aligned with desktop
+  const [dateType, setDateType] = useState(props.dateType || "fixed");
+  const [currentView, setCurrentView] = useState(
+    props.dateType === "fixed" ? "calendar" :
+    props.dateType === "flexible" ? "months" : "any"
+  );
+
   const [selectedDates, setSelectedDates] = useState({
     start: props.valueStart ? new Date(props.valueStart) : null,
     end: props.valueEnd ? new Date(props.valueEnd) : null
   });
+
   const [currentMonth, setCurrentMonth] = useState(
     props.date?.month || new Date(today.getFullYear(), today.getMonth(), 1)
   );
@@ -81,17 +90,20 @@ const AirbnbCalendarMobile = (props) => {
   };
 
   const handleApplyDates = () => {
+    props.setDateType(dateType); // ✅ keep parent in sync
     props.onChangeDate({
       start: selectedDates.start,
       end: selectedDates.end,
       month: currentMonth,
-      duration: tripDuration
+      duration: tripDuration,
+      dateType: dateType
     });
     props.setShowCalendar(false);
   };
 
-  const renderMonthGrid = (days) => {
-    return (<div>
+  // --- Renderers ---
+  const renderMonthGrid = (days) => (
+    <div>
       <div className="grid grid-cols-7 text-[10px] font-medium text-gray-500">
         {dayNames.map(day => <div key={day} className="text-center">{day}</div>)}
       </div>
@@ -99,39 +111,38 @@ const AirbnbCalendarMobile = (props) => {
         {days.map((date, idx) => {
           const isRowStart = idx % 7 === 0;
           const isRowEnd = idx % 7 === 6;
-          return (<div
-            key={idx}
-            className={`aspect-square flex items-center justify-center relative
-              ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
-              ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
-              ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}
-              ${date && isDateInRange(date) && isRowStart ? 'rounded-l-full' : ''}
-              ${date && isDateInRange(date) && isRowEnd ? 'rounded-r-full' : ''}`}
-          >
-            {date && (
-              <button
-                onClick={() => !isBeforeToday(date) && handleDateClick(date)}
-                disabled={isBeforeToday(date)}
-                className={`w-full h-full rounded-full flex items-center justify-center text-[10px] font-medium
-                ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' :
-                    isDateSelected(date) ? 'bg-black text-white' :
-                      isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
-                        'hover:bg-gray-100 text-gray-900'}`}
-              >
-                {date.getDate()}
-              </button>
-            )}
-          </div>)
+          return (
+            <div
+              key={idx}
+              className={`aspect-square flex items-center justify-center relative
+                ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
+                ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
+                ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}
+                ${date && isDateInRange(date) && isRowStart ? 'rounded-l-full' : ''}
+                ${date && isDateInRange(date) && isRowEnd ? 'rounded-r-full' : ''}`}
+            >
+              {date && (
+                <button
+                  onClick={() => !isBeforeToday(date) && handleDateClick(date)}
+                  disabled={isBeforeToday(date)}
+                  className={`w-full h-full rounded-full flex items-center justify-center text-[10px] font-medium
+                  ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' :
+                      isDateSelected(date) ? 'bg-black text-white' :
+                        isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
+                          'hover:bg-gray-100 text-gray-900'}`}
+                >
+                  {date.getDate()}
+                </button>
+              )}
+            </div>
+          );
         })}
       </div>
-    </div>)
-  };
+    </div>
+  );
 
   const renderCalendarView = () => {
     const currentMonthDays = getDaysInMonth(currentMonth);
-    const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
-    const nextMonthDays = getDaysInMonth(nextMonth);
-
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -139,17 +150,13 @@ const AirbnbCalendarMobile = (props) => {
             <Image src={"/circle_right.svg"} width={20} height={20} className="transform -scale-x-100" />
           </button>
           <div className="flex justify-center w-full">
-            <div className='flex justify-center w-[50%]'>
-              <Body2M_14>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</Body2M_14>
-            </div>
+            <Body2M_14>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</Body2M_14>
           </div>
           <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
             <Image src={"/circle_right.svg"} width={20} height={20} />
           </button>
         </div>
-        <div>
-          {renderMonthGrid(currentMonthDays)}
-        </div>
+        {renderMonthGrid(currentMonthDays)}
       </div>
     );
   };
@@ -205,26 +212,33 @@ const AirbnbCalendarMobile = (props) => {
           </div>
         </div>
 
+        {/* Tabs */}
         <div className="flex bg-gray-100 rounded-full px-[12px] py-[6px] w-fit mx-auto">
           {['fixed', 'flexible', 'anytime'].map(type => (
             <button
               key={type}
               onClick={() => {
-                props.setDateType(type);
+                setDateType(type);
+                setCurrentView(
+                  type === "fixed" ? "calendar" :
+                  type === "flexible" ? "months" : "any"
+                );
               }}
               className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all
-                ${props.dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
+                ${dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}>
               {type.charAt(0).toUpperCase() + type.slice(1)}
             </button>
           ))}
         </div>
 
-        {props.dateType === 'fixed'
+        {/* Content */}
+        {dateType === 'fixed'
           ? renderCalendarView()
-          : props.dateType === 'flexible'
+          : dateType === 'flexible'
             ? renderMonthView()
             : renderAnyView()}
 
+        {/* Footer */}
         <div className="flex justify-between gap-2 border-t border-gray-200 pt-4">
           <MediumIndigoOutlinedButton
             onClick={() => {

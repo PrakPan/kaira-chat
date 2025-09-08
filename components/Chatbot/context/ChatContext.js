@@ -23,8 +23,8 @@ export const ChatProvider = ({ itinearyId, children }) => {
     const token = localStorage.getItem('access_token');
     const itinerary = useSelector((state) => state.Itinerary);
     const dispatch = useDispatch();
-    // const origin = " https://thetarzanway.com";
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
+    const origin = " https://thetarzanway.com";
+    // const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
     const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
     const chatBotContainerRef = useRef(null);
     const [chatHistoryList, setChatHistoryList] = useState([]);

@@ -14,7 +14,6 @@ import { useDispatch } from "react-redux";
 import { authShologinwLogin, authShowLogin } from "../../../store/actions/auth";
 
 const NavigationMenu = () => {
-  const router = useRouter();
   const {
     isMobileMenuOpen,
     toggleMobileMenu,
@@ -23,6 +22,7 @@ const NavigationMenu = () => {
     overlayRef,
     menuItemsRef,
   } = useMobileMenu();
+  const router=useRouter();
 
   const dispatch=useDispatch()
   // Memoized active path checker to prevent unnecessary re-renders
@@ -59,8 +59,9 @@ const NavigationMenu = () => {
   return (
     <>
       <nav className={styles.navigationMenu} role="navigation">
-        <Image src={TTW} alt="TTW Logo" priority />
-
+        <div className="hover-pointer" onClick={()=>router.push("/")}>
+          <Image src={TTW} alt="TTW Logo" priority />
+        </div>
         <SearchInput />
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">

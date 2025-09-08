@@ -29,9 +29,6 @@ const LocationContainer = styled(Link)`
   text-decoration: none;
   padding: 0.5rem;
   margin-block: auto;
-  &:hover {
-    cursor: pointer;
-  }
   max-width: 100%;
   border-radius: 10px;
   display: grid;
@@ -39,6 +36,7 @@ const LocationContainer = styled(Link)`
   grid-gap: 0.5rem;
   &:hover {
     cursor: pointer;
+    background: #FEFFC0;
   }
 `;
 
