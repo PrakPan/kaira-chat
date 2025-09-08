@@ -277,7 +277,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
 };
 
 
-const LivePriceTimer = ({ priceValidUntil }) => {
+const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   const targetTime = priceValidUntil ? new Date(priceValidUntil.replace(" ", "T")).getTime() : null;
 
   const calculateTimeLeft = () => Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
@@ -313,8 +313,13 @@ const LivePriceTimer = ({ priceValidUntil }) => {
     };
   }, [targetTime]);
 
+  // Check if timer expired
   if (!targetTime || timeLeft <= 0) {
-    return null;
+    return (
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
+        Lock this trip with ₹{lockInAmount?.toLocaleString('en-IN')} to refresh prices - Prices Expired ⏰
+      </div>
+    );
   }
 
   // Format time left into hours, minutes, and seconds
@@ -337,7 +342,7 @@ const LivePriceTimer = ({ priceValidUntil }) => {
   );
 };
 
-const PaymentSuccess = ({ amount, onDownloadInvoice,loading }) => {
+const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
   return (
     <div className="bg-white p-2 rounded-lg text-center">
       <div className="mb-2">
@@ -353,43 +358,43 @@ const PaymentSuccess = ({ amount, onDownloadInvoice,loading }) => {
         </p>
       </div>
 
-        <GetInTouchContainer>
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="1px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={onDownloadInvoice}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      widthmobile={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />{" "}
-                    {loading ? (
-                      <PulseLoader />
-                    ) : (
-                      <span>Get in touch!</span>
-                    )}
-                  </div>
-                </Button>
-              </GetInTouchContainer>
+      <GetInTouchContainer>
+        <Button
+          color="#111"
+          fontWeight="500"
+          fontSize="1rem"
+          borderWidth="1px"
+          width="100%"
+          borderRadius="8px"
+          bgColor="#f8e000"
+          padding="12px"
+          onclick={onDownloadInvoice}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "0.5rem",
+              alignItems: "center",
+            }}
+          >
+            <ImageLoader
+              dimensions={{ height: 50, width: 50 }}
+              dimensionsMobile={{ height: 50, width: 50 }}
+              height={"20px"}
+              width={"20px"}
+              widthmobile={"20px"}
+              leftalign
+              url={"media/icons/login/customer-service-black.png"}
+            />{" "}
+            {loading ? (
+              <PulseLoader />
+            ) : (
+              <span>Get in touch!</span>
+            )}
+          </div>
+        </Button>
+      </GetInTouchContainer>
     </div>
   );
 };
@@ -654,7 +659,7 @@ const PaymentButton = ({
           Processing...
         </div>
       ) : (
-        paymentType === 'lockin' 
+        paymentType === 'lockin'
           ? `Pay ₹${getIndianPrice(
             Math.round(
               Math.round(amount)
@@ -1098,7 +1103,7 @@ const Details = (props) => {
   const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
       key: "rzp_test_FEKg5ZWGWl9i7c",
-      amount: data.amount * 100 || data?.discounted_cost * 100,
+      amount: data.amount * 100 || data?.total_payable_amount * 100,
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
       image: "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
@@ -1440,9 +1445,9 @@ const Details = (props) => {
           <div className=" mx-[1rem] mt-[1rem]">
             <div className="flex flex-row justify-between">
               {props.iscouponApplied &&
-                Cart?.discounted_cost != Cart?.total_cost &&
+                Cart?.total_payable_amount != Cart?.total_cost &&
                 Cart?.show_per_person_cost !=
-                Cart?.per_person_discounted_cost ? (
+                Cart?.per_person_total_payable_amount ? (
                 <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                   <span>₹</span>
                   <div>
@@ -1483,13 +1488,13 @@ const Details = (props) => {
                         ? getIndianPrice(
                           Math.round(
                             Math.round(
-                              Cart?.per_person_discounted_cost
+                              Cart?.per_person_total_payable_amount
                             )
                           )
                         )
                         : getIndianPrice(
                           Math.round(
-                            Math.round(Cart?.discounted_cost)
+                            Math.round(Cart?.total_payable_amount)
                           )
                         )}
                       {"/-"}
@@ -1774,135 +1779,211 @@ const Details = (props) => {
           <>
             {props?.token ? (
               <>
-                {(sessionPaymentCompleted || hasFullPaymentCompleted) && !showDetailedPayment ? (
+                {(props.payment?.total_payable_amount === 0 && hasFullPaymentCompleted) && !showDetailedPayment ? (
                   <PaymentSuccess
-                    amount={getIndianPrice(
-                            Math.round(Cart?.discounted_cost)
-                          )}
+                    amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
                     onDownloadInvoice={handleGetInTouch}
                     loading={props?.loading}
                   />
-                ) :
-
-                  (
-                    // STEP 1: Simple radio buttons + Proceed to Payment button (always visible)
-
-                   pricing_status == "SUCCESS" && <div>
-                      <div className="mb-4">
-                        <h3 className="font-medium text-base mb-3">Payment Options</h3>
-
-                        {/* Pay Full Amount Option */}
-                        <div
-                          className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
-                          onClick={() => setSelectedPaymentOption('full')}
+                ) : (
+                  <>
+                    {/* Check for pricing failure first */}
+                    {pricing_status === "FAILURE" ? (
+                      <GetInTouchContainer>
+                        <Button
+                          color="#111"
+                          fontWeight="500"
+                          fontSize="1rem"
+                          borderWidth="1px"
+                          width="100%"
+                          borderRadius="8px"
+                          bgColor="#f8e000"
+                          padding="12px"
+                          onclick={handleGetInTouch}
                         >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-                              {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-base">
-                                Pay full amount now to get discounts
-                              </div>
-                            </div>
+                          <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", alignItems: "center" }}>
+                            <ImageLoader
+                              dimensions={{ height: 50, width: 50 }}
+                              dimensionsMobile={{ height: 50, width: 50 }}
+                              height={"20px"}
+                              width={"20px"}
+                              widthmobile={"20px"}
+                              leftalign
+                              url={"media/icons/login/customer-service-black.png"}
+                            />
+                            {props?.loading ? <PulseLoader /> : <span>Get in touch!</span>}
                           </div>
-                        </div>
+                        </Button>
+                      </GetInTouchContainer>
+                    ) : (
+                      <>
+                        {/* Check if there's remaining amount to pay */}
+                        {props.payment?.total_payable_amount > 0 ? (
+                          <PaymentButton
+                            amount={props.payment.total_payable_amount}
+                            isLoading={paymentLoading}
+                            paymentType="full"
+                            onClick={() => handlePayNow('full')}
+                          />
+                        ) : (
+                          pricing_status === "SUCCESS" && (
+                            <>
+                              {/* Check if prices expired - show only lock-in option */}
+                              {(!Cart?.price_valid_until ||
+                                new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now()) ? (
+                                <div>
+                                  <div className="mb-4">
+                                    <h3 className="font-medium text-base mb-3">Lock-in Option</h3>
+                                    <div className="border-2 border-yellow-400 bg-yellow-50 rounded-lg p-3 mb-3">
+                                      <div className="flex items-center gap-3">
+                                        <div className="w-5 h-5 rounded-full border-2 border-yellow-400 bg-yellow-400 flex items-center justify-center">
+                                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="font-medium text-base">
+                                            Lock-in with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')} to refresh prices
+                                          </div>
+                                          <div className="text-sm text-gray-600 mt-1">
+                                            Prices have expired. Lock-in to get fresh pricing.
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <PaymentButton
+                                    amount={Cart?.lock_in_fee}
+                                    isLoading={paymentLoading}
+                                    paymentType="lockin"
+                                    onClick={() => handlePayNow('lockin')}
+                                  />
+                                </div>
+                              ) : (
+                                // Normal payment options when prices are valid
+                                <div>
+                                  <div className="mb-4">
+                                    <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
-                        {/* Lock-in Option */}
-                        {!Cart?.lock_in_fee_paid && <div
-                          className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
-                          onClick={() => setSelectedPaymentOption('lockin')}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-                              {selectedPaymentOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-base">
-                                Lock-in today's price with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')}
-                              </div>
-                            </div>
-                          </div>
-                        </div>}
-                      </div>
+                                    {/* Pay Full Amount Option */}
+                                    <div
+                                      className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
+                                      onClick={() => setSelectedPaymentOption('full')}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                                          {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="font-medium text-base">
+                                            Pay full amount now to get discounts
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
 
-                      {/* <Button
-                color="#111"
-                fontWeight="500"
-                fontSize="1rem"
-                borderWidth="1px"
-                width="100%"
-                borderRadius="8px"
-                bgColor="#f8e000"
-                padding="12px"
-                onclick={handleProceedToPayment}
-              >
-                Proceed to Payment
-              </Button> */}
+                                    {/* Lock-in Option */}
+                                    {!Cart?.lock_in_fee_paid && (
+                                      <div
+                                        className={`border-2 ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 cursor-pointer`}
+                                        onClick={() => setSelectedPaymentOption('lockin')}
+                                      >
+                                        <div className="flex items-center gap-3">
+                                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'lockin' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
+                                            {selectedPaymentOption === 'lockin' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                          </div>
+                                          <div className="flex-1">
+                                            <div className="font-medium text-base">
+                                              Lock-in today's price with ₹{Cart?.lock_in_fee?.toLocaleString('en-IN')}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
 
-                      <PaymentButton
-                        amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
-                        isLoading={paymentLoading}
-                        paymentType={selectedPaymentOption}
-                        onClick={handleProceedToPayment}
-                      />
-                      {Cart?.lock_in_fee_paid && (
-                        <div className="text-sm mt-2">
-                          <span>
-                            <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
-                            {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
-                          </span>
-                        </div>
-                      )}
+                                  <PaymentButton
+                                    amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
+                                    isLoading={paymentLoading}
+                                    paymentType={selectedPaymentOption}
+                                    onClick={handleProceedToPayment}
+                                  />
 
+                                  {Cart?.lock_in_fee_paid && (
+                                    <div className="text-sm mt-2">
+                                      <span>
+                                        <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
+                                        {`Your lock-in fee of ₹2,000 has been received. Please pay the remaining ₹${Cart?.discounted_cost} now or before 5 Sept 2025 to confirm your trip.`}
+                                      </span>
+                                    </div>
+                                  )}
 
-
-                      {selectedPaymentOption === 'full' && Cart?.lock_in_fee_paid && <div className="text-center text-sm text-gray-600 mt-3">
-                        Apply your coupon code at checkout in next step.
-                      </div>}
-                    </div>
-                  )
-                }
+                                  {selectedPaymentOption === 'full' && Cart?.lock_in_fee_paid && (
+                                    <div className="text-center text-sm text-gray-600 mt-3">
+                                      Apply your coupon code at checkout in next step.
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          )
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
               </>
             ) : (
               // Existing login/get in touch buttons remain the same
-              <GetInTouchContainer>
+              // <GetInTouchContainer>
+              //   <Button
+              //     color="#111"
+              //     fontWeight="500"
+              //     fontSize="1rem"
+              //     borderWidth="1px"
+              //     width="100%"
+              //     borderRadius="8px"
+              //     bgColor="#f8e000"
+              //     padding="12px"
+              //     onclick={handleGetInTouch}
+              //   >
+              //     <div
+              //       style={{
+              //         display: "flex",
+              //         justifyContent: "center",
+              //         gap: "0.5rem",
+              //         alignItems: "center",
+              //       }}
+              //     >
+              //       <ImageLoader
+              //         dimensions={{ height: 50, width: 50 }}
+              //         dimensionsMobile={{ height: 50, width: 50 }}
+              //         height={"20px"}
+              //         width={"20px"}
+              //         widthmobile={"20px"}
+              //         leftalign
+              //         url={"media/icons/login/customer-service-black.png"}
+              //       />{" "}
+              //       {props?.loading ? (
+              //         <PulseLoader />
+              //       ) : (
+              //         <span>Get in touch!</span>
+              //       )}
+              //     </div>
+              //   </Button>
+              // </GetInTouchContainer>
+              <div>
                 <Button
                   color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
+                  fontWeight="400"
+                  fontSize="0.45rem"
                   borderWidth="1px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={handleGetInTouch}
+                  width="12rem"
+                  borderRadius="10px"
+                  bgColor="#F7E700"
+                  onclick={handleLoginButton}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      widthmobile={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />{" "}
-                    {props?.loading ? (
-                      <PulseLoader />
-                    ) : (
-                      <span>Get in touch!</span>
-                    )}
-                  </div>
+                  Log in to proceed & Pay
                 </Button>
-              </GetInTouchContainer>
+              </div>
             )}
           </>
         )}
@@ -1941,9 +2022,9 @@ const Details = (props) => {
               <div className="p-3">
                 <div className="flex flex-row justify-between">
                   {props.iscouponApplied &&
-                    Cart?.discounted_cost != Cart?.total_cost &&
+                    Cart?.total_payable_amount != Cart?.total_cost &&
                     Cart?.show_per_person_cost !=
-                    Cart?.per_person_discounted_cost ? (
+                    Cart?.per_person_total_payable_amount ? (
                     <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                       <span>₹</span>
                       <div>
@@ -2119,8 +2200,8 @@ const Details = (props) => {
             {paymentCompleted ? (
               <PaymentSuccess
                 amount={getIndianPrice(
-                            Math.round(Cart?.discounted_cost)
-                          )}
+                  Math.round(Cart?.total_payable_amount)
+                )}
                 onDownloadInvoice={() => {/* Add download invoice logic */ }}
               />
             ) : (
@@ -2152,7 +2233,7 @@ const Details = (props) => {
                 <PriceDetails
                   itineraryCost={getIndianPrice(
                     Math.round(
-                      Math.round(Cart?.discounted_cost)
+                      Math.round(Cart?.total_payable_amount)
                     )
                   )}
                   lockInCost={Cart?.lock_in_fee || 2000}
@@ -2167,12 +2248,12 @@ const Details = (props) => {
                 />
 
                 {/* {!lockInCompleted && ( */}
-                  <PaymentButton
-                    amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
-                    isLoading={paymentLoading}
-                    paymentType={selectedPaymentOption}
-                    onClick={() => handlePayNow(selectedPaymentOption)}
-                  />
+                <PaymentButton
+                  amount={selectedPaymentOption === 'full' ? Cart?.are_prices_hidden ? Cart?.total_cost : Cart?.total_bookings_cost : Cart?.lock_in_fee}
+                  isLoading={paymentLoading}
+                  paymentType={selectedPaymentOption}
+                  onClick={() => handlePayNow(selectedPaymentOption)}
+                />
                 {/* )} */}
 
                 <Button

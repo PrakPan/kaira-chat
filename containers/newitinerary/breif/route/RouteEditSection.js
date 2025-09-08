@@ -50,6 +50,7 @@ import { axiosGetItineraryStatus } from "../../../../services/itinerary/daybyday
 import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
+import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
 
 const Container = styled.div`
   position: relative;
@@ -221,6 +222,8 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
+  console.log("Route Editt",props.routes)
+
   useEffect(() => {
     const cities = [];
     if (props?.routes) {
@@ -274,7 +277,7 @@ const RouteEditSection = (props) => {
               props?.routes[i]?.long ||
               props?.routes[i]?.longitude ||
               props?.routes[i]?.city?.longitude,
-            nights: props?.routes[i]?.nights || props?.routes[i]?.duration,
+            nights: getDaysDifference(props?.routes[i].end_date - props?.routes[i-1]?.start_date) || props?.routes[i]?.nights || props?.routes[i]?.duration,
           },
         });
 
