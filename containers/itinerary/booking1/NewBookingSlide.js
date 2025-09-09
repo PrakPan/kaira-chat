@@ -341,9 +341,12 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
     );
   }
 
-  // If lock-in fee is paid and timer expired, don't show anything
   if (Cart?.lock_in_fee_paid && (!targetTime || timeLeft <= 0)) {
-    return null;
+    return (
+      <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
+        Prices Expired! Refresh Prices to check latest itinerary cost
+      </div>
+    );
   }
 
   // Format time left into hours, minutes, and seconds (always show seconds)
@@ -735,9 +738,9 @@ const Details = (props) => {
   );
 
   const Cart = useSelector((state) => state.Cart);
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState('lockin');
 
-  const [selectedOption, setSelectedOption] = useState('full');
+  const [selectedOption, setSelectedOption] = useState('lockin');
   const [showExpandedPayment, setShowExpandedPayment] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [lockInCompleted, setLockInCompleted] = useState(false);
@@ -1948,7 +1951,7 @@ const Details = (props) => {
                                     Repricing...
                                   </div>
                                 ) : (
-                                  'Reprice Itinerary'
+                                  'Refresh Prices'
                                 )}
                               </Button>
                                 : <PaymentButton

@@ -761,6 +761,8 @@ const handleViewMore = async () => {
     setMoreLoadingState(false);
     setUpdateBookingState(false);
 
+    
+
     const updatedTransferBookings = JSON.parse(
       JSON.stringify(transferBookings?.transferBookings)
     );

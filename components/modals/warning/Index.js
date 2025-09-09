@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 
@@ -22,30 +22,32 @@ const GenericAPIModal = ({
   const [warningMessage, setWarningMessage] = useState("");
   const [warningApiCalled, setWarningApiCalled] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const warningApiCalledRef = useRef(false);
+useEffect(() => {
+  if (isOpen && !warningApiCalledRef.current && warningApiCall && requestData) {
+    handleInitialWarningRequest();
+  }
+}, [isOpen, warningApiCall, requestData]);
 
-  useEffect(() => {
-    if (isOpen && !warningApiCalled) {
-      handleInitialWarningRequest();
-    }
-  }, [isOpen]);
 
   // Reset states when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-     
-      setShowWarningModal(false);
-      setWarningMessage("");
-      setWarningApiCalled(false);
-    }
-  }, [isOpen]);
+ useEffect(() => {
+  if (!isOpen) {
+    setShowWarningModal(false);
+    setWarningMessage("");
+    warningApiCalledRef.current = false; 
+  }
+}, [isOpen]);
 
   const handleInitialWarningRequest = async () => {
 
-    if (isProcessing || !warningApiCall || !requestData) {
-      return;
-    }
+    if (isProcessing || warningApiCalledRef.current || !warningApiCall || !requestData) {
+    return;
+  }
 
-    setIsProcessing(true); 
+  warningApiCalledRef.current = true;
+  setIsProcessing(true);
+
 
     setWarningApiCalled(true);
     
