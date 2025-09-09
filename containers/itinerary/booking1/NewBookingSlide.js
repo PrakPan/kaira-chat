@@ -685,6 +685,7 @@ const PaymentButton = ({
       bgColor="#f8e000"
       padding="12px"
       onclick={onClick}
+      disabled={isLoading}
     >
       {isLoading ? (
         <div className="flex items-center justify-center">
@@ -1944,6 +1945,7 @@ const Details = (props) => {
                                 bgColor="#f8e000"
                                 padding="12px"
                                 onclick={handleRepriceBookings}
+                                disabled={repriceLoading}
                               >
                                 {repriceLoading ? (
                                   <div className="flex items-center justify-center">
