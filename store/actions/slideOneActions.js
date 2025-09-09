@@ -134,3 +134,8 @@ export const setSpecialRequests = (value) => ({
   type: actionTypes.SET_SPECIAL_REQUESTS,
   payload: value,
 });
+
+export const setItineraryCreated=(value)=>({
+  type:actionTypes.SET_ITINERARY_CREATED,
+  payload:value
+})

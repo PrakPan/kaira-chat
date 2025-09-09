@@ -16,17 +16,34 @@ import styled from "styled-components";
 import Script from "next/script";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
+import Loading from "./loading";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+
+    useEffect(() => {
+    const handleStart = () => setLoading(true);
+    const handleComplete = () => setLoading(false);
+
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", handleComplete);
+    router.events.on("routeChangeError", handleComplete);
+
+    return () => {
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", handleComplete);
+      router.events.off("routeChangeError", handleComplete);
+    };
+  }, [router]);
 
   function setupTokenExpiryWatcher() {
     const expiry = localStorage.getItem("expirationDate");
@@ -51,93 +68,14 @@ function MyApp({ Component, pageProps, store }) {
     }
   }
 
-  // Run this once on app load
   setupTokenExpiryWatcher();
 
-  // useEffect(() => {
-  //   const handleBrowserBack = (event) => {
-  //     event.preventDefault();
-  //     console.log("Browser back button pressed!");
-
-  //     const confirmLeave = window.confirm("Are you sure you want to go back?");
-  //     if (confirmLeave) {
-  //       window.history.back(); // Allow back
-  //     } else {
-  //       window.history.pushState(null, null, window.location.href); // Stay on page
-  //     }
-  //   };
-
-  //   if (typeof window !== "undefined") {
-  //     window.history.pushState(null, null, window.location.href); // push a dummy state
-  //     window.addEventListener("popstate", handleBrowserBack);
-  //   }
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handleBrowserBack);
-  //   };
-  // }, []);
-  // useEffect(() => {
-  //   try {
-  //     if (!window.location.href.split("/").includes("itinerary")) return;
-
-  //   setTimeout(() => {
-  //     (function () {
-  //       function getElement(xpath) {
-  //         return document.evaluate(
-  //           xpath,
-  //           document,
-  //           null,
-  //           XPathResult.FIRST_ORDERED_NODE_TYPE,
-  //           null
-  //         ).singleNodeValue;
-  //       }
-
-  //       let dfMessengerBubble = getElement(
-  //         "/html/body/df-messenger/div/df-messenger-chat-bubble"
-  //       );
-  //       if (!dfMessengerBubble)
-  //         return console.error("df-messenger-chat-bubble not found");
-
-  //       let dfMessengerChat =
-  //         dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
-  //       if (!dfMessengerChat)
-  //         return console.error("df-messenger-chat not found");
-
-  //       let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
-  //         "df-messenger-user-input"
-  //       );
-  //       if (!userInputContainer)
-  //         return console.error("df-messenger-user-input not found");
-
-  //       let textArea =
-  //         userInputContainer?.shadowRoot.querySelector("textarea");
-  //       if (!textArea) return console.error("Textarea not found");
-
-  //       textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
-
-  //       const enterEvent = new KeyboardEvent("keydown", {
-  //         key: "Enter",
-  //         code: "Enter",
-  //         keyCode: 13,
-  //         which: 13,
-  //         bubbles: true,
-  //       });
-  //       textArea.dispatchEvent(enterEvent);
-  //     })();
-  //   }, 2000);
-  //   } catch (error) {
-  //     console.log("Error is:",error)
-  //   }
-  // }, []);
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
     };
-    //When the component is mounted, subscribe to router changes
-    //and log those page views
     router.events.on("routeChangeComplete", handleRouteChange);
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method
+
     import("react-facebook-pixel")
       .then((x) => x.default)
       .then((ReactPixel) => {
@@ -151,7 +89,6 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-  // In a client-side context
 
   return (
     <>
@@ -165,6 +102,7 @@ function MyApp({ Component, pageProps, store }) {
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
         />
       </Head>
+      {loading&&<Loading/>}
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

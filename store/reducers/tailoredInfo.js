@@ -3,7 +3,7 @@ import * as actionTypes from "../actions/actionsTypes";
 const initialReducer = {
     slideOne: {
         startingLocation: null,
-        selectedCities: [{id: null,input_id: Date.now(),data: null,}],
+        selectedCities: [{ id: null, input_id: Date.now(), data: null, }],
         valueStart: null,
         valueEnd: null,
         selectedPreferences: [],
@@ -32,7 +32,8 @@ const initialReducer = {
         hotelType: [],
         mealPreferences: [],
         specialRequests: ""
-    }
+    },
+    itineraryCreated: false
 }
 
 const reducer = (state = initialReducer, action) => {
@@ -335,7 +336,6 @@ const reducer = (state = initialReducer, action) => {
                 };
             }
         }
-
         case actionTypes.SET_HOTEL_TYPE:
             return state.slideFour.hotelType.includes(action.payload)
                 ? {
@@ -378,6 +378,11 @@ const reducer = (state = initialReducer, action) => {
                     specialRequests: action.payload
                 }
             };
+        case actionTypes.SET_ITINERARY_CREATED:
+            return {
+                ...state,
+                itineraryCreated: action.payload
+            }
         default:
             return state;
     }

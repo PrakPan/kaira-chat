@@ -13,13 +13,13 @@ import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import Popup from "../ErrorPopup";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
-import { setItineraryInitiateData, setRoomConfiguration } from "../../store/actions/slideOneActions";
+import { setItineraryCreated, setItineraryInitiateData, setItineraryNotCreated, setRoomConfiguration } from "../../store/actions/slideOneActions";
 import { BlackContainer, buildItineraryPayload, Container, divideTravellers, headings, useSourceParams } from "./utils/slideOneActions";
 import useMediaQuery from "../media";
 
 const Enquiry = (props) => {
   const router = useRouter();
-    if(!router.isReady) return;
+  if (!router.isReady) return;
 
   const dispatch = useDispatch();
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -31,10 +31,13 @@ const Enquiry = (props) => {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const slideOneData = useSelector((state) => state.tailoredInfoReducer.slideOne)
   const itineraryInititateData = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData)
   const slideThreeData = useSelector((state) => state.tailoredInfoReducer.slideThree)
   const slideFourData = useSelector((state) => state.tailoredInfoReducer.slideFour)
+  const isItineraryCreated = useSelector((state) => state.tailoredInfoReducer.itineraryCreated)
+
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [startingLocation, setStartingLocation] = useState(false);
@@ -52,10 +55,10 @@ const Enquiry = (props) => {
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
   const [error, setError] = useState(null);
-  const [errors,setErrors]=useState({
-    startLocation:null,
-    destination1:null,
-    when:null
+  const [errors, setErrors] = useState({
+    startLocation: null,
+    destination1: null,
+    when: null
   })
 
   const slideIndex = Number(router.query.slideIndex) || 0;
@@ -73,21 +76,14 @@ const Enquiry = (props) => {
     };
   }, [props.tailoredFormModal]);
 
-  useEffect(()=>{
- if(slideIndex && slideIndex!=0){
-    console.log("inside slide index")
-    if(!itineraryInititateData) router.push({
+  useEffect(() => {
+    if ((slideIndex && slideIndex != 0) || isItineraryCreated) {
+      dispatch(setItineraryCreated(false));
+      if (!itineraryInititateData || isItineraryCreated) router.push({
         pathname: '/new-trip'
       })
-  }
-  },[router.isReady,slideIndex])
-
-  useEffect(() => {
-    if (props.token && props.phone !== "null") {
-      _submitDataHandler();
     }
-    setShowPopup(popupObj);
-  }, [ props.token, props.phone]);
+  }, [router.isReady, slideIndex])
 
   useEffect(() => {
     if (props.userLocation) {
@@ -137,36 +133,36 @@ const Enquiry = (props) => {
 
   const _SlideOneSubmitHandler = () => {
 
-    if(!slideOneData.selectedCities[0].id){
+    if (!slideOneData.selectedCities[0].id) {
       setErrors({
-        startLocation:null,
-        destination1:"destination can't be null",
-        when:null
+        startLocation: null,
+        destination1: "destination can't be null",
+        when: null
       })
       return;
     }
     if (slideOneData.date.type === "fixed" && !(slideOneData.date.start_date && slideOneData.date.end_date)) {
       setErrors({
-        startLocation:null,
-        destination1:null,
-        when:"start or end date can't be null"
+        startLocation: null,
+        destination1: null,
+        when: "start or end date can't be null"
       })
       return;
     }
 
     if (slideOneData.date.type === "flexible" && !(slideOneData.date.month && slideOneData.date.duration)) {
       setErrors({
-        startLocation:null,
-        destination1:null,
-        when:"month or duration can't be null"
+        startLocation: null,
+        destination1: null,
+        when: "month or duration can't be null"
       })
       return;
     }
 
     if (slideOneData.date.type === "anytime" && !slideOneData.date.duration) {
       setErrors({
-        startLocation:null,
-        when:"duration can't be null"
+        startLocation: null,
+        when: "duration can't be null"
       })
       return;
     }
@@ -271,6 +267,8 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
+        dispatch(setItineraryCreated(true));
+
         router.push(`/itinerary/${itineraryId}`)
         window.scrollTo(0, 0);
 
@@ -348,7 +346,7 @@ const Enquiry = (props) => {
               <></>
             )}
             <div className="w-full flex items-center justify-between mt-[20px]">
-              {isDesktop&&<div
+              {isDesktop && <div
                 style={{
                   padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
                   marginBottom: slideIndex === 2 ? "0rem" : "0rem",
@@ -482,38 +480,38 @@ const Enquiry = (props) => {
                 )}
 
                 {slideIndex === 1 &&
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`p-4 ${!isDesktop&&"gap-2"}`}>
-                      <button className={`LargeIndigoOutlinedButton ${!isDesktop&&"w-1/2"}`} onClick={_slideTwoSkip}>Skip</button>
-                      <Button
-                        fontSize="1rem"
-                        padding="0.5rem 2rem"
-                        fontWeight="500"
-                        margin="1rem 0"
-                        borderRadius="5px"
-                        borderWidth="1px"
-                        bgColor="#07213A"
-                        zIndex={9999}
-                        onclick={() => {
-                          initiateItineraryCreate()
-                          // router.push({
-                          //   pathname: '/new-trip',
-                          //   query: {
-                          //     slideIndex: slideIndex + 1,
-                          //   },
-                          // })
-                        }
-                        }
-                        loading={isLoading && submitted}
-                        height="50px"
-                        color="white"
-                        style={{
-                          maxWidth: isDesktop?"500px":"50%",
-                          width: "100%",
-                        }}                    >
-                        Continue
-                      </Button>
-                    </div>
-                  }
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`p-4 ${!isDesktop && "gap-2"}`}>
+                    <button className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`} onClick={_slideTwoSkip}>Skip</button>
+                    <Button
+                      fontSize="1rem"
+                      padding="0.5rem 2rem"
+                      fontWeight="500"
+                      margin="1rem 0"
+                      borderRadius="5px"
+                      borderWidth="1px"
+                      bgColor="#07213A"
+                      zIndex={9999}
+                      onclick={() => {
+                        initiateItineraryCreate()
+                        // router.push({
+                        //   pathname: '/new-trip',
+                        //   query: {
+                        //     slideIndex: slideIndex + 1,
+                        //   },
+                        // })
+                      }
+                      }
+                      loading={isLoading && submitted}
+                      height="50px"
+                      color="white"
+                      style={{
+                        maxWidth: isDesktop ? "500px" : "50%",
+                        width: "100%",
+                      }}                    >
+                      Continue
+                    </Button>
+                  </div>
+                }
 
                 {slideIndex === 2 && (
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>

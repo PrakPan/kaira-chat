@@ -7,18 +7,50 @@ import "swiper/css";
 import Image from "next/image";
 
 const Carousel3D = () => {
-  let isPageWide = media("(min-width: 450px)");
 
-  const baseImages = [
-    "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
-    "media/ladakh-carousel/pexels-jay-baid-1420324-15560333.jpg",
-    "media/ladakh-carousel/pexels-itismowgli-1202975.jpg",
-    "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
-    "media/ladakh-carousel/Group-1000002319.png",
-    "media/ladakh-carousel/pexels-imdad-sayyed-1274214-32630752.jpg",
-    "media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg",
-    "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
-  ];
+const baseImages = [
+  {
+    image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-jay-baid-1420324-15560333.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-itismowgli-1202975.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/Group-1000002319.png",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-imdad-sayyed-1274214-32630752.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg",
+    title: null,
+    caption: null,
+  },
+  {
+    image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
+    title: null,
+    caption: null,
+  },
+];
+
 
   const totalCount = 19;
   const images = [];
@@ -55,7 +87,7 @@ const Carousel3D = () => {
           <style>
             {`
         .perspective {
-          perspective: 2000px;
+          perspective: 1800px;
           perspective-origin: 50% 50%;
         }
         .preserve-3d {
@@ -108,14 +140,14 @@ const Carousel3D = () => {
               className="absolute w-full h-full preserve-3d transition-transform duration-700"
               style={{ transform: `rotateY(${rotation}deg)` }}
             >
-              {images.map((url, index) => {
+              {images.map((item, index) => {
                 const angle = index * anglePerSlide;
                 return (
                   <div
                     key={index}
                     className="absolute w-[700px] h-[900px] -top-[180px] left-[10px] rounded-[16px] flex items-center justify-center"
                     style={{
-                      backgroundImage: `url(https://images.thetarzanway.com/${url})`,
+                      backgroundImage: `url(https://images.thetarzanway.com/${item.image})`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                       transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
@@ -138,7 +170,7 @@ const Carousel3D = () => {
               <SwiperSlide key={index}>
                 <div className="relative aspect-[280/312] rounded-[16px] overflow-hidden">
                   <Image
-                    src={"https://images.thetarzanway.com/" + item}
+                    src={"https://images.thetarzanway.com/" + item.image}
                     alt={`${index}_image`}
                     fill
                     className="object-cover"

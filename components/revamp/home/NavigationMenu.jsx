@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 import { TTW } from "../assets";
@@ -12,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 import { authShologinwLogin, authShowLogin } from "../../../store/actions/auth";
+import useMediaQuery from "../../media";
 
 const NavigationMenu = () => {
   const {
@@ -23,6 +23,8 @@ const NavigationMenu = () => {
     menuItemsRef,
   } = useMobileMenu();
   const router=useRouter();
+
+    const isMidScreen = useMediaQuery("(min-width:786px)");
 
   const dispatch=useDispatch()
   // Memoized active path checker to prevent unnecessary re-renders
@@ -62,7 +64,7 @@ const NavigationMenu = () => {
         <div className="hover-pointer" onClick={()=>router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority />
         </div>
-        <SearchInput />
+        {isMidScreen&&<SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
           <li className="mr-4"></li>
@@ -74,7 +76,7 @@ const NavigationMenu = () => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <Button
+        <div className="flex gap-4"><Button
           className={styles.hamburger}
           onClick={toggleMobileMenu}
           variant="filled"
@@ -88,6 +90,7 @@ const NavigationMenu = () => {
         >
           <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
         </Button>
+        </div>
       </nav>
 
       {/* Mobile Sidebar Overlay */}

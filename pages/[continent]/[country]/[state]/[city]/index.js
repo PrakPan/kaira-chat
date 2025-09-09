@@ -122,24 +122,24 @@ export async function getStaticPaths() {
     );
   }
 
-  // return{
-  //   paths:paths,
-  //   fallback:false
-  // }
+  return{
+    paths:paths,
+    fallback:false
+  }
 
- return {
-    paths: [
-      {
-        params: {
-          continent: "europe",
-          country: "portugal",
-          state: "madeira",
-          city: "funchal_madeira",
-        },
-      },
-    ],
-    fallback: false,
-  };
+//  return {
+//     paths: [
+//       {
+//         params: {
+//           continent: "europe",
+//           country: "portugal",
+//           state: "madeira",
+//           city: "funchal_madeira",
+//         },
+//       },
+//     ],
+//     fallback: false,
+//   };
 }
 
 export async function getStaticProps(context){
