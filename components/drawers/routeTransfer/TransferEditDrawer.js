@@ -2451,6 +2451,13 @@ const handleCancel = () => {
           type: "success",
         });
 
+         if (responseData.is_refresh_needed === true) {
+    
+ 
+      window.location.reload();
+    
+    return; 
+  }
         setUpdateLoading(false);
 
       };
@@ -5465,6 +5472,13 @@ useEffect(() => {
               type: "success",
             })
           );
+           if (responseData.is_refresh_needed === true) {
+    
+ 
+      window.location.reload();
+    
+    return; 
+  }
         } else {
           const message = newDate
             ? "Departure date updated successfully!"

@@ -165,6 +165,8 @@ const Section = (props) => {
     // Define success handler
     const handleSuccess = (responseData, message) => {
 
+
+
       setLoading(false);
       dispatch(
         openNotification({
@@ -173,6 +175,16 @@ const Section = (props) => {
           heading: "Sucess!",
         })
       );
+
+      
+      if (responseData.is_refresh_needed === true) {
+    
+ 
+      window.location.reload();
+    
+    return; 
+  }
+
       if (!props?.airportBooking) {
         dispatch(
           updateSingleTransferBooking(
@@ -187,9 +199,9 @@ const Section = (props) => {
       props.getPaymentHandler();
       props.setHideBookingModal();
 
-    };
+      
+  }
 
-    // Define error handler
     const handleError = (errorMessage) => {
       setLoading(false);
       dispatch(
@@ -218,6 +230,11 @@ const Section = (props) => {
       loadingMessage: "Please wait while we update your flight...",
     });
 
+
+    };
+
+    // Define error handler
+  
     // axiosTaxiBooking
     //   .post(
     //     `${itineraryId || props.selectedBooking.itinerary_id}/bookings/taxi/`,
@@ -266,7 +283,7 @@ const Section = (props) => {
     //     );
     //     props.setHideBookingModal();
     //   });
-  };
+  
 
   if (props.data)
     return (
