@@ -2307,6 +2307,41 @@ const NewMultiModeContainer = ({
     }
   };
 
+  // Add this handleCancel function inside your NewMultiModeContainer component
+
+const handleCancel = () => {
+  console.log("Cancel handler called - deselecting final result");
+  
+  // Find the last selected step (highest index with a selection)
+  let lastSelectedIndex = -1;
+  Object.keys(selectedModeIds).forEach(index => {
+    const numIndex = parseInt(index);
+    if (numIndex > lastSelectedIndex) {
+      lastSelectedIndex = numIndex;
+    }
+  });
+
+  if (lastSelectedIndex >= 0) {
+    // Deselect only the final selected result
+    setSelectedModeIds((prev) => {
+      const newSelections = { ...prev };
+      delete newSelections[lastSelectedIndex];
+      return newSelections;
+    });
+
+    setSelectedData((prev) => {
+      const newData = [...prev];
+      newData[lastSelectedIndex] = undefined;
+      return newData;
+    });
+
+    console.log(`Deselected result at index ${lastSelectedIndex}`);
+  }
+
+  // Reset loading states
+  setUpdateLoading(false);
+};
+
   const handleUpdateTransfer = async () => {
     setUpdateLoading(true);
     if (Object.keys(selectedModeIds).length === totalSteps) {
@@ -2439,6 +2474,7 @@ const NewMultiModeContainer = ({
         requestData : requestBody,
         onSuccess: handleSuccess,
         onError: handleError,
+        onCancel: handleCancel,
         successMessage: "Taxi updated successfully.",
         loadingMessage: "Please wait while we update your flight...",
       });
@@ -4833,6 +4869,7 @@ const OtherTransfer = ({
   dcity,
   mercury,
   booking_id,
+  mode
 }) => {
   const ref = useRef(null);
   const dateRef = useRef(null);
@@ -4884,6 +4921,18 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
+
+useEffect(() => {
+  if (selectedResult?.transfer && !isBookingInProgress) {
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+
+    if (finalDate && finalTime) {
+      const departureDateTime = `${finalDate}T${finalTime}:00`;
+      loadTransfers(selectedResult.transfer, pax, departureDateTime);
+    }
+  }
+}, [selectedResult?.transfer, token]); // Only depend on transfer and token for initial load
   // FIXED: Update state when props change with proper guards
   useEffect(() => {
     if (
@@ -5027,13 +5076,17 @@ const OtherTransfer = ({
       const timeChanged = lastTimeState && lastTimeState !== departureTime;
       const dateChanged = lastDateState && lastDateState !== departureDate;
 
+      const isInitialLoad = !lastPaxState && !lastTimeState && !lastDateState;
+
+
       // Only call API if parameters changed AND we're not already processing
       if (
-        (paxChanged || timeChanged || dateChanged) &&
-        selectedResult?.transfer && 
-        !isResultSelected &&
-        !isBookingInProgress &&
-        !loadingRequestKey
+         (paxChanged || timeChanged || dateChanged) &&
+      !isInitialLoad && // ADD this condition
+      selectedResult?.transfer && 
+      !isResultSelected &&
+      !isBookingInProgress &&
+      !loadingRequestKey
       ) {
         const finalDate = departureDate || currentModeDepartureDate;
         const finalTime = departureTime || currentModeDepartureTime;
@@ -5081,11 +5134,6 @@ const OtherTransfer = ({
   }, [selectedResult?.transfer, token]);
   */
 
-  useEffect(() => {
-    if (selectedResult?.transfer && !otherTransfer && !error && !isBookingInProgress) {
-      setOtherTransfer(selectedResult.transfer);
-    }
-  }, [selectedResult?.transfer, otherTransfer, error, isBookingInProgress]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -5372,7 +5420,7 @@ const OtherTransfer = ({
       setUpdateLoading(true);
 
       const warningApiCall = (data) => {
-        return updateFlightBookingWarning.post(`${itinerary_id}/transfers/taxi/warning/`, data, {
+        return updateFlightBookingWarning.post(`${itinerary_id}/transfers/${mode?.toLowerCase()}/warning/`, data, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -5455,6 +5503,26 @@ const OtherTransfer = ({
         requestData: newRequestBody,
         onSuccess: handleSuccess,
         onError: handleError,
+        onCancel: () => { 
+        setLocalSelectedData((prev) => {
+        const newData = [...prev];
+        newData[currentStep - 1] = undefined;
+        return newData;
+        });
+
+    if (setSelectedData) {
+      setSelectedData((prev) => {
+        const newData = [...prev];
+        newData[currentStep - 1] = undefined;
+        return newData;
+      });
+    }
+
+    // Reset loading states
+    setUpdateLoading(false);
+    setIsBookingInProgress(false);
+    setLoadingOptionId(null);
+  },
         successMessage: "Taxi updated successfully.",
         loadingMessage: "Please wait while we update your transfer...",
       });

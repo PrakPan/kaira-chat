@@ -89,6 +89,7 @@ const Section = (props) => {
             cityId={props?.cityId}
             handleAirportTaxiSelect={props?.handleAirportTaxiSelect}
             bookingLoad={props?.bookingLoad}
+             handleTaxiDeselect={props?.handleTaxiDeselect}
           ></Route>
         </TaxiCard>
       </Container>

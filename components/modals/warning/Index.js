@@ -14,12 +14,14 @@ const GenericAPIModal = ({
   requestData,
   onSuccess,
   onError,
+  onCancel,
   successMessage = "Operation completed successfully",
   loadingMessage = "Processing your request...",
 }) => {
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningMessage, setWarningMessage] = useState("");
   const [warningApiCalled, setWarningApiCalled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (isOpen && !warningApiCalled) {
@@ -38,11 +40,12 @@ const GenericAPIModal = ({
   }, [isOpen]);
 
   const handleInitialWarningRequest = async () => {
-    if (!warningApiCall || !requestData) {
-      console.error("Warning API call or request data is missing");
-      onError("Configuration error: Missing warning API call or request data");
+
+    if (isProcessing || !warningApiCall || !requestData) {
       return;
     }
+
+    setIsProcessing(true); 
 
     setWarningApiCalled(true);
     
@@ -83,15 +86,17 @@ const GenericAPIModal = ({
       // Show error as notification and close modal
       onError(errorMsg);
       onClose(); 
+    }finally {
+      setIsProcessing(false); // RESET FLAG
     }
   };
 
   const proceedWithBooking = async () => {
-    if (!bookingApiCall || !requestData) {
-      console.error("Booking API call or request data is missing");
-      onError("Configuration error: Missing booking API call or request data");
+    if (isProcessing || !bookingApiCall || !requestData) {
       return;
     }
+
+    setIsProcessing(true); 
 
     try {
      
@@ -122,17 +127,23 @@ const GenericAPIModal = ({
       
       onError(errorMsg);
       onClose();
+    }finally {
+      setIsProcessing(false); // RESET FLAG
     }
   };
 
   const handleWarningConfirm = async () => {
+    if (isProcessing) return;
     await proceedWithBooking();
   };
 
-  const handleWarningCancel = () => {
-    setShowWarningModal(false);
-    onClose();
-  };
+ const handleWarningCancel = () => {
+  setShowWarningModal(false);
+  if (onCancel) {
+    onCancel();
+  }
+  onClose();
+};
 
   const handleCancel = () => {
     
@@ -196,10 +207,11 @@ const GenericAPIModal = ({
                   Cancel
                 </button>
                 <button
+                  disabled={isProcessing} 
                   onClick={handleWarningConfirm}
                   className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
                 >
-                  Confirm
+                   {isProcessing ? "Processing..." : "Confirm"}
                 </button>
               </div>
             </>
@@ -221,6 +233,7 @@ export const useGenericAPIModal = () => {
     requestData: null,
     onSuccess: () => {},
     onError: () => {},
+    onCancel: () => {},
     successMessage: "",
     loadingMessage: "",
   });

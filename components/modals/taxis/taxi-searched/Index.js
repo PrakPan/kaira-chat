@@ -50,6 +50,7 @@ const Booking = (props) => {
       :
       <SectionOne
         setHideBookingModal={props.setHideBookingModal}
+         handleTaxiDeselect={props?.handleTaxiDeselect}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         _updateSearchedTaxi={props._updateSearchedTaxi}
         getPaymentHandler={props.getPaymentHandler}

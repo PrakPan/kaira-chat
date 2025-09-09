@@ -435,6 +435,10 @@ const ComboTaxi = (props) => {
     setShowTransferEditDrawer(true);
   };
 
+  const handleTaxiDeselect = () => {
+  setSelectedTaxiIndex(null);
+};
+
   const fetchDataWithNewDate = (newDate) => {
     setSelectedDate(newDate);
     const updatedProps = {
@@ -586,6 +590,7 @@ const ComboTaxi = (props) => {
                           props?.destination_itinerary_city_id
                         }
                         edge={props?.edge}
+                        handleTaxiDeselect={handleTaxiDeselect}
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}

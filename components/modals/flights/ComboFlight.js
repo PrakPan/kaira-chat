@@ -370,6 +370,19 @@ const isTraceIdValid = () => {
     }
   }
 
+  const handleCancel = () => {
+
+  setSelectedFlightIndex(null);
+  
+  setUpdateBookingState(false);
+  setUpdateLoadingState(false);
+  
+  
+  if (setPendingBookingData) {
+    setPendingBookingData(null);
+  }
+};
+
   useEffect(() => {
     if (!preferredDepartureTime) return;
 
@@ -732,6 +745,8 @@ const handleViewMore = async () => {
 
   // Define the booking API call
   const bookingApiCall = (data) => {
+
+    setUpdateBookingState(true);
     return updateFlightBooking.post(`${itinerary_id}/bookings/flight/`, data, {
       headers: {
         Authorization: `Bearer ${props.token}`,
@@ -848,6 +863,7 @@ const handleViewMore = async () => {
     requestData,
     onSuccess: handleSuccess,
     onError: handleError,
+    onCancel: handleCancel,
     successMessage: "Flight updated successfully.",
     loadingMessage: "Please wait while we process your request...",
   });
