@@ -147,21 +147,21 @@ export async function getStaticPaths() {
     );
   }
 
-  return {
-    paths:paths,
-    fallback:false
-  }
   // return {
-  //   paths: [
-  //     {
-  //       params: {
-  //         continent: "europe",
-  //         country: "portugal",
-  //         state: "madeira",
-  //       },
-  //     },
-  //   ], fallback: false,
-  // };
+  //   paths:paths,
+  //   fallback:false
+  // }
+  return {
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+          state: "madeira",
+        },
+      },
+    ], fallback: false,
+  };
 }
 
 export async function getStaticProps(context) {
