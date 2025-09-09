@@ -79,7 +79,7 @@ const Enquiry = (props) => {
   useEffect(() => {
     if ((slideIndex && slideIndex != 0) || isItineraryCreated) {
       dispatch(setItineraryCreated(false));
-      if (!itineraryInititateData || isItineraryCreated) router.push({
+      if (!itineraryInititateData ) router.push({
         pathname: '/new-trip'
       })
     }
