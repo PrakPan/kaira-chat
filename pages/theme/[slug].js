@@ -141,7 +141,7 @@ export async function getStaticPaths() {
       const paths = response.data.data.pages.map((path) => ({
         params: { slug: path.slug },
       }));
-      return { paths, fallback: false };
+      return { paths: [], fallback: false };
     } else {
       console.error("Failed to fetch paths.");
       return { paths: [], fallback: false };

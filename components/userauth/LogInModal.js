@@ -227,7 +227,7 @@ const LogIn = React.memo((props) => {
         phone,
         otp,
         userDetails.userName,
-        null,setUserDetailsRequired,
+        null, setUserDetailsRequired,
         whatsapp,
         null,
         props.onSuccess
@@ -324,12 +324,17 @@ const LogIn = React.memo((props) => {
   });
 
   const onRecaptchaChange = (value) => {
+    if (!value) {
+      console.warn("Recaptcha returned null");
+      return;
+    }
     if (!props.otpSent) otpHandler(value);
     else resetOtpHandler(value);
   };
 
   const verifyRecaptchaHandler = () => {
     const recaptchaValue = recaptchaRef.current.getValue();
+    console.log("recaptcha value is: ",recaptchaValue)
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
@@ -435,13 +440,13 @@ const LogIn = React.memo((props) => {
                 fontWeight: "700",
               }}
             >
-              {!props?.onSuccess?<>
-              <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
-              <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
-              </>:
-              <>
-               <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
-              </>}
+              {!props?.onSuccess ? <>
+                <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
+                <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
+              </> :
+                <>
+                  <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
+                </>}
             </div>
           )}
 
@@ -511,67 +516,67 @@ const LogIn = React.memo((props) => {
               </Button>
             </form>
           ) : (
-              <form noValidate>
-                <div className="Body2R_14 mb-[2px]">Phone Number</div>
-                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
-                  <div
-                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
-                    onClick={() => setOpenCountryCodeOption(true)}
-                  >
-                    <div className="flex gap-3">
-                      <CountryImg
-                        height="30"
-                        width="30"
-                        objectFit="cover"
-                        src={
-                          props.CountryCodes ? props.CountryCodes[extension].img : ""
-                        }
-                      ></CountryImg>
-                      <div className="Body2R_14">{props?.CountryCodes[extension].label || +91}</div>
-                    </div>
+            <form noValidate>
+              <div className="Body2R_14 mb-[2px]">Phone Number</div>
+              <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
+                <div
+                  className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
+                  onClick={() => setOpenCountryCodeOption(true)}
+                >
+                  <div className="flex gap-3">
+                    <CountryImg
+                      height="30"
+                      width="30"
+                      objectFit="cover"
+                      src={
+                        props.CountryCodes ? props.CountryCodes[extension].img : ""
+                      }
+                    ></CountryImg>
+                    <div className="Body2R_14">{props?.CountryCodes[extension].label || +91}</div>
                   </div>
+                </div>
 
-                  {openCountryCodeOption && (
-                    <CountryCodeDropdown
-                      onClose={() => setOpenCountryCodeOption(false)}
-                      CountryCodes={props.CountryCodes}
-                      handleExtensionChangeOption={handleExtensionChangeOption}
-                      setOpenCountryCodeOption={setOpenCountryCodeOption}
-                    />
-                  )}
-                  <div className="Body2R_14">{mobileInput}</div>
-                </MobileNumberContainer>
+                {openCountryCodeOption && (
+                  <CountryCodeDropdown
+                    onClose={() => setOpenCountryCodeOption(false)}
+                    CountryCodes={props.CountryCodes}
+                    handleExtensionChangeOption={handleExtensionChangeOption}
+                    setOpenCountryCodeOption={setOpenCountryCodeOption}
+                  />
+                )}
+                <div className="Body2R_14">{mobileInput}</div>
+              </MobileNumberContainer>
 
-                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-                  {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
-                  <div className="Body2R_14">Receive OTP on Whatsapp</div>
-                </WhatsappCheckBox>
+              <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+                {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
+                <div className="Body2R_14">Receive OTP on Whatsapp</div>
+              </WhatsappCheckBox>
 
 
-                <ReCAPTCHA
-                  size="invisible"
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  ref={recaptchaRef}
-                  onChange={onRecaptchaChange}
-                  className="hidden"
-                />
-              </form>
-            )}
-        </div> :userDetailsRequired ?
-            <div className="flex flex-col gap-[24px]">
-              <div
-                style={{
-                  fontSize: "32px",
-                  textAlign: "left",
-                  fontWeight: "700",
-                }}
-              >
-                Just a Few Details to Get Started.
-              </div>
-              <div>
-                {props.newUser || (props.otpSent && !props.name) ? (
-                  <div className="flex flex-col gap-[6px]">
-                    <div className="Body2M_14">Name</div>
+              <ReCAPTCHA
+                size="invisible"
+                sitekey={RECAPTCHA_SITE_KEY}
+                ref={recaptchaRef}
+                onChange={onRecaptchaChange}
+                className="hidden"
+              />
+            </form>
+          )}
+        </div> : userDetailsRequired ?
+          <div className="flex flex-col gap-[24px]">
+            <div
+              style={{
+                fontSize: "32px",
+                textAlign: "left",
+                fontWeight: "700",
+              }}
+            >
+              Just a Few Details to Get Started.
+            </div>
+            <div>
+              {props.newUser || (props.otpSent && !props.name) ? (
+                <div className="flex flex-col gap-[6px]">
+                  <div className="Body2M_14">Name</div>
                   <FloatingInput
                     error={userNameError}
                     helperText={"Please enter valid username"}
@@ -584,16 +589,16 @@ const LogIn = React.memo((props) => {
                       _userDetailsOnChangeHandler(event, "userName");
                     }}
                   />
-                  </div>
-                ) : null}
+                </div>
+              ) : null}
 
-                {props.newUser || (props.otpSent && !props.email) ? 
-                  <div className="flex flex-col gap-[6px]">
+              {props.newUser || (props.otpSent && !props.email) ?
+                <div className="flex flex-col gap-[6px]">
                   <div className="Body2M_14">Email</div>
-                {email}
+                  {email}
                 </div> : null}
-              </div>
-            </div> :
+            </div>
+          </div> :
           <div>
             {!props.noheading && (
               <div
@@ -642,7 +647,7 @@ const LogIn = React.memo((props) => {
             Continue
           </Button>
         ) : (
-          <div className={`flex flex-col gap-[16px] ${userDetailsRequired?"mt-[68px]":"mt-[80px]"}`}>
+          <div className={`flex flex-col gap-[16px] ${userDetailsRequired ? "mt-[68px]" : "mt-[80px]"}`}>
             {counter == 0 && !userDetailsRequired && <div className="flex gap-[16px] justify-center">
               <div className="Body1R_16">Didn’t received?</div>
               <div className="Body1R_16 text-[#3A85FC] cursor-pointer" onClick={verifyRecaptchaHandler}>Resend OTP</div>
