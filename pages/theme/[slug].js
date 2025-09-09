@@ -142,6 +142,7 @@ export async function getStaticPaths() {
         params: { slug: path.slug },
       }));
       return { paths: [], fallback: false };
+      
     } else {
       console.error("Failed to fetch paths.");
       return { paths: [], fallback: false };
