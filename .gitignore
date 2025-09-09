@@ -106,4 +106,5 @@ pm2-deploy.sh
 s3-deploy.sh
 index_path.py
 
+package-lock.json
 vercel.json
