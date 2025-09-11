@@ -501,7 +501,7 @@ const Enquiry = (props) => {
                         // })
                       }
                       }
-                      loading={isLoading && submitted}
+                      loading={isLoading}
                       height="50px"
                       color="white"
                       style={{
