@@ -145,19 +145,38 @@ const ComboTaxi = (props) => {
   ]);
 
   useEffect(() => {
-    if (
-      props?.taxiResults?.length &&
-      props?.selectedData?.result_index !== undefined
-    ) {
-      const selectedIndex = props.taxiResults.findIndex(
-        (taxi) => taxi?.result_index === props.selectedData?.result_index
-      );
+  if (
+    props?.taxiResults?.length &&
+    props?.selectedData?.result_index !== undefined
+  ) {
+    const selectedIndex = props.taxiResults.findIndex(
+      (taxi) => taxi?.result_index === props.selectedData?.result_index
+    );
 
-      if (selectedIndex !== -1) {
-        setSelectedTaxiIndex(selectedIndex);
-      }
+    if (selectedIndex !== -1) {
+      setSelectedTaxiIndex(selectedIndex);
     }
-  }, [props.taxiResults, props.selectedData]);
+  } else {
+    if ((!props.selectedData || !props.isSelected) && selectedTaxiIndex !== null) {
+      console.log("Resetting taxi selection - parent deselected or no selected data");
+      setSelectedTaxiIndex(null);
+    }
+  }
+}, [props.taxiResults, props.selectedData, props.isSelected, selectedTaxiIndex]);
+  // useEffect(() => {
+  //   if (
+  //     props?.taxiResults?.length &&
+  //     props?.selectedData?.result_index !== undefined
+  //   ) {
+  //     const selectedIndex = props.taxiResults.findIndex(
+  //       (taxi) => taxi?.result_index === props.selectedData?.result_index
+  //     );
+
+  //     if (selectedIndex !== -1) {
+  //       setSelectedTaxiIndex(selectedIndex);
+  //     }
+  //   }
+  // }, [props.taxiResults, props.selectedData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

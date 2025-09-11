@@ -646,6 +646,7 @@ const ItineraryContainer = (props) => {
 
         if (allStatusesCompleted) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+          dispatch(setItineraryStatus("itinerary_status", res?.data?.status));
            [
           "ITINERARY",
           "TRANSFERS",
@@ -709,7 +710,7 @@ const ItineraryContainer = (props) => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
+            dispatch(setItineraryStatus("itinerary_status", data?.status));
           }
 
           dispatch(setItinerary(data));

@@ -24,10 +24,10 @@ const GenericAPIModal = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const warningApiCalledRef = useRef(false);
 useEffect(() => {
-  if (isOpen && !warningApiCalledRef.current && warningApiCall && requestData) {
+  if (isOpen && !warningApiCalledRef.current && !warningApiCalled && warningApiCall && requestData) {
     handleInitialWarningRequest();
   }
-}, [isOpen, warningApiCall, requestData]);
+}, [isOpen, warningApiCall, requestData, warningApiCalled]);
 
 
   // Reset states when modal closes
@@ -89,8 +89,8 @@ useEffect(() => {
       onError(errorMsg);
       onClose(); 
     }finally {
-      setIsProcessing(false); // RESET FLAG
-    }
+  setIsProcessing(false); // RESET FLAG
+}
   };
 
   const proceedWithBooking = async () => {
@@ -157,7 +157,7 @@ useEffect(() => {
     }
   };
 
-   if (!isOpen || !showWarningModal) return null;
+  if (!isOpen) return null;
 
 
   return ReactDOM.createPortal(
