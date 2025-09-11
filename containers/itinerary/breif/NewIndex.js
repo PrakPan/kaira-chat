@@ -49,13 +49,11 @@ line-height: 22px;
 
 const Details = (props) => {
   const router = useRouter();
-  const [active, setActive] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
-  const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
-  const searchParams = useSearchParams();
-  const {drawer}=router?.query
+  const [routeView, setRouteView] = useState(false)
+  const { drawer } = router?.query
 
   const CITY_COLOR_CODES = [
     "#359EBF", //  # shade of blue
@@ -156,10 +154,23 @@ const Details = (props) => {
       <DetailsContainer>
 
         <RoutesRow className="flex w-full justify-between">
-          <div className="flex gap-[10px]"> 
+          <div className="flex gap-[10px]">
             {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
-          <sapn >Routes</sapn></div>
-          <button className="underline underline-offset-1 color-[#3A85FC]">View</button>
+            <sapn >Routes</sapn></div>
+          <button
+            className="underline underline-offset-1 text-[#3A85FC]"
+            onClick={() =>
+              router.push({
+                pathname: `/itinerary/${router?.query?.id}`,
+                query: {
+                  drawer: "handleEditRoute",
+                },
+              })
+            }
+          >
+            View
+          </button>
+
         </RoutesRow>
         {/* <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
@@ -216,11 +227,11 @@ const Details = (props) => {
         </RouteComponent> */}
       </DetailsContainer>
 
-      {drawer=="handleEditRoute"&& (
+      {drawer == "handleEditRoute" && (
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
-          editRoute={drawer=="handleEditRoute"}
+          editRoute={drawer == "handleEditRoute"}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}

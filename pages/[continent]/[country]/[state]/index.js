@@ -136,6 +136,7 @@ export async function getStaticPaths() {
         params: {
           continent: continentSlug,
           country: countrySlug.replace(/ /g, "_"),
+          country: countrySlug.replace(/ /g, "_"),
           state: stateSlug,
         },
       });
@@ -147,10 +148,10 @@ export async function getStaticPaths() {
     );
   }
 
-  // return {
-  //   paths:paths,
-  //   fallback:false
-  // }
+  return {
+    paths:paths,
+    fallback:false
+  }
   return {
     paths: [
       {

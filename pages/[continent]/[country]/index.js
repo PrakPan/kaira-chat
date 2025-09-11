@@ -92,10 +92,10 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  // return {
-  //   paths:paths,
-  //   fallback:false
-  // }
+  return {
+    paths:paths,
+    fallback:false
+  }
   return {
     paths: [
       {
