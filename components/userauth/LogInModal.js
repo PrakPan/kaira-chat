@@ -334,7 +334,7 @@ const LogIn = React.memo((props) => {
 
   const verifyRecaptchaHandler = () => {
     const recaptchaValue = recaptchaRef.current.getValue();
-    console.log("recaptcha value is: ",recaptchaValue)
+    console.log("recaptcha value is: ", recaptchaValue)
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
@@ -426,8 +426,8 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className=" pb-[32px] px-[40px] h-[560px]">
-      <div className="flex flex-col gap-[24px]">
+    <div className="pt-[56px] px-[32px] h-full">
+      <div className="flex flex-col gap-[24px] h-full">
         {!props?.otpSent ? <div>
           {!props.noheading && (
             <div
@@ -441,8 +441,8 @@ const LogIn = React.memo((props) => {
               }}
             >
               {!props?.onSuccess ? <>
-                <h1>{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
-                <h1>{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
+                <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
+                <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
               </> :
                 <>
                   <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
@@ -671,24 +671,25 @@ const LogIn = React.memo((props) => {
             </Button>
           </div>
         )}
-
-        <div className="Body2R_14 text-[#6E757A]">
-          By continuing, you agree to our{" "}
-          <Link
-            href="/privacy-policy"
-            style={{ textDecoration: "none" }}
-            target="_blank"
-          >
-            Terms of Service
-          </Link>
-          {" "} and acknowlege you've read our{" "}
-          <Link
-            href="/privacy-policy"
-            style={{ textDecoration: "none" }}
-            target="_blank"
-          >
-            Privacy Policy.
-          </Link>
+        <div className="mt-12 ">
+          <div className="Body2R_14 text-[#6E757A]">
+            By continuing, you agree to our{" "}
+            <Link
+              href="/privacy-policy"
+              style={{ textDecoration: "none" }}
+              target="_blank"
+            >
+              Terms of Service
+            </Link>
+            {" "} and acknowlege you've read our{" "}
+            <Link
+              href="/privacy-policy"
+              style={{ textDecoration: "none" }}
+              target="_blank"
+            >
+              Privacy Policy.
+            </Link>
+          </div>
         </div>
       </div>
 
