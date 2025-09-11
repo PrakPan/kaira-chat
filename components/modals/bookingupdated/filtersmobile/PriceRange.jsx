@@ -13,29 +13,46 @@ export default function PriceRange(props) {
         { id: '10000+', label: '₹10,000+' }
     ];
 
-    const handlePriceRangeSelect = (rangeId) => {
-        setSelectedPriceRange(rangeId);
-        setIsOpen(false);
-        
-        const rangeMap = {
-            'all': { lower: null, upper: null }, 
-            '0-3000': { lower: 0, upper: 3000 },
-            '3000-6000': { lower: 3000, upper: 6000 },
-            '6000-10000': { lower: 6000, upper: 10000 },
-            '10000+': { lower: 10000, upper: 50000 }
-        };
+   const handlePriceRangeSelect = (rangeId) => {
+    setSelectedPriceRange(rangeId);
+    setIsOpen(false);
 
-        const selectedRange = rangeMap[rangeId];
-        
+    const rangeMap = {
+        'all': { lower: null, upper: null },
+        '0-3000': { lower: 0, upper: 3000 },
+        '3000-6000': { lower: 3000, upper: 6000 },
+        '6000-10000': { lower: 6000, upper: 10000 },
+        '10000+': { lower: 10000, upper: 50000 }
+    };
+
+    const selectedRange = rangeMap[rangeId];
+
+    if (rangeId === 'all') {
+       props?.setSelectedSort(null);
+       props?._addFilterHandler(null,"sort")
+    props?.setIsSortVisible(false); 
+        props.setFilters((prevFilters) => ({
+            ...prevFilters,
+            sort_by: null,
+            budget: {
+                price_lower_range: selectedRange.lower,
+                price_upper_range: selectedRange.upper
+            },
+            applyFilter: !prevFilters.applyFilter
+        }));
+    } else {
+        props?.setIsSortVisible(true);
         props.setFilters((prevFilters) => ({
             ...prevFilters,
             budget: {
                 price_lower_range: selectedRange.lower,
                 price_upper_range: selectedRange.upper
             },
-            applyFilter: !prevFilters.applyFilter 
+            applyFilter: !prevFilters.applyFilter
         }));
-    };
+    }
+};
+
 
     // Close dropdown when clicking outside
     useEffect(() => {

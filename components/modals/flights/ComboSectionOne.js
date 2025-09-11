@@ -21,6 +21,7 @@ const ComboSection = (props) => {
     setAirlineCodes,
     selectedAirlines,
     setSelectedAirlines,
+     setIsTimeOnlyChange,
   } = props;
 
   const [showPax, setShowPax] = useState(false);
@@ -156,6 +157,7 @@ const ComboSection = (props) => {
     // Debounce the API call
     const timer = setTimeout(() => {
       if (updatePreferredDepartureTime) {
+         setIsTimeOnlyChange(true);
         updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
       }
       setIsLoading(false);

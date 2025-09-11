@@ -203,6 +203,7 @@ const [previousUrl, setPreviousUrl] = useState(null);
 const [traceId, setTraceId] = useState(null);
 const [traceIdTimestamp, setTraceIdTimestamp] = useState(null);
 const [remainingTime, setRemainingTime] = useState(900);
+const [isTimeOnlyChange,setIsTimeOnlyChange] = useState(false);
 
 
 const isTraceIdValid = () => {
@@ -392,6 +393,7 @@ const isTraceIdValid = () => {
 }, [props.flightResults, props.selectedData]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
+   
     setPreferredDepartureTime(newDateTime);
   };
 
@@ -529,7 +531,7 @@ const handleViewMore = async () => {
 
     if (props.token) {
       const hasAirlineFilterChanged = filtersState?.airlines !== previousAirlineFilter;
-      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || (preferredDepartureTime && isTraceIdValid());
+      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || (isTimeOnlyChange && isTraceIdValid());
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -572,6 +574,7 @@ const handleViewMore = async () => {
           setLoading(false);
           setMoreLoadingState(false);
           setIsFetching(false);
+           setIsTimeOnlyChange(false);
 
           if (cancelTokenSourceRef.current === currentCancelTokenSource) {
             cancelTokenSourceRef.current = null;
@@ -1187,6 +1190,7 @@ const handleViewMore = async () => {
           preferred_departure_time={`${preferredDepartureTime}`}
           updatePreferredDepartureTime={updatePreferredDepartureTime}
           handleFiltersChange={handleFiltersChange}
+           setIsTimeOnlyChange={setIsTimeOnlyChange}
         />
 
         <GridContainer style={{ clear: "right" }}>

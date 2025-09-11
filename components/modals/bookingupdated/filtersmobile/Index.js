@@ -43,11 +43,20 @@ export default function TemporaryDrawer(props) {
     props.filtersState.budget.price_upper_range,
   ]);
   const [sortShow, setSortShow] = useState(false);
+  const [isSortVisible, setIsSortVisible] = useState(
+  props.filters?.budget?.price_lower_range !== null || 
+  props.filters?.budget?.price_upper_range !== null
+);
   const dispatch = useDispatch();
   const filtersRef = useRef(null);
 
   const sortRef = useRef(null);
 
+  useEffect(() => {
+  const shouldShowSort = props.filters?.budget?.price_lower_range !== null || 
+                        props.filters?.budget?.price_upper_range !== null;
+  setIsSortVisible(shouldShowSort);
+}, [props.filters?.budget]);
 
   useEffect(() => {
     const handleClickOutsideSort = (event) => {
@@ -136,7 +145,15 @@ export default function TemporaryDrawer(props) {
             <div className="w-full flex flex-row justify-between">
 
             <div className="w-[40%]">
-            <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
+           <PriceRange 
+  budget={props?.budget} 
+  setBudget={props?.setBudget} 
+  setFilters={props?.setFilters} 
+  handleBudgetChange={props?.handleBudgetChange} 
+  setIsSortVisible={setIsSortVisible}
+  setSelectedSort={setSelectedSort}
+  _addFilterHandler={props?._addFilterHandler}
+/>
             </div>
              <StarCategory
                 starCategory={props.FILTERS.star_category}
@@ -195,7 +212,8 @@ export default function TemporaryDrawer(props) {
           <div className="flex flex-row items-center justify-between px-4 mt-3">
             <div className="text-sm font-normal w-[95%] md:w-fit">
               Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
-              stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
+              stays in {props.booking_city} {isPageWide ? "|" : <br />} 
+              {isSortVisible && <>Sort by:{" "}
               <div
                 style={{
                   display: "inline",
@@ -246,7 +264,8 @@ export default function TemporaryDrawer(props) {
                     </SortContainer>
                   </div>
                 )}
-              </div>
+              </div> </>}
+             
 
               {/* <div
                 style={{
@@ -298,6 +317,7 @@ export default function TemporaryDrawer(props) {
                 )}
               </div> */}
             </div>
+            
 
             {(
               <div className="relative">

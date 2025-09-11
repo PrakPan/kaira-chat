@@ -85,6 +85,8 @@ const CitySummary = (props) => {
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
+  
+
   const handleActivity = (poiData, index, dayIndex) => {
     setDayByDayIndex(index);
     router.push(
@@ -236,6 +238,15 @@ const CitySummary = (props) => {
     // }
   };
 
+  const shouldShowSightseeingDrawer = router.query.drawer === "SightSeeing" && router.query.bookingId;
+console.log("Intracity Bookings",props.intracityBookings)
+console.log("Should show SightSeeing drawer:", shouldShowSightseeingDrawer);
+console.log("Taxi det",formattedTaxiDetails)
+;console.log("Conditions:", {
+  drawerMatch: router.query.drawer === "SightSeeing",
+  hasBookingId: !!router.query.bookingId,
+  bookingId: router.query.bookingId
+});
   const handleDelete = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
@@ -577,7 +588,11 @@ const CitySummary = (props) => {
                       </div>
                     </div>
 
+                    {console.log("DDD",drawer,item?.id)}
+                    
                     {drawer == "SightSeeing" && item?.id == bookingId && (
+                      <>
+                      {console.log("DDDD",drawer,item?.id)}
                       <TransferDrawer
                         show={drawer == "SightSeeing" && item?.id == bookingId}
                         setHandleShow={setHandleShowTaxi}
@@ -613,6 +628,7 @@ const CitySummary = (props) => {
                         isIntracity={true}
                         isSightseeing={true}
                       />
+                      </>
                     )}
                   </>
                 ))}

@@ -344,11 +344,22 @@ const Booking = (props) => {
           child_ages: room.childAges,
         };
       }),
-      sort_by: {
-        price_order: filters.sort === "price: high to low" ? "desc" : filters.sort === "price: low to high" ? "asc" : null,
-      },
       trace_id: null,
     };
+
+    console.log("Filters",filters.sort);
+
+    const priceOrderValue = filters.sort === "price: high to low"
+  ? "desc"
+  : filters.sort === "price: low to high"
+  ? "asc"
+  : null;
+
+if (priceOrderValue && filters.sort) {
+  requestData.sort_by = {
+    price_order: priceOrderValue,
+  };
+}
 
     hotelSearch
       .post("", requestData, {
@@ -523,11 +534,23 @@ const Booking = (props) => {
             child_ages: room.childAges,
           };
         }),
-        sort_by: {
-          price_order: filters.sort === "price: high to low" ? "desc" : "asc",
-        },
+        // sort_by: {
+        //   price_order: filters.sort === "price: high to low" ? "desc" : "asc",
+        // },
         trace_id: paginationStatus?.traceId,
       };
+
+      const priceOrderValue = filters.sort === "price: high to low"
+  ? "desc"
+  : filters.sort === "price: low to high"
+  ? "asc"
+  : null;
+
+if (priceOrderValue) {
+  requestData.sort_by = {
+    price_order: priceOrderValue,
+  };
+}
 
       hotelSearch
         .post("", requestData, {
