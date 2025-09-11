@@ -109,28 +109,6 @@ const ItineraryCity = (props) => {
       }
     );
     
-    // await bookingDetails
-    //   .get(
-    //     `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     setData(res.data);
-    //   })
-    //   .catch((err) => {
-    //     dispatch(
-    //       openNotification({
-    //         type: "error",
-    //         text: "unable to get detail",
-    //         heading: "Error!",
-    //       })
-    //     );
-    //     setShowDetails(false);
-    //   });
     setLoading(false);
   };
 

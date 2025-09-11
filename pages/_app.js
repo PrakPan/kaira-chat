@@ -22,7 +22,7 @@ function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps, store }) {
     }
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     const handleStart = () => setLoading(true);
     const handleComplete = () => setLoading(false);
 
@@ -102,7 +102,9 @@ function MyApp({ Component, pageProps, store }) {
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
         />
       </Head>
-      {loading&&<Loading/>}
+
+      <div id="modal-root"></div>
+      {loading && <Loading />}
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

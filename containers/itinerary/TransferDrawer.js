@@ -101,9 +101,7 @@ const TransferDrawer = ({
     );
   };
 
-  console.log("BBK",booking_type,transferType,data);
-
-
+  const {drawer}=router.query
   const toggleExpand = (index) => {
     if (expandedIndexes.includes(index)) {
       setExpandedIndexes(expandedIndexes.filter((i) => i !== index));

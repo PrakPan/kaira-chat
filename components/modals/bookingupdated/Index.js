@@ -956,25 +956,6 @@ const Booking = (props) => {
                 />
               </FloatingView>
             )}
-            {/* <ViewHotelDetails
-              mercury={true}
-              check_in={props?.selectedBooking.check_in}
-              check_out={props?.selectedBooking.check_out}
-              _setImagesHandler={props?._setImagesHandler}
-              onHide={() => setShowDetails(false)}
-              id={props?.currentBooking?.agoda_accommodation}
-              currentBooking={props?.currentBooking}
-              show={showDetails}
-              handleClick={props?.handleClick}
-              setStayBookings={props?.setStayBookings}
-              itineraryDaybyDay={props?.itineraryDaybyDay}
-              occupancies={filters.occupancies}
-              setShowLoginModal={props?.setShowLoginModal}
-              handleClose={handleClose}
-              city_id={props?.selectedBooking?.cityId}
-              plan={props.plan}
-              itinerary_city_id={props.itinerary_city_id}
-            ></ViewHotelDetails> */}
           </>
         </Drawer>
       </div>
