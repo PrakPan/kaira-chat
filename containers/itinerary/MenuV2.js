@@ -866,8 +866,8 @@ const SimpleTabsV2 = (props) => {
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
             />
-            {activeTab === "Itinerary" && (
-              <div id={"Itenary"}>
+              <div id={"Itenary"}
+                className={activeTab === "Itinerary" ? "block" : "hidden"}>
                 {props.mercuryItinerary
                   ? props?.itineraryDaybyDay && (
                     <DaybyDay
@@ -926,9 +926,9 @@ const SimpleTabsV2 = (props) => {
                     ></NewItenaryMain>
                   )}
               </div>
-            )}
 
-         {activeTab === "Bookings" && ( <div id={"Booking"}>
+          <div id={"Booking"}
+           className={activeTab === "Bookings" ? "block" : "hidden"}>
               {isGroup ? (
                 <div id={"Stays"}>
                   <Register></Register>
@@ -1114,7 +1114,6 @@ const SimpleTabsV2 = (props) => {
                 )
               )}
             </div>
-         )}
           </div>
           {!props?.mercuryItinerary ? (
             <div
