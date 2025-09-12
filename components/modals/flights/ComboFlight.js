@@ -477,10 +477,10 @@ const handleViewMore = async () => {
       destination: destinationInput.code || props.destination_code || props.selectedBooking.destination_iata,
       preferred_departure_time: preferredDepartureTime,
       flight_cabin_class: classType.value,
-      departure_time_period: filtersState.departure_time_period || "",
-      arrival_time_period: filtersState.arrival_time_period || "",
-      sort_by: filtersState.sort_by || "price",
-      order: filtersState.order || "asc",
+      // departure_time_period: filtersState.departure_time_period || "",
+      // arrival_time_period: filtersState.arrival_time_period || "",
+      // sort_by: filtersState.sort_by || "price",
+      // order: filtersState.order || "asc",
       trace_id: traceId,
       ...(filtersState?.airlines && isTraceIdValid() && { trace_id: traceId })
     };
