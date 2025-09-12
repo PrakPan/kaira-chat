@@ -1923,7 +1923,7 @@ const Details = (props) => {
                                   return startDate < currentDate;
                                 };
 
-                                if (isItineraryInPast()) {
+                                if (isItineraryInPast() || Math.round(Cart?.total_payable_amount) === 0) {
                                   return (
                                    <>
                                       <GetInTouchContainer>
