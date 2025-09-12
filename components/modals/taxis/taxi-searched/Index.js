@@ -57,6 +57,7 @@ const Booking = (props) => {
         setShowTaxiModal={props.setShowTaxiModal}
         selectedBooking={props.selectedBooking}
         data={props.data}
+        // isSelected={props?.isSelected} 
         handleTaxiSelect={props.handleTaxiSelect}
         origin_itinerary_city_id={props?.origin_itinerary_city_id}
         destination_itinerary_city_id={props?.destination_itinerary_city_id}

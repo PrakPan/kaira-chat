@@ -1651,6 +1651,7 @@ const RouteContainer = (props) => {
                   destinationCityId={
                     dCityData?.city?.id || dCityData?.gmaps_place_id
                   }
+                  
                   sourceRouteCityId={singleTransfer?.source?.city}
                   destinationRouteCityId={singleTransfer?.destination?.city}
                   sourceHubId={singleTransfer?.source?.id}
@@ -2502,13 +2503,22 @@ const NewMultiModeContainer = ({
         type: "success",
       });
 
-      if (data.is_refresh_needed === true) {
-        window.location.reload();
-        return;
-      }
 
       setUpdateLoading(false);
       setIsProcessingBooking(false);
+
+       if (data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
+        drawerParams.forEach(param => {
+          url.searchParams.delete(param);
+        });
+
+        window.history.replaceState({}, '', url.toString());
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
+      }
 
     } catch (error) {
       setUpdateLoading(false);
@@ -4716,10 +4726,18 @@ const OtherTransfer = ({
           })
         );
 
-        if (response.data.is_refresh_needed === true) {
+         if (response.data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
+        drawerParams.forEach(param => {
+          url.searchParams.delete(param);
+        });
+
+        window.history.replaceState({}, '', url.toString());
+        setTimeout(() => {
           window.location.reload();
-          return;
-        }
+        }, 200);
+      }
       } else {
         const message = newDate
           ? "Departure date updated successfully!"

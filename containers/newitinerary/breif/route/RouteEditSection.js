@@ -247,6 +247,17 @@ const RouteEditSection = (props) => {
             if (i === 0 || i === props.routes.length - 1) {
               return props?.routes[i]?.duration || 0;
             }
+
+            if(i===1){  
+             const endDate = props?.routes[i]?.end_date;
+             const startDate = itinerary?.start_date;
+            
+            if (startDate && endDate) {
+              return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+            }
+            
+            return props?.routes[i]?.duration || 1;
+            }
             
             const endDate = props?.routes[i]?.end_date;
             const startDate = props?.routes[i-1]?.end_date;

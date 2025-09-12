@@ -84,6 +84,7 @@ const Section = (props) => {
             origin_itinerary_city_id={props?.origin_itinerary_city_id}
             destination_itinerary_city_id={props?.destination_itinerary_city_id}
             edge={props?.edge}
+            isSelected={props?.isSelected}
             booking_id={props?.booking_id}
             airportBooking={props?.airportBooking}
             cityId={props?.cityId}

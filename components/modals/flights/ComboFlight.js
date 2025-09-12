@@ -434,22 +434,6 @@ useEffect(() => {
   }
 }, [props.flightResults, props.selectedData, props.isSelected, selectedFlightIndex]);
 
-  // useEffect(() => {
-  //   if (
-  //     props?.flightResults?.length &&
-  //     props?.selectedData?.resultIndex !== undefined
-  //   ) {
-  //     const selectedIndex = props.flightResults.findIndex(
-  //       (flight) =>
-  //         flight?.result_index ===
-  //         (props.selectedData?.resultIndex || props.selectedData?.result_index)
-  //     );
-
-  //     if (selectedIndex !== -1) {
-  //       setSelectedFlightIndex(selectedIndex);
-  //     }
-  //   }
-  // }, [props.flightResults, props.selectedData]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
     setPreferredDepartureTime(newDateTime);
@@ -870,9 +854,22 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
 
       dispatch(setTransfersBookings(updatedTransferBookings));
       props?.getPaymentHandler();
+      // if(response?.data?.is_refresh_needed){
+      //   window.location.reload(); 
+      // }
       if(response?.data?.is_refresh_needed){
-        window.location.reload(); 
-      }
+     const url = new URL(window.location);
+  const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
+  drawerParams.forEach(param => {
+    url.searchParams.delete(param);
+  });
+  
+  window.history.replaceState({}, '', url.toString());
+  
+  setTimeout(() => {
+    window.location.reload();
+  }, 200);
+}
     } else {
       dispatch(
         updateSingleTransferBooking(
@@ -881,9 +878,21 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
         )
       );
       props?.getPaymentHandler();
+      // if(response?.data?.is_refresh_needed){
+      //   window.location.reload(); 
+      // }
       if(response?.data?.is_refresh_needed){
-        window.location.reload(); 
-      }
+  const url = new URL(window.location);
+  const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
+  drawerParams.forEach(param => {
+    url.searchParams.delete(param);
+  });
+  
+  window.history.replaceState({}, '', url.toString());
+  setTimeout(() => {
+    window.location.reload();
+  }, 200);
+}
     }
 
     props.openNotification({
