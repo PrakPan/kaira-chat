@@ -208,18 +208,18 @@ const ImageCarousel = ({ images, noCaption }) => {
         <>
           <button
             onClick={(e) => prevSlide(e)}
-            className="absolute -left-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10"
+            className="absolute -left-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10 d-flex justify-center items-center"
           >
             <MdNavigateBefore className="text-2xl" />
           </button>
           <button
             onClick={(e) => nextSlide(e)}
-            className="absolute -right-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10"
+            className="absolute -right-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10 d-flex justify-center items-center"
           >
             <MdNavigateNext className="text-2xl" />
           </button>
         </>
-      )}
+       )} 
     </div>
   );
 };
