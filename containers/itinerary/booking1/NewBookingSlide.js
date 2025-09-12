@@ -1804,13 +1804,7 @@ const Details = (props) => {
       <div className="px-0 pb-4">
         {props.couponJSX}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
-          {/* <UpdateItineraryDates
-           itinerary={props?.itinerary}
-  token={props.token}
-  onUpdateSuccess={fetchItineraryStatus}
-  convertDFormat={convertDFormat}
-  tripsPage={props.tripsPage}
-/> */}
+  
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
@@ -1833,23 +1827,6 @@ const Details = (props) => {
               )}
 
 
-              {/* <>
-                  <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
-                    <MdEdit
-                      className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
-                      onClick={() => setFocus(true)}
-                    />
-                  </div>
-                  <div className="w-[1rem] h-[0.2rem]">
-                    <SelectDate
-                      date={date}
-                      setDate={setDate}
-                      setFocus={setFocus}
-                      focus={focus}
-                      token={props.token}
-                    ></SelectDate>
-                  </div>
-                </>  */}
             </div>
           </div>
         </div>
@@ -2208,7 +2185,7 @@ const Details = (props) => {
               className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
                 }  mb-0`}
             >
-              <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+              {!(final_status == "Paid" || final_status == "Released") && <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />}
               <div className="flex justify-end -mt-[1.8rem] mr-2">
                 <IoMdClose
                   className="hover:cursor-pointer text-2xl hover:text-gray-600 transition-colors"

@@ -257,7 +257,9 @@ const UpdateItineraryDates = ({
   convertDFormat,
   tripsPage = false,
   setShowEditDate,
-  showEditDate
+  showEditDate,
+  showAsModal = true, // Default to current behavior
+  autoOpenCalendar = false // Default to current behavior
 }) => {
 
   const dispatch = useDispatch();
@@ -278,9 +280,17 @@ const UpdateItineraryDates = ({
     itinerary?.end_date ? moment(itinerary.end_date) : null
   );
   const [showCalendar, setShowCalendar] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(autoOpenCalendar);
 
   const [isMobile, setIsMobile] = useState(false);
+
+  // REPLACE the existing useEffect that sets showCalendar
+useEffect(() => {
+  if (autoOpenCalendar) {
+    setShowCalendar(true);
+    setFocusedInput("startDate");
+  }
+}, [autoOpenCalendar]);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -395,8 +405,10 @@ const UpdateItineraryDates = ({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 absolute overflow-visible z-[8] mt-[1.3rem]">
+     <div className={showAsModal ? "flex flex-row items-center gap-2 absolute overflow-visible z-[8] mt-[1.3rem]" : "w-full"}>
       {/* Date display with pen icon */}
+  {showAsModal ? (
+<>
       <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
         {!isEditing ? (
           <div className="min-w-max">
@@ -520,7 +532,39 @@ const UpdateItineraryDates = ({
             </StyledDateRangeContainer>
           </div>
         </>
-      )}
+      )}  </>) : (
+      <>
+        <div className="flex flex-row items-center justify-between gap-4 mb-4">
+          <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
+            <div className="min-w-max">
+              {formatDateRangeDisplay()}
+            </div>
+          </div>
+          
+          <button 
+            onClick={handleCancel}
+            className="text-blue-600 underline text-sm hover:text-blue-800 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+
+        {!showCalendar && momentStartDate && momentEndDate && (
+          <div className="mb-4">
+            <button
+              onClick={handleUpdateDates}
+              disabled={isLoading}
+              className={`w-full px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity ${
+                isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#e6cc00]"
+              }`}
+            >
+              {isLoading ? "Applying..." : "Apply Date Change!"}
+            </button>
+          </div>
+        )}
+      </>
+    )}
+     
     </div>
   );
 };

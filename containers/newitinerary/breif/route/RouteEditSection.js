@@ -526,7 +526,7 @@ const RouteEditSection = (props) => {
             check_in: dest.cityData.checkin_date,
             check_out: dest.cityData.checkout_date,
             id: dest.cityData?.hasOwnProperty("id") ? dest.cityData?.id : null,
-            duration: dest.cityData?.duration || dest.cityData?.nights,
+            duration: dest.cityData?.nights || dest.cityData?.duration,
             start_date: dest.cityData.checkin_date || startDate,
           };
         })
