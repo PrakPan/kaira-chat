@@ -238,7 +238,31 @@ const RouteEditSection = (props) => {
           checkout_date: i === props.routes.length - 1 ? itinerary?.end_date : props.routes[i]?.end_date,
           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
           place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-          duration: props?.routes[i]?.duration,
+          duration:  (() => {
+            if (i === 0 || i === props.routes.length - 1) {
+              return props?.routes[i]?.duration || 0;
+            }
+
+            if(i===1){  
+             const endDate = props?.routes[i]?.end_date;
+             const startDate = itinerary?.start_date;
+            
+            if (startDate && endDate) {
+              return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+            }
+            
+            return props?.routes[i]?.duration || 1;
+            }
+            
+            const endDate = props?.routes[i]?.end_date;
+            const startDate = props?.routes[i-1]?.end_date;
+            
+            if (startDate && endDate) {
+              return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+            }
+            
+            return props?.routes[i]?.duration || 1;
+          })(),
           id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
           color: CITY_COLOR_CODES[i % 7],
           lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
