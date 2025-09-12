@@ -194,25 +194,26 @@ const ComboTaxi = (props) => {
     };
   }, [showTimeDropdown]);
 
-  const handleTimeSelection = (slot) => {
-    setSelectedTime(slot.display);
-    setSelectedTimeValue(slot.value);
-    setShowTimeDropdown(false);
 
-    if (props.onTimeChange) {
-      props.onTimeChange(slot.value);
-    } else {
-      fetchDataWithNewTime(slot.value);
-    }
-  };
+ const handleTimeSelection = (slot) => {
+  setSelectedTime(slot.display);
+  setSelectedTimeValue(slot.value);
+  setShowTimeDropdown(false);
 
-  const fetchDataWithNewTime = (newTime) => {
-    const updatedProps = {
-      ...props,
-      comboStartTime: newTime,
-    };
-    fetchDataWithProps(updatedProps);
+  if (props.onTimeChange) {
+    props.onTimeChange(slot.value, selectedDate || props?.comboStartDate);
+  } else {
+    fetchDataWithNewTime(slot.value, selectedDate || props?.comboStartDate);
+  }
+};
+ const fetchDataWithNewTime = (newTime, dateToUse = null) => {
+  const updatedProps = {
+    ...props,
+    comboStartTime: newTime,
+    comboStartDate: dateToUse || selectedDate || props?.comboStartDate,
   };
+  fetchDataWithProps(updatedProps);
+};
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -259,10 +260,10 @@ const ComboTaxi = (props) => {
       trips: [
         {
           start_date:
-            propsToUse?.comboStartDate ||
-            propsToUse.selectedBooking.check_in ||
-            start_date,
-          start_time: propsToUse?.comboStartTime || start_time,
+        propsToUse?.comboStartDate ||
+        propsToUse.selectedBooking.check_in ||
+        start_date,
+      start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
             number_of_adults + number_of_children + number_of_infants,
           trip_type: "one-way",
@@ -509,16 +510,13 @@ const ComboTaxi = (props) => {
                         onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                       >
                         <span className="text-sm font-medium">
-                          {selectedTime ||
-                            (props?.comboStartTime
-                              ? dayjs(
-                                  props?.comboStartDate +
-                                    "T" +
-                                    props?.comboStartTime +
-                                    ":00"
-                                )?.format("h:mm A")
-                              : "Select Time")}
-                        </span>
+  {selectedTime ||
+    (selectedTimeValue || props?.comboStartTime
+      ? dayjs(
+          `${selectedDate || props?.comboStartDate}T${selectedTimeValue || props?.comboStartTime}:00`
+        )?.format("h:mm A")
+      : "Select Time")}
+</span>
                         <button>
                           <svg
                             className={`w-5 h-5 text-gray-600 transition-transform`}
