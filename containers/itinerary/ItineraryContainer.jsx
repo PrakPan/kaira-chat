@@ -192,7 +192,7 @@ const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { itinerary_status, transfers_status, pricing_status, hotels_status } =
+  const { itinerary_status, transfers_status, pricing_status, hotels_status ,final_status} =
     useSelector((state) => state.ItineraryStatus);
 
   // Throttle function for performance optimization
@@ -646,7 +646,7 @@ const ItineraryContainer = (props) => {
 
         if (allStatusesCompleted) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-          dispatch(setItineraryStatus("itinerary_status", res?.data?.status));
+          dispatch(setItineraryStatus("final_status", res?.data?.status));
            [
           "ITINERARY",
           "TRANSFERS",
@@ -710,7 +710,7 @@ const ItineraryContainer = (props) => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("itinerary_status", data?.status));
+            dispatch(setItineraryStatus("final_status", data?.status));
           }
 
           dispatch(setItinerary(data));

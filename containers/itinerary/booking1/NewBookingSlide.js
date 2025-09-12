@@ -752,7 +752,7 @@ const Details = (props) => {
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
-  const { itinerary_status, transfers_status, pricing_status } = useSelector(
+  const { itinerary_status, transfers_status, pricing_status,final_status} = useSelector(
     (state) => state.ItineraryStatus
   );
   const Itinerary = useSelector(state => state.Itinerary);
@@ -1555,7 +1555,7 @@ const Details = (props) => {
           className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
             }  -mt-[1rem] -mx-[1rem] mb-0`}
         >
-          {!(itinerary_status == "Paid" || itinerary_status == "Released") && <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />}
+          {!(final_status == "Paid" || final_status == "Released") && <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />}
           <div className=" mx-[1rem] mt-[1rem]">
             <div className="flex flex-row justify-between">
               {props.iscouponApplied &&

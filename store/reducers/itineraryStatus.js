@@ -6,7 +6,7 @@ const initialState = {
   pricing_status: "PENDING",
   hotels_status: "PENDING",
   finalized_status:"PENDING",
-  itinerary_status: "PENDING"
+  final_status: "PENDING"
 };
 
 const reducer = (state = initialState, action) => {
