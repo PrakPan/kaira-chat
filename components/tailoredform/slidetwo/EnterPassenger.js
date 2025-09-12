@@ -92,7 +92,7 @@ export const ApplyButton = styled.button`
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: #005bb5;
+    background-color: #000000;
   }
 `;
 

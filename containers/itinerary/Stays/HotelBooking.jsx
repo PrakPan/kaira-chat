@@ -826,13 +826,6 @@ const HotelBooking = ({
             BookingButton={!isDateOlderThanCurrent(start_date) ? true : false}
             bookingFunData={bookingFunData}
             handleClickAc={handleClickAc}
-            // {() => {
-            //   handleClickAc(
-            //     bookingFunData.index,
-            //     bookingFunData.booking,
-            //     bookingFunData.city_id
-            //   );
-            // }}
             index={idx}
             booking={bookingFunData?.booking}
             city_id={city_id || bookingFunData?.city_id}

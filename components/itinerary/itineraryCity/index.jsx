@@ -109,35 +109,13 @@ const ItineraryCity = (props) => {
       }
     );
     
-    // await bookingDetails
-    //   .get(
-    //     `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     setData(res.data);
-    //   })
-    //   .catch((err) => {
-    //     dispatch(
-    //       openNotification({
-    //         type: "error",
-    //         text: "unable to get detail",
-    //         heading: "Error!",
-    //       })
-    //     );
-    //     setShowDetails(false);
-    //   });
     setLoading(false);
   };
 
-  const handleStay = (e, label, value, clickType) => {
+  const handleStay = (e, label, value, clickType,hotelId) => {
     e.stopPropagation();
     if (token){
-      const index = multiHotelStays.findIndex(h => h?.id === data?.id);
+      const index = multiHotelStays.findIndex(h => h?.id === hotelId);
       props?.handleClickAc(
          index !== -1 ? index : props?.index,
         props?.city,
@@ -238,7 +216,7 @@ const ItineraryCity = (props) => {
             <button
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
-                handleStay(e, "Add", props.city.city.name, "Add")
+                handleStay(e, "Add", props.city.city.name, "Add",null)
               }
             >
               + Add Stay in {props?.city?.city?.name}
