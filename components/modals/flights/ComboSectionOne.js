@@ -21,6 +21,7 @@ const ComboSection = (props) => {
     setAirlineCodes,
     selectedAirlines,
     setSelectedAirlines,
+    setIsTimeOnlyChange
   } = props;
 
   const [showPax, setShowPax] = useState(false);
@@ -136,6 +137,7 @@ const ComboSection = (props) => {
   const handleTimeSelection = (slot) => {
     setIsLoading(true);
     setSelectedTime(slot.display);
+    setIsTimeOnlyChange(true);
     setShowTimeDropdown(false);
 
     if (debounceTimer) {

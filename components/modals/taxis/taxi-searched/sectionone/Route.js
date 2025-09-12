@@ -96,6 +96,7 @@ const Section = (props) => {
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -104,6 +105,7 @@ const Section = (props) => {
   };
 
   const handleCancel = () => {
+    setIsChecked(false);
     setLoading(false);
     setShowWarningModal(false);
     setWarningMessage("");
@@ -119,6 +121,8 @@ const Section = (props) => {
 
 
   const handleUpdate = async () => {
+
+    setIsChecked(true);
     if (props.handleTaxiSelect) {
       props.handleTaxiSelect({
         trace_id: props.data.trace_id,
@@ -278,6 +282,7 @@ const Section = (props) => {
   };
 
   const handleWarningCancel = () => {
+    setIsChecked(false);
     setShowWarningModal(false);
     setWarningMessage("");
     setPendingBookingData(null);
@@ -394,12 +399,17 @@ const Section = (props) => {
                   cursor: "pointer",
                 }}
               >
+
                 <input
                   type="checkbox"
                   onChange={(e) => {
-                    if (e.target.checked) handleUpdate();
+                    if (e.target.checked) {
+                      handleUpdate();
+                    } else {
+                      handleCancel();
+                    }
                   }}
-                  // checked={props?.isSelected || false}
+                  checked={props?.isSelected || isChecked || false}
                   disabled={loading || props?.bookingLoad}
                   className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />

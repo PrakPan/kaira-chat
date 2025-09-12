@@ -226,6 +226,7 @@ const [warningMessage, setWarningMessage] = useState("");
 const [pendingBookingData, setPendingBookingData] = useState(null);
 const [isProcessingWarning, setIsProcessingWarning] = useState(false);
 const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+const [isTimeOnlyChange, setIsTimeOnlyChange] = useState(false);
 
 
 
@@ -554,6 +555,7 @@ const handleViewMore = async () => {
     const currentCancelTokenSource = cancelTokenSourceRef.current;
 
     setLoading(true);
+    setIsTimeOnlyChange(false);
     setIsFetching(true);
     setFlightsCount(0);
     setNextUrl(null);
@@ -573,7 +575,7 @@ const handleViewMore = async () => {
 
     if (props.token) {
       const hasAirlineFilterChanged = filtersState?.airlines !== previousAirlineFilter;
-      const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || preferredDepartureTime && isTraceIdValid();
+        const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || (isTimeOnlyChange && isTraceIdValid());
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -1176,6 +1178,7 @@ const handleWarningCancel = () => {
               getPaymentHandler={props.getPaymentHandler}
               combo={props?.combo}
               booking_id={props?.booking_id}
+              
             />
           ))}
 
@@ -1358,6 +1361,7 @@ const handleWarningCancel = () => {
           preferred_departure_time={`${preferredDepartureTime}`}
           updatePreferredDepartureTime={updatePreferredDepartureTime}
           handleFiltersChange={handleFiltersChange}
+          setIsTimeOnlyChange={setIsTimeOnlyChange}
         />
 
         <GridContainer style={{ clear: "right" }}>
