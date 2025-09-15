@@ -63,7 +63,7 @@ const AirportBookingItem = ({
   handlePickupDropDrawer,
   setTransferType,
   firstCity,
-  lastCity
+  lastCity,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -417,7 +417,7 @@ const AirportBookingItem = ({
       !hasPickup &&
       !hasDrop &&
       noPickupDropBookings.length === 0 &&
-      supportsTransfers(bookingMode)
+      supportsTransfers(bookingMode) 
     ) {
       return (
         <div className="flex flex-col gap-1">
@@ -431,6 +431,7 @@ const AirportBookingItem = ({
             </span>
           </div>}
           {/* Then Pickup */}
+          
          {!lastCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"

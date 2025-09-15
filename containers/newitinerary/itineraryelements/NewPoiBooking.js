@@ -161,6 +161,7 @@ export default function NewPoiBooking(props) {
                 <div className="flex flex-row justify-between">
                   <div className="text-[20px] font-semibold">
                     {props.data?.display_name || props.data?.name ? props.data?.display_name || props.data.name : null}
+                    {props.data?.display_name || props.data?.name ? props.data?.display_name || props.data.name : null}
                   </div>
                 </div>
                 {stars && (

@@ -121,11 +121,12 @@ const ActivityDetailsDrawer = (props) => {
       });
   };
 
-  const updatedActivityBooking = async () => {
+  const updatedActivityBooking = async (data) => {
     try {
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
         trace_id: traceId,
+       ...(data?.result_index !== undefined && { result_index: data.result_index }),
       };
 
       const res = await activityBooking.post(

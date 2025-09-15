@@ -37,6 +37,7 @@ import { toast, ToastContainer } from "react-toastify";
 import SetPassengers from "../../store/actions/passengers";
 import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
+import setCart from "../../store/actions/Cart";
 
 const Container = styled.div`
   width: 90%;
@@ -191,7 +192,7 @@ const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { itinerary_status, transfers_status, pricing_status, hotels_status } =
+  const { itinerary_status, transfers_status, pricing_status, hotels_status ,final_status} =
     useSelector((state) => state.ItineraryStatus);
 
   // Throttle function for performance optimization
@@ -368,11 +369,13 @@ const ItineraryContainer = (props) => {
               .ClaimItinary(props.id, props.token)
               .then((res) => {
                 setPayment(res); //
+                dispatch(setCart(res));
                 setPaymentLoading(false);
               })
               .catch((err) => {});
           } else {
             setPayment(res.data);
+            dispatch(setCart(res.data));
             setPaymentLoading(false);
           }
           let email = localStorage.getItem("email");
@@ -474,6 +477,7 @@ const ItineraryContainer = (props) => {
 
       let data = res.data;
       setPayment(data);
+      dispatch(setCart(data));
       dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
 
       for (let category in data.summary) {
@@ -642,6 +646,17 @@ const ItineraryContainer = (props) => {
 
         if (allStatusesCompleted) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+          dispatch(setItineraryStatus("final_status", res?.data?.status));
+           [
+          "ITINERARY",
+          "TRANSFERS",
+          "PRICING",
+          "HOTELS",
+           ].forEach((key) => {
+    const statusValue = status?.[key];
+    const statusField = `${key.toLowerCase()}_status`;
+    dispatch(setItineraryStatus(statusField, statusValue));
+  });
           setPolling(false);
         } else {
           setPolling(true);
@@ -695,7 +710,7 @@ const ItineraryContainer = (props) => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
+            dispatch(setItineraryStatus("final_status", data?.status));
           }
 
           dispatch(setItinerary(data));

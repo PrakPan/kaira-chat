@@ -195,8 +195,8 @@ const FullImgContent = (props) => {
             noLazy
           />
           <IconText>
-            Affordable & <br />
-            Flexible Bookings
+            Curated <br />
+            Experiences
           </IconText>
         </div>
 
@@ -209,7 +209,7 @@ const FullImgContent = (props) => {
             noLazy
           />
           <IconText>
-            Zero Hidden <br /> Charges
+            Transparent <br /> Pricing
           </IconText>
         </div>
       </IconsContainer>

@@ -106,6 +106,7 @@ const ActivityAddDrawer = (props) => {
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
 
+
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -871,6 +872,7 @@ const formattedDate =
                           : "things to do"}{" "}
                         available.
                       </span>
+                      
                     </EmptyMsg>
                     {debouncedSearch !== "" ? (
                       <Button

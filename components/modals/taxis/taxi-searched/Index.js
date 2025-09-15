@@ -50,12 +50,15 @@ const Booking = (props) => {
       :
       <SectionOne
         setHideBookingModal={props.setHideBookingModal}
+         handleTaxiDeselect={props?.handleTaxiDeselect}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         _updateSearchedTaxi={props._updateSearchedTaxi}
         getPaymentHandler={props.getPaymentHandler}
         setShowTaxiModal={props.setShowTaxiModal}
         selectedBooking={props.selectedBooking}
         data={props.data}
+        onTaxiSelect={props?.onTaxiSelect} 
+        isSelected={props?.isSelected} 
         handleTaxiSelect={props.handleTaxiSelect}
         origin_itinerary_city_id={props?.origin_itinerary_city_id}
         destination_itinerary_city_id={props?.destination_itinerary_city_id}

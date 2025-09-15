@@ -42,6 +42,13 @@ export default function ActivityDetails(props) {
   }
 }, [props.data?.prices]);
 
+
+  useEffect(() => {
+  if (props.data?.prices?.length > 0) {
+    setSelectedPackage(props.data.prices[0]);
+  }
+}, [props.data?.prices]);
+
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
