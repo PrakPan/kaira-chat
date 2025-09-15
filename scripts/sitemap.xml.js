@@ -76,7 +76,7 @@ const generateSitemap = async () => {
   const trips = response.data.map((trip) => {
     let group_type = trip?.group_type
       ? trip.group_type.replaceAll(" ", "_").toLowerCase()
-      : "group";
+      : "family";
     return {
       path: group_type + "/" + trip.slug,
     };
