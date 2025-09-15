@@ -10,7 +10,7 @@ export const StyledText = styled.div`
   font-size: 14px;
 `;
 
-const Section = styled.div`
+export const Section = styled.div`
   margin-bottom: 1.5rem;
 `;
 
@@ -26,7 +26,7 @@ export const StyledBox = styled.div`
   cursor: pointer;
 `;
 
-const PassengerRow = styled.div`
+export const PassengerRow = styled.div`
   width: 327px;
   height: auto;
   display: flex;
@@ -38,7 +38,7 @@ const PassengerRow = styled.div`
   flex-wrap: wrap;
 `;
 
-const PassengerLabel = styled.div`
+export const PassengerLabel = styled.div`
   display: flex;
   flex-direction: column;
   font-family: Inter, sans-serif;
@@ -53,13 +53,13 @@ const PassengerLabel = styled.div`
   }
 `;
 
-const CounterBox = styled.div`
+export const CounterBox = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
 
-const CounterButton = styled.button`
+export const CounterButton = styled.button`
   width: 32px;
   height: 32px;
   font-size: 18px;
@@ -72,7 +72,7 @@ const CounterButton = styled.button`
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 `;
 
-const CounterValue = styled.div`
+export const CounterValue = styled.div`
   width: 24px;
   text-align: center;
   font-size: 14px;
@@ -113,7 +113,7 @@ export const ClearButton = styled.button`
   }
 `;
 
-const AgeInput = styled.input`
+export const AgeInput = styled.input`
   display: flex;
   width: 87px;
   padding: 6px 10px;

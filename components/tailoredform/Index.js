@@ -16,6 +16,10 @@ import { logEvent } from "../../services/ga/Index";
 import { setItineraryCreated, setItineraryInitiateData, setItineraryNotCreated, setRoomConfiguration } from "../../store/actions/slideOneActions";
 import { BlackContainer, buildItineraryPayload, Container, divideTravellers, headings, useSourceParams } from "./utils/slideOneActions";
 import useMediaQuery from "../media";
+import Modal from "../ui/Modal";
+import ModalWithBackdrop from "../ui/ModalWithBackdrop";
+import RouteOverviewModal from "./slideOne/RouteOverviewModal";
+import BottomModal from "../ui/LowerModal";
 
 const Enquiry = (props) => {
   const router = useRouter();
@@ -25,6 +29,7 @@ const Enquiry = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [route, setRoute] = useState([]);
   const [locationsLatLong, setLocationsLatLong] = useState(useSelector((state) => state.tailoredInfoReducer.itineraryInititateData?.basic_route) || [])
+  const [showRouteOverview, setShowRouteOverview] = useState(false)
 
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -79,7 +84,7 @@ const Enquiry = (props) => {
   useEffect(() => {
     if ((slideIndex && slideIndex != 0) || isItineraryCreated) {
       dispatch(setItineraryCreated(false));
-      if (!itineraryInititateData ) router.push({
+      if (!itineraryInititateData) router.push({
         pathname: '/new-trip'
       })
     }
@@ -225,12 +230,7 @@ const Enquiry = (props) => {
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
       dispatch(setItineraryInitiateData(resData));
 
-      router.push({
-        pathname: "/new-trip",
-        query: {
-          slideIndex: slideIndex + 1,
-        },
-      });
+      setShowRouteOverview(true);
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.message);
@@ -446,6 +446,24 @@ const Enquiry = (props) => {
                   errors={errors}
                   completeItineraryCreate={completeItineraryCreate}
                 ></Flickity>
+                {isDesktop ? <ModalWithBackdrop
+                  centered
+                  show={showRouteOverview == true}
+                  mobileWidth="100%"
+                  backdrop
+                  closeIcon={true}
+                  onHide={() => setShowRouteOverview(false)}
+                  borderRadius={"12px"}
+                  animation={false}
+                  backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
+                ><RouteOverviewModal setShowRouteOverview={setShowRouteOverview} /></ModalWithBackdrop> :
+                  <BottomModal
+                    show={showRouteOverview == true}
+                    onHide={() => setShowRouteOverview(false)}
+                    width="100%"
+                    height="max-content"
+                  ><RouteOverviewModal setShowRouteOverview={setShowRouteOverview} /></BottomModal>
+                }
 
                 {error ? <p className="text-sm text-red-600">{error}</p> : null}
 

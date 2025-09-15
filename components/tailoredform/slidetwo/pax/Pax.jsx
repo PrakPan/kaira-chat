@@ -2,13 +2,21 @@ import { useState, useRef, useEffect } from "react";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Button from "../../../ui/button/Index";
+import ModalWithBackdrop from "../../../ui/ModalWithBackdrop";
+import { AgeInput, ApplyButton, ClearButton, CounterBox, CounterButton, CounterValue, PassengerLabel, PassengerRow } from "../EnterPassenger";
+import Image from "next/image";
+import useMediaQuery from "../../../media";
+import BottomModal from "../../../ui/LowerModal";
 
 const Pax = (props) => {
   const containerRef = useRef(null);
   const [isRoomExpanded, setIsRoomExpanded] = useState(false);
+  const isDesktop = useMediaQuery("(min-width:768px)");
   const [travelers, setTravelers] = useState(
     props?.numberOfAdults || 1 + props?.numberOfChildren || 0
   );
+  const [totalChildren, setTotalChildren] = useState(props?.numberOfChildren)
+  const [totalAdults, setTotalAdults] = useState(props?.numberOfAdults)
   const [rooms, setRooms] = useState(props.roomConfiguration);
 
   const [showError, setShowError] = useState(false);
@@ -28,13 +36,27 @@ const Pax = (props) => {
   }, []);
 
   useEffect(() => {
-    let total = 0;
+    let totalAdults = 0;
+    let totalChildren = 0;
     for (let room of rooms) {
-      total += room.adults;
-      total += room.children;
+      totalAdults += room.adults;
+      totalChildren += room.children;
     }
-    setTravelers(total);
-  }, [rooms]);
+    setTravelers(totalAdults + totalChildren);
+    setTotalAdults(totalAdults)
+    setTotalChildren(totalChildren)
+  }, [props?.roomConfiguration]);
+
+  useEffect(() => {
+    let totalAdults = 0;
+    let totalChildren = 0;
+    for (let room of rooms) {
+      totalAdults += room.adults;
+      totalChildren += room.children;
+    }
+    setTotalAdults(totalAdults)
+    setTotalChildren(totalChildren)
+  }, [rooms])
 
   const handleAddRoom = () => {
     if (rooms.length < 8) {
@@ -73,49 +95,105 @@ const Pax = (props) => {
           {rooms.length > 1 ? "s" : ""}
         </span>
       </div>
+      {isDesktop?<ModalWithBackdrop
+        centered
+        show={isRoomExpanded}
+        mobileWidth="100%"
+        backdrop
+        closeIcon={true}
+        onHide={() => setIsRoomExpanded(false)}
+        borderRadius={"12px"}
+        animation={false}
+        backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
+      >
+        <>
 
-      {isRoomExpanded && (
-        <div className="absolute border-[1px] bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
-          <div className="">
-            {rooms.map((room, index) => (
-              <Room
-                key={index}
-                index={index}
-                data={room}
-                setRooms={setRooms}
-                showError={showError}
-                removeRoom={removeRoom}
-              />
-            ))}
+          <div className="border-[1px] bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
+            <div className="">
+              <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
+                <div className="Heading2SB">Room Configuration</div>
+                <div className="Body2R_14">{totalAdults} Adults, {totalChildren} Children</div>
+              </div>
+              <div className="h-[1px] items-stretch bg-[#E5E5E5] mb-[20px]"></div>
+              {rooms.map((room, index) => (
+                <Room
+                  key={index}
+                  index={index}
+                  data={room}
+                  setRooms={setRooms}
+                  showError={showError}
+                  removeRoom={removeRoom}
+                />
+              ))}
 
-            <div className="flex justify-end mt-4 gap-2">
-              <button
-                onClick={handleAddRoom}
-                className="text-blue font-medium underline"
-                disabled={rooms.length >= 8}
-              >
-                Add Room
-              </button>
-            </div>
+              <div className="flex justify-end mt-4 gap-2">
+                <button
+                  onClick={handleAddRoom}
+                  className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
+                  disabled={rooms.length >= 8}
+                >
+                  + Add Room
+                </button>
+              </div>
 
-            <div className="mt-4 flex justify-end">
-              <Button
-                fontSize="1rem"
-                width={"auto"}
-                padding="0.5rem 2rem"
-                fontWeight="500"
-                margin="0"
-                borderRadius="5px"
-                borderWidth="1px"
-                bgColor="#f7e700"
-                onclick={() => handleDone()}
-              >
-                Apply
-              </Button>
+              <div className="mt-4 flex justify-end">
+                <div className="flex justify-between w-full gap-2">
+                  <ClearButton className="w-1/2" onClick={() => setIsRoomExpanded(false)}>Clear</ClearButton>
+                  <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
+                </div>
+
+              </div>
             </div>
           </div>
-        </div>
-      )}
+
+        </>
+      </ModalWithBackdrop>
+      :
+      <BottomModal
+        show={isRoomExpanded == true}
+        onHide={() => setIsRoomExpanded(false)}
+        width="100%"
+        height="max-content"
+      >
+        <div className="w-[100%] p-[20px]">
+            <div className="">
+              <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
+                <div className="Heading2SB">Room Configuration</div>
+                <div className="Body2R_14">{totalAdults} Adults, {totalChildren} Children</div>
+              </div>
+              <div className="h-[1px] items-stretch bg-[#E5E5E5] mb-[20px]"></div>
+              {rooms.map((room, index) => (
+                <Room
+                  key={index}
+                  index={index}
+                  data={room}
+                  setRooms={setRooms}
+                  showError={showError}
+                  removeRoom={removeRoom}
+                />
+              ))}
+
+              <div className="flex justify-end mt-4 gap-2">
+                <button
+                  onClick={handleAddRoom}
+                  className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
+                  disabled={rooms.length >= 8}
+                >
+                  + Add Room
+                </button>
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <div className="flex justify-between w-full gap-2">
+                  <ClearButton className="w-1/2" onClick={() => setIsRoomExpanded(false)}>Clear</ClearButton>
+                  <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
+                </div>
+
+              </div>
+            </div>
+          </div>
+      </BottomModal>
+}
     </div>
   );
 };
@@ -160,69 +238,44 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
 
   return (
     <div className="mb-6 last:mb-0 ">
-      <div className="flex justify-between">
-        <div className="mb-3 px-2 py-1 bg-gray-200 w-fit rounded-md">
-          <span className="text-sm font-medium">Room {index + 1}</span>
-        </div>
+      <div className="flex justify-between items-center mb-[16px]">
+        <div className="Body2M_14">Room {index + 1}</div>
         {index + 1 > 1 && (
           <button onClick={removeRoom} className="text-blue-600 font-medium">
-            <RiDeleteBin6Line className="text-red-600" />
+            <Image src="/delete.svg" width={20} height={20} />
           </button>
         )}
       </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <div className="font-medium">Adults</div>
-          <div className="text-xs text-gray-500">12+ years</div>
-        </div>
-        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-          <button
-            className={` flex items-center justify-center  ${adults > 1 ? "text-blue " : "text-gray-300"
-              }`}
-            onClick={() => handleAdults(false)}
-            disabled={adults <= 1}
-          >
-            -
-          </button>
-          <span className="mx-2 w-6 text-center">{adults}</span>
-          <button
-            className="flex items-center justify-center text-blue"
-            onClick={() => handleAdults(true)}
-            disabled={adults >= 14}
-          >
-            +
-          </button>
-        </div>
-      </div>
+      <PassengerRow  className="!w-[100%]">
+        <PassengerLabel>
+          <div className="title">Adults</div>
+          <div className="subtitle">Ages 13 or above</div>
+        </PassengerLabel>
+        <CounterBox>
+          <CounterButton onClick={() => setAdults((p) => p - 1)} disabled={adults <= 1}>−</CounterButton>
+          <CounterValue>{adults}</CounterValue>
+          <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={adults >= 14}>+</CounterButton>
+        </CounterBox>
+      </PassengerRow>
 
-      <div className="flex justify-between items-center mb-3">
-        <div>
-          <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">0-12 years</div>
+      <PassengerRow  className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+        <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+          <PassengerLabel>
+            <div className="title">Children</div>
+            <div className="subtitle">Ages 2 to 12</div>
+          </PassengerLabel>
+          <CounterBox>
+            <CounterButton onClick={() => handleChildren("minus")} disabled={children <= 0}>−</CounterButton>
+            <CounterValue>{children}</CounterValue>
+            <CounterButton onClick={() => handleChildren("plus")} disabled={children > 12}>+</CounterButton>
+          </CounterBox>
         </div>
-        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-          <button
-            className={`flex items-center justify-center ${children > 0 ? "text-blue" : "text-gray-300"
-              }`}
-            onClick={() => handleChildren("minus")}
-            disabled={children == 0}
-          >
-            -
-          </button>
-          <span className="mx-2 w-6 text-center">{children}</span>
-          <button
-            className=" flex items-center justify-center text-blue"
-            onClick={() => handleChildren("plus")}
-            disabled={children > 12}
-          >
-            +
-          </button>
-        </div>
-      </div>
+      </PassengerRow>
 
       {children > 0 && (
-        <div className="pl-4 space-y-2 mt-3">
+        <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
+          <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
           {childAges.map((age, i) => (
             <ChildAge
               key={i}
@@ -233,80 +286,47 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
               showError={showError}
             />
           ))}
+
         </div>
       )}
     </div>
   );
 };
 
-const ChildAge = ({ index, child, age, setChildAges, showError }) => {
-  const [openAges, setOpenAges] = useState(false);
-  const [selectedAge, setSelectedAge] = useState(age);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
+const ChildAge = ({ child, age, index, setChildAges, showError }) => {
+  const handleChange = (e) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : "";
     setChildAges((prev) =>
-      prev.map((age, i) => (i === index ? selectedAge : age))
+      prev.map((a, i) => (i === index ? value : a))
     );
-  }, [selectedAge, index, setChildAges]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenAges(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleChildAge = (value) => {
-    setSelectedAge(value);
-    setOpenAges(false);
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div
-        onClick={() => setOpenAges((prev) => !prev)}
-        className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${showError && selectedAge === null
-            ? "border-red-500"
-            : "border-gray-300"
-          }`}
-      >
-        <span>Child {child} age*</span>
-        <div className="flex items-center">
-          <span className="mr-1">
-            {selectedAge !== null ? selectedAge : "--"}
-          </span>
-          <RiArrowDropDownLine className="text-xl" />
+    <PassengerRow className="!w-[100%] text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+      <div className="flex justify-between items-center w-full">
+        <div className="title">Age of Child {index}</div>
+
+        <div className="flex items-center gap-2">
+          <AgeInput
+            key={index}
+            type="number"
+            min="2"
+            max="12"
+            value={age ?? ""}
+            onChange={handleChange}
+          />
+          <span className="text-sm text-gray-500">years</span>
         </div>
+
+        {showError && (age === null || age === "") && (
+          <div className="text-xs text-red-500 mt-1 absolute right-0 -bottom-4">
+            Please provide the age
+          </div>
+        )}
       </div>
-
-      {showError && selectedAge === null && (
-        <div className="text-xs text-red-500 mt-1">
-          Please provide the age of the child
-        </div>
-      )}
-
-      {openAges && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md  max-h-60 overflow-auto">
-          {Array.from({ length: 13 }, (_, i) => (
-            <>
-              <div
-                key={i}
-                onClick={() => handleChildAge(i)}
-                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              >
-                {i}
-              </div>
-            </>
-          ))}
-        </div>
-      )}
-    </div>
+    </PassengerRow>
   );
 };
+
 
 export default Pax;

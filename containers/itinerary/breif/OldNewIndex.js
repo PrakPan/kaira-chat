@@ -41,7 +41,6 @@ const Details = (props) => {
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
 
-  const {drawer,ciyId}=useParams()
 
   useEffect(() => {
     const Locationlatlong = [];
