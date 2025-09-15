@@ -13,9 +13,9 @@ import {
   updateSingleTransferBooking,
 } from "../../../../../store/actions/transferBookingsStore";
 import { useGenericAPIModal } from "../../../warning/Index";
-import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
+import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 
 
 const Container = styled.div`

@@ -59,6 +59,7 @@ import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 80px;
