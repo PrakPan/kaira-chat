@@ -69,26 +69,26 @@ const TravelPlanner = (props) => {
 
   return (
     <Layout
-      page_id={props.Data.id}
-      destination={props.Data.destination}
+      page_id={props.Data?.id}
+      destination={props.Data?.destination}
       page={"State Page"}
     >
       <Head>
         <title>
-          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data.slug)} | Trip Planner & Itinerary
+          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | Trip Planner & Itinerary
           | The Tarzan Way
         </title>
         <meta
           name="description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         ></meta>
         <meta
           property="og:title"
-          content={`${props.Data.social_share_title}`}
+          content={`${props.Data?.social_share_title}`}
         />
         <meta
           property="og:description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta

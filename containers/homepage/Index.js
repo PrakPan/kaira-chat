@@ -178,13 +178,13 @@ const Homepage = (props) => {
         }
         destinationType={"city-planner"}
         title={
-          <p style={!isPageWide ? { fontSize: "18px" } : {}}>
+          <p style={!isPageWide ? { fontSize: "20px" } : {fontSize: "40px"}}>
             Every Journey, One of a Kind – 
-            <br />
+            {isPageWide ? <br />: ""}
             Crafted with AI + Expert Care.
           </p>
         }
-        subheading={"No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates."}
+        subheading={<p style={!isPageWide ? {fontSize: "16px"} : {fontSize: "20px", marginRight: "0.2rem"}}>No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates.</p>}
         _startPlanningFunction={() => openTailoredModal(router)}
         resizeMode={"fill"}
         page={"Home Page"}
