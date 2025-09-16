@@ -136,7 +136,7 @@ export async function getStaticPaths() {
       paths.push({
         params: {
           continent: continentSlug,
-          country: countrySlug.toLowerCase().replace(/ /g, "_"),
+          country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
           state: stateSlug,
         },
       });
@@ -157,7 +157,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
-
+console.log('path is: ',path)
   let data = null;
   let locations = [];
   let hotLocationSearch = [];
@@ -171,7 +171,8 @@ export async function getStaticProps(context) {
     .then((res) => {
      const stateData = res.data.data.state;
      data = stateData;
-    if (stateData.page_data && Object.keys(stateData.page_data).length > 0) {
+     console.log('path is: ',data)
+    if (stateData?.page_data && Object.keys(stateData?.page_data).length > 0) {
       isThemePage = true;
     }
   })
@@ -230,84 +231,6 @@ export async function getStaticProps(context) {
   },
   };
 }
-
-// export async function getStaticProps(context) {
-//   var locations = [];
-//   let data = null;
-//   let hotLocationSearch = [];
-//   let pageId = "";
-//   let Type = "Country";
-//   console.log("start date:",new Date())
-//   const { continent, country, state } = context.params;
-//   const path = `${continent}/${country}/${state}`;
-//   try {
-//     const res = await axios.get(
-//       `${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`
-//     );
-//     if (res?.data?.path) {
-//       pageId = res?.data?.path?.id;
-//       Type = res.data.path.type;
-//     }
-//   } catch (err) {
-//     console.error("Path api error:", err);
-//   }
-
-//   try {
-//     const res = await axiosTravelPlannerInstance.get(
-//       `/?link=${context.params.state}`
-//     );
-//     data = res.data;
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-//       err.message
-//     );
-//   }
-
-//   if (!data) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-
-//   try {
-//     const loc = await axiospagelistinstance.get(
-//       `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
-//     );
-//     locations = loc.data;
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
-//       err.message
-//     );
-//   }
-
-//   try {
-//     const response = await axioslocationsinstance.get(
-//       `hot_destinations/?state=${state}/`
-//     );
-//     if (response.data?.length) {
-//       hotLocationSearch = response.data;
-//     }
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
-//       err.message
-//     );
-//   }
-//   console.log("end date:",new Date())
-
-//   return {
-//     props: {
-//       Data: data,
-//       locations,
-//       path,
-//       hotLocationSearch,
-//       page_id: pageId,
-//       Type,
-//     },
-//   };
-// }
 
 const mapDispatchToProps = (dispatch) => {
   return {
