@@ -229,8 +229,13 @@ const Enquiry = (props) => {
       setItineraryId(resData.itinerary_id);
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
       dispatch(setItineraryInitiateData(resData));
-
-      setShowRouteOverview(true);
+      router.push({
+        pathname: '/new-trip',
+        query: {
+          slideIndex: slideIndex + 1,
+        },
+      });
+      // setShowRouteOverview(true);
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.message);
