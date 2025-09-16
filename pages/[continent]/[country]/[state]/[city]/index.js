@@ -108,7 +108,7 @@ export async function getStaticPaths() {
         paths.push({
           params: {
             continent: continentSlug,
-            country: countrySlug,
+            country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
             state: stateSlug,
             city: citySlug,
           }
