@@ -109,7 +109,7 @@ const Pax = (props) => {
         <>
 
           <div className="border-[1px] bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
-            <div className="">
+            <div className="min-w-[367px]">
               <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
                 <div className="Heading2SB">Room Configuration</div>
                 <div className="Body2R_14">{totalAdults} Adults, {totalChildren} Children</div>
@@ -137,8 +137,7 @@ const Pax = (props) => {
               </div>
 
               <div className="mt-4 flex justify-end">
-                <div className="flex justify-between w-full gap-2">
-                  <ClearButton className="w-1/2" onClick={() => setIsRoomExpanded(false)}>Clear</ClearButton>
+                <div className="flex justify-end w-full gap-2">
                   <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
                 </div>
 
@@ -184,8 +183,7 @@ const Pax = (props) => {
               </div>
 
               <div className="mt-4 flex justify-end">
-                <div className="flex justify-between w-full gap-2">
-                  <ClearButton className="w-1/2" onClick={() => setIsRoomExpanded(false)}>Clear</ClearButton>
+                <div className="flex justify-end w-full gap-2">
                   <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
                 </div>
 

@@ -122,7 +122,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
   );
   return (
     <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
-      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 border-l' : ''}`}>
+      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 ' : ''}`}>
         <div className={`flex items-center justify-between p-2 ${!viewMore ? ' bg-white rounded-2xl shadow-sm' : ''}`} >
           <SectionHeading > Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></SectionHeading>
           <button
@@ -162,12 +162,14 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           {finalized_status === "PENDING" ? (
             <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
           ) : (
+            <div className="flex justify-end">
             <button
               onClick={handleAddActivity}
-              className="mt-3  w-fit text-[14px] text-blue underline font-medium font-montserrat"
+              className="mt-3  w-fit text-[14px] text-[#3A85FC;] underline font-medium font-montserrat"
             >
-              + Add activities on {getHumanDateWithYearv2(props?.day?.date)}
+              + Add 
             </button>
+            </div>
           )}
         </>
 

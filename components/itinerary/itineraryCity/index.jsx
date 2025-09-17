@@ -148,9 +148,9 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 rounded-t-lg flex flex-col w-full border-color-light-grey"
+      className="border-1 rounded-t-lg flex flex-col w-full p-[24px] border-[#E5E5E5] border-[1px]"
     >
-      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey">
+      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey mb-[24px]">
         <div className="space-y-1 font-montserrat">
           <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
@@ -214,12 +214,12 @@ const ItineraryCity = (props) => {
             </div>
           ) : (
             <button
-              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
+              className="text-blue cursor-pointer text-[14px] font-medium underline"
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add",null)
               }
             >
-              + Add Stay in {props?.city?.city?.name}
+              + Add a Stay in {props?.city?.city?.name}
             </button>
           )}
         </div>

@@ -630,7 +630,7 @@ const formattedDate =
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: 1501 }}
-      className={`font-lexend !overflow-y-hidden`}
+      className={` !overflow-y-hidden`}
       onHide={handleCloseDrawer}
     >
       {error == null ? (
