@@ -273,6 +273,7 @@ const MidSectionV2 = (props) => {
             )}
           </>
         ))}
+
     </Container>
   );
 };

@@ -1183,6 +1183,7 @@ const PickupDropDrawer = ({
         destinationId;
 
       if (allFieldsFilled) {
+        console.log("Auto-searching with current form data:", formData);
         hasAutoSearchedRef.current = true;
         searchTransfers();
       }

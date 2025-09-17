@@ -190,7 +190,7 @@ const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { itinerary_status, transfers_status, pricing_status, hotels_status } =
+  const { itinerary_status, transfers_status, pricing_status, hotels_status ,final_status} =
     useSelector((state) => state.ItineraryStatus);
 
   // Throttle function for performance optimization
@@ -643,6 +643,17 @@ const ItineraryContainer = (props) => {
 
         if (allStatusesCompleted) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+          dispatch(setItineraryStatus("final_status", res?.data?.status));
+           [
+          "ITINERARY",
+          "TRANSFERS",
+          "PRICING",
+          "HOTELS",
+           ].forEach((key) => {
+    const statusValue = status?.[key];
+    const statusField = `${key.toLowerCase()}_status`;
+    dispatch(setItineraryStatus(statusField, statusValue));
+  });
           setPolling(false);
         } else {
           setPolling(true);
@@ -696,7 +707,7 @@ const ItineraryContainer = (props) => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
+            dispatch(setItineraryStatus("final_status", data?.status));
           }
 
           dispatch(setItinerary(data));

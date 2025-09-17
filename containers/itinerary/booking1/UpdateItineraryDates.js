@@ -260,7 +260,9 @@ const UpdateItineraryDates = ({
   convertDFormat,
   tripsPage = false,
   setShowEditDate,
-  showEditDate
+  showEditDate,
+  showAsModal = true, // Default to current behavior
+  autoOpenCalendar = false // Default to current behavior
 }) => {
 
   const dispatch = useDispatch();
@@ -281,9 +283,17 @@ const UpdateItineraryDates = ({
     itinerary?.end_date ? moment(itinerary.end_date) : null
   );
   const [showCalendar, setShowCalendar] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(autoOpenCalendar);
 
   const [isMobile, setIsMobile] = useState(false);
+
+  // REPLACE the existing useEffect that sets showCalendar
+useEffect(() => {
+  if (autoOpenCalendar) {
+    setShowCalendar(true);
+    setFocusedInput("startDate");
+  }
+}, [autoOpenCalendar]);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -390,8 +400,8 @@ const UpdateItineraryDates = ({
       })
       .catch((error) => {
         setIsLoading(false);
-        let errorMsg = error.response.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
-        console.log("ERROR:UPDATING ITINERARY DATES", error.message);
+        let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
+        console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
         dispatch(openNotification({
           type: "error",
           text: errorMsg,

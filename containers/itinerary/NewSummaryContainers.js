@@ -289,6 +289,7 @@ const NewSummaryContainer = (props) => {
           couponJSX={couponJSX}
           paymentInfo={props?.payment}
           mercuryItinerary={props?.mercuryItinerary}
+          setShowFooterBannerMobile={props?.setShowFooterBannerMobile}
           itineraryDate={props?.itineraryDate}
           _GetInTouch={props?._GetInTouch}
           loading={props?.loading}

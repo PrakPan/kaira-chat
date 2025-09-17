@@ -63,7 +63,7 @@ const TransferDrawer = ({
  isSightseeing,
   combo,
   booking_id,
-  transferType
+  transferType,
 }) => {
   const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
@@ -75,7 +75,12 @@ const TransferDrawer = ({
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
-  const [isDrawerOpen, setIsDrawerOpen] = useState(show);
+  const [isDrawerOpen,setIsDrawerOpen] = useState(show);
+    const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+    router?.query;
+
+    console.log("DDD",drawer);
+
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
       setExpandedIndexes([0]);
@@ -101,7 +106,9 @@ const TransferDrawer = ({
     );
   };
 
-  const {drawer}=router.query
+  console.log("BBK",booking_type,transferType,data);
+
+
   const toggleExpand = (index) => {
     if (expandedIndexes.includes(index)) {
       setExpandedIndexes(expandedIndexes.filter((i) => i !== index));
@@ -635,8 +642,9 @@ const TransferDrawer = ({
                   fontSize={"1rem"}
                   padding={"7px 25px"}
                   onClick={() => {
-                    setHandleShow(false);
-                    setShowDrawer(true);
+                    // setHandleShow(false);
+                    // setShowDrawer(true);
+                    handleEditRoute(data)
                   }}
                 >
                   Change
