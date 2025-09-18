@@ -166,21 +166,6 @@ const HotelBooking = ({
         scroll: false,
       }
     );
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer: "showHotelDetail",
-          idx: index,
-          booking_id: booking.id,
-          city_id: booking.city_id,
-        },
-      },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
     handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
     logEvent({
       action: "Hotel_Details",
@@ -714,9 +699,9 @@ const HotelBooking = ({
                 <div className="lg:hidden pr-2 w-full">
                   <button
                     onClick={() => handleViewDetails(booking.name)}
-                    className="ttw-btn-secondary"
+                    className="ttw-btn-secondary max-ph:w-full"
                   >
-                    View Details
+                    Details
                   </button>
                 </div>
               </div>
@@ -756,7 +741,7 @@ const HotelBooking = ({
             <div
             >
               <button
-                className="ttw-btn-fill-yellow "
+                className="ttw-btn-fill-yellow max-ph:w-full"
                 onClick={(e) =>
                   handleChangeHotel(
                     e,

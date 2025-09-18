@@ -70,7 +70,7 @@ export default function NewHotelBooking({
       <div>
         {/* className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] p-2 h-full w-full" */}
 
-        <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite">
+        <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative">
           <div
             onClick={() => {
               handleViewHotel();
@@ -78,7 +78,7 @@ export default function NewHotelBooking({
             className={`w-full h-full flex md:flex-row md:items-center flex-col gap-xl grayscale-0`}
           >
             <div
-              className={`relative w-[260px] h-[12rem] `}
+              className={`relative w-[260px] max-ph:w-full h-[12rem] `}
             >
               <ImageCarousel images={booking.images} noCaption={true} />
 
@@ -126,7 +126,7 @@ export default function NewHotelBooking({
                         <div className="flex flex-row text-[#FFD201]">
                           {starRating(booking?.rating_ext)}
                         </div>
-                        <div>{booking?.rating_ext}</div>
+                        <div className="text-sm text-text-spacegrey font-[400]">{booking?.rating_ext}</div>
                         {booking?.num_reviews_ext && (
                           <div className="text-sm text-text-spacegrey font-[400] underline">
                             {booking?.num_reviews_ext} User reviews
@@ -185,7 +185,7 @@ export default function NewHotelBooking({
 
               {booking?.price && (
                 <div>
-                  <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
+                  <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
                     <div className="text-text-charcolblack text-lg font-700 leading-2xl-md">
                       <>₹{getIndianPrice(Math.ceil(booking.price))}</>
                     </div>
@@ -200,8 +200,8 @@ export default function NewHotelBooking({
             </div>
           </div>
 
-          <div className="absolute right-md bottom-2xl">
-              <button className="ttw-btn-secondary" onClick={() => handleViewHotel()}>View Details</button>
+          <div className="absolute right-md bottom-xl max-ph:static">
+              <button className="ttw-btn-secondary  max-ph:w-full max-ph:mt-md" onClick={() => handleViewHotel()}>Details</button>
           </div>
         </div>
       </div>

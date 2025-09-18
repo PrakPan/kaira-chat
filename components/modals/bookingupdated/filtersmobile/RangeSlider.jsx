@@ -22,8 +22,8 @@ const Container = styled.div`
 
     .range-slider__thumb {
         /* CSS for thumbs */
-        background: #F7E700;
-        border: 1px solid black;
+        background: #fff;
+        border: 9px solid #F7E700;
     }
 
     .range-slider__thumb[data-lower] {

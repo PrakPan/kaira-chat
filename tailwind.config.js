@@ -57,6 +57,7 @@ module.exports = {
         "md": "16px",
         "md-lg": "18px",
         "lg": "20px",
+        "lg-md": "22px",
         "xl": "24px",
         "xl-sm": "26px",
         "xl-md": "28px",
@@ -186,6 +187,8 @@ module.exports = {
           spacegrey:"#6E757A",
           smoothwhite:"#f6f6f6",
           svgIconFill: "#ACACAC",
+          chinesWhite: "#F9F9F9",
+          error:"#FA3530"
         },
         // Legacy support
         blue: "#0000EE",
