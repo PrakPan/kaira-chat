@@ -168,7 +168,7 @@ const Carousel3D = () => {
           </div>
         </div>
       </div>
-      <div className="hidden-desktop">
+      <div className="hidden-desktop px-4">
         <Swiper
           slidesPerView={1.2}
           initialSlide={0}
