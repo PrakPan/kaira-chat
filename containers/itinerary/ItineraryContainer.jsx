@@ -196,6 +196,8 @@ const ItineraryContainer = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status ,final_status} =
     useSelector((state) => state.ItineraryStatus);
 
+  const phone = useSelector((state) => state.Auth)?.phone;
+
   // Throttle function for performance optimization
   const throttle = (func, limit) => {
     let inThrottle;
@@ -662,8 +664,8 @@ const ItineraryContainer = (props) => {
     dispatch(setItineraryStatus(statusField, statusValue));
   });
           setPolling(false);
-          if (res.data?.notes && res.data.notes.length > 0) {
-    setNotes(res.data.notes);
+          if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
+    setNotes(res.data.celery.notes);
     setShowNotesPopup(true);
   }
         } else {
@@ -1407,11 +1409,13 @@ const ItineraryContainer = (props) => {
   return (
     <Container>
 
-       <NotesPopup
-      notes={notes}
-      isVisible={showNotesPopup}
-      onClose={() => setShowNotesPopup(false)}
-    />
+      <NotesPopup
+  notes={notes}
+  itineraryId={router.query.id}
+  userId={props.token ? 'user_' + phone : 'guest'} 
+  isLoggedIn={!!props.token} 
+  onClose={() => setShowNotesPopup(false)}
+/>
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
