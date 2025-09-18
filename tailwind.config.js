@@ -7,7 +7,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./containers/**/*.{js,ts,jsx,tsx}",
 
-    // Or if using `src` directory:
+    // Or if using `src` directorys:
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
