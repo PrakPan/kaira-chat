@@ -7,6 +7,7 @@ import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
+import CurveImageGallery from "../components/theme/CurveImageGallery";
 
 // import Layout from "../components/Layout";
 import { connect, useSelector } from "react-redux";
@@ -116,6 +117,7 @@ const Home = (props) => {
         <TravelVibeSection />
         <WhereNextSection />
         <WhatMakesUsSection />
+        <CurveImageGallery />
       </div>
       <div id="login" className="width-[100%] z-[1650]">
         <Login
