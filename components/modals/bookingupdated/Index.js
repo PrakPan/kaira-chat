@@ -21,6 +21,10 @@ import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryCo
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 import axios from 'axios';
+import Travelers from "./filtersmobile/Travelers";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import Filters from "./filtersmobile/Filters";
+import FilterChips from "./filtersmobile/FilterChips";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -72,6 +76,30 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const SortContainer = styled.div`
+  position: absolute;
+  z-index:20;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background: white;
+  border-radius: 0.5rem;
+  left: 0;
+  width: max-content;
+  padding: 0.5rem;
+  width:100%
+`;
+
+const SortItem = styled.div`
+  text-align: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  :hover {
+    background: #f7f3f3;
+  };
+  color:#000
+`;
+
 const Booking = (props) => {
   const [paginationStatus, setPaginationStatus] = useState({
     traceId: null,
@@ -102,6 +130,8 @@ const Booking = (props) => {
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const [hasUserSearched, setHasUserSearched] = useState(false);
+  const [defaultBudget, setDefaultBudget] = useState({ price_lower_range: 1000, price_upper_range: 9000, });
+  const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
@@ -126,10 +156,14 @@ const Booking = (props) => {
     type: [],
     star_category: [1, 2, 3, 4, 5],
     user_ratings: [1, 2, 3, 4, 5],
-    sort: ["Price: low to high", "Price: high to low"],
+    user_ratings_label: { 1: 'Poor', 2: 'Fair', 3: 'Average', 4: 'Good', 5: 'Excellent' },
+    sort: ["Price: Low to High", "Price: High to Low"],
     facilities: [],
     tags: [],
   });
+  const [cloneFilters, setCloneFilter] = useState({});
+  const [SelectedSort, setSelectedSort] = useState(filtersObj.sort[0]);
+  const [sortShow, setSortShow] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const dispatch = useDispatch();
@@ -146,7 +180,7 @@ const Booking = (props) => {
   useEffect(() => {
     if (
       props?.showBookingModal &&
-      currentBooking?.check_in 
+      currentBooking?.check_in
     ) {
       console.log("filters useEffect triggered", filters);
       setMoreOptionsJSX([]);
@@ -155,17 +189,17 @@ const Booking = (props) => {
   }, [filters.applyFilter]);
 
   useEffect(() => {
-  return () => {
-    if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel('Component unmounted');
-    }
-  };
-}, []);
+    return () => {
+      if (cancelTokenRef.current) {
+        cancelTokenRef.current.cancel('Component unmounted');
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    if (debouncedSearch.length > 2||hasUserSearched) {
+    if (debouncedSearch.length > 2 || hasUserSearched) {
       console.log("searching in debounced search")
-       setHasUserSearched(true);
+      setHasUserSearched(true);
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
@@ -255,6 +289,27 @@ const Booking = (props) => {
   };
 
   const _removeFilterHandler = (heading) => {
+    setFilters({
+      free_breakfast: false,
+      is_refundable: false,
+      budget: {
+        price_lower_range: 1000,
+        price_upper_range: 9000,
+      },
+      star_category: null,
+      sort: "price: low to high",
+      type: null,
+      user_ratings: null,
+      facilities: null,
+      tags: null,
+      trace_id: null,
+      occupancies: itinerary?.hotels_config?.room_configuration || [
+        { adults: 1, childAges: [] },
+      ],
+      applyFilter: false,
+      page: 1,
+    });
+
     let oldfilters = {
       budget: "",
       type: "",
@@ -305,14 +360,15 @@ const Booking = (props) => {
 
   const fetchHotelsFilter = () => {
     if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
-     setFetchingIsError({
-    error: false,
-    errorMsg: "",
-  });
-      if (cancelTokenRef.current) {
-    cancelTokenRef.current.cancel('New request initiated');
-  }
- cancelTokenRef.current = axios.CancelToken.source();
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
+    if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel('New request initiated');
+    }
+    setCloneFilter(JSON.parse(JSON.stringify(filters)));
+    cancelTokenRef.current = axios.CancelToken.source();
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -460,38 +516,38 @@ const Booking = (props) => {
       })
       .catch((err) => {
         if (axios.isCancel(err)) {
-        console.log('Request cancelled:', err.message);
-        
-        return;
-      }
+          console.log('Request cancelled:', err.message);
+
+          return;
+        }
         setLoading(false);
         setUpdateLoadingState(false);
         setMoreOptionsJSX([]);
 
-       
+
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-       
+
   };
 
   const fetchHotels = () => {
     try {
       if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
 
-       setFetchingIsError({
-    error: false,
-    errorMsg: "",
-  });
+      setFetchingIsError({
+        error: false,
+        errorMsg: "",
+      });
 
       if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel('New request initiated');
-    }
-    
-    
-    cancelTokenRef.current = axios.CancelToken.source();
+        cancelTokenRef.current.cancel('New request initiated');
+      }
+
+
+      cancelTokenRef.current = axios.CancelToken.source();
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);
@@ -640,13 +696,13 @@ const Booking = (props) => {
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
-        console.log('Request cancelled:', err.message);
-        
-        return;
-      }
+            console.log('Request cancelled:', err.message);
+
+            return;
+          }
           setLoading(false);
           setUpdateLoadingState(false);
-          
+
           if (err?.response.status == 400) {
             setPaginationStatus(() => ({
               traceId: null,
@@ -664,7 +720,7 @@ const Booking = (props) => {
             error: true,
             errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
-          
+
         });
     } catch (error) {
       console.log("error in accommodation search:", error);
@@ -707,7 +763,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900] px-xl">
               <SectionOne
                 booking_city={
                   currentBooking?.city_name || props?.selectedBooking?.city_name
@@ -720,6 +776,7 @@ const Booking = (props) => {
                 setMoreOptionsJSX={setMoreOptionsJSX}
                 clickType={props?.clickType}
                 setFilters={setFilters}
+                setShowFilters={setShowFilters}
                 hotelsConf={
                   itinerary?.hotels_config?.room_configuration || [
                     { adults: 1, childAges: [] },
@@ -728,28 +785,108 @@ const Booking = (props) => {
                 handleClose={handleClose}
               ></SectionOne>
 
-              <SectionTwo
-                loading={loading}
-                showFilter={props?.showFilter}
-                setshowFilter={props?.setshowFilter}
-                filtersState={filtersState}
-                FILTERS={filtersObj}
-                _updateStarFilterHandler={_updateStarFilterHandler}
-                updateUserStarHandler={updateUserStarHandler}
-                _removeFilterHandler={_removeFilterHandler}
-                _addFilterHandler={_addFilterHandler}
-                booking_city={
-                  currentBooking?.city_name || props?.selectedBooking?.city_name
-                }
-                No_of_stays={totalCount}
-                payment={props?.payment}
-                plan={props?.plan || props?.booking}
-                TotalCount={totalCount}
-                setShowFilters={setShowFilters}
-                showFilters={showFilters}
-                filters={filters}
-                setFilters={setFilters}
-              ></SectionTwo>
+              <div className="mt-xs">
+                <Travelers filters={filters} setFilters={setFilters} />
+              </div>
+
+
+              {totalCount ? (
+                <div className="flex flex-row items-center justify-between mt-lg">
+                  <div className="font-400 text-sm-md leading-xl text-text-spacegrey">
+                    Showing {totalCount ? `${totalCount} ` : null}
+                    stays in {currentBooking?.city_name || props?.selectedBooking?.city_name}
+                  </div>
+
+
+                  <div>
+                    <div className="text-sm font-normal w-[95%] md:w-fit">
+                      <div
+                        className="ttw-btn-secondary inline relative cursor-pointer"
+                        onClick={() => {
+                          setSortShow(!sortShow);
+                        }}
+                      >
+                        <b>
+                          {SelectedSort}
+                          {sortShow ? (
+                            <FiChevronUp
+                              style={{
+                                display: "inline",
+                                fontWeight: 900,
+                                fontSize: "1.2rem",
+                              }}
+                            />
+                          ) : (
+                            <FiChevronDown
+                              style={{
+                                display: "inline",
+                                fontWeight: 900,
+                                fontSize: "1.2rem",
+                              }}
+                            />
+                          )}
+                        </b>
+                        {sortShow ? (
+                          <SortContainer>
+                            {filtersObj["sort"].map((e, i) => (
+                              <SortItem
+                                key={i}
+                                onClick={() => {
+                                  setSelectedSort(e);
+                                  _addFilterHandler(e.toLowerCase(), "sort");
+                                }}
+                                selected={e === SelectedSort}
+                              >
+                                {e}
+                              </SortItem>
+                            ))}
+                          </SortContainer>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+
+              {isFilterChangesApplied &&
+                <>
+                <hr className="mt-md"/>
+                  <FilterChips
+                    defaultBudget={defaultBudget}
+                    filters={cloneFilters}
+                    filtersState={filtersState}
+                    FILTERS={filtersObj}
+                    _addFilterHandler={_addFilterHandler}
+                    _updateStarFilterHandler={_updateStarFilterHandler}
+                    updateUserStarHandler={updateUserStarHandler}
+                    setFilters={setFilters}
+                    setIsFilterChangesApplied={setIsFilterChangesApplied}
+                  />
+                </>
+              }
+
+              {showFilters && (
+                <div
+                >
+                  <Filters
+                    showFilter={showFilters}
+                    filtersState={filtersState}
+                    FILTERS={filtersObj}
+                    filters={filters}
+                    isFilterChangesApplied={isFilterChangesApplied}
+                    _addFilterHandler={_addFilterHandler}
+                    _removeFilterHandler={_removeFilterHandler}
+                    _updateStarFilterHandler={_updateStarFilterHandler}
+                    updateUserStarHandler={updateUserStarHandler}
+                    setshowFilter={setShowFilters}
+                    setFilters={setFilters}
+                    setIsFilterChangesApplied={setIsFilterChangesApplied}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-center sticky top-2/3 z-[900]">
@@ -799,10 +936,10 @@ const Booking = (props) => {
                   ) : null}
 
                   {!loading &&
-                  isFetchingError.error &&
-                  moreOptionsJSX?.length == 0 ? (
+                    isFetchingError.error &&
+                    moreOptionsJSX?.length == 0 ? (
                     <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
-                      <div className="flex flex-row items-center justify-center text-center font-lexend">
+                      <div className="flex flex-row items-center justify-center text-center px-lg">
                         {isFetchingError.errorMsg}
                       </div>
                       <GetInTouchContainer>
@@ -855,20 +992,20 @@ const Booking = (props) => {
 
                         {paginationStatus.page <
                           paginationStatus.totalPages && (
-                          <div className="mt-3">
-                            {/* {viewMoreStatus ? ( */}
-                            <Button
-                              boxShadow
-                              onclickparam={null}
-                              onclick={fetchHotels}
-                              margin="0.25rem auto"
-                              borderWidth="1px"
-                              borderRadius="2rem"
-                              padding="0.25rem 1rem"
-                            >
-                              View More
-                            </Button>
-                            {/* // ) : selectSearch !== "" ? (
+                            <div className="mt-3">
+                              {/* {viewMoreStatus ? ( */}
+                              <Button
+                                boxShadow
+                                onclickparam={null}
+                                onclick={fetchHotels}
+                                margin="0.25rem auto"
+                                borderWidth="1px"
+                                borderRadius="2rem"
+                                padding="0.25rem 1rem"
+                              >
+                                View More
+                              </Button>
+                              {/* // ) : selectSearch !== "" ? (
                               //   <Button
                               //     boxShadow
                               //     onclickparam={null}
@@ -881,8 +1018,8 @@ const Booking = (props) => {
                               //     Show All
                               //   </Button>
                               // ) : null} */}
-                          </div>
-                        )}
+                            </div>
+                          )}
                       </div>
                     </OptionsContainer>
                   ) : null}

@@ -1175,6 +1175,7 @@ const SimpleTabsV2 = (props) => {
                   setShowFooterBannerMobile={() =>
                     setShowFooterBannerMobile(true)
                   }
+
                   getPaymentHandler={props.getPaymentHandler}
                   payment={props.payment}
                   traveleritinerary={props.traveleritinerary}
@@ -1199,6 +1200,10 @@ const SimpleTabsV2 = (props) => {
                   resetRef={props?.resetRef}
                   _GetInTouch={() => _GetInTouch()}
                   setShowLoginModal={setShowLoginModal}
+                  setShowFooterBannerMobile={() =>
+                    setShowFooterBannerMobile(false)
+                  }
+                  blur={props.blur}
                   loading={loading}
                   social_title={props?.social_title}
                   social_description={props?.social_description}
@@ -1432,7 +1437,7 @@ const SimpleTabsV2 = (props) => {
         }
       </div>
 
-      {isPageWide && (
+      {/* {isPageWide && (
         <div
           onClick={() => setShare((prev) => !prev)}
           className="z-[999] flex fixed bottom-[90px] right-[25px] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer bg-black mb-[1rem]"
@@ -1443,7 +1448,7 @@ const SimpleTabsV2 = (props) => {
             <BsShareFill className="animate-popOut text-[25px] text-white" />
           )}
         </div>
-      )}
+      )} */}
 
       {isPageWide && (
         <SocialShareDesktop

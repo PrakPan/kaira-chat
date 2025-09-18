@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
@@ -7,7 +7,6 @@ import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
-import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect, useDispatch } from "react-redux";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
@@ -24,7 +23,6 @@ import setItinerary from "../../../../store/actions/itinerary";
 import FullScreenGallery from "../../../fullscreengallery/Index";
 import { bookingDetails } from "../../../../services/bookings/FetchAccommodation";
 import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
-import BackArrow from "../../../ui/BackArrow";
 import Drawer from "../../../ui/Drawer";
 const starRating = (rating) => {
   var stars = [];
@@ -222,7 +220,7 @@ const HotelBookingDetails = (props) => {
     for (var i = 0; i < hotelImages.length; i++) {
       if (hotelImages[i]) images.push(hotelImages[i]);
     }
-  } catch {}
+  } catch { }
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -272,15 +270,15 @@ const HotelBookingDetails = (props) => {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {
-  const hasMatchingHotel = item?.hotels?.some(hotel => hotel?.id === props?.id);
+          const hasMatchingHotel = item?.hotels?.some(hotel => hotel?.id === props?.id);
 
-  if (hasMatchingHotel) {
-    item.hotels = [];
-   item.itinerary_city_id=item?.itinerary_city_id
-  }
+          if (hasMatchingHotel) {
+            item.hotels = [];
+            item.itinerary_city_id = item?.itinerary_city_id
+          }
 
-  return item;
-});
+          return item;
+        });
 
         newStays = newStays.map((item) => {
           if (item?.id === props?.id) {
@@ -349,22 +347,23 @@ const HotelBookingDetails = (props) => {
       mobileWidth={"100%"}
     >
       <Container>
-        <BackContainer className=" font-lexend">
-          <BackArrow handleClick={handleCloseDrawer} />
-        </BackContainer>
+        <div className="my-[1rem]">
+          <NextImage src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={handleCloseDrawer} />
+        </div>
         {loadingDetails ? (
           <POIDetailsSkeleton />
         ) : (
-          <Container>
+          <div>
             <FlexBox>
-              <div>
-                <Name>{data?.hotel_details?.name}</Name>
+              <div className="text-xl text-black font-600 leading-2xl">
+                {data?.hotel_details?.name}
               </div>
 
-              <Button
+              <button
+                className="ttw-btn-secondary"
                 padding="7px 25px"
                 borderRadius="7px"
-                onclick={() => {
+                onClick={() => {
                   if (!localStorage.getItem("access_token")) {
                     props?.setShowLoginModal(true);
                     return;
@@ -372,8 +371,8 @@ const HotelBookingDetails = (props) => {
                   props.BookingButtonFun();
                 }}
               >
-                Change
-              </Button>
+                Change Hotel
+              </button>
             </FlexBox>
 
             {data?.hotel_details?.rating && (
@@ -1067,14 +1066,8 @@ const HotelBookingDetails = (props) => {
                     </PhotosButton>
                   ) : null
                 ) : null}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "0.25rem",
-                    right: "0.25rem",
-                    display: "flex",
-                  }}
-                ></div>
+  
+  
                 {props.tag ? (
                   <Tag
                     star_category={props.star_category}
@@ -1086,7 +1079,7 @@ const HotelBookingDetails = (props) => {
 
             <DetailsContainer>
               {data?.hotel_details?.check_in?.date &&
-              data?.hotel_details?.check_out?.date ? (
+                data?.hotel_details?.check_out?.date ? (
                 <CheckInText>
                   <div className="">
                     Check in: {dateFormat(data?.hotel_details?.check_in.date)}
@@ -1312,11 +1305,9 @@ const HotelBookingDetails = (props) => {
                     }}
                   >
                     <a
-                      href={`https://www.google.com/maps/search/?api=1&query=${
-                        data?.hotel_details?.coordinates?.latitude
-                      },${
-                        data?.hotel_details?.coordinates?.longitude
-                      }+(${data?.hotel_details?.name?.split(" ").join("+")})`}
+                      href={`https://www.google.com/maps/search/?api=1&query=${data?.hotel_details?.coordinates?.latitude
+                        },${data?.hotel_details?.coordinates?.longitude
+                        }+(${data?.hotel_details?.name?.split(" ").join("+")})`}
                       target="_blank"
                       style={{ color: "#0000EE", fontSize: "14px" }}
                     >
@@ -1423,7 +1414,7 @@ const HotelBookingDetails = (props) => {
                 images={imagesGallery}
               ></FullScreenGallery>
             ) : null}
-          </Container>
+          </div>
         )}
       </Container>
     </Drawer>

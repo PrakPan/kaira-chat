@@ -24,43 +24,40 @@ export default function PropertyType(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-medium">Property type</div>
+      <div className="mb-md text-md font-500 leading-xl">Property Type</div>
 
       <div className="flex flex-row items-center gap-2 flex-wrap">
-        {/* All option */}
-        <div
-          onClick={() => handleTypes("All")}
-          style={{
-            background: isSelectedType("All") ? "#F0F0FE" : "#F6F6F6",
-          }}
-          className="border-2 p-2 rounded-full cursor-pointer flex items-center gap-1"
-        >
-          All
-          {isSelectedType("All") && (
-            <span>
-              <Image src="/tick.svg" width={15} height={15} alt="tick" />
-            </span>
-          )}
-        </div>
-
-        {/* Other types */}
-        {props.types.map((type, index) => (
-          <div
-            key={index}
-            onClick={() => handleTypes(type)}
-            style={{
-              background: isSelectedType(type) ? "#F0F0FE" : "#F6F6F6",
-            }}
-            className="border-2 p-2 rounded-full cursor-pointer flex items-center gap-1"
-          >
-            {type}
-            {isSelectedType(type) && (
-              <span>
-                <Image src="/tick.svg" width={15} height={15} alt="tick" />
-              </span>
-            )}
+        <div className="flex flex-col flex-wrap  gap-md">
+          <div className="relative">
+            <label
+              className="flex items-center gap-2 cursor-pointer ttw-custom-yellochekbox-label" >
+              <input
+                type="checkbox"
+                checked={isSelectedType("All")}
+                onChange={() => handleTypes("All")}
+                className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-yellochekbox"
+              />
+              <span className="font-md font-400 text-black"> All</span>
+            </label>
           </div>
-        ))}
+
+          {/* Other types */}
+          {props.types.map((type, index) => (
+            <div className="relative w-[44%]">
+              <label
+                key={index}
+                className="flex items-center gap-2 cursor-pointer ttw-custom-yellochekbox-label" >
+                <input
+                  type="checkbox"
+                  checked={isSelectedType(type)}
+                  onChange={() => handleTypes(type)}
+                  className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-yellochekbox"
+                />
+                <span className="font-md font-400 text-black"> {type}</span>
+              </label>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

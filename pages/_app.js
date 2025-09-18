@@ -23,6 +23,8 @@ function MyApp({ Component, pageProps, store }) {
   const ref = useRef();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [currentPath, setCurrentPath] = useState('');
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -31,8 +33,22 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   useEffect(() => {
-    const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
+    const handleStart = (url) => {
+      const isItineraryRoute = currentPath.startsWith('/itinerary/');
+      const isSameItineraryPage = url.startsWith('/itinerary/') && 
+        currentPath.replace(/\?.*$/, '') === url.replace(/\?.*$/, '');
+      
+      if (isItineraryRoute && isSameItineraryPage) {
+        return;
+      }
+      
+      setLoading(true);
+    };
+    
+    const handleComplete = (url) => {
+      setCurrentPath(url);
+      setLoading(false);
+    };
 
     router.events.on("routeChangeStart", handleStart);
     router.events.on("routeChangeComplete", handleComplete);
@@ -43,7 +59,7 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleComplete);
       router.events.off("routeChangeError", handleComplete);
     };
-  }, [router]);
+  }, [router, currentPath]);
 
   function setupTokenExpiryWatcher() {
     const expiry = localStorage.getItem("expirationDate");

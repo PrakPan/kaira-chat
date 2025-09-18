@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
 import SmallGallery from "./SmallGallery";
+import TravelPartnerContact from "../../../components/TravelPartnerContact";
 
 const GridContainer = styled.div`
   display: grid;
@@ -39,10 +40,12 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
+        <div className="flex justify-between">
         <Heading>
-          {/* {toTitleCase(props.title)} */}
           {props.title}
         </Heading>
+        {isDesktop&&<TravelPartnerContact itinerary={props?.itinerary} />}
+        </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
       <div className="flex flex-row">

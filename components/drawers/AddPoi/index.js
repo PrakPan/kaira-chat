@@ -187,7 +187,7 @@ const AddPoi = (props) => {
           <H3>
             Replacing {props?.name} in {props?.cityName}
           </H3>
-          <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_1fr]">
+          <div className="grid w-full gap-2 sm:grid-cols-[3fr_1fr]">
             <div className="relative flex flex-row items-center  h-[44px]">
               <IoMdSearch
                 id={"icon"}
@@ -207,7 +207,7 @@ const AddPoi = (props) => {
 
             <div className="relative inline-block">
               <div
-                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
+                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
                 onClick={() => setShowDynamicfilters(true)}
               >
                 <Image
@@ -230,7 +230,7 @@ const AddPoi = (props) => {
                 {totalResults ? ` out of ${totalResults}` : null}
                 {props?.cityName ? ` in ${props?.cityName}` : null}
               </div>
-              <div className="max-[583px]:hidden">
+              <div className="max-sm:hidden">
                 <button
                   onClick={handleRecommneded}
                   className="flex flex-row items-center gap-1 cursor-pointer"
@@ -242,7 +242,7 @@ const AddPoi = (props) => {
                 </button>
               </div>
             </div>
-            <div className="min-[583px]:hidden flex justify-between w-full mb-2 px-2">
+            <div className="sm:hidden flex justify-between w-full mb-2 px-2">
               <button
                 onClick={handleRecommneded}
                 className="flex flex-row items-center gap-1 cursor-pointer"
@@ -304,8 +304,8 @@ const AddPoi = (props) => {
         <div
           className={`
         z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]
-        min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
-        max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full 
+        sm:absolute sm:top-[calc(100%+8px)] sm:right-0
+        max-sm:fixed max-sm:bottom-0 max-sm:w-full 
       `}
           ref={filtersRef}
         >

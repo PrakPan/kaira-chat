@@ -5,7 +5,7 @@ const CityDaybyDay = (props) => {
 
 
   return (
-    <div id="citydaybyday" className="flex flex-col">
+    <div id="citydaybyday" className="flex flex-col gap-2">
       {props.city?.day_by_day.map((day, index) => (
         <>
           <CityDay

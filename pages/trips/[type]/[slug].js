@@ -218,7 +218,7 @@ async function fetchAllSlugsWithIds() {
       
       if (trip?.group_type) {
         group_type = trip.group_type.replaceAll(" ", "_").toLowerCase();
-      }
+      }group_type
       
       return {
         group_type: group_type,

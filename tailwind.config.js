@@ -57,11 +57,13 @@ module.exports = {
         "md": "16px",
         "md-lg": "18px",
         "lg": "20px",
+        "lg-md": "22px",
         "xl": "24px",
         "xl-sm": "26px",
         "xl-md": "28px",
         "xl-lg": "30px",
         "2xl": "32px",
+        "2xl-md": "36px",
         "3xl": "40px",
         "4xl": "48px",
         "5xl": "56px",
@@ -107,6 +109,8 @@ module.exports = {
         "6xl": "24px",
         "7xl": "28px",
         "8xl": "36px",
+        "9xl": "42px",
+        "67br": "6777px",
         "circle": "50%",
       },
       borderWidth: {
@@ -127,6 +131,11 @@ module.exports = {
         dotted: "dotted",
         double: "double",
         none: "none",
+      },
+      screens: {
+        'max-xs': { max: '429px' },  
+        'max-sm': { max: '639px' },  
+        'max-ph': { max: '768px' }, 
       },
       height: {
         300: "300px",
@@ -153,9 +162,11 @@ module.exports = {
       },
       colors: {
         // Primary Colors
+        blue:"#3A85FC",
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
+          
         },
         // Secondary Colors
         secondary: {
@@ -173,9 +184,14 @@ module.exports = {
           white: "#FFFFFF",
           stroke: "#F8F8F8",
           background: "#F8F8F8",
+          smokywhite: "#f2f2f2e6",
+          charcolblack: "#212529",
+          spacegrey:"#6E757A",
+          smoothwhite:"#f6f6f6",
+          svgIconFill: "#ACACAC",
+          chinesWhite: "#F9F9F9",
+          error:"#FA3530"
         },
-        // Legacy support
-        blue: "#0000EE",
       },
       keyframes: {
         slideDown: {
