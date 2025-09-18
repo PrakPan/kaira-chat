@@ -10,23 +10,18 @@ const Container = styled.div`
 
 const SingleImage = styled.div`
 position: relative;
-border: 3px solid #fff;
-border-radius : 8px;
 overflow: hidden
 `
 
 const MoreImageOverlay = styled.div`
 position: relative;
-border: 3px solid #fff;
-border-radius : 8px;
 background: #F8E700;
 color: #000000;
 overflow: hidden;
 font-weight: 500;
 font-size: 14px;
-vertical-align: middle;
-width: 46px;
-height: 46px;
+height:44px;
+width:44px;
 display : flex;
 justify-content : center;
 align-items: center
@@ -43,21 +38,23 @@ function SmallGallery(props) {
     return (
         <Container className="pr-[24px] pl-[24px] border-l  min-h-full">
             {props.images && renderImages.map((item, index) => <>
-                <SingleImage style={{ left: -(index * 10) }}>
+                <SingleImage style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px]'>
                     {/* <Image src={item} width={50} height={50} /> */}
                     <ImageLoader
-                        dimensions={{ width: 40, height: 40 }}
+                        dimensions={{ width: 44, height: 44 }}
                         url={item}
-                        dimensionsMobile={{ width: 40, height: 40 }}
+                        dimensionsMobile={{ width: 44, height: 44 }}
                         noLazy
                     ></ImageLoader>
                 </SingleImage>
             </>)}
-               {props?.images?.length > renderImages.length &&
-                    <MoreImageOverlay style={{ left: -( renderImages.length* 10) }}>
+            {props?.images?.length > renderImages.length &&
+                <div style={{ left: -(renderImages.length * 20) }} className='relative rounded-full border-white border-[3px]'>
+                    <MoreImageOverlay  className='rounded-full'>
                         +{props?.images?.length - renderImages.length}
                     </MoreImageOverlay>
-                }
+                </div>
+            }
         </Container>
     )
 }

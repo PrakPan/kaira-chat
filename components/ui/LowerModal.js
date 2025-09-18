@@ -20,7 +20,7 @@ const BottomModal = ({
       onClick={onHide}
     >
       <div
-        className={`bg-white relative shadow-lg w-full ${
+        className={`bg-white relative shadow-lg w-full max-h-[90vh] overflow-y-auto ${
           animation
             ? "transition-all duration-300 ease-in-out transform translate-y-0"
             : ""

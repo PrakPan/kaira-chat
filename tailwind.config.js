@@ -162,9 +162,11 @@ module.exports = {
       },
       colors: {
         // Primary Colors
+        blue:"#3A85FC",
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
+          
         },
         // Secondary Colors
         secondary: {
@@ -190,8 +192,6 @@ module.exports = {
           chinesWhite: "#F9F9F9",
           error:"#FA3530"
         },
-        // Legacy support
-        blue: "#0000EE",
       },
       keyframes: {
         slideDown: {

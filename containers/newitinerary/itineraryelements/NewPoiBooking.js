@@ -13,6 +13,7 @@ import Button from "../../../components/ui/button/Index";
 import NewPoiDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDetailsDrawer";
 import RecommendedBadge from "./Recommended";
 import Image from "next/image";
+import useMediaQuery from "../../../components/media";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -30,6 +31,8 @@ export default function NewPoiBooking(props) {
     type:"",
     id:""
   })
+  const isDesktop = useMediaQuery("(min-width: 583px)");
+
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -62,8 +65,9 @@ export default function NewPoiBooking(props) {
 
   return (
     <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
-      <div
-        className={`relative flex gap-1  flex-col justify-start max-[583px]:hidden`}
+      {isDesktop?<div
+      id="poi"
+        className={`relative flex gap-1  flex-col justify-start`}
       >
         <div
           style={{
@@ -300,9 +304,9 @@ export default function NewPoiBooking(props) {
             </div>
           </div>
         </div>
-      </div>
+      </div>:
 
-      <div className="min-[583px]:hidden" id="Activity">
+      <div  id="poi">
         <div>
           <div
             style={{
@@ -468,7 +472,7 @@ export default function NewPoiBooking(props) {
             View Detail
           </Button>
         )}
-      </div>
+      </div>}
       {props.data?.is_very_popular && (
         <div className="absolute top-6 -left-2 z-[1]">
           <RecommendedBadge />

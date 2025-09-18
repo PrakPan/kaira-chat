@@ -129,7 +129,7 @@ const Details = (props) => {
     <Container>
       {props?.group_type !== null ? (
         <div className="pr-[24px]"  style={{ width: "max-content" }}>
-          <Heading>Group Type</Heading>
+          <Heading>Traveller Type</Heading>
           <Text className="flex flex-row gap-2">
             {props.group_type}
             {props.number_of_adults ||
@@ -178,20 +178,9 @@ const Details = (props) => {
           ) : (
             <div>
               <Heading className="flex flex-row gap-2 items-center">
-                Dates ({props.duration})
+                Date of Travelling
               </Heading>
-              {/* {isDesktop ? <DateRow>
-                <UpdateItineraryDates
-                  itinerary={props?.itinerary}
-                  token={props.token}
-                  onUpdateSuccess={fetchItineraryStatus}
-                  convertDFormat={convertDFormat}
-                  tripsPage={false}
-                  setShowEditDate={setShowEditDate}
-                  showEditDate={showEditDate}
-                />
-              </DateRow> :   */}
-               {convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }
+               <div className="Body2M_14">{convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }</div>
               
             </div>
           )}
