@@ -38,6 +38,7 @@ import SetPassengers from "../../store/actions/passengers";
 import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
 import setCart from "../../store/actions/Cart";
+import NotesPopup from "./NotesPopup";
 
 const Container = styled.div`
   width: 90%;
@@ -258,6 +259,9 @@ const ItineraryContainer = (props) => {
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
+
+  const [notes, setNotes] = useState(null);
+  const [showNotesPopup, setShowNotesPopup] = useState(false);
 
    const resetRef = () => {
     itinerarySuccessRef.current = false;
@@ -658,6 +662,10 @@ const ItineraryContainer = (props) => {
     dispatch(setItineraryStatus(statusField, statusValue));
   });
           setPolling(false);
+          if (res.data?.notes && res.data.notes.length > 0) {
+    setNotes(res.data.notes);
+    setShowNotesPopup(true);
+  }
         } else {
           setPolling(true);
         }
@@ -1398,6 +1406,12 @@ const ItineraryContainer = (props) => {
 
   return (
     <Container>
+
+       <NotesPopup
+      notes={notes}
+      isVisible={showNotesPopup}
+      onClose={() => setShowNotesPopup(false)}
+    />
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
