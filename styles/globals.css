@@ -234,7 +234,7 @@ a.termsnavunderlinelink {
 }
 
 .popup {
-    transform: translate(45%, 60%) scale(0);
+    transform: translate(45%, -60%) scale(0);
     visibility: hidden;
     transition:
         transform 0.3s,
@@ -243,6 +243,7 @@ a.termsnavunderlinelink {
 
 .open-popup {
     visibility: visible;
+    opacity: 1;
     transform: translate(0%, 0%) scale(1);
 }
 

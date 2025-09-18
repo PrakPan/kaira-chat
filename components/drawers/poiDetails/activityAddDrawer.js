@@ -647,7 +647,7 @@ const formattedDate =
                   />
                 </div>
               </div>
-              <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
+              <div className="flex max-sm:flex-col max-sm:!items-start justify-between w-full items-center">
                 <div className=" line-clamp-1 text-[24px] font-semibold ">
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}
                   in {props.cityName}
@@ -661,7 +661,7 @@ const formattedDate =
                   />
                 )}
               </div>
-              <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
+              <div className="grid w-full gap-2 sm:grid-cols-[3fr_2fr_1fr]">
                 <div className=" flex flex-row items-center relative h-[44px]">
                   <IoMdSearch
                     id={"icon"}
@@ -680,7 +680,7 @@ const formattedDate =
                   ></input>
                 </div>
                 <select
-                  className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
+                  className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-sm:hidden"
                   onChange={(e) => setStartDate(e.target.value)}
                   defaultValue={formattedDate}
                 >
@@ -710,7 +710,7 @@ const formattedDate =
 
                 <div className="relative inline-block">
                   <div
-                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
+                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
                     onClick={() => setShowDynamicfilters(true)}
                   >
                     <Image
@@ -727,13 +727,13 @@ const formattedDate =
 
                   {showDynamicfilters && (
                     <div
-                      className={`
-      z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
-
-      min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0 min-[584px]:block 
-
-       max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full max-[583px]:left-0 max-[583px]:block
-    `}
+                    className={`
+                      z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
+                
+                      sm:absolute sm:top-[calc(100%+8px)] sm:right-0 sm:block 
+                
+                       max-sm:fixed max-sm:bottom-0 max-sm:w-full max-sm:left-0 max-sm:block
+                    `}
                       ref={filtersRef}
                     >
                       <DyamicFilters
@@ -751,7 +751,7 @@ const formattedDate =
                 </div>
               </div>
 
-              <div className="min-[583px]:hidden flex justify-between w-full">
+              <div className="sm:hidden flex justify-between w-full">
                 {/* <button
                   onClick={handleRecommneded}
                   className="flex flex-row items-center gap-1 cursor-pointer"
@@ -795,7 +795,7 @@ const formattedDate =
                   {totalResults ? ` out of ${totalResults}` : null}
                   {props?.cityName ? ` in ${props?.cityName}` : null}
                 </div>
-                {/* <div className="max-[583px]:hidden">
+                {/* <div className="max-sm:hidden">
                   <button
                     onClick={handleRecommneded}
                     className="flex flex-row items-center gap-1 cursor-pointer"
@@ -804,7 +804,7 @@ const formattedDate =
                     Top Recommended
                   </button>
                 </div> */}
-                <div className="max-[583px]:hidden">
+                <div className="max-sm:hidden">
                   <button
                     onClick={handleNearby}
                     className="flex flex-row items-center gap-1 cursor-pointer"

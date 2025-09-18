@@ -44,7 +44,7 @@ const Overview = (props) => {
         <Heading>
           {props.title}
         </Heading>
-        {isDesktop&&<TravelPartnerContact/>}
+        {isDesktop&&<TravelPartnerContact itinerary={props?.itinerary} />}
         </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
