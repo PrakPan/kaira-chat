@@ -71,8 +71,10 @@ export default function PriceRange(props) {
                             </input>
                         </div>
                     </div>
-                </div>
+     
             </div>
         </div>
+        </div>
     );
+
 }

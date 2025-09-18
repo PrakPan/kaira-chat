@@ -237,7 +237,7 @@ const UserDashboard = (props) => {
                 Show More
               </button>
             ) : showMoreResults && showMoreLoading ? (
-              <div className="grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+              <div className="w-full grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
                 <ExperienceCardSkeleton />
                 <ExperienceCardSkeleton />
                 <ExperienceCardSkeleton />

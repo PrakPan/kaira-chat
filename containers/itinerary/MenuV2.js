@@ -1175,6 +1175,7 @@ const SimpleTabsV2 = (props) => {
                   setShowFooterBannerMobile={() =>
                     setShowFooterBannerMobile(true)
                   }
+
                   getPaymentHandler={props.getPaymentHandler}
                   payment={props.payment}
                   traveleritinerary={props.traveleritinerary}
@@ -1199,6 +1200,10 @@ const SimpleTabsV2 = (props) => {
                   resetRef={props?.resetRef}
                   _GetInTouch={() => _GetInTouch()}
                   setShowLoginModal={setShowLoginModal}
+                  setShowFooterBannerMobile={() =>
+                    setShowFooterBannerMobile(false)
+                  }
+                  blur={props.blur}
                   loading={loading}
                   social_title={props?.social_title}
                   social_description={props?.social_description}

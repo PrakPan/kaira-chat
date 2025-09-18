@@ -31,7 +31,7 @@ const generateSitemap = async () => {
   );
   const countriesData = countries.data.data.countries;
   let countriesPaths = countriesData
-  .filter((object) => object.path !== undefined)
+  .filter((object) => object.path !== undefined && object.path.split("/").length === 2)
   .map((object) => {
     return { title: "Country Planner", link: PROD_BASE_URL + "/" + object.path };
   });

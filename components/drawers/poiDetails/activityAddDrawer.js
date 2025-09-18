@@ -862,6 +862,7 @@ const formattedDate =
                           : "things to do"}{" "}
                         available.
                       </span>
+                      
                     </EmptyMsg>
                     {debouncedSearch !== "" ? (
                       <Button

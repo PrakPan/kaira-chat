@@ -1,0 +1,272 @@
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import { FaX } from "react-icons/fa6";
+
+
+// Generic API Modal Component
+const GenericAPIModal = ({
+  isOpen,
+  onClose,
+  title,
+  message,
+  warningApiCall,
+  bookingApiCall,
+  requestData,
+  onSuccess,
+  onError,
+  onCancel,
+  successMessage = "Operation completed successfully",
+  loadingMessage = "Processing your request...",
+}) => {
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [warningApiCalled, setWarningApiCalled] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const warningApiCalledRef = useRef(false);
+useEffect(() => {
+  if (isOpen && !warningApiCalledRef.current && !warningApiCalled && warningApiCall && requestData) {
+    handleInitialWarningRequest();
+  }
+}, [isOpen, warningApiCall, requestData, warningApiCalled]);
+
+
+  // Reset states when modal closes
+ useEffect(() => {
+  if (!isOpen) {
+    setShowWarningModal(false);
+    setWarningMessage("");
+    warningApiCalledRef.current = false; 
+  }
+}, [isOpen]);
+
+  const handleInitialWarningRequest = async () => {
+
+    if (isProcessing || warningApiCalledRef.current || !warningApiCall || !requestData) {
+    return;
+  }
+
+  warningApiCalledRef.current = true;
+  setIsProcessing(true);
+
+
+    setWarningApiCalled(true);
+    
+    try {
+      // Call the warning API without showing any loader
+      console.log("Calling warning API with:", requestData);
+      console.log("Warning API function:", warningApiCall);
+      const warningResponse = await warningApiCall(requestData);
+      
+      // Check if we should show warning based on show_warning field
+      if (warningResponse?.data?.show_warning === true) {
+        // Show warning modal with the warning message
+        setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
+        setShowWarningModal(true);
+      } else {
+        // Proceed directly with booking if show_warning is false
+        await proceedWithBooking();
+      }
+      
+    } catch (error) {
+      console.error("Warning API failed:", error);
+      
+      // Extract error message with better error handling
+      let errorMsg = "Warning check failed. Please try again.";
+      
+      if (error?.response?.data) {
+        if (error.response.data.errors?.[0]?.message?.[0]) {
+          errorMsg = error.response.data.errors[0].message[0];
+        } else if (error.response.data.message) {
+          errorMsg = error.response.data.message;
+        } else if (typeof error.response.data === 'string') {
+          errorMsg = error.response.data;
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      
+      // Show error as notification and close modal
+      onError(errorMsg);
+      onClose(); 
+    }finally {
+  setIsProcessing(false); // RESET FLAG
+}
+  };
+
+  const proceedWithBooking = async () => {
+    if (isProcessing || !bookingApiCall || !requestData) {
+      return;
+    }
+
+    setIsProcessing(true); 
+
+    try {
+     
+      setShowWarningModal(false); // Hide warning modal if it was showing
+      
+      const response = await bookingApiCall(requestData);
+      
+   
+      onSuccess(response?.data, successMessage);
+      onClose();
+    } catch (error) {
+      console.error("Booking API failed:", error);
+      
+      // Extract error message with better error handling
+      let errorMsg = "Booking failed. Please try again.";
+      
+      if (error?.response?.data) {
+        if (error.response.data.errors?.[0]?.message?.[0]) {
+          errorMsg = error.response.data.errors[0].message[0];
+        } else if (error.response.data.message) {
+          errorMsg = error.response.data.message;
+        } else if (typeof error.response.data === 'string') {
+          errorMsg = error.response.data;
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+      
+      onError(errorMsg);
+      onClose();
+    }finally {
+      setIsProcessing(false); // RESET FLAG
+    }
+  };
+
+  const handleWarningConfirm = async () => {
+    if (isProcessing) return;
+    await proceedWithBooking();
+  };
+
+ const handleWarningCancel = () => {
+  setShowWarningModal(false);
+  if (onCancel) {
+    onCancel();
+  }
+  onClose();
+};
+
+  const handleCancel = () => {
+    
+    
+    if (showWarningModal) {
+      handleWarningCancel();
+    } else {
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+
+  return ReactDOM.createPortal(
+    <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
+      <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
+        
+        {/* Mobile handle bar */}
+        <div className="md:hidden flex justify-center py-2">
+          <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+        </div>
+
+        {/* Close button - only show when not loading booking */}
+        { (
+          <button
+            onClick={handleCancel}
+            className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+          >
+            <FaX size={16} />
+          </button>
+        )}
+
+        {/* Content */}
+        <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
+          
+          {/* Show booking loader */}
+         
+
+          {/* Show warning modal content */}
+          {showWarningModal && (
+            <>
+              {/* Header */}
+              <h2 className="text-xl font-semibold mb-1 pr-8">
+                Dates Change Warning!
+              </h2>
+
+              {/* Warning Message */}
+              <div className="text-gray-700 mb-6">
+                <div className="rounded-lg p-2">
+                  {warningMessage}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
+                <button
+                  onClick={handleWarningCancel}
+                  className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  disabled={isProcessing} 
+                  onClick={handleWarningConfirm}
+                  className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
+                >
+                   {isProcessing ? "Processing..." : "Confirm"}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
+export const useGenericAPIModal = () => {
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    warningApiCall: null,
+    bookingApiCall: null,
+    requestData: null,
+    onSuccess: () => {},
+    onError: () => {},
+    onCancel: () => {},
+    successMessage: "",
+    loadingMessage: "",
+  });
+
+  const openModal = (config) => {
+    setModalConfig({
+      ...config,
+      isOpen: true,
+    });
+  };
+
+  const closeModal = () => {
+    setModalConfig(prev => ({
+      ...prev,
+      isOpen: false,
+    }));
+  };
+
+  const ModalComponent = () => (
+    <GenericAPIModal
+      {...modalConfig}
+      onClose={closeModal}
+    />
+  );
+
+  return {
+    openModal,
+    closeModal,
+    ModalComponent,
+    isOpen: modalConfig.isOpen,
+  };
+};
+
+export default GenericAPIModal;
