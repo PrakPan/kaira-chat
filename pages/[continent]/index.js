@@ -74,7 +74,7 @@ const TravelPlanner = (props) => {
 export async function getStaticPaths() {
   let paths = [];
   try {
-    //setting up mercury api
+    //mercury api
     const res = await axiospagelistinstance.get(
       "?page_type=Continent&fields=path"
     );

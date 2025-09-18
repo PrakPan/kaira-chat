@@ -14,7 +14,7 @@ export default function TravelPartnerContact(props) {
                 <button className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200" onClick={()=>setShare(true)}>
                     <Image src="/share.svg" height={22} width={22} className="text-gray-600" />
                 </button>
-                <div className="absolute top-10 right-0">
+                <div className="absolute top-10 right-0 w-max">
                     <SocialShareDesktop
                     social_title={props?.itinerary?.social_title}
                     social_description={props?.social_description}
