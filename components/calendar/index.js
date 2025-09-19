@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
@@ -33,6 +33,14 @@ const AirbnbCalendar = (props) => {
   
   const [currentMonth, setCurrentMonth] = useState(props.date.month || new Date(today.getFullYear(), today.getMonth(), 1));
   const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
+
+  // Auto-navigate to the month containing the start date
+  useEffect(() => {
+    if (selectedDates.start) {
+      const startDateMonth = new Date(selectedDates.start.getFullYear(), selectedDates.start.getMonth(), 1);
+      setCurrentMonth(startDateMonth);
+    }
+  }, [selectedDates.start]);
 
   // Constants
   const months = [

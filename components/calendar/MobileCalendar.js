@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
@@ -20,15 +20,30 @@ const AirbnbCalendarMobile = (props) => {
     props.dateType === "flexible" ? "months" : "any"
   );
 
+  const normalizeDate = (d) => {
+    if (!d) return null;
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  
   const [selectedDates, setSelectedDates] = useState({
-    start: props.valueStart ? new Date(props.valueStart) : null,
-    end: props.valueEnd ? new Date(props.valueEnd) : null
+    start: normalizeDate(props.valueStart),
+    end: normalizeDate(props.valueEnd)
   });
 
   const [currentMonth, setCurrentMonth] = useState(
     props.date?.month || new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [tripDuration, setTripDuration] = useState(props.date?.duration || 1);
+
+  // Auto-navigate to the month containing the start date
+  useEffect(() => {
+    if (selectedDates.start) {
+      const startDateMonth = new Date(selectedDates.start.getFullYear(), selectedDates.start.getMonth(), 1);
+      setCurrentMonth(startDateMonth);
+    }
+  }, [selectedDates.start]);
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',

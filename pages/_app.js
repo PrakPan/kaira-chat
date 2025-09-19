@@ -17,6 +17,7 @@ import Script from "next/script";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import Loading from "./loading";
+import { usePathname } from "next/navigation";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -24,6 +25,8 @@ function MyApp({ Component, pageProps, store }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
+  const newPath=usePathname()
+
 
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
@@ -33,14 +36,17 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   useEffect(() => {
+    if(currentPath=="") {
+      setCurrentPath(newPath)
+      return
+    }
     const handleStart = (url) => {
-      const isItineraryRoute = currentPath.startsWith('/itinerary/');
-      const isSameItineraryPage = url.startsWith('/itinerary/') && 
-        currentPath.replace(/\?.*$/, '') === url.replace(/\?.*$/, '');
+      const isSameItineraryPage = currentPath===newPath
       
-      if (isItineraryRoute && isSameItineraryPage) {
+      if (isSameItineraryPage) {
         return;
       }
+      setCurrentPath(newPath)
       
       setLoading(true);
     };
