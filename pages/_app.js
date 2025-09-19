@@ -17,6 +17,7 @@ import Script from "next/script";
 import restartBot from "../helper/RestartBot";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
+import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -27,6 +28,10 @@ function MyApp({ Component, pageProps, store }) {
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
+  }, []);
+
+  useEffect(() => {
+    cleanExpiredLocalStorage(); 
   }, []);
 
   function setupTokenExpiryWatcher() {

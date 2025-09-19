@@ -384,6 +384,11 @@ useEffect(() => {
       })
       .then((res) => {
         setItinerary(res?.data?.data);
+        Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
+        localStorage.removeItem(key);
+        }
+        });
         setShowCalendar(false);
         setIsEditing(false);
         setFocusedInput(null);
