@@ -9,6 +9,7 @@ import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import CurveImageGallery from "../components/theme/CurveImageGallery";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
+import NewFooter from "../components/newfooter/Index";
 
 // import Layout from "../components/Layout";
 import { connect, useSelector } from "react-redux";
@@ -121,6 +122,7 @@ const Home = (props) => {
         <CurveImageGallery />
         <CtaBoardingSection />
       </div>
+      <NewFooter page="Homepage" />
       <div id="login" className="width-[100%] z-[1650]">
         <Login
           show={props.showLogin}
