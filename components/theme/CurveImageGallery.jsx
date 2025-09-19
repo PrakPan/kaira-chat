@@ -78,7 +78,7 @@ const Carousel3D = () => {
   // Add touch events in addition to pointer events for maximum compatibility
   return (
     <section className="w-full bg-white  font-inter">
-      <div className="flex flex-col items-center mb-14">
+      <div className="flex flex-col items-center">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
             Memories Made with Us.
@@ -92,7 +92,7 @@ const Carousel3D = () => {
           </p>
         </div>
       </div>
-      <div className="flex bg-white text-white font-sans text-center relative mt-0 overflow-hidden hidden-mobile">
+      <div className="flex text-white font-sans text-center relative  overflow-hidden hidden-mobile -mt-15">
         <style>
           {`
         .perspective {
@@ -151,6 +151,11 @@ const Carousel3D = () => {
           >
             {images.map((item, index) => {
               const angle = index * anglePerSlide;
+              // Determine if card is facing away (needs text flip correction)
+              const isBackFacing =
+                Math.abs((angle + rotation) % 360) > 90 &&
+                Math.abs((angle + rotation) % 360) < 270;
+
               return (
                 <div
                   key={index}
@@ -162,7 +167,20 @@ const Carousel3D = () => {
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
                   }}
-                />
+                >
+                  <div
+                    className="absolute inset-0 text-white w-full h-full flex items-center justify-center"
+                    style={{
+                      transform: isBackFacing ? "rotateY(180deg)" : "none",
+                      backgroundColor: "rgba(0, 0, 0, 0.2)",
+                      borderRadius: "16px",
+                    }}
+                  >
+                    <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
+                      Hello World {index + 1}
+                    </h1>
+                  </div>
+                </div>
               );
             })}
           </div>
