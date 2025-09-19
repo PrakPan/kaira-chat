@@ -1412,7 +1412,6 @@ const ItineraryContainer = (props) => {
       <NotesPopup
   notes={notes}
   itineraryId={router.query.id}
-  userId={props.token ? 'user_' + phone : 'guest'} 
   isLoggedIn={!!props.token} 
   onClose={() => setShowNotesPopup(false)}
 />

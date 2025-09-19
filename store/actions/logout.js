@@ -37,21 +37,13 @@ export const logout = () => {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-         Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('notes_dismissed_')) {
-        localStorage.removeItem(key);
-        }
-        });
+       
 
         restartBot()
         dispatch(authLogout());
       })
       .catch((err) => {
-        Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('notes_dismissed_')) {
-        localStorage.removeItem(key);
-        }
-        });
+      
         localStorage.removeItem("access_token");
         localStorage.removeItem("name");
         localStorage.removeItem("email");

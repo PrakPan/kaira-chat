@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react';
+import { getWithExpiry, setWithExpiry } from '../../services/localStorageUtils';
 
-const NotesPopup = ({ notes, userId, itineraryId, onClose, isLoggedIn }) => {
+const NotesPopup = ({ notes, itineraryId, onClose, isLoggedIn }) => {
   const [isVisible, setIsVisible] = useState(false);
 
-  const getStorageKey = () => `notes_dismissed_${userId}_${itineraryId}`;
+  const getStorageKey = () => `notes_dismissed_${itineraryId}`;
 
   useEffect(() => {
     if (!isLoggedIn || !notes || !notes.length || !itineraryId) return;
 
     const storageKey = getStorageKey();
-    const isDismissed = localStorage.getItem(storageKey);
+    const isDismissed = getWithExpiry(storageKey);
     
     if (!isDismissed) {
       setIsVisible(true);
     }
-  }, [notes, itineraryId, userId, isLoggedIn]);
+  }, [notes, itineraryId, isLoggedIn]);
 
   const handleClose = () => {
     const storageKey = getStorageKey();
-    localStorage.setItem(storageKey, 'true');
+    setWithExpiry(storageKey, "true", 24 * 60 * 60 * 1000);
+
     
     setIsVisible(false);
     
@@ -87,7 +89,7 @@ const NotesPopup = ({ notes, userId, itineraryId, onClose, isLoggedIn }) => {
             onClick={handleClose}
             className="w-fit bg-[#07213A] text-white py-1 px-2 rounded-md"
           >
-            Confirm
+            Okay
           </button>
         </div>
       </div>

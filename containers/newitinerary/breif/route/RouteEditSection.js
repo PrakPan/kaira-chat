@@ -305,11 +305,10 @@ const RouteEditSection = (props) => {
         },
       });
 
-      // Update currentCheckinDate for next city
       currentCheckinDate = checkoutDateObj;
     }
 
-    console.log("CIII", cities);
+
     setDestinations(cities);
   }
 }, [props.routes, itinerary?.start_date]);
