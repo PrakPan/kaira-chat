@@ -19,10 +19,18 @@ const AirbnbCalendar = (props) => {
   // State
   const [dateType, setDateType] = useState(props.dateType)
   const [currentView, setCurrentView] = useState('calendar'); // default is Fixed-style calendar
+  const normalizeDate = (d) => {
+    if (!d) return null;
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
+  
   const [selectedDates, setSelectedDates] = useState({
-    start: new Date(props.valueStart),
-    end: new Date(props.valueEnd)
+    start: normalizeDate(props.valueStart),
+    end: normalizeDate(props.valueEnd)
   });
+  
   const [currentMonth, setCurrentMonth] = useState(props.date.month || new Date(today.getFullYear(), today.getMonth(), 1));
   const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
 

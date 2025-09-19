@@ -275,7 +275,14 @@ const UpdateItineraryDates = ({
   const [isLoading, setIsLoading] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
-
+  const [dateType, setDateType] = useState("fixed");
+const date={
+  type:"fixed",
+  start_date:new Date(startDate)?.toISOString(),
+  end_date:new Date(endDate)?.toISOString(),
+  month:"",
+  duration:""
+}
   const [momentStartDate, setMomentStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
   );
@@ -479,10 +486,13 @@ useEffect(() => {
           borderRadius="20px"
         >
           <AirbnbCalendar
-            valueStart={itinerary?.start_date}
-            valueEnd={itinerary?.end_date}
+            valueStart={new Date(itinerary?.start_date)}
+            valueEnd={new Date(itinerary?.end_date)}
             onChangeDate={handleOnCalenderApplyDates}
             setShowCalendar={() => closeModal(false)}
+            dateType={dateType}
+            setDateType={setDateType}
+            date={date}
           />
         </ModalWithBackdrop>
         // <>
