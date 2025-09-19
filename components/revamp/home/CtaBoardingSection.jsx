@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { backgroundImage } from "../assets";
+import { cta } from "../assets";
 
 const CtaBoardingSection = () => {
   return (
@@ -12,7 +12,7 @@ const CtaBoardingSection = () => {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src={backgroundImage}
+              src={cta}
               alt="Travel destination with water and buildings at sunset"
               fill
               className="object-cover"
