@@ -2354,6 +2354,7 @@ const NewMultiModeContainer = ({
 
   const handleUpdateTransfer = async () => {
     setUpdateLoading(true);
+
     if (Object.keys(selectedModeIds).length === totalSteps) {
       const transfersPayload = selectedData.map((item, index) => {
         const currentTransfer = transfer[index];
@@ -4483,6 +4484,8 @@ const OtherTransfer = ({
         handleSelect(transferIndex, selectedPriceData, transfer, mode);
       }
 
+        console.log("newLocalData",newLocalData)
+
       // FIXED: Use setTimeout to prevent immediate execution during state updates
       setTimeout(() => {
         if (!isBookingInProgress) {
@@ -4507,6 +4510,8 @@ const OtherTransfer = ({
     if (!Array.isArray(transfer) || transfer.length === 0) {
       throw new Error("Transfer data is missing");
     }
+
+    
 
     const transfersPayload = updatedData
       .filter(Boolean)
@@ -4592,6 +4597,8 @@ const OtherTransfer = ({
       console.log("Booking already in progress, ignoring duplicate call");
       return;
     }
+
+  
 
     try {
       const newRequestBody = buildRequestPayload(updatedData, newTime, newDate);
@@ -5128,7 +5135,7 @@ const OtherTransfer = ({
                           ...otherTransfer,
                           selectedPrice: {
                             ...priceOption,
-                            result_index: priceIndex,
+                            result_index: priceOption.result_index,
                           },
                         };
 
