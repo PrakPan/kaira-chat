@@ -56,7 +56,7 @@ const DestinationCard = ({
 
       {/* Arrow Icon */}
       <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
-        <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white backdrop-blur-sm border border-white/30 group-hover:bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
+        <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white backdrop-blur-sm border border-white/30 group-hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
           <FontAwesomeIcon
             icon={faArrowUp}
             className="text-black group-hover:text-black text-xs sm:text-sm transition-colors duration-300 transform rotate-45"

@@ -76,7 +76,7 @@ const NavigationMenu = () => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 md:hidden">
           <Button
             className={styles.hamburger}
             onClick={toggleMobileMenu}
