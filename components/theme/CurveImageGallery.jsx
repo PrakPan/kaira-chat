@@ -1,84 +1,100 @@
-import React, { useState, useRef, useEffect } from "react";
-import PrimaryHeading from "../heading/PrimaryHeading";
-import SecondaryHeading from "../heading/Secondary";
-import media from "../media";
+import React, { useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 const Carousel3D = () => {
+  useEffect(() => {
+    // Add the panorama slider CSS
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href =
+      "https://panorama-slider.uiinitiative.com/assets/index.c1d53924.css";
+    document.head.appendChild(link);
+
+    // Add the module preload link
+    const preloadLink = document.createElement("link");
+    preloadLink.rel = "modulepreload";
+    preloadLink.href =
+      "https://panorama-slider.uiinitiative.com/assets/vendor.dba6b2d2.js";
+    document.head.appendChild(preloadLink);
+
+    // Add the panorama slider script
+    const script = document.createElement("script");
+    script.type = "module";
+    script.crossOrigin = "anonymous";
+    script.src =
+      "https://panorama-slider.uiinitiative.com/assets/index.d2ce9dca.js";
+    document.body.appendChild(script);
+
+    // Cleanup script and links on unmount
+    return () => {
+      if (document.head.contains(link)) document.head.removeChild(link);
+      if (document.head.contains(preloadLink))
+        document.head.removeChild(preloadLink);
+      if (document.body.contains(script)) document.body.removeChild(script);
+    };
+  }, []);
+
   const baseImages = [
     {
       image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
-      title: null,
-      caption: null,
+      title: "Leh Palace",
+      description: "Ancient royal palace overlooking the Indus Valley",
+      tags: ["Historic", "Architecture"],
     },
     {
       image: "media/ladakh-carousel/pexels-jay-baid-1420324-15560333.jpg",
-      title: null,
-      caption: null,
+      title: "Pangong Lake",
+      description: "Crystal clear high-altitude lake in the Himalayas",
+      tags: ["Nature", "Lake"],
     },
     {
       image: "media/ladakh-carousel/pexels-itismowgli-1202975.jpg",
-      title: null,
-      caption: null,
+      title: "Nubra Valley",
+      description: "Desert landscapes with double-humped camels",
+      tags: ["Desert", "Adventure"],
     },
     {
       image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
-      title: null,
-      caption: null,
+      title: "Magnetic Hill",
+      description: "Mysterious hill with gravitational anomaly",
+      tags: ["Mystery", "Unique"],
     },
     {
       image: "media/ladakh-carousel/Group-1000002319.png",
-      title: null,
-      caption: null,
+      title: "Shanti Stupa",
+      description: "Buddhist white-domed stupa offering panoramic views",
+      tags: ["Buddhist", "Peace"],
     },
     {
       image: "media/ladakh-carousel/pexels-imdad-sayyed-1274214-32630752.jpg",
-      title: null,
-      caption: null,
+      title: "Tso Moriri",
+      description: "High altitude wetland conservation reserve",
+      tags: ["Wildlife", "Conservation"],
     },
     {
       image:
         "media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg",
-      title: null,
-      caption: null,
+      title: "Khardung La",
+      description: "World's highest motorable road pass",
+      tags: ["Adventure", "Extreme"],
     },
     {
       image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
-      title: null,
-      caption: null,
+      title: "Hemis Monastery",
+      description: "Largest monastic institution in Ladakh",
+      tags: ["Monastery", "Culture"],
     },
   ];
 
-  const totalCount = 19;
-  const images = [];
-
-  for (let i = 0; i < totalCount; i++) {
-    images.push(baseImages[i % baseImages.length]);
-  }
-
-  const totalSlides = images.length;
-  const anglePerSlide = 360 / totalSlides;
-  const radius = 2300;
-
-  const [rotation, setRotation] = useState(0);
-  const pointerStartX = useRef(null);
-
-  // Auto-slide functionality
-  useEffect(() => {
-    const autoSlideInterval = setInterval(() => {
-      setRotation((prev) => prev + anglePerSlide);
-    }, 3000); // Slide every 3 seconds
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(autoSlideInterval);
-  }, [anglePerSlide]);
-
-  // Add touch events in addition to pointer events for maximum compatibility
   return (
-    <section className="w-full bg-white  font-inter">
-      <div className="flex flex-col items-center">
+    <section className="w-full bg-white font-inter">
+      <div className="flex flex-col items-center py-16">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
             Memories Made with Us.
@@ -92,116 +108,150 @@ const Carousel3D = () => {
           </p>
         </div>
       </div>
-      <div className="flex text-white font-sans text-center relative  overflow-hidden hidden-mobile -mt-15">
-        <style>
-          {`
-        .perspective {
-          perspective: 1800px;
-          perspective-origin: 50% 50%;
-        }
-        .preserve-3d {
-          transform-style: preserve-3d;
-        }
-        .nav-button {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 40px;
-          height: 40px;
-          border-radius: 9999px;
-          background-color: rgba(0, 0, 0, 0.5);
-          color: white;
-          font-size: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-          cursor: pointer;
-        }
-        .nav-button:hover {
-          background-color: rgba(0, 0, 0, 0.7);
-        }
-      `}
-        </style>
 
-        <div className="relative w-screen h-[700px] mx-auto perspective">
-          {/* Left Navigation */}
-          {/* <Image
-            src="/arrow-circle-left.svg"
-            alt="left"
-            className="nav-button !top-[45%] left-40 !bg-inherit"
-            onClick={() => setRotation((prev) => prev - anglePerSlide)}
-            width={48}
-            height={48}
-          /> */}
+      {/* Desktop Panorama Slider */}
+      <div className="md:block">
+        <div
+          className="panorama-slider"
+          style={{
+            height: "500px",
+            display: "flex",
+            alignItems: "center",
+            background: "white",
+          }}
+        >
+          <div className="swiper" style={{ height: "100%" }}>
+            <div className="swiper-wrapper">
+              {baseImages.map((item, index) => (
+                <div key={index} className="swiper-slide">
+                  <div className="relative w-[375px] h-[416px] group cursor-pointer">
+                    <img
+                      className="slide-image w-full h-full object-cover rounded-2xl"
+                      src={`https://images.thetarzanway.com/${item.image}`}
+                      alt={item.title}
+                    />
 
-          {/* Right Navigation */}
-          {/* <Image
-            src="/arrow-circle-right.svg"
-            alt="left"
-            className="nav-button !top-[45%] right-40 !bg-inherit"
-            onClick={() => setRotation((prev) => prev + anglePerSlide)}
-            width={48}
-            height={48}
-          /> */}
+                    {/* Gradient Overlay */}
+                    <div
+                      className="absolute inset-0 rounded-2xl"
+                      style={{
+                        background:
+                          "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+                      }}
+                    />
 
-          <div
-            className="absolute w-full h-full preserve-3d transition-transform duration-700"
-            style={{ transform: `rotateY(${rotation}deg)` }}
-          >
-            {images.map((item, index) => {
-              const angle = index * anglePerSlide;
-              // Determine if card is facing away (needs text flip correction)
-              const isBackFacing =
-                Math.abs((angle + rotation) % 360) > 90 &&
-                Math.abs((angle + rotation) % 360) < 270;
+                    {/* Tags */}
+                    {item.tags && item.tags.length > 0 && (
+                      <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                        {item.tags.map((tag, tagIndex) => (
+                          <span
+                            key={tagIndex}
+                            className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
-              return (
-                <div
-                  key={index}
-                  className="absolute w-[700px] h-[900px] -top-[180px] left-[10px] rounded-[16px] flex items-center justify-center"
-                  style={{
-                    backgroundImage: `url(https://images.thetarzanway.com/${item.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 text-white w-full h-full flex items-center justify-center"
-                    style={{
-                      transform: isBackFacing ? "rotateY(180deg)" : "none",
-                      backgroundColor: "rgba(0, 0, 0, 0.2)",
-                      borderRadius: "16px",
-                    }}
-                  >
-                    <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-                      Hello World {index + 1}
-                    </h1>
+                    {/* Arrow Icon */}
+                    <div className="absolute top-4 right-4 z-10">
+                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
+                        <FontAwesomeIcon
+                          icon={faArrowUp}
+                          className="text-white group-hover:text-black text-sm transition-colors duration-300 transform rotate-45"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                      {item.title && (
+                        <h3 className="text-white font-semibold mb-2 text-xl">
+                          {item.title}
+                        </h3>
+                      )}
+                      {item.description && (
+                        <p className="text-white/90 leading-relaxed text-sm">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
+            <div className="swiper-pagination"></div>
           </div>
         </div>
       </div>
-      <div className="hidden-desktop px-4">
+
+      {/* Mobile Swiper */}
+      <div className="md:hidden px-4">
         <Swiper
           slidesPerView={1.2}
           initialSlide={0}
           spaceBetween={15}
           className="!h-max"
+          modules={[Pagination]}
+          pagination={{ clickable: true }}
         >
-          {images?.map((item, index) => (
+          {baseImages.map((item, index) => (
             <SwiperSlide key={index}>
-              <div className="relative aspect-[280/312] rounded-[16px] overflow-hidden">
+              <div className="relative w-[352px] h-[416px] rounded-[16px] overflow-hidden group cursor-pointer">
                 <Image
-                  src={"https://images.thetarzanway.com/" + item.image}
-                  alt={`${index}_image`}
+                  src={`https://images.thetarzanway.com/${item.image}`}
+                  alt={item.title}
                   fill
                   className="object-cover"
                 />
+
+                {/* Gradient Overlay */}
+                <div
+                  className="absolute inset-0 rounded-[16px]"
+                  style={{
+                    background:
+                      "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+                  }}
+                />
+
+                {/* Tags */}
+                {item.tags && item.tags.length > 0 && (
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-1 z-10">
+                    {item.tags.slice(0, 2).map((tag, tagIndex) => (
+                      <span
+                        key={tagIndex}
+                        className="px-2 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full border border-white/30"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Arrow Icon */}
+                <div className="absolute top-3 right-3 z-10">
+                  <div className="w-8 h-8 bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
+                    <FontAwesomeIcon
+                      icon={faArrowUp}
+                      className="text-white group-hover:text-black text-xs transition-colors duration-300 transform rotate-45"
+                    />
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                  {item.title && (
+                    <h3 className="text-white font-semibold mb-1 text-lg">
+                      {item.title}
+                    </h3>
+                  )}
+                  {item.description && (
+                    <p className="text-white/90 leading-relaxed text-sm line-clamp-2">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
               </div>
             </SwiperSlide>
           ))}
