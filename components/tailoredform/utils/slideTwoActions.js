@@ -4,7 +4,7 @@ import { logEvent } from "../../../services/ga/Index";
 import axiossearchstartinginstance from "../../../services/search/startinglocation";
 import axiossearchinstance from "../../../services/search/searchsuggest";
 
-const CITY_COLOR_CODES = [
+export const CITY_COLOR_CODES = [
     "#359EBF",
     "#F0C631",
     "#BF3535",

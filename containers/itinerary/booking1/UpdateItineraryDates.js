@@ -495,6 +495,7 @@ useEffect(() => {
             dateType={dateType}
             setDateType={setDateType}
             date={date}
+            isNotForm={true}
           />
         </ModalWithBackdrop>:
 
@@ -512,6 +513,7 @@ useEffect(() => {
             setDateType={setDateType}
             dateType={dateType}
             date={date}
+            isNotForm={true}
           />
         </BottomModal>}
         </div>
