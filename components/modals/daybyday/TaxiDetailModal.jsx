@@ -106,11 +106,11 @@ const TaxiDetailModal = ({
     transfer_details?.distance?.text ||
     `${transfer_details?.distance?.value} km`;
   const duration_text = transfer_details?.duration?.text;
-  const model = transfer_details?.quote?.taxi_category?.model_name;
-  const taxiType = transfer_details?.quote?.taxi_category?.type;
-  const fuelType = transfer_details?.quote?.taxi_category?.fuel_type;
-  const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity;
-  const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity;
+  const model = transfer_details?.quote?.taxi_category?.model_name || transfer_details?.quote?.vehicle?.model_name;
+  const taxiType = transfer_details?.quote?.taxi_category?.type || transfer_details?.quote?.vehicle?.type;
+  const fuelType = transfer_details?.quote?.taxi_category?.fuel_type ||  transfer_details?.quote?.vehicle?.fuel_type;
+  const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity || transfer_details?.quote?.vehicle?.bag_capacity;
+  const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity || transfer_details?.quote?.vehicle?.seating_capacity;
 
   if (error) {
         return (
@@ -266,10 +266,10 @@ const TaxiDetailModal = ({
                   ) : (
                     
                     <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
-                      {data?.transfer_details?.quote?.taxi_category?.image ? (
+                      {data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image ? (
                         <ImageLoader
                           url={
-                            data?.transfer_details?.quote?.taxi_category?.image
+                            data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image
                           }
                           className="w-full h-full object-contain"
                         />

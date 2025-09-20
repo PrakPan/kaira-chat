@@ -1762,6 +1762,8 @@ export const getModeIcon = (mode, size = 20) => {
       return <BiTrain size={size} />;
     case "taxi":
       return <MdLocalTaxi size={size} />;
+    case "rental":
+      return <MdLocalTaxi size={size} />;
     case "flight":
       return <FaPlaneDeparture size={size} />;
     case "bus":
@@ -2387,13 +2389,13 @@ const NewMultiModeContainer = ({
             return {
               ...transferObj,
               trace_id: item.trace_id,
-              result_index: item.selectedPrice
-                ?  Array.isArray(transfer[index]?.prices) ? transfer[index]?.prices?.findIndex(
-                  (p) =>
-                    p.price === item.selectedPrice.price &&
-                    p.currency === item.selectedPrice.currency
-                ): 0
-                : 0,
+              result_index: item.selectedPrice?.result_index,
+                // ?  Array.isArray(transfer[index]?.prices) ? transfer[index]?.prices?.findIndex(
+                //   (p) =>
+                //     p.price === item.selectedPrice.price &&
+                //     p.currency === item.selectedPrice.currency
+                // ): 0
+                // : 0,
               start_time:
                 item.departure_time ||
                 `${currentModeDepartureDate}T${currentModeDepartureTime}`,

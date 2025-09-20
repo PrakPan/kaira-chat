@@ -314,6 +314,39 @@ const TransferBooking = ({
                                   </div>
                                 )}
                               </>
+                            ) : booking?.booking_type === "Rental" ? (
+                              <>
+                                {booking?.transfer_details?.quote?.vehicle
+                                  ?.image ? (
+                                  <ImageLoader
+                                    className="object-contain border rounded-[11px]"
+                                    url={
+                                      booking?.transfer_details?.quote
+                                        ?.vehicle?.image
+                                    }
+                                    leftalign
+                                    height={
+                                      booking?.image?.includes("gozo")
+                                        ? "3rem"
+                                        : "4rem"
+                                    }
+                                    //  width={"4rem"}
+                                    //  widthmobile="4rem"
+                                    // onfail={handleTransferImageFailed}
+                                  />
+                                ) : (
+                                  <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                                    <TransportIconFetcher
+                                      TransportMode={booking?.booking_type}
+                                      Instyle={{
+                                        fontSize: "2.75rem",
+                                      }}
+                                      classname={" h-[34px] w-[34px]"}
+                                      color="#000000"
+                                    />
+                                  </div>
+                                )}
+                              </>
                             ) : (
                               <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
                                 <TransportIconFetcher
@@ -347,7 +380,7 @@ const TransferBooking = ({
 
                                       const seatingCapacity =
                                         booking?.transfer_details?.quote
-                                          ?.taxi_category?.seating_capacity ??
+                                          ?.vehicle?.seating_capacity ??
                                         booking?.number_of_adults +
                                           booking?.number_of_children +
                                           booking?.number_of_infants;
@@ -366,7 +399,7 @@ const TransferBooking = ({
 
                                       const bagCapacity =
                                         booking?.transfer_details?.quote
-                                          ?.taxi_category?.bag_capacity;
+                                          ?.vehicle?.bag_capacity;
                                       if (bagCapacity > 0) {
                                         details.push(
                                           <span
@@ -380,7 +413,7 @@ const TransferBooking = ({
 
                                       const fuelType =
                                         booking?.transfer_details?.quote
-                                          ?.taxi_category?.fuel_type;
+                                          ?.vehicle?.fuel_type;
                                       if (fuelType) {
                                         details.push(
                                           <span
@@ -630,11 +663,12 @@ const TransferBooking = ({
                     >
                       <div className="flex flex-row items-center justify-between gap-1 w-full">
                         <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                          {book?.booking_type === "Taxi" ? (
+                          {book?.booking_type === "Taxi" || book?.booking_type === "Rental" ? (
                             <ImageLoader
                               className="object-contain border rounded-[11px]"
                               url={
                                 book?.transfer_details?.quote?.taxi_category
+                                  ?.image || book?.transfer_details?.quote?.vehicle
                                   ?.image
                               }
                               leftalign

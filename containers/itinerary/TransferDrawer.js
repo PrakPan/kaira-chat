@@ -231,6 +231,17 @@ const TransferDrawer = ({
               handleEditRoute={handleEditRoute}
             />
           );
+        case "Rental":
+          return (
+            <TaxiDetailModal
+              data={transferData}
+              handleDelete={null}
+              loading={loading}
+              isEmbedded={true}
+              noHeading={true}
+              handleEditRoute={handleEditRoute}
+            />
+          );
         default:
           return (
             <VehicleDetailModal
@@ -562,7 +573,7 @@ const TransferDrawer = ({
             )
           ) : loading ? (
             <VehicleDetailLoader  />
-          ) : booking_type === "Taxi" ? (
+          ) : booking_type === "Taxi" || booking_type === "Rental" ? (
             <TaxiDetailModal
               data={data}
               handleDelete={handleDelete}
