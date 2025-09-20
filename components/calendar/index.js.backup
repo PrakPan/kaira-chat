@@ -5,19 +5,13 @@ import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Button
 import { useDispatch, useSelector } from 'react-redux';
 import { capitalizeFirstLetter } from '../../utils/tailoredform';
 import { setAnytimeDate, setFixedDate, setFlexibleDate } from '../../store/actions/slideOneActions';
-import {
-  isBeforeToday,
-  normalizeDate,
-  months,
-  dayNames,
-  formatDateRange,
-  getDaysInMonth,
-  isDateSelected,
-  isDateInRange,
-  isDateInHoverRange,
-  isDateRangeStart,
-  isDateRangeEnd
-} from './utils';
+
+const isBeforeToday = (date) => {
+  if (!date) return false;
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+  return date < todayMidnight;
+};
 
 const AirbnbCalendar = (props) => {
   const today = new Date();
@@ -25,6 +19,12 @@ const AirbnbCalendar = (props) => {
   const [dateType, setDateType] = useState(props.dateType)
   const [currentView, setCurrentView] = useState('calendar');
   const [hoveredDate, setHoveredDate] = useState(null);
+  const normalizeDate = (d) => {
+    if (!d) return null;
+    const date = new Date(d);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  };
   
   const [selectedDates, setSelectedDates] = useState({
     start: normalizeDate(props.valueStart),
@@ -40,6 +40,59 @@ const AirbnbCalendar = (props) => {
       setCurrentMonth(startDateMonth);
     }
   }, [selectedDates.start]);
+
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  const formatDateRange = () => {
+    if (!selectedDates.start || !selectedDates.end) return 'Select dates';
+    const start = selectedDates.start;
+    const end = selectedDates.end;
+    const startStr = `${months[start.getMonth()].slice(0, 3)} ${start.getDate()}`;
+    const endStr = `${months[end.getMonth()].slice(0, 3)} ${end.getDate()}`;
+    return `${startStr} - ${endStr}`;
+  };
+
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startingDayOfWeek = firstDay.getDay();
+    const days = [];
+
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      days.push(new Date(year, month, day));
+    }
+    return days;
+  };
+
+  const isDateSelected = (date) => {
+    if (!date) return false;
+    return (
+      (selectedDates.start && date.getTime() === selectedDates.start.getTime()) ||
+      (selectedDates.end && date.getTime() === selectedDates.end.getTime())
+    );
+  };
+  const isDateInRange = (date) => {
+    if (!date || !selectedDates.start || !selectedDates.end) return false;
+    return date > selectedDates.start && date < selectedDates.end;
+  };
+  
+  const isDateInHoverRange = (date) => {
+    if (!date || !selectedDates.start || !hoveredDate) return false;
+    if (hoveredDate <= selectedDates.start) return false;
+    return date > selectedDates.start && date < hoveredDate;
+  };
+  
+  const isDateRangeStart = (date) => selectedDates.start && date && date.getTime() === selectedDates.start.getTime();
+  const isDateRangeEnd = (date) => selectedDates.end && date && date.getTime() === selectedDates.end.getTime();
 
   const dispatch=useDispatch()
   const navigateMonth = (direction) => {
@@ -64,11 +117,13 @@ const AirbnbCalendar = (props) => {
         setSelectedDates({ start: date, end: null });
       }
     } else {
-      if (date < selectedDates.start) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.start && date < selectedDates.end) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.end) {
+      if (date > selectedDates.start) {
+        setSelectedDates(prev => ({
+          ...prev,
+          end: date
+        }));
+        setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
+      } else {
         setSelectedDates({ start: date, end: null });
       }
     }
@@ -94,14 +149,14 @@ const AirbnbCalendar = (props) => {
           return (<div
             key={idx}
             className={`flex items-center justify-center relative
-    ${date && isDateInRange(date, selectedDates) ? 'bg-gray-100' : ''}
-    ${date && isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200' : ''}
-    ${date && isDateRangeStart(date, selectedDates) ? 'bg-gray-100 rounded-l-full' : ''}
-    ${date && isDateRangeEnd(date, selectedDates) ? 'bg-gray-100 rounded-r-full' : ''}
-    ${date && isDateInRange(date, selectedDates) && isRowStart ? 'rounded-l-full' : ''}
-    ${date && isDateInRange(date, selectedDates) && isRowEnd ? 'rounded-r-full' : ''}
-    ${date && isDateInHoverRange(date, selectedDates, hoveredDate) && isRowStart ? 'rounded-l-full' : ''}
-    ${date && isDateInHoverRange(date, selectedDates, hoveredDate) && isRowEnd ? 'rounded-r-full' : ''}
+    ${date && isDateInRange(date) ? 'bg-gray-100' : ''}
+    ${date && isDateInHoverRange(date) ? 'bg-gray-200' : ''}
+    ${date && isDateRangeStart(date) ? 'bg-gray-100 rounded-l-full' : ''}
+    ${date && isDateRangeEnd(date) ? 'bg-gray-100 rounded-r-full' : ''}
+    ${date && isDateInRange(date) && isRowStart ? 'rounded-l-full' : ''}
+    ${date && isDateInRange(date) && isRowEnd ? 'rounded-r-full' : ''}
+    ${date && isDateInHoverRange(date) && isRowStart ? 'rounded-l-full' : ''}
+    ${date && isDateInHoverRange(date) && isRowEnd ? 'rounded-r-full' : ''}
   `}
           >
             {date && (
@@ -118,9 +173,9 @@ const AirbnbCalendar = (props) => {
                 disabled={isBeforeToday(date)}
                 className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
       ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' : ''}
-      ${isDateSelected(date, selectedDates) ? 'bg-black text-white' :
-                    isDateInRange(date, selectedDates) ? 'hover:bg-gray-200 text-gray-900' :
-                      isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200 text-gray-900' :
+      ${isDateSelected(date) ? 'bg-black text-white' :
+                    isDateInRange(date) ? 'hover:bg-gray-200 text-gray-900' :
+                      isDateInHoverRange(date) ? 'bg-gray-200 text-gray-900' :
                         !isBeforeToday(date) ? 'hover:bg-gray-100 text-gray-900' : ''}`}
               >
                 {date.getDate()}
@@ -235,7 +290,7 @@ const AirbnbCalendar = (props) => {
               <div className='text-center w-full'>
                 <h2 className="text-[20px] font-semibold text-gray-900 mb-4">When do you want to travel?</h2>
                 <div className="flex items-center justify-center space-x-4 text-[14px] font-normal leading-[22px] text-center w-full">
-                  <span className="font-medium">{formatDateRange(selectedDates)}</span>
+                  <span className="font-medium">{formatDateRange()}</span>
                   <span >|</span>
                   <span >{tripDuration} Days</span>
                 </div>
@@ -243,7 +298,7 @@ const AirbnbCalendar = (props) => {
             </div>
           </div>
 
-          {!props?.isNotForm&&<div className="">
+          <div className="">
             <div className="flex bg-gray-100 rounded-full px-[12px] py-[6px] w-fit mx-auto">
               {['fixed', 'flexible', 'anytime'].map(type => (
                 <button
@@ -259,7 +314,7 @@ const AirbnbCalendar = (props) => {
                 </button>
               ))}
             </div>
-          </div>}
+          </div>
 
           <div className="">
             {dateType === 'fixed' ? renderCalendarView() : dateType == "anytime" ? renderAnyView() : renderMonthView()}

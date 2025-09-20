@@ -90,7 +90,6 @@ const Details = (props) => {
       },
     });
 
-    // Enhanced tracking using passed function
     if (props.handleEditRouteClick) {
       props.handleEditRouteClick();
     }
@@ -121,7 +120,6 @@ const Details = (props) => {
     
       const fetchItinerary = async () => {
         props?.resetRef();
-        // setWaitingForStatusUpdate(true);
         props.fetchData(true);
       };
   
@@ -181,7 +179,7 @@ const Details = (props) => {
               <Heading className="flex flex-row gap-2 items-center">
                 Date of Travelling
               </Heading>
-               {isDesktop ? <DateRow>
+               <DateRow>
                 <UpdateItineraryDates
                   itinerary={props?.itinerary}
                   token={props.token}
@@ -191,9 +189,8 @@ const Details = (props) => {
                   setShowEditDate={setShowEditDate}
                   showEditDate={showEditDate}
                 />
-              </DateRow> : 
-               convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) }
-              
+              </DateRow>
+
             </div>
           )}
         </DateContainer>

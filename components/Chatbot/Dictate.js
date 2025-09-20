@@ -73,7 +73,7 @@ const Dictate = forwardRef((props, ref) => {
     }, [transcript, props.onTranscriptChange])
 
     if (!browserSupportsSpeechRecognition) {
-        return <span>Browser doesn't support speech recognition.</span>;
+        return <span></span>;
     }
 
 
