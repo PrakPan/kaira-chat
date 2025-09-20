@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { cta } from "../assets";
+import Button from "../common/components/button";
 
 const CtaBoardingSection = () => {
   return (
@@ -19,7 +20,7 @@ const CtaBoardingSection = () => {
               priority
             />
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/15 to-black/5" />
           </div>
 
           {/* Content */}
@@ -37,9 +38,16 @@ const CtaBoardingSection = () => {
               adventure. All you have to do is show up, grinning like Tazan!
             </p>
 
-            <button className="inline-flex items-center justify-center px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-full transition-colors duration-300 text-sm md:text-base">
-              Plan a Trip Here
-            </button>
+            <Button
+              variant="filled"
+              size="medium"
+              onClick={() => {
+                console.log("Get Free Travel Consultation clicked");
+              }}
+              className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
+            >
+              Plan a Trip Now!
+            </Button>
           </div>
         </div>
       </div>
