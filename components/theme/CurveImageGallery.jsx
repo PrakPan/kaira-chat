@@ -165,14 +165,14 @@ const Carousel3D = () => {
                     </div>
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-                      {item.title && (
-                        <h3 className="text-white font-semibold mb-2 text-xl">
-                          {item.title}
-                        </h3>
-                      )}
                       {item.description && (
-                        <p className="text-white/90 leading-relaxed text-sm">
+                        <p className="text-white/90 leading-relaxed text-md text-center">
                           {item.description}
+                        </p>
+                      )}
+                      {item.title && (
+                        <p className="text-white font-semibold mb-2 text-md text-center">
+                          {item.title}
                         </p>
                       )}
                     </div>
@@ -239,15 +239,15 @@ const Carousel3D = () => {
                 </div>
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
-                  {item.title && (
-                    <h3 className="text-white font-semibold mb-1 text-lg">
-                      {item.title}
-                    </h3>
-                  )}
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
                   {item.description && (
-                    <p className="text-white/90 leading-relaxed text-sm line-clamp-2">
+                    <p className="text-white/90 leading-relaxed text-md text-center">
                       {item.description}
+                    </p>
+                  )}
+                  {item.title && (
+                    <p className="text-white font-semibold mb-2 text-md text-center">
+                      {item.title}
                     </p>
                   )}
                 </div>
