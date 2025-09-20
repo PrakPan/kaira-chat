@@ -8,6 +8,7 @@ import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import CurveImageGallery from "../components/theme/CurveImageGallery";
+import FaqSection from "../components/revamp/home/FaqSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
 
@@ -120,6 +121,7 @@ const Home = (props) => {
         <WhereNextSection />
         <WhatMakesUsSection />
         <CurveImageGallery />
+        <FaqSection />
         <CtaBoardingSection />
       </div>
       <NewFooter page="Homepage" />

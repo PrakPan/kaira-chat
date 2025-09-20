@@ -22,11 +22,11 @@ const NavigationMenu = () => {
     overlayRef,
     menuItemsRef,
   } = useMobileMenu();
-  const router=useRouter();
+  const router = useRouter();
 
-    const isMidScreen = useMediaQuery("(min-width:786px)");
+  const isMidScreen = useMediaQuery("(min-width:786px)");
 
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
     (path) => router.pathname.startsWith(path),
@@ -61,10 +61,10 @@ const NavigationMenu = () => {
   return (
     <>
       <nav className={styles.navigationMenu} role="navigation">
-        <div className="hover-pointer" onClick={()=>router.push("/")}>
+        <div className="hover-pointer" onClick={() => router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority />
         </div>
-        {isMidScreen&&<SearchInput />}
+        {isMidScreen && <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
           <li className="mr-4"></li>
@@ -76,20 +76,21 @@ const NavigationMenu = () => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <div className="flex gap-4"><Button
-          className={styles.hamburger}
-          onClick={toggleMobileMenu}
-          variant="filled"
-        >
-          <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
-        </Button>
-        <Button
-          className={styles.hamburger}
-          onClick={toggleMobileMenu}
-          variant="filled"
-        >
-          <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            className={styles.hamburger}
+            onClick={toggleMobileMenu}
+            variant="filled"
+          >
+            <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
+          </Button>
+          <Button
+            className={styles.hamburger}
+            onClick={toggleMobileMenu}
+            variant="filled"
+          >
+            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+          </Button>
         </div>
       </nav>
 
