@@ -82,7 +82,7 @@ const FaqSection = () => {
                 onClick={() => toggleFaq(index)}
                 className="w-full px-0 py-6 text-left flex items-center justify-between hover:bg-transparent transition-colors duration-200 focus:outline-none"
               >
-                <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                <h3 className="text-[16px] font-semibold text-gray-900 pr-4">
                   {faq.question}
                 </h3>
                 <div className="flex-shrink-0">
@@ -101,7 +101,9 @@ const FaqSection = () => {
                     : "max-h-0 opacity-0 overflow-hidden"
                 }`}
               >
-                <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                <p className="text-[14px] text-gray-700 leading-relaxed">
+                  {faq.answer}
+                </p>
               </div>
             </div>
           ))}

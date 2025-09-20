@@ -93,8 +93,8 @@ const Carousel3D = () => {
   ];
 
   return (
-    <section className="w-full bg-white font-inter">
-      <div className="flex flex-col items-center py-16">
+    <section className="w-full bg-white font-inter py-16">
+      <div className="flex flex-col items-center">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
             Memories Made with Us.
