@@ -114,13 +114,16 @@ const Carousel3D = () => {
         <div
           className="panorama-slider"
           style={{
-            height: "500px",
+            height: "470px",
             display: "flex",
             alignItems: "center",
             background: "white",
           }}
         >
-          <div className="swiper" style={{ height: "100%" }}>
+          <div
+            className="swiper"
+            style={{ height: "100%", paddingBlock: "20px" }}
+          >
             <div className="swiper-wrapper">
               {baseImages.map((item, index) => (
                 <div key={index} className="swiper-slide">
@@ -130,7 +133,6 @@ const Carousel3D = () => {
                       src={`https://images.thetarzanway.com/${item.image}`}
                       alt={item.title}
                     />
-
                     {/* Gradient Overlay */}
                     <div
                       className="absolute inset-0 rounded-2xl"
@@ -139,31 +141,28 @@ const Carousel3D = () => {
                           "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
                       }}
                     />
-
                     {/* Tags */}
                     {item.tags && item.tags.length > 0 && (
                       <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                         {item.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30"
+                            className="px-3 py-1 bg-black/50 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30"
                           >
                             {tag}
                           </span>
                         ))}
                       </div>
                     )}
-
                     {/* Arrow Icon */}
                     <div className="absolute top-4 right-4 z-10">
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
+                      <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
                         <FontAwesomeIcon
                           icon={faArrowUp}
                           className="text-white group-hover:text-black text-sm transition-colors duration-300 transform rotate-45"
                         />
                       </div>
                     </div>
-
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
                       {item.title && (
