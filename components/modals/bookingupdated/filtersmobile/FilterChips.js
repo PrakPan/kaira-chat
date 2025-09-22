@@ -1,7 +1,7 @@
 import React from 'react'
 
 const svgIcons = {
-    'close': <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+    'close': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M4.99935 3.70758L8.29018 0.416748L9.58268 1.70925L6.29185 5.00008L9.58268 8.29091L8.29018 9.58341L4.99935 6.29258L1.70852 9.58341L0.416016 8.29091L3.70685 5.00008L0.416016 1.70925L1.70852 0.416748L4.99935 3.70758Z" fill="black" />
     </svg>
 }
