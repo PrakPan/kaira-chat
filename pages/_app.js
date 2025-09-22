@@ -17,12 +17,17 @@ import Script from "next/script";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import Loading from "./loading";
+import { usePathname } from "next/navigation";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [currentPath, setCurrentPath] = useState('');
+  const newPath=usePathname()
+
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -31,8 +36,25 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   useEffect(() => {
-    const handleStart = () => setLoading(true);
-    const handleComplete = () => setLoading(false);
+    if(currentPath=="") {
+      setCurrentPath(newPath)
+      return
+    }
+    const handleStart = (url) => {
+      const isSameItineraryPage = currentPath===newPath
+      
+      if (isSameItineraryPage) {
+        return;
+      }
+      setCurrentPath(newPath)
+      
+      setLoading(true);
+    };
+    
+    const handleComplete = (url) => {
+      setCurrentPath(url);
+      setLoading(false);
+    };
 
     router.events.on("routeChangeStart", handleStart);
     router.events.on("routeChangeComplete", handleComplete);
@@ -43,7 +65,7 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleComplete);
       router.events.off("routeChangeError", handleComplete);
     };
-  }, [router]);
+  }, [router, currentPath]);
 
   function setupTokenExpiryWatcher() {
     const expiry = localStorage.getItem("expirationDate");

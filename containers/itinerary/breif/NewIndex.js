@@ -158,7 +158,7 @@ const Details = (props) => {
             {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
             <sapn >Routes</sapn></div>
           <button
-            className="underline underline-offset-1 text-[#3A85FC]"
+            className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
             onClick={() =>
               router.push({
                 pathname: `/itinerary/${router?.query?.id}`,

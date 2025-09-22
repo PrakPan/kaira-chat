@@ -1437,7 +1437,7 @@ const SimpleTabsV2 = (props) => {
         }
       </div>
 
-      {isPageWide && (
+      {/* {isPageWide && (
         <div
           onClick={() => setShare((prev) => !prev)}
           className="z-[999] flex fixed bottom-[90px] right-[25px] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer bg-black mb-[1rem]"
@@ -1448,7 +1448,7 @@ const SimpleTabsV2 = (props) => {
             <BsShareFill className="animate-popOut text-[25px] text-white" />
           )}
         </div>
-      )}
+      )} */}
 
       {isPageWide && (
         <SocialShareDesktop

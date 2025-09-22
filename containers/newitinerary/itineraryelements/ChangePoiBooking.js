@@ -54,7 +54,7 @@ export default function ChangePoiBooking(props) {
   return (
     <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
       <div
-        className={`relative flex gap-1  flex-col justify-start max-[583px]:hidden`}
+        className={`relative flex gap-1  flex-col justify-start max-sm:hidden`}
       >
         <div
           style={{
@@ -293,7 +293,7 @@ export default function ChangePoiBooking(props) {
         </div>
       </div>
 
-      <div className="min-[583px]:hidden" id="Activity">
+      <div className="sm:hidden" id="Activity">
         <div>
           <div
             style={{

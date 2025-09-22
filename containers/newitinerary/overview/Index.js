@@ -38,13 +38,13 @@ const Overview = (props) => {
 
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <GridContainer className="gap-2">
         <div className="flex justify-between">
         <Heading>
           {props.title}
         </Heading>
-        {isDesktop&&<TravelPartnerContact/>}
+        {isDesktop&&<TravelPartnerContact itinerary={props?.itinerary} />}
         </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
@@ -67,9 +67,9 @@ const Overview = (props) => {
           setEditRoute={props.setEditRoute}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
-        <SmallGallery maxShow={3} images={props.images} />
+        {isDesktop&&<SmallGallery maxShow={3} images={props.images} />}
       </div>
-
+      {!isDesktop&&<SmallGallery maxShow={3} images={props.images} />}
 
       {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>

@@ -19,18 +19,20 @@ const Container = styled.div`
 `;
 
 const IconContainer = styled(Link)`
-  border: 1px solid white;
+  border: 0px;
   border-radius: 100%;
   padding: 7px;
   cursor: pointer;
   text-decoration: none;
   color: white;
+  background: ${(props) => (props.hoverbg ? props.hoverbg : "white")};
+  border: ${(props) =>
+    props.hoverbg ? `1px solid ${props.hoverbg}` : "1px solid white"};
+  transition: all 0.3s ease;
+
   &:hover {
-    color: white;
-    border: 0px;
-    background: ${(props) => (props.hoverbg ? props.hoverbg : "white")};
-    border: ${(props) =>
-      props.hoverbg ? `1px solid ${props.hoverbg}` : "white"};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 `;
 

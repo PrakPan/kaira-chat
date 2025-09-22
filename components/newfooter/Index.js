@@ -19,10 +19,10 @@ const Container = styled.div`
   position: relative;
 
   @media screen and (min-width: 768px) {
-    padding: 9.5rem 0rem 1.5rem 0rem;
+    padding: 1.5rem 0rem 1.5rem 0rem;
   }
   @media screen and (min-width: 1300px) {
-    padding: 9.5rem 5rem 1.5rem 5rem;
+    padding: 1.5rem 5rem 1.5rem 5rem;
   }
 `;
 
@@ -31,7 +31,7 @@ const SubContainer = styled.div`
     display: grid;
     grid-template-columns: 1fr 3fr;
     column-gap: 6%;
-    margin: 2% 0% 2% 7%;
+    margin: 0;
   }
 `;
 
@@ -109,6 +109,91 @@ const Heading = styled.p`
   }
 `;
 
+const NewsletterBanner = styled.div`
+  position: relative;
+  z-index: 1001;
+  background: #f7e700;
+  border-radius: 24px;
+  padding: 32px 40px;
+  margin: 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+    margin: 20px 16px;
+  }
+`;
+
+const NewsletterContent = styled.div`
+  flex: 1;
+  min-width: 200px;
+
+  h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    line-height: 1.2;
+
+    @media screen and (max-width: 768px) {
+      font-size: 24px;
+    }
+  }
+`;
+
+const NewsletterForm = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 4px;
+  min-width: 300px;
+
+  @media screen and (max-width: 768px) {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    background: transparent;
+    color: #666;
+
+    &::placeholder {
+      color: #999;
+    }
+  }
+
+  button {
+    background: #000;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #333;
+      transform: translateY(-1px);
+    }
+  }
+`;
+
 const SubscribeBox = styled.div`
   position: relative;
   z-index: 1001;
@@ -158,11 +243,20 @@ const NewFooter = (props) => {
 
   return (
     <>
-      <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
-        <Subscribe shadow={shadow} page={props.page} slug={props.slug} />
-      </SubscribeBox>
-
-      <Container className="font-lexend">
+      <Container className="font-inter">
+        <NewsletterBanner className="font-inter">
+          <NewsletterContent>
+            <h3>
+              Good Vibes & Great Deals,
+              <br />
+              Straight to You.
+            </h3>
+          </NewsletterContent>
+          <NewsletterForm>
+            <input type="email" placeholder="Email Address" />
+            <button type="submit">Subscribe</button>
+          </NewsletterForm>
+        </NewsletterBanner>
         <SubContainer>
           <Box>
             {showLogo ? (
@@ -183,7 +277,8 @@ const NewFooter = (props) => {
             )}
 
             <CompanyText>
-              The Tarzan Way is a travel and tech startup that enables you to craft your trips, your way, using an AI Trip Planner. We offer a one-stop solution where you can craft trips, manage bookings, and book it all in one go within minutes.
+              The Tarzan Way is a travel based startup with the vision to
+              simplify travel and build immersive travel programs across India.
             </CompanyText>
             <Socials></Socials>
 

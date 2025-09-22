@@ -15,6 +15,8 @@ import { useDispatch } from "react-redux";
 import AirbnbCalendar from "../../../components/calendar";
 import Modal from "../../../components/ui/Modal";
 import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
+import AirbnbCalendarMobile from "../../../components/calendar/MobileCalendar";
+import BottomModal from "../../../components/ui/LowerModal";
 
 const StyledDateRangeContainer = styled.div`
   .DateRangePicker {
@@ -275,7 +277,14 @@ const UpdateItineraryDates = ({
   const [isLoading, setIsLoading] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
-
+  const [dateType, setDateType] = useState("fixed");
+const date={
+  type:"fixed",
+  start_date:new Date(startDate)?.toISOString(),
+  end_date:new Date(endDate)?.toISOString(),
+  month:"",
+  duration:""
+}
   const [momentStartDate, setMomentStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
   );
@@ -436,7 +445,7 @@ useEffect(() => {
         )}
 
         {/* Show pencil icon when not editing, reset button when editing */}
-        {!isMobile ? !isEditing ? (
+        {!isEditing ? (
           <button
             onClick={handleEditClick}
             className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 hover:text-blue-500 hover:scale-110 active:scale-90"
@@ -450,7 +459,7 @@ useEffect(() => {
           <div className="cursor-pointer text-blue underline text-sm" onClick={handleCancel}>
             Reset
           </div>
-        ) : ''}
+        ) }
       </div>
 
       {/* Update button - show only when editing and dates are selected */}
@@ -469,8 +478,8 @@ useEffect(() => {
 
       {/* Calendar overlay - positioned absolutely but relative to this container */}
       {showCalendar && (
-
-        <ModalWithBackdrop
+        <div>
+        {!isMobile?<ModalWithBackdrop
           centered
           closeIcon={true}
           backdrop
@@ -479,83 +488,35 @@ useEffect(() => {
           borderRadius="20px"
         >
           <AirbnbCalendar
-            valueStart={itinerary?.start_date}
-            valueEnd={itinerary?.end_date}
+            valueStart={new Date(itinerary?.start_date)}
+            valueEnd={new Date(itinerary?.end_date)}
             onChangeDate={handleOnCalenderApplyDates}
             setShowCalendar={() => closeModal(false)}
+            dateType={dateType}
+            setDateType={setDateType}
+            date={date}
+            isNotForm={true}
           />
-        </ModalWithBackdrop>
-        // <>
-        //   <MobileOverlay onClick={() => setShowCalendar(false)} />
+        </ModalWithBackdrop>:
 
-        //   <div className={`${isMobile ? "hidden fixed" : "absolute"} z-[8]`}>
-        //     <StyledDateRangeContainer $show={showCalendar}>
-        //       <div className={`${isMobile ? "p-4" : "mb-1"}`}>
-        //         {/* Mobile header */}
-        //         {isMobile && (
-        //           <div className="flex items-center justify-between mb-1 pt-2">
-        //             <button
-        //               onClick={() => setShowCalendar(false)}
-        //               className="text-gray-500 hover:text-gray-700"
-        //             >
-        //               <FaX size={16} /> 
-        //             </button>
-        //           </div>
-        //         )}
-
-        //         <DateRangePicker
-        //           displayFormat="DD MMM YYYY"
-        //           startDate={momentStartDate}
-        //           startDateId="startDate"
-        //           endDate={momentEndDate}
-        //           endDateId="endDate"
-        //           onDatesChange={({ startDate, endDate }) => {
-        //             setMomentStartDate(startDate);
-        //             setMomentEndDate(endDate);
-
-        //             // Update string dates for API
-        //             if (startDate) {
-        //               setStartDate(startDate.format("YYYY-MM-DD"));
-        //             }
-        //             if (endDate) {
-        //               setEndDate(endDate.format("YYYY-MM-DD"));
-        //             }
-
-        //             // Clear end date when selecting new start date
-        //             if (
-        //               startDate &&
-        //               momentEndDate &&
-        //               startDate.isAfter(momentEndDate)
-        //             ) {
-        //               setMomentEndDate(null);
-        //               setEndDate("");
-        //             }
-
-        //             // Hide calendar when both dates are selected
-        //             if (startDate && endDate) {
-        //               setShowCalendar(false);
-        //               setFocusedInput(null);
-        //             }
-        //           }}
-        //           focusedInput={focusedInput}
-        //           onFocusChange={(focusedInput) => {
-        //             setFocusedInput(focusedInput);
-        //           }}
-        //           isOutsideRange={(day) => day.isBefore(moment(), "day")}
-        //           numberOfMonths={isMobile ? 1 : 2}
-        //           orientation="horizontal"
-        //           noBorder={true}
-        //           readOnly={true}
-        //           keepOpenOnDateSelect={false}
-        //           reopenPickerOnClearDates={false}
-        //           hideKeyboardShortcutsPanel={true}
-        //           daySize={isMobile ? 40 : 39}
-
-        //         />
-        //       </div>
-        //     </StyledDateRangeContainer>
-        //   </div>
-        // </>
+        <BottomModal
+          show={showCalendar}
+          onHide={() => closeModal(false)}
+          width="100%"
+          height="max-content"
+        >
+          <AirbnbCalendarMobile
+            valueStart={new Date(itinerary?.start_date)}
+            valueEnd={new Date(itinerary?.end_date)}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={() => closeModal(false)}
+            setDateType={setDateType}
+            dateType={dateType}
+            date={date}
+            isNotForm={true}
+          />
+        </BottomModal>}
+        </div>
       )}
     </div>
   );

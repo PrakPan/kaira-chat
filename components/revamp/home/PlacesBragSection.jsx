@@ -38,7 +38,7 @@ const PlacesBragSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-gray-100">
+    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full sm:max-w-7xl sm:mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
