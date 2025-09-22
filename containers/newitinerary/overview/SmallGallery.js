@@ -29,17 +29,22 @@ align-items: center
 `
 
 function SmallGallery(props) {
+    const [images,setImages]=useState([]);
     const isDesktop = useMediaQuery("(min-width:767px)");
+    console.log("max show is: ",props.images)
 
     const [renderImages, setRenderImages] = useState([]);
 
     useEffect(() => {
-        const newArr = props.images.slice(0, props.maxShow);
+        let nImages=props.images.slice(0, props.maxShow).filter((item)=>item!="");
+        setImages(nImages)
+        const newArr = nImages.slice(0, props.maxShow).filter((item)=>item!="");
+        console.log('new array is: ',newArr)
         setRenderImages(newArr);
     }, [])
     return (
         <Container className={`pr-[24px] ${isDesktop ? "border-l pl-[24px]" : ""} min-h-full`}>
-            {props.images && renderImages.map((item, index) => <>
+            {images && renderImages.map((item, index) => <>
                 <SingleImage style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px]'>
                     {/* <Image src={item} width={50} height={50} /> */}
                     <ImageLoader
@@ -50,7 +55,7 @@ function SmallGallery(props) {
                     ></ImageLoader>
                 </SingleImage>
             </>)}
-            {props?.images?.length > renderImages.length &&
+            {images?.length > renderImages.length &&
                 <div style={{ left: -(renderImages.length * 20) }} className='relative rounded-full border-white border-[3px]'>
                     <MoreImageOverlay  className='rounded-full'>
                         +{props?.images?.length - renderImages.length}
