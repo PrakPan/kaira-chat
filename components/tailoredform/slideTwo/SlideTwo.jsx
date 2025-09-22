@@ -377,7 +377,12 @@ export const Destination = (props) => {
                 />
             )}
 
-            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
+            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10"
+             onClick={(e) => {
+                e.stopPropagation();  
+               handleEditDestination(setPopUp)
+           }}
+            >
                 <div className="flex flex-row items-center gap-3">
                     {!(startingCity || endingCity) && (
                         <div className="text-gray-400 cursor-grab active:cursor-grabbing">

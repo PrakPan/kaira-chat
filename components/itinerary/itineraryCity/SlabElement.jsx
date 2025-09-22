@@ -392,12 +392,13 @@ const Activity = (props) => {
           </div>
           <div>
             <button
-              onClick={() =>
+              onClick={(e) => {
+                e.stopPropagation();
                 handleActivity(
                   props?.element,
                   props?.element?.poi != null ? "poi" : "activity"
                 )
-              }
+              }}
               className="ttw-btn-secondary">
               Details
             </button>
@@ -660,9 +661,10 @@ const Recommendation = (props) => {
           </div>
           <div>
             <button
-              onClick={() =>
+              onClick={(e) => {   
+                e.stopPropagation();
                 handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
-              }
+              }}
               className="ttw-btn-secondary"
             >
               Details

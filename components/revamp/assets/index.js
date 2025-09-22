@@ -5,10 +5,11 @@ import image3 from "./3.png";
 import image4 from "./4.png";
 import Japan from "./japan.png";
 import backgroundImage from "./bg.png";
+import cta from "./cta.png";
 import TTW from "./ttw.svg";
 
 // Named exports for individual imports
-export { backgroundImage, image1, image2, image3, image4, TTW, Japan };
+export { backgroundImage, image1, image2, image3, image4, TTW, Japan, cta };
 
 // Alternative descriptive names
 export {
@@ -30,4 +31,5 @@ export default {
   image4,
   backgroundImage,
   heroImages,
+  cta,
 };

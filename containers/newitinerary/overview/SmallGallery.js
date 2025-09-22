@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components';
 import ImageLoader from "../../../components/ImageLoader";
+import useMediaQuery from '../../../components/media';
 
 const Container = styled.div`
   display: flex;
@@ -28,7 +29,8 @@ align-items: center
 `
 
 function SmallGallery(props) {
-    console.log(props, ": small gal");
+    const isDesktop = useMediaQuery("(min-width:767px)");
+
     const [renderImages, setRenderImages] = useState([]);
 
     useEffect(() => {
@@ -36,7 +38,7 @@ function SmallGallery(props) {
         setRenderImages(newArr);
     }, [])
     return (
-        <Container className="pr-[24px] pl-[24px] border-l  min-h-full">
+        <Container className={`pr-[24px] ${isDesktop ? "border-l pl-[24px]" : ""} min-h-full`}>
             {props.images && renderImages.map((item, index) => <>
                 <SingleImage style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px]'>
                     {/* <Image src={item} width={50} height={50} /> */}

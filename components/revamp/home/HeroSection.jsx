@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState, useCallback } from "react";
 import { heroImages } from "../assets";
 import {
   ANIMATION_CONFIG,
@@ -17,10 +17,23 @@ const HeroSection = ({ title, subtitle }) => {
   const imageRefs = useRef([]);
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
+  const [loadedImages, setLoadedImages] = useState(0);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
-  // GSAP animation using useGSAP hook
+  // Track image loading
+  const handleImageLoad = useCallback(() => {
+    setLoadedImages((prev) => prev + 1);
+  }, []);
+
+  // Check if all images are loaded
+  const allImagesLoaded = loadedImages >= heroImages.length;
+
+  // GSAP animation using useGSAP hook - only start when all images are loaded
   useGSAP(
     () => {
+      // Only start animation if all images are loaded and animation hasn't started yet
+      if (!allImagesLoaded || animationStarted) return;
+
       // Set initial state - images are below viewport and invisible
       gsap.set(imageRefs.current, {
         ...ANIMATION_CONFIG.initialStates.fromBottom,
@@ -38,8 +51,11 @@ const HeroSection = ({ title, subtitle }) => {
 
       // Make the floating animation repeat infinitely
       tl.repeat(-1);
+
+      // Mark animation as started
+      setAnimationStarted(true);
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [allImagesLoaded, animationStarted] }
   );
 
   return (
@@ -52,7 +68,12 @@ const HeroSection = ({ title, subtitle }) => {
             ref={(el) => (imageRefs.current[index] = el)}
             className={styles.foregroundImage}
           >
-            <Image src={image} alt={`Hero Image ${index + 1}`} />
+            <Image
+              src={image}
+              alt={`Hero Image ${index + 1}`}
+              onLoad={handleImageLoad}
+              priority={index < 2} // Prioritize loading first 2 images
+            />
           </div>
         ))}
       </div>

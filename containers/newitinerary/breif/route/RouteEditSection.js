@@ -49,6 +49,8 @@ import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
 import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
+import Button from "../../../../components/ui/button/Index"
+import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
 
 const Container = styled.div`
   position: relative;
