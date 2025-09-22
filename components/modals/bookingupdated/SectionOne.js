@@ -60,7 +60,7 @@ const Section = (props) => {
               className="w-full rounded-md-lg border-sm border-text-disabled py-xs pl-2xl pr-sm font-400 text-sm-md leading-lg-md focus:outline-none focus:ring-0 focus:border-sm focus:border-blue-500 focus:border-primary-indigo"
             ></input>
           </div>
-          <button onClick={() => props?.setShowFilters(true)} className="ttw-btn-secondary-fill">{svgIcons.filter} Filter</button>
+          <button onClick={() => props?.setShowFilters(true)} className="ttw-btn-secondary-fill">{svgIcons.filter} <span className="max-ph:hidden">Filter</span></button>
         </div>
       </div>
     </div>
