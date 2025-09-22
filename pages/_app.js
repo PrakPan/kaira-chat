@@ -52,7 +52,7 @@ function MyApp({ Component, pageProps, store }) {
     };
     
     const handleComplete = (url) => {
-      setCurrentPath(url);
+      setCurrentPath(newPath);
       setLoading(false);
     };
 
