@@ -264,6 +264,23 @@ a.termsnavunderlinelink {
     font-size: 14px;
 }
 
+.ttw-sort-button{
+     white-space: nowrap;
+    border: 1px solid var(--color-pure-black);
+    padding: 5px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    width: fit-content;
+    border-radius: var(--border-radius-md);
+    font-family: var(--font-family-montserrat);
+    font-size: 14px; 
+}
+
+
+.ttw-sort-button:hover{
+    background-color: var(--color-light-background);
+}
+
 
 .ttw-btn-secondary-flat {
     white-space: nowrap;

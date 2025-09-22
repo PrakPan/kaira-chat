@@ -10,7 +10,7 @@ import BottomModal from "../../../ui/LowerModal";
 
 const Pax = (props) => {
   const containerRef = useRef(null);
-  const [isRoomExpanded, setIsRoomExpanded] = useState(false);
+  const [isRoomExpanded, setIsRoomExpanded] = useState(props?.isOpenModal);
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [travelers, setTravelers] = useState(
     props?.numberOfAdults || 1 + props?.numberOfChildren || 0
@@ -34,6 +34,12 @@ const Pax = (props) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (props?.isOpenModal && props?.hideOpenModel && !isRoomExpanded) {
+      props?.hideOpenModel();
+    }
+  }, [isRoomExpanded])
 
   useEffect(() => {
     let totalAdults = 0;
@@ -85,9 +91,10 @@ const Pax = (props) => {
   return (
     <div
       ref={containerRef}
-      className="relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]"    >
-      <div
-        className="flex flex-col   rounded-lg cursor-pointer w-full"
+      className={`${!props?.isOpenModal ? 'relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]' : 'relative'}`}    >
+
+      {!props?.isOpenModal && <div
+        className="flex flex-col rounded-lg cursor-pointer w-full"
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
       >
         <span className="mr-2 text-gray-700">
@@ -95,7 +102,8 @@ const Pax = (props) => {
           {rooms.length > 1 ? "s" : ""}
         </span>
       </div>
-      {isDesktop?<ModalWithBackdrop
+      }
+      {isDesktop ? <ModalWithBackdrop
         centered
         show={isRoomExpanded}
         mobileWidth="100%"
@@ -147,14 +155,14 @@ const Pax = (props) => {
 
         </>
       </ModalWithBackdrop>
-      :
-      <BottomModal
-        show={isRoomExpanded == true}
-        onHide={() => setIsRoomExpanded(false)}
-        width="100%"
-        height="max-content"
-      >
-        <div className="w-[100%] p-[20px]">
+        :
+        <BottomModal
+          show={isRoomExpanded == true}
+          onHide={() => setIsRoomExpanded(false)}
+          width="100%"
+          height="max-content"
+        >
+          <div className="w-[100%] p-[20px]">
             <div className="">
               <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
                 <div className="Heading2SB">Room Configuration</div>
@@ -190,8 +198,8 @@ const Pax = (props) => {
               </div>
             </div>
           </div>
-      </BottomModal>
-}
+        </BottomModal>
+      }
     </div>
   );
 };
@@ -245,7 +253,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         )}
       </div>
 
-      <PassengerRow  className="!w-[100%]">
+      <PassengerRow className="!w-[100%]">
         <PassengerLabel>
           <div className="title">Adults</div>
           <div className="subtitle">Ages 13 or above</div>
@@ -257,7 +265,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         </CounterBox>
       </PassengerRow>
 
-      <PassengerRow  className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+      <PassengerRow className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
           <PassengerLabel>
             <div className="title">Children</div>

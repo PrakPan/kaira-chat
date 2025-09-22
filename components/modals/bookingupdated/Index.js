@@ -82,10 +82,8 @@ const SortContainer = styled.div`
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background: white;
   border-radius: 0.5rem;
-  left: 0;
-  width: max-content;
+  right: 0;
   padding: 0.5rem;
-  width:100%
 `;
 
 const SortItem = styled.div`
@@ -162,7 +160,7 @@ const Booking = (props) => {
     tags: [],
   });
   const [cloneFilters, setCloneFilter] = useState({});
-  const [SelectedSort, setSelectedSort] = useState(filtersObj.sort[0]);
+  const [SelectedSort, setSelectedSort] = useState("select");
   const [sortShow, setSortShow] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -801,30 +799,14 @@ const Booking = (props) => {
                   <div>
                     <div className="text-sm font-normal w-[95%] md:w-fit">
                       <div
-                        className="ttw-btn-secondary inline relative cursor-pointer"
+                        className="ttw-sort-button whitespace-nowrap relative cursor-pointer"
                         onClick={() => {
                           setSortShow(!sortShow);
                         }}
                       >
-                        <b>
+                        <img className="inline mr-xs" src="/assets/stays/sort-icon.svg" />
+                         <b className="inline max-ph:hidden">
                           {SelectedSort}
-                          {sortShow ? (
-                            <FiChevronUp
-                              style={{
-                                display: "inline",
-                                fontWeight: 900,
-                                fontSize: "1.2rem",
-                              }}
-                            />
-                          ) : (
-                            <FiChevronDown
-                              style={{
-                                display: "inline",
-                                fontWeight: 900,
-                                fontSize: "1.2rem",
-                              }}
-                            />
-                          )}
                         </b>
                         {sortShow ? (
                           <SortContainer>
