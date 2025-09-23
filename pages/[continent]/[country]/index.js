@@ -20,15 +20,9 @@ const TravelPlanner = (props) => {
   }, []);
 
   return (
-    <Layout
-      destination={props?.Data?.name}
-      id={props?.Data?.id}
-      page={"Country Page"}
-    >
-      <Head>
-        <title>
-          {props?.Data?.name} | Trip Planner & Itinerary | The Tarzan Way
-        </title>
+    <>
+     <Head>
+     <title>{props.pageTitle}</title>
         <meta
           name="description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
@@ -54,6 +48,11 @@ const TravelPlanner = (props) => {
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
       </Head>
+    <Layout
+      destination={props?.Data?.name}
+      id={props?.Data?.id}
+      page={"Country Page"}
+    >
 
       {props.pageData && props.Data?.page_data?.slug != "india" ? (
           <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
@@ -67,6 +66,7 @@ const TravelPlanner = (props) => {
         type={props?.Type}
       ></CountryPage>)}
     </Layout>
+    </>
   );
 };
 
@@ -119,15 +119,14 @@ export async function getStaticProps(context) {
   let Type = "Country";
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
-  let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
+  let pageId = PagesToIdMapping[path] !== undefined ? PagesToIdMapping[path] : "";
 
   let isThemePage = false;
+  let pageTitle = `${country.charAt(0).toUpperCase() + country.slice(1)} | Trip Planner & Itinerary | The Tarzan Way`;
 
   try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
-    );
+    // Fetch country data
+    const res = await axios.get(`${MERCURY_HOST}/api/v1/geos/country/${pageId}`);
     data = res.data.data.country;
     if (data?.page_data && Object.keys(data?.page_data).length > 0) {
       isThemePage = true;
@@ -140,13 +139,13 @@ export async function getStaticProps(context) {
       };
     }
 
-    //mercury api
+    // Fetch continent data
     const continentData = await axiospagelistinstance.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
     for (let i = 0; i < continentData.data.data.pages.length; i++) {
-      let continentSlug=continentData.data.data.pages[i].slug
-      
+      let continentSlug = continentData.data.data.pages[i].slug;
+
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${continentSlug}`
       );
@@ -166,7 +165,7 @@ export async function getStaticProps(context) {
   }
 
   try {
-    //dev api
+    // Fetch hot location search data
     const response = await axioslocationsinstance.get(
       `hot_destinations/?country=${country}/`
     );
@@ -189,6 +188,7 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path],
       Type,
       pageData: isThemePage,
+      pageTitle, // Add pageTitle to props
     },
   };
 }
