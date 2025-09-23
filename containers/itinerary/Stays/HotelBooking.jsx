@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import { connect, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -77,6 +78,22 @@ const HotelBooking = ({
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   
+
+  const { trackHotelCardClicked, trackBulk, getState } = useAnalytics();
+
+  const handleMultipleActions = (hotel) => {
+    // Bulk tracking example
+    trackBulk([
+      { eventName: 'hotel_card_clicked', properties: { hotel_id: hotel.id } },
+      { eventName: 'hotel_card_details', properties: { hotel_id: hotel.id } },
+      { eventName: 'section_viewed', properties: { section_id: 'hotels' } }
+    ]);
+  };
+
+  const checkStatus = () => {
+    const state = getState();
+    console.log('Analytics State:', state);
+  };
 
   const {
     drawer = null,
@@ -674,7 +691,7 @@ const HotelBooking = ({
                       borderRadius="8px"
                       hoverColor="white"
                       fontWeight="400"
-                      onclick={() => handleViewDetails(booking.name)}
+                      onclick={() => {handleViewDetails(booking.name); checkStatus(); handleMultipleActions(booking)}}
                     >
                       View Detail
                     </Button>
