@@ -248,7 +248,6 @@ export const EditInput = connect(
 
 
     const handleCountry = ({ data }) => {
-      console.log("data is:",data)
       const RequestData = {
         name: userData.name,
         whatsapp_opt_in: userData.whatsapp_opt_in,
@@ -269,11 +268,6 @@ export const EditInput = connect(
         .catch((err) => {
           setLoading(false);
           closeEdit(false);
-          if (err?.response?.data?.name) {
-            console.log(err.response.data.name[0]);
-          } else {
-            console.log(err?.response?.data);
-          }
         });
     };
 
@@ -321,11 +315,9 @@ export const EditInput = connect(
         .catch((err) => {
           setLoading(false);
           if (err.response.data.phone) {
-            console.log(err?.response?.data?.phone[0]);
             setError(err?.response?.data?.phone[0]);
           } else {
             closeEdit(false);
-            console.log(err?.response?.data);
           }
         });
     };

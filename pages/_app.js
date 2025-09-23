@@ -36,7 +36,6 @@ function MyApp({ Component, pageProps, store }) {
 
   function setupTokenExpiryWatcher() {
     const expiry = localStorage.getItem('expirationDate');
-    console.log("expiry is:",expiry)
     if (!expiry) return;
   
     const timeLeft = new Date(expiry).getTime()- Date.now();
@@ -181,7 +180,7 @@ function MyApp({ Component, pageProps, store }) {
           src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
           strategy="afterInteractive"
           onLoad={() => {
-            console.log("CRMOne bot script loaded");
+            
             restartBot(); // Start bot once script is ready
           }}
         />

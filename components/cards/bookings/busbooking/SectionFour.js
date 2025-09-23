@@ -24,7 +24,7 @@ const Section = (props) => {
           borderColor="rgba(222, 222, 222, 1)"
           borderWidth="1px"
           onclickparam={null}
-          onclick={() => console.log("test")}
+          onclick={() => {}}
         >
           Change
         </Button>

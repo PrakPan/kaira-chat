@@ -16,7 +16,6 @@ import ThemePage from "../../../../containers/travelplanner/ThemePage"
 
 const TravelPlanner = (props) => {
   useEffect(() => {
-    console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
@@ -157,7 +156,6 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
-console.log('path is: ',path)
   let data = null;
   let locations = [];
   let hotLocationSearch = [];
@@ -171,7 +169,6 @@ console.log('path is: ',path)
     .then((res) => {
      const stateData = res.data.data.state;
      data = stateData;
-     console.log('path is: ',data)
     if (stateData?.page_data && Object.keys(stateData?.page_data).length > 0) {
       isThemePage = true;
     }

@@ -306,6 +306,12 @@ const LogIn = React.memo((props) => {
   };
 
   const verifyRecaptchaHandler = () => {
+
+    if (!props.otpSent) {
+    props.onStartLoading();
+  } else {
+    props.onStartLoading();
+  }
     const recaptchaValue = recaptchaRef.current.getValue();
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
@@ -758,6 +764,7 @@ const mapDispatchToProps = (dispatch) => {
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),
+    onStartLoading: () => dispatch(authaction.authStartLoading()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
     onUpdate: (response) => dispatch(authaction.changeUserDetails(response)),

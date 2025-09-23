@@ -76,7 +76,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
         payload: updatedData,
       });
     }catch(err){
-      console.log("Redux DBD",err.message);
+      
     }
     } else {
       console.error(`Key path ${keyPath} not found in intercity bookings`);

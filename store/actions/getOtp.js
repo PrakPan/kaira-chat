@@ -51,7 +51,7 @@ export const getotp = (data) => {
       });
   }
   return (dispatch) => {
-    dispatch(authStartLoading()); //Show spinner
+    // dispatch(authStartLoading()); //Show spinner
     axiosauthinstance
       .post("/initiate/", authData)
       .then((response) => {

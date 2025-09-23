@@ -12,7 +12,6 @@ import axios from "axios";
 import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 import ThemePage from "../../../../../containers/travelplanner/ThemePage";
 const Experience = (props) => {
-  console.log("experience props are:",props)
   const router = useRouter();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI

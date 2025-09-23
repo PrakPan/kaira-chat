@@ -68,7 +68,6 @@ const DateRow = styled.div`
 };
 
 const Details = (props) => {
-  console.log("profil",props?.itinerary)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
   const dispatch = useDispatch();
@@ -94,7 +93,7 @@ const Details = (props) => {
   }
 
     const fetchItineraryStatus = async (itineraryId = router.query.id) => {
-      console.log("I'm inside Details")
+
         try {
           const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
           const status = res.data?.celery;
