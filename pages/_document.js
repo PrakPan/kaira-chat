@@ -31,6 +31,7 @@ export default class MyDocument extends Document {
     return (
       <Html id="html" lang="en">
         <Head>
+        <title>The Tarzan Way</title>
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (

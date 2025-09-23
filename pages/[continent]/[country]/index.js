@@ -1,32 +1,26 @@
 import Head from "next/head";
-import { connect } from "react-redux";
-import { useEffect } from "react";
 import Layout from "../../../components/Layout";
-import CountryPage from "../../../containers/country/Index";
+import CountryPageWrapper from "../../../components/country/CountryPageWrapper";
 import axioscountrydetailsinstance, {
   getCountryPaths,
 } from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
-import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
-import ThemePage from "../../../containers/travelplanner/ThemePage";
 
 const TravelPlanner = (props) => {
-  useEffect(() => {
-    props.setHotLocationSearch(props.hotLocationSearch);
-  }, []);
+  const pageTitle = props.pageTitle || `${props?.Data?.name || 'Travel'} | Trip Planner & Itinerary | The Tarzan Way`;
 
   return (
     <>
-     <Head>
-     <title>{props.pageTitle}</title>
+      <Head>
+        <title>{pageTitle}</title>
         <meta
           name="description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
-        ></meta>
+        />
         <meta
           property="og:title"
           content={
@@ -41,31 +35,27 @@ const TravelPlanner = (props) => {
         <meta
           property="keywords"
           content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
-        ></meta>
-
+        />
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
-        ></link>
+        />
       </Head>
-    <Layout
-      destination={props?.Data?.name}
-      id={props?.Data?.id}
-      page={"Country Page"}
-    >
-
-      {props.pageData && props.Data?.page_data?.slug != "india" ? (
-          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
-        ) : (
-
-      <CountryPage
-        continetCarousel={props?.continetCarousel}
-        data={props?.Data}
-        locations={props?.locations}
-        page_id={props.page_id || ""}
-        type={props?.Type}
-      ></CountryPage>)}
-    </Layout>
+      <Layout
+        destination={props?.Data?.name}
+        id={props?.Data?.id}
+        page={"Country Page"}
+      >
+        <CountryPageWrapper
+          continetCarousel={props?.continetCarousel}
+          data={props?.Data}
+          locations={props?.locations}
+          page_id={props.page_id || ""}
+          type={props?.Type}
+          pageData={props.pageData}
+          hotLocationSearch={props.hotLocationSearch}
+        />
+      </Layout>
     </>
   );
 };
@@ -92,24 +82,11 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  // return {
-  //   paths:paths,
-  //   fallback:false
-  // }
   return {
-    paths: [
-      {
-        params: {
-          continent: "europe",
-          country: "portugal",
-        },
-      },
-    ],
-    fallback: false,
+    paths: paths,
+    fallback: false
   };
-  
 }
-
 
 export async function getStaticProps(context) {
   let data = null;
@@ -128,6 +105,12 @@ export async function getStaticProps(context) {
     // Fetch country data
     const res = await axios.get(`${MERCURY_HOST}/api/v1/geos/country/${pageId}`);
     data = res.data.data.country;
+    
+    // Update pageTitle with actual country name if available
+    if (data?.name) {
+      pageTitle = `${data.name} | Trip Planner & Itinerary | The Tarzan Way`;
+    }
+    
     if (data?.page_data && Object.keys(data?.page_data).length > 0) {
       isThemePage = true;
     }
@@ -188,15 +171,9 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path],
       Type,
       pageData: isThemePage,
-      pageTitle, // Add pageTitle to props
+      pageTitle,
     },
   };
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
-  };
-};
-
-export default connect(null, mapDispatchToProps)(TravelPlanner);
+export default TravelPlanner;
