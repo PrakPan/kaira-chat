@@ -89,7 +89,7 @@ const FullImgContent = (props) => {
   };
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <PaddingContianer className="flex flex-col items-start z-10">
         <div className="flex flex-col items-start">
           <H1

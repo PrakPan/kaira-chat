@@ -145,7 +145,7 @@ const TaxiDetailModal = ({
             )}
           </h1>
           {!isEmbedded && !noChange && (
-            <div className="font-lexend flex justify-between items-start !m-0">
+            <div className=" flex justify-between items-start !m-0">
               {loading ? (
                 <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
               ) : (

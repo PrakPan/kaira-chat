@@ -50,10 +50,10 @@ const Result = (props) => {
         href={"/" + props.path}
         style={{ textDecoration: "none", color: "black" }}
       >
-        <ResultTitle className="font-lexend">{props.title}</ResultTitle>
+        <ResultTitle className="">{props.title}</ResultTitle>
         <p
           style={{ opacity: "0.5", fontSize: "0.75rem", margin: "0" }}
-          className="font-lexend"
+          className=""
         >
           {props.type.toUpperCase()}
         </p>

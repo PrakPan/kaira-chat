@@ -526,7 +526,7 @@ const Booking = (props) => {
                 </OptionsContainer>
               ) : null}
               {noResults ? (
-                <p className="font-lexend text-center">
+                <p className=" text-center">
                   Oops, we couldn't find what you were searching but we are
                   already adding new and approved accommodation to our database
                   everyday!

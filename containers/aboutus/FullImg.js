@@ -63,7 +63,7 @@ const FullImg = () => {
     <div className={classes.Container}>
       <div className={classes.BackgroundImg}></div>
       <TextContainer>
-        <Heading className="font-lexend">About Us</Heading>
+        <Heading className="">About Us</Heading>
         <Text className="font-nunito">
           What started as a way to do something during college turned into a
           venture to revolutionize the travel industry by becoming a travel

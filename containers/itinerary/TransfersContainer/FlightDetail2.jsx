@@ -208,7 +208,7 @@ const Details = ({
       ) : (
         <>
           {onChange && (
-            <div className="font-lexend flex justify-between items-start !m-0">
+            <div className=" flex justify-between items-start !m-0">
               <Text>{name}</Text>
               <Generalbuttonstyle
                 borderRadius={"7px"}

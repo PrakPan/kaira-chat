@@ -21,7 +21,7 @@ const FullImgContent = (props) => {
     },
   ];
   return (
-    <div className="font-lexend">
+    <div className="">
       <Flickity data={data}></Flickity>
     </div>
   );

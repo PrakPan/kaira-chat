@@ -22,7 +22,7 @@ const MobileBar = (props) => {
 
   return (
     <Container className="center-div" onClick={props.setPannelOpen}>
-      <SearchText className="font-lexend">
+      <SearchText className="">
         {isPageLoaded ? (
           <FontAwesomeIcon
             icon={faSearch}

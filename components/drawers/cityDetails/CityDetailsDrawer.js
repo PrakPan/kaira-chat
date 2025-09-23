@@ -66,7 +66,7 @@ const CityDetailsDrawer = (props) => {
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={() => {
         router.push(
           {

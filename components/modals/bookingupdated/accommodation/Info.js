@@ -55,7 +55,7 @@ const Accommodation = (props) => {
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}
       >
-        <Name className="font-lexend">
+        <Name className="">
           {props.name}
           <BsInfoCircle style={{ marginLeft: "0.25rem" }}></BsInfoCircle>
         </Name>
@@ -78,7 +78,7 @@ const Accommodation = (props) => {
             fontSize: "0.75rem",
             margin: "0 0 0.25rem 0",
           }}
-          className="font-lexend"
+          className=""
         >
           <span>
             {props.number_of_rooms ? props.number_of_rooms + " x " : "1 x "}
@@ -92,7 +92,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Breakfast Included
           </p>
@@ -104,7 +104,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Room Only
           </p>
@@ -116,7 +116,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Breakfast and Lunch / Dinner Included
           </p>
@@ -128,7 +128,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Breakfast , Lunch and Dinner Included
           </p>
@@ -143,7 +143,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Room Only
           </p>
@@ -155,7 +155,7 @@ const Accommodation = (props) => {
         ></FontAwesomeIcon>
       </div>
       <RightBottomContainer>
-        <Cost className="font-lexend">
+        <Cost className="">
           {props.cost - props.selectedBooking.cost > 0 ? (
             <FaArrowUp
               style={{

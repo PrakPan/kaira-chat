@@ -269,12 +269,12 @@ const POIDetails = (props) => {
         <Container itineraryDrawer={props.itineraryDrawer}>
           {!props.itineraryDrawer ? (
             <div>
-              <BackContainer className="flex justify-between font-lexend">
+              <BackContainer className="flex justify-between ">
                 <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
               </BackContainer>
             </div>
           ) : (
-            <BackContainer className="flex justify-between font-lexend">
+            <BackContainer className="flex justify-between ">
               <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
             </BackContainer>
           )}
@@ -842,7 +842,7 @@ const POIDetails = (props) => {
             backdrop
             width={"50%"}
             mobileWidth={"100%"}
-            className="font-lexend"
+            className=""
             style={{ zIndex: 1505 }}
             onHide={() => setShowDrawer(false)}
           >

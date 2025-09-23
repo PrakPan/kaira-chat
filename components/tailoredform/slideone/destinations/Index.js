@@ -162,7 +162,7 @@ const Destinations = (props) => {
         {!selectedCities?.some((e) => !e.name) && (
           <p
             onClick={_addDestinationHandler}
-            className="text-center font-lexend hover-pointer"
+            className="text-center  hover-pointer"
             style={{ color: "#1360D3", margin: "0.5rem", fontSize: "0.85rem" }}
           >
             + Add Destination

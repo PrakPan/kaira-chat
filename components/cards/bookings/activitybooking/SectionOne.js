@@ -51,9 +51,9 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div>
-          <Name className="font-lexend">{props.data.name}</Name>
+          <Name className="">{props.data.name}</Name>
           <div
             style={{ display: "grid", gridTemplateColumns: "max-content auto" }}
           >
@@ -71,7 +71,7 @@ const Section = (props) => {
                 marginLeft: "0.25rem",
               }}
             >
-              <Subtext className="font-lexend">{props.data.city}</Subtext>
+              <Subtext className="">{props.data.city}</Subtext>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ const Section = (props) => {
           {props.data ? (
             props.data.user_rating && color !== "red" ? (
               <RatingContainer
-                className="font-lexend "
+                className=" "
                 style={{ backgroundColor: color, lineHeight: "1" }}
               >
                 <IoStarSharp

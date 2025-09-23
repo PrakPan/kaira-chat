@@ -62,11 +62,11 @@ const SearchFullImg = (props) => {
           {props.text}
         </SubText>
       ) : (
-        <Tagline className="font-lexend">{props.tagline}</Tagline>
+        <Tagline className="">{props.tagline}</Tagline>
       )}
 
       {props.city ? (
-        <Tagline style={{ margin: "0" }} className="font-lexend">
+        <Tagline style={{ margin: "0" }} className="">
           {props.tagline}
         </Tagline>
       ) : (

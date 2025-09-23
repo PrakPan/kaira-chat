@@ -186,7 +186,7 @@ const SearchField = (props) => {
         ></SelectedCitiesContainer>
       ) : null}
 
-      <TopLocations className="font-lexend text-center">
+      <TopLocations className=" text-center">
         {!results.length
           ? "Top destinations for you"
           : "Destinations around " + "'" + value + "'"}

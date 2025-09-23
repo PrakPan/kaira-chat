@@ -52,7 +52,7 @@ const TravellerCounter = (props) => {
   }, []);
 
   return (
-    <div className="font-lexend center-div text-center">
+    <div className=" center-div text-center">
       <Container>
         <LeafContainer>
           <ImageLoader

@@ -28,7 +28,7 @@ const FoodToEat = (props) => {
         dimensions={{ width: 900, height: 900 }}
         dimensionsMobile={{ width: 900, height: 900 }}
       ></ImageLoader>
-      <IconTagLine className="font-lexend">{icon.name}</IconTagLine>
+      <IconTagLine className="">{icon.name}</IconTagLine>
     </IconContainer>
   ));
 

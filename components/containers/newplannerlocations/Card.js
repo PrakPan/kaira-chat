@@ -75,8 +75,8 @@ const Experiences = (props) => {
           </div>
         ) : (
           <>
-            <Name className="font-lexend">{props.location}</Name>
-            <Subtext className="font-lexend truncate">
+            <Name className="">{props.location}</Name>
+            <Subtext className=" truncate">
               {filters_to_show
                 ? filters_to_show
                 : props.heading

@@ -613,7 +613,7 @@ const TransferEditDrawer = (props) => {
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend pb-0 md:pb-[100px]"
+      className=" pb-0 md:pb-[100px]"
       width={"50vw"}
       mobileWidth={"100vw"}
       onHide={() => {

@@ -44,13 +44,13 @@ const RegistrationModal = (props) => {
 
           <p
             style={{ fontWeight: "800", margin: "0", fontSize: "19px" }}
-            className="font-lexend"
+            className=""
           >
             Terms & Conditions
           </p>
         </Modal.Header>
 
-        <Body className="font-lexend">
+        <Body className="">
           <ol>
             <li>
               All amounts are payable to "TARZAN WAY TRAVELS PVT LTD". PAN

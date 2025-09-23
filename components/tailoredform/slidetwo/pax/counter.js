@@ -118,11 +118,11 @@ const Counter = (props) => {
       <div style={{ padding: "0.5rem" }}>
         <p
           style={{ margin: "0rem 0", fontSize: "0.85rem" }}
-          className="font-lexend text-center"
+          className=" text-center"
         >
           {props.heading}
         </p>
-        <Age className="font-lexend text-center">{props.age}</Age>
+        <Age className=" text-center">{props.age}</Age>
       </div>
 
       <div

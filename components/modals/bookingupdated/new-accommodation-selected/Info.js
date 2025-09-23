@@ -81,7 +81,7 @@ const Accommodation = (props) => {
     <Container className="">
       <div style={{ display: "flex", alignItems: "center" }}>
         <Name
-          className="font-lexend hover-pointer"
+          className=" hover-pointer"
           onClick={props.setShowDetails}
         >
           {props.selectedBooking ? props.selectedBooking.name : null}
@@ -115,7 +115,7 @@ const Accommodation = (props) => {
                       fontSize: "0.75rem",
                       margin: "0 0 0 0",
                     }}
-                    className="font-lexend"
+                    className=""
                   >
                     Check In
                   </p>
@@ -125,7 +125,7 @@ const Accommodation = (props) => {
                       fontSize: "0.75rem",
                       margin: "0 0 0 0",
                     }}
-                    className="font-lexend"
+                    className=""
                   >
                     {getDate(props.selectedBooking.check_in)}
                   </p>
@@ -139,7 +139,7 @@ const Accommodation = (props) => {
                       fontSize: "0.75rem",
                       margin: "0 0 0 0",
                     }}
-                    className="font-lexend"
+                    className=""
                   >
                     Check Out
                   </p>
@@ -149,7 +149,7 @@ const Accommodation = (props) => {
                       fontSize: "0.75rem",
                       margin: "0 0 0 0",
                     }}
-                    className="font-lexend"
+                    className=""
                   >
                     {getDate(props.selectedBooking.check_out)}
                   </p>
@@ -191,7 +191,7 @@ const Accommodation = (props) => {
                           fontSize: "0.75rem",
                           margin: "0 0 0 0",
                         }}
-                        className="font-lexend"
+                        className=""
                       >
                         {room.number_of_rooms + " x "}
                       </p>
@@ -201,7 +201,7 @@ const Accommodation = (props) => {
                           fontSize: "0.75rem",
                           margin: "0 0 0 0.25rem",
                         }}
-                        className="font-lexend"
+                        className=""
                       >
                         {room.room_type_name}
                       </p>
@@ -214,7 +214,7 @@ const Accommodation = (props) => {
         <div style={{ display: "flex", alignItems: "center" }}>
           {props.rating && color !== "red" ? (
             <RatingContainer
-              className="font-lexend hidden-mobile"
+              className=" hidden-mobile"
               style={{ backgroundColor: color, lineHeight: "1" }}
             >
               <IoStarSharp
@@ -233,7 +233,7 @@ const Accommodation = (props) => {
       </DesktopGridContainer>
       {props.rating && color !== "red" ? (
         <RatingContainer
-          className="font-lexend hidden-desktop"
+          className=" hidden-desktop"
           style={{ backgroundColor: color, lineHeight: "1" }}
         >
           <IoStarSharp

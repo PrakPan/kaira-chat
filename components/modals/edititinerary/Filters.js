@@ -64,7 +64,7 @@ const Filters = (props) => {
       <Typography
         id="continuous-slider"
         gutterBottom
-        className="font-lexend"
+        className=""
         style={{ fontSize: "1rem", fontWeight: "600" }}
       >
         COST
@@ -84,7 +84,7 @@ const Filters = (props) => {
         <Typography
           id="continuous-slider"
           gutterBottom
-          className="font-lexend"
+          className=""
           style={{ fontSize: "1rem", fontWeight: "600" }}
         >
           EXPERIENCE FILTERS
@@ -150,7 +150,7 @@ const Filters = (props) => {
         <Typography
           id="continuous-slider"
           gutterBottom
-          className="font-lexend"
+          className=""
           style={{ fontSize: "1rem", fontWeight: "600" }}
         >
           GROUP TYPE

@@ -133,7 +133,7 @@ const Banner = (props) => {
         <div style={{ display: "flex" }}>
           <MenuButton handleClick={handleMenuClick}></MenuButton>
           <NavigationHeading
-            className="font-lexend"
+            className=""
             onClick={() => handleMenuClick()}
           >
             {heading}

@@ -617,7 +617,7 @@ const HotelBookingDetails = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 Photos Gallery
               </PhotosButton>
@@ -860,7 +860,7 @@ const HotelBookingDetails = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 Photos Gallery
               </PhotosButton>

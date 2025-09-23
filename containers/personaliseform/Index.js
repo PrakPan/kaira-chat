@@ -473,11 +473,11 @@ const Personaliseform = (props) => {
       ) : null}
 
       {questionIndex ? (
-        <Question className="font-lexend">
+        <Question className="">
           {Questions.questions[questionIndex]}
         </Question>
       ) : isPageWide ? (
-        <Question className="font-lexend">
+        <Question className="">
           {Questions.questions[questionIndex]}
         </Question>
       ) : null}

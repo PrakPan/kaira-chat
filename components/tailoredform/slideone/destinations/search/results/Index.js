@@ -85,7 +85,7 @@ const SearchResults = (props) => {
       tailoredFormModal={props.tailoredFormModal}
     >
       {/* {props.hotLocations && props?.results?.length ? (
-        <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
+        <Heading className="">POPULAR DESTINATIONS</Heading>
       ) : null} */}
       {props?.results?.length ? (
         props?.results?.map((result, i) => {

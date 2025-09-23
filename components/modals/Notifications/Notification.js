@@ -51,7 +51,7 @@ const Notification = (props) => {
   return (
     <Container className="border-thi">
       <NotificationClickContainer onClick={_handleRedirect}>
-        <Heading className="font-lexend">
+        <Heading className="">
           Woohoo! Your package has arrived 🎉
         </Heading>
         <Text className="font-nunito">

@@ -53,10 +53,10 @@ const HowItWorksSlideshow = (props) => {
         />
       </ImageContainer>
       <div className="center-div">
-        <HowItWorksHeading className="font-lexend">
+        <HowItWorksHeading className="">
           {travelsupportcontent.howitworks[0].heading}
         </HowItWorksHeading>
-        <HowItWorksText className="font-lexend">
+        <HowItWorksText className="">
           {travelsupportcontent.howitworks[0].text}
         </HowItWorksText>
       </div>
@@ -71,10 +71,10 @@ const HowItWorksSlideshow = (props) => {
         />
       </ImageContainer>
       <div className="center-div">
-        <HowItWorksHeading className="font-lexend">
+        <HowItWorksHeading className="">
           {travelsupportcontent.howitworks[1].heading}
         </HowItWorksHeading>
-        <HowItWorksText className="font-lexend">
+        <HowItWorksText className="">
           {travelsupportcontent.howitworks[1].text}
         </HowItWorksText>
       </div>
@@ -89,10 +89,10 @@ const HowItWorksSlideshow = (props) => {
         />
       </ImageContainer>
       <div className="center-div">
-        <HowItWorksHeading className="font-lexend">
+        <HowItWorksHeading className="">
           {travelsupportcontent.howitworks[2].heading}
         </HowItWorksHeading>
-        <HowItWorksText className="font-lexend">
+        <HowItWorksText className="">
           {travelsupportcontent.howitworks[2].text}
         </HowItWorksText>
       </div>

@@ -71,7 +71,7 @@ const Timer = (props) => {
       >
         <TimeRemaining
           style={{ fontSize: hideTimer ? "1rem" : "1.5rem" }}
-          className="font-lexend"
+          className=""
         >
           Time Remaining
         </TimeRemaining>
@@ -135,7 +135,7 @@ const Timer = (props) => {
         >
           <TimeRemaining
             style={{ fontSize: hideTimer ? "1rem" : "1.5rem" }}
-            className="font-lexend"
+            className=""
           >
             Time Remaining
           </TimeRemaining>

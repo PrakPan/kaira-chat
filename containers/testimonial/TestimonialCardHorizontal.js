@@ -34,7 +34,7 @@ const HorizontalTestimonialCard = (props) => {
   return (
     <Container className="border">
       <div className="center-div">
-        <Name className="font-lexend">
+        <Name className="">
           <b>Dieter Arnold</b>
         </Name>
         <Location>GERMANY</Location>

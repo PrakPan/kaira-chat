@@ -63,7 +63,7 @@ const Index = (props) => {
       setJSX(
         <>
           <Internallinkbutton
-            className={`font-lexend `}
+            className={` `}
             link={props.link}
             color={props.color}
             borderRadius={props.borderRadius}
@@ -113,7 +113,7 @@ const Index = (props) => {
     } else if (props.external_link) {
       setJSX(
         <Externallinkbutton
-          className={`font-lexend `}
+          className={` `}
           external_link={props.external_link}
           color={props.color}
           borderRadius={props.borderRadius}

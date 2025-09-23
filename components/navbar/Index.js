@@ -86,7 +86,7 @@ const Navbar = ((props) => {
   const _openAllNotificationsHandler = () => {};
 
   return (
-    <div className="font-lexend">
+    <div className="">
       <div className="hidden-desktop">
         {!hideNav && (
           <NewMobile

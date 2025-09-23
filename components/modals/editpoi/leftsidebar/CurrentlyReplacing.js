@@ -51,7 +51,7 @@ const CurrentlyReplacing = (props) => {
       <TextContainer>
         <div>
           <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-          <Name className="font-lexend">{props.replacing}</Name>
+          <Name className="">{props.replacing}</Name>
         </div>
       </TextContainer>
     </Container>

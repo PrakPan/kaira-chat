@@ -89,7 +89,7 @@ const Cost = (props) => {
               </StrikedCost>
             ) : null}
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <Text className="font-lexend">
+              <Text className="">
                 {"₹ " +
                   getIndianPrice(Math.round(props.starting_cost / 100)) +
                   "/-"}

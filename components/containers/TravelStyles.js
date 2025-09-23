@@ -186,17 +186,17 @@ const ExperientialTravelStyle = (props) => {
 
   return (
     <Container>
-      <Number className="font-lexend">10,000+</Number>
-      <Heading className="font-lexend">Experiences Curated</Heading>
+      <Number className="">10,000+</Number>
+      <Heading className="">Experiences Curated</Heading>
       <GridContainer>
         {isPageWide ? (
           <Card>
             <ImageCard onClick={() => _handleRedirect("Caravans")}>
               <TextContainer>
-                <ImageTextTop className="AnimateTop font-lexend">
+                <ImageTextTop className="AnimateTop ">
                   Caravans
                 </ImageTextTop>
-                <ImageTextBottom className="AnimateBottom font-lexend">
+                <ImageTextBottom className="AnimateBottom ">
                   EXPLORE
                 </ImageTextBottom>
               </TextContainer>
@@ -222,7 +222,7 @@ const ExperientialTravelStyle = (props) => {
         <Card>
           <ImageCard onClick={() => _handleRedirect("Faces Of India")}>
             <TextContainer>
-              <ImageTextTop className="AnimateTop font-lexend">
+              <ImageTextTop className="AnimateTop ">
                 Faces of India
               </ImageTextTop>
               <ImageTextBottom className="AnimateBottom font-nunito">
@@ -249,7 +249,7 @@ const ExperientialTravelStyle = (props) => {
         <Card>
           <ImageCard onClick={() => _handleRedirect("Volunteer & Travel")}>
             <TextContainer>
-              <ImageTextTop className="AnimateTop font-lexend">
+              <ImageTextTop className="AnimateTop ">
                 Volunteer & Travel
               </ImageTextTop>
               <ImageTextBottom className="AnimateBottom font-nunito">
@@ -275,7 +275,7 @@ const ExperientialTravelStyle = (props) => {
         <Card>
           <ImageCard onClick={() => _handleRedirect("Travel & Learn")}>
             <TextContainer>
-              <ImageTextTop className="AnimateTop font-lexend">
+              <ImageTextTop className="AnimateTop ">
                 Travel & Learn
               </ImageTextTop>
               <ImageTextBottom className="AnimateBottom font-nunito">

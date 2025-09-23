@@ -101,7 +101,7 @@ display: -webkit-box;
 
       <Name
         onClick={props.page || props.link ? _onClickHandler : null}
-        className="font-lexend text-center hover-pointer"
+        className=" text-center hover-pointer"
       >
         <b>{props.heading}</b>
       </Name>

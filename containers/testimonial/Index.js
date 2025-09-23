@@ -55,7 +55,7 @@ const Testimonial = (props) => {
       <WhyTarzan />
       <SetWidthContainer>
         <div style={{ margin: "3rem 0" }}>
-          <HeadingNew className="font-lexend">What they say?</HeadingNew>
+          <HeadingNew className="">What they say?</HeadingNew>
           <HeadingContainer></HeadingContainer>
         </div>
         <AsSeenIn />

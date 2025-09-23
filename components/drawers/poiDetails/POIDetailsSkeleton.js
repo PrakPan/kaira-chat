@@ -50,7 +50,7 @@ const POIDetailsSkeleton = (props) => {
           />
         </div>
       ) : (
-        <BackContainer className=" font-lexend">
+        <BackContainer className=" ">
           <BackArrow handleClick={(e)=>props?.handleCloseDrawer(e)}/>
         </BackContainer>
       )}

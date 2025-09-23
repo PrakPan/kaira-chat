@@ -46,7 +46,7 @@ export default function Filters(props) {
       anchor={"right"}
       backdrop
       style={{ zIndex: 1508 }}
-      className="font-lexend"
+      className=""
       onHide={() => props.setshowFilter(false)}
     >
       <div className="w-[80vw] md:w-[27vw] px-lg h-[98vh] flex flex-col items-start mx-auto">

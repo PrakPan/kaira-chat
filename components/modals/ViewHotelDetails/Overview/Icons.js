@@ -41,7 +41,7 @@ const Icons = (props) => {
         }}
       >
         <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-        <IconText style={{ fontWeight: "600" }} className="font-lexend">
+        <IconText style={{ fontWeight: "600" }} className="">
           Ideal Duration
         </IconText>
         <IconText style={{ fontWeight: "300" }} className="font-nunito">
@@ -56,7 +56,7 @@ const Icons = (props) => {
         }}
       >
         <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-        <IconText style={{ fontWeight: "600" }} className="font-lexend">
+        <IconText style={{ fontWeight: "600" }} className="">
           Opening Time
         </IconText>
         <IconText style={{ fontWeight: "300" }} className="font-nunito">
@@ -65,7 +65,7 @@ const Icons = (props) => {
       </IconContainer>
       <IconContainer>
         <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-        <IconText style={{ fontWeight: "600" }} className="font-lexend">
+        <IconText style={{ fontWeight: "600" }} className="">
           Some Heading
         </IconText>
         <IconText style={{ fontWeight: "300" }} className="font-nunito">

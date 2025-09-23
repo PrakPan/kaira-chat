@@ -129,7 +129,7 @@ const Locations = (props) => {
 
   return (
     <div>
-      <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
+      <Heading className="">POPULAR DESTINATIONS</Heading>
       <Container>{locations}</Container>
     </div>
   );

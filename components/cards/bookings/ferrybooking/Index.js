@@ -31,14 +31,14 @@ const Booking = (props) => {
     <div style={{ height: "max-content" }}>
       <div
         style={{ margin: "0 0 0.25rem 0", fontSize: "18px" }}
-        className="font-lexend"
+        className=""
       >
         <b>{props.data ? (props.data.city ? props.data.city : "") : ""}</b>
         {" - Ferry Booking"}
       </div>
       <div
         style={{ margin: "0 0 1rem 0", fontSize: "14px", fontWeight: "300" }}
-        className="font-lexend"
+        className=""
       >
         {props.data
           ? props.data.check_in

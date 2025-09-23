@@ -49,7 +49,7 @@ const Overview = (props) => {
     <div>
       {props.short_description ? (
         <Container>
-          <Heading align="center" className="font-lexend" bold>
+          <Heading align="center" className="" bold>
             About
           </Heading>
 

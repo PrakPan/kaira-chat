@@ -49,9 +49,9 @@ const SearchFullImg = (props) => {
   return (
     <Container className="center-dv">
       <ContentContainer>
-        <Tagline className="font-lexend">{props.tagline}</Tagline>
+        <Tagline className="">{props.tagline}</Tagline>
 
-        <SubText className="font-lexend">{props.text}</SubText>
+        <SubText className="">{props.text}</SubText>
       </ContentContainer>
     </Container>
   );

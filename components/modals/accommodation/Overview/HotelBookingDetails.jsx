@@ -341,7 +341,7 @@ const HotelBookingDetails = (props) => {
       show={runTimeShowPopup}
       anchor={"right"}
       backdrop
-      className="font-lexend"
+      className=""
       onHide={handleCloseDrawer}
       width={"50%"}
       mobileWidth={"100%"}
@@ -802,7 +802,7 @@ const HotelBookingDetails = (props) => {
                   hotelImages.length ? (
                     <PhotosButton
                       onClick={() => _setImagesHandler(images)}
-                      className="font-lexend bg-black"
+                      className=" bg-black"
                     >
                       Photos Gallery
                     </PhotosButton>
@@ -1060,7 +1060,7 @@ const HotelBookingDetails = (props) => {
                   hotelImages.length ? (
                     <PhotosButton
                       onClick={() => _setImagesHandler(images)}
-                      className="font-lexend bg-black"
+                      className=" bg-black"
                     >
                       Photos Gallery
                     </PhotosButton>

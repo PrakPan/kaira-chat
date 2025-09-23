@@ -430,7 +430,7 @@ const Route = (props) => {
   return (
     <Container>
       <div className="flex flex-row justify-between items-end">
-        <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
+        <div className=" mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
         {transfers_status === "SUCCESS" ? (

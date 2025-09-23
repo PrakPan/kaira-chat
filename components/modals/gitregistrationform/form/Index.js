@@ -88,7 +88,7 @@ const Enquiry = (props) => {
       {props.formFailedError ? <Error>{props.formFailedError}</Error> : null}
 
       <PayNow
-        className="hover-pointer font-lexend"
+        className="hover-pointer "
         onClick={() => props.onSuccess(paxList)}
       >
         Confirm and Proceed

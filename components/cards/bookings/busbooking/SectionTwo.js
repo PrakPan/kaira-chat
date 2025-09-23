@@ -41,7 +41,7 @@ const Section = (props) => {
   };
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div
           style={{
             display: "grid",
@@ -72,7 +72,7 @@ const Section = (props) => {
             props.isDatePresent &&
             !props.is_registration_needed ? (
               <div>
-                <Heading className="font-lexend">Trip Start</Heading>
+                <Heading className="">Trip Start</Heading>
                 <Text className="font-nunito">
                   {getTime(props.data.check_in)}
                 </Text>
@@ -100,7 +100,7 @@ const Section = (props) => {
                     leftalign
                   ></ImageLoader>
                   <div>
-                    <Heading className="font-lexend">Duration</Heading>
+                    <Heading className="">Duration</Heading>
                     <Text className="font-nunito">
                       {props.data.costings_breakdown.duration.text}
                     </Text>
@@ -139,7 +139,7 @@ const Section = (props) => {
               >
                 <div style={{ display: "flex", gap: "1rem" }}>
                   <div className="centerdiv">
-                    <Heading className="font-lexend">
+                    <Heading className="">
                       {props.data.costings_breakdown
                         ? props.data.costings_breakdown.distance
                           ? props.data.costings_breakdown.distance.text
@@ -170,7 +170,7 @@ const Section = (props) => {
                       ></ImageLoader>
                       <div style={{ display: "flex", gap: "1rem" }}>
                         <div className="centerdiv">
-                          <Heading className="font-lexend">
+                          <Heading className="">
                             {props.data.costings_breakdown
                               ? props.data.costings_breakdown.no_of_seats
                                 ? props.data.costings_breakdown.no_of_seats +

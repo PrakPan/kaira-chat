@@ -66,7 +66,7 @@ const Booking = (props) => {
           {props.images.length ? (
             <PhotosButton
               onClick={() => props.setImagesHandler(imagesarr)}
-              className="font-lexend"
+              className=""
               style={{
                 backgroundColor: "white",
                 opacity: "0.7",
@@ -96,7 +96,7 @@ const Booking = (props) => {
               <div>
                 <Typography
                   className={
-                    props.blur ? "font-lexend blurry-text" : " font-lexend"
+                    props.blur ? " blurry-text" : " "
                   }
                   style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
                 >
@@ -128,7 +128,7 @@ const Booking = (props) => {
           />
           <PhotosButton
             onClick={() => props.setImagesHandler(imagesarr)}
-            className="font-lexend"
+            className=""
             style={{
               backgroundColor: "white",
               opacity: "0.7",
@@ -152,7 +152,7 @@ const Booking = (props) => {
           <div>
             <Typography
               className={
-                props.blur ? "font-lexend blurry-text" : " font-lexend"
+                props.blur ? " blurry-text" : " "
               }
               style={{ fontSize: "1rem", fontWeight: "600", width: "100%" }}
             >
@@ -164,7 +164,7 @@ const Booking = (props) => {
                 margin: "0.5rem 0",
                 fontWeight: "300",
               }}
-              className="font-lexend"
+              className=""
             >
               {props.details1}
             </p>

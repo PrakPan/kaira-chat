@@ -39,7 +39,7 @@ const SearchInput = (props) => {
   return (
     <Container
       placeholder="Search cities"
-      className="font-lexend"
+      className=""
       autoFocus
       onChange={(event) => _handleKey(event)}
     ></Container>

@@ -134,7 +134,7 @@ export default function ElementCard2(props) {
         backdrop
         width={500}
         style={{ zIndex: 1501 }}
-        className="font-lexend"
+        className=""
         onHide={handleCloseDrawer}
       >
         <Container>

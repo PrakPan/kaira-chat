@@ -102,10 +102,10 @@ const Counter = (props) => {
         dimensionsMobile={{ width: 400, height: 400 }}
         url={props.img}
       ></ImageLoader>
-      <p style={{ margin: "0rem 0" }} className="font-lexend">
+      <p style={{ margin: "0rem 0" }} className="">
         {props.heading}
       </p>
-      <Age className="font-lexend">
+      <Age className="">
         <em>{props.age}</em>
       </Age>
       <GridContainer>

@@ -67,7 +67,7 @@ const Overview = (props) => {
           align="center"
           aligndesktop="center"
           margin="0"
-          className="font-lexend"
+          className=""
           bold
           noline
         >
@@ -75,7 +75,7 @@ const Overview = (props) => {
         </Heading>
       ) : null}
       {props.duration && !isPageWide ? (
-        <ApproxTime className="font-lexend">
+        <ApproxTime className="">
           <StyledFontAwesomeIcon icon={faClock} />
           {"Approximate Time: " + props.duration + "h"}
         </ApproxTime>
@@ -99,19 +99,19 @@ const Overview = (props) => {
               align="center"
               aligndesktop="center"
               margin="0"
-              className="font-lexend"
+              className=""
               bold
               noline
             >
               {props.name}
             </Heading>
             {props.duration ? (
-              <ApproxTime className="font-lexend">
+              <ApproxTime className="">
                 <StyledFontAwesomeIcon icon={faClock} />
                 {"Approximate Time: " + props.duration + "h"}
               </ApproxTime>
             ) : null}
-            <Text className="font-lexend">{props.short_description}</Text>
+            <Text className="">{props.short_description}</Text>
           </div>
         ) : null}
       </GridContainer>

@@ -138,7 +138,7 @@ const SearchInput = (props) => {
         </div>
       ) : null}
       {!props.showSearchStarting && props.startingLocation ? (
-        <div className="font-lexend" onClick={_handleClearResults}>
+        <div className="" onClick={_handleClearResults}>
           {props.startingLocation.name}
         </div>
       ) : null}

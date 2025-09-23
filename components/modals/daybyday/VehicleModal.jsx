@@ -144,7 +144,7 @@ const VehicleDetailModal = ({
             </div>
           )}
           {!isEmbedded && (
-            <div className="font-lexend flex justify-between items-start !m-0 p-4">
+            <div className=" flex justify-between items-start !m-0 p-4">
               {loading ? (
                 <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
               ) : (
