@@ -224,8 +224,7 @@ const RouteEditSection = (props) => {
 
   console.log("Route Edittt",props.routes)
 
-
-  useEffect(() => {
+useEffect(() => {
   const cities = [];
 
   if (props?.routes && itinerary?.start_date) {
@@ -250,11 +249,17 @@ const RouteEditSection = (props) => {
       const isFirst = i === 0;
       const isLast = i === props.routes.length - 1;
 
-      // --- Duration Logic ---
-      const duration = props?.routes[i]?.duration || 1;
+      // --- Duration Logic (same as your original) ---
+      const duration = (() => {
+        if (isFirst || isLast) {
+          return props?.routes[i]?.duration || 0;
+        }
+
+        return props?.routes[i]?.duration || 1;
+      })();
 
       // --- Checkin/Checkout based on calculated duration ---
-      const checkin_date = formatDate(currentCheckinDate);
+      const checkin_date = i === 1 ? formatDate(new Date(itinerary.start_date)) : formatDate(currentCheckinDate);
       const checkoutDateObj = addDays(currentCheckinDate, duration);
       const checkout_date = formatDate(checkoutDateObj);
 
