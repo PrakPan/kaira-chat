@@ -27,9 +27,9 @@ const generateSitemap = async () => {
 
   // Fetch countries list
   const countries = await axios.get(
-    `${BASE_URL}/api/v1/geos/country/?fields=path`
+    `${BASE_URL}/api/v1/geos/search/all/?type=Country`
   );
-  const countriesData = countries.data.data.countries;
+  const countriesData = countries.data;
   let countriesPaths = countriesData
   .filter((object) => object.path !== undefined && object.path.split("/").length === 2)
   .map((object) => {
@@ -38,9 +38,9 @@ const generateSitemap = async () => {
 
   // Fetch states list
   const states = await axios.get(
-    `${BASE_URL}/api/v1/geos/state/?fields=path`
+    `${BASE_URL}/api/v1/geos/search/all/?type=State`
   );
-  const statesData = states.data.data.states;
+  const statesData = states.data;
 
   let statesPaths = statesData
   .filter((object) => object.path !== undefined)
@@ -53,15 +53,16 @@ const generateSitemap = async () => {
 
   // Fetch cities list
   const cities = await axios.get(
-    `${BASE_URL}/api/v1/geos/city/?fields=path`
+    `${BASE_URL}/api/v1/geos/search/all/?type=City`
   );
-  const citiesData = cities.data.data.cities;
+  const citiesData = cities.data;
 
   let cityPaths = citiesData
   .filter((object) => object.path !== undefined)
   .map((object) => {
     return { title: "City Planner", link: PROD_BASE_URL + "/" + object.path };
   });
+
 
   const subRegions=await axios.get(`${BASE_URL}/api/v1/website/pages/?page_type=Subregion&fields=path`)
   const subRegionsData=subRegions.data.data.pages
@@ -108,6 +109,7 @@ const generateSitemap = async () => {
     ...subRegionsPaths,
     ...tripsPaths,
   ];
+  console.log("all paths length: ",allPaths.length)
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
