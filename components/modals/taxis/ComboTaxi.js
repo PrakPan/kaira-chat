@@ -381,11 +381,15 @@ const ComboTaxi = (props) => {
           });
           setLoading(false);
           setError(true);
+          const errorMsg =
+        err?.response?.data?.errors?.[0]?.message?.[0] ||
+        err.message ||
+        "There seems to be a problem, please try again later!";
 
           dispatch(
             openNotification({
               type: "error",
-              text: "There seems to be a problem, please try again later!",
+              text: errorMsg,
               heading: "Error!",
             })
           );
