@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { cta } from "../assets";
 import Button from "../common/components/button";
+import Link from "next/link";
 
 const CtaBoardingSection = () => {
   return (
@@ -38,7 +39,8 @@ const CtaBoardingSection = () => {
               adventure. All you have to do is show up, grinning like Tazan!
             </p>
 
-            <Button
+            <Link href="/new-trip">
+              <Button
               variant="filled"
               size="medium"
               onClick={() => {
@@ -48,6 +50,7 @@ const CtaBoardingSection = () => {
             >
               Plan a Trip Now!
             </Button>
+            </Link>
           </div>
         </div>
       </div>

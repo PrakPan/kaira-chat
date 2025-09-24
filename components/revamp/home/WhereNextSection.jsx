@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Button from "../common/components/button";
 import { Japan } from "../assets";
+import Link from "next/link";
 
 const WhereNextSection = () => {
   // Traveler avatars data - using simple color-coded initials for now
@@ -57,6 +58,7 @@ const WhereNextSection = () => {
 
               {/* CTA Button */}
               <div className="mb-8 lg:mb-10">
+              <Link href="/new-trip">
                 <Button
                   variant="filled"
                   size="medium"
@@ -67,6 +69,7 @@ const WhereNextSection = () => {
                 >
                   + Create a Trip Now!
                 </Button>
+                </Link>
               </div>
 
               {/* Travelers Section */}

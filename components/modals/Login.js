@@ -140,6 +140,7 @@ const Enquiry = (props) => {
               ref={myref}
               onhide={props.onhide}
               itinary_id={props.itinary_id}
+              onSuccess={props?.onSuccess}
             ></Login>
           </div>
         </div>
