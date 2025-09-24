@@ -621,7 +621,7 @@ const RouteEditSection = (props) => {
         .then((response) => {
           dispatch(setItinerary(response.data));
         Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
+        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
         localStorage.removeItem(key);
         }
         });
