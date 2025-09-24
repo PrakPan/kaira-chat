@@ -263,7 +263,7 @@ const ItineraryCity = (props) => {
         </button>
       </div>
 
-      {itinerary_status === "SUCCESS" ? (
+      {(
         viewMore ? (
           <>
             <CityDaybyDay
@@ -292,7 +292,7 @@ const ItineraryCity = (props) => {
             getPaymentHandler={props?.getPaymentHandler}
           />
         )
-      ) : null}
+      )}
     </div>
   );
 };

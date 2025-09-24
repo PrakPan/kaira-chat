@@ -626,6 +626,12 @@ useEffect(() => {
           headers,
         })
         .then((response) => {
+          
+            Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
+        localStorage.removeItem(key);
+        }
+        });
           dispatch(setItinerary(response.data));
           setLoading(false);
           const itineraryId =
