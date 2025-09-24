@@ -18,13 +18,13 @@ const Tags = (props) => {
   return (
     <Container>
       {props.data.room_view.length ? (
-        <Tag className="font-lexend">{props.data.room_view[0].ViewName}</Tag>
+        <Tag className="">{props.data.room_view[0].ViewName}</Tag>
       ) : (
-        <Tag className="font-lexend">{"No View"}</Tag>
+        <Tag className="">{"No View"}</Tag>
       )}
-      <Tag className="font-lexend">250 sq ft</Tag>
+      <Tag className="">250 sq ft</Tag>
       {props.data.bed_type.length ? (
-        <Tag className="font-lexend">{props.data.bed_type[0].BedName}</Tag>
+        <Tag className="">{props.data.bed_type[0].BedName}</Tag>
       ) : null}
     </Container>
   );

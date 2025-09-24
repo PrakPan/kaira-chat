@@ -82,7 +82,7 @@ const Index = (props) => {
       for (var i = 0; i < newContent.length; i++) {
         if (newContent[i].heading) {
           cards.push(
-            <Heading2 className="font-lexend">{newContent[i].heading}</Heading2>
+            <Heading2 className="">{newContent[i].heading}</Heading2>
           );
         }
       }
@@ -91,7 +91,7 @@ const Index = (props) => {
     for (var i = 0; i < content.length; i++) {
       if (content[i].heading) {
         cards.push(
-          <Heading2 className="font-lexend">{content[i].heading}</Heading2>
+          <Heading2 className="">{content[i].heading}</Heading2>
         );
       }
     }
@@ -114,7 +114,7 @@ const Index = (props) => {
       <LottieAnimation></LottieAnimation>
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
 
-      <Heading2 className=" font-lexend font-medium text-lg">
+      <Heading2 className="  font-medium text-lg">
         {" "}
         {props?.isEdit ? newContent[currentStep - 1].heading : content[currentStep - 1].heading}{" "}
       </Heading2>

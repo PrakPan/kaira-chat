@@ -37,8 +37,8 @@ const TestimonialCard = (props) => {
 
   return (
     <Container className="border">
-      <Name className="font-lexend">Daniel Arnold</Name>
-      <Location className="font-lexend">AUSTRALIA</Location>
+      <Name className="">Daniel Arnold</Name>
+      <Location className="">AUSTRALIA</Location>
       <Content className="font-nunito">{props.text}</Content>
     </Container>
   );

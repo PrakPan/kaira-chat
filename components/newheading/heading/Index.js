@@ -22,7 +22,7 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Mainheading
-            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
+            className={props.blur ? "blurry-text " : ""}
             color={props.color}
             fontWeight={props.fontWeight}
             borderColor={props.borderColor}
@@ -48,7 +48,7 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Simpleheading
-            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
+            className={props.blur ? "blurry-text " : ""}
             color={props.color}
             fontWeight={props.fontWeight}
             borderColor={props.borderColor}
@@ -74,7 +74,7 @@ const Index = (props) => {
       setJSX(
         <Container2>
           <Bannerheading
-            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
+            className={props.blur ? "blurry-text " : ""}
             fontSize={props.fontSize}
             fontWeight={props.fontWeight}
             textAlign={props.textAlign}
@@ -89,7 +89,7 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Defaultheading
-            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
+            className={props.blur ? "blurry-text " : ""}
             fontSize={props.fontSize}
             padding={props.padding}
             color={props.color}

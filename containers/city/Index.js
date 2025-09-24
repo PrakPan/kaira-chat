@@ -35,7 +35,7 @@ const Experience = (props) => {
   else
     return (
       <div
-        className="font-lexend"
+        className=""
         style={isPageWide ? { minHeight: "100vh" } : {}}
       >
         {isPageWide ? (

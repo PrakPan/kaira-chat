@@ -178,7 +178,7 @@ const TestimonialCard = (props) => {
           width="50%"
         />
 
-        <Name className="font-lexend">{props.name}</Name>
+        <Name className="">{props.name}</Name>
 
         <ImageLoader
           dimensions={{ height: 100, width: 180 }}
@@ -189,7 +189,7 @@ const TestimonialCard = (props) => {
         ></ImageLoader>
 
         <ReviewContainer style={{ position: "relative" }}>
-          <ReviewFront className="font-lexend">
+          <ReviewFront className="">
             <em>{props.text}</em>{" "}
           </ReviewFront>
 
@@ -202,7 +202,7 @@ const TestimonialCard = (props) => {
                 margin: "2rem auto 0 auto",
                 display: "block",
               }}
-              className="font-lexend"
+              className=""
             >
               Read More
             </ReadMore>
@@ -216,11 +216,11 @@ const TestimonialCard = (props) => {
         onClick={(event) => _flipHandler(event, false)}
         onMouseLeave={(event) => _flipHandler(event, false)}
       >
-        <Name className="font-lexend">{props.name + "'s story"}</Name>
+        <Name className="">{props.name + "'s story"}</Name>
         <ReviewContainer
           style={{ position: "relative", maxHeight: Card1Height - 50 + "px" }}
         >
-          <ReviewBack className="font-lexend">
+          <ReviewBack className="">
             {props.review.length < stringlength
               ? props.review
               : props.review.substring(0, stringlength) + "..."}

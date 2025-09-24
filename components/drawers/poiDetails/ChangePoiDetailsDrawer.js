@@ -130,7 +130,7 @@ const ChangePoiDetailDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: 1506 }}
-      className="font-lexend"
+      className=""
       onHide={(e) => {
         props.setShowDetails({ show: false, data: {} });
 

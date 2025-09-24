@@ -41,7 +41,7 @@ const City = (props) => {
   }
 
   return (
-    <div className="font-lexend ">
+    <div className=" ">
       <div className="font-bold text-2xl pb-3">
         {props.cityData.city_name + " - " + props.cityData.duration} Nights
       </div>

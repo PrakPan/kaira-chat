@@ -733,7 +733,7 @@ const Booking = (props) => {
           anchor={"right"}
           backdrop
           style={{ zIndex: 1251 }}
-          className="font-lexend "
+          className=" "
           onHide={handleClose}
           width={"50vw"}
           mobileWidth={"100vw"}
@@ -754,7 +754,7 @@ const Booking = (props) => {
                   duration={1.3}
                   ydistance={25}
                 >
-                  <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                  <div className="text-white   px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
                     {isError.errorMsg}
                   </div>
                 </Slide>
@@ -890,7 +890,7 @@ const Booking = (props) => {
                     color: "red",
                     margin: "1rem",
                   }}
-                  className="text-center font-lexend"
+                  className="text-center "
                 >
                   You're not authorized to take this action, please contact your
                   experience captain.
@@ -906,7 +906,7 @@ const Booking = (props) => {
                         margin: "auto",
                         height: isPageWide ? "80vh" : "40vh",
                       }}
-                      className="center-div text-center font-lexend"
+                      className="center-div text-center "
                     >
                       <LoadingLottie
                         height={"5rem"}
@@ -1008,7 +1008,7 @@ const Booking = (props) => {
 
                   {!loading && noResults ? (
                     <OptionsContainer className="px-2 center-div space-y-5">
-                      <div className="font-lexend center-div text-center">
+                      <div className=" center-div text-center">
                         Oops, we couldn't find what you were searching but we
                         are already adding new and approved accommodations to
                         our database everyday!

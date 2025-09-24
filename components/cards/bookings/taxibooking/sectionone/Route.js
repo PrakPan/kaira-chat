@@ -34,7 +34,7 @@ const Section = (props) => {
       <Container>
         <Heading
           className={
-            props.data.user_selected ? "font-lexend" : "font-lexend   "
+            props.data.user_selected ? "" : "   "
           }
         >
           {props.rental
@@ -44,10 +44,10 @@ const Section = (props) => {
             : "Round-trip Taxi"}
         </Heading>
         {!props.rental ? (
-          <RouteContainer className="font-lexend">
+          <RouteContainer className="">
             <Location
               className={
-                props.data.user_selected ? "font-lexend" : "font-lexend   "
+                props.data.user_selected ? "" : "   "
               }
             >
               {props.data.city}
@@ -63,7 +63,7 @@ const Section = (props) => {
             </div>
             <Location
               className={
-                props.data.user_selected ? "font-lexend" : "font-lexend   "
+                props.data.user_selected ? "" : "   "
               }
             >
               {props.data.destination_city}
@@ -73,7 +73,7 @@ const Section = (props) => {
           <RouteContainer>
             <Location
               className={
-                props.data.user_selected ? "font-lexend" : "font-lexend   "
+                props.data.user_selected ? "" : "   "
               }
             >
               {props.data.city}

@@ -131,7 +131,7 @@ const SearchPannel = (props) => {
             autoFocus
             onChange={_onChangeHandler}
             value={inputValue}
-            className="font-lexend"
+            className=""
             placeholder="Search Locations"
           ></Search>
 

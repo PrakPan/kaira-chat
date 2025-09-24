@@ -37,7 +37,7 @@ const CardListItem = styled.li`
 
 const FullImgContent = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <Card className="border center-v text-cener">
         <ImageLoader
           url="media/website/b2b/passenger.png"
@@ -46,7 +46,7 @@ const FullImgContent = (props) => {
           width="3rem"
           leftalign
         />
-        <CardHeading className="font-lexend">
+        <CardHeading className="">
           Leisure Travel: Team building company retreats
         </CardHeading>
         <ul style={{ padding: "0 0 0 1rem" }}>
@@ -70,7 +70,7 @@ const FullImgContent = (props) => {
           width="3rem"
           leftalign
         />
-        <CardHeading className="font-lexend">
+        <CardHeading className="">
           Booking Needs: Employee business travel needs
         </CardHeading>
         <ul style={{ padding: "0 0 0 1rem" }}>
@@ -91,7 +91,7 @@ const FullImgContent = (props) => {
           width="3rem"
           leftalign
         />
-        <CardHeading className="font-lexend">
+        <CardHeading className="">
           Conferences: Company travel excursions and conferences
         </CardHeading>
         <ul style={{ padding: "0 0 0 1rem" }}>

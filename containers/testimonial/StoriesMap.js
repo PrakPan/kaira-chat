@@ -184,7 +184,7 @@ const StoriesMap = () => {
     if (isPageWide) {
       return (
         <div>
-          <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
+          <StoriesHeading className="">Our Stories</StoriesHeading>
 
           <Container>
             <PinIcon style={{ left: "86%", top: "78.9%" }}>
@@ -332,7 +332,7 @@ const StoriesMap = () => {
     } else {
       return (
         <div>
-          <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
+          <StoriesHeading className="">Our Stories</StoriesHeading>
 
           <Container>
             <PinIcon style={{ left: "47.3rem", top: "40.9%" }}>

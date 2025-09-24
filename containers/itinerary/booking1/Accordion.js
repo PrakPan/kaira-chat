@@ -96,7 +96,7 @@ const FAQs = (props) => {
           >
             <Typography
               content={"span"}
-              className="font-lexend"
+              className=""
               style={{ fontWeight: "700", fontSize: "0.80rem", margin: "0" }}
             >
               <div className="flex flex-row gap-1">
@@ -115,7 +115,7 @@ const FAQs = (props) => {
 
             <Typography
               content={"span"}
-              className="font-lexend"
+              className=""
               style={{
                 fontWeight: "700",
                 fontSize: "0.95rem",

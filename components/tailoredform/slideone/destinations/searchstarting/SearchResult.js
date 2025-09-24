@@ -30,7 +30,7 @@ font-weight : 500;
 const SearchResult = (props) => {
   return (
     <Container
-      className="font-lexend hover-pointer"
+      className=" hover-pointer"
       onClick={(event) => props.selectResult(event, props.text, props.place_id)}
     >
       <MarkerContainer>

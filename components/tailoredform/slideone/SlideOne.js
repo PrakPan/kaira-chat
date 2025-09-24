@@ -116,7 +116,7 @@ const SlideOne = (props) => {
           }}
         >
           {props.eventDates && props.destination ? (
-            <div className="font-lexend" style={{ fontSize: "0.8rem" }}>
+            <div className="" style={{ fontSize: "0.8rem" }}>
               The dates for this event are fixed and cannot be changed!
             </div>
           ) : (

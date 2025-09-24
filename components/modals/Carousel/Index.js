@@ -32,7 +32,7 @@ const Carousel = (props) => {
       >
         <h1
           style={{ fontSize: "32px", textAlign: "left" }}
-          className="font-lexend"
+          className=""
         >
           Hi Maria,
         </h1>

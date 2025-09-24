@@ -21,7 +21,7 @@ const Location = (props) => {
     <Container>
       <StyledIcon></StyledIcon>
       <TextContainer className="center-div">
-        <div className="font-lexend" style={{ fontSize: "0.9rem" }}>
+        <div className="" style={{ fontSize: "0.9rem" }}>
           {props.data.location}
         </div>
       </TextContainer>

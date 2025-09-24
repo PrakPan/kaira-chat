@@ -82,14 +82,14 @@ const CurrentlyReplacing = (props) => {
       <TextContainer>
         <div>
           <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-          <Name className="font-lexend">FLIGHT</Name>
+          <Name className="">FLIGHT</Name>
           {props.selectedBooking ? (
             <DetailsContainer>
               {props.selectedBooking.costings_breakdown ? (
                 props.selectedBooking.costings_breakdown.Segments ? (
                   props.selectedBooking.costings_breakdown.Segments[0]
                     .length ? (
-                    <Detail className="font-lexend">
+                    <Detail className="">
                       {props.selectedBooking.costings_breakdown.Segments[0][0]
                         .Origin.Airport.CityName +
                         " to " +
@@ -102,7 +102,7 @@ const CurrentlyReplacing = (props) => {
                 ) : null
               ) : null}
               {props.selectedBooking.check_in ? (
-                <Detail className="font-lexend">
+                <Detail className="">
                   {"Departure: " +
                     getTime(props.selectedBooking.check_in) +
                     ", " +
@@ -110,7 +110,7 @@ const CurrentlyReplacing = (props) => {
                 </Detail>
               ) : null}
               {props.selectedBooking.check_out ? (
-                <Detail className="font-lexend">
+                <Detail className="">
                   {"Arrival: " +
                     getTime(props.selectedBooking.check_out) +
                     ", " +

@@ -6,7 +6,6 @@ import { Pagination } from "swiper";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-
 const Carousel3D = () => {
   useEffect(() => {
     // Add the panorama slider CSS

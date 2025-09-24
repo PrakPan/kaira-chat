@@ -242,7 +242,7 @@ const CityContainer = (props) => {
           color: "white !important",
         }}
         label={getHumanDate(props.day_slabs[j].slab)}
-        className="itinerary-day-tab font-lexend"
+        className="itinerary-day-tab "
       ></Tab>
     );
     TabsContainers.push(
@@ -257,7 +257,7 @@ const CityContainer = (props) => {
               duration={500}
               style={{ margin: "0" }}
               onClick={(event) => _handlePrevClick(event)}
-              className="font-lexend"
+              className=""
             >
               <StyledPrevIcon></StyledPrevIcon>
               Previous Day
@@ -271,7 +271,7 @@ const CityContainer = (props) => {
               duration={500}
               style={{}}
               onClick={(event) => _handleNextClick(event)}
-              className="font-lexend"
+              className=""
             >
               Next Day
               <StyledNextIcon></StyledNextIcon>

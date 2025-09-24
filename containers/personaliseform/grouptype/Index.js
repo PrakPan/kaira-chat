@@ -63,7 +63,7 @@ const Pax = (props) => {
   return (
     <Container>
       <GroupTypeContainer
-        className="font-lexend border-thin"
+        className=" border-thin"
         onClick={props.hidePax}
       >
         <div>
@@ -78,7 +78,7 @@ const Pax = (props) => {
             }{" "}
           </div>
         </div>
-        <div className="font-lexend center-div">
+        <div className=" center-div">
           <StyledFontAwesome icon={faEdit}></StyledFontAwesome>
         </div>
       </GroupTypeContainer>

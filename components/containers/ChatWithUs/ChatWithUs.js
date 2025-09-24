@@ -46,34 +46,34 @@ const HowItWorksText = styled.p`
 
 const ChatWithUs = (props) => {
   const HowitWorksHeadingsArr = [
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Select your preferences
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Let our AI plan your itinerary
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Easy Bookings with 24x7 Concierge
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       No Commissions - Pay for what you get
     </HowItWorksHeading>,
   ];
 
   const HowitWorksContentsArr = [
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       From solo travel to workcation, honeymoon to family travel, tell us about
       your mood, budget & timeline.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       Get a unique itinerary completely personalized for you, with all bookings
       in one place.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       From your stays to activities, book-it-all in one click, and enjoy 24x7
       assistance while you explore.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       We only take a small service fees for negotiated-bookings & live support.
     </HowItWorksText>,
   ];

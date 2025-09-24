@@ -21,23 +21,23 @@ const BottomText = styled.p`
 const Statistic = () => {
   return (
     <StatisticContainer>
-      <div className="font-lexend text-center">
+      <div className=" text-center">
         <Heading bold margin="auto" noline align="center">
           100%
         </Heading>
-        <BottomText className="font-lexend">Statistic 1</BottomText>
+        <BottomText className="">Statistic 1</BottomText>
       </div>
-      <div className="font-lexend text-center">
+      <div className=" text-center">
         <Heading bold margin="auto" noline align="center">
           100%
         </Heading>
-        <BottomText className="font-lexend">Statistic 1</BottomText>
+        <BottomText className="">Statistic 1</BottomText>
       </div>
-      <div className="font-lexend text-center">
+      <div className=" text-center">
         <Heading bold margin="auto" noline align="center">
           100%
         </Heading>
-        <BottomText className="font-lexend">Statistic 1</BottomText>
+        <BottomText className="">Statistic 1</BottomText>
       </div>
     </StatisticContainer>
   );

@@ -57,23 +57,23 @@ const Tabscomponent = (props) => {
       >
         <Tab
           label="Rooms"
-          className="accommodationdetail-tab font-lexend"
+          className="accommodationdetail-tab "
         ></Tab>
         <Tab
           label="Amenities"
-          className="accommodationdetail-tab font-lexend"
+          className="accommodationdetail-tab "
         ></Tab>
         {props.data.addr1 ? (
           <Tab
             label="Location"
-            className="accommodationdetail-tab font-lexend"
+            className="accommodationdetail-tab "
           ></Tab>
         ) : null}
 
         {props.data.description ? (
           <Tab
             label="Description"
-            className="accommodationdetail-tab font-lexend"
+            className="accommodationdetail-tab "
           ></Tab>
         ) : null}
       </Tabs>
@@ -90,7 +90,7 @@ const Tabscomponent = (props) => {
       <TabPanel value={value} index={3}>
         {props.data.description ? (
           <div
-            className="font-lexend"
+            className=""
             dangerouslySetInnerHTML={{ __html: props.data.description }}
           ></div>
         ) : null}

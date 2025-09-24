@@ -22,7 +22,7 @@ const Vision = (props) => {
         }}
       >
         <Heading
-          className="font-lexend"
+          className=""
           aligndesktop="center"
           bold
           noline

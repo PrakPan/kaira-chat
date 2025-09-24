@@ -26,7 +26,7 @@ const BannerMobile = (props) => {
         margin="0"
         width="100%"
       >
-        <p className="font-lexend" style={{ margin: "0", fontWeight: "500" }}>
+        <p className="" style={{ margin: "0", fontWeight: "500" }}>
           Schedule Callback
         </p>
       </Button>

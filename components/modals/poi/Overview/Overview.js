@@ -44,11 +44,11 @@ const Heading = styled.h1`
 const Overview = (props) => {
   return (
     <Container>
-      <Heading className="font-lexend text-center" bold noline>
+      <Heading className=" text-center" bold noline>
         {props.name}
       </Heading>
       {props.duration ? (
-        <ApproxTime className="font-lexend">
+        <ApproxTime className="">
           <StyledFontAwesomeIcon icon={faClock} />
           {"Approximate Time: " + props.duration + "h"}
         </ApproxTime>

@@ -21,7 +21,7 @@ const Icon = (props) => {
         dimensions={{ width: 900, height: 900 }}
         dimensionsMobile={{ width: 900, height: 900 }}
       ></ImageLoader>
-      <IconTagLine className="font-lexend">{props.icon.name}</IconTagLine>
+      <IconTagLine className="">{props.icon.name}</IconTagLine>
     </Container>
   );
 };

@@ -843,7 +843,7 @@ const SimpleTabsV2 = (props) => {
               width={"50%"}
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-              className="font-lexend pb-[20px]"
+              className=" pb-[20px]"
               isCloseButtonEnable={true}
               onHide={() => handleChatBotOpen(false)}
             >

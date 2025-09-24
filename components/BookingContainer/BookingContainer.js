@@ -67,8 +67,8 @@ const BookingContainer = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
@@ -96,8 +96,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
@@ -117,8 +117,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -143,8 +143,8 @@ const BookingContainer = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail["name"]}
@@ -168,8 +168,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail["name"]}
@@ -183,8 +183,8 @@ const BookingContainer = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -209,7 +209,7 @@ const BookingContainer = (props) => {
 
   return (
     <font>
-      <div className="font-lexend ml-4 flex flex-col rounded-xl shadow-md   border-2 border-[#ECEAEA] shadow-[#ECEAEA]">
+      <div className=" ml-4 flex flex-col rounded-xl shadow-md   border-2 border-[#ECEAEA] shadow-[#ECEAEA]">
         <div className="flex flex-col  bg-[#F7E70033] ">
           <div className="p-3">
             <div className="flex flex-row justify-between">
@@ -280,7 +280,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text"
+                            ? " text-enter blurry-text"
                             : "text-sm font-semibold"
                         }
                       >
@@ -289,7 +289,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text"
+                            ? " text-enter blurry-text"
                             : "text-sm font-semibold"
                         }
                       >
@@ -312,7 +312,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text"
+                            ? " text-enter blurry-text"
                             : "text-sm font-semibold"
                         }
                       >
@@ -321,7 +321,7 @@ const BookingContainer = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text"
+                            ? " text-enter blurry-text"
                             : "text-sm font-semibold"
                         }
                       >

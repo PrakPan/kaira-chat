@@ -75,7 +75,7 @@ const Externallinkbutton = (props) => {
       passHref={true}
     >
       <Externalbuttonstyle
-        className="font-lexend"
+        className=""
         color={props.color}
         borderRadius={props.borderRadius}
         bgColor={props.bgColor}

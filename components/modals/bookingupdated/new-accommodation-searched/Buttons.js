@@ -16,7 +16,7 @@ const GridContainer = styled.div`
 
 const Section = (props) => {
   return (
-    <Container className="font-lexend hidden-desktop">
+    <Container className=" hidden-desktop">
       <GridContainer>
         <Button
           fontSize="0.85rem"

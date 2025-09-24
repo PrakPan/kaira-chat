@@ -15,7 +15,7 @@ const Container = styled.div`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div
           className="center-dv"
           style={{
@@ -27,7 +27,7 @@ const Section = (props) => {
         >
           <p
             style={{ margin: "0", fontSize: "15px", fontWeight: "700" }}
-            className="font-lexend text-center"
+            className=" text-center"
           >
             {"Bus"}
           </p>

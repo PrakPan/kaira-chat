@@ -6,6 +6,7 @@ import {
   gsap,
   useGSAP,
 } from "../common/gsapConfig";
+import Link from "next/link";
 
 const JourneySimplified = () => {
   // Refs for GSAP animations
@@ -277,6 +278,7 @@ const JourneySimplified = () => {
 
         {/* CTA Button */}
         <div className="text-center">
+        <Link href="/new-trip">
           <Button
             variant="filled"
             size="medium"
@@ -287,6 +289,7 @@ const JourneySimplified = () => {
           >
             + Get Free Travel Consultation
           </Button>
+          </Link>
         </div>
       </div>
     </section>

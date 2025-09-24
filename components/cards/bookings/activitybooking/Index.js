@@ -33,7 +33,7 @@ const Booking = (props) => {
       for (var i = 0; i < props.rooms.length; i++) {
         if (props.rooms[i].number_of_rooms)
           roomsJSX.push(
-            <Detail key={i} className="font-lexend">
+            <Detail key={i} className="">
               {props.rooms[i].room_type
                 ? props.rooms[i].number_of_rooms +
                   " x " +
@@ -43,7 +43,7 @@ const Booking = (props) => {
           );
         else
           roomsJSX.push(
-            <Detail key={i} className="font-lexend">
+            <Detail key={i} className="">
               {props.rooms[i].room_type
                 ? props.rooms[i].room_type
                 : "Private Room"}
@@ -70,7 +70,7 @@ const Booking = (props) => {
     <div style={{ height: "max-content" }}>
       <div
         style={{ margin: "0 0 1rem 0", fontSize: "18px" }}
-        className="font-lexend"
+        className=""
       >
         <b>{props.data ? (props.data.city ? props.data.city : "") : ""}</b>
         {props.data

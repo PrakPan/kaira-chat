@@ -245,6 +245,7 @@ const Enquiry = (props) => {
   };
 
   const completeItineraryCreate = () => {
+    console.log("completeItineraryCreate called")
     const data = {
       source,
       itinerary_id: itineraryId,
@@ -274,8 +275,10 @@ const Enquiry = (props) => {
         setSubmitted(true);
         dispatch(setItineraryCreated(true));
 
-        router.push(`/itinerary/${itineraryId}`)
-        window.scrollTo(0, 0);
+        setTimeout(() => {
+          window.location.href = `/itinerary/${itineraryId}`;
+          window.scrollTo(0, 0);
+        }, 100);
 
         logEvent({
           action: "conversion",

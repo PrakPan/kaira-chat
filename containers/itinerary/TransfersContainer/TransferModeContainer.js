@@ -980,7 +980,7 @@ const TransferModeContainer = (props) => {
                         <FlexBox>
                           {props.userSelected ? (
                             <div>
-                              <Cost className="font-lexend">
+                              <Cost className="">
                                 {props.booking.booking_cost
                                   ? "₹" +
                                     getIndianPrice(

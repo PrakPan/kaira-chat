@@ -11,13 +11,13 @@ const Booking = (props) => {
   return (
     <GridContainer>
       <div
-        className="center-div font-lexend text-center"
+        className="center-div  text-center"
         style={{ fontSize: "0.75rem", fontWeight: "600" }}
       >
         Private Room
       </div>
       <div
-        className="center-div font-lexend text-center"
+        className="center-div  text-center"
         style={{
           fontSize: "0.75rem",
           fontWeight: "600",
@@ -28,7 +28,7 @@ const Booking = (props) => {
         2 Nights
       </div>
       <div
-        className="center-div font-lexend text-center"
+        className="center-div  text-center"
         style={{ fontSize: "0.75rem", fontWeight: "600" }}
       >
         One More

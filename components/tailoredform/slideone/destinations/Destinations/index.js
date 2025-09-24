@@ -60,7 +60,7 @@ const EndDestination = (props) => {
             _handleFocusSearch();
           }
       }
-      className="font-lexend hover-pointer"
+      className=" hover-pointer"
       style={{
         borderRadius: "8px",
         border:

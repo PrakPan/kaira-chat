@@ -67,8 +67,8 @@ const Booking = (props) => {
             <div
               className={
                 props.data.user_selected
-                  ? "font-lexend text-center"
-                  : "blurry-text font-lexend text-center"
+                  ? " text-center"
+                  : "blurry-text  text-center"
               }
               style={{
                 fontWeight: "400",
@@ -93,7 +93,7 @@ const Booking = (props) => {
                 fontWeight: "700",
                 fontSize: "0.95rem",
               }}
-              className="font-lexend"
+              className=""
             >
               {getTime(props.data.check_in)}
             </div>
@@ -107,7 +107,7 @@ const Booking = (props) => {
                 fontWeight: "400",
                 fontSize: "0.95rem",
               }}
-              className="font-lexend"
+              className=""
             >
               {!getTime(props.data.check_in)
                 ? props.data.city + " (" + props.data.origin_code + ")"
@@ -152,7 +152,7 @@ const Booking = (props) => {
                 fontWeight: "700",
                 fontSize: "0.95rem",
               }}
-              className="font-lexend"
+              className=""
             >
               {getTime(props.data.check_out)}
             </div>
@@ -166,7 +166,7 @@ const Booking = (props) => {
                 fontWeight: "400",
                 fontSize: "0.95rem",
               }}
-              className="font-lexend"
+              className=""
             >
               {!getTime(props.data.check_out)
                 ? props.data.destination_city +
@@ -182,8 +182,8 @@ const Booking = (props) => {
             <div
               className={
                 props.data.user_selected
-                  ? "font-lexend"
-                  : "font-lexend blurry-text"
+                  ? ""
+                  : " blurry-text"
               }
               style={{
                 fontSize: "0.75rem",
@@ -201,8 +201,8 @@ const Booking = (props) => {
             <div
               className={
                 props.data.user_selected
-                  ? "font-lexend"
-                  : "font-lexend blurry-text"
+                  ? ""
+                  : " blurry-text"
               }
               style={{
                 fontSize: "0.55rem",
@@ -222,7 +222,7 @@ const Booking = (props) => {
             props.data.costings_breakdown.Segments ? (
               props.data.costings_breakdown.Segments[0].length > 1 ? (
                 <div
-                  className="font-lexend text-center"
+                  className=" text-center"
                   style={{
                     fontSize: "0.65rem",
                     fontWeight: "300",
@@ -245,8 +245,8 @@ const Booking = (props) => {
             <div
               className={
                 props.data.user_selected
-                  ? "font-lexend"
-                  : "font-lexend blurry-text"
+                  ? ""
+                  : " blurry-text"
               }
               style={{
                 fontSize: "0.75rem",
@@ -264,8 +264,8 @@ const Booking = (props) => {
             <div
               className={
                 props.data.user_selected
-                  ? "font-lexend"
-                  : "font-lexend blurry-text"
+                  ? ""
+                  : " blurry-text"
               }
               style={{
                 fontSize: "0.55rem",

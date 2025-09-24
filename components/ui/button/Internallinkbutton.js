@@ -74,7 +74,7 @@ const Internallinkbutton = (props) => {
       passHref={true}
     >
       <Internalbuttonstyle
-        className="font-lexend"
+        className=""
         color={props.color}
         borderRadius={props.borderRadius}
         bgColor={props.bgColor}

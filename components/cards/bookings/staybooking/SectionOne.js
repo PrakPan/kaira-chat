@@ -49,9 +49,9 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <Name
-          className="font-lexend  hover-pointer"
+          className="  hover-pointer"
           onClick={
             !props.is_registration_needed
               ? props.setShowBookingModal
@@ -65,7 +65,7 @@ const Section = (props) => {
           {props.data ? (
             props.data.user_rating && color !== "red" ? (
               <RatingContainer
-                className="font-lexend "
+                className=" "
                 style={{ backgroundColor: color, lineHeight: "1" }}
               >
                 <IoStarSharp

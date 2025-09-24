@@ -81,7 +81,7 @@ const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container className="font-lexend center-di text-cente">
+    <Container className=" center-di text-cente">
       <PaddingContianer>
         <Heading>{props.title}</Heading>
         {isPageWide ? (

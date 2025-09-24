@@ -15,7 +15,7 @@ const GridContainer = styled.div`
 
 const Section = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <GridContainer>
         <Button
           onclick={props.setShowDetails}

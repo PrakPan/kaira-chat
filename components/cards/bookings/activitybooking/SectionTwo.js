@@ -44,7 +44,7 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
           {props.data.check_in &&
           props.isDatePresent &&
@@ -60,8 +60,8 @@ const Section = (props) => {
                 leftalign
               ></ImageLoader>
               <div>
-                <Heading className="font-lexend">Date</Heading>
-                <Text className="font-lexend">
+                <Heading className="">Date</Heading>
+                <Text className="">
                   {getDate(props.data.check_in)}
                 </Text>
               </div>
@@ -79,8 +79,8 @@ const Section = (props) => {
                 leftalign
               ></ImageLoader>
               <div>
-                <Heading className="font-lexend">Duration</Heading>
-                <Text className="font-lexend">
+                <Heading className="">Duration</Heading>
+                <Text className="">
                   {props.data.ideal_duration_hours_text}
                 </Text>
               </div>
@@ -101,7 +101,7 @@ const Section = (props) => {
                   leftalign
                 ></ImageLoader>
                 <div>
-                  <Text className="font-lexend">
+                  <Text className="">
                     {props.data.costings_breakdown.no_of_tickets + " Person(s)"}
                   </Text>
                 </div>

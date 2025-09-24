@@ -79,7 +79,7 @@ const Element = (props) => {
         )}
         <div>
           <Name
-            className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+            className={props.blur ? " blurry-text" : ""}
           >
             {props.name}
             {props.element_type === ITINERARY_ELEMENT_TYPES.activity &&
@@ -106,7 +106,7 @@ const Element = (props) => {
 
           {props.text && !props.is_food && !props.is_poi_rec ? (
             <Description
-              className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+              className={props.blur ? " blurry-text" : ""}
             >
               {props.text}
             </Description>
@@ -125,7 +125,7 @@ const Element = (props) => {
               props.activity_data.poi.tips ? (
                 props.activity_data.poi.tips.length ? (
                   <div
-                    className="font-lexend"
+                    className=""
                     style={{ fontSize: "1rem", margin: "0.5rem 0" }}
                   >
                     <div style={{ fontWeight: "600" }}>Tips & Tricks</div>

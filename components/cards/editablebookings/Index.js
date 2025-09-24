@@ -143,7 +143,7 @@ const Booking = (props) => {
       for (var i = 0; i < props.rooms.length; i++) {
         if (props.rooms[i].number_of_rooms)
           roomsJSX.push(
-            <Detail key={i} className="font-lexend">
+            <Detail key={i} className="">
               {props.rooms[i].room_type
                 ? props.rooms[i].number_of_rooms +
                   " x " +
@@ -153,7 +153,7 @@ const Booking = (props) => {
           );
         else
           roomsJSX.push(
-            <Detail key={i} className="font-lexend">
+            <Detail key={i} className="">
               {props.rooms[i].room_type
                 ? props.rooms[i].room_type
                 : "Private Room"}
@@ -231,21 +231,21 @@ const Booking = (props) => {
                   : RANDOM_RATING[Math.floor(Math.random() * 10)]}
               </RatingContainer>
             ) : null}
-            <Heading className="font-lexend">Details</Heading>
+            <Heading className="">Details</Heading>
             {props.type === "Accommodation" ? (
               <div>
                 {props.check_in && !props.experience ? (
-                  <Detail className="font-lexend">
+                  <Detail className="">
                     {"Check in: " + getDate(props.check_in)}
                   </Detail>
                 ) : null}
                 {props.check_out && !props.experience ? (
-                  <Detail className="font-lexend">
+                  <Detail className="">
                     {"Check out: " + getDate(props.check_out)}
                   </Detail>
                 ) : null}
                 {props.duration && props.experience ? (
-                  <Detail className="font-lexend">
+                  <Detail className="">
                     {props.duration + " Night(s)"}
                   </Detail>
                 ) : null}
@@ -258,7 +258,7 @@ const Booking = (props) => {
                       style={{ marginRight: "0.25rem" }}
                     ></FontAwesomeIcon>
                     <p
-                      className="font-lexend"
+                      className=""
                       style={{
                         marginRight: "1rem",
                         display: "inline",
@@ -272,7 +272,7 @@ const Booking = (props) => {
                       style={{ marginRight: "0.25rem" }}
                     ></FontAwesomeIcon>
                     <p
-                      className="font-lexend"
+                      className=""
                       style={{
                         marginRight: "1rem",
                         display: "inline",
@@ -286,7 +286,7 @@ const Booking = (props) => {
                       style={{ marginRight: "0.25rem" }}
                     ></FontAwesomeIcon>
                     <p
-                      className="font-lexend"
+                      className=""
                       style={{
                         marginRight: "1rem",
                         display: "inline",
@@ -297,7 +297,7 @@ const Booking = (props) => {
                     </p>
                   </div>
                 ) : null}
-                <Detail className="font-lexend">{mealplan}</Detail>
+                <Detail className="">{mealplan}</Detail>
                 <FontAwesomeIcon
                   icon={faWifi}
                   style={{ fontSize: "0.75rem", fontWeight: "300" }}
@@ -314,7 +314,7 @@ const Booking = (props) => {
             {!props.experience ? (
               <ButtonContainer>
                 {props.is_selected ? (
-                  <Selected className="font-lexend">
+                  <Selected className="">
                     <BsCheckLg
                       style={{ fontSize: "0.75rem", marginRight: "0.25rem" }}
                     ></BsCheckLg>
@@ -322,7 +322,7 @@ const Booking = (props) => {
                   </Selected>
                 ) : (
                   <Select
-                    className="font-lexend"
+                    className=""
                     onClick={_handleTaxiSelection}
                   >
                     {props.cardUpdateLoading === props.booking_id ? (
@@ -406,21 +406,21 @@ const Booking = (props) => {
                 : RANDOM_RATING[Math.floor(Math.random() * 10)]}
             </RatingContainer>
           ) : null}
-          <Heading className="font-lexend">Details</Heading>
+          <Heading className="">Details</Heading>
           {props.type === "Accommodation" ? (
             <div>
               {props.check_in && !props.experience ? (
-                <Detail className="font-lexend">
+                <Detail className="">
                   {"Check in: " + getDate(props.check_in)}
                 </Detail>
               ) : null}
               {props.check_out && !props.experience ? (
-                <Detail className="font-lexend">
+                <Detail className="">
                   {"Check out: " + getDate(props.check_out)}
                 </Detail>
               ) : null}
               {props.experience && props.duration ? (
-                <Detail className="font-lexend">{props.duration}</Detail>
+                <Detail className="">{props.duration}</Detail>
               ) : null}
               {RoomsJSX}
               {props.plan ? (
@@ -430,7 +430,7 @@ const Booking = (props) => {
                     style={{ marginRight: "0.25rem" }}
                   ></FontAwesomeIcon>
                   <p
-                    className="font-lexend"
+                    className=""
                     style={{
                       marginRight: "1rem",
                       display: "inline",
@@ -444,7 +444,7 @@ const Booking = (props) => {
                     style={{ marginRight: "0.25rem" }}
                   ></FontAwesomeIcon>
                   <p
-                    className="font-lexend"
+                    className=""
                     style={{
                       marginRight: "1rem",
                       display: "inline",
@@ -458,7 +458,7 @@ const Booking = (props) => {
                     style={{ marginRight: "0.25rem" }}
                   ></FontAwesomeIcon>
                   <p
-                    className="font-lexend"
+                    className=""
                     style={{
                       marginRight: "1rem",
                       display: "inline",
@@ -469,7 +469,7 @@ const Booking = (props) => {
                   </p>
                 </div>
               ) : null}
-              <Detail className="font-lexend">{mealplan}</Detail>
+              <Detail className="">{mealplan}</Detail>
               <FontAwesomeIcon
                 icon={faWifi}
                 style={{ fontSize: "0.75rem", fontWeight: "300" }}
@@ -481,14 +481,14 @@ const Booking = (props) => {
           {!props.experience ? (
             <ButtonContainer>
               {props.is_selected && !props.experience ? (
-                <Selected className="font-lexend">
+                <Selected className="">
                   <BsCheckLg
                     style={{ fontSize: "0.75rem", marginRight: "0.25rem" }}
                   ></BsCheckLg>
                   Selected
                 </Selected>
               ) : !props.experience ? (
-                <Select className="font-lexend" onClick={_handleTaxiSelection}>
+                <Select className="" onClick={_handleTaxiSelection}>
                   {props.cardUpdateLoading === props.booking_id ? (
                     <Spinner
                       display="inline"

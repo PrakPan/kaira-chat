@@ -259,7 +259,7 @@ const Details = (props) => {
 
   return (
     <SummaryContainer
-      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
+      className=" ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
       style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
       couponSlide={couponSlide}
     >

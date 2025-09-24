@@ -23,7 +23,7 @@ const TaxiCard = styled.div`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <TaxiCard>
           <ImageContainer
           // style={{
@@ -57,7 +57,7 @@ const Section = (props) => {
               fontSize: "15px",
               fontWeight: "700",
             }}
-            className="font-lexend text-center"
+            className=" text-center"
           >
             {props.data.taxi_category.type}
           </p> */}
@@ -67,7 +67,7 @@ const Section = (props) => {
               fontSize: "13px",
               fontWeight: "300",
             }}
-            className="font-lexend text-center"
+            className=" text-center"
           >
             {props.data?.taxi_category?.seating_capacity + "-seater"}
           </p> */}

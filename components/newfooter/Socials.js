@@ -38,7 +38,7 @@ const IconContainer = styled(Link)`
 
 const Socials = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <IconContainer
         hoverbg={"#1D9BF0"}
         href="https://twitter.com/thetarzanway"

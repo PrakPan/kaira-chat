@@ -62,7 +62,7 @@ const Banner = (props) => {
       <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
-            <Text className="font-lexend">{props.text}</Text>
+            <Text className="">{props.text}</Text>
           </div>
           <Button
             display="inline-block"

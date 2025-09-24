@@ -90,9 +90,9 @@ const Terms = () => {
 
   return (
     <>
-      <Heading className="font-lexend">Terms And Conditions</Heading>
+      <Heading className="">Terms And Conditions</Heading>
 
-      <Container className="font-lexend">
+      <Container className="">
         {isPageWide && (
           <Linkcardstyle>
             <Navbar />

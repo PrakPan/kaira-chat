@@ -119,8 +119,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
@@ -148,8 +148,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
@@ -169,8 +169,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -195,8 +195,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail["name"]}
@@ -220,8 +220,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail["name"]}
@@ -235,8 +235,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -513,8 +513,8 @@ const Details = (props) => {
                   show_per_person_cost={props.payment.show_per_person_cost}
                   className={
                     props.blur
-                      ? "font-lexend blurry-text"
-                      : "font-lexend text-3xl flex flex-row items-center font-semibold"
+                      ? " blurry-text"
+                      : " text-3xl flex flex-row items-center font-semibold"
                   }
                 >
                   <span>₹</span>
@@ -622,8 +622,8 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text "
-                        : "font-lexend text-enter text-sm font-normal"
+                        ? " text-enter blurry-text "
+                        : " text-enter text-sm font-normal"
                     }
                   >
                     {"Surcharges & Taxes"}
@@ -631,8 +631,8 @@ const Details = (props) => {
                   <div
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text font-bold"
-                        : "font-lexend text-enter "
+                        ? " text-enter blurry-text font-bold"
+                        : " text-enter "
                     }
                   >
                     {"₹ " +
@@ -655,8 +655,8 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text  "
-                            : "font-lexend text-enter text-sm font-bold  flex flex-col"
+                            ? " text-enter blurry-text  "
+                            : " text-enter text-sm font-bold  flex flex-col"
                         }
                       >
                         {"Coupon Discount"}
@@ -687,8 +687,8 @@ const Details = (props) => {
                       <div
                         className={
                           props.blur
-                            ? "font-lexend text-enter blurry-text "
-                            : "font-lexend text-enter font-bold"
+                            ? " text-enter blurry-text "
+                            : " text-enter font-bold"
                         }
                       >
                         {props?.payment?.coupon_usage?.discount ? (

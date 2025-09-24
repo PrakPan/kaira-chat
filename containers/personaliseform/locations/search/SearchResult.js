@@ -50,7 +50,7 @@ const SearchResult = (props) => {
       }
     >
       <div>
-        <Name className="font-lexend">{props.location}</Name>
+        <Name className="">{props.location}</Name>
         <Parent>{!props.newcity ? props.parent : "Add new city"}</Parent>
       </div>
       <div className="center-div">

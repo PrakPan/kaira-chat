@@ -39,7 +39,7 @@ const Pannel = (props) => {
         icon={faChevronLeft}
         style={{ margin: "1rem" }}
       ></FontAwesomeIcon>
-      <Heading className="font-lexend">{props.heading}</Heading>
+      <Heading className="">{props.heading}</Heading>
       {props.heading !== "Star Category" ? (
         <div style={{ width: "max-content", margin: "2rem auto" }}>
           <FormGroup>
@@ -65,7 +65,7 @@ const Pannel = (props) => {
                     }
                   />
                 }
-                label={<Label className="font-lexend">{currentfilter}</Label>}
+                label={<Label className="">{currentfilter}</Label>}
               />
             ))}
           </FormGroup>

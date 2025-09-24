@@ -138,7 +138,7 @@ const Timer = (props) => {
             {!props.hideTimer ? (
               <TimeRemaining
                 style={{ fontSize: props.hideTimer ? "1rem" : "2.5rem" }}
-                className="font-lexend"
+                className=""
               >
                 {"Hi " + firstname + "!"}
               </TimeRemaining>
@@ -146,7 +146,7 @@ const Timer = (props) => {
 
             {props.hideTimer ? null : (
               <p
-                className="font-lexend"
+                className=""
                 style={{
                   fontWeight: 300,
                   margin: "0 1rem 1.5rem 1rem",
@@ -258,7 +258,7 @@ const Timer = (props) => {
                 }}
               >
                 <TimeNumber
-                  className="font-lexend"
+                  className=""
                   style={{ fontSize: props.hideTimer ? "1rem" : "1.9rem" }}
                 >
                   {props.hours}
@@ -274,7 +274,7 @@ const Timer = (props) => {
                 }}
               >
                 <TimeNumber
-                  className="font-lexend"
+                  className=""
                   style={{ fontSize: props.hideTimer ? "1rem" : "1.9rem" }}
                 >
                   {props.minutes}
@@ -290,7 +290,7 @@ const Timer = (props) => {
                 }}
               >
                 <TimeNumber
-                  className="font-lexend"
+                  className=""
                   style={{ fontSize: props.hideTimer ? "1rem" : "1.9rem" }}
                 >
                   {props.seconds}
@@ -347,7 +347,7 @@ const Timer = (props) => {
             {!props.hideTimer ? (
               <TimeRemaining
                 style={{ fontSize: props.hideTimer ? "1rem" : "2.5rem" }}
-                className="font-lexend"
+                className=""
               >
                 {"Hi " + firstname + "!"}
               </TimeRemaining>
@@ -355,7 +355,7 @@ const Timer = (props) => {
 
             {props.hideTimer ? null : (
               <p
-                className="font-lexend"
+                className=""
                 style={{
                   fontWeight: 300,
                   margin: "0 1rem 1.5rem 1rem",
@@ -463,7 +463,7 @@ const Timer = (props) => {
           {!props.hideTimer ? (
             <TimeRemaining
               style={{ fontSize: props.hideTimer ? "1rem" : "2.5rem" }}
-              className="font-lexend"
+              className=""
             >
               {"Hi " + firstname + "!"}
             </TimeRemaining>
@@ -471,7 +471,7 @@ const Timer = (props) => {
 
           {props.hideTimer ? null : (
             <p
-              className="font-lexend"
+              className=""
               style={{
                 fontWeight: 300,
                 margin: "0 1rem 1.5rem 1rem",

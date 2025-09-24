@@ -64,7 +64,7 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         {props.isDatePresent && !props.is_registration_needed ? (
           <div
             style={{
@@ -93,8 +93,8 @@ const Section = (props) => {
               <div style={{}}>
                 {props.data.check_in ? (
                   <div>
-                    <Heading className="font-lexend">Check In</Heading>
-                    <Text className="font-lexend">
+                    <Heading className="">Check In</Heading>
+                    <Text className="">
                       {getDate(props.data.check_in)}
                     </Text>
                   </div>
@@ -120,8 +120,8 @@ const Section = (props) => {
               <div style={{}}>
                 {props.data.check_out ? (
                   <div>
-                    <Heading className="font-lexend">Check Out</Heading>
-                    <Text className="font-lexend">
+                    <Heading className="">Check Out</Heading>
+                    <Text className="">
                       {getDate(props.data.check_out)}
                     </Text>
                   </div>
@@ -156,8 +156,8 @@ const Section = (props) => {
                 leftalign
               ></ImageLoader>
               <div style={{ display: "flex", alignItems: "center" }}>
-                {/* <Heading className='font-lexend'>Check In</Heading> */}
-                <Text className="font-lexend">
+                {/* <Heading className=''>Check In</Heading> */}
+                <Text className="">
                   {props.data.duration + " night(s)"}
                 </Text>
               </div>
@@ -198,13 +198,13 @@ const Section = (props) => {
                     flexDirection: "column",
                   }}
                 >
-                  <Text className="font-lexend">
+                  <Text className="">
                     {rooms[0].number_of_adults > 1
                       ? rooms[0].number_of_adults + " Adults "
                       : "1 Adult"}
                   </Text>
                   <Text
-                    className="font-lexend"
+                    className=""
                     style={{ marginLeft: "0.25rem" }}
                   >
                     {rooms[0].number_of_children
@@ -216,7 +216,7 @@ const Section = (props) => {
                       : null}
                   </Text>
                   <Text
-                    className="font-lexend"
+                    className=""
                     style={{ marginLeft: "0.25rem" }}
                   >
                     {rooms[0].number_of_infants
@@ -256,7 +256,7 @@ const Section = (props) => {
                       props.data.costings_breakdown.length ? (
                         props.data.costings_breakdown[0].pricing_type ===
                         "CP" ? (
-                          <Text className="font-lexend">Breakfast</Text>
+                          <Text className="">Breakfast</Text>
                         ) : null
                       ) : null
                     ) : null}
@@ -264,7 +264,7 @@ const Section = (props) => {
                       props.data.costings_breakdown.length ? (
                         props.data.costings_breakdown[0].pricing_type ===
                         "MAP" ? (
-                          <Text className="font-lexend">
+                          <Text className="">
                             Breakfast & Lunch / dinner
                           </Text>
                         ) : null
@@ -274,7 +274,7 @@ const Section = (props) => {
                       props.data.costings_breakdown.length ? (
                         props.data.costings_breakdown[0].pricing_type ===
                         "AP" ? (
-                          <Text className="font-lexend">
+                          <Text className="">
                             Breakfast, Lunch & Dinner
                           </Text>
                         ) : null
@@ -316,11 +316,11 @@ const Section = (props) => {
                       gridTemplateColumns: "max-content auto",
                     }}
                   >
-                    <Text className="font-lexend" style={{}}>
+                    <Text className="" style={{}}>
                       {room.number_of_rooms + " x "}
                     </Text>
                     <RoomText
-                      className="font-lexend"
+                      className=""
                       style={{ marginLeft: "0.25rem" }}
                     >
                       {room.room_type_name}
@@ -330,7 +330,7 @@ const Section = (props) => {
               : null}
             {props.is_registration_needed ? (
               <div className="">
-                <Text className="font-lexend">
+                <Text className="">
                   Double / triple sharing rooms
                 </Text>
               </div>

@@ -330,15 +330,15 @@ export const auth = (
           dispatch(authSuccess(responseData.data.user?.oauth?.access_token)); //Store toke  n
           dispatch(setUserDetails(userdata)); //Store user name and email
           dispatch(checkAuthTimeout(responseData.data.user?.oauth?.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
-          dispatch(authCloseLogin()); //close login modal
           //store token details in local storage
           localStorage.setItem(
             "access_token",
             responseData.data.user?.oauth?.access_token
           );
-             if (onSuccess) {
+          if (onSuccess) {
             onSuccess();
           }
+          dispatch(authCloseLogin()); 
           localStorage.setItem("expirationDate", expirationDate);
         }
       })

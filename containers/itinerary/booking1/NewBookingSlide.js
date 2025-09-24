@@ -1023,8 +1023,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {Cart?.costings_breakdown[booking].detail[
@@ -1052,8 +1052,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {Cart?.costings_breakdown[booking].detail[
@@ -1073,8 +1073,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -1099,8 +1099,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {Cart?.costings_breakdown[booking].detail["name"]}
@@ -1124,8 +1124,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {
@@ -1143,8 +1143,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -1590,8 +1590,8 @@ const Details = (props) => {
                   show_per_person_cost={Cart?.show_per_person_cost}
                   className={
                     props.blur
-                      ? "font-lexend blurry-text"
-                      : "font-lexend text-3xl flex flex-row items-center font-semibold"
+                      ? " blurry-text"
+                      : " text-3xl flex flex-row items-center font-semibold"
                   }
                 >
                   {Cart && <span>₹</span>}
@@ -1712,8 +1712,8 @@ const Details = (props) => {
                     <div
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text "
-                          : "font-lexend text-enter text-sm font-normal"
+                          ? " text-enter blurry-text "
+                          : " text-enter text-sm font-normal"
                       }
                     >
                       {"Surcharges & Taxes"}
@@ -1721,8 +1721,8 @@ const Details = (props) => {
                     <div
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text font-bold"
-                          : "font-lexend text-enter "
+                          ? " text-enter blurry-text font-bold"
+                          : " text-enter "
                       }
                     >
                       {"₹ " +
@@ -1740,8 +1740,8 @@ const Details = (props) => {
                         <div
                           className={
                             props.blur
-                              ? "font-lexend text-enter blurry-text  "
-                              : "font-lexend text-enter text-sm font-bold  flex flex-col"
+                              ? " text-enter blurry-text  "
+                              : " text-enter text-sm font-bold  flex flex-col"
                           }
                         >
                           {"Coupon Discount"}
@@ -1771,8 +1771,8 @@ const Details = (props) => {
                         <div
                           className={
                             props.blur
-                              ? "font-lexend text-enter blurry-text "
-                              : "font-lexend text-enter font-bold"
+                              ? " text-enter blurry-text "
+                              : " text-enter font-bold"
                           }
                         >
                           {Cart?.coupon_usage?.discount ? (
@@ -2169,7 +2169,7 @@ const Details = (props) => {
           width={"50%"}
           mobileWidth={"100%"}
           style={{ zIndex: 1600 }}
-          className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`}
+          className={` ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`}
           onHide={handleCloseDrawer}
         >
           {/* Close button */}
@@ -2226,8 +2226,8 @@ const Details = (props) => {
                       show_per_person_cost={Cart?.show_per_person_cost}
                       className={
                         props.blur
-                          ? "font-lexend blurry-text"
-                          : "font-lexend text-3xl flex flex-row items-center font-semibold"
+                          ? " blurry-text"
+                          : " text-3xl flex flex-row items-center font-semibold"
                       }
                     >
                       {Cart && <span>₹</span>}
@@ -2543,7 +2543,7 @@ const Details = (props) => {
         width={"100%"}
         mobileWidth={"100%"}
         style={{ zIndex: 1601 }}
-        className="font-lexend"
+        className=""
         onHide={() => setShowSetPassenger(false)}
       >
         <IoMdClose

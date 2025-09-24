@@ -55,7 +55,7 @@ const GroupType = (props) => {
         <GroupComponent />
         {/* <div className="text-center">
           <OptionContainer
-            className=" center-div font-lexend hover-pointer"
+            className=" center-div  hover-pointer"
             is_selected={props.groupType === "Solo"}
             onClick={() => props._handleShowPax("Solo")}
           >
@@ -72,7 +72,7 @@ const GroupType = (props) => {
 {/* 
         <div className="text-center">
           <OptionContainer
-            className="center-div   font-lexend hover-pointer"
+            className="center-div    hover-pointer"
             is_selected={props.groupType === "Couple"}
             onClick={() => props._handleShowPax("Couple")}
           >
@@ -89,7 +89,7 @@ const GroupType = (props) => {
 
         <div className="text-center">
           <OptionContainer
-            className=" center-div  font-lexend hover-pointer"
+            className=" center-div   hover-pointer"
             is_selected={props.groupType === "Friends"}
             onClick={() => props._handleShowPax("Friends")}
           >
@@ -106,7 +106,7 @@ const GroupType = (props) => {
 
         <div className="text-center">
           <OptionContainer
-            className="  center-div  font-lexend hover-pointer"
+            className="  center-div   hover-pointer"
             is_selected={props.groupType === "Family"}
             onClick={() => props._handleShowPax("Family")}
           >

@@ -59,7 +59,7 @@ const FullImgContentLadakh = (props) => {
   };
 
   return (
-    <Container className="font-lexend h-full !flex justify-center items-center mt-4">
+    <Container className=" h-full !flex justify-center items-center mt-4">
       <PaddingContianer className="flex items-center justify-center mt-[120px]">
 
         {isPageWide ? (

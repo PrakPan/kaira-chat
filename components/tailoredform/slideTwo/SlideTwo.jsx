@@ -168,17 +168,19 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 export const EditDestinations = (props) => {
     const [popUp, setPopUp] = useState(false);
     const [newDestination, setNewDestination] = useState(null);
+    
     return (
         <div className="w-full md:w-[50%] lg:w-[55%] lg:p-4 font-inter font-normal flex flex-col items-start justify-start pb-[150px] gap-3">
             <div className="w-full flex flex-row items-start justify-between">
-                <div className="text-[20px] pb-3">Route Preview</div>
+                <div className="relative text-[20px] pb-3">Route Preview</div>
                 <div
                     onClick={() => props?.setIsAddMode(true)}
-                    className="relative text-blue cursor-pointer underline text-sm"
+                    className=" text-blue cursor-pointer underline text-sm"
                 >
                     + Add Destination
-                    {props.isAddMode == true && (
-                        <div className="text-black absolute top-[100px] -left-[200px] w-[300px]">
+                </div>
+                {(props.isAddMode === true) && (
+                        <div className="text-black absolute top-[170px] left-[200px]  w-[300px]">
                             <DestinationPopUp
                                 destinationRef={props.destinationRef}
                                 cityData={{}} // empty for new
@@ -190,13 +192,13 @@ export const EditDestinations = (props) => {
                                 setDestinationChanges={props.setDestinationChanges}
                                 onSetDestination={(dest) => setNewDestination(dest)}
                                 onClose={() => {
-                                    props.setIsAddMode(false)
-                                    console.log("close add destination called close")
+                                    props?.setIsAddMode(false)
+                                    console.log("close add destination called close: ",props.isAddMode)
                                 }}
+                                setPopUp={props.setIsAddMode} // Add this to prevent conflicts
                             />
                         </div>
                     )}
-                </div>
             </div>
 
             {props.destinations.length ? (
@@ -422,9 +424,7 @@ export const Destination = (props) => {
                     </div>
                 </div>
 
-                {/* Edit/Delete */}
-                {(
-                    <div className="flex flex-row items-center gap-2">
+                {!startingCity && !endingCity && (                    <div className="flex flex-row items-center gap-2">
                         <div
                             onClick={(e) => {
                                  e.stopPropagation();  
@@ -436,7 +436,7 @@ export const Destination = (props) => {
                             <MdOutlineEdit size={18} color={"#3B82F6"} />
                         </div>
 
-                        {!startingCity && !endingCity && (
+                        
                             <div
                                 onClick={(e) =>
                                     handleRemoveDestination(
@@ -452,9 +452,9 @@ export const Destination = (props) => {
                             >
                                 <MdOutlineDelete size={18} color="#EF4444" />
                             </div>
-                        )}
                     </div>
-                )}
+                                            )}
+
             </div>
 
             {/* Dotted line */}
@@ -511,6 +511,16 @@ export const DestinationPopUp = (props) => {
         }
     }, [debouncedSearch, startingCity, endingCity]);
 
+    const handleClose = () => {
+        // if (setPopUp) {
+        //     setPopUp(false);
+        // }
+        if (onClose) {
+            onClose();
+        }
+       
+    };
+
     return (
         <div
             ref={destinationRef}
@@ -523,7 +533,7 @@ export const DestinationPopUp = (props) => {
                 <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
 
                 <RxCrossCircled
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="text-2xl cursor-pointer absolute right-2 top-2"
                 />
 
@@ -634,14 +644,12 @@ export const DestinationPopUp = (props) => {
                         }
 
                         // Close popup
-                        if (props.setPopUp) props.setPopUp(false);
-                        if (props.onClose) props.onClose();
+                        handleClose();
                     }}
                     className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
                 >
                     Update
                 </button>
-
 
             </div>
         </div>

@@ -40,7 +40,7 @@ const Result = (props) => {
 
   return (
     <Container
-      className="font-lexend p-2"
+      className=" p-2"
       onClick={(e) => {
         _handleClick(e),
           props._updateDestinationHandler(

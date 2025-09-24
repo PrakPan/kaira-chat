@@ -290,7 +290,7 @@ const ViewHotelDetails = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      className="font-lexend"
+      className=""
       onHide={props.onHide}
       style={{zIndex:1252}}
       width={"50vw"}
@@ -298,7 +298,7 @@ const ViewHotelDetails = (props) => {
     >
       {!loading ? (
         <Container>
-          <BackContainer className=" font-lexend">
+          <BackContainer className=" ">
             <BackArrow handleClick={props.onHide} />
           </BackContainer>
           {!error ? (

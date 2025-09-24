@@ -119,7 +119,7 @@ const RegistrationModal = (props) => {
           ></TbArrowBack>
         </Modal.Header>
         <Body className="">
-          <p className="font-lexend text-center">
+          <p className=" text-center">
             You're not authorized to purchase this, verify email
           </p>
           <Email

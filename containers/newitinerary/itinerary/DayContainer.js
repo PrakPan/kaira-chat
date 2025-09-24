@@ -11,7 +11,7 @@ const Date = styled.div`
 
 const DayContainer = (props) => {
   return (
-    <div className="font-lexend">
+    <div className="">
       <Date>Feb 3, 2023</Date>
 
       <div className="border-thin" style={{ borderRadius: "10px" }}></div>
