@@ -51,6 +51,7 @@ import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
 import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   position: relative;
@@ -188,6 +189,7 @@ const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
   const handleClose = useHandleClose();
+  const router = useRouter();
   const [startDate, setStartDate] = useState(
     getDate(props?.plan ? props?.plan.start_date : props?.itinerary?.start_date)
   );
@@ -586,7 +588,7 @@ const RouteEditSection = (props) => {
         .then((response) => {
           setLoading(false);
           const itineraryId =
-            props.ItineraryId || props?.itinerary?.ItineraryId;
+           router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
           handleClose()
         })
@@ -615,19 +617,19 @@ const RouteEditSection = (props) => {
         });
     } else {
       axiosMercuryItineraryUpdateInstance
-        .post(`/${props.ItineraryId || props?.itinerary?.ItineraryId}/`, data, {
+        .post(`/${router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId}/`, data, {
           headers,
         })
         .then((response) => {
           dispatch(setItinerary(response.data));
         Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
+        if (key.startsWith(`notes_dismissed_${ router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
         localStorage.removeItem(key);
         }
         });
           setLoading(false);
           const itineraryId =
-            props.ItineraryId || props?.itinerary?.ItineraryId;
+            router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
           handleClose()
         })

@@ -18,14 +18,17 @@ const Itinerary = (props) => {
   const itineraryId = useSelector((state) => state.ItineraryId);
 
   useEffect(() => {
-    if (!itineraryId) {
-      if (router.query.id) {
-        props.setItineraryId(router.query.id);
-      }
-      getHotLocationsSearch();
-      props.checkAuthState();
-    }
-  }, [router]);
+  const id = router.query.id;
+  if (id && itineraryId !== id) {
+    props.setItineraryId(id);
+  }
+}, [router.query.id]);
+
+useEffect(() => {
+  getHotLocationsSearch();
+  props.checkAuthState();
+}, []); 
+
 
   const getHotLocationsSearch = async () => {
     try {
