@@ -176,8 +176,8 @@ const ItineraryCity = (props) => {
           <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
             {" - "}
-            {multiHotelDuration}{" "}
-            {multiHotelDuration === 1 ? "Night" : "Nights"}
+            {props?.city?.duration}{" "}
+            {props?.city?.duration === 1 ? "Night" : "Nights"}
           </div>
 
           {hotels_status === "PENDING" ? (
