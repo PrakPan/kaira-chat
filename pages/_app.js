@@ -190,12 +190,11 @@ function MyApp({ Component, pageProps, store }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
-             <JupiterAnalytics 
-        apiEndpoint="/api/jupiter-analytics/track"
-        apiKey={process.env.NEXT_PUBLIC_JUPITER_API_KEY}
+            <JupiterAnalytics 
+        apiEndpoint="https://dev.jupiter.tarzanway.com"
         userId={pageProps.user?.id}
         batchSize={10}
-        flushInterval={5000}
+        flushInterval={3000}
       />
             <Component {...pageProps} />
           </Theme>

@@ -83,6 +83,14 @@ const HotelBooking = ({
 
   const handleMultipleActions = (hotel) => {
     // Bulk tracking example
+    trackHotelCardClicked(router.query.id, hotel.id, 'search_results');
+    
+    // Check state
+    setTimeout(() => {
+      console.log('Current state:', getState());
+    }, 1000);
+
+
     trackBulk([
       { eventName: 'hotel_card_clicked', properties: { hotel_id: hotel.id } },
       { eventName: 'hotel_card_details', properties: { hotel_id: hotel.id } },
