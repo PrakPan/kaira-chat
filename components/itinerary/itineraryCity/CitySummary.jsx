@@ -588,7 +588,7 @@ console.log("Taxi det",formattedTaxiDetails)
                       </div>
                     </div>
 
-                    {console.log("DDD",drawer,item?.id)}
+                
                     
                     {drawer == "SightSeeing" && item?.id == bookingId && (
                       <>

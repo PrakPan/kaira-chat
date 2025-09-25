@@ -109,9 +109,9 @@ const pax = props?.rates?.reduce((total, rate) => {
             <div className="text-sm font-semibold text-black px-2">
               ₹{getIndianPrice(Math.round(rate.final_rate))}
               {rate.refundable ? (
-      <span className="text-[#3BAF75]">Refundable</span>
+      <span className="text-[#3BAF75]">&nbsp; Refundable</span>
     ) : (
-      <span className="text-[#EE724B]">Non-Refundable</span>
+      <span className="text-[#EE724B]">&nbsp; Non-Refundable</span>
     )}
             </div>
           )}
