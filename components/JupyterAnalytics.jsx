@@ -1,7 +1,7 @@
 import Script from 'next/script';
 import { useEffect } from 'react';
 
-export default function JupiterAnalytics({ 
+export default function JupyterAnalytics({ 
   apiEndpoint = 'https://dev.jupiter.tarzanway.com', // Your actual API host
   apiKey = '',
   userId = null,
