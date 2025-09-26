@@ -40,8 +40,10 @@ export default class MyDocument extends Document {
             href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
           />
           {/* Google Tag Manager */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
+          {
+          process.env.NODE_ENV === "production" &&
+            !CONTENT_SERVER_HOST.includes("dev") && 
+            (
               <>
                 <script
                   dangerouslySetInnerHTML={{
@@ -75,8 +77,10 @@ export default class MyDocument extends Document {
           {/*  End Google Tag Manager */}
 
           {/* Partytown */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
+          {
+          process.env.NODE_ENV === "production" &&
+            !CONTENT_SERVER_HOST.includes("dev") && 
+            (
               <>
                 <script
                   type="text/partytown"

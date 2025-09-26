@@ -18,6 +18,7 @@ import restartBot from "../helper/RestartBot";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
+import JupiterAnalytics from "../components/jupyterAnalytics";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -189,6 +190,12 @@ function MyApp({ Component, pageProps, store }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
+            <JupiterAnalytics 
+        apiEndpoint="https://dev.jupiter.tarzanway.com"
+        userId={pageProps.user?.id}
+        batchSize={10}
+        flushInterval={3000}
+      />
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>
