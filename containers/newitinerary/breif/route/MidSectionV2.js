@@ -104,6 +104,7 @@ const MidSectionV2 = (props) => {
   );
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  
 
   const handleAddTransfer = () => {
     router.push(

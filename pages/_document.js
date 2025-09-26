@@ -41,8 +41,8 @@ export default class MyDocument extends Document {
           />
           {/* Google Tag Manager */}
           {
-          // process.env.NODE_ENV === "production" &&
-          //   !CONTENT_SERVER_HOST.includes("dev") && 
+          process.env.NODE_ENV === "production" &&
+            !CONTENT_SERVER_HOST.includes("dev") && 
             (
               <>
                 <script
@@ -78,8 +78,8 @@ export default class MyDocument extends Document {
 
           {/* Partytown */}
           {
-          // process.env.NODE_ENV === "production" &&
-          //   !CONTENT_SERVER_HOST.includes("dev") && 
+          process.env.NODE_ENV === "production" &&
+            !CONTENT_SERVER_HOST.includes("dev") && 
             (
               <>
                 <script
