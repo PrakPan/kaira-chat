@@ -18,7 +18,8 @@ import restartBot from "../helper/RestartBot";
 import { useDispatch } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupiterAnalytics from "../components/jupyterAnalytics";
+import JupiterAnalytics from "../components/JupiterAnalytics";
+
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
