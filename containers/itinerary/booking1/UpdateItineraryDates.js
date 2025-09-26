@@ -522,7 +522,7 @@ useEffect(() => {
                   onFocusChange={(focusedInput) => {
                     setFocusedInput(focusedInput);
                   }}
-                  isOutsideRange={(day) => day.isBefore(moment(), "day")}
+                  isOutsideRange={(day) => day.isSameOrBefore(moment(), "day")}
                   numberOfMonths={isMobile ? 1 : 2}
                   orientation="horizontal"
                   noBorder={true}

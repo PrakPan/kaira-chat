@@ -278,7 +278,7 @@ const formattedDate =
           });
         } else {
           props.openNotification({
-            text: "There seems to be a problem, please try again!",
+            text:  err?.response?.data?.errors?.[0]?.message?.[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
