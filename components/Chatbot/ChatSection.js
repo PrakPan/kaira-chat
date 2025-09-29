@@ -5,6 +5,8 @@ import Markdown from 'react-markdown';
 import styles from "../../styles/Chatbot.module.css";
 import ProductSlider from './product-slider/ProductSlider';
 import media from '../../components/media';
+import Image from 'next/image';
+import useCachedImage from '../../hooks/useCachedImage';
 
 const Container = styled.div`
    height: calc(100% - 270px);
@@ -23,6 +25,8 @@ const Container = styled.div`
 const MessageWrapper = styled.div`
   display: flex;
   justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
+  align-items: flex-start;
+  gap: 10px;
 `;
 
 const Message = styled.div`
@@ -39,8 +43,24 @@ const Message = styled.div`
 
 const ChatMessage = React.memo(({ item }) => {
     const isUser = item.is_bot === false;
+    const cachedAvatar = useCachedImage(
+        "/assets/chatbot/chatbot-avaatar.svg",
+        "chatbot-avatar",
+        24 * 60 * 60 * 1000     
+    );
     return (
         <MessageWrapper isUser={isUser}>
+            
+            {!isUser && cachedAvatar &&
+                <Image
+                    src={cachedAvatar}
+                    alt="ticket"
+                    width={26}
+                    height={26}
+                    className='mt-[8px]'
+                />
+            }
+            
             <Message isUser={isUser}>
                 <Markdown>{item.message}</Markdown>
             </Message>
