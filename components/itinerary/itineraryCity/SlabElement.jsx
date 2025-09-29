@@ -8,6 +8,7 @@ import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 export const getStars = (rating) => {
   const stars = [];
@@ -22,6 +23,7 @@ export const getStars = (rating) => {
 };
 
 const SlabElement = (props) => {
+  const {trackActivityBookingAdd,trackActivityCardClicked,trackPoiCardClicked} = useAnalytics();
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
@@ -31,6 +33,9 @@ const SlabElement = (props) => {
           slabIndex={props?.slabIndex}
           itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
+          trackActivityBookingAdd={trackActivityBookingAdd}
+          trackActivityCardClicked={trackActivityCardClicked}
+          trackPoiCardClicked={trackActivityCardClicked}
           cityID={props?.cityID}
           cityName={props?.cityName}
         />
@@ -72,6 +77,11 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type,dayIndex) => {
+    if(type==='activity'){
+    props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
+    }if(type==='poi'){
+    props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
+    }
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

@@ -378,6 +378,7 @@ const Route = (props) => {
         console.log("Keys", key);
         locationsArr.push(
           <MidSectionV2
+            transferId={key}
             loadbookings={props?.loadbookings}
             pinColour={
               i === 0 || i === props?.CityData.length - 1

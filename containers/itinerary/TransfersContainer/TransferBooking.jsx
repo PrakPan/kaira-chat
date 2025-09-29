@@ -13,6 +13,7 @@ import { getModeIcon } from "../../../components/drawers/routeTransfer/TransferE
 import { FaPlaneDeparture } from "react-icons/fa";
 import PickupDropDrawer from "../PickupDropDrawer";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -74,7 +75,8 @@ const TransferBooking = ({
   isAirport,
   booking_id,
   dItineraryCityId,
-  oItineraryCityId
+  oItineraryCityId,
+  transferId,
 }) => {
 
   console.log("BKing",booking);
@@ -83,6 +85,8 @@ const TransferBooking = ({
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferCardClicked} = useAnalytics();
+  const {id} = useSelector((state)=>state.auth);
 
   useEffect(() => {
     setaddboking(booking?.user_selected);
@@ -96,6 +100,8 @@ const TransferBooking = ({
   }
 
   const handleAddTransfer = () => {
+
+    trackTransferBookingAdd(router.query.id,transferId,id);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -114,6 +120,7 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
+    trackTransferCardClicked(router.query.id,book?.id || booking_id,'transfer_section');
     // if(isAirport){
     //   setAirportBookingId(book?.id)
     // }

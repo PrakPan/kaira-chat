@@ -168,6 +168,7 @@ const NewPoiDetailsDrawer = (props) => {
               dayIndex={props?.dayIndex}
               setShowLoginModal={props.setShowLoginModal}
               setShowDrawer={props?.setShowDrawer}
+              trackPoiBookingAdded={props?.trackPoiBookingAdded}
             />
           ) : (
             <PoiDetailsSkeleton

@@ -79,29 +79,10 @@ const HotelBooking = ({
   const [showBookingModal, setShowBookingModal] = useState(false);
   
 
-  const { trackHotelCardClicked, trackBulk, getState } = useAnalytics();
-
-  const handleMultipleActions = (hotel) => {
-    // Bulk tracking example
-    trackHotelCardClicked(router.query.id, hotel.id, 'search_results');
-    
-    // Check state
-    setTimeout(() => {
-      console.log('Current state:', getState());
-    }, 1000);
+  const { trackHotelCardClicked, trackHotelListClicked,trackHotelBookingAdd,trackHotelBookingDelete,trackHotelCardDetails } = useAnalytics();
 
 
-    trackBulk([
-      { eventName: 'hotel_card_clicked', properties: { hotel_id: hotel.id } },
-      { eventName: 'hotel_card_details', properties: { hotel_id: hotel.id } },
-      { eventName: 'section_viewed', properties: { section_id: 'hotels' } }
-    ]);
-  };
-
-  const checkStatus = () => {
-    const state = getState();
-    console.log('Analytics State:', state);
-  };
+  
 
   const {
     drawer = null,
@@ -154,6 +135,7 @@ const HotelBooking = ({
 
 
   const handleViewDetails = (value) => {
+    trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -199,6 +181,7 @@ const HotelBooking = ({
 
   const handleChangeHotel = (e, label, value, clickType) => {
     e.stopPropagation();
+    trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
     if (token) {
       router.push(
         {
@@ -699,7 +682,7 @@ const HotelBooking = ({
                       borderRadius="8px"
                       hoverColor="white"
                       fontWeight="400"
-                      onclick={() => {handleViewDetails(booking.name); checkStatus(); handleMultipleActions(booking)}}
+                      onclick={() => {handleViewDetails(booking.name)}}
                     >
                       View Detail
                     </Button>

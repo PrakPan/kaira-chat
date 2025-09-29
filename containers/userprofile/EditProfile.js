@@ -14,6 +14,7 @@ import axiosuserinstance, {
   userEmailEditInstance,
   userImageUploadInstance,
 } from "../../services/user/edit";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const CountryCodeContainer = styled.div`
   position: relative;
@@ -113,6 +114,7 @@ export const EditInput = connect(
     const [ExtensionOptions, setExtensionOptions] = useState([]);
     const [openCountryMenu, setOpenCountryMenu] = useState(false);
     const ref = useRef();
+    const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
 
     useEffect(() => {
       const checkIfClickedOutside = (e) => {
