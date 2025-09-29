@@ -49,6 +49,7 @@ import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 import { TopicSharp } from "@mui/icons-material";
 import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
+import { useAnalytics } from "../../hooks/useAnalytics.js";
 const useStyles = {
   root: `
     flex-grow-1
@@ -82,6 +83,7 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
+  const {trackGetInTouchClicked} = useAnalytics();
 
   console.log("Itiii",stays,props?.activityBookings,props?.itinerary)
 
@@ -163,6 +165,7 @@ const SimpleTabsV2 = (props) => {
             text: res.data.message,
             heading: "Request received.",
           });
+          trackGetInTouchClicked(itneraryId,props?.payment?.discounted_cost,'Rupees');
           setLoading(false);
         })
         .catch((err) => {

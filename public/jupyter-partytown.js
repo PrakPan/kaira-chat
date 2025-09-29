@@ -606,7 +606,6 @@
     initializeAnalytics(self.JUPITER_CONFIG);
   }
 
-  console.log('✅ Jupiter Analytics script loaded and ready');
 
 })();
 

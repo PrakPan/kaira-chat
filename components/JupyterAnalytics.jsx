@@ -41,7 +41,7 @@ export default function JupiterAnalytics({
 
       {/* Load Jupiter Analytics in web worker */}
       <Script
-        src="/jupiter-analytics.js"
+        src="/jupyter-partytown.js"
         strategy="worker"
         onLoad={() => {
           console.log('✅ Jupiter Analytics loaded in web worker');

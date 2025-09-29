@@ -26,6 +26,7 @@ import { bookingDetails } from "../../../../services/bookings/FetchAccommodation
 import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
 import BackArrow from "../../../ui/BackArrow";
 import Drawer from "../../../ui/Drawer";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -172,6 +173,8 @@ const HotelBookingDetails = (props) => {
   const dispatch = useDispatch();
   const { drawer, booking_id, idx, city_id } = router.query;
 
+    const { trackHotelCardClicked, trackHotelListClicked,trackHotelBookingAdd,trackHotelBookingDelete,trackHotelCardDetails } = useAnalytics();
+
   const { id } = router.query;
 
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -268,6 +271,7 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
+        trackHotelBookingDelete(router.query.id, props?.id)
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {

@@ -9,6 +9,7 @@ import { FaEdit } from "react-icons/fa";
 import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
 import { getDatesInRange } from "../../../helper/DateUtils";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -18,11 +19,13 @@ const CityDay = (props) => {
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const {trackActivityBookingAdd,trackActivityCardClicked} = useAnalytics();
 
   const router=useRouter()
   const { drawer, idx, itinerary_city_id,date } =
   router?.query;
   const handleAddActivity = () => {
+    trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

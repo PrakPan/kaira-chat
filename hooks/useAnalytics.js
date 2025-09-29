@@ -234,6 +234,15 @@ export const useAnalytics = () => {
     }, []),
     
     // Itinerary Events
+    trackItineraryInitiated: useCallback(async (actionSource) => {
+      return await callWorkerFunction('track',actionSource);
+    }, []),
+
+    trackItineraryCompleted: useCallback(async (itineraryId,actionSource) => {
+      return await callWorkerFunction('track',actionSource,{itinerary_id: itineraryId});
+    }, []),
+
+
     trackItineraryPageView: useCallback(async (itineraryId, isFirstVisit = false) => {
       return await callWorkerFunction('trackItineraryPageView', itineraryId, isFirstVisit);
     }, []),
@@ -302,7 +311,11 @@ export const useAnalytics = () => {
     
     // Hotel Events
     trackHotelCardClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
-      return await callWorkerFunction('trackHotelCardClicked', itineraryId, hotelId, actionSource);
+      return await callWorkerFunction('track', 'hotel_card_clicked',{itinerary_id:itineraryId, hotel_id:hotelId});
+    }, []),
+
+    trackHotelListClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
+      return await callWorkerFunction('track', 'hotel_search_list',{itinerary_id:itineraryId, hotel_id:hotelId});
     }, []),
     
     trackHotelCardDetails: useCallback(async (itineraryId, hotelId, actionSource) => {
@@ -330,11 +343,17 @@ export const useAnalytics = () => {
       });
     }, []),
     
-    trackHotelBookingAdd: useCallback(async (itineraryId, hotelId, userId = null) => {
+    trackHotelBookingAdd: useCallback(async (itineraryId, hotelId) => {
       return await callWorkerFunction('track', 'hotel_booking_add', {
         itinerary_id: itineraryId,
-        hotel_id: hotelId,
-        user_id: userId
+        hotel_id: hotelId
+      });
+    }, []),
+
+     trackHotelBookingDelete: useCallback(async (itineraryId, hotelId) => {
+      return await callWorkerFunction('track', 'hotel_booking_delete', {
+        itinerary_id: itineraryId,
+        hotel_id: hotelId
       });
     }, []),
     
@@ -347,9 +366,26 @@ export const useAnalytics = () => {
       });
     }, []),
     
-    trackTransferBookingAdd: useCallback(async (itineraryId, userId = null) => {
+    trackTransferBookingAdd: useCallback(async (itineraryId, transferId,userId = null) => {
       return await callWorkerFunction('track', 'transfer_booking_add', {
         itinerary_id: itineraryId,
+        transfer_id: transferId,
+        user_id: userId
+      });
+    }, []),
+
+    trackTransferBookingDelete: useCallback(async (itineraryId, transferId,userId = null) => {
+      return await callWorkerFunction('track', 'transfer_booking_delete', {
+        itinerary_id: itineraryId,
+        transfer_id: transferId,
+        user_id: userId
+      });
+    }, []),
+
+     trackTransferBookingChange: useCallback(async (itineraryId, transferId,userId = null) => {
+      return await callWorkerFunction('track', 'transfer_booking_change', {
+        itinerary_id: itineraryId,
+        transfer_id: transferId,
         user_id: userId
       });
     }, []),
@@ -365,6 +401,30 @@ export const useAnalytics = () => {
     
     trackActivityBookingAdd: useCallback(async (itineraryId, actionSource) => {
       return await callWorkerFunction('track', 'activity_booking_add', {
+        itinerary_id: itineraryId,
+        action_source: actionSource
+      });
+    }, []),
+
+     trackActivityBookingDelete: useCallback(async (itineraryId, activityId, actionSource) => {
+      return await callWorkerFunction('track', 'activity_booking_delete', {
+        itinerary_id: itineraryId,
+        activity_id: activityId,
+        action_source: actionSource
+      });
+    }, []),
+
+    // Activity Events
+    trackPoiCardClicked: useCallback(async (itineraryId, activityId, actionSource) => {
+      return await callWorkerFunction('track', 'poi_card_clicked', {
+        itinerary_id: itineraryId,
+        poi_id: activityId,
+        action_source: actionSource
+      });
+    }, []),
+    
+    trackPoiBookingAdd: useCallback(async (itineraryId, actionSource) => {
+      return await callWorkerFunction('track', 'poi_booking_add', {
         itinerary_id: itineraryId,
         action_source: actionSource
       });

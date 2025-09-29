@@ -12,10 +12,9 @@ import { GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import styled from "styled-components";
 import Script from "next/script";
 import restartBot from "../helper/RestartBot";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import JupiterAnalytics from "../components/jupyterAnalytics";
@@ -26,7 +25,8 @@ function MyApp({ Component, pageProps, store }) {
   const dispatch = useDispatch();
   const [jupiterInitialized, setJupiterInitialized] = useState(false);
   const initializationAttempts = useRef(0);
-  const maxAttempts = 10; // Limit retry attempts
+  const maxAttempts = 10;
+  const { id } = useSelector(state => state.auth);
 
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
@@ -36,78 +36,18 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   useEffect(() => {
-    cleanExpiredLocalStorage(); 
-  }, []);
-
-  const [partytownStatus, setPartytownStatus] = useState('checking');
-
-  // Debug Partytown initialization
-  useEffect(() => {
-    const checkPartytown = () => {
-      console.log('🔍 Checking Partytown status...');
-      
-      fetch('/~partytown/partytown-sw.js')
-        .then(response => {
-          console.log('📁 Partytown SW file accessible:', response.ok);
-          if (!response.ok) {
-            setPartytownStatus('files_missing');
-            console.error('❌ Run: npx partytown copylib public/~partytown');
-          }
-        })
-        .catch(err => {
-          console.error('❌ Partytown files not found:', err);
-          setPartytownStatus('files_missing');
-        });
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-          const partytownSW = registrations.find(sw => 
-            sw.scope.includes('partytown') || 
-            sw.active?.scriptURL.includes('partytown')
-          );
-          console.log('🔧 Partytown Service Worker found:', !!partytownSW);
-          if (partytownSW) {
-            setPartytownStatus('active');
-          }
-        });
-      }
-
-      setTimeout(() => {
-        const testPassed = window.PARTYTOWN_TEST_PASSED;
-        const jupiterLoaded = window.JupiterAnalytics;
-        
-        console.log('🧪 Test results:', {
-          partytown_test: testPassed,
-          jupiter_loaded: !!jupiterLoaded,
-          jupiter_ready: jupiterLoaded?.getState?.()?.isInitialized
-        });
-
-        if (testPassed && jupiterLoaded) {
-          setPartytownStatus('working');
-        } else if (!testPassed) {
-          setPartytownStatus('scripts_failed');
-        }
-      }, 3000);
-    };
-
-    if (document.readyState === 'complete') {
-      checkPartytown();
-    } else {
-      window.addEventListener('load', checkPartytown);
-    }
-
-    return () => window.removeEventListener('load', checkPartytown);
+    cleanExpiredLocalStorage();
   }, []);
 
   function setupTokenExpiryWatcher() {
+    if (typeof window === 'undefined') return;
+    
     const expiry = localStorage.getItem('expirationDate');
-    console.log("expiry is:", expiry);
     if (!expiry) return;
-  
+
     const timeLeft = new Date(expiry).getTime() - Date.now();
-    console.log("time left is:", timeLeft);
+    
     if (timeLeft <= 0) {
-      // Token already expired, logout immediately
       dispatch(authLogout());
       localStorage.clear();
       restartBot();
@@ -126,109 +66,92 @@ function MyApp({ Component, pageProps, store }) {
       }, timeLeft);
     }
   }
-  
-  setupTokenExpiryWatcher();
+
+  useEffect(() => {
+    setupTokenExpiryWatcher();
+  }, []);
 
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
+      
+      // Track with Jupiter Analytics if available
+      if (window.JupiterAnalytics?.trackPageView) {
+        window.JupiterAnalytics.trackPageView(url);
+      }
+
+      // Facebook Pixel - only on client side
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'PageView');
+      }
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
 
-    import("react-facebook-pixel")
-      .then((x) => x.default)
-      .then((ReactPixel) => {
-        ReactPixel.init(FACEBOOK_PIXEL_ID);
-        ReactPixel.pageView();
-        router.events.on("routeChangeComplete", () => {
-          ReactPixel?.pageView();
-        });
-      });
+    // Initialize Facebook Pixel - ONLY on client side
+    if (typeof window !== 'undefined') {
+      import("react-facebook-pixel")
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+          ReactPixel.init(FACEBOOK_PIXEL_ID);
+          ReactPixel.pageView();
+        })
+        .catch(err => console.error('Facebook Pixel load error:', err));
+    }
 
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
 
-  // FIXED: Jupiter Analytics initialization with proper error handling
+  // Jupiter Analytics initialization
   useEffect(() => {
     if (typeof window === 'undefined' || jupiterInitialized) return;
 
     const tryInitialize = () => {
       initializationAttempts.current += 1;
-      
-      console.log(`🔄 Jupiter initialization attempt ${initializationAttempts.current}/${maxAttempts}`);
 
-      // Check if Jupiter component has exposed initialization method
-      if (window.JupiterAnalytics?.initializeAnalytics) {
-        try {
-          console.log('📦 Calling JupiterAnalytics.initializeAnalytics()');
-          window.JupiterAnalytics.initializeAnalytics({
-            userId: pageProps.user?.id || null,
-            siteId: 'tarzanway-web',
-            apiHost: 'https://dev.jupiter.tarzanway.com',
-            anonymousId: "abc",
-          });
-          setJupiterInitialized(true);
-          console.log('✅ Jupiter Analytics initialized successfully');
-        } catch (error) {
-          console.error('❌ Error initializing Jupiter Analytics:', error);
-          setJupiterInitialized(true); // Stop retrying on error
+      if (window.JupiterAnalytics) {
+        const analytics = window.JupiterAnalytics;
+        
+        // Try different initialization methods
+        const initMethods = [
+          'initializeAnalytics',
+          'init',
+          'initialize'
+        ];
+
+        for (const method of initMethods) {
+          if (typeof analytics[method] === 'function') {
+            try {
+              analytics[method]({
+                userId: id || null,
+                siteId: 'tarzanway-web',
+                apiHost: 'https://dev.jupiter.tarzanway.com',
+                anonymousId: "abc",
+              });
+              setJupiterInitialized(true);
+              console.log(`✅ Jupiter initialized via ${method}`);
+              return;
+            } catch (error) {
+              console.error(`Error with ${method}:`, error);
+            }
+          }
         }
-      } else if (window.JupiterAnalytics?.init) {
-        // Alternative initialization method
-        try {
-          console.log('📦 Calling JupiterAnalytics.init()');
-          window.JupiterAnalytics.init({
-            userId: pageProps.user?.id || null,
-            siteId: 'tarzanway-web',
-            apiHost: 'https://dev.jupiter.tarzanway.com',
-            anonymousId: "abc",
-          });
-          setJupiterInitialized(true);
-          console.log('✅ Jupiter Analytics initialized successfully (via init)');
-        } catch (error) {
-          console.error('❌ Error initializing Jupiter Analytics via init:', error);
-          setJupiterInitialized(true);
-        }
-      } else if (initializationAttempts.current >= maxAttempts) {
-        console.warn('⚠️ Jupiter Analytics initialization failed after maximum attempts');
-        console.log('Available Jupiter methods:', Object.keys(window.JupiterAnalytics || {}));
-        setJupiterInitialized(true); // Stop retrying
+      }
+
+      // Retry if not successful and under max attempts
+      if (initializationAttempts.current < maxAttempts) {
+        setTimeout(tryInitialize, 1000);
       } else {
-        console.warn('⏳ JupiterAnalytics not ready yet. Retrying...');
-        setTimeout(tryInitialize, 1000); // Increased timeout to reduce spam
+        console.warn('⚠️ Jupiter Analytics initialization failed');
+        setJupiterInitialized(true);
       }
     };
 
-    // Start initialization attempts
-    const initTimeout = setTimeout(tryInitialize, 1000); // Give components time to mount
-
+    const initTimeout = setTimeout(tryInitialize, 1000);
     return () => clearTimeout(initTimeout);
-  }, [pageProps.user?.id, jupiterInitialized]);
-
-  // Alternative: Handle Jupiter Analytics through ref callback
-  const handleJupiterRef = (jupiterInstance) => {
-    if (jupiterInstance && !jupiterInitialized) {
-      console.log('📦 Jupiter Analytics component mounted, attempting direct initialization');
-      try {
-        // If the component exposes direct methods
-        if (jupiterInstance.initialize) {
-          jupiterInstance.initialize({
-            userId: pageProps.user?.id || null,
-            siteId: 'tarzanway-web',
-            apiHost: 'https://dev.jupiter.tarzanway.com',
-            anonymousId: "abc",
-          });
-          setJupiterInitialized(true);
-          console.log('✅ Jupiter Analytics initialized via component ref');
-        }
-      } catch (error) {
-        console.error('❌ Error initializing Jupiter via component ref:', error);
-      }
-    }
-  };
+  }, [id, jupiterInitialized]);
 
   return (
     <>
@@ -242,23 +165,25 @@ function MyApp({ Component, pageProps, store }) {
           rel="stylesheet"
         />
       </Head>
-      <body>
-        <Script
-          src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-          strategy="afterInteractive"
-          onLoad={() => {
-            console.log("CRMOne bot script loaded");
+
+      {/* CRMOne bot - load after page is interactive */}
+      <Script
+        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log("CRMOne bot script loaded");
+          if (typeof restartBot === 'function') {
             restartBot();
-          }}
-        />
-      </body>
+          }
+        }}
+      />
+
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
-            <JupiterAnalytics 
-              ref={handleJupiterRef}
+            <JupiterAnalytics
               apiEndpoint="https://dev.jupiter.tarzanway.com"
-              userId={pageProps.user?.id}
+              userId={id || null}
               batchSize={10}
               flushInterval={3000}
               siteId="tarzanway-web"
