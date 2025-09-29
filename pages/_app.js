@@ -23,7 +23,11 @@ import JupiterAnalytics from "../components/jupyterAnalytics";
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
+  const [jupiterInitialized, setJupiterInitialized] = useState(false);
+  const initializationAttempts = useRef(0);
+  const maxAttempts = 10; // Limit retry attempts
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -35,14 +39,78 @@ function MyApp({ Component, pageProps, store }) {
     cleanExpiredLocalStorage(); 
   }, []);
 
+  const [partytownStatus, setPartytownStatus] = useState('checking');
+
+  // Debug Partytown initialization
+  useEffect(() => {
+    const checkPartytown = () => {
+      console.log('🔍 Checking Partytown status...');
+      
+      fetch('/~partytown/partytown-sw.js')
+        .then(response => {
+          console.log('📁 Partytown SW file accessible:', response.ok);
+          if (!response.ok) {
+            setPartytownStatus('files_missing');
+            console.error('❌ Run: npx partytown copylib public/~partytown');
+          }
+        })
+        .catch(err => {
+          console.error('❌ Partytown files not found:', err);
+          setPartytownStatus('files_missing');
+        });
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          const partytownSW = registrations.find(sw => 
+            sw.scope.includes('partytown') || 
+            sw.active?.scriptURL.includes('partytown')
+          );
+          console.log('🔧 Partytown Service Worker found:', !!partytownSW);
+          if (partytownSW) {
+            setPartytownStatus('active');
+          }
+        });
+      }
+
+      setTimeout(() => {
+        const testPassed = window.PARTYTOWN_TEST_PASSED;
+        const jupiterLoaded = window.JupiterAnalytics;
+        
+        console.log('🧪 Test results:', {
+          partytown_test: testPassed,
+          jupiter_loaded: !!jupiterLoaded,
+          jupiter_ready: jupiterLoaded?.getState?.()?.isInitialized
+        });
+
+        if (testPassed && jupiterLoaded) {
+          setPartytownStatus('working');
+        } else if (!testPassed) {
+          setPartytownStatus('scripts_failed');
+        }
+      }, 3000);
+    };
+
+    if (document.readyState === 'complete') {
+      checkPartytown();
+    } else {
+      window.addEventListener('load', checkPartytown);
+    }
+
+    return () => window.removeEventListener('load', checkPartytown);
+  }, []);
+
   function setupTokenExpiryWatcher() {
     const expiry = localStorage.getItem('expirationDate');
-    console.log("expiry is:",expiry)
+    console.log("expiry is:", expiry);
     if (!expiry) return;
   
-    const timeLeft = new Date(expiry).getTime()- Date.now();
-    console.log("time left is:",timeLeft)
+    const timeLeft = new Date(expiry).getTime() - Date.now();
+    console.log("time left is:", timeLeft);
     if (timeLeft <= 0) {
+      // Token already expired, logout immediately
+      dispatch(authLogout());
+      localStorage.clear();
+      restartBot();
     } else {
       setTimeout(() => {
         dispatch(authLogout());
@@ -54,116 +122,113 @@ function MyApp({ Component, pageProps, store }) {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-        restartBot()
+        restartBot();
       }, timeLeft);
     }
   }
   
-  // Run this once on app load
   setupTokenExpiryWatcher();
-  
 
-  // useEffect(() => {
-  //   const handleBrowserBack = (event) => {
-  //     event.preventDefault();
-  //     console.log("Browser back button pressed!");
-
-  //     const confirmLeave = window.confirm("Are you sure you want to go back?");
-  //     if (confirmLeave) {
-  //       window.history.back(); // Allow back
-  //     } else {
-  //       window.history.pushState(null, null, window.location.href); // Stay on page
-  //     }
-  //   };
-
-  //   if (typeof window !== "undefined") {
-  //     window.history.pushState(null, null, window.location.href); // push a dummy state
-  //     window.addEventListener("popstate", handleBrowserBack);
-  //   }
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handleBrowserBack);
-  //   };
-  // }, []);
-  // useEffect(() => {
-  //   try {
-  //     if (!window.location.href.split("/").includes("itinerary")) return;
-
-  //   setTimeout(() => {
-  //     (function () {
-  //       function getElement(xpath) {
-  //         return document.evaluate(
-  //           xpath,
-  //           document,
-  //           null,
-  //           XPathResult.FIRST_ORDERED_NODE_TYPE,
-  //           null
-  //         ).singleNodeValue;
-  //       }
-
-  //       let dfMessengerBubble = getElement(
-  //         "/html/body/df-messenger/div/df-messenger-chat-bubble"
-  //       );
-  //       if (!dfMessengerBubble)
-  //         return console.error("df-messenger-chat-bubble not found");
-
-  //       let dfMessengerChat =
-  //         dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
-  //       if (!dfMessengerChat)
-  //         return console.error("df-messenger-chat not found");
-
-  //       let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
-  //         "df-messenger-user-input"
-  //       );
-  //       if (!userInputContainer)
-  //         return console.error("df-messenger-user-input not found");
-
-  //       let textArea =
-  //         userInputContainer?.shadowRoot.querySelector("textarea");
-  //       if (!textArea) return console.error("Textarea not found");
-
-  //       textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
-
-  //       const enterEvent = new KeyboardEvent("keydown", {
-  //         key: "Enter",
-  //         code: "Enter",
-  //         keyCode: 13,
-  //         which: 13,
-  //         bubbles: true,
-  //       });
-  //       textArea.dispatchEvent(enterEvent);
-  //     })();
-  //   }, 2000);
-  //   } catch (error) {
-  //     console.log("Error is:",error)
-  //   }
-  // }, []);
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
     };
-    //When the component is mounted, subscribe to router changes
-    //and log those page views
+
     router.events.on("routeChangeComplete", handleRouteChange);
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method
+
     import("react-facebook-pixel")
       .then((x) => x.default)
       .then((ReactPixel) => {
-        ReactPixel.init(FACEBOOK_PIXEL_ID); // facebookPixelId
+        ReactPixel.init(FACEBOOK_PIXEL_ID);
         ReactPixel.pageView();
         router.events.on("routeChangeComplete", () => {
-          ReactPixel.pageView();
+          ReactPixel?.pageView();
         });
       });
+
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-  // In a client-side context
-  
-  
 
+  // FIXED: Jupiter Analytics initialization with proper error handling
+  useEffect(() => {
+    if (typeof window === 'undefined' || jupiterInitialized) return;
+
+    const tryInitialize = () => {
+      initializationAttempts.current += 1;
+      
+      console.log(`🔄 Jupiter initialization attempt ${initializationAttempts.current}/${maxAttempts}`);
+
+      // Check if Jupiter component has exposed initialization method
+      if (window.JupiterAnalytics?.initializeAnalytics) {
+        try {
+          console.log('📦 Calling JupiterAnalytics.initializeAnalytics()');
+          window.JupiterAnalytics.initializeAnalytics({
+            userId: pageProps.user?.id || null,
+            siteId: 'tarzanway-web',
+            apiHost: 'https://dev.jupiter.tarzanway.com',
+            anonymousId: "abc",
+          });
+          setJupiterInitialized(true);
+          console.log('✅ Jupiter Analytics initialized successfully');
+        } catch (error) {
+          console.error('❌ Error initializing Jupiter Analytics:', error);
+          setJupiterInitialized(true); // Stop retrying on error
+        }
+      } else if (window.JupiterAnalytics?.init) {
+        // Alternative initialization method
+        try {
+          console.log('📦 Calling JupiterAnalytics.init()');
+          window.JupiterAnalytics.init({
+            userId: pageProps.user?.id || null,
+            siteId: 'tarzanway-web',
+            apiHost: 'https://dev.jupiter.tarzanway.com',
+            anonymousId: "abc",
+          });
+          setJupiterInitialized(true);
+          console.log('✅ Jupiter Analytics initialized successfully (via init)');
+        } catch (error) {
+          console.error('❌ Error initializing Jupiter Analytics via init:', error);
+          setJupiterInitialized(true);
+        }
+      } else if (initializationAttempts.current >= maxAttempts) {
+        console.warn('⚠️ Jupiter Analytics initialization failed after maximum attempts');
+        console.log('Available Jupiter methods:', Object.keys(window.JupiterAnalytics || {}));
+        setJupiterInitialized(true); // Stop retrying
+      } else {
+        console.warn('⏳ JupiterAnalytics not ready yet. Retrying...');
+        setTimeout(tryInitialize, 1000); // Increased timeout to reduce spam
+      }
+    };
+
+    // Start initialization attempts
+    const initTimeout = setTimeout(tryInitialize, 1000); // Give components time to mount
+
+    return () => clearTimeout(initTimeout);
+  }, [pageProps.user?.id, jupiterInitialized]);
+
+  // Alternative: Handle Jupiter Analytics through ref callback
+  const handleJupiterRef = (jupiterInstance) => {
+    if (jupiterInstance && !jupiterInitialized) {
+      console.log('📦 Jupiter Analytics component mounted, attempting direct initialization');
+      try {
+        // If the component exposes direct methods
+        if (jupiterInstance.initialize) {
+          jupiterInstance.initialize({
+            userId: pageProps.user?.id || null,
+            siteId: 'tarzanway-web',
+            apiHost: 'https://dev.jupiter.tarzanway.com',
+            anonymousId: "abc",
+          });
+          setJupiterInitialized(true);
+          console.log('✅ Jupiter Analytics initialized via component ref');
+        }
+      } catch (error) {
+        console.error('❌ Error initializing Jupiter via component ref:', error);
+      }
+    }
+  };
 
   return (
     <>
@@ -183,7 +248,7 @@ function MyApp({ Component, pageProps, store }) {
           strategy="afterInteractive"
           onLoad={() => {
             console.log("CRMOne bot script loaded");
-            restartBot(); // Start bot once script is ready
+            restartBot();
           }}
         />
       </body>
@@ -191,11 +256,14 @@ function MyApp({ Component, pageProps, store }) {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
             <JupiterAnalytics 
-        apiEndpoint="https://dev.jupiter.tarzanway.com"
-        userId={pageProps.user?.id}
-        batchSize={10}
-        flushInterval={3000}
-      />
+              ref={handleJupiterRef}
+              apiEndpoint="https://dev.jupiter.tarzanway.com"
+              userId={pageProps.user?.id}
+              batchSize={10}
+              flushInterval={3000}
+              siteId="tarzanway-web"
+              anonymousId="abc"
+            />
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>
@@ -203,6 +271,7 @@ function MyApp({ Component, pageProps, store }) {
     </>
   );
 }
+
 MyApp.getInitialProps = async ({ Component, ctx }) => {
   return {
     pageProps: {
@@ -212,6 +281,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     },
   };
 };
+
 export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
   ssr: false,
 });

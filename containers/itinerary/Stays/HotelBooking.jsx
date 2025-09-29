@@ -79,24 +79,130 @@ const HotelBooking = ({
   const [showBookingModal, setShowBookingModal] = useState(false);
   
 
-  const { trackHotelCardClicked, trackBulk, getState } = useAnalytics();
+  const { trackHotelCardClicked, trackBulk, getState, isReady } = useAnalytics();
+  const [debugInfo, setDebugInfo] = useState(null);
 
-  const handleMultipleActions = (hotel) => {
-    // Bulk tracking example
-    trackHotelCardClicked(router.query.id, hotel.id, 'search_results');
+  // Debug Partytown status on component mount
+  // useEffect(() => {
+  //   const checkPartytownStatus = () => {
+  //     console.log('🔍 Checking Partytown status in component...');
+      
+  //     const status = {
+  //       isReady,
+  //       windowJupiter: !!window.JupiterAnalytics,
+  //       jupiterMethods: window.JupiterAnalytics ? Object.keys(window.JupiterAnalytics) : [],
+  //       workerState: null,
+  //       partytownTest: !!window.PARTYTOWN_TEST_PASSED
+  //     };
+
+  //     try {
+  //       if (window.JupiterAnalytics && window.JupiterAnalytics.getState) {
+  //         status.workerState = window.JupiterAnalytics.getState();
+  //       }
+  //     } catch (error) {
+  //       status.error = error.message;
+  //     }
+
+  //     console.log('📊 Partytown Status:', status);
+  //     setDebugInfo(status);
+  //   };
+
+  //   checkPartytownStatus();
     
-    // Check state
-    setTimeout(() => {
-      console.log('Current state:', getState());
-    }, 1000);
+    // Check every 2 seconds until ready
+  //   const interval = setInterval(() => {
+  //     if (!isReady) {
+  //       checkPartytownStatus();
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 2000);
 
+  //   return () => clearInterval(interval);
+  // }, [isReady]);
 
-    trackBulk([
-      { eventName: 'hotel_card_clicked', properties: { hotel_id: hotel.id } },
-      { eventName: 'hotel_card_details', properties: { hotel_id: hotel.id } },
-      { eventName: 'section_viewed', properties: { section_id: 'hotels' } }
-    ]);
+  // Enhanced handler with comprehensive debugging
+  const handleMultipleActions = async (hotel) => {
+    console.log('🎯 Button clicked for hotel:', hotel.id);
+    console.log('📊 Analytics ready:', isReady);
+    console.log('🔧 Current state:', getState());
+
+    if (!isReady) {
+      console.warn('⚠️ Analytics not ready yet, calls may be queued');
+      // Still proceed - the useAnalytics hook should queue the calls
+    }
+
+    try {
+      // 1. Track individual hotel click
+      console.log('📤 Tracking hotel card click...');
+      const clickResult = await trackHotelCardClicked(
+        router.query.id, 
+        hotel.id, 
+        'search_results'
+      );
+      console.log('✅ Hotel click result:', clickResult);
+
+      // 2. Track bulk events
+      console.log('📦 Tracking bulk events...');
+      const bulkResult = await trackBulk([
+        { 
+          eventName: 'hotel_card_clicked', 
+          properties: { 
+            hotel_id: hotel.id,
+            itinerary_id: router.query.id,
+            action_source: 'search_results'
+          } 
+        },
+        { 
+          eventName: 'hotel_card_details', 
+          properties: { 
+            hotel_id: hotel.id,
+            itinerary_id: router.query.id,
+            action_source: 'search_results'
+          } 
+        },
+        { 
+          eventName: 'section_viewed', 
+          properties: { 
+            section_id: 'hotels',
+            itinerary_id: router.query.id
+          } 
+        }
+      ]);
+      console.log('✅ Bulk tracking result:', bulkResult);
+
+      // 3. Check final state
+      setTimeout(() => {
+        const finalState = getState();
+        console.log('📊 Final state after tracking:', finalState);
+        
+        if (finalState) {
+          console.log('📈 Events in queue:', finalState.queueSize);
+          console.log('📊 Stats:', finalState.stats);
+        }
+      }, 1000);
+
+    } catch (error) {
+      console.error('❌ Tracking error:', error);
+    }
   };
+
+  // const handleMultipleActions = (hotel) => {
+  //   // Bulk tracking example
+  //   trackHotelCardClicked(router.query.id, hotel.id, 'search_results');
+    
+  //   // Check state
+  //   setTimeout(() => {
+  //     console.log('Current state:', getState());
+  //   }, 1000);
+
+
+  //   trackBulk([
+  //     { eventName: 'hotel_card_clicked', properties: { hotel_id: hotel.id } },
+  //     { eventName: 'hotel_card_details', properties: { hotel_id: hotel.id } },
+  //     { eventName: 'section_viewed', properties: { section_id: 'hotels' } }
+  //   ]);
+  // };
 
   const checkStatus = () => {
     const state = getState();

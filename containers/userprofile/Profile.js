@@ -10,6 +10,7 @@ import { EditInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
 import { userImageUploadInstance } from "../../services/user/edit";
 import { getCountryCodes } from "../../store/actions/countryCodes";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const Container = styled.div`
   padding: 0.5rem;
@@ -51,6 +52,7 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
   const imageEditRef = useRef();
+  const {trackUserAccountUpdate} = useAnalytics()
 
   useEffect(() => {
     props.getCountryCodes();
@@ -150,7 +152,7 @@ const Profile = (props) => {
   };
 
   const handleSave = () => {
-    props.changeUserDetails({name:props.name,country:props.country, whatsapp_opt_in: whatsapp });
+    props.changeUserDetails({name:props.name,country:props.country, whatsapp_opt_in: whatsapp },trackUserAccountUpdate);
   };
 
   const Name = styled.p`
@@ -522,9 +524,9 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image)),
-    changeUserDetails: (payload) =>
-      dispatch(authaction.changeUserDetails(payload)),
+    onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image,trackUserAccountUpdate)),
+    changeUserDetails: (payload,trackUserAccountUpdate) =>
+      dispatch(authaction.changeUserDetails(payload,trackUserAccountUpdate)),
     setUserDetails: (payload) => dispatch(authaction.setUserDetails(payload)),
     getCountryCodes: () => dispatch(getCountryCodes()),
   };
