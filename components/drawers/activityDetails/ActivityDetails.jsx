@@ -241,6 +241,35 @@ export default function ActivityDetails(props) {
                 </div>
               </div>
             )}
+
+            {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-green">Inclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.inclusions.map((inclusion, i) => (
+                    <li key={i} className="mb-1">- {inclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Exclusions Section */}
+          {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-red">Exclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.exclusions.map((exclusion, i) => (
+                    <li key={i} className="mb-1">- {exclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
           </div>
           {props.data?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
