@@ -402,6 +402,35 @@ const ActivityDetails = (props) => {
                 </Text>
               </div>
             )}
+
+             {props.activityData?.inclusions && props.activityData?.inclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-green">Inclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.activityData.inclusions.map((inclusion, i) => (
+                    <li key={i} className="mb-1">- {inclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Exclusions Section */}
+          {props.activityData?.exclusions && props.activityData?.exclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-red">Exclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.activityData.exclusions.map((exclusion, i) => (
+                    <li key={i} className="mb-1">- {exclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
             {props.data?.address && (
               <div>
                 <span className="font-bold pr-1">Address:</span>{" "}

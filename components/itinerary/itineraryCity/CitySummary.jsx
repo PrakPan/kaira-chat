@@ -39,14 +39,14 @@ const CitySummary = (props) => {
     date,
     bookingId,
   } = router?.query;
-  const activityData = {
+  const  activityData = {
     id: poi_id,
     type: type,
     dayIndex: dayIndex,
     index: index,
   };
   const handleView = async (poi, type, dayIndex) => {
-    try {
+    try {       
       router.push(
         {
           pathname: `/itinerary/${router.query.id}`,
