@@ -17,7 +17,7 @@ import restartBot from "../helper/RestartBot";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupyterAnalytics from "../components/jupyterAnalytics";
+// import JupyterAnalytics from "../components/jupyterAnalytics";
 
 
 
@@ -108,53 +108,53 @@ function MyApp({ Component, pageProps, store }) {
   }, [router.events]);
 
   // Jupiter Analytics initialization
-  useEffect(() => {
-    if (typeof window === 'undefined' || jupiterInitialized) return;
+  // useEffect(() => {
+  //   if (typeof window === 'undefined' || jupiterInitialized) return;
 
-    const tryInitialize = () => {
-      initializationAttempts.current += 1;
+  //   const tryInitialize = () => {
+  //     initializationAttempts.current += 1;
 
-      if (window.JupiterAnalytics) {
-        const analytics = window.JupiterAnalytics;
+  //     if (window.JupiterAnalytics) {
+  //       const analytics = window.JupiterAnalytics;
         
-        // Try different initialization methods
-        const initMethods = [
-          'initializeAnalytics',
-          'init',
-          'initialize'
-        ];
+  //       // Try different initialization methods
+  //       const initMethods = [
+  //         'initializeAnalytics',
+  //         'init',
+  //         'initialize'
+  //       ];
 
-        for (const method of initMethods) {
-          if (typeof analytics[method] === 'function') {
-            try {
-              analytics[method]({
-                userId: id || null,
-                siteId: 'tarzanway-web',
-                apiHost: 'https://dev.jupiter.tarzanway.com',
-                anonymousId: "abc",
-              });
-              setJupiterInitialized(true);
-              console.log(`✅ Jupiter initialized via ${method}`);
-              return;
-            } catch (error) {
-              console.error(`Error with ${method}:`, error);
-            }
-          }
-        }
-      }
+  //       for (const method of initMethods) {
+  //         if (typeof analytics[method] === 'function') {
+  //           try {
+  //             analytics[method]({
+  //               userId: id || null,
+  //               siteId: 'tarzanway-web',
+  //               apiHost: 'https://dev.jupiter.tarzanway.com',
+  //               anonymousId: "abc",
+  //             });
+  //             setJupiterInitialized(true);
+  //             console.log(`✅ Jupiter initialized via ${method}`);
+  //             return;
+  //           } catch (error) {
+  //             console.error(`Error with ${method}:`, error);
+  //           }
+  //         }
+  //       }
+  //     }
 
-      // Retry if not successful and under max attempts
-      if (initializationAttempts.current < maxAttempts) {
-        setTimeout(tryInitialize, 1000);
-      } else {
-        console.warn('⚠️ Jupiter Analytics initialization failed');
-        setJupiterInitialized(true);
-      }
-    };
+  //     // Retry if not successful and under max attempts
+  //     if (initializationAttempts.current < maxAttempts) {
+  //       setTimeout(tryInitialize, 1000);
+  //     } else {
+  //       console.warn('⚠️ Jupiter Analytics initialization failed');
+  //       setJupiterInitialized(true);
+  //     }
+  //   };
 
-    const initTimeout = setTimeout(tryInitialize, 1000);
-    return () => clearTimeout(initTimeout);
-  }, [id, jupiterInitialized]);
+  //   const initTimeout = setTimeout(tryInitialize, 1000);
+  //   return () => clearTimeout(initTimeout);
+  // }, [id, jupiterInitialized]);
 
   return (
     <>
@@ -184,14 +184,14 @@ function MyApp({ Component, pageProps, store }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
-            <JupiterAnalytics
+            {/* <JupiterAnalytics
               apiEndpoint="https://dev.jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
               siteId="tarzanway-web"
               anonymousId="abc"
-            />
+            /> */}
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>

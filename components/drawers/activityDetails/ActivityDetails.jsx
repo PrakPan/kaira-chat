@@ -523,7 +523,10 @@ export default function ActivityDetails(props) {
               </div>
               <div className="flex flex-col">
                 <div className="font-medium text-gray-900">
-                  {packageItem.description}
+                  {props.data?.is_package ? packageItem.title : ''}
+                </div>
+                <div className="font-normal text-gray-900">
+                  {props.data?.is_package ? packageItem.description : ''}
                 </div>
                 <div className="text-sm text-gray-600">
                   For {packageItem.pax_details.adults + packageItem.pax_details.children} people

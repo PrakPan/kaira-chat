@@ -43,8 +43,8 @@ export default class MyDocument extends Document {
               'gtag', 
               'dataLayer.push', 
               'mixpanel',
-              'JupiterAnalytics', 
-              'JUPITER_CONFIG'
+              // 'JupiterAnalytics', 
+              // 'JUPITER_CONFIG'
             ]}
             resolveUrl={(url) => {
               // Proxy problematic URLs through your own server to avoid CORS
