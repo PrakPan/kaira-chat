@@ -79,7 +79,7 @@ const Carousel3D = () => {
   ];
 
   return (
-    <section className="w-full bg-white font-inter py-16">
+    <section className="bg-white font-inter py-16">
       <div className="flex flex-col items-center">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
@@ -95,8 +95,8 @@ const Carousel3D = () => {
         </div>
       </div>
 
-      {/* Desktop Panorama Slider */}
-      <div className="md:block">
+      {/* Desktop Panorama Slider max-w-[1520px] mx-auto */}
+      <div className="md:block ">
         <div
           className="panorama-slider"
           style={{
@@ -112,8 +112,15 @@ const Carousel3D = () => {
           >
             <div className="swiper-wrapper">
               {baseImages.map((item, index) => (
-                <div key={index} className="swiper-slide">
-                  <div className="relative w-[375px] h-[416px] group cursor-pointer">
+                <div
+                  key={index}
+                  className="swiper-slide mx-1"
+                  style={{ width: "375px", height: "416px" }}
+                >
+                  <div
+                    className="relative w-100% h-100% group cursor-pointer"
+                    style={{ height: "416px" }}
+                  >
                     <img
                       className="slide-image w-full h-full object-cover rounded-2xl"
                       src={`https://images.thetarzanway.com/${item.image}`}
@@ -142,10 +149,10 @@ const Carousel3D = () => {
                     )}
                     {/* Arrow Icon */}
                     <div className="absolute top-4 right-4 z-10">
-                      <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
+                      <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
                         <FontAwesomeIcon
                           icon={faArrowUp}
-                          className="text-white group-hover:text-black text-sm transition-colors duration-300 transform rotate-45"
+                          className="text-white group-hover:text-inverted hover:text-black text-sm transition-colors duration-300 transform rotate-45"
                         />
                       </div>
                     </div>
