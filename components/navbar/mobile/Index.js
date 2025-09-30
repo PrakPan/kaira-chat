@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import LoggedInMenu from "./LoggedIn";
 import * as authaction from "../../../store/actions/auth";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import ImageLoader from "../../ImageLoader";
 import * as logout from "../../../store/actions/logout";
 import Notifications from "../../modals/Notifications/Index";
@@ -13,6 +13,7 @@ import SearchMobile from "../../search/homepage/mobile/Index";
 import { FaSearch } from "react-icons/fa";
 import openTailoredModal from "../../../services/openTailoredModal";
 import usePageLoaded from "../../custom hooks/usePageLoaded";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const Container = styled.div`
   background-color: white;
@@ -121,6 +122,8 @@ const Mobile = (props) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+  const {trackUserLogout} = useAnalytics();
+  const {id} = useSelector(state=>state.auth);
 
   useEffect(() => {
     setShowLogo(true);
@@ -366,7 +369,7 @@ const Mobile = (props) => {
                   notifications={props.notifications}
                   _handleNotifications={_handleNotifications}
                   onClose={() => setToggleMenu(false)}
-                  onLogout={props.onLogout}
+                  onLogout={()=>{props.onLogout(); trackUserLogout(id);}}
                   name={props.name}
                 />
               </ListItem>
@@ -378,7 +381,7 @@ const Mobile = (props) => {
               {OtherLinksDiv}
 
               {props.token && (
-                <ListItem onClick={props.onLogout}>
+                <ListItem onClick={()=>{props.onLogout(); trackUserLogout(id);}} >
                   {
                     <ImageLoader
                       leftalign

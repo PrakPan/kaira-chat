@@ -3,7 +3,7 @@ import { Heading } from "../flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
 import { FlightSegment } from "../../../containers/itinerary/TransfersContainer/FlightDetail";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { PulseLoader } from "react-spinners";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
@@ -14,6 +14,7 @@ import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 import { TbArrowBack } from "react-icons/tb";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 0;
@@ -58,8 +59,10 @@ const FlightDetailModal = ({
   const fareRulesLoading = false;
   const fareRUlesError = false;
   const [loading, setLoading] = useState(false);
+  const {id} = useSelector(state => state.auth);
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const {trackTransferBookingDelete} = useAnalytics();
 
   const handleDelete = async () => {
     if (!localStorage.getItem("access_token")) {
@@ -79,6 +82,7 @@ const FlightDetailModal = ({
 
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
+        trackTransferBookingDelete(router.query.id,booking_id,id);
         setLoading(false);
         dispatch(
           openNotification({

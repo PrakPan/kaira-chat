@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import styled from "styled-components";
@@ -14,6 +14,8 @@ import NewPoiDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDe
 import RecommendedBadge from "./Recommended";
 import Image from "next/image";
 import useMediaQuery from "../../../components/media";
+import { useAnalytics } from "../../../hooks/useAnalytics";
+import { useRouter } from "next/router";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -34,6 +36,9 @@ export default function NewPoiBooking(props) {
   const isDesktop = useMediaQuery("(min-width: 583px)");
 
 
+  const {trackPoiBookingAdded,trackPoiCardClicked} = useAnalytics();
+  const router = useRouter();
+
   useEffect(() => {
     if (props?.data && props.data?.rating) {
       const stars = [];
@@ -53,6 +58,7 @@ export default function NewPoiBooking(props) {
   };
 
   const handleClick = async (id) => {
+    trackPoiCardClicked(router.query.id, id, "itinerary_poi_list");
     setActivityData({
       type:"poi",
       id:id,
@@ -429,6 +435,7 @@ export default function NewPoiBooking(props) {
           itineraryDrawer
           date={props.date}
           show={showDetails.show}
+          trackPoiBookingAdded={trackPoiBookingAdded}
           handleCloseDrawer={handleCloseDrawer}
           Topheading={"Select Poi"}
           cityId={props?.cityId}

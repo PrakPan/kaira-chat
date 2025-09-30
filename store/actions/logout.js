@@ -36,10 +36,12 @@ export const logout = () => {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
+       
 
         dispatch(authLogout());
       })
       .catch((err) => {
+      
         localStorage.removeItem("access_token");
         localStorage.removeItem("name");
         localStorage.removeItem("email");
