@@ -118,7 +118,7 @@ const Carousel3D = () => {
                   style={{ width: "375px", height: "416px" }}
                 >
                   <div
-                    className="relative w-100% h-100% group cursor-pointer"
+                    className="relative w-100% h-100% group cursor-pointer text-white hover:text-black"
                     style={{ height: "416px" }}
                   >
                     <img
@@ -148,11 +148,11 @@ const Carousel3D = () => {
                       </div>
                     )}
                     {/* Arrow Icon */}
-                    <div className="absolute top-4 right-4 z-10">
-                      <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110">
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 text-white hover:text-black">
                         <FontAwesomeIcon
                           icon={faArrowUp}
-                          className="text-white group-hover:text-inverted hover:text-black text-sm transition-colors duration-300 transform rotate-45"
+                          className="text-current group-hover:text-black text-sm transition-colors duration-300 transform rotate-45"
                         />
                       </div>
                     </div>
