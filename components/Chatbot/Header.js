@@ -55,7 +55,7 @@ function Header() {
                 <div>
                 <Heading className='font-montserrat'> Hello, I m your TarzanWay AI, your travel guide
                 </Heading>
-                <SubText>I’m here to assist you in planning your experience. Ask me anything travel related.</SubText>
+                <SubText>Ready to assist with planning, tips, and personalized experiences. Just ask, and let’s start your adventure!</SubText>
                 </div>
                 <ButtonWrapper className=" float-right">
                     <IconButton onClick={newSessionStart}>

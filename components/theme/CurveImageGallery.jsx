@@ -6,39 +6,8 @@ import { Pagination } from "swiper";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+
 const Carousel3D = () => {
-  useEffect(() => {
-    // Add the panorama slider CSS
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href =
-      "https://panorama-slider.uiinitiative.com/assets/index.c1d53924.css";
-    document.head.appendChild(link);
-
-    // Add the module preload link
-    const preloadLink = document.createElement("link");
-    preloadLink.rel = "modulepreload";
-    preloadLink.href =
-      "https://panorama-slider.uiinitiative.com/assets/vendor.dba6b2d2.js";
-    document.head.appendChild(preloadLink);
-
-    // Add the panorama slider script
-    const script = document.createElement("script");
-    script.type = "module";
-    script.crossOrigin = "anonymous";
-    script.src =
-      "https://panorama-slider.uiinitiative.com/assets/index.d2ce9dca.js";
-    document.body.appendChild(script);
-
-    // Cleanup script and links on unmount
-    return () => {
-      if (document.head.contains(link)) document.head.removeChild(link);
-      if (document.head.contains(preloadLink))
-        document.head.removeChild(preloadLink);
-      if (document.body.contains(script)) document.body.removeChild(script);
-    };
-  }, []);
-
   const baseImages = [
     {
       image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
@@ -89,6 +58,24 @@ const Carousel3D = () => {
       description: "Largest monastic institution in Ladakh",
       tags: ["Monastery", "Culture"],
     },
+    {
+      image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
+      title: "Hemis Monastery",
+      description: "Largest monastic institution in Ladakh",
+      tags: ["Monastery", "Culture"],
+    },
+    {
+      image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
+      title: "Hemis Monastery",
+      description: "Largest monastic institution in Ladakh",
+      tags: ["Monastery", "Culture"],
+    },
+    {
+      image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
+      title: "Hemis Monastery",
+      description: "Largest monastic institution in Ladakh",
+      tags: ["Monastery", "Culture"],
+    },
   ];
 
   return (
@@ -113,7 +100,7 @@ const Carousel3D = () => {
         <div
           className="panorama-slider"
           style={{
-            height: "470px",
+            height: "560px",
             display: "flex",
             alignItems: "center",
             background: "white",

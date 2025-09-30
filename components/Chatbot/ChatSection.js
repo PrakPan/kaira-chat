@@ -5,6 +5,8 @@ import Markdown from 'react-markdown';
 import styles from "../../styles/Chatbot.module.css";
 import ProductSlider from './product-slider/ProductSlider';
 import media from '../../components/media';
+import Image from 'next/image';
+import useCachedImage from '../../hooks/useCachedImage';
 
 const Container = styled.div`
    height: calc(100% - 270px);
@@ -23,6 +25,8 @@ const Container = styled.div`
 const MessageWrapper = styled.div`
   display: flex;
   justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
+  align-items: flex-start;
+  gap: 10px;
 `;
 
 const Message = styled.div`
@@ -37,10 +41,21 @@ const Message = styled.div`
     margin-bottom:15px
 `;
 
-const ChatMessage = React.memo(({ item }) => {
+const ChatMessage = React.memo(({ item, cachedAvatar }) => {
     const isUser = item.is_bot === false;
     return (
         <MessageWrapper isUser={isUser}>
+            
+            {!isUser && cachedAvatar &&
+                <Image
+                    src={cachedAvatar}
+                    alt="ticket"
+                    width={26}
+                    height={26}
+                    className='mt-[8px]'
+                />
+            }
+            
             <Message isUser={isUser}>
                 <Markdown>{item.message}</Markdown>
             </Message>
@@ -52,7 +67,11 @@ function ChatSection(props) {
     let isPageWide = media("(min-width: 768px)");
     const { conversations, isTyping, currentBotMessage,lastProductSliderPosition } = useChat();
     const scrollRef = useRef(null);
-
+    const cachedAvatar = useCachedImage(
+        "/assets/chatbot/chatbot-avaatar.svg",
+        "chatbot-avatar",
+        24 * 60 * 60 * 1000     
+    );
 
     useEffect(() => {
         const scrollToBottom = () => {
@@ -98,11 +117,11 @@ function ChatSection(props) {
                             />
                         </div>
                         :
-                        < ChatMessage key={idx} item={chatObj} ></ChatMessage>
+                        < ChatMessage key={idx} item={chatObj} cachedAvatar={cachedAvatar} ></ChatMessage>
                 ))}
 
                 {currentBotMessage && (
-                    < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }}></ChatMessage>
+                    < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar}></ChatMessage>
                 )}
 
                 {isTyping && <div className={styles.typingIndicator}> <div className={styles.typingDots}>

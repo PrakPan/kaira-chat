@@ -8,7 +8,8 @@ import { setTransfersBookings } from "../../../store/actions/transferBookingsSto
 import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import axios from "axios";
 import moment from "moment";
-
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { setStays } from "../../../store/actions/StayBookings";
 const localStorageKeyForSessionIds = 'chatbotSessionIds';
 
 export const ChatProvider = ({ itinearyId, children }) => {
@@ -22,6 +23,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
     const socketRef = useRef(null);
     const token = localStorage.getItem('access_token');
     const itinerary = useSelector((state) => state.Itinerary);
+    const stays = useSelector((state) => state.Stays);
     const dispatch = useDispatch();
     const origin = " https://thetarzanway.com";
     // const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
@@ -34,6 +36,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         return oldSessionIds[itinearyId] || null;
     });
     let reconnecting = false;
+    const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
     useEffect(() => {
         if (!itinearyId) return;
@@ -237,18 +240,32 @@ export const ChatProvider = ({ itinearyId, children }) => {
         switch (payload.action_type) {
             case "createAccommodationBooking":
                 dispatch(updateSingleStayCityAndCheckInWise(payload.data));
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
                 break;
 
             case "createActivityBooking":
                 updateActivityBooking(payload.data);
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
                 break
 
             case "poiAdd":
                 dispatch(updateSinglePoiDetails(payload.data));
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
                 break
 
             case "createFlightBooking":
                 fetchAllTransferBooking(itinearyId)
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+                break
+
+            case "deleteAccommodationBooking":
+                deleteAccommodationBooking(payload.data);
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+                break
+
+            case "deleteActivityBooking":
+                deleteActivityBooking(payload.data);
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
                 break
 
             default:
@@ -304,6 +321,66 @@ export const ChatProvider = ({ itinearyId, children }) => {
             }),
         };
 
+        dispatch(setItinerary(newItinerary));
+    }
+
+    const deleteActivityBooking = (res) => {
+        if(res.status!=204) return;
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+
+        const itineraryCities = newItinerary.cities.map((city) => {
+            city.day_by_day.forEach((day, index) => {
+              if (day?.slab_elements) {
+                day.slab_elements = day.slab_elements.filter(
+                  (item) => item?.booking?.id !== res?.booking_id	
+                );
+              }
+            });
+
+            city.activities = city.activities?.filter(
+              (item) => item?.id !== res?.booking_id	
+            );
+          
+
+          return city;
+        });
+
+        newItinerary.cities = itineraryCities;
+
+        dispatch(setItinerary(newItinerary));
+    }
+
+    const deleteAccommodationBooking = (res) => {
+        if(res.status!=204) return;
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+        var newStays = JSON.parse(JSON.stringify(stays));
+        newItinerary.cities = newItinerary.cities.map((item) => {
+          const hasMatchingHotel = item?.hotels?.some(hotel => hotel?.id === res?.booking_id	);
+
+          if (hasMatchingHotel) {
+            item.hotels = [];
+            item.itinerary_city_id = item?.itinerary_city_id
+          }
+
+          return item;
+        });
+
+        newStays = newStays.map((item) => {
+          if (item?.id === res?.booking_id	) {
+            return {
+              itinerary_city_id: item?.itinerary_city_id,
+              check_in: item?.check_in,
+              check_out: item?.check_out,
+              city_id: item?.city_id,
+              city_name: item?.city_name,
+              duration: item?.duration,
+              trace_city_id: item?.trace_city_id,
+            };
+          }
+          return item;
+        });
+
+        dispatch(setStays(newStays));
         dispatch(setItinerary(newItinerary));
     }
 

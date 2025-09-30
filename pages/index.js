@@ -56,6 +56,16 @@ const Home = (props) => {
         ></meta>
 
         <link rel="canonical" href={`https://thetarzanway.com`}></link>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
 
         <script
           type="application/ld+json"

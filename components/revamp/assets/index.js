@@ -7,9 +7,20 @@ import Japan from "./japan.png";
 import backgroundImage from "./bg.png";
 import cta from "./cta.png";
 import TTW from "./ttw.svg";
+import Paris from "./destination.png";
 
 // Named exports for individual imports
-export { backgroundImage, image1, image2, image3, image4, TTW, Japan, cta };
+export {
+  backgroundImage,
+  image1,
+  image2,
+  image3,
+  image4,
+  TTW,
+  Japan,
+  cta,
+  Paris,
+};
 
 // Alternative descriptive names
 export {
