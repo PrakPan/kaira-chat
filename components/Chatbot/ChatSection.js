@@ -7,6 +7,8 @@ import ProductSlider from './product-slider/ProductSlider';
 import media from '../../components/media';
 import Image from 'next/image';
 import useCachedImage from '../../hooks/useCachedImage';
+import { authShowLogin } from '../../store/actions/auth';
+import { useDispatch } from 'react-redux';
 
 const Container = styled.div`
    height: calc(100% - 270px);
@@ -41,6 +43,16 @@ const Message = styled.div`
     margin-bottom:15px
 `;
 
+const LoginButton = styled.button`
+    background: #F7E700;
+    padding: 10px 16px;
+    width:131px;
+    height:40px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+`;
+
 const ChatMessage = React.memo(({ item, cachedAvatar }) => {
     const isUser = item.is_bot === false;
     return (
@@ -64,6 +76,7 @@ const ChatMessage = React.memo(({ item, cachedAvatar }) => {
 });
 
 function ChatSection(props) {
+    const dispatch = useDispatch();
     let isPageWide = media("(min-width: 768px)");
     const { conversations, isTyping, currentBotMessage,lastProductSliderPosition } = useChat();
     const scrollRef = useRef(null);
@@ -100,10 +113,33 @@ function ChatSection(props) {
         };
     }, []);
 
+    const handleShowLogin=()=>{
+        dispatch(authShowLogin());
+    }
+
 
     return (
         <Container ref={scrollRef} className={styles.chatWrapper}>
             <div className="chat-section" >
+                {!localStorage.getItem("access_token")?<div className='flex items-start gap-2 '>
+                    {cachedAvatar &&
+                        <Image
+                            src={cachedAvatar}
+                            alt="ticket"
+                            width={26}
+                            height={26}
+                        />
+                    }
+                    <div>
+                        <div className="Body1M_16">Hi, I'm the TarzanWay AI 👋</div>
+                        <div className="Body2R_14">I can see you're not logged in. Please log in to continue </div>
+                        <div className="Body2R_14">chatting and unlock your personalized travel experience.</div>
+                        <LoginButton onClick={handleShowLogin} className='mt-[24px]'>
+                            Login/Signup
+                        </LoginButton>
+                    </div>
+                </div>:
+                <>
                 {conversations.map((chatObj, idx) => (
                     chatObj?.type && chatObj?.data?.length > 0 ?
                         <div key={idx} style={{ width: isPageWide ? "calc(50vw - 160px)" : 'calc(100vw - 50px)' }}>
@@ -127,6 +163,9 @@ function ChatSection(props) {
                 {isTyping && <div className={styles.typingIndicator}> <div className={styles.typingDots}>
                     <span></span><span></span><span></span>
                 </div> <span className={styles.thinking}>Bot is thinking...</span></div>}
+                </>
+                }
+                
             </div>
         </Container>
     );
