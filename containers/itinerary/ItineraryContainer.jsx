@@ -730,6 +730,7 @@ const ItineraryContainer = (props) => {
           }
 
           dispatch(setItinerary(data));
+
           // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
           props.setBreif(data);
@@ -739,6 +740,7 @@ const ItineraryContainer = (props) => {
           let activities = getItineraryActivities();
           props.setItineraryActivities(activities);
           setItineraryLoading(false);
+          // dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
         }
 
         if (hotels === "SUCCESS" && !hotelsSuccessRef.current) {

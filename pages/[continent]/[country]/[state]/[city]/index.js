@@ -11,13 +11,16 @@ import {  MERCURY_HOST } from "../../../../../services/constants";
 import axios from "axios";
 import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 import ThemePage from "../../../../../containers/travelplanner/ThemePage";
+import { useAnalytics } from "../../../../../hooks/useAnalytics";
 const Experience = (props) => {
   const router = useRouter();
+  const { trackPageView } = useAnalytics();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
+    trackPageView(props.Type, `${props.cityData.name} Page`)
   }, []);
 
   const schemaData = {

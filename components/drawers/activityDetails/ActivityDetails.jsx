@@ -491,11 +491,16 @@ export default function ActivityDetails(props) {
                     />
                   </div>
                 ))}
+
               </div>
             </div>
           ) : null}
 
-         {props?.data?.prices && props?.data?.prices?.length && props?.data?.is_package && (
+
+          {/* Inclusions Section */}
+         
+
+         {props?.data?.prices && props?.data?.prices?.length && (
   <div className="mb-4">
     <h3 className="font-medium text-base mb-3">Package Options</h3>
     

@@ -18,6 +18,7 @@ import styled from "styled-components";
 import ReviewPoi from "../../../components/POIDetails/Reviews";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
+import { useRouter } from "next/router";
 
 export const Title = styled.p`
   font-weight: 800;
@@ -96,6 +97,7 @@ export default function PoiDetails(props) {
   });
 
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -158,6 +160,7 @@ export default function PoiDetails(props) {
     }
     props.updatedActivityBooking().then((res) => {
       setLoading(false);
+      props?.trackPoiBookingAdded(router?.query?.id,props?.data?.id, "itinerary_poi_list");
       if (res != 0) {
         props?.setShowDrawer(false);
         props?.handleCloseDrawer(e);

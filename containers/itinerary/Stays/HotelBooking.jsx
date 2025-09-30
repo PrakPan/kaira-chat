@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import { connect, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -78,6 +79,11 @@ const HotelBooking = ({
   const [showBookingModal, setShowBookingModal] = useState(false);
   
 
+  const { trackHotelCardClicked, trackHotelListClicked,trackHotelBookingAdd,trackHotelBookingDelete,trackHotelCardDetails } = useAnalytics();
+
+
+  
+
   const {
     drawer = null,
     booking_id = null,
@@ -129,6 +135,7 @@ const HotelBooking = ({
 
 
   const handleViewDetails = (value) => {
+    trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -174,6 +181,7 @@ const HotelBooking = ({
 
   const handleChangeHotel = (e, label, value, clickType) => {
     e.stopPropagation();
+    trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
     if (token) {
       router.push(
         {
@@ -674,7 +682,7 @@ const HotelBooking = ({
                       borderRadius="8px"
                       hoverColor="white"
                       fontWeight="400"
-                      onclick={() => handleViewDetails(booking.name)}
+                      onclick={() => {handleViewDetails(booking.name)}}
                     >
                       View Detail
                     </Button>

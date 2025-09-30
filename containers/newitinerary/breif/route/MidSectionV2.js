@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import TransferSkeleton from "../../../../components/itinerary/Skeleton/TransferSkeleton";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { useRouter } from "next/router";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
 
 const Container = styled.div`
   display: grid;
@@ -103,9 +104,15 @@ const MidSectionV2 = (props) => {
         }
   );
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const {id} = useSelector((state) => state.auth);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const {trackTransferBookingAdd,trackTransferBookingChange} =  useAnalytics();
 
   const handleAddTransfer = () => {
+    if(props.cityTransferBookings?.id){
+      trackTransferBookingChange(router.query.id,props?.transferId,id);
+    }
+    trackTransferBookingAdd(router.query.id,props?.transferId,id);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

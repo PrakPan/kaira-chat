@@ -393,6 +393,7 @@ useEffect(() => {
         setIsEditing(false);
         setFocusedInput(null);
         if (onUpdateSuccess) {
+
           onUpdateSuccess();
         }
         setIsLoading(false);

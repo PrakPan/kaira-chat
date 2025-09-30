@@ -50,6 +50,21 @@ const nextConfig = {
     instrumentationHook: true,
   },
 
+  // webpack: (config) => {
+  //   config.plugins.push(
+  //     new (require('copy-webpack-plugin'))({
+  //       patterns: [
+  //         {
+  //           from: 'lib/analytics.js',
+  //           to: 'static/jupiter-analytics.js',
+  //         },
+  //       ],
+  //     })
+  //   );
+  //   return config;
+  // },
+
+  
   swcMinify: true,
 
   eslint: {

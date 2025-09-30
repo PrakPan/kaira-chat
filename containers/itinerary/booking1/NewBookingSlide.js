@@ -505,6 +505,7 @@ const Details = (props) => {
   };
 
   const handleWhatsappChat = () => {
+    trackWhatsAppClicked(router?.query?.id,Cart?.discounted_cost,'Rupees');
     logEvent({
       action: "Button_Click",
       params: {

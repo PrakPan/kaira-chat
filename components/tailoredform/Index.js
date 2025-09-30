@@ -19,6 +19,7 @@ import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -174,6 +175,7 @@ const Enquiry = (props) => {
     min_price: 0,
     max_price: 3000,
   });
+  const {trackItineraryInitiated, trackItineraryCompleted} = useAnalytics();
   
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
@@ -296,6 +298,7 @@ const Enquiry = (props) => {
 
 const queryType = router?.query?.type?.toLowerCase();
 const propType = props?.type?.toLowerCase();
+
 
 if (queryType === "page" || propType === "page") {
   selectedObj = [
@@ -610,6 +613,7 @@ let dist=divideTravellers()
       .post("", data)
       .then((res) => {
         const data = res.data;
+        trackItineraryInitiated('itinerary_initiated');
         setError(null);
         setItineraryId(data.itinerary_id);
         setIsLoading(false);
@@ -688,6 +692,7 @@ let dist=divideTravellers()
       })
       .then((response) => {
         setError(null);
+        trackItineraryCompleted(itineraryId, 'itinerary_completed');
         setSubmitted(true);
         window.location.href = `/itinerary/${itineraryId}`;
         window.scrollTo(0, 0);

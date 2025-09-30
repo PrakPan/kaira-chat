@@ -25,7 +25,6 @@ const InnerContainer = styled.div`
 `;
 
 const Pin = (props) => {
-  console.log("props1 are:",props)
   return (
     <Container
       className="center-div"

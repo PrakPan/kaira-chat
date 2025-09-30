@@ -94,7 +94,7 @@ export const getotp = (data) => {
           dispatch(authMobileFail("OTP could not be sent"));
           Sentry.captureException(
             new Error(
-              `[LogIn Error]: ${err.response.config.url} : ${err.response.config.data}`
+              `[LogIn Error]: ${err?.response?.config?.url} : ${err?.response?.config?.data}`
             )
           );
         }

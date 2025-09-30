@@ -105,7 +105,6 @@ const TransferDrawer = ({
     );
   };
 
-  console.log("BBK",booking_type,transferType,data);
 
 
   const toggleExpand = (index) => {

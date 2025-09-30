@@ -12,17 +12,27 @@ import { GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import styled from "styled-components";
 import Script from "next/script";
 import restartBot from "../helper/RestartBot";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
+import JupyterAnalytics from "../components/jupyterAnalytics";
+
+
+
+
+
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
+  const [jupiterInitialized, setJupiterInitialized] = useState(false);
+  const initializationAttempts = useRef(0);
+  const maxAttempts = 10;
+  const { id } = useSelector(state => state.auth);
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -35,12 +45,17 @@ function MyApp({ Component, pageProps, store }) {
   }, []);
 
   function setupTokenExpiryWatcher() {
+    if (typeof window === 'undefined') return;
+    
     const expiry = localStorage.getItem('expirationDate');
     if (!expiry) return;
-  
-    const timeLeft = new Date(expiry).getTime()- Date.now();
-    console.log("time left is:",timeLeft)
+
+    const timeLeft = new Date(expiry).getTime() - Date.now();
+    
     if (timeLeft <= 0) {
+      dispatch(authLogout());
+      localStorage.clear();
+      restartBot();
     } else {
       setTimeout(() => {
         dispatch(authLogout());
@@ -52,116 +67,96 @@ function MyApp({ Component, pageProps, store }) {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-        restartBot()
+        restartBot();
       }, timeLeft);
     }
   }
-  
-  // Run this once on app load
-  setupTokenExpiryWatcher();
-  
 
-  // useEffect(() => {
-  //   const handleBrowserBack = (event) => {
-  //     event.preventDefault();
-  //     console.log("Browser back button pressed!");
+  useEffect(() => {
+    setupTokenExpiryWatcher();
+  }, []);
 
-  //     const confirmLeave = window.confirm("Are you sure you want to go back?");
-  //     if (confirmLeave) {
-  //       window.history.back(); // Allow back
-  //     } else {
-  //       window.history.pushState(null, null, window.location.href); // Stay on page
-  //     }
-  //   };
-
-  //   if (typeof window !== "undefined") {
-  //     window.history.pushState(null, null, window.location.href); // push a dummy state
-  //     window.addEventListener("popstate", handleBrowserBack);
-  //   }
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handleBrowserBack);
-  //   };
-  // }, []);
-  // useEffect(() => {
-  //   try {
-  //     if (!window.location.href.split("/").includes("itinerary")) return;
-
-  //   setTimeout(() => {
-  //     (function () {
-  //       function getElement(xpath) {
-  //         return document.evaluate(
-  //           xpath,
-  //           document,
-  //           null,
-  //           XPathResult.FIRST_ORDERED_NODE_TYPE,
-  //           null
-  //         ).singleNodeValue;
-  //       }
-
-  //       let dfMessengerBubble = getElement(
-  //         "/html/body/df-messenger/div/df-messenger-chat-bubble"
-  //       );
-  //       if (!dfMessengerBubble)
-  //         return console.error("df-messenger-chat-bubble not found");
-
-  //       let dfMessengerChat =
-  //         dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
-  //       if (!dfMessengerChat)
-  //         return console.error("df-messenger-chat not found");
-
-  //       let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
-  //         "df-messenger-user-input"
-  //       );
-  //       if (!userInputContainer)
-  //         return console.error("df-messenger-user-input not found");
-
-  //       let textArea =
-  //         userInputContainer?.shadowRoot.querySelector("textarea");
-  //       if (!textArea) return console.error("Textarea not found");
-
-  //       textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
-
-  //       const enterEvent = new KeyboardEvent("keydown", {
-  //         key: "Enter",
-  //         code: "Enter",
-  //         keyCode: 13,
-  //         which: 13,
-  //         bubbles: true,
-  //       });
-  //       textArea.dispatchEvent(enterEvent);
-  //     })();
-  //   }, 2000);
-  //   } catch (error) {
-  //     console.log("Error is:",error)
-  //   }
-  // }, []);
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
+      
+      // Track with Jupiter Analytics if available
+      if (window.JupiterAnalytics?.trackPageView) {
+        window.JupiterAnalytics.trackPageView(url);
+      }
+
+      // Facebook Pixel - only on client side
+      if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', 'PageView');
+      }
     };
-    //When the component is mounted, subscribe to router changes
-    //and log those page views
+
     router.events.on("routeChangeComplete", handleRouteChange);
-    // If the component is unmounted, unsubscribe
-    // from the event with the `off` method
-    import("react-facebook-pixel")
-      .then((x) => x.default)
-      .then((ReactPixel) => {
-        ReactPixel.init(FACEBOOK_PIXEL_ID); // facebookPixelId
-        ReactPixel.pageView();
-        router.events.on("routeChangeComplete", () => {
+
+    // Initialize Facebook Pixel - ONLY on client side
+    if (typeof window !== 'undefined') {
+      import("react-facebook-pixel")
+        .then((x) => x.default)
+        .then((ReactPixel) => {
+          ReactPixel.init(FACEBOOK_PIXEL_ID);
           ReactPixel.pageView();
-        });
-      });
+        })
+        .catch(err => console.error('Facebook Pixel load error:', err));
+    }
+
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-  // In a client-side context
-  
-  
 
+  // Jupiter Analytics initialization
+  useEffect(() => {
+    if (typeof window === 'undefined' || jupiterInitialized) return;
+
+    const tryInitialize = () => {
+      initializationAttempts.current += 1;
+
+      if (window.JupiterAnalytics) {
+        const analytics = window.JupiterAnalytics;
+        
+        // Try different initialization methods
+        const initMethods = [
+          'initializeAnalytics',
+          'init',
+          'initialize'
+        ];
+
+        for (const method of initMethods) {
+          if (typeof analytics[method] === 'function') {
+            try {
+              analytics[method]({
+                userId: id || null,
+                siteId: 'tarzanway-web',
+                apiHost: 'https://dev.jupiter.tarzanway.com',
+                anonymousId: "abc",
+              });
+              setJupiterInitialized(true);
+              console.log(`✅ Jupiter initialized via ${method}`);
+              return;
+            } catch (error) {
+              console.error(`Error with ${method}:`, error);
+            }
+          }
+        }
+      }
+
+      // Retry if not successful and under max attempts
+      if (initializationAttempts.current < maxAttempts) {
+        setTimeout(tryInitialize, 1000);
+      } else {
+        console.warn('⚠️ Jupiter Analytics initialization failed');
+        setJupiterInitialized(true);
+      }
+    };
+
+    const initTimeout = setTimeout(tryInitialize, 1000);
+    return () => clearTimeout(initTimeout);
+  }, [id, jupiterInitialized]);
 
   return (
     <>
@@ -188,6 +183,14 @@ function MyApp({ Component, pageProps, store }) {
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
+            <JupyterAnalytics
+              apiEndpoint="https://dev.jupiter.tarzanway.com"
+              userId={id || null}
+              batchSize={10}
+              flushInterval={3000}
+              siteId="tarzanway-web"
+              anonymousId="abc"
+            />
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>
@@ -195,6 +198,7 @@ function MyApp({ Component, pageProps, store }) {
     </>
   );
 }
+
 MyApp.getInitialProps = async ({ Component, ctx }) => {
   return {
     pageProps: {
@@ -204,6 +208,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     },
   };
 };
+
 export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
   ssr: false,
 });

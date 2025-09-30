@@ -225,7 +225,7 @@ const RouteEditSection = (props) => {
   }
 
 
-  useEffect(() => {
+useEffect(() => {
   const cities = [];
 
   if (props?.routes && itinerary?.start_date) {
@@ -241,6 +241,7 @@ const RouteEditSection = (props) => {
       result.setDate(result.getDate() + days);
       return result;
     };
+
 
 
 
@@ -288,7 +289,6 @@ const RouteEditSection = (props) => {
     setDestinations(cities);
   }
 }, [props.routes, itinerary?.start_date]);
-
 
 //   useEffect(() => {
 //   const cities = [];
@@ -621,6 +621,12 @@ const RouteEditSection = (props) => {
           headers,
         })
         .then((response) => {
+          
+            Object.keys(localStorage).forEach(key => {
+        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
+        localStorage.removeItem(key);
+        }
+        });
           dispatch(setItinerary(response.data));
         Object.keys(localStorage).forEach(key => {
         if (key.startsWith(`notes_dismissed_${ router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId}`)) {

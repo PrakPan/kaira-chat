@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useEffect, useRef } from "react";
+import React, { use, useEffect, useRef } from "react";
 import Pin from "../newitinerary/breif/route/Pin";
 import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
@@ -24,6 +24,7 @@ import { LuInfo } from "react-icons/lu";
 import TransferPickupDropButton from "./TransferPickupDropButton";
 import PickupDropDrawer from "./PickupDropDrawer";
 import { useHandleClose } from "../../hooks/useHandleClose";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const Container = styled.div`
   display: flex;
@@ -749,7 +750,8 @@ const CityItem = ({
   destinationLat,
   destinationLong,
   firstCity,
-  lastCity
+  lastCity,
+  bookingIdToDelete
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -759,6 +761,8 @@ const CityItem = ({
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
+  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferBookingDelete} = useAnalytics();
+  const {id} = useSelector((state) => state.auth);
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
@@ -881,6 +885,7 @@ useEffect(() => {
 const handleEdit = async (combo, book) => {
   const bookingType = book?.booking_type || booking_type;
   setTransferType(bookingType);
+  trackTransferBookingChange(router.query.id,bookingIdToDelete,id);
   setIsIntracity(false);
   if (combo) {
     setComboDetails(true);
@@ -926,6 +931,7 @@ const handleEdit = async (combo, book) => {
   };
 
   const handleAddTransfer = () => {
+    trackTransferBookingAdd(router.query.id,bookingIdToDelete,id);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -990,6 +996,7 @@ const handleEdit = async (combo, book) => {
         dispatch(updateTransferBookings(dataPassed?.id));
         setLoading(false);
         getPaymentHandler();
+        trackTransferBookingDelete(router.query.id,bookingIdToDelete,id);
 
         if (isIntracity) {
           setCurrentAirportBookings((prev) =>
@@ -1176,8 +1183,6 @@ useEffect(() => {
   ) || [];
 
 
-
-console.log("HandleEdit",airportBookingId,booking_id,bookingId)
 
   return (
     <Container>

@@ -23,6 +23,7 @@ import { BiSolidCustomize } from "react-icons/bi";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -134,6 +135,8 @@ const ActivityDetails = (props) => {
 
   const dispatch = useDispatch();
 
+  const {trackActivityBookingDelete} = useAnalytics();
+
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -187,8 +190,10 @@ const ActivityDetails = (props) => {
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
+
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
+        trackActivityBookingDelete(router.query.id,props?.data?.id,"ActivityDetailsDrawer");
 
         const itineraryCities = newItinerary.cities.map((city) => {
           if (city.id === props?.itinerary_city_id) {
@@ -402,7 +407,8 @@ const ActivityDetails = (props) => {
                 </Text>
               </div>
             )}
-            {props.activityData?.inclusions && props.activityData?.inclusions?.length > 0 && (
+
+             {props.activityData?.inclusions && props.activityData?.inclusions?.length > 0 && (
             <div className="flex flex-col gap-2 mb-[30px]">
               <div className="text-[20px] font-semibold text-green">Inclusions</div>
               <div className="border-b-[1px]"></div>

@@ -14,6 +14,7 @@ import { BsPeopleFill } from "react-icons/bs";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import { FaPen } from "react-icons/fa";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -27,6 +28,8 @@ const CitySummary = (props) => {
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const {trackActivityBookingAdd,trackActivityCardClicked} = useAnalytics();
+  const {id} = useSelector(state=>state.auth) 
   const dispatch = useDispatch();
   const {
     drawer,
@@ -39,13 +42,14 @@ const CitySummary = (props) => {
     date,
     bookingId,
   } = router?.query;
-  const activityData = {
+  const  activityData = {
     id: poi_id,
     type: type,
     dayIndex: dayIndex,
     index: index,
   };
   const handleView = async (poi, type, dayIndex) => {
+    trackActivityCardClicked(router.query.id,poi,'day_by_day_collapse');
     try {
       router.push(
         {
@@ -125,6 +129,7 @@ const CitySummary = (props) => {
   };
 
   const handleAddActivity = () => {
+    trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
