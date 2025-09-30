@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { Modal, Box, Backdrop, IconButton } from "@mui/material";
 import useChat from "../hook/UseChat";
 import styled from "styled-components";
@@ -6,6 +6,8 @@ import moment from "moment";
 import NoDataLayouteOne from "../../NoDataLayouts/NoDataLayouteOne";
 import LoadingLayoutsOne from "../../LoadingLayouts/LoadingLayoutsOne";
 import Image from "next/image";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 
 const Container = styled.div`
 padding:20px;
@@ -109,12 +111,42 @@ const groupChatsByDate = (chatHistoryList) => {
 
 function HistoryList() {
     const { chatBotContainerRef, handleOpenChatHistory, newSessionStart, isOpenChatHistoryDrawer, chatHistoryList, showChatHistoryById, sessionId, isloadingChatHistory } = useChat();
-
+    const [groupedChats, setGroupedChats] = useState(groupChatsByDate(chatHistoryList));
     const openNwChat=()=>{
         newSessionStart();
         handleOpenChatHistory();
     }
-    const groupedChats = groupChatsByDate(chatHistoryList);
+
+    const handleDeleteChat=async(id,date)=>{
+        const res = await axios.delete(
+            `${MERCURY_HOST}/chat/sessions/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                },
+            }
+        );
+        const newGroupedChats = groupChatsByDate(chatHistoryList);
+        if(res.status===204){
+            if(date==="today"){
+                newGroupedChats.today=newGroupedChats.today.filter(item=>item.id!==id);
+                setGroupedChats(newGroupedChats);
+            }else if(date==="yesterday"){
+                newGroupedChats.yesterday=newGroupedChats.yesterday.filter(item=>item.id!==id);
+                setGroupedChats(newGroupedChats);
+            }else if(date==="lastWeek"){
+                newGroupedChats.lastWeek=newGroupedChats.lastWeek.filter(item=>item.id!==id);
+                setGroupedChats(newGroupedChats);
+            }else if(date==="older"){
+                newGroupedChats.older=newGroupedChats.older.filter(item=>item.id!==id);
+                setGroupedChats(newGroupedChats);
+            }
+        }
+    }
+
+    useEffect(()=>{
+        setGroupedChats(groupChatsByDate(chatHistoryList));
+    },[chatHistoryList]);
 
     return (
         <Modal
@@ -168,11 +200,11 @@ function HistoryList() {
                                         {groupedChats.today.map((item, idx) => (
                                             <ChatItem 
                                                 key={idx} 
-                                                onClick={() => showChatHistoryById(item.id)} 
+                                                
                                                 className={sessionId === item.id ? 'active' : ''}
                                             >
-                                                <span>{item?.name || moment(item.created_at).format("hh:mm A")}</span>
-                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]"/>
+                                                <span onClick={() => showChatHistoryById(item.id)} >{item?.name || moment(item.created_at).format("hh:mm A")}</span>
+                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]" onClick={()=>handleDeleteChat(item.id,"today")}/>
                                             </ChatItem>
                                         ))}
                                     </DateGroup>
@@ -184,11 +216,11 @@ function HistoryList() {
                                         {groupedChats.yesterday.map((item, idx) => (
                                             <ChatItem 
                                                 key={idx}
-                                                onClick={() => showChatHistoryById(item.id)} 
+                                                
                                                 className={sessionId === item.id ? 'active' : ''}
                                             >
-                                                <span>{item?.name || moment(item.created_at).format("hh:mm A")}</span>
-                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]"/>
+                                                <span onClick={() => showChatHistoryById(item.id)} >{item?.name || moment(item.created_at).format("hh:mm A")}</span>
+                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]" onClick={()=>handleDeleteChat(item.id,"yesterday")}/>
                                             </ChatItem>
                                         ))}
                                     </DateGroup>
@@ -200,11 +232,11 @@ function HistoryList() {
                                         {groupedChats.lastWeek.map((item, idx) => (
                                             <ChatItem 
                                                 key={idx}
-                                                onClick={() => showChatHistoryById(item.id)} 
+                                                
                                                 className={sessionId === item.id ? 'active' : ''}
                                             >
-                                                <span>{item?.name || moment(item.created_at).format("MMM DD")}</span>
-                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]"/>
+                                                <span onClick={() => showChatHistoryById(item.id)} >{item?.name || moment(item.created_at).format("MMM DD")}</span>
+                                                <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]" onClick={()=>handleDeleteChat(item.id,"lastWeek")}/>
                                             </ChatItem>
                                         ))}
                                     </DateGroup>
@@ -216,11 +248,11 @@ function HistoryList() {
                                         {groupedChats.older.map((item, idx) => (
                                             <ChatItem 
                                                 key={idx}
-                                                onClick={() => showChatHistoryById(item.id)} 
+                                                    
                                                 className={sessionId === item.id ? 'active' : ''}
                                             >
-                                                <span>{item?.name || moment(item.created_at).format("MMM DD, YYYY")}</span>
-                                               <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]"/>
+                                                <span onClick={() => showChatHistoryById(item.id)} >{item?.name || moment(item.created_at).format("MMM DD, YYYY")}</span>
+                                               <Image src="/delete.svg" width={16} height={16} className="text-[#D43E29]" onClick={()=>handleDeleteChat(item.id,"older")}/>
                                             </ChatItem>
                                         ))}
                                     </DateGroup>
