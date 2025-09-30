@@ -263,6 +263,11 @@ export const ChatProvider = ({ itinearyId, children }) => {
                 dispatch(SetCallPaymentInfo(!CallPaymentInfo));
                 break
 
+            case "deleteActivityBooking":
+                deleteActivityBooking(payload.data);
+                dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+                break
+
             default:
                 console.log("Unhandle update details itinerary action :- ", payload.action_type);
                 break;
@@ -319,9 +324,34 @@ export const ChatProvider = ({ itinearyId, children }) => {
         dispatch(setItinerary(newItinerary));
     }
 
-    const deleteAccommodationBooking = (res) => {
-        console.log("deleteAccommodationBooking", res);
+    const deleteActivityBooking = (res) => {
+        if(res.status!=204) return;
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
 
+        const itineraryCities = newItinerary.cities.map((city) => {
+            city.day_by_day.forEach((day, index) => {
+              if (day?.slab_elements) {
+                day.slab_elements = day.slab_elements.filter(
+                  (item) => item?.booking?.id !== res?.booking_id	
+                );
+              }
+            });
+
+            city.activities = city.activities?.filter(
+              (item) => item?.id !== res?.booking_id	
+            );
+          
+
+          return city;
+        });
+
+        newItinerary.cities = itineraryCities;
+
+        dispatch(setItinerary(newItinerary));
+    }
+
+    const deleteAccommodationBooking = (res) => {
+        if(res.status!=204) return;
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {

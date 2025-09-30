@@ -155,7 +155,7 @@ function HistoryList() {
                     </div>
                     <div className="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
                         <Heading>Chat History</Heading>
-                        <button className="MediumIndigoOutlinedButton" onClick={openNwChat}>New Chat</button>
+                        <button className="MediumIndigoOutlinedButton !h-[32px] !w-[98px] text-[14px] !p-0" onClick={openNwChat}>New Chat</button>
                     </div>
                     <ListContainer>
                         {isloadingChatHistory && <LoadingLayoutsOne {...loadingObj} />}
