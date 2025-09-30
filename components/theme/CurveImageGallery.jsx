@@ -179,7 +179,7 @@ const Carousel3D = () => {
       </div>
 
       {/* Mobile Swiper */}
-      <div className="md:hidden px-4">
+      <div className="hidden px-4">
         <Swiper
           slidesPerView={1.2}
           initialSlide={0}
