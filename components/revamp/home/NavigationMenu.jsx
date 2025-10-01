@@ -16,6 +16,7 @@ import ProfileDropDown from "../../navbar/ProfileDropDown";
 import { authLogout } from "../../../store/actions/auth";
 import MobileMenu from "../../navbar/mobile/Index";
 import ImageLoader from "../../ImageLoader";
+import * as logout from "../../../store/actions/logout";
 
 const NavigationMenu = (props) => {
   const {
@@ -213,7 +214,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onLogout: () => dispatch(authLogout()),
+    onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authShowLogin()),
   };
 };
