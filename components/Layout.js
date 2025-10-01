@@ -7,6 +7,7 @@ import media from "./media";
 import NotificationPopup from "./ui/NotificationPopup";
 import { changeUserLocation } from "../store/actions/userLocation";
 import Cookies from "js-cookie";
+import NavigationMenu from "./revamp/home/NavigationMenu";
 
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -87,17 +88,7 @@ const Layout = React.memo((props) => {
 
   return (
     <div className="layout">
-      <Header
-        PW={props.PW}
-        staticnav={props.staticnav}
-        ctaonclick={props.ctaonclick}
-        hidecta={props.hidecta}
-        hidehomecta={props.hidehomecta}
-        id={props.id}
-        destination={props.destination}
-        page={props.page}
-        itinerary={props.itinerary}
-      />
+      <NavigationMenu/>
 
       <div
         style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}

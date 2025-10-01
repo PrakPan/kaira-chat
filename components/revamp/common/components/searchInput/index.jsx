@@ -109,7 +109,7 @@ const SearchInput = ({
     const fetchResults = async () => {
       try {
         const res = await axiossearchinstance.get(`?q=${debouncedSearch}`);
-        setResults(res.data || []);
+        setResults(res.data.slice(0, 10) || []);
       } catch (err) {
         console.error("Search error:", err);
       }
