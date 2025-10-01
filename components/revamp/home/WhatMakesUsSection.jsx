@@ -185,10 +185,7 @@ export default function WhatMakesUsSection() {
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-center max-w-[1320px] mx-auto">
         {/* Left copy */}
-        <div
-          className="flex flex-col justify-center pr-8"
-          style={{ height: "616px" }}
-        >
+        <div className="flex flex-col justify-center md:pr-8 md:[height:616px]">
           <div className="space-y-12">
             {featuresLeft.map((f) => (
               <div key={f.title} className="max-w-sm">
@@ -263,10 +260,7 @@ export default function WhatMakesUsSection() {
         </div>
 
         {/* Right copy */}
-        <div
-          className="flex flex-col justify-center pl-8"
-          style={{ height: "616px" }}
-        >
+        <div className="flex flex-col justify-center md:pl-8 md:[height:616px]">
           <div className="space-y-12">
             {featuresRight.map((f) => (
               <div key={f.title} className="max-w-sm">
