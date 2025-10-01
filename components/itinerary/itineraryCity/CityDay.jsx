@@ -10,6 +10,9 @@ import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { openNotification } from "../../../store/actions/notification";
+import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -20,10 +23,22 @@ const CityDay = (props) => {
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
   const {trackActivityBookingAdd,trackActivityCardClicked} = useAnalytics();
+  const dispatch = useDispatch();
+
 
   const router=useRouter()
-  const { drawer, idx, itinerary_city_id,date } =
-  router?.query;
+  const {
+    drawer,
+    poi_id,
+    type,
+    dayIndex,
+    index,
+    itinerary_city_id,
+    idx,
+    date,
+    bookingId,
+  } = router?.query;
+ 
   const handleAddActivity = () => {
     trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
@@ -100,6 +115,58 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
       };
     }
   );
+
+  const handleDelete = async (val) => {
+      if (!localStorage?.getItem("access_token")) {
+        props?.setShowLoginModal(true);
+        return;
+      }
+      const dataPassed = val != null ? val : taxiData;
+      try {
+        setLoading(true);
+        const response = await axiosDeleteBooking.delete(
+          `${router?.query?.id}/bookings/${
+            dataPassed?.booking_type?.includes(",")
+              ? `combo`
+              : dataPassed?.booking_type?.toLowerCase()
+          }/${dataPassed?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+  
+        if (response.status === 204) {
+          dispatch(updateTransferBookings(dataPassed?.id));
+          setLoading(false);
+          props?.getPaymentHandler();
+  
+          setHandleShowTaxi(false);
+          dispatch(
+            openNotification({
+              type: "success",
+              text: `Taxi deleted successfully`,
+              heading: "Success!",
+            })
+          );
+        }
+      } catch (err) {
+        const errorMsg =
+          err?.response?.data?.errors?.[0]?.message?.[0] ||
+          err.response?.data?.errors[0]?.detail ||
+          err.message;
+        dispatch(
+          openNotification({
+            type: "error",
+            text: errorMsg,
+            heading: "Error!",
+          })
+        );
+        setLoading(false);
+      }
+    };
+
   return (
     <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
       <div
@@ -148,7 +215,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&
-          matchingIntracityBookings?.length > 0 && (
+          matchingIntracityBookings?.length > 0 &&  (
             <>
               <hr />
               <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
@@ -248,6 +315,47 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                             </div>
                           </div>
                         </div>
+
+                         {drawer == "SightSeeing" && item?.id == bookingId && (
+                            <>
+                           
+                            <TransferDrawer
+                              show={drawer == "SightSeeing" && item?.id == bookingId}
+                              setHandleShow={setHandleShowTaxi}
+                              bookingData={taxiData}
+                              booking_type={"Taxi"}
+                              booking_id={item?.id}
+                              loading={loading}
+                              handleDelete={handleDelete}
+                              origin_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+                              destination_itinerary_city_id={
+                                props?.city?.id || props?.city?.gmaps_place_id
+                              }
+                              itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+                              
+                              setShowDrawer={setHandleShowTaxi}
+                              // city={city}
+                              _updateFlightBookingHandler={
+                                props?._updateFlightBookingHandler
+                              }
+                              _updatePaymentHandler={props?._updatePaymentHandler}
+                              getPaymentHandler={props?.getPaymentHandler}
+                              // oCityData={oCityData}
+                              // dCityData={dCityData}
+                              setShowLoginModal={props?.setShowLoginModal}
+                              setError={props?.setError}
+                              // dcity={destination_city_name}
+                              // selectedBooking={selectedBooking}
+                              // setSelectedBooking={setSelectedBooking}
+                              // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                              // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+                              // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                              // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+                              isIntracity={true}
+                              isSightseeing={true}
+                            />
+                            </>
+                          )}
                       </div>
                     ))}
                   </div>
@@ -261,6 +369,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           </button>
         </div> */}
       </div>
+     
       {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx==props?.index && (
         <ActivityAddDrawer
           showDrawer={itinerary_city_id == props?.itinerary_city_id && idx==props?.index}

@@ -244,14 +244,6 @@ const CitySummary = (props) => {
   };
 
   const shouldShowSightseeingDrawer = router.query.drawer === "SightSeeing" && router.query.bookingId;
-console.log("Intracity Bookings",props.intracityBookings)
-console.log("Should show SightSeeing drawer:", shouldShowSightseeingDrawer);
-console.log("Taxi det",formattedTaxiDetails)
-;console.log("Conditions:", {
-  drawerMatch: router.query.drawer === "SightSeeing",
-  hasBookingId: !!router.query.bookingId,
-  bookingId: router.query.bookingId
-});
   const handleDelete = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
@@ -512,7 +504,7 @@ console.log("Taxi det",formattedTaxiDetails)
       </div>
 
       {props?.intracityBookings &&
-        formattedTaxiDetails &&
+        formattedTaxiDetails &&  formattedTaxiDetails?.[0]?.id &&
         props?.intracityBookings?.length > 0 && (
           <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
             <div className="text-[14px] font-medium leading-[22px] w-[80px]">
