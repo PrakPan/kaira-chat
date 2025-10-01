@@ -22,6 +22,7 @@ const CityDaybyDay = (props) => {
             activityBookings={props?.activityBookings}
             setActivityBookings={props?.setActivityBookings}
             intracityBookings={props?.intracityBookings}
+            getPaymentHandler={props?.getPaymentHandler}
           />
         </>
       ))}
