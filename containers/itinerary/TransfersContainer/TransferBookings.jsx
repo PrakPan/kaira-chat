@@ -195,6 +195,7 @@ const TransferBookings = (props) => {
           sections.push(
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
+              transferId={connectionKey}
               loadbookings={props?.loadbookings}
               key={`airport-${booking?.id}-${index}`}
               index={-1}
@@ -248,6 +249,7 @@ const TransferBookings = (props) => {
               loadbookings={props?.loadbookings}
               key={`intracity-${booking.id}-${index}`}
               index={-1}
+               transferId={connectionKey}
               booking={booking}
               payment={props?.payment}
               token={props?.token}
@@ -290,6 +292,7 @@ const TransferBookings = (props) => {
             loadbookings={props?.loadbookings}
             key={intercityBooking.id || `intercity-${connectionKey}`}
             index={-1}
+            transferId={connectionKey}
             booking={intercityBooking}
             payment={props?.payment}
             token={props?.token}
@@ -327,6 +330,7 @@ const TransferBookings = (props) => {
               loadbookings={props?.loadbookings}
               key={`airport-${booking?.id}-${index}`}
               index={-1}
+              transferId={connectionKey}
               booking={booking}
               payment={props?.payment}
               token={props?.token}
@@ -396,6 +400,7 @@ const TransferBookings = (props) => {
             sections.push(
               <TransferBooking
                 mercuryItinerary={props?.mercuryItinerary}
+                transferId={connectionKey}
                 loadbookings={props?.loadbookings}
                 key={`intracity-${booking.id}-${idx}`}
                 index={index}
@@ -437,6 +442,7 @@ const TransferBookings = (props) => {
             if(booking?.is_airport_drop || (!(booking?.is_airport_drop) && !(booking?.is_airport_pickup))){
             sections.push(
               <TransferBooking
+                 transferId={connectionKey}
                 mercuryItinerary={props?.mercuryItinerary}
                 loadbookings={props?.loadbookings}
                 key={`airport-${booking?.id}-${index}`}
@@ -487,6 +493,7 @@ const TransferBookings = (props) => {
             <TransferBooking
               booking_id={intercityBooking?.id}
               mercuryItinerary={props?.mercuryItinerary}
+               transferId={connectionKey}
               loadbookings={props?.loadbookings}
               key={intercityBooking.id || `intercity-${connectionKey}`}
               index={index}
@@ -527,6 +534,7 @@ const TransferBookings = (props) => {
                 loadbookings={props?.loadbookings}
                 key={`airport-${booking?.id}-${index}`}
                 index={-1}
+                 transferId={connectionKey}
                 booking={booking}
                 payment={props?.payment}
                 token={props?.token}
@@ -602,6 +610,7 @@ const TransferBookings = (props) => {
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
               loadbookings={props?.loadbookings}
+               transferId={connectionKey}
               key={`intracity-${booking.id}-${idx}`}
               index={lastIndex}
               booking={booking}
@@ -646,6 +655,7 @@ const TransferBookings = (props) => {
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
               loadbookings={props?.loadbookings}
+               transferId={connectionKey}
               key={`airport-${booking?.id}-${index}`}
               index={-1}
               booking={booking}
@@ -696,6 +706,7 @@ const TransferBookings = (props) => {
             key={intercityBooking.id || `intercity-${connectionKey}`}
             index={lastIndex}
             booking={intercityBooking}
+             transferId={connectionKey}
             payment={props?.payment || null}
             token={props?.token || null}
             setShowLoginModal={props?.setShowLoginModal}
@@ -734,6 +745,7 @@ const TransferBookings = (props) => {
             loadbookings={props?.loadbookings}
             key={`airport-${booking?.id}-${index}`}
             index={-1}
+             transferId={itineraries?.end_city?.gmaps_place_id}
             booking={booking}
             payment={props?.payment}
             token={props?.token}
@@ -779,6 +791,7 @@ const TransferBookings = (props) => {
             loadbookings={props?.loadbookings}
             key={`airport-${booking?.id}-${index}`}
             index={-1}
+            transferId={itineraries?.end_city?.gmaps_place_id}
             booking={booking}
             payment={props?.payment}
             token={props?.token}

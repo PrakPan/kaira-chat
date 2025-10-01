@@ -10,14 +10,17 @@ import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 import { useRouter } from "next/router";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
+  const { trackPageView } = useAnalytics();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
+    trackPageView(props.Type, `${props.destination} Page`);
   }, []);
 
   return (

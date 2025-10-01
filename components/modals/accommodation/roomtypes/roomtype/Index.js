@@ -4,10 +4,12 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import media from "../../../../media";
 import { RxCross2 } from "react-icons/rx";
 import { dateFormat } from "../../../../../helper/DateUtils";
-import { useState } from "react";
+import { use, useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
 import Image from "next/image";
+import { useAnalytics } from "../../../../../hooks/useAnalytics";
+import { useRouter } from "next/router";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -17,6 +19,9 @@ const ImageContainer = styled.div`
 const RoomType = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [openRooms, setOpenRooms] = useState({});
+  const { trackHotelRoomDetails } = useAnalytics();
+  const router = useRouter();
+  
 
   const getRoomImage = (images) => {
     if (images && images.length) {
@@ -32,10 +37,16 @@ const RoomType = (props) => {
 
 
   const toggleRoomDetails = (roomIndex) => {
+    if(openRooms[roomIndex]){    
+      trackHotelRoomDetails(router.query.id, props.data.id,roomIndex, 'room_details_viewed')
+    }else{
+      trackHotelRoomDetails(router.query.id, props.data.id,roomIndex, 'room_details_hide')
+    }
     setOpenRooms(prev => ({
       ...prev,
       [roomIndex]: !prev[roomIndex]
     }));
+
   };
 
   return (

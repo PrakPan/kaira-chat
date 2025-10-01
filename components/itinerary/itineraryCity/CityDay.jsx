@@ -29,7 +29,7 @@ const DivideSlabElement = styled.div`
     color: #A09E9E;
 `
 import { getDatesInRange } from "../../../helper/DateUtils";
-import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -40,11 +40,13 @@ const CityDay = (props) => {
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const {trackActivityBookingAdd,trackActivityCardClicked} = useAnalytics();
 
   const router = useRouter()
   const { drawer, idx, itinerary_city_id, date } =
     router?.query;
   const handleAddActivity = () => {
+    trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

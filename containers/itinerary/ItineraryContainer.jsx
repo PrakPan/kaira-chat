@@ -38,6 +38,7 @@ import SetPassengers from "../../store/actions/passengers";
 import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
 import setCart from "../../store/actions/Cart";
+import NotesPopup from "./NotesPopup";
 
 const Container = styled.div`
   width: 90%;
@@ -193,6 +194,8 @@ const ItineraryContainer = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status ,final_status} =
     useSelector((state) => state.ItineraryStatus);
 
+  const phone = useSelector((state) => state.Auth)?.phone;
+
   // Throttle function for performance optimization
   const throttle = (func, limit) => {
     let inThrottle;
@@ -256,6 +259,9 @@ const ItineraryContainer = (props) => {
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
+
+  const [notes, setNotes] = useState(null);
+  const [showNotesPopup, setShowNotesPopup] = useState(false);
 
    const resetRef = () => {
     itinerarySuccessRef.current = false;
@@ -655,6 +661,10 @@ const ItineraryContainer = (props) => {
     dispatch(setItineraryStatus(statusField, statusValue));
   });
           setPolling(false);
+          if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
+    setNotes(res.data.celery.notes);
+    setShowNotesPopup(true);
+  }
         } else {
           setPolling(true);
         }
@@ -1396,6 +1406,13 @@ const ItineraryContainer = (props) => {
 
   return (
     <Container>
+
+      <NotesPopup
+  notes={notes}
+  itineraryId={router.query.id}
+  isLoggedIn={!!props.token} 
+  onClose={() => setShowNotesPopup(false)}
+/>
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
