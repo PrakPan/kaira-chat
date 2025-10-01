@@ -20,6 +20,46 @@ import Modal from "../ui/Modal";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import RouteOverviewModal from "./slideOne/RouteOverviewModal";
 import BottomModal from "../ui/LowerModal";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useAnalytics } from "../../hooks/useAnalytics";
+import styled, { keyframes } from "styled-components";
+import { fadeIn } from "react-animations";
+
+const fadeInAnimation = keyframes`${fadeIn}`;
+
+
+const CloseIcon = styled.div`
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+  border-bottom: 1px solid #0000004a;
+  padding-block: 1rem;
+`;
+
+const Heading = styled.p`
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.5rem 0;
+  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+  text-align: left;
+  font-weight: 600;
+  color: black;
+  line-height: normal;
+
+  @media screen and (min-width: 815px) {
+    font-size: 1.4rem;
+    margin: 0.25rem 0 0.25rem 0;
+    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+  }
+`;
+
+
+const LoadingText = styled.div`
+  font-size: 1.2rem;
+  position: absolute;
+  bottom: 30%;
+  opacity: 0.8;
+`;
+
 
 const Enquiry = (props) => {
   const router = useRouter();
@@ -67,6 +107,7 @@ const Enquiry = (props) => {
   })
 
   const slideIndex = Number(router.query.slideIndex) || 0;
+  const {trackItineraryInitiated, trackItineraryCompleted} = useAnalytics();
 
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
@@ -100,6 +141,9 @@ const Enquiry = (props) => {
         });
     }
   }, [props.userLocation]);
+
+
+ 
 
   const _handleHideBlack = () => {
     setShowCities(false);
@@ -180,7 +224,7 @@ const Enquiry = (props) => {
     initiateItineraryCreate();
   };
 
-  const _SlideThreeSubmitHandler = () => {
+ const _SlideThreeSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     let dist = divideTravellers(slideThreeData);
@@ -192,6 +236,7 @@ const Enquiry = (props) => {
       },
     });
   };
+
 
   const _slideTwoSkip = () => {
     try {
@@ -206,6 +251,8 @@ const Enquiry = (props) => {
 
     }
   }
+  
+  
 
   const initiateItineraryCreate = async () => {
     const data = buildItineraryPayload({
@@ -224,6 +271,7 @@ const Enquiry = (props) => {
       setIsLoading(true);
       const res = await itineraryInitiate.post("", data);
       const resData = res.data;
+      trackItineraryInitiated('itinerary_initiated');
 
       setError(null);
       setItineraryId(resData.itinerary_id);
@@ -273,6 +321,7 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
+        trackItineraryCompleted(itineraryId, 'itinerary_completed');
         dispatch(setItineraryCreated(true));
 
         setTimeout(() => {

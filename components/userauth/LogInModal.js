@@ -19,6 +19,8 @@ import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
+import { useAnalytics } from "../../hooks/useAnalytics";
+
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
@@ -103,6 +105,7 @@ const LogIn = React.memo((props) => {
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
+  const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -220,7 +223,8 @@ const LogIn = React.memo((props) => {
           userDetails.email,
           whatsapp,
           props.CountryCodes[extension].value,
-          props.onSuccess
+          props.onSuccess,
+          trackUserLogin
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -230,7 +234,8 @@ const LogIn = React.memo((props) => {
         null, setUserDetailsRequired,
         whatsapp,
         null,
-        props.onSuccess
+        props.onSuccess,
+        trackUserLogin
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -240,7 +245,8 @@ const LogIn = React.memo((props) => {
         userDetails.email,
         whatsapp,
         null,
-        props.onSuccess
+        props.onSuccess,
+        trackUserLogin
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -250,10 +256,11 @@ const LogIn = React.memo((props) => {
         userDetails.email,
         whatsapp,
         null,
-        props.onSuccess
+        props.onSuccess,
+        trackUserLogin
       );
     } else {
-      props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess);
+      props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess, trackUserLogin);
     }
 
   };
@@ -311,7 +318,8 @@ const LogIn = React.memo((props) => {
     props.onUpdate({
       phone: phone,
       whatsapp_opt_in: whatsapp,
-    });
+    },trackUserAccountUpdate);
+
   };
 
   const _handlePhoneUpdate = () => {
@@ -737,7 +745,7 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp, country, onSuccess) =>
+    onAuth: (mobile, password, name, email, whatsapp, country, onSuccess,trackUserLogin) =>
       dispatch(
         authaction.auth(
           mobile,
@@ -746,7 +754,8 @@ const mapDispatchToProps = (dispatch) => {
           email,
           whatsapp,
           country,
-          onSuccess
+          onSuccess,
+          trackUserLogin
         )
       ),
     onOtp: (mobile, setNewUser) =>
@@ -754,7 +763,8 @@ const mapDispatchToProps = (dispatch) => {
     onResetLogin: () => dispatch(authaction.authResetLogin()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
-    onUpdate: (response) => dispatch(authaction.changeUserDetails(response)),
+    onUpdate: (response, trackUserAccountUpdate) => 
+  dispatch(authaction.changeUserDetails(response, trackUserAccountUpdate)),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
     getCountryCodes: () => dispatch(getCountryCodes()),
   };

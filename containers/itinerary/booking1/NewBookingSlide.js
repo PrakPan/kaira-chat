@@ -49,6 +49,7 @@ import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
 import ReactDOM from "react-dom";
 import setItinerary from "../../../store/actions/itinerary";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -783,6 +784,7 @@ const Details = (props) => {
   const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
+  const {trackWhatsAppClicked} = useAnalytics();
 
 
   useEffect(() => {
@@ -1457,6 +1459,7 @@ const Details = (props) => {
   };
 
   const handleWhatsappChat = () => {
+    trackWhatsAppClicked(router?.query?.id,Cart?.discounted_cost,'Rupees');
     logEvent({
       action: "Button_Click",
       params: {

@@ -9,9 +9,17 @@ import axioslocationsinstance from "../../../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
+import ThemePage from "../../../containers/travelplanner/ThemePage";
+import { useRouter } from "next/router";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
-  const pageTitle = props.pageTitle || `${props?.Data?.name || 'Travel'} | Trip Planner & Itinerary | The Tarzan Way`;
+  const router = useRouter();
+  const { trackPageView } = useAnalytics();
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+     trackPageView(props.Type, `${props?.Data?.name} Page`);
+  }, []);
 
   return (
     <>

@@ -2,15 +2,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   position: relative;
   z-index: 100;
-  width: 100%;
-  max-width: 1440px;
-  padding-inline: 80px;
+  width: 85%;
   margin: 0 auto;
   @media (max-width: 768px) {
-    padding-inline: 16px;
+    width: 100%;
   }
 }
 

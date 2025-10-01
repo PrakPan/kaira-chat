@@ -30,7 +30,7 @@ const WhereNextSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-24 px-2 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
         <div
           className="rounded-2xl lg:rounded-3xl p-8 lg:p-12"
@@ -58,17 +58,17 @@ const WhereNextSection = () => {
 
               {/* CTA Button */}
               <div className="mb-8 lg:mb-10">
-              <Link href="/new-trip">
-                <Button
-                  variant="filled"
-                  size="medium"
-                  onClick={() => {
-                    console.log("Create a Trip Now! clicked");
-                  }}
-                  className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-                >
-                  + Create a Trip Now!
-                </Button>
+                <Link href="/new-trip">
+                  <Button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </Button>
                 </Link>
               </div>
 

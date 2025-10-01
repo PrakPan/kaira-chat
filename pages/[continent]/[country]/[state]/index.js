@@ -13,11 +13,16 @@ import { MERCURY_HOST } from "../../../../services/constants";
 import * as PagesToIdMapping from "../../../../data/PagesToIdMapping.json";
 import { convertDbNameToCapitalFirst } from "../../../../helper/convertDbnameToCapitalFirst";
 import ThemePage from "../../../../containers/travelplanner/ThemePage"
+import { useRouter } from "next/router";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
+  const router = useRouter();
+  const { trackPageView } = useAnalytics();
   useEffect(() => {
     console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
+    trackPageView(props.Type, `${props.Data?.name} Page`)
   }, []);
 
   const faq = [

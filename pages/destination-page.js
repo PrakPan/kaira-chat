@@ -3,6 +3,7 @@ import styles from "../styles/pages/revamp/home.module.scss";
 import HeroSection from "../components/revamp/destination/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
+import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
 const Testimonials = () => {
   return (
     <>
@@ -38,6 +39,7 @@ const Testimonials = () => {
         <NavigationMenu />
         <HeroSection />
         <JourneySimplified />
+        <MostLovedItinerariesSection />
       </div>
     </>
   );

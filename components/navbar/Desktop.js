@@ -5,7 +5,7 @@ import ProfileDropDownLoggedOut from "./ProfileDropDownLoggedOut";
 import Link from "next/link";
 import * as logout from "../../store/actions/logout";
 import * as authaction from "../../store/actions/auth";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import Button from "../ui/button/Index";
 import Notifications from "../modals/Notifications/Index";
@@ -16,6 +16,7 @@ import { ImSearch } from "react-icons/im";
 import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
+import { useAnalytics } from "../../hooks/useAnalytics";
 
 const NavbarContainer = styled.div`
   position: relative;
@@ -116,7 +117,9 @@ const Navbar = (props) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [toggleSearch, setToggleSearch] = useState(false);
 
-  const toggleProfileList = () => {
+  const {id} = useSelector(state=>state.auth);
+  const {trackUserLogout} = useAnalytics();
+    const toggleProfileList = () => {
     setShowDropDownProfileList(!showDropDownProfileList);
     setShowDropDownProfileListMobile(!showDropDownProfileListMobile);
     if (showMobileNavItems == true) {
@@ -313,7 +316,7 @@ const Navbar = (props) => {
                   showDropDownProfileList={showDropDownProfileList}
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
-                  onLogout={props.onLogout}
+                  onLogout={()=>{props.onLogout(); trackUserLogout(id)}}
                   token={props.token}
                   headerColor={props.headerColor}
                   name={props.name}
@@ -329,7 +332,7 @@ const Navbar = (props) => {
                   showDropDownProfileList={showDropDownProfileList}
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
-                  onLogout={props.onLogout}
+                  onLogout={()=>{props.onLogout(); trackUserLogout(id)}}
                   setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}

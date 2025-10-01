@@ -8,6 +8,7 @@ import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 
+
 //Open login modal
 export const authShowLogin = () => {
   console.log("login clicked autha")
@@ -254,9 +255,11 @@ export const auth = (
   email,
   whatsapp,
   country,
-  onSuccess = null
+  onSuccess = null,
+  trackUserLogin
 ) => {
   //name and email null incase of old user
+   
 
   const authData = {
     grant_type: "password",
@@ -280,6 +283,8 @@ export const auth = (
         country,
       };
     }
+
+     
 
     axiosauthinstance
       .post("/complete/", updatedauthdata)
@@ -307,6 +312,7 @@ export const auth = (
             email_last_verified_on:
               responseData.data.user?.email_last_verified_on,
           };
+          trackUserLogin(userdata.id);
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
           localStorage.setItem("country", userdata.country);
@@ -488,9 +494,10 @@ export const authResetLogin = () => {
   };
 };
 
-export const changeUserDetails = (userdetails) => {
+export const changeUserDetails = (userdetails,trackUserAccountUpdate) => {
   return (dispatch, getState) => {
     const token = getState().auth.token;
+    
 
     axiosuserinstance
       .put("", userdetails, {
@@ -500,6 +507,7 @@ export const changeUserDetails = (userdetails) => {
       })
       .then((res) => {
         const responseData = res.data;
+        trackUserAccountUpdate(responseData.data.user?.id,userdetails);
 
         localStorage.setItem("name", responseData.data.user?.name);
         localStorage.setItem("email", responseData.data.user?.email);
@@ -536,9 +544,11 @@ export const changeUserDetails = (userdetails) => {
   };
 };
 
-export const uploadProfilePic = (image) => {
+export const uploadProfilePic = (image,trackUserAccountUpdate) => {
   return (dispatch, getState) => {
     const token = getState().auth.token;
+    const userId = getState().auth.id;
+  
     axiosuserinstance
       .patch(
         "/profile_pic/upload/",
@@ -551,6 +561,7 @@ export const uploadProfilePic = (image) => {
       )
       .then((res) => {
         dispatch(setProiflePic(true));
+        trackUserAccountUpdate(userId,{profile_pic:image});
       })
       .catch((err) => {
         //set error

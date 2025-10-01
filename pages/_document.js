@@ -2,6 +2,8 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
 import Script from "next/script";
+import { Partytown } from '@builder.io/partytown/react';
+
 const Container = styled.div`
   margin-right: -0.6rem;
   margin-bottom: 5rem;
@@ -13,25 +15,80 @@ const Container = styled.div`
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
-    // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
-    // Step 2: Retrieve styles from components in the page
     const page = await ctx.renderPage(
       (App) => (props) => sheet.collectStyles(<App {...props} />)
     );
 
-    // Step 3: Extract the styles as <style> tags
     const styleTags = sheet.getStyleElement();
-
-    // Step 4: Pass styleTags as a prop
     return { ...page, styleTags };
   }
 
   render() {
+    const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
+    const isDevelopment = process.env.NODE_ENV === "development";
+    
     return (
       <Html id="html" lang="en">
         <Head>
-        <title>The Tarzan Way</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
+          />
+          
+          {/* Partytown Configuration */}
+          <Partytown 
+            debug={isDevelopment}
+            forward={[
+              'gtag', 
+              'dataLayer.push', 
+              'mixpanel',
+              'JupiterAnalytics', 
+              'JUPITER_CONFIG'
+            ]}
+            resolveUrl={(url) => {
+              // Proxy problematic URLs through your own server to avoid CORS
+              const proxyUrls = [
+                'snap.licdn.com',
+                'freshchat.com',
+                'fw-cdn.com',
+                'clarity.ms'
+              ];
+              
+              if (proxyUrls.some(domain => url.href.includes(domain))) {
+                const proxiedUrl = new URL('/api/proxy', url.origin);
+                proxiedUrl.searchParams.append('url', url.href);
+                return proxiedUrl;
+              }
+              
+              return url;
+            }}
+          />
+
+          {/* Jupiter Analytics - Load with Partytown */}
+          <script
+            type="text/partytown"
+            dangerouslySetInnerHTML={{
+              __html: `
+                console.log('📦 Loading Jupiter Analytics...');
+                if (typeof importScripts === 'function') {
+                  try {
+                    importScripts('/jupyter-partytown.js');
+                    console.log('✅ Jupiter script loaded via importScripts');
+                  } catch (e) {
+                    console.error('❌ ImportScripts failed:', e);
+                  }
+                } else {
+                  const script = document.createElement('script');
+                  script.src = '/jupyter-partytown.js';
+                  script.onload = () => console.log('✅ Jupiter script loaded');
+                  script.onerror = (e) => console.error('❌ Script load failed:', e);
+                  document.head.appendChild(script);
+                }
+              `
+            }}
+          />
+
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
@@ -103,7 +160,7 @@ export default class MyDocument extends Document {
             }}
           ></script>
 
-          <link
+         <link
             rel="icon"
             href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
           />
@@ -162,71 +219,8 @@ export default class MyDocument extends Document {
         
           }
         `}
-          </style>
+        </style>
 
-          {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
-          <>
-            <df-messenger
-              location="asia-south1"
-              project-id="ai-chabot-451908"
-              agent-id="680b71a4a47fab68f44972ab"
-              language-code="en"
-              intent="WELCOME"
-            >
-              <Container>
-                <df-messenger-chat-bubble
-                  chat-title="Personalized Travel Plan"
-                  chat-icon="https://images.thetarzanway.com/media/chatbot.png"
-                  chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
-                  // to change floater icon, change this link
-                ></df-messenger-chat-bubble>
-              </Container>
-            </df-messenger>
-
-            <style>
-              {`
-            df-messenger {
-              z-index: 1024;
-              position: fixed;
-              --df-messenger-font-color: #333333;
-              --df-messenger-font-family: "Poppins", sans-serif;
-              --df-messenger-chat-background: #F3F6FC;
-              --df-messenger-message-user-background: #ffffff;
-              --df-messenger-message-bot-background: #F7e700;
-              --df-messenger-input-placeholder-color: #757575;
-              --df-messenger-input-text-color: #000000;
-              --df-messenger-send-icon: #007bff;
-              --df-messenger-chat-window-height: calc(100vh - 80px);
-              --df-messenger-chat-window-width: 40vw;
-              --df-messenger-border-radius: 9px;
-              --df-messenger-button-size: 80px;
-              --df-messenger-chat-bubble-icon-size: 80px;
-              --df-messenger-send-icon-color: black;
-              bottom: 0;
-              right: 0;
-              padding: 4px;
-              border: 4px;
-              border-radius: 6px;
-              margin-right: 20px;
-              margin-bottom: 10px;
-              background-size: contain;
-              background-repeat: no-repeat;
-            }
-
-            .df-messenger-chat-bubble-icon {
-              margin-top: 5px;
-            }
-
-            @media (max-width: 768px) {
-              df-messenger {
-                bottom: 60px;
-                margin-right: 16px;
-              }
-            }
-          `}
-            </style>
-          </> */}
-          {/* Google Tag Manager (noscript) */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
               <noscript>
@@ -241,6 +235,7 @@ export default class MyDocument extends Document {
                 ></iframe>
               </noscript>
             )}
+
           <Main />
           <div id="modal-portal" />
           <div id="popup-portal" />
