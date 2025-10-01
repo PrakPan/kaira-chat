@@ -663,6 +663,22 @@ const ActivityDetails = (props) => {
               </div>
             )}
 
+            {props.activityData?.prices && props.activityData?.prices.length && (props.activityData?.prices[0]?.title || props.activityData?.prices[0]?.description) && <div className="flex flex-col">
+                <div className="text-[20px] font-semibold mb-2">
+                Package Details
+                </div>
+                <div className="font-medium text-gray-900">
+                  {props.activityData?.prices[0]?.title ? props.activityData?.prices[0]?.title : null}
+                </div>
+                <div className="font-normal text-gray-900">
+                  {props.activityData?.prices[0]?.description ? props.activityData?.prices[0]?.description : null}
+                </div>
+                <div className="text-sm text-gray-600">
+                  For {props.activityData?.prices[0]?.pax_details.adults + props.activityData?.prices[0]?.pax_details.children} people
+                </div>
+              </div>}
+
+
           {props?.data?.cancellation_policies && (
             <>
               <div className="text-[20px] font-semibold">

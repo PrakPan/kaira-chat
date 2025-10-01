@@ -500,11 +500,11 @@ export default function ActivityDetails(props) {
           {/* Inclusions Section */}
          
 
-         {props?.data?.prices && props?.data?.prices?.length && (
+       {props?.data?.prices && props?.data?.prices?.length && (
   <div className="mb-4">
     <h3 className="font-medium text-base mb-3">Package Options</h3>
     
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 w-full">
       {props.data.prices.map((packageItem, index) => (
         <div
           key={packageItem.result_index}
@@ -515,8 +515,10 @@ export default function ActivityDetails(props) {
           }`}
           onClick={() => setSelectedPackage(packageItem)}
         >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex  flex-col gap-2 w-full">
+              <div className="flex justify-between w-full items-start">
+              <div className="flex items-center gap-3">
               <div 
                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   selectedPackage?.result_index === packageItem.result_index
@@ -528,23 +530,35 @@ export default function ActivityDetails(props) {
                   <div className="w-2 h-2 rounded-full bg-white"></div>
                 )}
               </div>
-              <div className="flex flex-col">
-                <div className="font-medium text-gray-900">
-                  {packageItem.description}
-                </div>
-                <div className="text-sm text-gray-600">
-                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
-                </div>
+              <div className="font-medium text-gray-900">
+                  {props.data?.is_package ? packageItem?.title ? packageItem.title : '' : ''}
               </div>
-            </div>
-            <div className="text-right">
+              {!(packageItem?.description) && !packageItem?.title &&  <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+              </div>}
+              </div>
+              <div className="text-right">
               <div className="font-bold text-lg">
                 ₹{getIndianPrice(Math.round(packageItem.total_price))}
               </div>
-              <div className="text-sm text-gray-600">
+              {/* <div className="text-sm text-gray-600">
                 per package
+              </div> */}
+              </div>
+
+              </div>
+
+              <div className="flex flex-col ">
+                
+                <div className="font-normal text-gray-900 text-sm">
+                  {props.data?.is_package ? packageItem?.description ? packageItem.description : '' : ''}
+                </div>
+                {(packageItem?.description || packageItem?.title) && <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+                </div>}
               </div>
             </div>
+            
           </div>
         </div>
       ))}
