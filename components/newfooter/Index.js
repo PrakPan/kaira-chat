@@ -252,10 +252,23 @@ const NewFooter = (props) => {
               Straight to You.
             </h3>
           </NewsletterContent>
-          <NewsletterForm>
-            <input type="email" placeholder="Email Address" />
-            <button type="submit">Subscribe</button>
-          </NewsletterForm>
+          <form
+            className="flex gap-2 items-center bg-white rounded-xl p-1 min-w-[200px] w-full max-w-md mx-auto sm:flex-row flex-col sm:min-w-[300px]"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <input
+              type="email"
+              placeholder="Email Address"
+              className="flex-1 border-none outline-none px-4 py-3 text-sm bg-transparent text-gray-700 placeholder-gray-400 rounded-lg sm:rounded-none sm:rounded-l-lg w-full"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-black text-white border-none px-6 py-3 rounded-lg font-semibold text-sm cursor-pointer whitespace-nowrap transition-all duration-300 hover:bg-gray-800 sm:rounded-none sm:rounded-r-lg w-full sm:w-auto sm:mt-0"
+            >
+              Subscribe
+            </button>
+          </form>
         </NewsletterBanner>
         <SubContainer>
           <Box>

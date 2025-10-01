@@ -13,74 +13,74 @@ const Carousel3D = () => {
       image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
       title: "Leh Palace",
       description: "Ancient royal palace overlooking the Indus Valley",
-      tags: ["Historic", "Architecture"],
+      tags: ["Historic"],
     },
     {
       image: "media/ladakh-carousel/pexels-jay-baid-1420324-15560333.jpg",
       title: "Pangong Lake",
       description: "Crystal clear high-altitude lake in the Himalayas",
-      tags: ["Nature", "Lake"],
+      tags: ["Nature"],
     },
     {
       image: "media/ladakh-carousel/pexels-itismowgli-1202975.jpg",
       title: "Nubra Valley",
       description: "Desert landscapes with double-humped camels",
-      tags: ["Desert", "Adventure"],
+      tags: ["Desert"],
     },
     {
       image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
       title: "Magnetic Hill",
       description: "Mysterious hill with gravitational anomaly",
-      tags: ["Mystery", "Unique"],
+      tags: ["Mystery"],
     },
     {
       image: "media/ladakh-carousel/Group-1000002319.png",
       title: "Shanti Stupa",
       description: "Buddhist white-domed stupa offering panoramic views",
-      tags: ["Buddhist", "Peace"],
+      tags: ["Buddhist"],
     },
     {
       image: "media/ladakh-carousel/pexels-imdad-sayyed-1274214-32630752.jpg",
       title: "Tso Moriri",
       description: "High altitude wetland conservation reserve",
-      tags: ["Wildlife", "Conservation"],
+      tags: ["Wildlife"],
     },
     {
       image:
         "media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg",
       title: "Khardung La",
       description: "World's highest motorable road pass",
-      tags: ["Adventure", "Extreme"],
+      tags: ["Adventure"],
     },
     {
       image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
       title: "Hemis Monastery",
       description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery", "Culture"],
+      tags: ["Monastery"],
     },
     {
       image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
       title: "Hemis Monastery",
       description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery", "Culture"],
+      tags: ["Monastery"],
     },
     {
       image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
       title: "Hemis Monastery",
       description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery", "Culture"],
+      tags: ["Monastery"],
     },
     {
       image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
       title: "Hemis Monastery",
       description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery", "Culture"],
+      tags: ["Monastery"],
     },
   ];
 
   return (
     <section className="bg-white font-inter py-16">
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center px-1">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
             Memories Made with Us.
@@ -98,16 +98,17 @@ const Carousel3D = () => {
       {/* Desktop Panorama Slider max-w-[1520px] mx-auto */}
       <div className="md:block ">
         <div
-          className="panorama-slider"
+          className="panorama-slider text-antialiased"
           style={{
             height: "560px",
             display: "flex",
             alignItems: "center",
             background: "white",
+            userSelect: "none",
           }}
         >
           <div
-            className="swiper"
+            className="swiper "
             style={{ height: "100%", paddingBlock: "20px" }}
           >
             <div className="swiper-wrapper">
@@ -118,17 +119,17 @@ const Carousel3D = () => {
                   style={{ width: "375px", height: "416px" }}
                 >
                   <div
-                    className="relative w-100% h-100% group cursor-pointer text-white hover:text-black"
+                    className="relative w-100% h-100% group cursor-pointer text-white hover:text-black rounded-2xl overflow-hidden"
                     style={{ height: "416px" }}
                   >
                     <img
-                      className="slide-image w-full h-full object-cover rounded-2xl"
+                      className="slide-image block w-full h-full object-cover"
                       src={`https://images.thetarzanway.com/${item.image}`}
                       alt={item.title}
                     />
                     {/* Gradient Overlay */}
                     <div
-                      className="absolute inset-0 rounded-2xl"
+                      className=" absolute inset-0"
                       style={{
                         background:
                           "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -136,7 +137,7 @@ const Carousel3D = () => {
                     />
                     {/* Tags */}
                     {item.tags && item.tags.length > 0 && (
-                      <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
+                      <div className="  absolute top-4 left-4 flex flex-wrap gap-2 z-10">
                         {item.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
@@ -148,7 +149,7 @@ const Carousel3D = () => {
                       </div>
                     )}
                     {/* Arrow Icon */}
-                    <div className="absolute top-4 right-4 z-20">
+                    <div className="absolute top-4 right-4 z-10">
                       <div className="w-10 h-10 bg-black/50 backdrop-blur-sm border border-white/30 group-hover:bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 text-white hover:text-black">
                         <FontAwesomeIcon
                           icon={faArrowUp}
@@ -157,7 +158,7 @@ const Carousel3D = () => {
                       </div>
                     </div>
                     {/* Content */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                    <div className=" absolute bottom-0 left-0 right-0 p-6 z-10">
                       {item.description && (
                         <p className="text-white/90 leading-relaxed text-md text-center">
                           {item.description}
