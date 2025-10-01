@@ -328,7 +328,7 @@ const Mobile = (props) => {
           {OtherLinksDiv}
 
           {props.token && (
-            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); }}>
+            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); trackUserLogout(id); }}>
               <ImageLoader
                 leftalign
                 url={"media/icons/navigation/logout.png"}
