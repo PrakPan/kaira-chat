@@ -11,7 +11,8 @@
 }
 
 .typingIndicator {
-    max-width: 200px;
+    max-width: 300px;
+    width:max-content;
     padding: 12px 16px;
     border-radius: 18px;
     background: #f1f3f4;
@@ -28,8 +29,8 @@
 }
 
 .typingDots span {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     background: #999;
     animation: typingDots 1.4s infinite ease-in-out;

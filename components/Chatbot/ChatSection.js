@@ -160,9 +160,9 @@ function ChatSection(props) {
                     < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar}></ChatMessage>
                 )}
 
-                {isTyping && <div className={styles.typingIndicator}> <div className={styles.typingDots}>
+                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" : "Analyzing your Itinerary..."}    <div className={styles.typingDots}>
                     <span></span><span></span><span></span>
-                </div> <span className={styles.thinking}>Bot is thinking...</span></div>}
+                </div></span></div>}
                 </>
                 }
                 

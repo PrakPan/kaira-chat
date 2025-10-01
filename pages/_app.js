@@ -18,7 +18,7 @@ import { authLogout } from "../store/actions/auth";
 import Loading from "./loading";
 import { usePathname } from "next/navigation";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupiterAnalytics from "../components/jupyterAnalytics";
+import JupiterAnalytics from "../components/JupyterAnalytics";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();

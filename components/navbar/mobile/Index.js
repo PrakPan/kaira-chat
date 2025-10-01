@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import Drawer from "../../ui/Drawer";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import LoggedInMenu from "./LoggedIn";
@@ -13,6 +12,10 @@ import SearchMobile from "../../search/homepage/mobile/Index";
 import { FaSearch } from "react-icons/fa";
 import openTailoredModal from "../../../services/openTailoredModal";
 import usePageLoaded from "../../custom hooks/usePageLoaded";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
+import styles from "../../revamp/home/NavigationMenu.module.scss";
+import Button from "../../revamp/common/components/button";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const Container = styled.div`
@@ -28,24 +31,39 @@ const Container = styled.div`
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
 `;
 
-const DrawerContainer = styled.div`
-  width: 250px;
+const DropdownContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
   background-color: white;
-  height: 100vh;
-  padding-top: 65px;
+  border-radius: 0.5rem;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  width: 250px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+  opacity: ${(props) => (props.show ? 1 : 0)};
+  visibility: ${(props) => (props.show ? 'visible' : 'hidden')};
+  transform: ${(props) => (props.show ? 'translateY(0)' : 'translateY(-10px)')};
+  transition: all 0.2s ease-in-out;
 `;
 
 const ListContainer = styled.div`
-  padding-block: 0.5rem;
+  padding: 0.5rem 0;
 `;
 
 const ListItem = styled.div`
-  padding-block: 1rem;
-  padding-inline: 15px;
+  padding: 1rem 15px;
   display: flex;
   gap: 13px;
   align-items: center;
   font-family: Poppins;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
 `;
 
 const StyledLink = styled(Link)`
@@ -92,8 +110,8 @@ const Heading = styled.p`
   line-height: 16px;
   text-transform: uppercase;
   color: #7a7a7a;
-  margin-block: 1rem;
-  padding-inline: 1rem;
+  margin: 1rem 0;
+  padding: 0 1rem;
 `;
 
 const HamburgerIcon = (
@@ -122,11 +140,25 @@ const Mobile = (props) => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+  const dropdownRef = useRef();
   const {trackUserLogout} = useAnalytics();
   const {id} = useSelector(state=>state.auth);
 
   useEffect(() => {
     setShowLogo(true);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setToggleMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const _handleNotifications = () => {
@@ -142,26 +174,21 @@ const Mobile = (props) => {
   const _handleHomepageRedirect = () => {
     if (props.PW) router.push("/corporates/physicswallah");
     else router.push("/");
+    setToggleMenu(false);
   };
 
   var LinksArr = [
     {
       type: "main",
-      onclick: () => _handleHomepageRedirect(),
-      text: "Home",
-      icon: "media/icons/navigation/home-page.png",
+      onclick: () => _handleNotifications(),
+      text: "Notifications",
+      icon: "media/icons/navigation/bell.png",
     },
     {
       type: "main",
       link: "/dashboard",
       text: "My Trips",
-      icon: "media/icons/navigation/clipboard.png",
-    },
-    {
-      type: "main",
-      onclick: () => _handleNotifications(),
-      text: "Notifications",
-      icon: "media/icons/navigation/bell.png",
+      icon: "media/icons/navigation/trip.svg",
     },
     {
       type: "main",
@@ -178,7 +205,7 @@ const Mobile = (props) => {
     {
       type: "main",
       link: "/testimonials",
-      text: "Testimonials",
+      text: "Reviews",
       icon: "media/icons/navigation/testimonial.png",
     },
     {
@@ -272,135 +299,51 @@ const Mobile = (props) => {
   });
 
   return (
-    <div key={props.notOpenCount}>
-      <Container
-        staticnav={props.staticnav}
-        hidecta={props.hidecta}
-        style={{
-          backgroundColor:
-            props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginRight: "-10px",
-          }}
-        >
-          {props.notifications.length && props.notOpenCount ? (
-            <RedDot className="center-div ">{props.notOpenCount}</RedDot>
-          ) : null}
-
-          {isPageLoaded ? (
-            <div onClick={() => setToggleMenu(!toggleMenu)}>
-              {HamburgerIcon}
-            </div>
-          ) : null}
-        </div>
-
-        {showLogo ? (
-          <div
-            style={{
-              position: "relative",
-              marginLeft: "-20%",
-              marginBlock: "auto",
-            }}
-            onClick={_handleHomepageRedirect}
+    <div key={props.notOpenCount} ref={dropdownRef} style={{ position: 'relative' }}>
+      <Button
+            className={styles.hamburger}
+            onClick={() => setToggleMenu(!toggleMenu)}
+            variant="filled"
           >
-            <StyledLink
-              href={!props.PW ? "/" : "/corporates/physicswallah"}
-              style={{ textDecoration: "none" }}
-            >
+            <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
+          </Button>
+
+
+      <DropdownContainer show={toggleMenu}>
+        <ListContainer>
+          {!props.token?<ListItem style={{ backgroundColor: "#F8F8F8" }}>
+            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+            <div>Login/Signup</div>
+          </ListItem>:<>
+          <ListItem style={{ backgroundColor: "#F8F8F8" }}>
+            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+            <div>My Profile</div>
+          </ListItem>
+          </>}
+
+          {MainLinksDiv}
+
+          <Heading>OTHERS</Heading>
+
+          {OtherLinksDiv}
+
+          {props.token && (
+            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); trackUserLogout(id); }}>
               <ImageLoader
-                dimensions={{ width: 122, height: 100 }}
-                dimensionsMobile={{ width: 122, height: 100 }}
-                hoverpointer
-                onclick={_handleHomepageRedirect}
-                width="3rem"
                 leftalign
-                widthmobile="52px"
-                url={"media/website/logo-only.svg"}
+                url={"media/icons/navigation/logout.png"}
+                height="20px"
+                width="20px"
+                dimensions={{ height: 50, width: 50 }}
+                dimensionsMobile={{ height: 50, width: 50 }}
+                widthmobile="20px"
                 noPlaceholder={true}
-              ></ImageLoader>
-            </StyledLink>
-
-            {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
-          </div>
-        ) : (
-          <div></div>
-        )}
-
-        {!props.hidecta ? (
-          <div
-            style={{
-              background: "#F0F0F0",
-              padding: "10px",
-              marginBlock: "auto",
-              borderRadius: "50%",
-            }}
-            className="center-div"
-            onClick={() => props.setShowMobileSearch(true)}
-          >
-            <FaSearch
-              style={{
-                color: props.headerColor === "black" ? "white" : "black",
-              }}
-            ></FaSearch>
-          </div>
-        ) : null}
-
-        <Drawer
-          anchor="left"
-          show={toggleMenu}
-          onHide={() => setToggleMenu(false)}
-          className="mobile-header-menu"
-          width="250px"
-          style={{ zIndex: "1200 !important" }}
-        >
-          <DrawerContainer>
-            <ListContainer>
-              <ListItem style={{ backgroundColor: "#F8F8F8" }}>
-                <LoggedInMenu
-                  userImage={props.image}
-                  _handleLogin={_handleLogin}
-                  token={props.token}
-                  notOpenCount={props.notOpenCount}
-                  notifications={props.notifications}
-                  _handleNotifications={_handleNotifications}
-                  onClose={() => setToggleMenu(false)}
-                  onLogout={()=>{props.onLogout(); trackUserLogout(id);}}
-                  name={props.name}
-                />
-              </ListItem>
-
-              {MainLinksDiv}
-
-              <Heading>OTHERS</Heading>
-
-              {OtherLinksDiv}
-
-              {props.token && (
-                <ListItem onClick={()=>{props.onLogout(); trackUserLogout(id);}} >
-                  {
-                    <ImageLoader
-                      leftalign
-                      url={"media/icons/navigation/logout.png"}
-                      height="20px"
-                      width="20px"
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      widthmobile="20px"
-                      noPlaceholder={true}
-                    />
-                  }
-                  <div>Logout</div>
-                </ListItem>
-              )}
-            </ListContainer>
-          </DrawerContainer>
-        </Drawer>
-      </Container>
+              />
+              <div>Logout</div>
+            </ListItem>
+          )}
+        </ListContainer>
+      </DropdownContainer>
 
       {props.showMobileSearch ? (
         <div className="hidden-desktop" style={{ width: "100%" }}>
