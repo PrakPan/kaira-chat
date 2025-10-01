@@ -13,7 +13,7 @@ import { useAnalytics } from "../../../hooks/useAnalytics";
 export const getStars = (rating) => {
   const stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
-    stars.push(<MdOutlineStar className="text-[#FFD201]" />);
+    stars.push(<MdOutlineStar key={i} className="text-[#FFD201]" />);
   }
   if (Math.floor(rating) < rating) {
     stars.push(<MdStarHalf className="text-[#FFD201]" />);
@@ -418,6 +418,7 @@ const Recommendation = (props) => {
           >
             <ImageLoader
               borderRadius={"5px"}
+              alt={"Img"}
               style={{
                 width: isPageWide ? "60px" : "50px",
                 height: isPageWide ? "60px" : "50px",
@@ -449,6 +450,7 @@ const Recommendation = (props) => {
                     height={12}
                     width={12}
                     className="object-contain"
+                    alt={"Img"}
                   />
                 </div>
                 <div>Restaurant</div>

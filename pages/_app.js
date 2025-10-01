@@ -132,7 +132,7 @@ function MyApp({ Component, pageProps, store }) {
               analytics[method]({
                 userId: id || null,
                 siteId: 'tarzanway-web',
-                apiHost: 'https://dev.jupiter.tarzanway.com',
+                apiHost: 'https://jupiter.tarzanway.com',
                 anonymousId: "abc",
               });
               setJupiterInitialized(true);
@@ -184,7 +184,7 @@ function MyApp({ Component, pageProps, store }) {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
             <JupyterAnalytics
-              apiEndpoint="https://dev.jupiter.tarzanway.com"
+              apiEndpoint="https://jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}

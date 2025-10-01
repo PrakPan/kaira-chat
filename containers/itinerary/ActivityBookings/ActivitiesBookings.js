@@ -13,18 +13,20 @@ const ActivitiesBookings = (props) => {
       {showActivities && (
         <div className="mb-8 cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
           Activities
-          <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+          <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
         </div>
       )}
       {props?.itinerary?.cities?.map((city, index1) => {
         return city?.activities?.map((item, index) => {
-          {
-            showActivities == false && setShowActivities(true);
-          }
+         if (showActivities === false) {
+          setShowActivities(true);
+         }
+
           return (
             <ActivitiesSummary
               city={city}
               item={item}
+              key={index1 + "-" + index}
               index={index}
               index1={index1}
               setShowLoginModal={props?.setShowLoginModal}

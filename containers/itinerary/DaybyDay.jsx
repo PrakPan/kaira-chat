@@ -128,7 +128,7 @@ const router=useRouter()
         <div className="flex flex-col">
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={startCity?.place_id}
+            key={startCity?.place_id || 1}
             city={startCity?.city_name}
             pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}

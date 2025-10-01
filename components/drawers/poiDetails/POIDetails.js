@@ -184,10 +184,6 @@ const POIDetails = (props) => {
         itineraryCities = newItinerary.cities.map((city) => {
           const cityTemp = city;
           if (city.id === props?.itinerary_city_id) {
-            console.log(
-              "here:",
-              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
-            );
             cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
               props?.slabIndex,
               1
@@ -692,16 +688,16 @@ const POIDetails = (props) => {
               </div>
               {isSmallScreen ? (
                 <>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-full">
+                  {props?.data?.reviews?.map((item,i) => (
+                    <div className="w-full" key={i}>
                       <ReviewPoi review={item} />
                     </div>
                   ))}
                 </>
               ) : (
                 <ScrollContainer>
-                  {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                  {props?.data?.reviews?.map((item,i) => (
+                    <div className="w-[289px]" key={i}>
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -712,8 +708,8 @@ const POIDetails = (props) => {
           {props.data?.tips && props.data?.tips.length > 0 ? (
             <div>
               <Heading>Tips</Heading>
-              {props?.data?.tips.map((item) => (
-                <Text>{item}</Text>
+              {props?.data?.tips.map((item,i) => (
+                <Text key={i}>{item}</Text>
               ))}
             </div>
           ) : (
@@ -814,7 +810,7 @@ const POIDetails = (props) => {
                       className="flex gap-1 items-center p-1"
                       style={loading ? { visibility: "hidden" } : {}}
                     >
-                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                      <Image src="/delete.svg" width={"20"} height={"20"} alt={"Remove"} />{" "}
                       Remove from Itinerary
                     </div>
                     {loading && (

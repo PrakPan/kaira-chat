@@ -61,6 +61,7 @@ const Booking = (props) => {
           width="80%"
           leftalign
           widthmobile="80%"
+          alt="logo"
         ></img>
         {props.data.costings_breakdown ? (
           props.data.costings_breakdown.Segments ? (

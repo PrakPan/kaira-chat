@@ -119,10 +119,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
 
       <div className="flex flex-col p-3 md:w-[85%]">
         {elements.map((element, index) => (
-          <>
+          <div key={index}>
             <SlabElement
               itinerary_city_id={props?.itinerary_city_id}
-              key={index}
               element={element}
               dayIndex={props?.index}
               slabIndex={index}
@@ -133,7 +132,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
             />
 
             {index !== elements.length - 1 ? <hr /> : null}
-          </>
+          </div>
         ))}
 
         {finalized_status === "PENDING" ? (
@@ -159,9 +158,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                 <div className="flex flex-col gap-2 w-full">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
-                      <>
+                      <div key={item?.id}>
                         <div
-                          key={item.id}
+                          
                           className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
                           // onClick={() => handleTaxi(item.id)}
                         >
@@ -249,7 +248,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                             </div>
                           </div>
                         </div>
-                      </>
+                      </div>
                     ))}
                   </div>
                 </div>

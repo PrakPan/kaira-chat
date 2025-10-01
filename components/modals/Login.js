@@ -116,6 +116,7 @@ const Enquiry = (props) => {
               width="100%"
               onload={() => setShowImage(true)}
               borderRadius="20px 0 0 20px"
+              alt="login"
             ></ImageLoader>
 
             <ImgTagsContainer>
@@ -127,6 +128,7 @@ const Enquiry = (props) => {
                     url={e.icon}
                     dimensions={{ width: 200, height: 200 }}
                     noPlaceholder={true}
+                    alt="Login"
                   />
                   <p className="font-lexend">{e.text}</p>
                 </TagItem>

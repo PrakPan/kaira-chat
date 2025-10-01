@@ -809,7 +809,7 @@ const ActivityDetails = (props) => {
                           className="flex gap-1 items-center p-1"
                           style={loading ? { visibility: "hidden" } : {}}
                         >
-                          <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                          <Image src="/delete.svg" width={"20"} height={"20"} alt="delete"/>{" "}
                           Remove from Itinerary
                         </div>
                         {loading && (

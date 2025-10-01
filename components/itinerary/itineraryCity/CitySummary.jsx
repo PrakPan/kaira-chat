@@ -318,10 +318,10 @@ console.log("Taxi det",formattedTaxiDetails)
               return (
                 size <= 3 &&
                 !poi?.activity && (
-                  <>
+                  <div key={index}>
                     <span
                       onClick={() => handleActivity(poi, index, poi.dayIndex)}
-                      key={index}
+                      
                       id={index}
                       className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
                     >
@@ -357,7 +357,7 @@ console.log("Taxi det",formattedTaxiDetails)
                           )}
                       </>
                     ) : null}
-                  </>
+                  </div>
                 )
               );
             })}
@@ -377,9 +377,9 @@ console.log("Taxi det",formattedTaxiDetails)
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-wrap gap-2">
             {activities?.map((item) => (
-              <>
+              <div key={item.id}>
                 <div
-                  key={item.id}
+                 
                   className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                   onClick={() => handleView(item.id, "activity", poi.dayIndex)}
                 >
@@ -495,7 +495,7 @@ console.log("Taxi det",formattedTaxiDetails)
                       )}
                   </>
                 ) : null}
-              </>
+              </div>
             ))}
           </div>
           {finalized_status === "PENDING" ? (
@@ -521,9 +521,9 @@ console.log("Taxi det",formattedTaxiDetails)
             <div className="flex flex-col gap-2 w-full">
               <div className="flex flex-wrap gap-2">
                 {formattedTaxiDetails?.map((item) => (
-                  <>
+                  <div key={item.id}>
                     <div
-                      key={item.id}
+                      
                       className="group relative flex gap-2 w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                       onClick={() => handleTaxi(item.id)}
                     >
@@ -635,7 +635,7 @@ console.log("Taxi det",formattedTaxiDetails)
                       />
                       </>
                     )}
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
