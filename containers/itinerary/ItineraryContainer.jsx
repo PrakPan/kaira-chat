@@ -429,12 +429,15 @@ const ItineraryContainer = (props) => {
             duration: data?.cities[i]?.duration,
             check_in: data?.cities[i]?.start_date,
             check_out:
-              data?.cities[i]?.start_date && data?.cities[i]?.duration
+              data?.cities[i]?.start_date && data?.cities[i]?.duration 
                 ? addDaysToDate(
                     data?.cities[i]?.start_date,
                     data?.cities[i]?.duration
                   )
-                : null,
+                : addDaysToDate(
+                    data?.cities[i]?.start_date,
+                    0
+                  ),
           });
         } else {
           for (let hotel of hotels) {

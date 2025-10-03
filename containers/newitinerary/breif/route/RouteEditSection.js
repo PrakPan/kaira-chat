@@ -255,7 +255,7 @@ useEffect(() => {
           return props?.routes[i]?.duration || 0;
         }
 
-        return props?.routes[i]?.duration || 1;
+        return props?.routes[i]?.duration;
       })();
 
       // --- Checkin/Checkout based on calculated duration ---
@@ -288,6 +288,8 @@ useEffect(() => {
     setDestinations(cities);
   }
 }, [props.routes, itinerary?.start_date]);
+
+  // console.log("Cities",destinations)
 
 //   useEffect(() => {
 //   const cities = [];
@@ -1009,11 +1011,11 @@ export const EditDestinations = (props) => {
     for (let i = 1; i < destinations.length - 1; i++) {
       const dest = destinations[i];
       const checkInDate = prevDate;
-      const checkOutDate = dest?.cityData?.nights
+      const checkOutDate = dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
         ? getDateString(
             addDays(new Date(getDate(prevDate)), dest.cityData.nights)
           )
-        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+        : getDateString(addDays(new Date(getDate(prevDate)),0));
 
       dest.cityData.checkin_date = checkInDate;
       dest.cityData.checkout_date = checkOutDate;
@@ -1408,7 +1410,7 @@ export const DestinationPopUp = (props) => {
   );
   const debouncedSearch = useDebounce(search);
   const [destination, setDestination] = useState(cityData);
-  const [nights, setNights] = useState(cityData?.nights ?? 1);
+  const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
