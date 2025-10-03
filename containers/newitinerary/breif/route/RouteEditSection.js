@@ -222,7 +222,7 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  console.log("Route Edittt",props.routes)
+  // console.log("Route Edittt",props.routes)
 
 useEffect(() => {
   const cities = [];
@@ -580,7 +580,7 @@ useEffect(() => {
       },
     };
 
-    console.log("New Request Data", data,destinations);
+    // console.log("New Request Data", data);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1356,7 +1356,7 @@ export const Destination = (props) => {
           <div className="w-[30%] h-full flex flex-row items-center gap-2">
             <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
             <div className="text-sm text-gray-500">
-              {!(startingCity || endingCity) && cityData?.nights
+              {!(startingCity || endingCity) && cityData?.nights >=0 
                 ? `${cityData.nights} ${
                     cityData.nights > 1
                       ? isPageWide
@@ -1485,7 +1485,7 @@ export const DestinationPopUp = (props) => {
 
   const handleSetNights = (minus = false) => {
   setNights((prev) => {
-    const newValue = minus ? Math.max(1, prev - 1) : prev + 1;
+    const newValue = minus ? Math.max(0, prev - 1) : prev + 1;
     return newValue;
   });
 
@@ -1503,7 +1503,7 @@ export const DestinationPopUp = (props) => {
 
  const handleUpdateDestination = () => {
   setDestinationChanges(true);
-  console.log("New Desti", destination);
+  // console.log("New Desti", destination);
 
   setDestinations((prev) => {
     let destinations = [...prev];

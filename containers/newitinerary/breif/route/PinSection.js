@@ -56,6 +56,8 @@ const PinSection = (props) => {
     props.setShowDrawerData(props.cityData);
   };
 
+  // console.log("Rendering: PinSection", {city_name: props?.city, duration: props.duration});
+
   return (
     <Container
       className="cursor-pointer w-fit"
@@ -84,15 +86,15 @@ const PinSection = (props) => {
           props.setCurrentPopup ? "ml-4 heading" : "lg:ml-8 ml-2 heading"
         } `}
       >
-        {props.duration >= 1
+        {props.duration >= 0 && props.duration !== null
           ? props.city +
             `${
               props.duration > 1
                 ? ` - ${props.duration} Nights`
-                : `${props.duration == 0 ? `` : ` - ${props.duration}`}  Night`
+                : `${props.duration == 0 ? `- 0 Night` : ` - ${props.duration}`}  Night`
             } `
           : props.city}
-        {props.transfersPin || !props.duration || props.duration === "0" ? (
+        {props.transfersPin || props.duration == null ? (
           <></>
         ) : (
           <IconContainer className="IconContainer">
