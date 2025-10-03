@@ -51,7 +51,6 @@ import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
 import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
-import { useRouter } from "next/router";
 
 const Container = styled.div`
   position: relative;
@@ -189,7 +188,6 @@ const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
   const handleClose = useHandleClose();
-  const router = useRouter();
   const [startDate, setStartDate] = useState(
     getDate(props?.plan ? props?.plan.start_date : props?.itinerary?.start_date)
   );
@@ -224,6 +222,7 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
+  // console.log("Route Edittt",props.routes)
 
 useEffect(() => {
   const cities = [];
@@ -244,19 +243,19 @@ useEffect(() => {
 
 
 
-
     let currentCheckinDate = new Date(itinerary.start_date);
 
     for (let i = 0; i < props.routes.length; i += 1) {
       const isFirst = i === 0;
       const isLast = i === props.routes.length - 1;
 
+      // --- Duration Logic (same as your original) ---
       const duration = (() => {
         if (isFirst || isLast) {
           return props?.routes[i]?.duration || 0;
         }
 
-        return props?.routes[i]?.duration || 1;
+        return props?.routes[i]?.duration;
       })();
 
       // --- Checkin/Checkout based on calculated duration ---
@@ -289,6 +288,8 @@ useEffect(() => {
     setDestinations(cities);
   }
 }, [props.routes, itinerary?.start_date]);
+
+  // console.log("Cities",destinations)
 
 //   useEffect(() => {
 //   const cities = [];
@@ -371,16 +372,21 @@ useEffect(() => {
 //         },
 //       });
 
-//       // Update currentCheckinDate for next city
 //       currentCheckinDate = checkoutDateObj;
 //     }
 
-//     console.log("CIII", cities);
+
 //     setDestinations(cities);
 //   }
 // }, [props.routes, itinerary?.start_date]);
 
 
+
+
+
+
+
+  // console.log("Route Editt",destinations)
 
   useEffect(() => {
     if (destinations.length) {
@@ -576,6 +582,7 @@ useEffect(() => {
       },
     };
 
+    // console.log("New Request Data", data);
 
     const headers = {
       "Content-Type": "application/json",
@@ -588,7 +595,7 @@ useEffect(() => {
         .then((response) => {
           setLoading(false);
           const itineraryId =
-           router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId;
+            props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
           handleClose()
         })
@@ -617,7 +624,7 @@ useEffect(() => {
         });
     } else {
       axiosMercuryItineraryUpdateInstance
-        .post(`/${router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId}/`, data, {
+        .post(`/${props.ItineraryId || props?.itinerary?.ItineraryId}/`, data, {
           headers,
         })
         .then((response) => {
@@ -628,14 +635,9 @@ useEffect(() => {
         }
         });
           dispatch(setItinerary(response.data));
-        Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${ router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
-        localStorage.removeItem(key);
-        }
-        });
           setLoading(false);
           const itineraryId =
-            router.query.id || props.ItineraryId || props?.itinerary?.ItineraryId;
+            props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
           handleClose()
         })
@@ -1009,11 +1011,11 @@ export const EditDestinations = (props) => {
     for (let i = 1; i < destinations.length - 1; i++) {
       const dest = destinations[i];
       const checkInDate = prevDate;
-      const checkOutDate = dest?.cityData?.nights
+      const checkOutDate = dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
         ? getDateString(
             addDays(new Date(getDate(prevDate)), dest.cityData.nights)
           )
-        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+        : getDateString(addDays(new Date(getDate(prevDate)),0));
 
       dest.cityData.checkin_date = checkInDate;
       dest.cityData.checkout_date = checkOutDate;
@@ -1356,7 +1358,7 @@ export const Destination = (props) => {
           <div className="w-[30%] h-full flex flex-row items-center gap-2">
             <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
             <div className="text-sm text-gray-500">
-              {!(startingCity || endingCity) && cityData?.nights
+              {!(startingCity || endingCity) && cityData?.nights >=0 
                 ? `${cityData.nights} ${
                     cityData.nights > 1
                       ? isPageWide
@@ -1408,10 +1410,8 @@ export const DestinationPopUp = (props) => {
   );
   const debouncedSearch = useDebounce(search);
   const [destination, setDestination] = useState(cityData);
-  const [nights, setNights] = useState(cityData?.nights ?? 1);
+  const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
-  const [skipSearch, setSkipSearch] = useState(false);
-
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1436,10 +1436,6 @@ export const DestinationPopUp = (props) => {
     setSearch(e.target.value);
   };
   useEffect(() => {
-    if (skipSearch) {   
-      setSkipSearch(false);
-      return;
-    }
     handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
@@ -1466,7 +1462,6 @@ export const DestinationPopUp = (props) => {
   };
 
   const handleSetDestination = (i) => {
-     setSkipSearch(true);
     setSearch(searchResults[i].name || searchResults[i].text);
 
     setDestination((prev) => {
@@ -1492,7 +1487,7 @@ export const DestinationPopUp = (props) => {
 
   const handleSetNights = (minus = false) => {
   setNights((prev) => {
-    const newValue = minus ? Math.max(1, prev - 1) : prev + 1;
+    const newValue = minus ? Math.max(0, prev - 1) : prev + 1;
     return newValue;
   });
 
@@ -1510,7 +1505,7 @@ export const DestinationPopUp = (props) => {
 
  const handleUpdateDestination = () => {
   setDestinationChanges(true);
-  console.log("New Desti", destination);
+  // console.log("New Desti", destination);
 
   setDestinations((prev) => {
     let destinations = [...prev];

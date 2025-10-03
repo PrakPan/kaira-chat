@@ -440,7 +440,10 @@ const ItineraryContainer = (props) => {
                     data?.cities[i]?.start_date,
                     data?.cities[i]?.duration
                   )
-                : null,
+                : addDaysToDate(
+                    data?.cities[i]?.start_date,
+                    0
+                  ),
           });
         } else {
           for (let hotel of hotels) {
