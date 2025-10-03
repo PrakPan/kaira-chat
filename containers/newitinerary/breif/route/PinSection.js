@@ -91,7 +91,7 @@ const PinSection = (props) => {
             `${
               props.duration > 1
                 ? ` - ${props.duration} Nights`
-                : `${props.duration == 0 ? `- 0 Night` : ` - ${props.duration}`}  Night`
+                : `${props.duration == 0 ? `- 0 ` : ` - ${props.duration}`}  Night`
             } `
           : props.city}
         {props.transfersPin || props.duration == null ? (
