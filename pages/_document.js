@@ -41,7 +41,7 @@ export default class MyDocument extends Document {
             debug={isProduction}
             forward={[
               'gtag', 
-              'dataLayer.push', 
+              // 'dataLayer.push', 
               'mixpanel',
               'JupiterAnalytics', 
               'JUPITER_CONFIG'

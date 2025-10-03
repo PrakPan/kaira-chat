@@ -43,6 +43,7 @@ import {
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
 import UpdateItineraryDates from "./UpdateItineraryDates";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -75,7 +76,7 @@ const Details = (props) => {
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-
+  const {trackWhatsAppClicked} = useAnalytics();
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
 

@@ -486,7 +486,7 @@ export const useAnalytics = () => {
       });
     }, []),
     
-    trackPoiBookingAdd: useCallback(async (itineraryId, actionSource) => {
+    trackPoiBookingAdded: useCallback(async (itineraryId, actionSource) => {
       return await callWorkerFunction('track', 'poi_booking_add', {
         itinerary_id: itineraryId,
         action_source: actionSource
