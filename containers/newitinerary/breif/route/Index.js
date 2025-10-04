@@ -339,7 +339,7 @@ const Route = (props) => {
           city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
           cityId={props?.CityData[i]?.city?.id}
           duration={
-            props?.CityData[i]?.duration ? props?.CityData[i]?.duration : null
+            props?.CityData[i]?.duration >=0 ? props?.CityData[i]?.duration : null
           }
           pinColour={
             i === 0 || i === props?.CityData.length - 1
