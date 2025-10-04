@@ -32,6 +32,7 @@ import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 import { FaX } from "react-icons/fa6";
 import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -191,7 +192,9 @@ const [previousUrl, setPreviousUrl] = useState(null);
   const cancelTokenSourceRef = useRef(null);
 
   const [currentRequestId, setCurrentRequestId] = useState(0);
-
+  const {trackTransferBookingChange,trackTransferBookingAdd} = useAnalytics();
+  const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
+ 
   //for flight search
   const [sourceInput, setSourceInput] = useState({
     id: props?.transferData?.source?.id || "",
@@ -811,6 +814,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     
     // Success handling (your existing success logic)
     props._updateFlightBookingHandler([response.data]);
+   
     props.getPaymentHandler();
     setMoreLoadingState(false);
     setUpdateBookingState(false);
@@ -834,6 +838,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
                 ...booking,
                 ...response.data,
               };
+               trackTransferBookingAdd(itinerary_id,key,updatedTransferBookings[category][key],response.data,sourceInput?.city_name,destinationInput?.city_name)
             } else if (booking?.children && Array.isArray(booking.children) && booking.children.length > 0) {
               let foundMatch = false;
               const updatedChildren = booking.children.map((childBooking) => {
@@ -880,6 +885,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
           response.data
         )
       );
+      trackTransferBookingAdd(itinerary_id,`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,intercity?.[`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`],response.data,sourceInput?.city_name,destinationInput?.city_name)
       props?.getPaymentHandler();
       // if(response?.data?.is_refresh_needed){
       //   window.location.reload(); 

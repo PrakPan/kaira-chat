@@ -145,24 +145,24 @@ const ComboTaxi = (props) => {
   ]);
 
   useEffect(() => {
-  if (
-    props?.taxiResults?.length &&
-    props?.selectedData?.result_index !== undefined
-  ) {
-    const selectedIndex = props.taxiResults.findIndex(
-      (taxi) => taxi?.result_index === props.selectedData?.result_index
-    );
+    if (
+      props?.taxiResults?.length &&
+      props?.selectedData?.result_index !== undefined
+    ) {
+      const selectedIndex = props.taxiResults.findIndex(
+        (taxi) => taxi?.result_index === props.selectedData?.result_index
+      );
 
-    if (selectedIndex !== -1) {
-      setSelectedTaxiIndex(selectedIndex);
+      if (selectedIndex !== -1) {
+        setSelectedTaxiIndex(selectedIndex);
+      }
+    } else {
+      if ((!props.selectedData || !props.isSelected) && selectedTaxiIndex !== null) {
+        console.log("Resetting taxi selection - parent deselected or no selected data");
+        setSelectedTaxiIndex(null);
+      }
     }
-  } else {
-    if ((!props.selectedData || !props.isSelected) && selectedTaxiIndex !== null) {
-      console.log("Resetting taxi selection - parent deselected or no selected data");
-      setSelectedTaxiIndex(null);
-    }
-  }
-}, [props.taxiResults, props.selectedData, props.isSelected, selectedTaxiIndex]);
+  }, [props.taxiResults, props.selectedData, props.isSelected, selectedTaxiIndex]);
   // useEffect(() => {
   //   if (
   //     props?.taxiResults?.length &&
@@ -195,25 +195,25 @@ const ComboTaxi = (props) => {
   }, [showTimeDropdown]);
 
 
- const handleTimeSelection = (slot) => {
-  setSelectedTime(slot.display);
-  setSelectedTimeValue(slot.value);
-  setShowTimeDropdown(false);
+  const handleTimeSelection = (slot) => {
+    setSelectedTime(slot.display);
+    setSelectedTimeValue(slot.value);
+    setShowTimeDropdown(false);
 
-  if (props.onTimeChange) {
-    props.onTimeChange(slot.value, selectedDate || props?.comboStartDate);
-  } else {
-    fetchDataWithNewTime(slot.value, selectedDate || props?.comboStartDate);
-  }
-};
- const fetchDataWithNewTime = (newTime, dateToUse = null) => {
-  const updatedProps = {
-    ...props,
-    comboStartTime: newTime,
-    comboStartDate: dateToUse || selectedDate || props?.comboStartDate,
+    if (props.onTimeChange) {
+      props.onTimeChange(slot.value, selectedDate || props?.comboStartDate);
+    } else {
+      fetchDataWithNewTime(slot.value, selectedDate || props?.comboStartDate);
+    }
   };
-  fetchDataWithProps(updatedProps);
-};
+  const fetchDataWithNewTime = (newTime, dateToUse = null) => {
+    const updatedProps = {
+      ...props,
+      comboStartTime: newTime,
+      comboStartDate: dateToUse || selectedDate || props?.comboStartDate,
+    };
+    fetchDataWithProps(updatedProps);
+  };
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -260,10 +260,10 @@ const ComboTaxi = (props) => {
       trips: [
         {
           start_date:
-        propsToUse?.comboStartDate ||
-        propsToUse.selectedBooking.check_in ||
-        start_date,
-      start_time: propsToUse?.comboStartTime || start_time,
+            propsToUse?.comboStartDate ||
+            propsToUse.selectedBooking.check_in ||
+            start_date,
+          start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
             number_of_adults + number_of_children + number_of_infants,
           trip_type: "one-way",
@@ -382,9 +382,9 @@ const ComboTaxi = (props) => {
           setLoading(false);
           setError(true);
           const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] ||
-        err.message ||
-        "There seems to be a problem, please try again later!";
+            err?.response?.data?.errors?.[0]?.message?.[0] ||
+            err.message ||
+            "There seems to be a problem, please try again later!";
 
           dispatch(
             openNotification({
@@ -460,8 +460,8 @@ const ComboTaxi = (props) => {
   };
 
   const handleTaxiDeselect = () => {
-  setSelectedTaxiIndex(null);
-};
+    setSelectedTaxiIndex(null);
+  };
 
   const fetchDataWithNewDate = (newDate) => {
     setSelectedDate(newDate);
@@ -515,13 +515,13 @@ const ComboTaxi = (props) => {
                         onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                       >
                         <span className="text-sm font-medium">
-  {selectedTime ||
-    (selectedTimeValue || props?.comboStartTime
-      ? dayjs(
-          `${selectedDate || props?.comboStartDate}T${selectedTimeValue || props?.comboStartTime}:00`
-        )?.format("h:mm A")
-      : "Select Time")}
-</span>
+                          {selectedTime ||
+                            (selectedTimeValue || props?.comboStartTime
+                              ? dayjs(
+                                `${selectedDate || props?.comboStartDate}T${selectedTimeValue || props?.comboStartTime}:00`
+                              )?.format("h:mm A")
+                              : "Select Time")}
+                        </span>
                         <button>
                           <svg
                             className={`w-5 h-5 text-gray-600 transition-transform`}
@@ -551,11 +551,10 @@ const ComboTaxi = (props) => {
                             {timeSlots.map((slot, index) => (
                               <div
                                 key={index}
-                                className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
-                                  selectedTime === slot.display
+                                className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${selectedTime === slot.display
                                     ? "bg-blue-100"
                                     : ""
-                                }`}
+                                  }`}
                                 onClick={() => handleTimeSelection(slot)}
                               >
                                 {slot.display}

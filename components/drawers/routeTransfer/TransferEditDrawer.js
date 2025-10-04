@@ -59,6 +59,7 @@ import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -1858,7 +1859,9 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const {trackTransferBookingAdd} = useAnalytics();
 
+  const {intercity} = useSelector((state) => state.TransferBookings).transferBookings;
 
   const { number_of_adults, number_of_children, number_of_infants, start_date } =
     useSelector((state) => state.Itinerary);
@@ -2327,7 +2330,6 @@ const NewMultiModeContainer = ({
   // Add this handleCancel function inside your NewMultiModeContainer component
 
   const handleCancel = () => {
-    console.log("Cancel handler called - deselecting final result");
 
     // Find the last selected step (highest index with a selection)
 
@@ -2501,6 +2503,8 @@ const NewMultiModeContainer = ({
           data
         )
       );
+
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
 
       getPaymentHandler();
       actualClose();
@@ -4146,6 +4150,8 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
+  const {trackTransferBookingAdd} = useAnalytics();
+  const {intercity} = useSelector((state) => state.TransferBookings)?.transferBookings;
 
   useEffect(() => {
     if (selectedResult?.transfer && !isBookingInProgress) {
@@ -4726,6 +4732,8 @@ const OtherTransfer = ({
           response.data
         )
       );
+
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
 
       getPaymentHandler();
 

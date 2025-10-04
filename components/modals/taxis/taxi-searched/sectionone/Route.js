@@ -16,6 +16,7 @@ import { useGenericAPIModal } from "../../../warning/Index";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
+import { useAnalytics } from "../../../../../hooks/useAnalytics";
 
 
 const Container = styled.div`
@@ -97,7 +98,9 @@ const Section = (props) => {
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-
+  const {trackTransferBookingChange,trackTransferBookingAdd} = useAnalytics();
+  const {intercity,airport} = useSelector(state=>state.TransferBookings)?.transferBookings;
+ 
   const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -235,8 +238,10 @@ const Section = (props) => {
             response.data
           )
         );
+        trackTransferBookingAdd(itineraryId || props.selectedBooking.itinerary_id,`${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,intercity?.[`${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`],response.data,response.data?.transfer_details?.trips?.[0]?.origin?.address,response.data?.transfer_details?.trips?.[0]?.destination?.address)
       } else {
         dispatch(updateAirportTransferBooking(`${props?.cityId}`, response.data));
+        trackTransferBookingAdd(itineraryId || props.selectedBooking.itinerary_id,`${props?.cityId}`,airport?.[`${props?.cityId}`],response.data,response.data?.transfer_details?.trips?.[0]?.origin?.address,response.data?.transfer_details?.trips?.[0]?.destination?.address)
       }
 
       props._updateTaxiBookingHandler([response.data]);

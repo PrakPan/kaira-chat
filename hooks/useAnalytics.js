@@ -421,35 +421,46 @@ export const useAnalytics = () => {
     }, []),
     
     // Transfer Events
-    trackTransferCardClicked: useCallback(async (itineraryId, transferId, actionSource) => {
+    trackTransferCardClicked: useCallback(async (itineraryId, transferId, actionSource,fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_card_clicked', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
-        action_source: actionSource
+        action_source: actionSource,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
     
-    trackTransferBookingAdd: useCallback(async (itineraryId, transferId, userId = null) => {
+    trackTransferBookingAdd: useCallback(async (itineraryId, transferId,previousData = null ,newData = null,fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_add', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
-        user_id: userId
+        previous_data: previousData,
+        new_data: newData,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
 
-    trackTransferBookingDelete: useCallback(async (itineraryId, transferId, userId = null) => {
+    trackTransferBookingDelete: useCallback(async (itineraryId, transferId, userId = null,previousData = null,fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_delete', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
-        user_id: userId
+        user_id: userId,
+        previous_data: previousData,
+        new_data: null,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
 
-    trackTransferBookingChange: useCallback(async (itineraryId, transferId, userId = null) => {
+    trackTransferBookingChange: useCallback(async (itineraryId, transferId, userId = null, fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_change', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
-        user_id: userId
+        user_id: userId,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
     

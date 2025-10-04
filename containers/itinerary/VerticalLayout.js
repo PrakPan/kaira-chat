@@ -26,6 +26,7 @@ import PickupDropDrawer from "./PickupDropDrawer";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { useAnalytics } from "../../hooks/useAnalytics";
 
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -761,7 +762,7 @@ const CityItem = ({
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
-  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferBookingDelete} = useAnalytics();
+  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferBookingDelete,trackTransferCardClicked} = useAnalytics();
   const {id} = useSelector((state) => state.auth);
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
@@ -931,7 +932,7 @@ const handleEdit = async (combo, book) => {
   };
 
   const handleAddTransfer = () => {
-    trackTransferBookingAdd(router.query.id,bookingIdToDelete,id);
+    trackTransferCardClicked(router.query.id,bookingIdToDelete,id,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
