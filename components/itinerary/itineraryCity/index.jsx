@@ -178,7 +178,7 @@ const ItineraryCity = (props) => {
             {props?.city?.city?.name}
             {" - "}
             {multiHotelDuration}{" "}
-            {multiHotelDuration === 1 ? "Night" : "Nights"}
+            {multiHotelDuration > 1 ? "Nights" : "Night"}  {props?.city?.duration === 0 ? "(Transit City)" : ""}
           </div>
 
           {hotels_status === "PENDING" ? (
@@ -240,7 +240,7 @@ const ItineraryCity = (props) => {
               })}
             </div>
           ) : (
-            <div
+            props?.city?.duration !== 0  && <div
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add",null)

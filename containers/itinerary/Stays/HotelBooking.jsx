@@ -722,6 +722,7 @@ const HotelBooking = ({
           </div>
         </>
       ) : (
+        (booking?.duration || cities[index]?.duration) ? 
         <div>
           <div className="flex lg:flex-row flex-col justify-between lg:items-center items-start cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] p-3 ">
             <div className="flex flex-col">
@@ -779,7 +780,7 @@ const HotelBooking = ({
               </Button>
             </div>
           </div>
-        </div>
+        </div> : null
       )}
 
       <ViewHotelDetails

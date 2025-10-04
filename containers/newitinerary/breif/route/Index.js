@@ -375,7 +375,7 @@ const Route = (props) => {
               : props?.CityData[i + 1]?.id)
           }`;
         }
-        console.log("Keys", key);
+        // console.log("Keys", key);
         locationsArr.push(
           <MidSectionV2
             transferId={key}
