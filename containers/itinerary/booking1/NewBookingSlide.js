@@ -76,7 +76,9 @@ const Details = (props) => {
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-  const {trackWhatsAppClicked} = useAnalytics();
+ 
+  const { trackWhatsAppClicked } = useAnalytics();
+  const Cart = useSelector((state) => state.Cart);
   const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
 
@@ -87,7 +89,7 @@ const Details = (props) => {
     document.body.appendChild(script);
   }, []);
   useEffect(() => {
-    console.log("loading is:", props.loadpricing);
+    // console.log("loading is:", props.loadpricing);
   }, [props.loadpricing]);
 
   const getCurrentDateIfOlder = (dateString) => {
@@ -506,7 +508,7 @@ const Details = (props) => {
   };
 
   const handleWhatsappChat = () => {
-    trackWhatsAppClicked(router?.query?.id,Cart?.discounted_cost,'Rupees');
+    
     logEvent({
       action: "Button_Click",
       params: {
@@ -516,11 +518,15 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
+    
+
+    // console.log("WhatsappCta",urls.WHATSAPP + "?text=" + encodeURIComponent(message));
 
     window.open(
       urls.WHATSAPP + "?text=" + encodeURIComponent(message),
       "_blank"
     );
+     trackWhatsAppClicked(router?.query?.id,Cart?.discounted_cost,'Rupees');
   };
 
   const handleTermsConditions = () => {
