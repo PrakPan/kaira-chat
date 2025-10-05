@@ -1,8 +1,8 @@
 import { useState } from "react";
 import styled from "styled-components";
-import Modal from "../../ui/Modal";
 import useMediaQuery from "../../media";
 import BottomModal from "../../ui/LowerModal";
+import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 
 export const StyledText = styled.div`
   font-family: "Inter", sans-serif;
@@ -33,9 +33,26 @@ export const PassengerRow = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 8px;
-  margin-bottom: 8px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
+  
+`;
+
+export const HeaderRow = styled.div`
+  width: 327px;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  
 `;
 
 export const PassengerLabel = styled.div`
@@ -48,7 +65,8 @@ export const PassengerLabel = styled.div`
     font-size: 14px;
   }
   .subtitle {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: 400;
     color: #6b7280;
   }
 `;
@@ -73,10 +91,18 @@ export const CounterButton = styled.button`
 `;
 
 export const CounterValue = styled.div`
-  width: 24px;
+  width: 87px;
   text-align: center;
   font-size: 14px;
   font-weight: 500;
+  border-radius: 40px;
+  border: 1px solid var(--Text-Colors-Stroke, #E5E5E5);
+  background: var(--text-colors-text-white, #FFF);
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-colors-text-black, #000);
+  font-family: Inter, sans-serif;
 `;
 
 export const ApplyButton = styled.button`
@@ -148,9 +174,9 @@ export const AgeInput = styled.input`
 
 const EnterPassenger = (props) => {
   const [showPassengers, setShowPassenger] = useState(false);
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
-  const [infants, setInfants] = useState(0);
+  const [adults, setAdults] = useState(props.numberOfAdults);
+  const [children, setChildren] = useState(props.numberOfChildren);
+  const [infants, setInfants] = useState(props.numberOfInfants);
   const [childAges, setChildAges] = useState([]);
 
   let isPageWide = useMediaQuery("(min-width: 768px)");
@@ -160,10 +186,8 @@ const EnterPassenger = (props) => {
     setChildAges((prev) => {
       const updated = [...prev];
       if (newCount > prev.length) {
-        // add empty slots for new children
-        return [...updated, ...Array(newCount - prev.length).fill("")];
+        return [...updated, ...Array(newCount - prev.length).fill(10)];
       } else {
-        // remove extra age inputs
         return updated.slice(0, newCount);
       }
     });
@@ -184,7 +208,6 @@ const EnterPassenger = (props) => {
     setShowPassenger(false);
   };
 
-  console.log("room config new is: ", props?.roomConfiguration)
   return (
     <div>
       <StyledText className="mb-[4px]">Who's Going</StyledText>
@@ -193,27 +216,31 @@ const EnterPassenger = (props) => {
       </StyledBox>
 
       {isPageWide ? 
-      <Modal
-        height={isPageWide ? "436px" : "100%"}
-        borderRadius={"12px"}
+      <ModalWithBackdrop
         show={showPassengers}
-        backdrop={true}
-        size="lg"
-        onHide={() => setShowPassenger(false)}
+        backdrop
+        size="md"
+        onHide={() => {
+          setShowPassenger(false)
+          setAdults(props.numberOfAdults)
+          setChildren(props.numberOfChildren)
+          setInfants(props.numberOfInfants)
+        }}
+        borderRadius={"12px"}
         animation={false}
-        width={isPageWide ? "367px" : "100%"}
+        backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
         <div className="flex flex-col justify-between items-center h-[436px] p-[20px] overflow-y-auto">
-          <PassengerRow className="flex flex-col p-2">
-            <div className="text-[20px]">Who's Going?</div>
-            <div>{adults + children + infants} Travelers</div>
-          </PassengerRow>
+          <HeaderRow>
+            <div className="Heading2SB">Who's Going?</div>
+            <div className="Body2R_14">{adults + children + infants} Travelers</div>
+          </HeaderRow>
 
           <Section>
             {/* Adults */}
             <PassengerRow>
               <PassengerLabel>
-                <div className="title">Adults</div>
+                <div className="Body2M_14">Adults</div>
                 <div className="subtitle">Ages 13 or above</div>
               </PassengerLabel>
               <CounterBox>
@@ -227,7 +254,7 @@ const EnterPassenger = (props) => {
             <PassengerRow style={{ flexDirection: "column", alignItems: "flex-start" }}>
               <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
                 <PassengerLabel>
-                  <div className="title">Children</div>
+                  <div className="Body2M_14">Children</div>
                   <div className="subtitle">Ages 2 to 12</div>
                 </PassengerLabel>
                 <CounterBox>
@@ -239,35 +266,10 @@ const EnterPassenger = (props) => {
 
             </PassengerRow>
 
-            {children > 0 && (
-              <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
-                {Array.from({ length: children }).map((_, idx) => (
-                  <PassengerRow className="w-full text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                    <div className="flex justify-between items-center w-full">
-                      <div className="title">Age of Child {idx}</div>
-                      <AgeInput
-                        key={idx}
-                        type="number"
-                        min="2"
-                        max="12"
-                        value={childAges[idx] || ""}
-                        onChange={(e) => {
-                          const updated = [...childAges];
-                          updated[idx] = e.target.value;
-                          setChildAges(updated);
-                        }}
-                      />
-                    </div>
-                  </PassengerRow>
-                ))}
-              </div>
-            )}
-
             {/* Infants */}
             <PassengerRow>
               <PassengerLabel>
-                <div className="title">Infants</div>
+                <div className="Body2M_14">Infants</div>
                 <div className="subtitle">Under age 2</div>
               </PassengerLabel>
               <CounterBox>
@@ -279,29 +281,33 @@ const EnterPassenger = (props) => {
           </Section>
 
           {/* Buttons */}
-          <div className="flex justify-between w-full gap-2">
-            <ClearButton className="w-1/2" onClick={() => { setAdults(2); setChildren(0); setInfants(0); setChildAges([]); setShowPassenger(false); }}>Clear</ClearButton>
+          <div className="flex justify-end w-full gap-2">
             <ApplyButton className="w-1/2" onClick={handleApply}>Apply</ApplyButton>
           </div>
         </div>
-      </Modal> :
+      </ModalWithBackdrop> :
         <BottomModal
           show={showPassengers}
-          onHide={() => setShowPassenger(false)}
+          onHide={() => {
+            setShowPassenger(false)
+            setAdults(props.numberOfAdults)
+            setChildren(props.numberOfChildren)
+            setInfants(props.numberOfInfants)
+          }}
           width="100%"
           height="max-content"
           >
           <div className="flex flex-col justify-between items-center h-[436px] p-[20px] overflow-y-auto">
-            <PassengerRow className="flex flex-col p-2 !w-[100%]">
-              <div className="text-[20px]">Who's Going?</div>
-              <div>{adults + children + infants} Travelers</div>
-            </PassengerRow>
+            <HeaderRow>
+              <div className="Heading2SB">Who's Going?</div>
+              <div className="Body2R_14">{adults + children + infants} Travelers</div>
+            </HeaderRow>
 
             <Section className="w-full">
               {/* Adults */}
               <PassengerRow className="!w-[100%]">
                 <PassengerLabel>
-                  <div className="title">Adults</div>
+                  <div className="Body2M_14">Adults</div>
                   <div className="subtitle">Ages 13 or above</div>
                 </PassengerLabel>
                 <CounterBox>
@@ -315,7 +321,7 @@ const EnterPassenger = (props) => {
               <PassengerRow className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
                 <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
                   <PassengerLabel>
-                    <div className="title">Children</div>
+                    <div className="Body2M_14">Children</div>
                     <div className="subtitle">Ages 2 to 12</div>
                   </PassengerLabel>
                   <CounterBox>
@@ -327,35 +333,10 @@ const EnterPassenger = (props) => {
 
               </PassengerRow>
 
-              {children > 0 && (
-                <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
-                  {Array.from({ length: children }).map((_, idx) => (
-                    <PassengerRow className="!w-full text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                      <div className="flex justify-between items-center w-full">
-                        <div className="title">Age of Child {idx}</div>
-                        <AgeInput
-                          key={idx}
-                          type="number"
-                          min="2"
-                          max="12"
-                          value={childAges[idx] || ""}
-                          onChange={(e) => {
-                            const updated = [...childAges];
-                            updated[idx] = e.target.value;
-                            setChildAges(updated);
-                          }}
-                        />
-                      </div>
-                    </PassengerRow>
-                  ))}
-                </div>
-              )}
-
               {/* Infants */}
               <PassengerRow className="!w-[100%]">
                 <PassengerLabel>
-                  <div className="title">Infants</div>
+                  <div className="Body2M_14">Infants</div>
                   <div className="subtitle">Under age 2</div>
                 </PassengerLabel>
                 <CounterBox>
@@ -367,8 +348,7 @@ const EnterPassenger = (props) => {
             </Section>
 
             {/* Buttons */}
-            <div className="flex justify-between w-full gap-2">
-              <ClearButton className="w-1/2" onClick={() => { setAdults(2); setChildren(0); setInfants(0); setChildAges([]); setShowPassenger(false); }}>Clear</ClearButton>
+            <div className="flex justify-end w-full gap-2">
               <ApplyButton className="w-1/2" onClick={handleApply}>Apply</ApplyButton>
             </div>
           </div>

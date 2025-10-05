@@ -12,9 +12,6 @@ import { authCloseLogin } from "../../store/actions/auth";
 const ImgContainer = styled.div`
   height: 100%;
   position: relative;
-  img {
-    filter: brightness(0.5);
-  }
 `;
 
 const ImgTagsContainer = styled.div`
@@ -22,9 +19,6 @@ const ImgTagsContainer = styled.div`
   bottom: -30px;
   transform: translateY(-43%);
   left: 10%;
-  img {
-    filter: brightness(1);
-  }
 `;
 
 const tags = [
@@ -52,7 +46,7 @@ const tags = [
 
 const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
+  const [modalWidth, setModalWidth] = useState(isPageWide ? "848px" : "90%");
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
   const dispatch = useDispatch();
@@ -69,12 +63,12 @@ const Enquiry = (props) => {
   useEffect(() => {
     function findModalWidth() {
       if (window.innerWidth >= 1600) setModalWidth(50);
-      else if (window.innerWidth >= 1400) setModalWidth(60);
-      else if (window.innerWidth >= 1100) setModalWidth(70);
-      else if (window.innerWidth >= 768) setModalWidth(90);
-      else if (window.innerWidth >= 600) setModalWidth(60);
-      else if (window.innerWidth >= 400) setModalWidth(80);
-      else setModalWidth(90);
+      else if (window.innerWidth >= 1400) setModalWidth("848px");
+      else if (window.innerWidth >= 1100) setModalWidth("848px");
+      else if (window.innerWidth >= 768) setModalWidth("90%");
+      else if (window.innerWidth >= 600) setModalWidth("60%");
+      else if (window.innerWidth >= 400) setModalWidth("80%");
+      else setModalWidth("90%");
     }
     window.addEventListener("resize", findModalWidth);
     findModalWidth();
@@ -90,7 +84,7 @@ const Enquiry = (props) => {
         show={props.show}
         onHide={props.onhide}
         borderRadius="20px"
-        width={modalWidth + "%"}
+        width={modalWidth}
         zIndex={props?.zIndex}
       >
         <div id="login-modal" style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
@@ -108,14 +102,14 @@ const Enquiry = (props) => {
             <ImageLoader
               noLazy
               url={"media/themes/auth.png"}
-              height="100%"
+              height="560px"
               width="100%"
               onload={() => setShowImage(true)}
               borderRadius="20px"
             ></ImageLoader>
 
             <ImgTagsContainer>
-              <div className="text-[32px] font-[700] leading-[40px] text-white mb-4">
+              <div className="text-[32px] font-[700] leading-[40px] text-white mb-4 max-w-[334px]">
                 Your Personalized Travel Journey Starts with a Tap
               </div>
               <div className="flex gap-4">
@@ -135,7 +129,7 @@ const Enquiry = (props) => {
 
           </ImgContainer>
 
-          <div style={{ padding: "20px" }}>
+          <div style={{ paddingTop: "20px" }}>
             <Login
               ref={myref}
               onhide={props.onhide}

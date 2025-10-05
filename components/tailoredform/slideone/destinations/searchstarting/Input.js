@@ -14,7 +14,8 @@ const ResultsContainer = styled.div`
   width: 100%;
   background-color: white;
   left: 0;
-  top: 2.75rem;
+  top: 53px;
+  padding: 20px;
   z-index: 4;
 `;
 
@@ -129,6 +130,7 @@ const SearchInput = (props) => {
         <div style={{ display: "flex" }}>
           <InputContainer
             onFocus={props.onfocus}
+            className="Body2M_14"
             onBlur={_handleBlur}
             placeholder="Enter the start Location"
             value={search}
@@ -146,7 +148,7 @@ const SearchInput = (props) => {
         <ResultsContainer className="border">
           {loading
             ? [skeleton, skeleton, skeleton, skeleton, skeleton]
-            : resultsJSX}
+            : <div className="flex flex-col gap-[8px]">{resultsJSX}</div>}
         </ResultsContainer>
       ) : null}
     </div>

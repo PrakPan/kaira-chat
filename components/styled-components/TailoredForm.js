@@ -36,6 +36,9 @@ export const StyledButton = styled.button`
       border: 1px solid var(--primary-colors-primary-yellow-color, #f7e700);
       background: var(--primary-colors-primary-yellow-color, #f7e700);
     `}
+    &:hover {
+      background: #f7e700;
+    }
 `;
 
 export const StyledFlexWrap = styled.div`

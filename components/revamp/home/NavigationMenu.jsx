@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { TTW } from "../assets";
 import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
@@ -9,15 +9,18 @@ import SearchInput from "../common/components/searchInput";
 import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { connect, useDispatch } from "react-redux";
-import {  authShowLogin } from "../../../store/actions/auth";
+import { connect, useDispatch, useSelector } from "react-redux";
+import {  authShowLogin, authCloseLogin } from "../../../store/actions/auth";
 import useMediaQuery from "../../media";
 import ProfileDropDown from "../../navbar/ProfileDropDown";
 import { authLogout } from "../../../store/actions/auth";
 import MobileMenu from "../../navbar/mobile/Index";
 import ImageLoader from "../../ImageLoader";
 import * as logout from "../../../store/actions/logout";
-
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
+import Login from "../../modals/Login";
 const NavigationMenu = (props) => {
   const {
     isMobileMenuOpen,
@@ -27,7 +30,6 @@ const NavigationMenu = (props) => {
     overlayRef,
     menuItemsRef,
   } = useMobileMenu();
-  console.log("navigation props", props);
   const router = useRouter();
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
   const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] = useState(false);
@@ -79,6 +81,11 @@ const NavigationMenu = (props) => {
   const _deleteNotificationHandler = (id) => {};
 
   const _openAllNotificationsHandler = () => {};
+  useEffect(() => {
+    axios.get(`${MERCURY_HOST}/api/v1/geos/search/hot_destinations`).then((res) => {
+      dispatch(setHotLocationSearch(res.data));
+    });
+  }, [props]);
 
 
   return (
@@ -93,7 +100,7 @@ const NavigationMenu = (props) => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          {props.token ? (
+          {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
             name={props.name}
             image={props.image}
@@ -104,7 +111,7 @@ const NavigationMenu = (props) => {
             showDropDownProfileListMobile={showDropDownProfileListMobile}
             notifications={[]}
             toggleProfileList={toggleProfileList}
-            token={props.token}
+            token={localStorage.getItem("access_token")}
             />
           ) : (
             <Button size="small" onClick={handleCTAClick}>
@@ -199,6 +206,14 @@ const NavigationMenu = (props) => {
             Get Started
           </button>
         </div>
+        <div id="login" className="width-[100%] z-[1650]">
+        <Login
+          show={props.showLogin}
+          onhide={props.authCloseLogin}
+          itinary_id={props?.itinary_id}
+          zIndex={"3300"}
+        />
+      </div>
       </div>
     </>
   );
@@ -209,6 +224,7 @@ const mapStateToProps = (state) => {
     token: state.auth.token,
     name: state.auth.name,
     image: state.auth.image,
+    showLogin: state.auth.showLogin,
   };
 };
 
@@ -216,6 +232,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authShowLogin()),
+    authCloseLogin: () => dispatch(authCloseLogin()),
   };
 };
 

@@ -52,6 +52,8 @@ export const ChatProvider = ({ itinearyId, children }) => {
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const {trackTransferBookingDelete} = useAnalytics();
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+
 
 
   useEffect(() => {
@@ -100,6 +102,18 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
       if (!id) {
         setDisableQuerySection(true);
+        const interval = setInterval (() => {
+          if(finalized_status=="SUCCESS"){
+            clearInterval(interval);
+            const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+              socketRef.current.send(
+                JSON.stringify({ message: initialPrompt, token })
+              );
+            }
+          }
+        }, 1000);
+        
         const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
         // console.log(initialPrompt)
         if (socketRef.current?.readyState === WebSocket.OPEN) {

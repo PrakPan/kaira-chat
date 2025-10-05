@@ -88,7 +88,7 @@ function MyApp({ Component, pageProps, store }) {
     if (timeLeft <= 0) {
       dispatch(authLogout());
       localStorage.clear();
-      restartBot();
+      // restartBot();
     } else {
       setTimeout(() => {
         dispatch(authLogout());
@@ -213,7 +213,7 @@ function MyApp({ Component, pageProps, store }) {
         onLoad={() => {
           console.log("CRMOne bot script loaded");
           if (typeof restartBot === 'function') {
-            restartBot();
+            // restartBot();
           }
         }}
       />

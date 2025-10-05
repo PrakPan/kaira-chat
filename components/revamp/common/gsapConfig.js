@@ -48,7 +48,7 @@ export const createEntranceAnimation = (elements, config = {}) => {
   const {
     duration = ANIMATION_CONFIG.duration.fast,
     ease = ANIMATION_CONFIG.ease.backOut,
-    stagger = ANIMATION_CONFIG.stagger.medium,
+    stagger = ANIMATION_CONFIG.stagger.long,
     delay = 0,
   } = config;
 

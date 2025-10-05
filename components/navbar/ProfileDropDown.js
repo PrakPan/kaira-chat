@@ -187,8 +187,8 @@ const ProfileDropDown = (props) => {
         <ImageLoader
           borderRadius="50%"
           url={
-            props.image !== "null" && props.image !== null
-              ? props.image
+            localStorage.getItem("user_image") !== "null" && localStorage.getItem("user_image") !== null
+              ? localStorage.getItem("user_image")
               : "media/icons/navigation/profile-user.png"
           }
           width="2rem"

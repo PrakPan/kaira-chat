@@ -34,7 +34,7 @@ const WhatsappCheckBox = styled.div`
   line-height: 16px;
   display: flex;
   gap: 0.3rem;
-  margin-block: 1rem 1rem;
+  margin-top: 16px;
   align-items: center;
 `;
 
@@ -342,7 +342,6 @@ const LogIn = React.memo((props) => {
 
   const verifyRecaptchaHandler = () => {
     const recaptchaValue = recaptchaRef.current.getValue();
-    console.log("recaptcha value is: ", recaptchaValue)
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
@@ -434,7 +433,7 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className="pt-[56px] px-[32px] h-full">
+    <div className="pt-[36px] px-[32px] h-max">
       <div className="flex flex-col gap-[24px] h-full">
         {!props?.otpSent ? <div>
           {!props.noheading && (
@@ -443,7 +442,7 @@ const LogIn = React.memo((props) => {
                 fontSize: "32px",
                 textAlign: "left",
                 margin: isPageWide
-                  ? "1.2rem 0rem 1.2rem 0.5rem"
+                  ? "0 0rem 32px 0rem"
                   : "0rem 0rem 1rem 0.5rem",
                 fontWeight: "700",
               }}
@@ -453,7 +452,7 @@ const LogIn = React.memo((props) => {
                 <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
               </> :
                 <>
-                  <h1>{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
+                  <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
                 </>}
             </div>
           )}
@@ -472,7 +471,7 @@ const LogIn = React.memo((props) => {
           {(props.token && !props.phone) ||
             (props.token && props.phone == "null") ? (
             <form noValidate>
-              <div className="Body2R_14">Phone Number</div>
+              <div className="Body2R_14 mb-[6px]">Phone Number</div>
               <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
                 <div
                   className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
@@ -525,7 +524,7 @@ const LogIn = React.memo((props) => {
             </form>
           ) : (
             <form noValidate>
-              <div className="Body2R_14 mb-[2px]">Phone Number</div>
+              <div className="Body2R_14 mb-[6px]">Phone Number</div>
               <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
                 <div
                   className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
@@ -601,7 +600,7 @@ const LogIn = React.memo((props) => {
               ) : null}
 
               {props.newUser || (props.otpSent && !props.email) ?
-                <div className="flex flex-col gap-[6px]">
+                <div className="flex flex-col gap-[6px] mt-[20px]">
                   <div className="Body2M_14">Email</div>
                   {email}
                 </div> : null}
@@ -629,7 +628,7 @@ const LogIn = React.memo((props) => {
               </div>
 
               {props.otpSent ? password : null}
-              <div className="Body1R_16"> You will get OTP in {minutes}:{seconds}</div>
+              <div className="Body1R_16 text-[#6E757A;]"> You will get OTP in <span className="text-black Body1M_16">{minutes}:{seconds}</span></div>
             </div>
 
 
@@ -638,7 +637,7 @@ const LogIn = React.memo((props) => {
         {!props.otpSent ? (
           <Button
             onclick={verifyRecaptchaHandler}
-            margin={props.nospacing ? "0" : "40px 0"}
+            margin={props.nospacing ? "0" : "40px 0 0 0"}
             width="100%"
             bgColor="#07213A"
             fontWeight="500"
@@ -655,9 +654,9 @@ const LogIn = React.memo((props) => {
             Continue
           </Button>
         ) : (
-          <div className={`flex flex-col gap-[16px] ${userDetailsRequired ? "mt-[68px]" : "mt-[80px]"}`}>
+          <div className={`flex flex-col gap-[16px] ${!userDetailsRequired ? `${counter == 0 && !userDetailsRequired ? "mt-[80px]" : "mt-[120px]"}` : "mt-[46px]"}`}>
             {counter == 0 && !userDetailsRequired && <div className="flex gap-[16px] justify-center">
-              <div className="Body1R_16">Didn’t received?</div>
+              <div className="Body1R_16 text-[#6E757A;]">Didn't receive OTP?</div>
               <div className="Body1R_16 text-[#3A85FC] cursor-pointer" onClick={verifyRecaptchaHandler}>Resend OTP</div>
             </div>}
             <Button
@@ -679,7 +678,7 @@ const LogIn = React.memo((props) => {
             </Button>
           </div>
         )}
-        <div className="mt-12 ">
+        <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
           <div className="Body2R_14 text-[#6E757A]">
             By continuing, you agree to our{" "}
             <Link

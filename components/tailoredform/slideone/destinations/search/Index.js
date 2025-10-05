@@ -22,7 +22,8 @@ const Search = (props) => {
   const { query } = useRouter();
 
   const _handleKey = (value) => {
-    if (value && !props.searchFinalized)
+    console.log("value", value);
+    if (value && !props.searchFinalized){
       if (value.length > 1) {
         setShowHotLocations(false);
         setShowResults(true);
@@ -51,6 +52,13 @@ const Search = (props) => {
             });
           });
       }
+      else{
+        setShowResults(false);
+      }
+    }
+    else{
+      setShowResults(false);
+    }
   };
 
   useEffect(() => {
@@ -61,15 +69,6 @@ const Search = (props) => {
 
     setHotLocationsData(props.hotLocations);
 
-    // axioslocationsinstance
-    //   .get("hot_destinations" + params)
-    //   .then((response) => {
-    //     if (response.data.length) setHotLocationsData(response.data);
-    //     else setShowHotLocations(false);
-    //   })
-    //   .catch((e) => {
-    //     setShowHotLocations(false);
-    //   });
   }, []);
 
   return (
@@ -97,7 +96,7 @@ const Search = (props) => {
         ></SearchInput>
       </div>
 
-      {showResults && (
+      {showResults ? (
         <>
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -111,9 +110,7 @@ const Search = (props) => {
           setSearchFinalized={props.setSearchFinalized}
         ></SearchResults>
         </>
-      )}
-
-      {showHotLocations && (
+      ) : showHotLocations ? (
         <SearchResults
           hotLocations
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -129,7 +126,7 @@ const Search = (props) => {
           setValueEnd={props.setValueEnd}
           tailoredFormModal={props.tailoredFormModal}
         ></SearchResults>
-      )}
+      ) : null}
     </Container>
   );
 };
