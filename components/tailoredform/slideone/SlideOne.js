@@ -12,6 +12,7 @@ import AirbnbCalendarMobile from "../../calendar/MobileCalendar";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { setAnytimeDate, setCalendarDates, setDateType, setFixedDate, setFlexibleDate } from "../../../store/actions/slideOneActions";
+import { getHumanDate } from "../../../services/getHumanDate";
 
 const Container = styled.div`
   color: black;
@@ -38,8 +39,8 @@ const SlideOne = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [showCalendar, setShowCalendar] = useState(false);
   const date = useSelector((state) => state.tailoredInfoReducer.slideOne.date);
-  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
-  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
+  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
+  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
   const dispatch = useDispatch();
   const handleOnCalenderApplyDates = (values) => {
     if (values.dateType == "fixed") {
@@ -78,19 +79,17 @@ const SlideOne = (props) => {
       </Section>
 
       <Section>
-        {/* <AirbnbCalendar /> */}
         <div>
-          <Body2R_14>When</Body2R_14>
+          <Body2R_14 className="mb-[4px]">When</Body2R_14>
           <div className="relative w-full">
             <StyledFigmaBox
               value={
                 date.type === "fixed" ? (valueStart && valueEnd
-                  ? `${formatShortDate(valueStart)} - ${formatShortDate(valueEnd)}`
+                  ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
                   : "") : date.type === "flexible" ? (new Date(date.month).toLocaleString("default", { month: "long" }) + ", " + date.duration + " days") : date.duration + " days"
               }
               placeholder="Select dates"
-              className={`cursor-pointer w-full pr-10 ${!(valueStart && valueEnd) && "text-[#ACACAC] text-[14px]"
-                }`}
+              className={`cursor-pointer w-full pr-10  Body2M_14`}
               onClick={() => setShowCalendar(true)}
               readOnly
             />

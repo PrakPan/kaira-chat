@@ -64,7 +64,9 @@ const FlickityComp = (props) => {
       ) : null}
 
       {slideIndex === 3 ?
-        <SlideFour/> : null}
+      <Card> 
+        <SlideFour/> 
+        </Card> : null}
 
       {slideIndex == 4 &&
         <div>

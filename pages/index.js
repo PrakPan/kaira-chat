@@ -135,14 +135,14 @@ const Home = (props) => {
         <CtaBoardingSection />
       </div>
       <NewFooter page="Homepage" />
-      <div id="login" className="width-[100%] z-[1650]">
+      {/* <div id="login" className="width-[100%] z-[1650]">
         <Login
           show={props.showLogin}
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}
           zIndex={"3300"}
         />
-      </div>
+      </div> */}
     </>
   );
 };
