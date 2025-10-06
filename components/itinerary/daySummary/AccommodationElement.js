@@ -170,10 +170,12 @@ export default function AccommodationElement(props) {
                   <span className="flex flex-row text-[#FFD201] ml-2">
                     {stars}
                   </span>
-                  <span className="">{selectedBooking?.user_rating} . </span>
+                 {selectedBooking?.user_rating && <> 
+                   <span className="">{selectedBooking?.user_rating} . </span>
                   <span className="underline">
                     {selectedBooking?.number_of_reviews} user reviews
                   </span>
+                   </>}
                 </span>
               ) : null}
             </div>

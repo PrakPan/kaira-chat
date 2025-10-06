@@ -23,6 +23,7 @@
     --color-midnight-indigo-hover :#0b3965;
     --color-site-yellow:#F7e700;
    --color-stroke-checkbox :#ACACAC;
+   
 
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
@@ -296,7 +297,7 @@ a.termsnavunderlinelink {
 
 .ttw-btn-fill-yellow {
     white-space: nowrap;
-    border: 1px solid var(--color-pure-black);
+    border: 1px solid var(--color-site-yellow);
     background-color: var(--color-site-yellow);
     padding: 5px 16px;
     font-size: 14px;
@@ -310,6 +311,7 @@ a.termsnavunderlinelink {
 .ttw-btn-secondary:hover, .ttw-btn-fill-yellow:hover {
     background: var(--color-pure-black);
     color: var(--color-pure-white);
+    border-color: var(--color-pure-black);
 }
 
 .ttw-btn-secondary-flat:hover{
@@ -357,6 +359,23 @@ a.termsnavunderlinelink {
     font-weight: 500;
     font-size: 12px;
     align-content: flex-end;
+}
+
+.ttw-btn-fill-error {
+    white-space: nowrap;
+    border: 1px solid theme('colors.text.error');
+    background-color: theme('colors.text.error');
+    color: theme('colors.text.white');
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    width: fit-content;
+    border-radius: var(--border-radius-md);
+    font-family: var(--font-family-montserrat);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: theme('spacing.xs');
 }
 
 .border-color-light-grey {
@@ -430,6 +449,39 @@ a.termsnavunderlinelink {
 }
 
 .ttw-custom-yellochekbox-label:has(.ttw-custom-yellochekbox:checked)::before{
-    background-color: var(--color-site-yellow);
-    border-color: var(--color-site-yellow);
+    background-color: var(--color-pure-black);
+    border-color: var(--color-pure-black);
+}
+
+.drawerContainer{
+    border-radius: theme('borderRadius.3xl') 0px 0px theme('borderRadius.3xl') ;
+}
+
+
+.gl-dynamic-render-elements ul{
+ padding: 0px;
+} 
+
+.gl-dynamic-render-elements h6{
+ margin-top: theme('spacing.sm');
+} 
+
+.list-informaation-ul {
+    padding-left: theme('spacing.md');
+    margin-top: theme('spacing.sm')
+}
+
+.list-informaation-ul li{
+  list-style: disc;
+  font-size: theme('fontSize.sm-md');
+  color: theme('colors.text.spacegrey');
+  font-weight: theme('fontWeight.400');
+  margin-bottom: theme('spacing.xxs')
+}
+
+
+@media (max-width: 768px) {
+.drawerContainer{
+    border-radius: 0px;
+}
 }

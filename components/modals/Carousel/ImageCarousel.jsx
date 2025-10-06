@@ -157,7 +157,7 @@ const ImageCarousel = ({ images, noCaption }) => {
             >
               <Image src={src.image} alt={`Slide ${index + 1}`} fill />
               {!noCaption && src?.caption &&(
-                <div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
+                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                   {src?.caption}
                 </div>
               )}
