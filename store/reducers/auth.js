@@ -36,6 +36,7 @@ const reducer = (state = initialState, action) => {
         mobileFail: false,
         otpFail: false,
         newUser: false,
+        loading: false,
       };
     case actionTypes.AUTH_RESETLOGIN:
       return {
@@ -44,6 +45,7 @@ const reducer = (state = initialState, action) => {
         mobileFail: false,
         otpFail: false,
         newUser: false,
+        loading: false,
       };
     case actionTypes.AUTH_STARTLOADING:
       return {

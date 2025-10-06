@@ -131,6 +131,13 @@ const LogIn = React.memo((props) => {
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
 
+  useEffect(() => { 
+     props.onResetLogin();
+    mobileRef.current.focus();
+  }, []);
+
+  
+
   useEffect(() => {
     if (otp.length > 3) {
       submitOtpHandler();
@@ -324,7 +331,7 @@ const LogIn = React.memo((props) => {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
     } else {
-      recaptchaRef.current.execute(); // Trigger the invisible ReCAPTCHA
+      recaptchaRef.current.execute(); 
     }
   };
 
@@ -408,6 +415,7 @@ const LogIn = React.memo((props) => {
         <LoginLoadingIcon width={"7rem"} />
       </div>
     );
+
 
   return (
     <div className="font-lexend">
