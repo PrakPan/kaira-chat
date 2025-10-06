@@ -360,10 +360,10 @@
     analyticsState.isInitialized = true;
     
 
-    track('analytics_initialized', {
-      version: '1.0.2-partytown',
-      partytown: isPartytown
-    });
+    // track('analytics_initialized', {
+    //   version: '1.0.2-partytown',
+    //   partytown: isPartytown
+    // });
   };
 
   // Specific tracking functions
