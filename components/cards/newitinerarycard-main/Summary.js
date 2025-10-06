@@ -19,7 +19,7 @@ const Summary = (props) => {
   return (
     <Container>
       <IconContainer
-        className="font-lexend text-center"
+        className=" text-center"
         color={props.summary.Stays?.count ? "rgba(0,0,0, 1)" : "#b5b3b3"}
       >
         <AiFillHome
@@ -34,7 +34,7 @@ const Summary = (props) => {
       </IconContainer>
 
       <IconContainer
-        className="font-lexend text-center"
+        className=" text-center"
         color={props.summary.Transfers?.count ? "black" : "#b5b3b3"}
       >
         <AiFillCar
@@ -49,7 +49,7 @@ const Summary = (props) => {
       </IconContainer>
 
       <IconContainer
-        className="font-lexend text-center"
+        className=" text-center"
         color={props.summary?.Flights?.count ? "black" : "#b5b3b3"}
       >
         <MdOutlineFlight
@@ -64,7 +64,7 @@ const Summary = (props) => {
       </IconContainer>
 
       <IconContainer
-        className="font-lexend text-center"
+        className=" text-center"
         color={props.summary.Activities?.count ? "black" : "#b5b3b3"}
       >
         <MdLocalActivity

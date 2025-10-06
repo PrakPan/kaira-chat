@@ -289,7 +289,7 @@ const Booking = (props) => {
                   fontWeight: "600",
                   fontSize: isPageWide ? "20px" : "16px",
                 }}
-                className="font-lexend"
+                className=""
               >
                 {getTime(props.data.Segments[0][0].Origin.DepTime)}
               </div>
@@ -308,7 +308,7 @@ const Booking = (props) => {
                   fontWeight: "400",
                   fontSize: isPageWide ? "20px" : "16px",
                 }}
-                className="font-lexend"
+                className=""
               >
                 {"(" + props.data.Segments[0][0].Origin.Airport.CityCode + ")"}
               </div>
@@ -341,7 +341,7 @@ const Booking = (props) => {
                   fontWeight: "600",
                   fontSize: isPageWide ? "20px" : "16px",
                 }}
-                className="font-lexend"
+                className=""
               >
                 {getTime(
                   props.data.Segments[0][props.data.Segments[0].length - 1]
@@ -362,7 +362,7 @@ const Booking = (props) => {
                   fontWeight: "400",
                   fontSize: isPageWide ? "20px" : "16px",
                 }}
-                className="font-lexend"
+                className=""
               >
                 {"(" +
                   props.data.Segments[0][props.data.Segments[0].length - 1]
@@ -376,7 +376,7 @@ const Booking = (props) => {
           {props.data.Segments ? (
             props.data.Segments[0].length ? (
               <div
-                className="font-lexend"
+                className=""
                 style={{
                   fontSize: "14px",
                   fontWeight: "400",
@@ -403,7 +403,7 @@ const Booking = (props) => {
               props.data.Segments[0].length ? (
                 props.data.Segments[0].length > 1 ? (
                   <div
-                    className="font-lexend text-center"
+                    className=" text-center"
                     style={{
                       fontSize: "0.70rem",
                       fontWeight: "400",
@@ -430,7 +430,7 @@ const Booking = (props) => {
                   </div>
                 ) : (
                   <div
-                    className="font-lexend text-center"
+                    className=" text-center"
                     style={{
                       fontSize: "0.70rem",
                       fontWeight: "400",
@@ -459,7 +459,7 @@ const Booking = (props) => {
           {props.data.Segments ? (
             props.data.Segments[0].length ? (
               <div
-                className="font-lexend"
+                className=""
                 style={{
                   fontSize: "14px",
                   fontWeight: "400",

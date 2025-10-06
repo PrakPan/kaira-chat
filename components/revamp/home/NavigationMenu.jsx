@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { TTW } from "../assets";
 import { menuAnimations } from "../common/animations/menuAnimations";
 import { useMobileMenu } from "../common/hooks/useMobileMenu";
@@ -8,12 +8,20 @@ import styles from "./NavigationMenu.module.scss";
 import SearchInput from "../common/components/searchInput";
 import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { authShologinwLogin, authShowLogin } from "../../../store/actions/auth";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { connect, useDispatch, useSelector } from "react-redux";
+import {  authShowLogin, authCloseLogin } from "../../../store/actions/auth";
 import useMediaQuery from "../../media";
-
-const NavigationMenu = () => {
+import ProfileDropDown from "../../navbar/ProfileDropDown";
+import { authLogout } from "../../../store/actions/auth";
+import MobileMenu from "../../navbar/mobile/Index";
+import ImageLoader from "../../ImageLoader";
+import * as logout from "../../../store/actions/logout";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
+import Login from "../../modals/Login";
+const NavigationMenu = (props) => {
   const {
     isMobileMenuOpen,
     toggleMobileMenu,
@@ -23,9 +31,12 @@ const NavigationMenu = () => {
     menuItemsRef,
   } = useMobileMenu();
   const router = useRouter();
-
+  const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
+  const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] = useState(false);
   const isMidScreen = useMediaQuery("(min-width:786px)");
-
+  const [Height, setHeight] = useState(false);
+  const [showMobileNavItems, setShowMobileNavItems] = useState(false);
+  const [hideNav, setHideNav] = useState(false);
   const dispatch = useDispatch();
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
@@ -57,10 +68,29 @@ const NavigationMenu = () => {
     () => [], // Empty array since navigation items are removed
     [isActive, closeMobileMenu, handleMenuItemHover]
   );
+  const toggleProfileList = () => {
+    setShowDropDownProfileList(!showDropDownProfileList);
+    setShowDropDownProfileListMobile(!showDropDownProfileListMobile);
+    if (showMobileNavItems == true) {
+      setShowMobileNavItems(false);
+    }
+    if (showMobileNavItems == false) {
+      setHeight(!Height);
+    }
+  };
+  const _deleteNotificationHandler = (id) => {};
+
+  const _openAllNotificationsHandler = () => {};
+  useEffect(() => {
+    axios.get(`${MERCURY_HOST}/api/v1/geos/search/hot_destinations`).then((res) => {
+      dispatch(setHotLocationSearch(res.data));
+    });
+  }, [props]);
+
 
   return (
     <>
-      <nav className={styles.navigationMenu} role="navigation">
+      <nav className={styles.navigationMenu + " " + props.className} role="navigation">
         <div className="hover-pointer" onClick={() => router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority />
         </div>
@@ -70,27 +100,62 @@ const NavigationMenu = () => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          <Button size="small" onClick={handleCTAClick}>
-            Login/Signup
-          </Button>
+          {localStorage.getItem("access_token") ? (
+            <ProfileDropDown 
+            name={props.name}
+            image={props.image}
+            onLogout={props.onLogout}
+            authShowLogin={props.authShowLogin}
+            setShowDropDownProfileList={setShowDropDownProfileList}
+            showDropDownProfileList={showDropDownProfileList}
+            showDropDownProfileListMobile={showDropDownProfileListMobile}
+            notifications={[]}
+            toggleProfileList={toggleProfileList}
+            token={localStorage.getItem("access_token")}
+            />
+          ) : (
+            <Button size="small" onClick={handleCTAClick}>
+              Login/Signup
+            </Button>
+          )}
         </ul>
 
         {/* Hamburger Menu Button */}
         <div className="flex gap-4 md:hidden">
-          <Button
-            className={styles.hamburger}
-            onClick={toggleMobileMenu}
-            variant="filled"
-          >
-            <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
-          </Button>
-          <Button
+          <MobileMenu 
+          id={props.id}
+          _openAllNotificationsHandler={_openAllNotificationsHandler}
+          hidecta={false}
+          ctaonclick={handleCTAClick}
+          _deleteNotificationHandler={_deleteNotificationHandler}
+          notifications={[]}
+          hideNav={hideNav}
+          showMobileSearch={false}
+          setShowMobileSearch={()=>{}}
+          setHideNav={setHideNav}
+          notOpenCount={null}
+          setShowLoginModal={authShowLogin}
+          staticnav ={true}
+          itinerary={true}
+          />
+          {!props.token?<Button
             className={styles.hamburger}
             onClick={toggleMobileMenu}
             variant="filled"
           >
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-          </Button>
+          </Button>:<ImageLoader
+          borderRadius="50%"
+          url={
+            props.image !== "null" && props.image !== null
+              ? props.image
+              : "media/icons/navigation/profile-user.png"
+          }
+          noPlaceholder={true}
+          width="48px"
+          height="48px"
+        />
+          }
         </div>
       </nav>
 
@@ -141,9 +206,34 @@ const NavigationMenu = () => {
             Get Started
           </button>
         </div>
+        <div id="login" className="width-[100%] z-[1650]">
+        <Login
+          show={props.showLogin}
+          onhide={props.authCloseLogin}
+          itinary_id={props?.itinary_id}
+          zIndex={"3300"}
+        />
+      </div>
       </div>
     </>
   );
 };
 
-export default NavigationMenu;
+const mapStateToProps = (state) => {
+  return {
+    token: state.auth.token,
+    name: state.auth.name,
+    image: state.auth.image,
+    showLogin: state.auth.showLogin,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onLogout: () => dispatch(logout.logout()),
+    authShowLogin: () => dispatch(authShowLogin()),
+    authCloseLogin: () => dispatch(authCloseLogin()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NavigationMenu);

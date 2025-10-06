@@ -56,7 +56,7 @@ const Section = (props) => {
 
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div
           style={
             isPageWide
@@ -70,7 +70,7 @@ const Section = (props) => {
         >
           <FlexBox>
             {props.isSelected ? (
-              <Cost className="font-lexend">
+              <Cost className="">
                 {props.data.cost
                   ? props.data.cost
                     ? "₹" + getIndianPrice(Math.round(props.data.cost))
@@ -78,7 +78,7 @@ const Section = (props) => {
                   : null}
               </Cost>
             ) : (
-              <Cost className="font-lexend">
+              <Cost className="">
                 {props.data.Fare
                   ? props.data.Fare.OfferedFare
                     ? "₹" +

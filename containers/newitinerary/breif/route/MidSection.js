@@ -99,7 +99,7 @@ const MidSection = (props) => {
   };
 
   return (
-    <Container className="font-lexend" hidemidsection={hidemidsection}>
+    <Container className="" hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>

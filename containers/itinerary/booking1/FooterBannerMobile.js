@@ -122,7 +122,7 @@ const Banner = (props) => {
                     </StrikedCost>
                   ) : null
                 ) : null}
-                <Cost className="font-lexend">
+                <Cost className="">
                   {"₹ " +
                     getIndianPrice(
                       Math.round(props.payment.per_person_total_cost / 100)

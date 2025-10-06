@@ -55,7 +55,7 @@ const NotFound = (props) => {
       <Container className="center-div">
         <Heading className="font-opensnans">
           <div
-            className="font-lexend"
+            className=""
             style={{
               margin: "0",
               display: "inline",
@@ -75,7 +75,7 @@ const NotFound = (props) => {
             dimensions={{ width: 800, height: 800 }}
           ></ImageLoader>
           <div
-            className="font-lexend"
+            className=""
             style={{
               margin: "0",
               display: "inline",

@@ -15,7 +15,7 @@ const RegistrationModal = (props) => {
       >
         <p
           style={{ fontWeight: "800", margin: "0", fontSize: "19px" }}
-          className="font-lexend"
+          className=""
         >
           Terms & Conditions
         </p>

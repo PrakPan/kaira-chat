@@ -30,11 +30,11 @@ const Notes = (props) => {
     )
       NotesArr.push(
         <Text
-          className={props.blur ? "font-lexend blurry-text" : "font-lexend "}
+          className={props.blur ? " blurry-text" : " "}
         >
           <b
             style={{ fontWeight: "600" }}
-            className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+            className={props.blur ? " blurry-text" : ""}
           >{`${property}: `}</b>
           {props.meta[property]}
         </Text>

@@ -35,18 +35,18 @@ const Icons= (props) => {
       <Container>
        <IconContainer className="" style={{borderStyle: 'none solid none none', borderWidth: '1px', borderColor: '#E4e4e4'}}>
             <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-            <IconText style={{fontWeight: '600'}} className="font-lexend">Ideal Duration</IconText>
+            <IconText style={{fontWeight: '600'}} className="">Ideal Duration</IconText>
             <IconText style={{fontWeight: '300'}} className="font-nunito">3 Hours</IconText>
 
        </IconContainer>
        <IconContainer style={{borderStyle: 'none solid none none', borderWidth: '1px', borderColor: '#E4e4e4'}} >
             <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-            <IconText style={{fontWeight: '600'}} className="font-lexend">Opening Time</IconText>
+            <IconText style={{fontWeight: '600'}} className="">Opening Time</IconText>
             <IconText style={{fontWeight: '300'}} className="font-nunito">8:00PM - 5:00PM</IconText>
        </IconContainer>
        <IconContainer >
             <StyledFontAwesomeIcon icon={faClock}></StyledFontAwesomeIcon>
-            <IconText style={{fontWeight: '600'}} className="font-lexend">Some Heading</IconText>
+            <IconText style={{fontWeight: '600'}} className="">Some Heading</IconText>
             <IconText style={{fontWeight: '300'}} className="font-nunito">Some Text</IconText>
        </IconContainer>
       </Container>

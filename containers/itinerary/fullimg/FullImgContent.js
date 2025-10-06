@@ -29,7 +29,7 @@ const Duration = styled.p`
 const FullImg = (props) => {
   return (
     <Container>
-      <CityHeading className="font-lexend">{props.heading}</CityHeading>
+      <CityHeading className="">{props.heading}</CityHeading>
       {props.plan ? (
         <Duration className="font-nunito">
           {props.plan.duration_number + " " + props.plan.duration_unit}

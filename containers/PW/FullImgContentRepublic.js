@@ -64,7 +64,7 @@ const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container className="font-lexend center-di ">
+    <Container className=" center-di ">
       <PaddingContianer>
         <Heading style={{ fontWeight: "800" }}>HOLI SPECIALS</Heading>
         <SubText>Avail 50% discount for Holi Dates.</SubText>

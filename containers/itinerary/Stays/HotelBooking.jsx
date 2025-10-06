@@ -45,6 +45,7 @@ const svgIcons = {
 
 
 }
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -101,6 +102,10 @@ const HotelBooking = ({
   const [showBookingModal, setShowBookingModal] = useState(false);
   
 
+  const { trackHotelCardClicked, trackHotelListClicked,trackHotelBookingAdd,trackHotelBookingDelete,trackHotelCardDetails } = useAnalytics();
+
+
+  
 
   const {
     drawer = null,
@@ -157,6 +162,7 @@ const starRating = (rating, length) => {
 
 
   const handleViewDetails = (value) => {
+    trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -187,6 +193,7 @@ const starRating = (rating, length) => {
 
   const handleChangeHotel = (e, label, value, clickType) => {
     e.stopPropagation();
+    trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
     if (token) {
       router.push(
         {

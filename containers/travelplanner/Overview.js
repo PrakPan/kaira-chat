@@ -33,7 +33,7 @@ const Overview = (props) => {
           style={{
             lineHeight: 1.58,
           }}
-          className="font-lexend"
+          className=""
         >
           <span ref={ref}>
             {more ? props.overview_text : props.overview_text.slice(0, 750)}

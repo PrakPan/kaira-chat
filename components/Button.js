@@ -39,7 +39,7 @@ const Button = React.forwardRef((props, ref) => {
         <Container
           onMouseEnter={() => setHover(true)}
           onMouseOut={() => setHover(false)}
-          className="font-lexend center-dv"
+          className=" center-dv"
           onClick={() => props.onclick(props.onclickparam)}
           style={{
             color: hover ? hovercolor : color,
@@ -65,7 +65,7 @@ const Button = React.forwardRef((props, ref) => {
         <Container
           onMouseEnter={() => setHover(true)}
           onMouseOut={() => setHover(false)}
-          className="font-lexend center-dv"
+          className=" center-dv"
           onClick={() => props.onclick(props.onclickparam)}
           style={{
             color: hover ? hovercolor : color,
@@ -92,7 +92,7 @@ const Button = React.forwardRef((props, ref) => {
         <Container
           onMouseEnter={() => setHover(true)}
           onMouseOut={() => setHover(false)}
-          className={props.blur ? "font-lexend blurry-text" : "font-lexends"}
+          className={props.blur ? " blurry-text" : "s"}
           style={{
             color: hover ? hovercolor : color,
             display: props.display ? props.display : "block",
@@ -117,7 +117,7 @@ const Button = React.forwardRef((props, ref) => {
         <Container
           onMouseEnter={() => setHover(true)}
           onMouseOut={() => setHover(false)}
-          className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+          className={props.blur ? " blurry-text" : ""}
           style={{
             color: hover ? hovercolor : color,
             display: props.display ? props.display : "block",

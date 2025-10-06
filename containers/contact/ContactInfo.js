@@ -89,7 +89,7 @@ const Contact = () => {
 
       <GridContainer>
         <AddressContainer>
-          <HeadingSmall className="font-lexend" align="center">
+          <HeadingSmall className="" align="center">
             Address
           </HeadingSmall>
 
@@ -103,7 +103,7 @@ const Contact = () => {
           <br></br>
 
           <HeadingSmall
-            className="font-lexend"
+            className=""
             align="center"
             style={{ marginTop: "1rem" }}
           >
@@ -119,7 +119,7 @@ const Contact = () => {
         </AddressContainer>
 
         <NumberContainer>
-          <HeadingSmall className="font-lexend" align="center">
+          <HeadingSmall className="" align="center">
             Reach Out
           </HeadingSmall>
 
@@ -159,7 +159,7 @@ const Contact = () => {
       </GridContainer>
 
       <AddressContainer style={{ border: "none" }}>
-        <HeadingSmall className="font-lexend" align="center">
+        <HeadingSmall className="" align="center">
           Social Media
         </HeadingSmall>
 

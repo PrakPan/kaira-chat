@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Body2M_14 } from '../new-ui/Body';
 import { MediumIndigoButton, MediumIndigoOutlinedButton } from '../new-ui/Buttons';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { capitalizeFirstLetter } from '../../utils/tailoredform';
-import { setAnytimeDate, setFixedDate, setFlexibleDate } from '../../store/actions/slideOneActions';
 import {
   isBeforeToday,
   normalizeDate,
@@ -25,7 +24,7 @@ const AirbnbCalendar = (props) => {
   const [dateType, setDateType] = useState(props.dateType)
   const [currentView, setCurrentView] = useState('calendar');
   const [hoveredDate, setHoveredDate] = useState(null);
-  
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [selectedDates, setSelectedDates] = useState({
     start: normalizeDate(props.valueStart),
     end: normalizeDate(props.valueEnd)
@@ -35,11 +34,12 @@ const AirbnbCalendar = (props) => {
   const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
 
   useEffect(() => {
-    if (selectedDates.start) {
+    if (selectedDates.start && isInitialLoad) {
       const startDateMonth = new Date(selectedDates.start.getFullYear(), selectedDates.start.getMonth(), 1);
       setCurrentMonth(startDateMonth);
+      setIsInitialLoad(false);
     }
-  }, [selectedDates.start]);
+  }, []);
 
   const dispatch=useDispatch()
   const navigateMonth = (direction) => {
@@ -266,7 +266,7 @@ const AirbnbCalendar = (props) => {
           </div>
 
           <div className='flex justify-end'>
-            <div className="border-t border-gray-200 flex gap-[20px]">
+            <div className=" flex gap-[20px]">
               <MediumIndigoOutlinedButton
                 onClick={() => {
                   setSelectedDates({ start: null, end: null });

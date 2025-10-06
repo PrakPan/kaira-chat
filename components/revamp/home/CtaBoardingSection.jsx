@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { cta } from "../assets";
 import Button from "../common/components/button";
+import Link from "next/link";
 
 const CtaBoardingSection = () => {
   return (
@@ -25,10 +26,7 @@ const CtaBoardingSection = () => {
 
           {/* Content */}
           <div className="relative z-10 text-center max-w-3xl px-6">
-            <h2
-              className="font-bold text-white mb-4 leading-tight"
-              style={{ fontSize: "40px" }}
-            >
+            <h2 className="font-bold text-white mb-4 leading-tight text-[32px] md:text-[40px]">
               Let's Turn That Wanderlust Into a{" "}
               <span className="block">Boarding Pass</span>
             </h2>
@@ -38,16 +36,18 @@ const CtaBoardingSection = () => {
               adventure. All you have to do is show up, grinning like Tazan!
             </p>
 
-            <Button
-              variant="filled"
-              size="medium"
-              onClick={() => {
-                console.log("Get Free Travel Consultation clicked");
-              }}
-              className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
-            >
-              Plan a Trip Now!
-            </Button>
+            <Link href="/new-trip">
+              <Button
+                variant="filled"
+                size="medium"
+                onClick={() => {
+                  console.log("Get Free Travel Consultation clicked");
+                }}
+                className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
+              >
+                Plan a Trip Now!
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

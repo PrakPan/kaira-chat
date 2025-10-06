@@ -15,7 +15,7 @@ const ItineraryElementM = (props) => {
   }
 
   return (
-    <div className="font-lexend">
+    <div className="">
       <div>
         <div className="flex flex-row items-start">
           <div className="flex justify-center items-center">

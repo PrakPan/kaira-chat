@@ -605,7 +605,7 @@ const ItineraryPoiElement = (props) => {
         anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
-        className="font-lexend"
+        className=""
         onHide={() => setShowDrawer(false)}
         mobileWidth={"100vw"}
         width="50vw"

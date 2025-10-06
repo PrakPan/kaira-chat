@@ -62,7 +62,7 @@ const FlickityCarousel = (props) => {
             style={{ bottom: "0", left: "0", padding: "0", width: "100%" }}
           >
             <RatingContainer
-              className="font-lexend"
+              className=""
               style={{ backgroundColor: color }}
             >
               <FontAwesomeIcon
@@ -71,7 +71,7 @@ const FlickityCarousel = (props) => {
               ></FontAwesomeIcon>
               {props.review_score + "/10"}
             </RatingContainer>
-            <ReviewCount className="font-lexend">
+            <ReviewCount className="">
               {props.review_count + " Reviews"}
             </ReviewCount>
           </Carousel.Caption>

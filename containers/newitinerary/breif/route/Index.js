@@ -378,6 +378,7 @@ const Route = (props) => {
         console.log("Keys", key);
         locationsArr.push(
           <MidSectionV2
+            transferId={key}
             loadbookings={props?.loadbookings}
             pinColour={
               i === 0 || i === props?.CityData.length - 1
@@ -430,7 +431,7 @@ const Route = (props) => {
   return (
     <Container>
       <div className="flex flex-row justify-between items-end">
-        <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
+        <div className=" mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
         {transfers_status === "SUCCESS" ? (

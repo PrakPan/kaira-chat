@@ -87,7 +87,7 @@ const RouteEditSection = (props) => {
             className="w-full h-full relative  flex flex-col bg-white items-center  overflow-y-auto hide-scrollbar"
         >
 
-            <div className="w-full h-full md:px-5 hide-scrollbar overflow-y-auto py-5">
+            <div className="w-full h-full  hide-scrollbar overflow-y-auto ">
 
                 {!isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges })}
 
@@ -168,17 +168,20 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 export const EditDestinations = (props) => {
     const [popUp, setPopUp] = useState(false);
     const [newDestination, setNewDestination] = useState(null);
+    const isDesktop = useMediaQuery("(min-width:768px)");
+
     return (
         <div className="w-full md:w-[50%] lg:w-[55%] lg:p-4 font-inter font-normal flex flex-col items-start justify-start pb-[150px] gap-3">
             <div className="w-full flex flex-row items-start justify-between">
-                <div className="text-[20px] pb-3">Route Preview</div>
+                <div className="relative text-[20px] pb-3">Route Preview</div>
                 <div
                     onClick={() => props?.setIsAddMode(true)}
-                    className="relative text-blue cursor-pointer underline text-sm"
+                    className=" text-blue cursor-pointer underline Body1R_16"
                 >
                     + Add Destination
-                    {props.isAddMode == true && (
-                        <div className="text-black absolute top-[100px] -left-[200px] w-[300px]">
+                </div>
+                {(props.isAddMode === true) && (
+                        <div className={`text-black absolute ${isDesktop ? "top-[120px] left-[180px]" : "top-[350px] left-[80px]"}  w-[300px] z-[1000]`}>
                             <DestinationPopUp
                                 destinationRef={props.destinationRef}
                                 cityData={{}} // empty for new
@@ -190,13 +193,13 @@ export const EditDestinations = (props) => {
                                 setDestinationChanges={props.setDestinationChanges}
                                 onSetDestination={(dest) => setNewDestination(dest)}
                                 onClose={() => {
-                                    props.setIsAddMode(false)
-                                    console.log("close add destination called close")
+                                    props?.setIsAddMode(false)
+                                    console.log("close add destination called close: ",props.isAddMode)
                                 }}
+                                setPopUp={props.setIsAddMode} // Add this to prevent conflicts
                             />
                         </div>
                     )}
-                </div>
             </div>
 
             {props.destinations.length ? (
@@ -377,12 +380,7 @@ export const Destination = (props) => {
                 />
             )}
 
-            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10"
-             onClick={(e) => {
-                e.stopPropagation();  
-               handleEditDestination(setPopUp)
-           }}
-            >
+            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
                 <div className="flex flex-row items-center gap-3">
                     {!(startingCity || endingCity) && (
                         <div className="text-gray-400 cursor-grab active:cursor-grabbing">
@@ -409,11 +407,11 @@ export const Destination = (props) => {
                         )}
 
                         <div className="flex flex-row items-center justify-center gap-3">
-                            <div className="text-base lg:text-[16px] cursor-pointer font-medium">
+                            <div className=" Body1M_16  cursor-pointer">
                                 {cityData.city_name || cityData.name || cityData.text}
                             </div>
                             {!(startingCity || endingCity) && cityData?.nights && (
-                                <div className="text-sm text-gray-500">
+                                <div className="Body1R_16 text-gray-500">
                                     <span className="text-[16px] text-gray-500">I</span> &nbsp;
                                     {`${cityData.nights} ${cityData.nights > 1 ? "Nights" : "Night"}`}
                                 </div>
@@ -422,21 +420,19 @@ export const Destination = (props) => {
                     </div>
                 </div>
 
-                {/* Edit/Delete */}
-                {(
-                    <div className="flex flex-row items-center gap-2">
+                {!startingCity && !endingCity && (                    <div className="flex flex-row items-center gap-2">
                         <div
                             onClick={(e) => {
-                                 e.stopPropagation();  
-                                handleEditDestination(setPopUp)
-                            }
-                            }
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleEditDestination(setPopUp);
+                            }}
                             className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
                         >
-                            <MdOutlineEdit size={18} color={"#3B82F6"} />
+                            <MdOutlineEdit size={24} color={"#3B82F6"} />
                         </div>
 
-                        {!startingCity && !endingCity && (
+                        
                             <div
                                 onClick={(e) =>
                                     handleRemoveDestination(
@@ -450,11 +446,11 @@ export const Destination = (props) => {
                                 }
                                 className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
                             >
-                                <MdOutlineDelete size={18} color="#EF4444" />
+                                <MdOutlineDelete size={24} color="#EF4444" />
                             </div>
-                        )}
                     </div>
-                )}
+                                            )}
+
             </div>
 
             {/* Dotted line */}
@@ -511,6 +507,14 @@ export const DestinationPopUp = (props) => {
         }
     }, [debouncedSearch, startingCity, endingCity]);
 
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else if (setPopUp) {
+            setPopUp(false);
+        }
+    };
+
     return (
         <div
             ref={destinationRef}
@@ -523,7 +527,10 @@ export const DestinationPopUp = (props) => {
                 <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
 
                 <RxCrossCircled
-                    onClick={onClose}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleClose();
+                    }}
                     className="text-2xl cursor-pointer absolute right-2 top-2"
                 />
 
@@ -628,20 +635,18 @@ export const DestinationPopUp = (props) => {
                                 setDestinationChanges: setDestinationChanges || (() => { }),
                                 updateDestinationsDates,
                                 updateLatLong,
-                                setPopUp: props.setPopUp,
+                                setPopUp: null, // Don't auto-close, let handleClose handle it
                                 isAddMode,
                             });
                         }
 
                         // Close popup
-                        if (props.setPopUp) props.setPopUp(false);
-                        if (props.onClose) props.onClose();
+                        handleClose();
                     }}
                     className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
                 >
                     Update
                 </button>
-
 
             </div>
         </div>

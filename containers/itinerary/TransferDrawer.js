@@ -544,7 +544,7 @@ const TransferDrawer = ({
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={handleClose}
       mobileWidth="100vw"
       width={"50vw"}

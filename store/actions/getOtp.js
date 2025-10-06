@@ -4,7 +4,7 @@ import { setUserDetails } from "./auth";
 import * as ga from "../../services/ga/Index";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
 import * as Sentry from "@sentry/nextjs";
-
+import { openNotification } from "./notification";
 //Show spinner
 export const authStartLoading = () => {
   return {
@@ -80,8 +80,14 @@ export const getotp = (data) => {
       })
       .catch((err) => {
         if (err?.response?.status === 400) {
-          if (err.response.data?.message) {
-            dispatch(authMobileFail(err.response.data.message));
+          if (err.response.data?.errors) {
+            console.log("err.response.data.errors: ", err.response.data.errors[0].username[0])
+            dispatch(authMobileFail(err.response.data.errors[0].username[0]));
+            dispatch(openNotification({
+              type: "error",
+              text: err.response.data.errors[0].username[0],
+              heading: "Error!",
+            }))
           } else {
             dispatch(authMobileFail(err.response.data.errors[0].username[0])); //Invalid mobile
             Sentry.captureException(
@@ -94,7 +100,7 @@ export const getotp = (data) => {
           dispatch(authMobileFail("OTP could not be sent"));
           Sentry.captureException(
             new Error(
-              `[LogIn Error]: ${err.response.config.url} : ${err.response.config.data}`
+              `[LogIn Error]: ${err?.response?.config?.url} : ${err?.response?.config?.data}`
             )
           );
         }

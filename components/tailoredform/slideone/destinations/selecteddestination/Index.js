@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { MdOutlineLocationOn } from "react-icons/md";
 import SearchInputStarting from "../searchstarting/Input";
 import SearchInput from "../search/Index";
 import { BiTargetLock } from "react-icons/bi";
@@ -8,19 +7,6 @@ import { AiFillDelete } from "react-icons/ai";
 import { StyledContainer } from "../../../../styled-components/TailoredForm";
 import Image from "next/image";
 
-const Container = styled.div`
-  margin-bottom: 0.25rem;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.55rem 0.35rem;
-  background-color: white;
-  position: relative;
-  @media screen and (min-width: 768px) {
-    padding: 0.55rem 0.55rem;
-  }
-`;
 
 const RightContainer = styled.div`
   line-height: 1;
@@ -70,44 +56,28 @@ const SelectedDestination = (props) => {
       }}
     >
       <div
-        className="hover-pointer text-[0.85rem] flex flex-row items-center justify-between w-full"
+        className="hover-pointer text-[0.85rem] flex flex-row items-center gap-[14px] w-full"
         selectlocation={props.selectlocation}
       >
         {props.selectedCity?.name ? (
-          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
-          
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />   
         ) : (
           <BiTargetLock
-            style={{
-              lineHeight: "1",
-              fontSize: "1.25rem",
-            }}
-          ></BiTargetLock>
+            height={26}
+            width={26}
+            className="ml-[4px] h-[26px] w-[26px]"
+            />
         )}
 
         {props.selectlocation ? (
           !props.showSearchStarting ? (
             !props.startingLocation ? (
-              <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate">Delhi, IN</div>
-                <span
-                  style={{
-                    opacity: "0.3",
-                  }}
-                >
-                  Departing from
-                </span>
+              <div className="flex flex-row gap-2 justify-between">
+                <div className="truncate Body2M_14">Delhi, IN</div>
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate">{props.startingLocation.name}</div>
-                <span
-                  style={{
-                    opacity: "0.3",
-                  }}
-                >
-                  Departing
-                </span>
+                <div className="truncate Body2M_14">{props.startingLocation.name}</div>
               </div>
             )
           ) : (
@@ -162,21 +132,18 @@ const SelectedDestination = (props) => {
         )}
       </div>
 
-      {!props.selectlocation ? (
         <RightContainer className="hover-pointer">
-          {props.setDeletedId ? (
-            <AiFillDelete
+          <Image
+            src="/close.svg"
+            width={18}
+            height={18}
               onClick={() => {
-                props.setDeletedId(props.inbox_id);
+                props.setStartingLocation(null);
               }}
               className="hover-pointer"
               style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
-            ></AiFillDelete>
-          ) : null}
+            />
         </RightContainer>
-      ) : (
-        <RightContainer className="hover-pointer"></RightContainer>
-      )}
     </StyledContainer>
   );
 };

@@ -25,7 +25,7 @@ const MobileBar = (props) => {
       onClick={props.setPannelOpen}
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      <SearchText className="font-lexend">
+      <SearchText className="">
         {isPageLoaded ? (
           <FontAwesomeIcon
             icon={faSearch}

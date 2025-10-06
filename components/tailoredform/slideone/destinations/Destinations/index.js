@@ -3,24 +3,9 @@ import styled from "styled-components";
 import { MdOutlineLocationOn } from "react-icons/md";
 import SearchInputStarting from "../searchstarting/Input";
 import SearchInput from "../search/Index";
-import { BiTargetLock } from "react-icons/bi";
-import { AiFillDelete } from "react-icons/ai";
 import { StyledContainer } from "../../../../styled-components/TailoredForm";
 import Image from "next/image";
-
-const Container = styled.div`
-  margin-bottom: 0.25rem;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.55rem 0.35rem;
-  background-color: white;
-  position: relative;
-  @media screen and (min-width: 768px) {
-    padding: 0.55rem 0.55rem;
-  }
-`;
+import { useSelector } from "react-redux";
 
 const RightContainer = styled.div`
   line-height: 1;
@@ -33,7 +18,8 @@ const EndDestination = (props) => {
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
   const [showDestination, setShowDestination] = useState(true);
-  console.log("props in end destinations is: ",props?.selectedCity?.name)
+  const hotLocations = useSelector((state) => state.HotLocationSearch);
+
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
   };
@@ -60,7 +46,7 @@ const EndDestination = (props) => {
             _handleFocusSearch();
           }
       }
-      className="font-lexend hover-pointer"
+      className=" hover-pointer"
       style={{
         borderRadius: "8px",
         border:
@@ -75,35 +61,23 @@ const EndDestination = (props) => {
       >
         {props.selectedCity?.name ? (
           <>
-            <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
+            {props?.selectedCity?.name && <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />}  
           </>
         ) : (
-          <MdOutlineLocationOn style={{ lineHeight: "1", fontSize: "1.25rem" }} />
+          <MdOutlineLocationOn className="h-[26px] w-[32px]" />
         )}
 
         {props.selectlocation ? (
           !props.showSearchStarting ? (
             !props.startingLocation ? (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate">Delhi, IN</div>
-                <span
-                  style={{
-                    opacity: "0.3",
-                  }}
-                >
-                  Departing from
-                </span>
+                <div className="truncate Body2M_14">Delhi, IN</div>
+                
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate">{props.startingLocation.name}</div>
-                <span
-                  style={{
-                    opacity: "0.3",
-                  }}
-                >
-                  Departing
-                </span>
+                <div className="truncate Body2M_14">{props.startingLocation.name}</div>
+                
               </div>
             )
           ) : (
@@ -122,15 +96,7 @@ const EndDestination = (props) => {
         ) : props.destination && showDestination ? (
           <div className="w-[90%] flex flex-row gap-2 justify-between">
             <div className="truncate">{props.destination}</div>
-            {!props.setDeletedId && (
-              <span
-                style={{
-                  opacity: "0.3",
-                }}
-              >
-                Destination
-              </span>
-            )}
+            
           </div>
         ) : (
             <SearchInput
@@ -155,24 +121,27 @@ const EndDestination = (props) => {
               eventDates={props.eventDates}
               updatedData={props.updatedData}
               tailoredFormModal={props.tailoredFormModal}
+              hotlocations={props.hotlocations}
             ></SearchInput>
         )}
       </div>
 
       {!props.selectlocation ? (
         <RightContainer className="hover-pointer">
-          {props.setDeletedId ? (
-            <Image
+            {props.setDeletedId && <Image
             src="/close.svg"
             width={18}
             height={18}
               onClick={() => {
-                props.setDeletedId(props.inbox_id);
+                (props.index === 0 && props.size ==1)? props._updateDestinationHandler(
+                  null,
+                  props.inbox_id,
+                  null
+                ) : props.setDeletedId(props.inbox_id);
               }}
               className="hover-pointer"
               style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
-            />
-          ) : null}
+            />}
         </RightContainer>
       ) : (
         <RightContainer className="hover-pointer"></RightContainer>

@@ -37,7 +37,7 @@ const Pax = (props) => {
         widthmobile="2rem"
         height="auto"
       ></ImageLoader>
-      <div className="font-lexend">
+      <div className="">
         <PaxText>{props.number_of_adults}</PaxText>
         <PaxSubtext>Travelers</PaxSubtext>
       </div>

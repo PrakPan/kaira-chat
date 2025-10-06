@@ -178,15 +178,15 @@ const LocationsContainer = (props) => {
   return (
     <AbsoluteContainer className='border' top={props.top}>
       <TbArrowBack onClick={() => props.setShowCities(false)} className="hover-pointer" style={{ marginTop: '4px', fontSize: '1rem'}}></TbArrowBack>
-      {/* <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-lexend text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p> */}
-      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className="font-lexend text-center">Top Locations</p>
+      {/* <p style={{fontSize: '0.85rem', fontWeight: '600'}} className=" text-center">{props.destination ? "Cities around " + props.destination : "Top Locations"}</p> */}
+      <p style={{fontSize: '0.85rem', fontWeight: '600'}} className=" text-center">Top Locations</p>
    {/* <Search _showSearchedLocations={_showSearchedLocations}></Search> */}
     <LocationContainer  >
       
                 { !searchedLocationsJSX.length ?  locationsJSX.length ? locationsJSX : null : searchedLocationsJSX}
                 { !searchedLocationsJSX.length ?  props.CITIES? props.CITIES.length && showMore ? moreLocationsJSX : null : null : null}
    </LocationContainer>
-   {moreLocationsJSX.length && !showMore? <div className='font-lexend text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
+   {moreLocationsJSX.length && !showMore? <div className=' text-center hover-pointer' style={{fontSize: '0.75rem'}} onClick={() => setShowMore(!showMore)}>View All</div> : null}
    <div style={{display: 'flex', justifyContent: 'flex-end'}}><Button align="right" padding="0.5rem 2rem" fontWeight="600" margin="1rem 0 0 0" borderRadius="5px" borderWidth="0" bgColor="#f7e700"  onclick={() => props.setShowCities(false)}>
                 {props.selectedCities ? props.selectedCities.length ? 'Continue' : 'Inspire Me' :'Inspire Me'}
                 </Button></div>  

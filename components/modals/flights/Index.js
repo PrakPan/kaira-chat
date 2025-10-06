@@ -414,7 +414,7 @@ const Booking = (props) => {
         anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
-        className="font-lexend"
+        className=""
         show={props.showFlightModal}
         onHide={props.setHideFlightModal}
         mobileWidth={"100%"}
@@ -465,7 +465,7 @@ const Booking = (props) => {
                       margin: "auto",
                       height: isPageWide ? "80vh" : "40vh",
                     }}
-                    className="center-div font-lexend"
+                    className="center-div "
                   >
                     <LoadingLottie
                       height={"5rem"}
@@ -477,7 +477,7 @@ const Booking = (props) => {
                 ) : null}
 
                 {isFetchingError.error ? (
-                  <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+                  <div className="flex flex-row items-center justify-center h-[80vh] text-center ">
                     {isFetchingError.errorMsg}
                   </div>
                 ) : !noResults && !updateLoadingState && !unauthorized ? (
@@ -539,7 +539,7 @@ const Booking = (props) => {
                 ) : null}
 
                 {noResults && !unauthorized ? (
-                  <p className="font-lexend text-center">
+                  <p className=" text-center">
                     Oops, we couldn't find what you were searching!
                   </p>
                 ) : null}

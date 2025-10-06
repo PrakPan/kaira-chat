@@ -291,7 +291,7 @@ const Section = (props) => {
 
   return (
     <Container>
-      <Heading className="font-lexend flex flex-col items-start">
+      <Heading className=" flex flex-col items-start">
         <div className="flex flex-row items-center gap-2">
           <IoMdClose
             className="hover-pointer"
@@ -376,14 +376,14 @@ const Section = (props) => {
           anchor={"right"}
           backdrop
           style={{ zIndex: 1502 }}
-          className="font-lexend"
+          className=""
           show={props.showFilter}
           onHide={() => props.setShowFilter(false)}
           mobileWidth={"100%"}
           width={"50%"}
         >
           <Container>
-            <Heading className="font-lexend">
+            <Heading className="">
               <IoMdClose
                 className="hover-pointer"
                 onClick={() => props.setShowFilter(false)}

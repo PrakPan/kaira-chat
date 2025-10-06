@@ -215,7 +215,7 @@ const Booking = (props) => {
                 {showPoiDetails ? (
                   <div
                     onClick={() => setShowPoiDetails(false)}
-                    className="font-lexend"
+                    className=""
                   >
                     Back to results
                   </div>
@@ -255,7 +255,7 @@ const Booking = (props) => {
                         margin: "auto",
                         height: isPageWide ? "80vh" : "40vh",
                       }}
-                      className="text-center font-lexend center-div"
+                      className="text-center  center-div"
                     >
                       <Spinner></Spinner>Please wait while we update your plan
                     </div>
@@ -268,7 +268,7 @@ const Booking = (props) => {
                     </OptionsContainer>
                   ) : null}
                   {noResults ? (
-                    <p className="font-lexend text-center">
+                    <p className=" text-center">
                       Oops, we couldn't find what you were searching but we are
                       already adding new activities to our database everyday!
                     </p>
@@ -282,7 +282,7 @@ const Booking = (props) => {
                   {isPageWide ? (
                     <BackToResults
                       onClick={() => setShowPoiDetails(false)}
-                      className="font-lexend"
+                      className=""
                     >
                       <FontAwesomeIcon
                         style={{ marginRight: "0.5rem" }}

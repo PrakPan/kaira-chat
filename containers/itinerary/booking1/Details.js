@@ -120,7 +120,7 @@ const Details = (props) => {
             fontWeight: "400",
             letterSpacing: "1px",
           }}
-          className="font-lexend text-enter"
+          className=" text-enter"
         >
           STARTING POINT?
         </p>
@@ -130,7 +130,7 @@ const Details = (props) => {
             fontWeight: "400",
             letterSpacing: "1px",
           }}
-          className="font-lexend text-enter"
+          className=" text-enter"
         >
           HOW MANY PEOPLE?
         </p>
@@ -165,7 +165,7 @@ const Details = (props) => {
             fontWeight: "400",
             letterSpacing: "1px",
           }}
-          className="font-lexend text-enter"
+          className=" text-enter"
         >
           WHEN WILL YOU LEAVE?
         </p>
@@ -174,7 +174,7 @@ const Details = (props) => {
           selectedDate={details.date}
         />
       </div>
-      <INR className="font-lexend">
+      <INR className="">
         <FontAwesomeIcon icon={faRupeeSign} />
         {" " + amount / 100}
       </INR>

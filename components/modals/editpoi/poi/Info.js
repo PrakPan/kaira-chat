@@ -45,14 +45,14 @@ const Accommodation = (props) => {
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}
       >
-        <Name className="font-lexend">{props.heading}</Name>
+        <Name className="">{props.heading}</Name>
         <StyledInfoIcon
           onClick={() => props._openPoiModal(props.data.activity_data.poi)}
         ></StyledInfoIcon>
       </div>
       {props.text ? (
         <Description
-          className="font-lexend"
+          className=""
           onClick={() => props._openPoiModal(props.data.activity_data.poi)}
         >
           {isPageWide && props.text.length

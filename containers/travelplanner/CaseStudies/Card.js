@@ -126,7 +126,7 @@ const CardContainer = (props) => {
                   ></AiFillStar>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <CardSubHeading className="font-lexend">
+                  <CardSubHeading className="">
                     {props.duration + " • " + props.destination}
                   </CardSubHeading>
                 </div>
@@ -179,7 +179,7 @@ const CardContainer = (props) => {
               marginTop: "5px",
               fontWeight: 700,
             }}
-            className="font-lexend"
+            className=""
           >
             {props.heading}
           </H9>
@@ -220,7 +220,7 @@ const CardContainer = (props) => {
             </div>
 
             <div style={{ display: "flex", alignItems: "center" }}>
-              <CardSubHeading className="font-lexend">
+              <CardSubHeading className="">
                 {props.duration + " • " + props.destination}
               </CardSubHeading>
             </div>
@@ -246,7 +246,7 @@ const CardContainer = (props) => {
               lineHeight: 1.5,
               margin: "0",
             }}
-            className="font-lexend"
+            className=""
           >
             {props.text}
           </H9>

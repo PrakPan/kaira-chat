@@ -286,7 +286,7 @@ const Day_I_ContainerM = (props) => {
   divide(props.Days.slab_elements, Arslab_elements);
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <div
         style={{ paddingTop: "4px", display: "flex", alignItems: "center" }}
         className="pb-4 justify-between"

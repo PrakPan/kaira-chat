@@ -85,13 +85,13 @@ const PartnerWith = (props) => {
 
         <Card className="center-div" style={{ padding: "1rem" }}>
           <div>
-            <ImageHeading className="font-lexend">
+            <ImageHeading className="">
               {props.content[i].name}
             </ImageHeading>
             <QuoteContainer>
               <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
             </QuoteContainer>
-            <Text className="font-lexend">{props.content[i].review}</Text>
+            <Text className="">{props.content[i].review}</Text>
             <PlanDetails className="font-nunito">
               {props.content[i].text}
             </PlanDetails>
@@ -129,7 +129,7 @@ const PartnerWith = (props) => {
 
         <Card className="center-div">
           <div>
-            <ImageHeading className="font-lexend">
+            <ImageHeading className="">
               {props.content[1].name}
             </ImageHeading>
 
@@ -137,7 +137,7 @@ const PartnerWith = (props) => {
               <QuoteContainer>
                 <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
               </QuoteContainer>
-              <Text className="font-lexend">{props.content[1].review}</Text>
+              <Text className="">{props.content[1].review}</Text>
             </ReviewContainer>
 
             <PlanDetails className="font-nunito">
@@ -164,14 +164,14 @@ const PartnerWith = (props) => {
 
         <Card className="center-div">
           <div>
-            <ImageHeading className="font-lexend">
+            <ImageHeading className="">
               {props.content[0].name}
             </ImageHeading>
             <ReviewContainer>
               <QuoteContainer>
                 <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
               </QuoteContainer>
-              <Text className="font-lexend">{props.content[0].review}</Text>
+              <Text className="">{props.content[0].review}</Text>
             </ReviewContainer>
             <PlanDetails className="font-nunito">
               {props.content[0].text}
@@ -211,14 +211,14 @@ const PartnerWith = (props) => {
 
         <Card className="center-div">
           <div>
-            <ImageHeading className="font-lexend">
+            <ImageHeading className="">
               {props.content[2].name}
             </ImageHeading>
             <ReviewContainer>
               <QuoteContainer>
                 <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
               </QuoteContainer>
-              <Text className="font-lexend">{props.content[2].review}</Text>
+              <Text className="">{props.content[2].review}</Text>
             </ReviewContainer>
             <PlanDetails className="font-nunito">
               {props.content[2].text}
@@ -244,14 +244,14 @@ const PartnerWith = (props) => {
 
         <Card className="center-div">
           <div>
-            <ImageHeading className="font-lexend">
+            <ImageHeading className="">
               {props.content[3].name}
             </ImageHeading>
             <ReviewContainer>
               <QuoteContainer>
                 <ImQuotesLeft style={{ marginBottom: "0.5rem" }} />
               </QuoteContainer>
-              <Text className="font-lexend">{props.content[3].review}</Text>
+              <Text className="">{props.content[3].review}</Text>
             </ReviewContainer>
             <PlanDetails className="font-nunito">
               {props.content[3].text}

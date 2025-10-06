@@ -5,9 +5,9 @@ import Result from "./Result";
 
 const AbsoluteContainer = styled.div`
   background-color: white;
-  padding: 0 0.5rem;
+  padding: 20px;
   position: absolute;
-  top: ${(props) => props.top};
+  top: 53px;
   width: 100%;
   left: 0;
   z-index: 1500;
@@ -15,7 +15,6 @@ const AbsoluteContainer = styled.div`
     props.tailoredFormModal &&
     `
     min-height: 100px;
-    max-height: 250px;
     overflow: auto;
     `}
 `;
@@ -29,7 +28,6 @@ const Heading = styled.p`
   align-items: center;
   text-align: center;
   text-transform: uppercase;
-  margin: 1rem;
   color: #7a7a7a;
   margin-left: 0.2rem;
 `;
@@ -39,8 +37,7 @@ const skeleton = (
     style={{
       display: "grid",
       gridTemplateColumns: "34px 1fr",
-      gap: "12px",
-      marginBlock: "1rem",
+      gap: "16px",
     }}
   >
     <SkeletonCard borderRadius="100%"></SkeletonCard>
@@ -85,7 +82,7 @@ const SearchResults = (props) => {
       tailoredFormModal={props.tailoredFormModal}
     >
       {/* {props.hotLocations && props?.results?.length ? (
-        <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
+        <Heading className="">POPULAR DESTINATIONS</Heading>
       ) : null} */}
       {props?.results?.length ? (
         props?.results?.map((result, i) => {

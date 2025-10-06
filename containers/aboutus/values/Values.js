@@ -35,26 +35,26 @@ const HowItWorksContainer = styled.div`
 `;
 
 const HowitWorksHeadingsArr = [
-  <HowItWorksHeading className="font-lexend">Innovate</HowItWorksHeading>,
+  <HowItWorksHeading className="">Innovate</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-lexend">Improve</HowItWorksHeading>,
+  <HowItWorksHeading className="">Improve</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-lexend">Interact</HowItWorksHeading>,
+  <HowItWorksHeading className="">Interact</HowItWorksHeading>,
 ];
 
 const HowitWorksContentsArr = [
-  <HowItWorksText className="font-lexend">
+  <HowItWorksText className="">
     We aim to create a highly intelligent and user-friendly platform that helps
     every traveler to understand, plan, and book a travel experience and
     interact with fellow travelers and guides.
   </HowItWorksText>,
 
-  <HowItWorksText className="font-lexend">
+  <HowItWorksText className="">
     We aim to improve a traveler’s journey by giving them a one-stop solution
     for each of their travel needs with complete transparency of prices.
   </HowItWorksText>,
 
-  <HowItWorksText className="font-lexend">
+  <HowItWorksText className="">
     We aim to interact and connect with every traveler and to build diverse
     experiences for everyone irrespective of their age, gender, financial
     conditions, or disabilities.
@@ -69,7 +69,7 @@ const Values = () => {
       <>
         <Heading
           aligndesktop="center"
-          className="font-lexend text-center"
+          className=" text-center"
           align="center"
           bold
           margin="3.5rem"
@@ -138,7 +138,7 @@ const Values = () => {
     return (
       <div>
         <Heading
-          className="font-lexend text-center"
+          className=" text-center"
           bold
           align="center"
           margin="1.5rem"

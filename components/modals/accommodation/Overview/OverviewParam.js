@@ -198,13 +198,13 @@ const OverviewParam = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      className="font-lexend"
+      className=""
       onHide={props.onHide}
       width={"50vw"}
       mobileWidth={"100vw"}
     >
     <Container>
-      <BackContainer className=" font-lexend">
+      <BackContainer className=" ">
         <BackArrow handleClick={props.onHide} />
       </BackContainer>
       <FlexBox>
@@ -650,7 +650,7 @@ const OverviewParam = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 View Gallery
               </PhotosButton>
@@ -893,7 +893,7 @@ const OverviewParam = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 All Photos
               </PhotosButton>

@@ -143,7 +143,7 @@ const UserDashboard = (props) => {
         </div>
 
         {isPageWide && !myPlansArr.length && !loading ? (
-          <NoPlans className="font-lexend">
+          <NoPlans className="">
             You don't have any plans yet.{" "}
             <a
               onClick={() => openTailoredModal(router)}
@@ -156,7 +156,7 @@ const UserDashboard = (props) => {
 
         {!isPageWide && !myPlansArr.length && !loading ? (
           <>
-            <NoPlans className="font-lexend">
+            <NoPlans className="">
               You don't have any plans yet.{" "}
             </NoPlans>
             <a

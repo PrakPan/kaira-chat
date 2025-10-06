@@ -21,7 +21,7 @@ const TextBox = (props) => {
       list.push(<Li className="font-nunito">{props.data[i]}</Li>);
     }
     return (
-      <div className="font-lexend">
+      <div className="">
         <ul>{list}</ul>
       </div>
     );

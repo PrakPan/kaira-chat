@@ -64,11 +64,11 @@ const Testimonial = (props) => {
         dimensions={{ width: 900, height: 900 }}
       ></ImageLoader>
 
-      <CardHeading className="font-lexend text-center">
+      <CardHeading className=" text-center">
         {props.heading}
       </CardHeading>
 
-      <CardSubHeading className="font-lexend text-center">
+      <CardSubHeading className=" text-center">
         {props.duration + " | " + props.destination}
       </CardSubHeading>
 

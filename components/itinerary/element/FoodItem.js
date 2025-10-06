@@ -38,10 +38,10 @@ const FoodData = (props) => {
         ></ImageLoader>
       </div>
       <div>
-        <Heading className="font-lexend">
+        <Heading className="">
           {props.data ? props.data.name : null}
         </Heading>
-        <Text className="font-lexend">
+        <Text className="">
           {props.data ? props.data.description.substring(0, 150) + "..." : null}
         </Text>
       </div>

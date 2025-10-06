@@ -26,7 +26,7 @@ const FAQs = (props) => {
         >
           <Typography
             content={"span"}
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "600" }}
           >
             {props.faqs[i].question}

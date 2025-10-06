@@ -19,7 +19,7 @@ const Location = styled.p`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <Location className={props.data.user_selected ? "" : "blurry-text"}>
           {props.data.city}
         </Location>

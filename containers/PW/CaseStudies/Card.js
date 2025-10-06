@@ -31,7 +31,7 @@ const CardContainer = (props) => {
         style={{ fontSize: "1.25rem", marginLeft: "-0rem" }}
       ></ImQuotesLeft>
       <CardListItem>{props.text}</CardListItem>
-      <CardHeading className="font-lexend">{props.heading}</CardHeading>
+      <CardHeading className="">{props.heading}</CardHeading>
     </Card>
   );
 };

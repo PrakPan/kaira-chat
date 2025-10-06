@@ -548,7 +548,7 @@ const TransfersContainer = (props) => {
     <Container id="transfers">
       <div
         id="Transfer_Container"
-        className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
+        className="cursor-pointer  mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
       >
         Transfers
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>

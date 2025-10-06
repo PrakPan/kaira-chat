@@ -66,11 +66,11 @@ const Cart = (props) => {
             borderRadius="5px"
             height={"100%"}
           ></ImageLoader>
-          <AbsoluteContainer className="font-lexend center-div text-center">
-            <Heading className="font-lexend">
+          <AbsoluteContainer className=" center-div text-center">
+            <Heading className="">
               {props.plan ? (props.plan.name ? props.plan.name : null) : null}
             </Heading>
-            <Subheading className="font-lexend">
+            <Subheading className="">
               {props.plan
                 ? props.plan.duration_number
                   ? props.plan.duration_number + " " + props.plan.duration_unit

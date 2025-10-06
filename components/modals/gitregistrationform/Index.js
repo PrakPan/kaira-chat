@@ -101,7 +101,7 @@ const RegistrationModal = (props) => {
 
             <p
               style={{ fontWeight: "800", margin: "0", fontSize: "19px" }}
-              className="font-lexend"
+              className=""
             >
               Confirm and Pay
             </p>
@@ -117,7 +117,7 @@ const RegistrationModal = (props) => {
             ></Cart>
 
             <p
-              className="font-lexend text-center"
+              className=" text-center"
               style={{
                 fontWeight: "500",
                 margin: "1rem 0 0 0",

@@ -25,7 +25,7 @@ const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <div className="flex flex-row items-center gap-2">
         <IoMdClose
           className="hover-pointer"

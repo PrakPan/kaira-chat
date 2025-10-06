@@ -202,7 +202,7 @@ const Option = (props) => {
               margin: "0.5rem 0 0 0",
               fontSize: "0.85rem",
             }}
-            className="font-lexend"
+            className=""
           >
             <b>{props.heading}</b>
           </p>
@@ -215,7 +215,7 @@ const Option = (props) => {
               fontSize: "0.85rem",
               fontWeight: "500",
             }}
-            className="font-lexend"
+            className=""
           >
             {props.heading}
           </p>
@@ -228,7 +228,7 @@ const Option = (props) => {
             letterSpacing: "1px",
             fontSize: "0.75rem",
           }}
-          className="font-lexend"
+          className=""
         >
           {props.text}
         </p>

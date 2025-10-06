@@ -8,6 +8,7 @@ import usePageLoaded from "../custom hooks/usePageLoaded";
 import { FaBell, FaUser } from "react-icons/fa";
 import { MdOutlineLogout, MdAssignment } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
+import Image from "next/image";
 
 
 const ProfileList = styled.span`
@@ -58,7 +59,8 @@ const ProfileContainer = styled.div`
     top: 3rem;
     border-radius: 1rem !important;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    left: -100%;
+    left: 50%;
+    transform: translateX(-50%);
     padding: 0rem 1rem 1rem 1rem;
     border-radius: 0.5rem;
     z-index: 80;
@@ -101,9 +103,19 @@ const ProfileDropDown = (props) => {
       showProfileList={props.showDropDownProfileList}
       showProfileListMobile={props.showDropDownProfileListMobile}
     >
-      <Link onClick={()=>{props.authShowLogin}}>
+      <button 
+        onClick={() => props.authShowLogin()} 
+        style={{ 
+          background: 'none', 
+          border: 'none', 
+          padding: 0, 
+          cursor: 'pointer',
+          width: '100%',
+          textAlign: 'left'
+        }}
+      >
         <ProfileList>Login</ProfileList>
-      </Link>
+      </button>
     </ProfileContainer>
   );
 
@@ -114,12 +126,11 @@ const ProfileDropDown = (props) => {
         style={{
           backgroundColor:
             props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
-          color: "rgba(0,0,0,0.7)",
         }}
         showProfileList={props.showDropDownProfileList}
       >
         <ProfileList style={{ borderStyle: "none" }}>
-          <FaUser /> <div>{"Hi " + firstname}</div>
+          <FaUser /> <div>My Profile</div>
         </ProfileList>
         <ProfileList
           style={{ display: "grid", gridTemplateColumns: "auto max-content" }}
@@ -153,7 +164,7 @@ const ProfileDropDown = (props) => {
           passHref={true}
         >
           <ProfileList>
-            <MdAssignment />
+            <Image src="trip.svg" alt="My Trips" width={15} height={15} />
             <div>My Trips</div>
           </ProfileList>
         </Link>
@@ -176,8 +187,8 @@ const ProfileDropDown = (props) => {
         <ImageLoader
           borderRadius="50%"
           url={
-            props.image !== "null" && props.image !== null
-              ? props.image
+            localStorage.getItem("user_image") !== "null" && localStorage.getItem("user_image") !== null
+              ? localStorage.getItem("user_image")
               : "media/icons/navigation/profile-user.png"
           }
           width="2rem"
@@ -186,9 +197,11 @@ const ProfileDropDown = (props) => {
           onclick={props.toggleProfileList}
           noPlaceholder={true}
         />
+        <div className="Body2R_14">{props.name}</div>
         {isPageLoaded ? (
           <IoIosArrowDown
-            className="text-2xl"
+            width="18px"
+            height="18px"
             onClick={props.toggleProfileList}
             style={{ color: props.headerColor === "black" ? "white" : "black" }}
           />

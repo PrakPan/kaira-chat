@@ -49,15 +49,16 @@ export default function SlideThree(props) {
 
 
   return (
-    <div className="flex flex-col gap-[30px]">
+    <div className="w-[100vw] w-[100vw] sm:w-[543px]">
+    <div className="flex flex-col gap-[30px] px-[16px] sm:px-[0px] ">
       <div className="flex flex-col gap-[12px]">
         <Body1M_16>Hotel Type</Body1M_16>
 
-        <div className="flex justify-between">
+        <StyledFlexWrap className="justify-between">
           {["3", "4", "5"].map((star) => (
             <label
               key={star}
-              className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+              className="flex items-center gap-2  rounded-md w-fit cursor-pointer"
             >
               <input
                 type="checkbox"
@@ -66,14 +67,14 @@ export default function SlideThree(props) {
                 onChange={() => dispatch(toggleHotelType(star))}
                 className="focus:outline-none cursor-pointer"
               />
-              <div className="text-sm">{star}-Stars</div>
+              <div className="Body2R_14">{star}-Stars</div>
             </label>
           ))}
-        </div>
+        </StyledFlexWrap>
 
       </div>
       <div>
-        <Body2R_14 className="mb-[6px]">Room Configuration</Body2R_14>
+        <Body2R_14 className="mb-[8px]">Room Configuration</Body2R_14>
         <Pax
           numberOfAdults={numberOfAdults}
           setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
@@ -87,11 +88,10 @@ export default function SlideThree(props) {
         />
       </div>
 
-      <div>
-        <Body1M_16 className="mb-[6px]">Meal Prefernces</Body1M_16>
+      {/* <div>
+        <Body1M_16 className="mb-[12px]">Meal Preferences</Body1M_16>
         <StyledFlexWrap >
           {MEAL_PREFERENCES.map((filter, i) => {
-            let clicked = false
             return (
              <div
               key={i}
@@ -101,7 +101,7 @@ export default function SlideThree(props) {
             >
               <StyledButton
                 style={{ lineHeight: "1.2", alignItems: "flex-start" }}
-                className="center-div"
+                className="center-div Body2R_14"
                 clicked={mealPreferences.includes(filter)}
               >
                 {filter}
@@ -110,15 +110,16 @@ export default function SlideThree(props) {
             );
           })}
         </StyledFlexWrap>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
           <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
           <StyledTextarea
             placeholder="Write any special requests"
             onChange={handleSpecialRequest}
             value={specialRequests}
           />
-      </div>
+      </div> */}
+    </div>
     </div>
   );
 }

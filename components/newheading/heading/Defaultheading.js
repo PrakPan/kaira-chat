@@ -40,7 +40,7 @@ const Defaultheadingstyle = styled.div`
 const Defaultheading = (props) => {
   return (
     <Defaultheadingstyle
-      className="font-lexend"
+      className=""
       fontSize={props.fontSize} //1
       padding={props.padding} //3
       color={props.color} //4

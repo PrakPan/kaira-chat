@@ -179,16 +179,13 @@ export default function WhatMakesUsSection() {
   // Attempt to locate a Japan related image. Fallback to a placeholder if not found.
   const japanImg = "/assets/icons/test.jpeg"; // TODO: replace with actual Japan image path when available
   return (
-    <section className="w-full bg-white py-16 px-4 md:px-10 lg:px-20 font-inter">
+    <section className="w-full bg-white py-16 px-4 md:px-10 lg:px-20 font-inter overflow-hidden">
       <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-14">
         What Makes Us Wander-ful.
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-center max-w-[1320px] mx-auto">
         {/* Left copy */}
-        <div
-          className="flex flex-col justify-center pr-8"
-          style={{ height: "616px" }}
-        >
+        <div className="flex flex-col justify-center md:pr-8 md:[height:616px]">
           <div className="space-y-12">
             {featuresLeft.map((f) => (
               <div key={f.title} className="max-w-sm">
@@ -263,10 +260,7 @@ export default function WhatMakesUsSection() {
         </div>
 
         {/* Right copy */}
-        <div
-          className="flex flex-col justify-center pl-8"
-          style={{ height: "616px" }}
-        >
+        <div className="flex flex-col justify-center md:pl-8 md:[height:616px]">
           <div className="space-y-12">
             {featuresRight.map((f) => (
               <div key={f.title} className="max-w-sm">

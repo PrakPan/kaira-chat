@@ -626,7 +626,7 @@ const Overview = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 View Gallery
               </PhotosButton>
@@ -869,7 +869,7 @@ const Overview = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend bg-black"
+                className=" bg-black"
               >
                 All Photos
               </PhotosButton>

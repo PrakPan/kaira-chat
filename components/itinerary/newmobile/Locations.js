@@ -17,7 +17,7 @@ const Locations = (props) => {
               color: "white !important",
             }}
             label={props.city_slabs[i].city_name}
-            className="itinerary-city-tab font-lexend"
+            className="itinerary-city-tab "
           ></Tab>
         );
       }

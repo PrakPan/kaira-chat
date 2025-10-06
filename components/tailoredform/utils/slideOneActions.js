@@ -9,9 +9,9 @@ const fadeInAnimation = keyframes`${fadeIn}`;
 export const divideTravellers = (slideThreeData) => {
   let distribution = [];
 
-  let tempadults = slideThreeData.numberOfAdults;
-  let tempChildren = slideThreeData.numberOfChildren;
-  let tempInfants = slideThreeData.numberOfInfants;
+  let tempadults = slideThreeData?.roomConfiguration?.[0]?.adults||slideThreeData.numberOfAdults;
+  let tempChildren = slideThreeData?.roomConfiguration?.[0]?.children||slideThreeData.numberOfChildren;
+  let tempInfants = slideThreeData?.roomConfiguration?.[0]?.infants||slideThreeData.numberOfInfants;
   while (tempadults != 0) {
     if (tempadults >= 2) {
       distribution.push({ adults: 2, children: 0 });
@@ -198,6 +198,6 @@ export const headings = [
   "Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.",
   "Route Overview — Customize Your Journey from Start to Finish!",
   "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?",
-  "Almost There — Let's Personalize the Final Details of Your Trip.",
+  "Almost there - Just let us know your stay preferences and get your itinerary!",
   "Awesome! We've got your details.",
 ];
