@@ -177,7 +177,7 @@ const ItineraryCity = (props) => {
             {props?.city?.city?.name}
             {" - "}
             {props?.city?.duration}{" "}
-            {props?.city?.duration > 1 ? "Nights" : "Night"} {props?.city?.duration === 0 ? "(Transit City)" : ""}
+            {props?.city?.duration > 1 || props?.city?.duration === 0 ? "Nights" : "Night"} {props?.city?.duration === 0 ? "(Transit City)" : ""}
           </div>
 
           {hotels_status === "PENDING" ? (
