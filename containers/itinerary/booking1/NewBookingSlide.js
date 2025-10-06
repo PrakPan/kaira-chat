@@ -604,14 +604,14 @@ const PriceDetails = ({
   selectedPaymentOption
 }) => {
   const Cart = useSelector((state) => state.Cart);
-  
-  const numericItineraryCost = typeof itineraryCost === 'string' 
-    ? parseFloat(itineraryCost.replace(/,/g, '')) 
+
+  const numericItineraryCost = typeof itineraryCost === 'string'
+    ? parseFloat(itineraryCost.replace(/,/g, ''))
     : itineraryCost;
-  const numericTotalPayable = typeof totalPayable === 'string' 
-    ? parseFloat(totalPayable.replace(/,/g, '')) 
+  const numericTotalPayable = typeof totalPayable === 'string'
+    ? parseFloat(totalPayable.replace(/,/g, ''))
     : totalPayable;
-  
+
   if (numericTotalPayable === 0) {
     return (
       <div className="mb-4">
@@ -623,7 +623,7 @@ const PriceDetails = ({
       </div>
     );
   }
-  
+
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Price Details</h3>
@@ -634,12 +634,14 @@ const PriceDetails = ({
           <span>₹{typeof itineraryCost === 'string' ? itineraryCost : itineraryCost.toLocaleString('en-IN')}</span>
         </div>
 
-        {!Cart?.are_prices_hidden && surchargesTaxes > 0 && (
-          <div className="flex justify-between">
-            <span>Surcharges and Taxes</span>
-            <span>₹{surchargesTaxes.toLocaleString('en-IN')}</span>
-          </div>
-        )}
+        {
+          // !Cart?.are_prices_hidden && 
+          surchargesTaxes > 0 && (
+            <div className="flex justify-between">
+              <span>Surcharges and Taxes</span>
+              <span>₹{surchargesTaxes.toLocaleString('en-IN')}</span>
+            </div>
+          )}
 
         {couponDiscount !== 0 && (
           <div className="flex justify-between text-green-600">
@@ -703,11 +705,11 @@ const PaymentButton = ({
   );
 };
 
-const ItineraryInclusions = ({ 
-  costingsBreakdown, 
-  selectedInclusions, 
-  onToggleInclusion, 
-  arePricesHidden 
+const ItineraryInclusions = ({
+  costingsBreakdown,
+  selectedInclusions,
+  onToggleInclusion,
+  arePricesHidden
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
     Stays: true,
@@ -727,7 +729,7 @@ const ItineraryInclusions = ({
     Object.entries(costingsBreakdown || {}).forEach(([id, booking]) => {
       const type = booking.booking_type;
       let category = 'Activities';
-      
+
       if (type === 'Accommodation') category = 'Stays';
       else if (type === 'Flight') category = 'Flights';
       else if (type === 'Train' || type === 'Taxi' || type === 'Bus' || type === 'Ferry') category = 'Transfers';
@@ -767,11 +769,11 @@ const ItineraryInclusions = ({
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Itinerary Inclusions</h3>
-      
+
       {Object.entries(categories).map(([category, bookings]) => {
         if (bookings.length === 0) return null;
-        
-        const categoryTotal = bookings.reduce((sum, booking) => 
+
+        const categoryTotal = bookings.reduce((sum, booking) =>
           selectedInclusions[booking.id] ? sum + booking.booking_cost : sum, 0
         );
         const selectedCount = bookings.filter(b => selectedInclusions[b.id]).length;
@@ -779,7 +781,7 @@ const ItineraryInclusions = ({
         return (
           <div key={category} className="mb-3 border border-gray-200 rounded-lg overflow-hidden">
             {/* Category Header */}
-            <div 
+            <div
               className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
               onClick={() => toggleCategory(category)}
             >
@@ -792,17 +794,16 @@ const ItineraryInclusions = ({
                   </div>
                 </div>
               </div>
-              
+
               {categoryTotal > 0 && (
                 <div className="font-semibold text-sm mr-2">
                   ₹{getIndianPrice(Math.round(categoryTotal))}
                 </div>
               )}
-              
-              <RiArrowDropDownLine 
-                className={`text-2xl transition-transform ${
-                  expandedCategories[category] ? 'rotate-180' : ''
-                }`}
+
+              <RiArrowDropDownLine
+                className={`text-2xl transition-transform ${expandedCategories[category] ? 'rotate-180' : ''
+                  }`}
               />
             </div>
 
@@ -810,11 +811,10 @@ const ItineraryInclusions = ({
             {expandedCategories[category] && (
               <div className="divide-y divide-gray-100">
                 {bookings.map((booking) => (
-                  <div 
+                  <div
                     key={booking.id}
-                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
-                      !selectedInclusions[booking.id] ? 'opacity-50' : ''
-                    }`}
+                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${!selectedInclusions[booking.id] ? 'opacity-50' : ''
+                      }`}
                   >
                     {/* Checkbox */}
                     <div className="pt-0.5">
@@ -831,19 +831,19 @@ const ItineraryInclusions = ({
                       <div className="font-medium text-sm mb-1 line-clamp-2">
                         {booking.detail.name}
                       </div>
-                      
+
                       <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                         <div className="flex items-center gap-1">
                           <BsCalendar2 className="flex-shrink-0" />
                           <span>{formatDate(booking.detail.check_in)}</span>
                         </div>
-                        
+
                         {booking.detail.duration && (
                           <span className="ml-1">
                             ({booking.detail.duration}N)
                           </span>
                         )}
-                        
+
                         {booking.detail.pax && (
                           <div className="flex items-center gap-1">
                             <span>•</span>
@@ -851,16 +851,16 @@ const ItineraryInclusions = ({
                             <span>{booking.detail.pax.number_of_adults} Adults</span>
                           </div>
                         )}
-                        
+
                         {/* Show individual booking cost */}
                         {
-                        // !arePricesHidden && 
-                        booking.booking_cost > 0 && (
-                          <div className="flex items-center gap-1 text-green-600 font-medium">
-                            <span>•</span>
-                            <span>₹{getIndianPrice(Math.round(booking.booking_cost))}</span>
-                          </div>
-                        )}
+                          // !arePricesHidden && 
+                          booking.booking_cost > 0 && (
+                            <div className="flex items-center gap-1 text-green-600 font-medium">
+                              <span>•</span>
+                              <span>₹{getIndianPrice(Math.round(booking.booking_cost))}</span>
+                            </div>
+                          )}
                       </div>
                     </div>
 
@@ -1016,31 +1016,34 @@ const Details = (props) => {
   };
 
   const calculateFilteredTotal = () => {
-  if (!Cart?.costings_breakdown) return 0;
-  
-  let total = 0;
-  Object.entries(Cart.costings_breakdown).forEach(([id, booking]) => {
-    if (selectedInclusions[id]) {
-      total += booking.booking_cost || 0;
+    if (!Cart?.costings_breakdown) return 0;
+
+    let total = 0;
+    Object.entries(Cart.costings_breakdown).forEach(([id, booking]) => {
+      if (selectedInclusions[id]) {
+        total += booking.booking_cost || 0;
+      }
+    });
+
+    // If total is 0, return 0 early
+    if (total === 0) return 0;
+
+    // Add surcharges proportionally only if prices are not hidden
+    if (
+      // !Cart?.are_prices_hidden && 
+      Cart?.surcharges_and_taxes) {
+      // const selectedRatio = total / (Cart.total_bookings_cost || 1);
+      // total += Cart.surcharges_and_taxes ;
+      // * selectedRatio;
     }
-  });
-  
-  // If total is 0, return 0 early
-  if (total === 0) return 0;
-  
-  // Add surcharges proportionally only if prices are not hidden
-  if (!Cart?.are_prices_hidden && Cart?.surcharges_and_taxes) {
-    const selectedRatio = total / (Cart.total_bookings_cost || 1);
-    total += Cart.surcharges_and_taxes * selectedRatio;
-  }
-  
-  // Apply coupon if applicable
-  if (couponUsageData?.discount) {
-    total = Math.max(0, total - couponUsageData.discount);
-  }
-  
-  return Math.round(total);
-};
+
+    // Apply coupon if applicable
+    if (couponUsageData?.discount) {
+      total = Math.max(0, total - couponUsageData.discount);
+    }
+
+    return Math.round(total);
+  };
 
   const handleCloseDrawer = () => {
     setShowPaymentDrawer(false);
@@ -2533,7 +2536,7 @@ const Details = (props) => {
                   arePricesHidden={Cart?.are_prices_hidden}
                 />
 
-                {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !==0 && <CouponSection
+                {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !== 0 && <CouponSection
                   appliedCoupon={appliedCoupon}
                   savedAmount={couponSavedAmount}
                   onRemoveCoupon={handleRemoveCoupon}
@@ -2548,7 +2551,7 @@ const Details = (props) => {
                   lockInCost={0}
                   couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
                   surchargesTaxes={Cart?.surcharges_and_taxes || 0}
-                  totalPayable={getIndianPrice(Math.round(calculateFilteredTotal()))}
+                  totalPayable={getIndianPrice(Math.round(calculateFilteredTotal() + Cart?.surcharges_and_taxes))}
                   selectedPaymentOption={selectedPaymentOption}
                   selectedInclusions={selectedInclusions}
                   totalBookingsCost={Cart?.total_bookings_cost}
@@ -2561,46 +2564,46 @@ const Details = (props) => {
 
                 {/* {!lockInCompleted && ( */}
                 {calculateFilteredTotal() === 0 ? (
-  <>
-    <GetInTouchContainer>
-      <Button
-        color="#111"
-        fontWeight="500"
-        fontSize="1rem"
-        borderWidth="1px"
-        width="100%"
-        borderRadius="8px"
-        bgColor="#f8e000"
-        padding="12px"
-        onclick={handleGetInTouch}
-      >
-        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", alignItems: "center" }}>
-          <ImageLoader
-            dimensions={{ height: 50, width: 50 }}
-            dimensionsMobile={{ height: 50, width: 50 }}
-            height={"20px"}
-            width={"20px"}
-            widthmobile={"20px"}
-            leftalign
-            url={"media/icons/login/customer-service-black.png"}
-          />
-          {props?.loading ? <PulseLoader /> : <span>Get in touch!</span>}
-        </div>
-      </Button>
-    </GetInTouchContainer>
-    
-    <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
-      Please select at least one inclusion to proceed
-    </div>
-  </>
-) : (
-  <PaymentButton
-    amount={calculateFilteredTotal()}
-    isLoading={paymentLoading}
-    paymentType={'full'}
-    onClick={() => handlePayNow('full')}
-  />
-)}
+                  <>
+                    <GetInTouchContainer>
+                      <Button
+                        color="#111"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="1px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        padding="12px"
+                        onclick={handleGetInTouch}
+                      >
+                        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", alignItems: "center" }}>
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />
+                          {props?.loading ? <PulseLoader /> : <span>Get in touch!</span>}
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+
+                    <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
+                      Please select at least one inclusion to proceed
+                    </div>
+                  </>
+                ) : (
+                  <PaymentButton
+                    amount={calculateFilteredTotal() + Cart.surcharges_and_taxes}
+                    isLoading={paymentLoading}
+                    paymentType={'full'}
+                    onClick={() => handlePayNow('full')}
+                  />
+                )}
                 {/* )} */}
 
                 <Button
