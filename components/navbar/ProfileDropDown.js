@@ -164,7 +164,7 @@ const ProfileDropDown = (props) => {
           passHref={true}
         >
           <ProfileList>
-            <Image src="trip.svg" alt="My Trips" width={15} height={15} />
+            <Image src="/trip.svg" alt="My Trips" width={15} height={15} />
             <div>My Trips</div>
           </ProfileList>
         </Link>

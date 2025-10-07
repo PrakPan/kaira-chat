@@ -102,8 +102,8 @@ const NavigationMenu = (props) => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          <button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
-                  Create a Trip
+          <button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
+                  My Trips
                 </button>
           {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
@@ -127,7 +127,7 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex  gap-4 md:hidden">
-        <button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
+        <button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
                   Create a Trip
         </button>
           <MobileMenu 

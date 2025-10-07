@@ -639,7 +639,7 @@ const PriceDetails = ({
           surchargesTaxes > 0 && (
             <div className="flex justify-between">
               <span>Surcharges and Taxes</span>
-              <span>₹{Math.round(surchargesTaxes).toLocaleString('en-IN')}</span>
+              <span>₹{surchargesTaxes.toLocaleString('en-IN')}</span>
             </div>
           )}
 
@@ -706,7 +706,7 @@ const PaymentButton = ({
 };
 
 const ItineraryInclusions = ({
-  costingsBreakdown,
+  Cart,
   selectedInclusions,
   onToggleInclusion,
   arePricesHidden
@@ -719,27 +719,37 @@ const ItineraryInclusions = ({
   });
 
   const categorizeBookings = () => {
-    const categories = {
-      Stays: [],
-      Transfers: [],
-      Flights: [],
-      Activities: []
-    };
-
-    Object.entries(costingsBreakdown || {}).forEach(([id, booking]) => {
-      const type = booking.booking_type;
-      let category = 'Activities';
-
-      if (type === 'Accommodation') category = 'Stays';
-      else if (type === 'Flight') category = 'Flights';
-      else if (type === 'Train' || type === 'Taxi' || type === 'Bus' || type === 'Ferry') category = 'Transfers';
-      else if (type === 'Activity') category = 'Activities';
-
-      categories[category].push({ id, ...booking });
-    });
-
-    return categories;
+  const categories = {
+    Stays: [],
+    Transfers: [],
+    Flights: [],
+    Activities: []
   };
+
+  if (Cart?.summary) {
+    Object.entries(Cart.summary).forEach(([category, data]) => {
+      if (data.bookings && data.bookings.length > 0) {
+        categories[category] = data.bookings.map(booking => ({
+          id: booking.id,
+          booking_cost: booking.booking_cost,
+          detail: {
+            name: booking.name,
+            check_in: booking.check_in,
+            check_out: booking.check_out,
+            duration: booking.duration,
+            pax: booking.pax,
+            transfer_type: booking.transfer_type
+          },
+          booking_type: category === 'Stays' ? 'Accommodation' : 
+                       category === 'Flights' ? 'Flight' :
+                       category === 'Transfers' ? 'Transfer' : 'Activity'
+        }));
+      }
+    });
+  }
+
+  return categories;
+};
 
   const categories = categorizeBookings();
 
@@ -948,15 +958,18 @@ const Details = (props) => {
   const { trackWhatsAppClicked } = useAnalytics();
 
   useEffect(() => {
-    if (Cart?.costings_breakdown) {
-      const initialSelections = {};
-      Object.keys(Cart.costings_breakdown).forEach(bookingId => {
-        // All inclusions are selected by default
-        initialSelections[bookingId] = true;
-      });
-      setSelectedInclusions(initialSelections);
-    }
-  }, [Cart?.costings_breakdown]);
+  if (Cart?.summary) {
+    const initialSelections = {};
+    Object.values(Cart.summary).forEach(category => {
+      if (category.bookings) {
+        category.bookings.forEach(booking => {
+          initialSelections[booking.id] = true;
+        });
+      }
+    });
+    setSelectedInclusions(initialSelections);
+  }
+}, [Cart?.summary]);
 
 
   useEffect(() => {
@@ -1016,34 +1029,39 @@ const Details = (props) => {
   };
 
   const calculateFilteredTotal = () => {
-    if (!Cart?.costings_breakdown) return 0;
-
-    let total = 0;
-    Object.entries(Cart.costings_breakdown).forEach(([id, booking]) => {
-      if (selectedInclusions[id]) {
-        total += booking.booking_cost || 0;
-      }
-    });
-
-    // If total is 0, return 0 early
-    if (total === 0) return 0;
-
-    // Add surcharges proportionally only if prices are not hidden
-    if (
-      // !Cart?.are_prices_hidden && 
-      Cart?.surcharges_and_taxes) {
-      // const selectedRatio = total / (Cart.total_bookings_cost || 1);
-      // total += Cart.surcharges_and_taxes ;
-      // * selectedRatio;
+  if (!Cart?.summary) return 0;
+  
+  let total = 0;
+  
+  // Calculate from summary bookings
+  Object.values(Cart.summary).forEach(category => {
+    if (category.bookings) {
+      category.bookings.forEach(booking => {
+        if (selectedInclusions[booking.id]) {
+          total += booking.booking_cost || 0;
+        }
+      });
     }
-
-    // Apply coupon if applicable
-    if (couponUsageData?.discount) {
-      total = Math.max(0, total - couponUsageData.discount);
-    }
-
-    return Math.round(total);
-  };
+  });
+  
+  // If total is 0, return 0 early
+  if (total === 0) return 0;
+  
+  // Add surcharges proportionally only if prices are not hidden
+  if (
+    // !Cart?.are_prices_hidden && 
+    Cart?.surcharges_and_taxes) {
+    // const selectedRatio = total / (Cart.total_bookings_cost || 1);
+    // total += Cart.surcharges_and_taxes;
+  }
+  
+  // Apply coupon if applicable
+  if (couponUsageData?.discount) {
+    total = Math.max(0, total - couponUsageData.discount);
+  }
+  
+  return Math.round(total);
+};
 
   const handleCloseDrawer = () => {
     setShowPaymentDrawer(false);
@@ -1207,167 +1225,167 @@ const Details = (props) => {
     setShowCouponModal(true);
   };
 
-  const setBookingSummary = () => {
-    try {
-      if (Cart) {
-        if (Cart?.costings_breakdown)
-          for (const booking in Cart?.costings_breakdown) {
-            if (Cart?.costings_breakdown[booking].user_selected) {
-              if (
-                Cart?.costings_breakdown[booking].booking_type ===
-                "Accommodation"
-              ) {
-                bookingslist.push(
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      fontWeight: "400",
-                      letterSpacing: "1px",
-                      marginBottom: "0.25rem",
-                    }}
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
-                    }
-                  >
-                    {Cart?.costings_breakdown[booking].detail[
-                      "duration"
-                    ] +
-                      "N at " +
-                      Cart?.costings_breakdown[booking].detail["name"]}
-                  </p>
-                );
-                bookinglistwithcost.push(
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "3fr 1fr",
-                      margin: "0.5rem 0",
-                      gridGap: "1rem",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
-                      }
-                    >
-                      {Cart?.costings_breakdown[booking].detail[
-                        "duration"
-                      ] +
-                        "N at " +
-                        Cart?.costings_breakdown[booking].detail[
-                        "name"
-                        ]}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
-                      }
-                    >
-                      {"₹ " +
-                        getIndianPrice(
-                          Math.ceil(
-                            Cart?.costings_breakdown[booking][
-                            "booking_cost"
-                            ]
-                          )
-                        )}
-                    </p>
-                  </div>
-                );
-              } else {
-                bookingslist.push(
-                  <p
-                    style={{
-                      fontSize: "0.75rem",
-                      fontWeight: "400",
-                      letterSpacing: "1px",
-                      marginBottom: "0.25rem",
-                    }}
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
-                    }
-                  >
-                    {Cart?.costings_breakdown[booking].detail["name"]}
-                  </p>
-                );
-                bookinglistwithcost.push(
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "3fr 1fr",
-                      margin: "0.5rem 0",
-                      gridGap: "1rem",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
-                      }
-                    >
-                      {
-                        Cart?.costings_breakdown[booking].detail[
-                        "name"
-                        ]
-                      }
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: "300",
-                        letterSpacing: "1px",
-                        marginBottom: "0.25rem",
-                      }}
-                      className={
-                        props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
-                      }
-                    >
-                      {"₹ " +
-                        getIndianPrice(
-                          Math.ceil(
-                            Cart?.costings_breakdown[booking][
-                            "booking_cost"
-                            ]
-                          )
-                        )}
-                    </p>
-                  </div>
-                );
-              }
-            }
-          }
-      }
-    } catch { }
-  };
+  // const setBookingSummary = () => {
+  //   try {
+  //     if (Cart) {
+  //       if (Cart?.costings_breakdown)
+  //         for (const booking in Cart?.costings_breakdown) {
+  //           if (Cart?.costings_breakdown[booking].user_selected) {
+  //             if (
+  //               Cart?.costings_breakdown[booking].booking_type ===
+  //               "Accommodation"
+  //             ) {
+  //               bookingslist.push(
+  //                 <p
+  //                   style={{
+  //                     fontSize: "0.75rem",
+  //                     fontWeight: "400",
+  //                     letterSpacing: "1px",
+  //                     marginBottom: "0.25rem",
+  //                   }}
+  //                   className={
+  //                     props.blur
+  //                       ? "font-lexend text-enter blurry-text"
+  //                       : "font-lexend text-enter"
+  //                   }
+  //                 >
+  //                   {Cart?.costings_breakdown[booking].detail[
+  //                     "duration"
+  //                   ] +
+  //                     "N at " +
+  //                     Cart?.costings_breakdown[booking].detail["name"]}
+  //                 </p>
+  //               );
+  //               bookinglistwithcost.push(
+  //                 <div
+  //                   style={{
+  //                     display: "grid",
+  //                     gridTemplateColumns: "3fr 1fr",
+  //                     margin: "0.5rem 0",
+  //                     gridGap: "1rem",
+  //                   }}
+  //                 >
+  //                   <p
+  //                     style={{
+  //                       fontSize: "0.75rem",
+  //                       fontWeight: "300",
+  //                       letterSpacing: "1px",
+  //                       marginBottom: "0.25rem",
+  //                     }}
+  //                     className={
+  //                       props.blur
+  //                         ? "font-lexend text-enter blurry-text"
+  //                         : "font-lexend text-enter"
+  //                     }
+  //                   >
+  //                     {Cart?.costings_breakdown[booking].detail[
+  //                       "duration"
+  //                     ] +
+  //                       "N at " +
+  //                       Cart?.costings_breakdown[booking].detail[
+  //                       "name"
+  //                       ]}
+  //                   </p>
+  //                   <p
+  //                     style={{
+  //                       fontSize: "0.75rem",
+  //                       fontWeight: "300",
+  //                       letterSpacing: "1px",
+  //                       marginBottom: "0.25rem",
+  //                     }}
+  //                     className={
+  //                       props.blur
+  //                         ? "font-lexend text-enter blurry-text"
+  //                         : "font-lexend text-enter"
+  //                     }
+  //                   >
+  //                     {"₹ " +
+  //                       getIndianPrice(
+  //                         Math.ceil(
+  //                           Cart?.costings_breakdown[booking][
+  //                           "booking_cost"
+  //                           ]
+  //                         )
+  //                       )}
+  //                   </p>
+  //                 </div>
+  //               );
+  //             } else {
+  //               bookingslist.push(
+  //                 <p
+  //                   style={{
+  //                     fontSize: "0.75rem",
+  //                     fontWeight: "400",
+  //                     letterSpacing: "1px",
+  //                     marginBottom: "0.25rem",
+  //                   }}
+  //                   className={
+  //                     props.blur
+  //                       ? "font-lexend text-enter blurry-text"
+  //                       : "font-lexend text-enter"
+  //                   }
+  //                 >
+  //                   {Cart?.costings_breakdown[booking].detail["name"]}
+  //                 </p>
+  //               );
+  //               bookinglistwithcost.push(
+  //                 <div
+  //                   style={{
+  //                     display: "grid",
+  //                     gridTemplateColumns: "3fr 1fr",
+  //                     margin: "0.5rem 0",
+  //                     gridGap: "1rem",
+  //                   }}
+  //                 >
+  //                   <p
+  //                     style={{
+  //                       fontSize: "0.75rem",
+  //                       fontWeight: "300",
+  //                       letterSpacing: "1px",
+  //                       marginBottom: "0.25rem",
+  //                     }}
+  //                     className={
+  //                       props.blur
+  //                         ? "font-lexend text-enter blurry-text"
+  //                         : "font-lexend text-enter"
+  //                     }
+  //                   >
+  //                     {
+  //                       Cart?.costings_breakdown[booking].detail[
+  //                       "name"
+  //                       ]
+  //                     }
+  //                   </p>
+  //                   <p
+  //                     style={{
+  //                       fontSize: "0.75rem",
+  //                       fontWeight: "300",
+  //                       letterSpacing: "1px",
+  //                       marginBottom: "0.25rem",
+  //                     }}
+  //                     className={
+  //                       props.blur
+  //                         ? "font-lexend text-enter blurry-text"
+  //                         : "font-lexend text-enter"
+  //                     }
+  //                   >
+  //                     {"₹ " +
+  //                       getIndianPrice(
+  //                         Math.ceil(
+  //                           Cart?.costings_breakdown[booking][
+  //                           "booking_cost"
+  //                           ]
+  //                         )
+  //                       )}
+  //                   </p>
+  //                 </div>
+  //               );
+  //             }
+  //           }
+  //         }
+  //     }
+  //   } catch { }
+  // };
 
 
 
@@ -1380,7 +1398,7 @@ const Details = (props) => {
   let oldaccommodation = false;
   if (props.traveleritinerary) oldaccommodation = true;
 
-  setBookingSummary();
+  // setBookingSummary();
 
   function getURL() {
     const url = router.asPath.split("?")[0];
@@ -1904,13 +1922,13 @@ const Details = (props) => {
             {Cart && acoordianceOpen && (
               <div className="">
                 <Accordion
-                  stayBookings={props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                  payment={Cart}
-                  mercuryItinerary={props?.mercuryItinerary}
-                ></Accordion>
+  stayBookings={Cart?.summary?.Stays?.bookings || []}
+  flightBookings={Cart?.summary?.Flights?.bookings || []}
+  activityBookings={Cart?.summary?.Activities?.bookings || []}
+  transferBookings={Cart?.summary?.Transfers?.bookings || []}
+  payment={Cart}
+  mercuryItinerary={props?.mercuryItinerary}
+/>
 
                 {!oldaccommodation && !Cart?.are_prices_hidden ? (
                   <div className="flex flex-row justify-between">
@@ -2530,11 +2548,11 @@ const Details = (props) => {
               // Detailed payment view
               <div>
                 <ItineraryInclusions
-                  costingsBreakdown={Cart?.costings_breakdown}
-                  selectedInclusions={selectedInclusions}
-                  onToggleInclusion={handleToggleInclusion}
-                  arePricesHidden={Cart?.are_prices_hidden}
-                />
+  Cart={Cart}  // Pass entire Cart instead of costingsBreakdown
+  selectedInclusions={selectedInclusions}
+  onToggleInclusion={handleToggleInclusion}
+  arePricesHidden={Cart?.are_prices_hidden}
+/>
 
                 {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !== 0 && <CouponSection
                   appliedCoupon={appliedCoupon}
@@ -2550,7 +2568,7 @@ const Details = (props) => {
                   itineraryCost={getIndianPrice(Math.round(calculateFilteredTotal() + (couponUsageData?.discount || 0)))}
                   lockInCost={0}
                   couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
-                  surchargesTaxes={Cart?.surcharges_and_taxes || 0}
+                  surchargesTaxes={Math.round(Cart?.surcharges_and_taxes) || 0}
                   totalPayable={getIndianPrice(Math.round(calculateFilteredTotal() + Cart?.surcharges_and_taxes))}
                   selectedPaymentOption={selectedPaymentOption}
                   selectedInclusions={selectedInclusions}
