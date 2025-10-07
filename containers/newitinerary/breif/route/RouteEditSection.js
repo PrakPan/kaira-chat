@@ -1412,6 +1412,7 @@ export const DestinationPopUp = (props) => {
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
+  const [isSearched,setIsSearched] = useState(false);
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1436,6 +1437,7 @@ export const DestinationPopUp = (props) => {
     setSearch(e.target.value);
   };
   useEffect(() => {
+    if(!isSearched)
     handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
@@ -1483,6 +1485,7 @@ export const DestinationPopUp = (props) => {
     });
 
     setSearchResults(null);
+    setIsSearched(true);
   };
 
   const handleSetNights = (minus = false) => {
@@ -1615,7 +1618,7 @@ export const DestinationPopUp = (props) => {
             type="text"
             autoFocus
             value={search}
-            onChange={(e) => handleSearch(e)}
+            onChange={(e) => {handleSearch(e); setIsSearched(false);} }
             placeholder="Search Destination"
             className="focus:outline-none w-full"
           ></input>
