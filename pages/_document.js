@@ -41,10 +41,10 @@ export default class MyDocument extends Document {
             debug={isDevelopment}
             forward={[
               'gtag', 
-              'dataLayer.push', 
+              // 'dataLayer.push', 
               'mixpanel',
-              'JupiterAnalytics', 
-              'JUPITER_CONFIG'
+              // 'JupiterAnalytics', 
+              // 'JUPITER_CONFIG'
             ]}
             resolveUrl={(url) => {
               // Proxy problematic URLs through your own server to avoid CORS
@@ -66,7 +66,7 @@ export default class MyDocument extends Document {
           />
 
           {/* Jupiter Analytics - Load with Partytown */}
-          <script
+          {/* <script
             type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `
@@ -87,7 +87,7 @@ export default class MyDocument extends Document {
                 }
               `
             }}
-          />
+          /> */}
 
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
