@@ -8,7 +8,7 @@ function renderRoutesMapSection({ isDesktop, containerHeight, routes, destinatio
       }`}
     >
       <div className="flex-1 h-full w-full">
-        <RoutesMap locations={routes} />
+        <RoutesMap locations={routes.slice(1, routes.length - 1)} />
       </div>
 
       {destinationChanges && (

@@ -162,9 +162,10 @@ function ChatSection(props) {
                     < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar}></ChatMessage>
                 )}
 
-                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" : finalized_status=="PENDING" ? "Fetching your itinerary" : "Analyzing your Itinerary"}    <div className={styles.typingDots}>
+                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" :  "Analyzing your Itinerary"}    <div className={styles.typingDots}>
                     <span></span><span></span><span></span>
                 </div></span></div>}
+                {finalized_status=="PENDING" && <span><span>Fetching your itinerary</span><div className={styles.typingDots}></div> </span>}
                 </>
                 }
                 

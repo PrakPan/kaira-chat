@@ -43,6 +43,8 @@ const NavigationMenu = (props) => {
     (path) => router.pathname.startsWith(path),
     [router.pathname]
   );
+  const slideIndex = Number(router.query.slideIndex) || 0;
+
 
   // Memoized handlers to prevent unnecessary re-renders
   const handleMenuItemHover = useCallback((element, isHovering) => {
@@ -100,6 +102,9 @@ const NavigationMenu = (props) => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
+          <button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
+                  Create a Trip
+                </button>
           {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
             name={props.name}
@@ -121,7 +126,10 @@ const NavigationMenu = (props) => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <div className="flex gap-4 md:hidden">
+        <div className="flex  gap-4 md:hidden">
+        <button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
+                  Create a Trip
+        </button>
           <MobileMenu 
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
@@ -137,8 +145,10 @@ const NavigationMenu = (props) => {
           setShowLoginModal={authShowLogin}
           staticnav ={true}
           itinerary={true}
+          handleCTAClick={handleCTAClick}
           />
-          {!props.token?<Button
+          
+          {/* {!props.token?<Button
             className={styles.hamburger}
             onClick={toggleMobileMenu}
             variant="filled"
@@ -155,7 +165,7 @@ const NavigationMenu = (props) => {
           width="48px"
           height="48px"
         />
-          }
+          } */}
         </div>
       </nav>
 
@@ -206,14 +216,14 @@ const NavigationMenu = (props) => {
             Get Started
           </button>
         </div>
-        <div id="login" className="width-[100%] z-[1650]">
+        {slideIndex!=4&&<div id="login" className="width-[100%] z-[1650]">
         <Login
           show={props.showLogin}
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}
           zIndex={"3300"}
         />
-      </div>
+      </div>}
       </div>
     </>
   );

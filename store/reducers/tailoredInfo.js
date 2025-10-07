@@ -22,7 +22,7 @@ const initialReducer = {
         numberOfAdults: 1,
         numberOfChildren: 0,
         numberOfInfants: 0,
-        roomConfiguration: [],
+        roomConfiguration: [{adults: 1, children: 0, infants: 0, childAges: []}],
         submitSecondSlide: false,
         addHotels: false,
         addFlights: false,

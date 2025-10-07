@@ -25,6 +25,7 @@ module.exports = {
         "xs": "10px",
         "sm": "12px",
         "sm-md": "14px",
+        "sm-xl": "15px",
         "md": "16px",
         "md-lg": "18px",
         "lg": "20px",
@@ -75,6 +76,7 @@ module.exports = {
         "auto": "auto",
         "zero": "0px",
         "xxs": "4px",
+        "xxs-md" : "6px",
         "xs": "8px",
         "sm": "12px",
         "sm-md": "14px",
@@ -134,9 +136,9 @@ module.exports = {
         none: "none",
       },
       screens: {
-        'max-xs': { max: '429px' },  
-        'max-sm': { max: '639px' },  
-        'max-ph': { max: '768px' }, 
+        'max-xs': { max: '429px' },
+        'max-sm': { max: '639px' },
+        'max-ph': { max: '768px' },
       },
       height: {
         300: "300px",
@@ -163,11 +165,11 @@ module.exports = {
       },
       colors: {
         // Primary Colors
-        blue:"#3A85FC",
+        blue: "#3A85FC",
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
-          
+
         },
         // Secondary Colors
         secondary: {
@@ -175,6 +177,9 @@ module.exports = {
           blue: "#2196F3",
           coral: "#FF6B6B",
           red: "#F44336",
+        },
+        trans: {
+          black_70: "rgba(0, 0, 0, 0.72)"
         },
         // Text Colors
         text: {
@@ -187,11 +192,11 @@ module.exports = {
           background: "#F8F8F8",
           smokywhite: "#f2f2f2e6",
           charcolblack: "#212529",
-          spacegrey:"#6E757A",
-          smoothwhite:"#f6f6f6",
+          spacegrey: "#6E757A",
+          smoothwhite: "#f6f6f6",
           svgIconFill: "#ACACAC",
           chinesWhite: "#F9F9F9",
-          error:"#FA3530"
+          error: "#FA3530"
         },
       },
       keyframes: {

@@ -1,7 +1,7 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 
-export const useNavigationMarker = () => {
+export const useNavigationMarker = (scrollContainerRef, sectionIds = [], onActiveTabChange) => {
   const [markerPos, setMarkerPos] = useState({
     x: 0,
     width: 0,
@@ -16,6 +16,33 @@ export const useNavigationMarker = () => {
       x,
     });
   }, []);
+
+
+  useEffect(() => {
+  const container = scrollContainerRef?.current;
+  if (!container) return;
+
+  const handleScroll = () => {
+    const containerRect = container.getBoundingClientRect();
+
+    for (let i = 0; i < sectionIds.length; i++) {
+      const section = document.getElementById(sectionIds[i]);
+      if (!section) continue;
+
+      const sectionRect = section.getBoundingClientRect();
+      const relativeTop = sectionRect.top - containerRect.top;
+
+      if (relativeTop <= 0 && Math.abs(relativeTop) < section.offsetHeight) {
+        onActiveTabChange && onActiveTabChange(i, sectionIds[i]);
+        break;
+      }
+    }
+  };
+
+  container.addEventListener("scroll", handleScroll);
+  return () => container.removeEventListener("scroll", handleScroll);
+}, [sectionIds, scrollContainerRef, onActiveTabChange]);
+
 
   return {
     markerPos,

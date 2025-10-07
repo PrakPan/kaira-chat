@@ -17,7 +17,7 @@ const Search = (props) => {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hotLocationsData, setHotLocationsData] = useState([]);
+  const [hotLocationsData, setHotLocationsData] = useState(props.hotLocations);
   const [showHotLocations, setShowHotLocations] = useState(false);
   const { query } = useRouter();
 
@@ -66,9 +66,6 @@ const Search = (props) => {
     if (query.state) params = `?state=${query.state}`;
     else if (query.country) params = `?country=${query.country}`;
     else if (query.continent) params = `?continent=${query.continent}`;
-
-    setHotLocationsData(props.hotLocations);
-
   }, []);
 
   return (

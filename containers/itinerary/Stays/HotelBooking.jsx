@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import { connect, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 
 const svgIcons = {
@@ -133,10 +134,14 @@ const HotelBooking = ({
     setBookingFunData({ index: i, booking: data, city_id: city_id });
   }
 
-  const starRating = (rating) => {
-    var stars = getStars(rating);
-    return stars;
-  };
+const starRating = (rating, length) => {
+  var stars = [];
+  for (let i = 0; i < Math.floor(rating); i++) {
+    stars.push(<FaStar />);
+  }
+  if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+  return stars;
+};
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -557,19 +562,19 @@ const HotelBooking = ({
                     </div>
 
                     {booking?.rating ? (
-                      <div className="gap-1 flex flex-row  items-center">
+                      <div className="gap-1 flex flex-row  tems-center">
                         <div className="flex flex-row text-[#FFD201]">
                           {starRating(booking.rating)}
                         </div>
-                        <div>
+                        <div className="text-sm-md text-text-spacegrey font-[400]">
                           {booking.rating}
-                          {" . "}
                         </div>
-                        {booking?.user_ratings_total ? (
+                        {booking?.user_ratings_total ? (<> 
+                             {" . "}
                           <div className="text-sm-md text-text-spacegrey font-[400] underline">
                             {booking.user_ratings_total} reviews
                           </div>
-                        ) : null}
+                       </> ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -698,7 +703,9 @@ const HotelBooking = ({
                     // || !payment?.user_allowed_to_pay ? null
                     // :
                     <div>
-                      <button className="ttw-btn-fill-yellow ">
+                      <button className="ttw-btn-fill-yellow " 
+                        onClick={(e) => handleChangeHotel(e, "Change", booking?.name) }
+                      >
                         Change
                       </button>
                     </div>

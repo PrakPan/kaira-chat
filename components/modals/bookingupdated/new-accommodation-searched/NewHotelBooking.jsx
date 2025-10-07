@@ -113,13 +113,13 @@ export default function NewHotelBooking({
 
                 {booking && (
                   <div className="flex flex-col gap-1">
-                    {booking?.addr1 && (
+                    {/* {booking?.addr1 && (
                       <div className="text-sm-md  text-text-spacegrey font-[400] flex flex-row gap-2 items-center">
                          <span className="w-[16px]"> {svgIcons.loaction} </span>
                         {booking?.addr1}
                         {booking?.addr2 && `, ${booking.addr2}`}
                       </div>
-                    )}
+                    )} */}
 
                     {booking?.rating_ext > 0.0 ? (
                       <div className="gap-1 flex flex-row  items-center">
@@ -128,8 +128,8 @@ export default function NewHotelBooking({
                         </div>
                         <div className="text-sm text-text-spacegrey font-[400]">{booking?.rating_ext}</div>
                         {booking?.num_reviews_ext && (
-                          <div className="text-sm text-text-spacegrey font-[400] underline">
-                            {booking?.num_reviews_ext} User reviews
+                          <div className="text-sm text-text-spacegrey font-[400] ">
+                           ( {booking?.num_reviews_ext} )
                           </div>
                         )}
                       </div>

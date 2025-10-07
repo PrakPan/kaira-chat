@@ -95,7 +95,7 @@ const EndDestination = (props) => {
           )
         ) : props.destination && showDestination ? (
           <div className="w-[90%] flex flex-row gap-2 justify-between">
-            <div className="truncate">{props.destination}</div>
+            <div className="truncate Body2M_14">{props.destination}</div>
             
           </div>
         ) : (

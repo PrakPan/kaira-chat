@@ -1652,6 +1652,7 @@ a {
 .MediumIndigoButton {
   display: flex;
   width: 131px;
+  height: 40px;
   padding: 8px var(--Xl, 16px);
   justify-content: center;
   align-items: center;

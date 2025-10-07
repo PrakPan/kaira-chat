@@ -143,7 +143,9 @@ const Enquiry = (props) => {
   };
 
   const _submitDataHandler = () => {
+    setIsSubmitting(true);
     completeItineraryCreate();
+    setIsSubmitting(false);
   };
 
   const _prevSlideHandler = () => {
@@ -227,7 +229,7 @@ const Enquiry = (props) => {
     let dist = divideTravellers(slideThreeData);
     dispatch(setRoomConfiguration(dist));
 
-    if(localStorage.getItem("access_token") && !slideThreeData.addHotels){
+    if(totalSlides == 3){
       _submitDataHandler();
       return;
     }
@@ -341,7 +343,10 @@ const Enquiry = (props) => {
       });
   };
 
-  const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
+  const totalSlides = localStorage.getItem("access_token") 
+  ? (slideThreeData.addHotels ? 4 : 3) 
+  : (slideThreeData.addHotels ? 5 : 4);
+  // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const progress = ((slideIndex + 1) / totalSlides) * circumference;
@@ -482,7 +487,7 @@ const Enquiry = (props) => {
               </div>
             </div>
             <div className="flex flex-col items-center">
-              {/* <div id="login" className="z-[1650]">
+              <div id="login" className="z-[1650]">
                 <Login
                   show={showLogin}
                   onhide={onHide}
@@ -491,7 +496,7 @@ const Enquiry = (props) => {
                     completeItineraryCreate();
                   }}
                 />
-              </div> */}
+              </div>
               <div
                 className={`${slideIndex == 1 ? "w-[100%]" : "max-w-[600px]"}`}
               >
@@ -668,7 +673,7 @@ const Enquiry = (props) => {
                       height="50px"
                       color="white"
                     >
-                      Continue
+                      {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
                     </Button>
                   </div>
                 )}
@@ -709,7 +714,7 @@ const Enquiry = (props) => {
                       }}
                       height="50px"
                     >
-                      Continue
+                      {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
                     </Button>
                   </div>
                 )}
@@ -740,7 +745,7 @@ const Enquiry = (props) => {
                       onClick={_submitDataHandler}
                       height="50px"
                     >
-                      Continue
+                      {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
                     </Button>
                   </div>
                 ) : null}
