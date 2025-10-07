@@ -628,10 +628,16 @@ const LogIn = React.memo((props) => {
               </div>
 
               {props.otpSent ? password : null}
-              <div className="Body1R_16 text-[#6E757A;]"> You will get OTP in <span className="text-black Body1M_16">{minutes}:{seconds}</span></div>
+              <div className="Body1R_16 text-[#6E757A;]"> You can resend OTP in <span className="text-black Body1M_16">{minutes}:{seconds}</span></div>
             </div>
 
-
+            <ReCAPTCHA
+                size="invisible"
+                sitekey={RECAPTCHA_SITE_KEY}
+                ref={recaptchaRef}
+                onChange={onRecaptchaChange}
+                className="hidden"
+              />
           </div>}
 
         {!props.otpSent ? (

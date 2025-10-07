@@ -2,14 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import LoggedInMenu from "./LoggedIn";
 import * as authaction from "../../../store/actions/auth";
 import { connect, useSelector } from "react-redux";
 import ImageLoader from "../../ImageLoader";
 import * as logout from "../../../store/actions/logout";
 import Notifications from "../../modals/Notifications/Index";
 import SearchMobile from "../../search/homepage/mobile/Index";
-import { FaSearch } from "react-icons/fa";
 import openTailoredModal from "../../../services/openTailoredModal";
 import usePageLoaded from "../../custom hooks/usePageLoaded";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -300,20 +298,45 @@ const Mobile = (props) => {
 
   return (
     <div key={props.notOpenCount} ref={dropdownRef} style={{ position: 'relative' }}>
-      <Button
+            <div onClick={() => setToggleMenu(!toggleMenu)}>
+
+      {!props.token?<Button
             className={styles.hamburger}
-            onClick={() => setToggleMenu(!toggleMenu)}
             variant="filled"
           >
-            <FontAwesomeIcon icon={faBars} className="w-4 h-4" />
-          </Button>
+            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+          </Button>:<ImageLoader
+          borderRadius="50%"
+          url={
+            props.image !== "null" && props.image !== null
+              ? props.image
+              : "media/icons/navigation/profile-user.png"
+          }
+          noPlaceholder={true}
+          width="48px"
+          height="48px"
+        />
+          }
+          </div>
+  {/* <ImageLoader
+          borderRadius="50%"
+          url={
+            props.image !== "null" && props.image !== null
+              ? props.image
+              : "media/icons/navigation/profile-user.png"
+          }
+          onClick={() => setToggleMenu(!toggleMenu)}
+          noPlaceholder={true}
+          width="48px"
+          height="48px"
+        /> */}
 
 
       <DropdownContainer show={toggleMenu}>
         <ListContainer>
           {!props.token?<ListItem style={{ backgroundColor: "#F8F8F8" }}>
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-            <div>Login/Signup</div>
+            <div onClick={props.handleCTAClick}>Login/Signup</div>
           </ListItem>:<>
           <ListItem style={{ backgroundColor: "#F8F8F8" }}>
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
