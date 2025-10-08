@@ -38,9 +38,8 @@ const SearchInput = (props) => {
   }, [props.searchFinalized]);
 
   const _resetSelectedCities = () => {
-    if (props.inbox_id !== selectedCities[0]?.input_id) {
+      console.log("resetting", props.inbox_id);
       dispatch(resetSelectedCity(props.inbox_id));
-    }
   };
 
   const _handleReset = () => {
@@ -67,6 +66,7 @@ const SearchInput = (props) => {
       readOnly={props.eventDates ? true : false}
       placeholder="Search destination"
       value={value}
+      className="Body2M_14"
       onChange={(e) => setValue(e.target.value)}
     ></Container>
   );

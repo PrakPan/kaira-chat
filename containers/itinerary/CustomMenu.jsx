@@ -77,7 +77,6 @@ const CustomMenu = ({
       style={{ textDecoration: "none" }}
       spy={true}
       offset={offSet ? offSet : -90}
-      onSetActive={() => onSelect(index, item.id)}
       {...restProps}
     >
       {Mstyle == "round" ? (

@@ -164,7 +164,7 @@ const ProfileDropDown = (props) => {
           passHref={true}
         >
           <ProfileList>
-            <Image src="trip.svg" alt="My Trips" width={15} height={15} />
+            <Image src="/trip.svg" alt="My Trips" width={15} height={15} />
             <div>My Trips</div>
           </ProfileList>
         </Link>
@@ -187,8 +187,8 @@ const ProfileDropDown = (props) => {
         <ImageLoader
           borderRadius="50%"
           url={
-            props.image !== "null" && props.image !== null
-              ? props.image
+            localStorage.getItem("user_image") !== "null" && localStorage.getItem("user_image") !== null
+              ? localStorage.getItem("user_image")
               : "media/icons/navigation/profile-user.png"
           }
           width="2rem"

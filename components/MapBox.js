@@ -9,10 +9,22 @@ import { FaLocationPin } from "react-icons/fa6";
 import ReactDOMServer from "react-dom/server";
 import { GOOGLE_MAPS_API_KEY } from "../services/constants";
 
+const CITY_COLOR_CODES = [
+  "#F0C631",
+  "#BF3535",
+  "#47691e",
+  "#cc610a",
+  "#008080",
+  "#7d5e7d",
+  "#359EBF",
+];
+
 const limeOptions = {
-  color: "#004d6994",
+  color: "#0D53FF",
   dashArray: "10, 5",
   dashOffset: "15",
+  smoothFactor: 1.0,
+  weight: 3,
 };
 
 const CustomMarkerIcon = ({ index, color }) => (
@@ -31,12 +43,54 @@ const Mapbox = React.memo((props) => {
   const [polylines, setPolylines] = useState();
 
   useEffect(() => {
-    const updatedPolylines = props.locations.map((element) => [
-      element.lat || element?.latitude,
-      element.long || element?.longitude,
-    ]);
+    if (props.locations.length < 2) {
+      setPolylines([]);
+      return;
+    }
 
-    setPolylines(updatedPolylines);
+    // Create curved path by adding intermediate points
+    const createCurvedPath = (start, end) => {
+      const points = [];
+      const steps = 20; // Number of intermediate points for smooth curve
+      
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const lat = start[0] + (end[0] - start[0]) * t;
+        const lng = start[1] + (end[1] - start[1]) * t;
+        
+        // Add curve by offsetting the middle points
+        if (i > 0 && i < steps) {
+          const offset = Math.sin(t * Math.PI) * 0.1; // Curve intensity
+          const perpendicularLat = (end[1] - start[1]) * offset;
+          const perpendicularLng = -(end[0] - start[0]) * offset;
+          
+          points.push([
+            lat + perpendicularLat,
+            lng + perpendicularLng
+          ]);
+        } else {
+          points.push([lat, lng]);
+        }
+      }
+      
+      return points;
+    };
+
+    const curvedPolylines = [];
+    for (let i = 0; i < props.locations.length - 1; i++) {
+      const start = [
+        props.locations[i].lat || props.locations[i]?.latitude,
+        props.locations[i].long || props.locations[i]?.longitude
+      ];
+      const end = [
+        props.locations[i + 1].lat || props.locations[i + 1]?.latitude,
+        props.locations[i + 1].long || props.locations[i + 1]?.longitude
+      ];
+      
+      curvedPolylines.push(...createCurvedPath(start, end));
+    }
+
+    setPolylines(curvedPolylines);
   }, [props.locations]);
 
   const FitBoundsOnMount = ({ maxZoom = 10 }) => {
@@ -138,7 +192,7 @@ const Mapbox = React.memo((props) => {
               icon={divIcon({
                 className: "icon",
                 html: ReactDOMServer.renderToStaticMarkup(
-                  <CustomMarkerIcon index={index} color={location?.color} />
+                  <CustomMarkerIcon index={index} color={CITY_COLOR_CODES[index % CITY_COLOR_CODES.length]} />
                 ),
                 iconSize: 20,
               })}

@@ -1600,7 +1600,7 @@ a {
 
 .Body3M_12 {
   font-size: 12px;
-  line-height: 18px;
+  line-height: 16px;
   font-weight: 500;
 }
 
@@ -1652,6 +1652,7 @@ a {
 .MediumIndigoButton {
   display: flex;
   width: 131px;
+  height: 40px;
   padding: 8px var(--Xl, 16px);
   justify-content: center;
   align-items: center;

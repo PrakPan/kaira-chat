@@ -8,14 +8,13 @@ import { getParent } from "../../../../../../utils/tailoredform";
 const Container = styled.div`
   display: grid;
   grid-template-columns: 34px 1fr;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  margin-block: 1rem;
+  border-radius: 4px;
   &:hover {
     background: #FEFFC0;
   }
 `;
-
 const MarkerContainer = styled.div`
   background: #dfdfdf;
   border-radius: 100%;

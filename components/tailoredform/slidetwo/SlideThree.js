@@ -40,19 +40,6 @@ const SlideThree = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    dispatch(
-      setRoomConfiguration([
-        {
-          adults: numberOfAdults,
-          children: numberOfChildren,
-          infants: numberOfInfants,
-          childAges: Array.from({ length: numberOfChildren }, () => 0),
-        },
-      ])
-    );
-  }, [numberOfAdults, numberOfChildren, numberOfInfants, dispatch]);
-
 
   const _handleShowPax = (grouptype) => {
     if (grouptype === "Solo") {
@@ -113,7 +100,7 @@ const SlideThree = (props) => {
               onChange={(e) => dispatch(setAddHotels(e.target.checked))}
               className="focus:outline-none cursor-pointer"
             />
-            <div className="text-sm">Stay</div>
+            <div className="Body2R_14">Stay</div>
           </label>
 
           <label
@@ -127,7 +114,7 @@ const SlideThree = (props) => {
               onChange={(e) => dispatch(setAddFlights(e.target.checked))}
               className="focus:outline-none cursor-pointer"
             />
-            <div className="text-sm">Flights</div>
+            <div className="Body2R_14">Flights</div>
           </label>
 
           <label
@@ -141,7 +128,7 @@ const SlideThree = (props) => {
               onChange={(e) => dispatch(setAddInclusions(e.target.checked))}
               className = "focus:outline-none cursor-pointer"
                 />
-                <div className="text-sm">Activities + Transfers</div>
+                <div className="Body2R_14">Activities + Transfers</div>
           </label>
         </Section>
       </div>

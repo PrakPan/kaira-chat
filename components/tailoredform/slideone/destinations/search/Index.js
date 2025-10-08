@@ -17,12 +17,13 @@ const Search = (props) => {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hotLocationsData, setHotLocationsData] = useState([]);
+  const [hotLocationsData, setHotLocationsData] = useState(props.hotLocations);
   const [showHotLocations, setShowHotLocations] = useState(false);
   const { query } = useRouter();
 
   const _handleKey = (value) => {
-    if (value && !props.searchFinalized)
+    console.log("value", value);
+    if (value && !props.searchFinalized){
       if (value.length > 1) {
         setShowHotLocations(false);
         setShowResults(true);
@@ -51,6 +52,13 @@ const Search = (props) => {
             });
           });
       }
+      else{
+        setShowResults(false);
+      }
+    }
+    else{
+      setShowResults(false);
+    }
   };
 
   useEffect(() => {
@@ -58,18 +66,6 @@ const Search = (props) => {
     if (query.state) params = `?state=${query.state}`;
     else if (query.country) params = `?country=${query.country}`;
     else if (query.continent) params = `?continent=${query.continent}`;
-
-    setHotLocationsData(props.hotLocations);
-
-    // axioslocationsinstance
-    //   .get("hot_destinations" + params)
-    //   .then((response) => {
-    //     if (response.data.length) setHotLocationsData(response.data);
-    //     else setShowHotLocations(false);
-    //   })
-    //   .catch((e) => {
-    //     setShowHotLocations(false);
-    //   });
   }, []);
 
   return (
@@ -97,7 +93,7 @@ const Search = (props) => {
         ></SearchInput>
       </div>
 
-      {showResults && (
+      {showResults ? (
         <>
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -111,9 +107,7 @@ const Search = (props) => {
           setSearchFinalized={props.setSearchFinalized}
         ></SearchResults>
         </>
-      )}
-
-      {showHotLocations && (
+      ) : showHotLocations ? (
         <SearchResults
           hotLocations
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -129,7 +123,7 @@ const Search = (props) => {
           setValueEnd={props.setValueEnd}
           tailoredFormModal={props.tailoredFormModal}
         ></SearchResults>
-      )}
+      ) : null}
     </Container>
   );
 };

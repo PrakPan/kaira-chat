@@ -12,18 +12,18 @@ const Container = styled.div`
 
     .range-slider__range {
         /* CSS for range */
-        background: #F7E700;
+        background: #000;
     }
 
     .range-slider__range[data-active] {
         /* CSS for active (actively being dragged) range */
-        background: #F7E700;
+        background: #000;
     }
 
     .range-slider__thumb {
         /* CSS for thumbs */
         background: #fff;
-        border: 9px solid #F7E700;
+        border: 9px solid #000;
     }
 
     .range-slider__thumb[data-lower] {

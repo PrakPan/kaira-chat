@@ -337,7 +337,7 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }
-              className="w-fit text-[14px]  cursor-pointer font-medium font-montserrat mt-1"
+              className={`${isPageWide?"Body2M_14":"Body3M_12"}`}
             >
               {props.element.heading}
             </div>
@@ -347,15 +347,15 @@ const Activity = (props) => {
                 <Image
                   src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
                   alt="ticket"
-                  width={15}
-                  height={15}
+                  width={18}
+                  height={18}
                 />
               </div>
 
-              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] font-normal text-[#6E757A]"> 12:30 - 1:30 PM</div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
               {props.element?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                <div className="text-[12px]">
+                <div className="Body3M_12">
                   {props.element?.rating}
                 </div>
                 <div className="flex items-center">
@@ -367,7 +367,7 @@ const Activity = (props) => {
           </div>
         </div>
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[10px] flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[8px] flex-row-reverse justify-end' : ''}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -409,7 +409,7 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }}
-              className="ttw-btn-secondary">
+              className="IndigoOutlinedButton !w-[78px] Body2M_14">
               Details
             </button>
           </div>
@@ -604,7 +604,7 @@ const Recommendation = (props) => {
                   "restaurant"
                 )
               }
-              className="w-fit text-[14px] font-medium cursor-pointer font-montserrat"
+              className={`${isPageWide?"Body2M_14":"Body3M_12"}`}
             >
               {props.element.heading}
             </div>
@@ -615,15 +615,15 @@ const Recommendation = (props) => {
                 <Image
                   src={'/assets/Itinerary/restaurant.svg'}
                   alt="ticket"
-                  width={15}
-                  height={15}
+                  width={18}
+                  height={18}
                 />
               </div>
 
-              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] font-normal text-[#6E757A]"> 12:30 - 1:30 PM</div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
               {props.element?.restaurants?.[0]?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                <div className="text-[12px]">
+                <div className="Body3M_12">
                   {props.element?.restaurants?.[0]?.rating}
                 </div>
                 <div className="flex items-center">
@@ -636,7 +636,7 @@ const Recommendation = (props) => {
         </div>
 
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[10px] flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[8px] flex-row-reverse justify-end' : ''}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -675,7 +675,7 @@ const Recommendation = (props) => {
                 e.stopPropagation();
                 handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
               }}
-              className="ttw-btn-secondary"
+              className="IndigoOutlinedButton !w-[78px] Body2M_14"
             >
               Details
             </button>

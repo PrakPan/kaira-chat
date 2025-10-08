@@ -13,7 +13,6 @@ import Image from "next/image";
 import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
 
 const SectionHeading = styled.div`
-   font-family: Montserrat;
    font-weight: 500;
    font-size: 14px;
    line-height: 22px;
@@ -32,7 +31,7 @@ import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const CityDay = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 767px)");
   const [viewMore, setViewMore] = useState(false);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
@@ -124,9 +123,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
   );
   return (
     <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
-      <div className={`flex flex-col pt-2 pb-2 pl-3 pr-2 md:w-[100%]  ${isPageWide ? 'ml-4 ' : ''}`}>
-        <div className={`flex items-center justify-between p-2 ${!viewMore ? ' bg-white rounded-2xl shadow-sm' : ''}`} >
-          <SectionHeading > Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></SectionHeading>
+      <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 ' : ''}`}>
+        <div className={`flex items-center justify-between ${!viewMore ? ' bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px]' : 'mb-[12px]'}`} >
+          <div className={`Body2M_14`}> Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></div>
           <button
             onClick={() => setViewMore((prev) => !prev)}
             className="flex items-center text-sm font-semibold"

@@ -42,14 +42,14 @@ const Destinations = (props) => {
     const des = [];
     for (let i = 0; i < selectedCities?.length; i++) {
       des.push(
-        <div>
-          <Body2R_14>Destination</Body2R_14>
+        <div className="flex flex-col gap-[4px]">
+          {i == 0 && <Body2R_14>Destination</Body2R_14>}
           <EndDestination
             autofocus={i == 0 && selectedCities[0].name && true}
             _updateDestinationHandler={_updateDestinationHandler}
             key={selectedCities[i].input_id}
             setDeletedId={
-              (i != 0 || selectedCities.length > 1) && setDeletedId
+           selectedCities.length!=1 && setDeletedId
             }
             inbox_id={selectedCities[i].input_id}
             selectedCities={selectedCities}
@@ -62,6 +62,8 @@ const Destinations = (props) => {
             tailoredFormModal={props.tailoredFormModal}
             selectedCity={selectedCities[i]}
             index={i}
+            size={selectedCities.length}
+            hotlocations={props.hotlocations}
           ></EndDestination>
         </div>
       );
@@ -74,7 +76,6 @@ const Destinations = (props) => {
     const id = Date.now();
     dest.push(
       <>
-        <StyledHeading>Destination</StyledHeading>
         <SelectedDestination
           autofocus
           _updateDestinationHandler={_updateDestinationHandler}
@@ -120,7 +121,7 @@ const Destinations = (props) => {
 
   return (
     <Container>
-      <div>
+      <div className="flex flex-col gap-[4px]">
         <Body2R_14>Start Location</Body2R_14>
         <SelectedDestination
           startingLocation={props.startingLocation}
@@ -138,6 +139,7 @@ const Destinations = (props) => {
           {props.errors.startLocation}
         </p>}
       </div>
+      <Container className=" !gap-[4px]">
       {destinations.map((e, i) => (
         <div key={i}>
           <>{e}</>
@@ -148,6 +150,7 @@ const Destinations = (props) => {
           }
         </div>
       ))}
+      </Container>
 
       <div
         style={{
@@ -163,7 +166,7 @@ const Destinations = (props) => {
           <p
             onClick={_addDestinationHandler}
             className="text-center  hover-pointer"
-            style={{ color: "#1360D3", margin: "0.5rem", fontSize: "0.85rem" }}
+            style={{ color: "#1360D3", margin: "0.5rem -9px 0 0", fontSize: "0.85rem" }}
           >
             + Add Destination
           </p>

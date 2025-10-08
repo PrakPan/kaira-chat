@@ -8,7 +8,7 @@ import media from '../../components/media';
 import Image from 'next/image';
 import useCachedImage from '../../hooks/useCachedImage';
 import { authShowLogin } from '../../store/actions/auth';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Container = styled.div`
    height: calc(100% - 270px);
@@ -55,6 +55,7 @@ const LoginButton = styled.button`
 
 const ChatMessage = React.memo(({ item, cachedAvatar }) => {
     const isUser = item.is_bot === false;
+    const { finalized_status } = useSelector((state) => state.ItineraryStatus);
     return (
         <MessageWrapper isUser={isUser}>
             
@@ -79,6 +80,7 @@ function ChatSection(props) {
     const dispatch = useDispatch();
     let isPageWide = media("(min-width: 768px)");
     const { conversations, isTyping, currentBotMessage,lastProductSliderPosition } = useChat();
+    const { finalized_status } = useSelector((state) => state.ItineraryStatus);
     const scrollRef = useRef(null);
     const cachedAvatar = useCachedImage(
         "/assets/chatbot/chatbot-avaatar.svg",
@@ -160,9 +162,10 @@ function ChatSection(props) {
                     < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar}></ChatMessage>
                 )}
 
-                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" : "Analyzing your Itinerary..."}    <div className={styles.typingDots}>
+                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" :  "Analyzing your Itinerary"}    <div className={styles.typingDots}>
                     <span></span><span></span><span></span>
                 </div></span></div>}
+                {finalized_status=="PENDING" && <div className={styles.typingIndicator}><span className={styles.thinking}>Fetching your itinerary<div className={styles.typingDots}></div> </span></div>}
                 </>
                 }
                 

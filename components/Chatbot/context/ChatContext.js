@@ -52,6 +52,8 @@ export const ChatProvider = ({ itinearyId, children }) => {
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const {trackTransferBookingDelete} = useAnalytics();
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+
 
 
   useEffect(() => {
@@ -60,10 +62,14 @@ export const ChatProvider = ({ itinearyId, children }) => {
     getAllChatHistory(itinearyId);
     if (sessionId) {
       showChatHistoryById(sessionId, true);
-    } else {
-      connect(sessionId);
-    }
+    } 
   }, [itinearyId]);
+  useEffect(() => {
+    if (!itinearyId) return;
+    if (!sessionId && finalized_status === "SUCCESS") {
+      connect(null);
+    }
+  }, [finalized_status]);
 
   const connect = (id = null) => {
     if (reconnecting) return;
@@ -100,13 +106,20 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
       if (!id) {
         setDisableQuerySection(true);
-        const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
-        // console.log(initialPrompt)
-        if (socketRef.current?.readyState === WebSocket.OPEN) {
-          socketRef.current.send(
-            JSON.stringify({ message: initialPrompt, token })
-          );
-        }
+        // const interval = setInterval (() => {
+        //   if(finalized_status=="SUCCESS"){
+
+            const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+              socketRef.current.send(
+                JSON.stringify({ message: initialPrompt, token })
+              );
+            }
+            // clearInterval(interval);
+
+        //   }
+        // }, 1000);
+        
       }
     };
 

@@ -4,7 +4,7 @@ import RoomType from "./roomtype/Index";
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
-  
+
   const handleUpdateBooking = (index) => {
     const rates = props.data[index].rates.map((rate) => {
       return {
@@ -19,34 +19,34 @@ const Rooms = (props) => {
 
   useEffect(() => {
     let rooms_arr = [];
-    let roomCounter = 0; 
-    
+    let roomCounter = 0;
+
     if (props.data) {
       for (var i = 0; i < props.data.length; i++) {
         // if (props.data[i]?.final_rate) {
-          const currentRooms = getRooms(props.data[i]);
-          
-          rooms_arr.push(
-            <RoomType
-              currentBooking={props?.currentBooking}
-              key={i}
-              index={roomCounter} 
-              price={props.data[i].final_rate}
-              data={props.data[i]}
-              rooms={currentRooms}
-              handleUpdateBooking={handleUpdateBooking}
-              selectedRecommendation={
-                selectedRecommendation && selectedRecommendation === i
-              }
-              setSelectedRecommendation={setSelectedRecommendation}
-              checkInDate={props.check_in?.date}
-              city={props.city}
-              duration={props?.duration}
-              cancellationPolicy={props?.cancellationPolicy}
-            ></RoomType>
-          );
-          
-          roomCounter += currentRooms.length;
+        const currentRooms = getRooms(props.data[i]);
+
+        rooms_arr.push(
+          <RoomType
+            currentBooking={props?.currentBooking}
+            key={i}
+            index={roomCounter}
+            price={props.data[i].final_rate}
+            data={props.data[i]}
+            rooms={currentRooms}
+            handleUpdateBooking={handleUpdateBooking}
+            selectedRecommendation={
+              selectedRecommendation && selectedRecommendation === i
+            }
+            setSelectedRecommendation={setSelectedRecommendation}
+            checkInDate={props.check_in?.date}
+            city={props.city}
+            duration={props?.duration}
+            cancellationPolicy={props?.cancellationPolicy}
+          ></RoomType>
+        );
+
+        roomCounter += currentRooms.length;
         // }
       }
       setRooms(rooms_arr);
@@ -65,15 +65,18 @@ const Rooms = (props) => {
   };
 
   return (<><div className="flex flex-col gap-3">{rooms} <div>
-                  {props?.cancellationPolicy && (
-                    <div
-                      className="text-[14px]"
-                      dangerouslySetInnerHTML={{
-                        __html: props?.cancellationPolicy,
-                      }}
-                    ></div>
-                  )}
-          </div></div></>)
+    {props?.cancellationPolicy && (
+      <>
+        <hr className="my-lg" />
+        <div
+          className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements"
+          dangerouslySetInnerHTML={{
+            __html: props?.cancellationPolicy,
+          }}
+        ></div>
+      </>
+    )}
+  </div></div></>)
 };
 
 export default Rooms;

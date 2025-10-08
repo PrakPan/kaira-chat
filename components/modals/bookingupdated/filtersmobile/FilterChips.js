@@ -1,9 +1,9 @@
 import React from 'react'
 
 const svgIcons = {
-    'close': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.99935 3.70758L8.29018 0.416748L9.58268 1.70925L6.29185 5.00008L9.58268 8.29091L8.29018 9.58341L4.99935 6.29258L1.70852 9.58341L0.416016 8.29091L3.70685 5.00008L0.416016 1.70925L1.70852 0.416748L4.99935 3.70758Z" fill="black" />
-    </svg>
+    'close':<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M4.99999 3.70746L8.29082 0.416626L9.58332 1.70913L6.29249 4.99996L9.58332 8.29079L8.29082 9.58329L4.99999 6.29246L1.70916 9.58329L0.416656 8.29079L3.70749 4.99996L0.416656 1.70913L1.70916 0.416626L4.99999 3.70746Z" fill="black"/>
+</svg>
 }
 
 
@@ -41,8 +41,8 @@ function FilterChips(props) {
         }
 
         const allCleared =
-            ( isBudgetClear || (props.filters.budget.price_lower_range === props.defaultBudget.price_lower_range &&
-            props.filters.budget.price_upper_range === props.defaultBudget.price_upper_range)) &&
+            (isBudgetClear || (props.filters.budget.price_lower_range === props.defaultBudget.price_lower_range &&
+                props.filters.budget.price_upper_range === props.defaultBudget.price_upper_range)) &&
             props.filters.star_category.length === 0 &&
             props.filters.user_ratings.length === 0 &&
             (props.filters.type.length === 0 || (props.filters.type.length === 1 && props.filters.type[0] === "All")) &&
@@ -60,7 +60,7 @@ function FilterChips(props) {
 
                 {/* Price */}
                 {(props?.filters?.budget?.price_lower_range != props.defaultBudget?.price_lower_range || props?.filters?.budget?.price_upper_range != props.defaultBudget?.price_upper_range) &&
-                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap'>
+                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center'>
                         <span className='text-sm-md font-400 leading-xl'>{props?.filters?.budget.price_lower_range} - {props?.filters?.budget?.price_upper_range}</span>
                         <button className='ml-xs' onClick={() => handleRemove("budget")}>{svgIcons.close}</button>
                     </div>
@@ -68,7 +68,7 @@ function FilterChips(props) {
 
                 {/* star category */}
                 {props?.filters?.star_category?.length > 0 && props?.filters?.star_category.map((item, index) => (
-                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap' key={index}>
+                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center' key={index}>
                         <span className='text-sm-md font-400 leading-xl'>{item} Star </span>
                         <button className='ml-xs' onClick={() => handleRemove("star_category", item)}>{svgIcons.close}</button>
                     </div>
@@ -77,7 +77,7 @@ function FilterChips(props) {
 
                 {/* user rating */}
                 {props?.filters?.user_ratings?.length > 0 && props?.filters?.user_ratings.map((item, index) => (
-                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap' key={index}>
+                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center' key={index}>
                         <span className='text-sm-md font-400 leading-xl'>{props?.FILTERS?.user_ratings_label[item] || item + ' Rating'}</span>
                         <button className='ml-xs' onClick={() => handleRemove("user_ratings", item)}>{svgIcons.close}</button>
                     </div>
@@ -87,7 +87,7 @@ function FilterChips(props) {
                 {/* type */}
                 {props?.filters?.type?.length > 0 && props?.filters?.type.map((item, index) => (<>
                     {item != 'All' &&
-                        <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap' key={index}>
+                        <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center' key={index}>
                             <span className='text-sm-md font-400 leading-xl'>{item}</span>
                             <button className='ml-xs' onClick={() => handleRemove("type", item)}>{svgIcons.close}</button>
                         </div>
@@ -97,7 +97,7 @@ function FilterChips(props) {
 
                 {/* facilities */}
                 {props?.filters?.facilities?.length > 0 && props?.filters?.facilities.map((item, index) => (
-                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap' key={index}>
+                    <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center' key={index}>
                         <span className='text-sm-md font-400 leading-xl'>{item}</span>
                         <button className='ml-xs' onClick={() => handleRemove("facilities", item)}>{svgIcons.close}</button>
                     </div>

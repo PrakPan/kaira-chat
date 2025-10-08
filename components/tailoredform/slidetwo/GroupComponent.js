@@ -16,13 +16,14 @@ export const StyledBox = styled.div`
   justify-content: center;
   gap: 10px;
   border-radius: 8px;
-  border: 1px solid black;
   padding: 10px;
   background-color: ${({ is_selected }) => (is_selected ? "#F7E700" : "transparent")};
+    border: ${({ is_selected }) => (is_selected ? "none" : "1px solid #E5E5E5")};
+
 `;
 
 
-const groups = ["Solo", "Couple", "Friends", "Family", "Corporate"];
+const groups = ["Solo", "Couple", "Friends", "Family"];
 
 const GroupComponent = (props) => {
     return (
@@ -31,7 +32,7 @@ const GroupComponent = (props) => {
                 <StyledBox is_selected={props.groupType === item}
                     onClick={() => props._handleShowPax(item)}>
                         <div className="flex flex-col gap-[4px]">
-                    <Image src="/calendar.svg" width={20} height={20} />
+                    <Image src={`/${item.toLowerCase()}.svg`} width={20} height={20} />
                     <Body2R_14>
                         {item}
                     </Body2R_14>

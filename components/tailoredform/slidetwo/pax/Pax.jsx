@@ -1,7 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import Button from "../../../ui/button/Index";
 import ModalWithBackdrop from "../../../ui/ModalWithBackdrop";
 import { AgeInput, ApplyButton, ClearButton, CounterBox, CounterButton, CounterValue, PassengerLabel, PassengerRow } from "../EnterPassenger";
 import Image from "next/image";
@@ -255,7 +252,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
 
       <PassengerRow className="!w-[100%]">
         <PassengerLabel>
-          <div className="title">Adults</div>
+          <div className="Body2M_14">Adults</div>
           <div className="subtitle">Ages 13 or above</div>
         </PassengerLabel>
         <CounterBox>
@@ -268,7 +265,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       <PassengerRow className="!w-[100%]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
         <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
           <PassengerLabel>
-            <div className="title">Children</div>
+            <div className="Body2M_14">Children</div>
             <div className="subtitle">Ages 2 to 12</div>
           </PassengerLabel>
           <CounterBox>
@@ -280,8 +277,8 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       </PassengerRow>
 
       {children > 0 && (
-        <div className="w-full" style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "4px" }}>
-          <div className="text-[12px] text-[#6E757A]">Enter the children age for the best options and prices</div>
+        <div className="w-full" style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="text-[12px] text-[#6E757A]">Enter the age of each child below</div>
           {childAges.map((age, i) => (
             <ChildAge
               key={i}
@@ -310,9 +307,10 @@ const ChildAge = ({ child, age, index, setChildAges, showError }) => {
   return (
     <PassengerRow className="!w-[100%] text-[12px]" style={{ flexDirection: "column", alignItems: "flex-start" }}>
       <div className="flex justify-between items-center w-full">
-        <div className="title">Age of Child {index}</div>
+        <div className="Body2M_14">Age of Child {index+1}</div>
 
         <div className="flex items-center gap-2">
+          <CounterButton onClick={() => handleChange({ target: { value: age - 1 } })} disabled={age <= 2}>−</CounterButton>
           <AgeInput
             key={index}
             type="number"
@@ -320,8 +318,11 @@ const ChildAge = ({ child, age, index, setChildAges, showError }) => {
             max="12"
             value={age ?? ""}
             onChange={handleChange}
+            disabled
           />
-          <span className="text-sm text-gray-500">years</span>
+                    <span className="text-sm text-gray-500">years</span>
+
+          <CounterButton onClick={() => handleChange({ target: { value: age + 1 } })} disabled={age >= 12}>+</CounterButton>
         </div>
 
         {showError && (age === null || age === "") && (

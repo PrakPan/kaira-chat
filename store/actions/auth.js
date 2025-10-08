@@ -358,6 +358,10 @@ export const auth = (
           });
 
           dispatch(authEmailFail(err.response.data?.errors[0].email[0]));
+          dispatch(openNotification({
+            type: "error",
+            heading: err.response.data?.errors[0].email,
+          }))
         } else {
           logEvent({
             action: "number-login-otp_fail",

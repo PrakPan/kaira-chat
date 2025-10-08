@@ -4,14 +4,13 @@ import styled from "styled-components";
 import ImageLoader from "../../../../ImageLoader";
 
 const Container = styled.div`
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 16px;
   align-items: center;
-  margin-block: 1rem;
-  margin-left: 10px;
-  border-radius: 50px;
+  border-radius: 4px;
   &:hover {
-    background: #f0f0f0;
+    background: #FEFFC0;
   }
 `;
 
@@ -30,7 +29,7 @@ font-weight : 500;
 const SearchResult = (props) => {
   return (
     <Container
-      className=" hover-pointer"
+      className=" hover-pointer px-2 py-[4px]"
       onClick={(event) => props.selectResult(event, props.text, props.place_id)}
     >
       <MarkerContainer>
