@@ -25,6 +25,7 @@ import Travelers from "./filtersmobile/Travelers";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Filters from "./filtersmobile/Filters";
 import FilterChips from "./filtersmobile/FilterChips";
+import { IconButton } from "@mui/material";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -160,7 +161,7 @@ const Booking = (props) => {
     tags: [],
   });
   const [cloneFilters, setCloneFilter] = useState({});
-  const [SelectedSort, setSelectedSort] = useState("select");
+  const [SelectedSort, setSelectedSort] = useState("Sort");
   const [sortShow, setSortShow] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -725,6 +726,11 @@ const Booking = (props) => {
     }
   };
 
+  const resetSort = () => {
+    setSelectedSort("Sort");
+    _addFilterHandler("price: low to high", "sort");
+  }
+
   if (props?.token)
     return (
       <div>
@@ -797,17 +803,28 @@ const Booking = (props) => {
 
 
                   <div>
-                    <div className="text-sm font-normal w-[95%] md:w-fit">
+                    <div className="text-sm font-normal w-[95%] md:w-fit relative">
                       <div
                         className="ttw-sort-button whitespace-nowrap relative cursor-pointer"
                         onClick={() => {
                           setSortShow(!sortShow);
                         }}
                       >
+
                         <img className="inline mr-xs" src="/assets/stays/sort-icon.svg" />
-                         <b className="inline max-ph:hidden">
+                        <b className="inline max-ph:hidden">
                           {SelectedSort}
                         </b>
+                        {SelectedSort != "Sort" &&
+                          <IconButton onClick={(e) => {
+                            resetSort();
+                            e.stopPropagation();
+                          }} className="!ml-xxs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="black" />
+                            </svg>
+                          </IconButton>
+                        }
                         {sortShow ? (
                           <SortContainer>
                             {filtersObj["sort"].map((e, i) => (
@@ -835,7 +852,7 @@ const Booking = (props) => {
 
               {isFilterChangesApplied &&
                 <>
-                <hr className="mt-md"/>
+                  <hr className="mt-md" />
                   <FilterChips
                     defaultBudget={defaultBudget}
                     filters={cloneFilters}

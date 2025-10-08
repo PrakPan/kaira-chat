@@ -562,7 +562,7 @@ const HotelBookingDetails = (props) => {
                               <ImageLoader
                                 url={
                                   ImagesError[0]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[0]?.image
                                 }
                                 width="100%"
@@ -599,7 +599,7 @@ const HotelBookingDetails = (props) => {
                               <ImageLoader
                                 url={
                                   ImagesError[2]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[2]?.image
                                 }
                                 fit="cover"
@@ -637,7 +637,7 @@ const HotelBookingDetails = (props) => {
                               <ImageLoader
                                 url={
                                   ImagesError[3]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[3]?.image
                                 }
                                 fit="cover"
@@ -680,7 +680,7 @@ const HotelBookingDetails = (props) => {
                               noLazy
                               url={
                                 ImagesError[0]
-                                  ? "media/icons/bookings/notfounds/noroom.png"
+                                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                   : images[0]?.image
                               }
                               width="100%"
@@ -717,7 +717,7 @@ const HotelBookingDetails = (props) => {
                               noLazy
                               url={
                                 ImagesError[1]
-                                  ? "media/icons/bookings/notfounds/noroom.png"
+                                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                   : images[1]?.image
                               }
                               fit="cover"
@@ -755,7 +755,7 @@ const HotelBookingDetails = (props) => {
                               noLazy
                               url={
                                 ImagesError[2]
-                                  ? "media/icons/bookings/notfounds/noroom.png"
+                                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                   : images[2]?.image
                               }
                               fit="cover"
@@ -796,7 +796,7 @@ const HotelBookingDetails = (props) => {
                               noLazy
                               url={
                                 ImagesError[0]
-                                  ? "media/icons/bookings/notfounds/noroom.png"
+                                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                   : images[0]?.image
                               }
                               fit="cover"
@@ -834,7 +834,7 @@ const HotelBookingDetails = (props) => {
                               noLazy
                               url={
                                 ImagesError[1]
-                                  ? "media/icons/bookings/notfounds/noroom.png"
+                                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                   : images[1]?.image
                               }
                               fit="cover"
@@ -872,7 +872,7 @@ const HotelBookingDetails = (props) => {
                             noLazy
                             url={
                               ImagesError[0]
-                                ? "media/icons/bookings/notfounds/noroom.png"
+                                ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                 : images[0]?.image
                             }
                             fit="cover"
@@ -936,7 +936,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[0]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[0]?.image
                                 }
                                 fit="cover"
@@ -974,7 +974,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[1]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[1]?.image
                                 }
                                 fit="cover"
@@ -1012,7 +1012,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[2]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[2]?.image
                                 }
                                 fit="cover"
@@ -1053,7 +1053,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[0]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[0]?.image
                                 }
                                 fit="cover"
@@ -1091,7 +1091,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[1]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[1]?.image
                                 }
                                 fit="cover"
@@ -1132,7 +1132,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[0]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : images[0]?.image
                                 }
                                 fit="cover"
@@ -1393,7 +1393,7 @@ const HotelBookingDetails = (props) => {
                                 noLazy
                                 url={
                                   ImagesError[i]
-                                    ? "media/icons/bookings/notfounds/noroom.png"
+                                    ? "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                                     : "media/icons/google-maps.png"
                                 }
                                 height="30px"

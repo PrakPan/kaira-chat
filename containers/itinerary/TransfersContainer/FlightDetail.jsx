@@ -147,30 +147,33 @@ const Details = ({
           <>
             {" "}
             <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold">
-                Fare Details and Rules
-              </div>
+            <div className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements">
+          <h6 className="section-heading">
+            Fare Details and Rules
+          </h6>
 
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: fareRules,
-                }}
-                className="flex flex-col gap-1 text-sm ml-4"
-              ></div>
-            </div>
+        
+            <div
+              dangerouslySetInnerHTML={{
+                __html: fareRules,
+              }}
+              className="section-content pl-lg"
+            ></div>
+          </div>
+        </div>
           </>
         )
       )}
       {provider && !combo && (
         <div className="flex justify-end">
-          <Generalbuttonstyle
-            bgColor={"#F7E700"}
-            borderRadius="8px"
-            fontWeight="400"
-            padding="0.6rem 0.6rem"
-            hoverColor="white"
-            margin="auto 0px"
-            onclickparam={null}
+          <button className="ttw-btn-fill-yellow"
+            // bgColor={"#F7E700"}
+            // borderRadius="8px"
+            // fontWeight="400"
+            // padding="0.6rem 0.6rem"
+            // hoverColor="white"
+            // margin="auto 0px"
+            // onclickparam={null}
             onClick={async () => {
               try {
                 // setLoading(true);
@@ -238,7 +241,6 @@ const Details = ({
                 );
               }
             }}
-            className="z-[1600]"
           >
             <div className="flex justify-center items-center relative min-w-[120px] h-[24px]">
               <span className={`${loading ? "invisible" : "visible"}`}>
@@ -255,7 +257,7 @@ const Details = ({
                 </div>
               )}
             </div>
-          </Generalbuttonstyle>
+          </button>
         </div>
       )}
       <ToastContainer />
