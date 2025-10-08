@@ -10,13 +10,13 @@ import ReactDOMServer from "react-dom/server";
 import { GOOGLE_MAPS_API_KEY } from "../services/constants";
 
 const CITY_COLOR_CODES = [
-  "#359EBF",
   "#F0C631",
   "#BF3535",
   "#47691e",
   "#cc610a",
   "#008080",
   "#7d5e7d",
+  "#359EBF",
 ];
 
 const limeOptions = {

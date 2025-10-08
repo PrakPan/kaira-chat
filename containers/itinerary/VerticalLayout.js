@@ -25,6 +25,7 @@ import TransferPickupDropButton from "./TransferPickupDropButton";
 import PickupDropDrawer from "./PickupDropDrawer";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import useMediaQuery from "../../components/media";
 
 const Container = styled.div`
   display: flex;
@@ -665,7 +666,7 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className="text-blue font-[500] text-[14px] hover:underline cursor-pointer"
+            className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -752,6 +753,7 @@ const CityItem = ({
   const router = useRouter();
   const dispatch = useDispatch();
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const isDesktop = useMediaQuery("(min-width:767px)");
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -1218,7 +1220,7 @@ useEffect(() => {
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className="font-montserrat font-[500] text-[18px] text-[#01202B]">{city}</div>}
+          {!(upPresent && downPresent) && <div className={`${isDesktop?"Body1M_16":"Body2M_14"}`}>{city}</div>}
 
           {transfers_status === "PENDING" ? (
             upPresent && downPresent ? (
@@ -1273,7 +1275,7 @@ useEffect(() => {
                             handleEdit(transfer_type === "combo", booking);
                         }}
                       >
-                        <div className="group-hover:text-blue font-montserrat font-[500] text-[15px] text-[#01202B]">
+                        <div className={`${isDesktop?"Body1M_16":"Body2M_14"} group-hover:text-blue `}>
                           {upPresent && downPresent ? city : ""}
                         </div>
                         {upPresent && downPresent && (
@@ -1288,7 +1290,7 @@ useEffect(() => {
 
                       {/* Duration */}
                       {duration && (
-                        <div className="font-[400] text-[12px] font-montserrat">
+                        <div className="Body3R_12">
                           Duration: {duration}
                         </div>
                       )}
@@ -1297,7 +1299,7 @@ useEffect(() => {
                 ) : isPageWide ? (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-medium leading-[60px] text-blue hover:underline font-montserrat"
+                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer from {origin_city_name} to{" "}
                     {destination_city_name}
@@ -1305,7 +1307,7 @@ useEffect(() => {
                 ) : (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px]font-medium leading-[60px] text-blue hover:underline font-montserrat"
+                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer
                   </button>

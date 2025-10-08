@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
+import {usePathname} from "next/navigation"
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { TTW } from "../assets";
 import { menuAnimations } from "../common/animations/menuAnimations";
@@ -31,6 +32,7 @@ const NavigationMenu = (props) => {
     menuItemsRef,
   } = useMobileMenu();
   const router = useRouter();
+  const pathname = usePathname();
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
   const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] = useState(false);
   const isMidScreen = useMediaQuery("(min-width:786px)");
@@ -102,9 +104,9 @@ const NavigationMenu = (props) => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          <button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
-                  Create a Trip
-                </button>
+          {pathname!="/dashboard"&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
+                  My Trips
+          </button>}
           {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
             name={props.name}
@@ -127,9 +129,9 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex  gap-4 md:hidden">
-        <button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
-                  Create a Trip
-        </button>
+        {pathname!="/dashboard"&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
+                  My Trips
+        </button>}
           <MobileMenu 
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}
