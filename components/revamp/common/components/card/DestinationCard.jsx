@@ -16,7 +16,7 @@ const DestinationCard = ({
 }) => {
   return (
     <div
-      className={`relative group cursor-pointer rounded-lg sm:rounded-2xl overflow-hidden transform transition-all duration-300 sm:hover:-translate-y-2 sm:hover:shadow-2xl w-full ${className}`}
+      className={`relative group cursor-pointer rounded-lg sm:rounded-2xl overflow-hidden w-full ${className}`}
       style={{ height }}
       onClick={onClick}
       {...props}
@@ -72,8 +72,7 @@ const DestinationCard = ({
         <p className="text-white/90 leading-relaxed text-sm">{description}</p>
       </div>
 
-      {/* Hover Effect Overlay */}
-      <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* Hover Effect Overlay removed (no hover) */}
     </div>
   );
 };

@@ -3,9 +3,10 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper";
+import { Pagination, Navigation } from "swiper";
 import "swiper/css";
 import "swiper/css/pagination";
+// import "swiper/css/navigation";
 
 const ItineraryCard = ({ itinerary, onClick }) => {
   // Normalize images: itinerary.image could be array or single
@@ -14,17 +15,22 @@ const ItineraryCard = ({ itinerary, onClick }) => {
     : [itinerary.image];
 
   return (
-    <div className="w-[384px] cursor-pointer" onClick={onClick}>
+    <div className="w-full">
       {/* Image / Carousel Container */}
       <div className="bg-[#e4e4e4] h-[424px] overflow-hidden rounded-[24px] relative group">
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Navigation]}
           pagination={{ clickable: true }}
+          // navigation={{ clickable: true }}
           className="h-full"
           style={{ height: "424px" }}
         >
           {images.map((img, idx) => (
-            <SwiperSlide key={idx} className="h-full">
+            <SwiperSlide
+              key={idx}
+              className="h-full"
+              style={{ cursor: "pointer" }}
+            >
               <div className="w-full h-full relative">
                 <Image
                   src={img}
