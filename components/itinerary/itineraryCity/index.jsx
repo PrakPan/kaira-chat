@@ -1,59 +1,13 @@
 import { useEffect, useState } from "react";
-import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { logEvent } from "../../../services/ga/Index";
-import { toast } from "react-toastify";
-import BackArrow from "../../ui/BackArrow";
-import { openNotification } from "../../../store/actions/notification";
-import FullScreenGallery from "../../fullscreengallery/Index";
-import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
-import media from "../../media";
-import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
-import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 251;
-  cursor: pointer;
-`;
-
-const Container = styled.div`
-  padding: 0 0.75rem 0.75rem 0.75rem;
-  @media screen and (min-width: 768px) {
-    padding: 0 1.25rem 1.25rem 1.25rem;
-  }
-`;
-
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
+import useMediaQuery from "../../media";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(true);
@@ -64,11 +18,11 @@ const ItineraryCity = (props) => {
   const { itinerary_status, hotels_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+  const isDesktop = useMediaQuery("(min-width:767px)");
 
   const router=useRouter()
  
   const [images, setImages] = useState(null);
-  const dispatch = useDispatch();
 
   // Use cityHotels and totalDuration from props instead of calculating locally
   const multiHotelStays = props.cityHotels || stay?.filter(hotel => {
@@ -148,11 +102,11 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 rounded-t-lg flex flex-col w-full p-[24px] border-[#E5E5E5] border-[1px]"
+      className="border-1 rounded-t-lg flex flex-col w-full  border-[#E5E5E5] border-[1px]"
     >
-      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey mb-[24px]">
-        <div className="space-y-1 font-montserrat">
-          <div className={`md:text-[18px] font-semibold`}>
+      <div className="px-[16px] py-[12px] flex items-start justify-between rounded-t-lg border-b-[1px] border-[#E5E5E5]  ">
+        <div className="space-y-1 ">
+          <div className={`${!isDesktop?"Body1M_16":"Heading3SB"}`}>
             {props?.city?.city?.name}
             {" - "}
             {multiHotelDuration}{" "}
@@ -190,7 +144,7 @@ const ItineraryCity = (props) => {
                         alt="Hotel Icon"
                       />
                         <div
-                          className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue"
+                          className={`${!isDesktop?"Body3M_12":"Body2R_14"} cursor-pointer hover:underline`}
                           onClick={() => fetchDetails(hotel.id)}
                         >
                           {hotel?.name} 
@@ -214,7 +168,7 @@ const ItineraryCity = (props) => {
             </div>
           ) : (
             <button
-              className="text-blue cursor-pointer text-[14px] font-medium underline"
+            className={`${!isDesktop?"Body3M_12":"Body2R_14"} text-blue cursor-pointer hover:underline`}
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add",null)
               }
