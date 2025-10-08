@@ -500,7 +500,7 @@ const starRating = (rating, length) => {
                     url={
                       hotel_image && !imageFail
                         ? hotel_image
-                        : "media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     onfail={() => {
                       setImageFail(true);

@@ -5,8 +5,6 @@ import media from "../../../components/media";
 
 const StaysContainer = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
-  // console.log("CITTT",props?.cities)
   const { hotels_status } = useSelector((state) => state.ItineraryStatus);
   return (
     <div id="stays" className="mt-5">
@@ -42,7 +40,6 @@ const StaysContainer = (props) => {
                 CityData={props?.CityData}
                 start_date={props?.plan?.start_date}
                 itinerary_city_id={booking?.itinerary_city_id}
-                // setShowBookingModal={props?.setShowBookingModal}
               />
             </>
           ))

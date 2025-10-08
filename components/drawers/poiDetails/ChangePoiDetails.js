@@ -222,7 +222,7 @@ export default function ChangePoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[0]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 0"
                   fill
@@ -247,7 +247,7 @@ export default function ChangePoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[1]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 1"
                   fill
@@ -272,7 +272,7 @@ export default function ChangePoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[2]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 2"
                   fill
@@ -297,7 +297,7 @@ export default function ChangePoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[3]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 3"
                   fill

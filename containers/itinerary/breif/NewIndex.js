@@ -156,7 +156,7 @@ const Details = (props) => {
         <RoutesRow className="flex w-full justify-between">
           <div className="flex gap-[10px]">
             {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
-            <sapn >Routes</sapn></div>
+            <span className="Body2M_14">Routes</span></div>
           <button
             className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
             onClick={() =>

@@ -225,17 +225,20 @@ const Details = ({
           </div>
 
           <div className="flex flex-col">
-            <div className="w-fit py-2 mb-2 text-lg font-bold">
-              Fare Details and Rules
-            </div>
+            <div className="text-sm-xl font-400 leading-xl gl-dynamic-render-elements">
+          <h6 className="section-heading">
+            Fare Details and Rules
+          </h6>
 
+        
             <div
               dangerouslySetInnerHTML={{
                 __html: fareRules,
               }}
-              className="flex flex-col gap-1 text-sm ml-4"
+              className="section-content pl-lg"
             ></div>
           </div>
+        </div>
           {cancellationPolicy && (
             <div className="flex flex-col">
               <div className="w-fit py-2 mb-2 text-lg font-bold">
