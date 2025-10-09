@@ -41,11 +41,12 @@ import setCart from "../../store/actions/Cart";
 import NotesPopup from "./NotesPopup";
 
 const Container = styled.div`
-  width: 90%;
-  margin: 5vh auto 0 auto;
+  width: 100%;
+  padding: 17px 16px 0 16px;
   @media screen and (min-width: 768px) {
     width: 85%;
     margin: -5vh auto 0 auto;
+    padding: 0;
   }
 `;
 
