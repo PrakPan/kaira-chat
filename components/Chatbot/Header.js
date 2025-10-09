@@ -53,9 +53,9 @@ function Header() {
         <>
             <Container>
                 <div>
-                <Heading className='font-montserrat'> Ready to plan your perfect trip?
+                <Heading className='font-montserrat'>Hey, I’m Kaira — Your AI Travel Buddy.
                 </Heading>
-                <SubText>Let’s customize your itinerary together!</SubText>
+                <SubText>Ready to plan your perfect trip? Let’s customize your itinerary together!</SubText>
                 </div>
                 <ButtonWrapper className=" float-right">
                     <IconButton onClick={newSessionStart}>

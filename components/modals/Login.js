@@ -6,8 +6,6 @@ import { connect, useDispatch } from "react-redux";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { authCloseLogin } from "../../store/actions/auth";
 
 const ImgContainer = styled.div`
   height: 100%;
@@ -46,10 +44,10 @@ const tags = [
 
 const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [modalWidth, setModalWidth] = useState(isPageWide ? "848px" : "90%");
+  const [modalWidth, setModalWidth] = useState(isPageWide ? "848px" : "100%");
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
-  const dispatch = useDispatch();
+
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
@@ -65,10 +63,10 @@ const Enquiry = (props) => {
       if (window.innerWidth >= 1600) setModalWidth(50);
       else if (window.innerWidth >= 1400) setModalWidth("848px");
       else if (window.innerWidth >= 1100) setModalWidth("848px");
-      else if (window.innerWidth >= 768) setModalWidth("90%");
-      else if (window.innerWidth >= 600) setModalWidth("60%");
-      else if (window.innerWidth >= 400) setModalWidth("80%");
-      else setModalWidth("90%");
+      else if (window.innerWidth >= 768) setModalWidth("100%");
+      else if (window.innerWidth >= 600) setModalWidth("100%");
+      else if (window.innerWidth >= 400) setModalWidth("100%");
+      else setModalWidth("100%");
     }
     window.addEventListener("resize", findModalWidth);
     findModalWidth();
@@ -109,7 +107,7 @@ const Enquiry = (props) => {
             ></ImageLoader>
 
             <ImgTagsContainer>
-              <div className="text-[32px] font-[700] leading-[40px] text-white mb-4 max-w-[334px]">
+              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide ? "max-w-[334px]" : "max-w-[100%]"}`}>
                 Your Personalized Travel Journey Starts with a Tap
               </div>
               <div className="flex gap-4">
@@ -146,14 +144,51 @@ const Enquiry = (props) => {
         centered
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
+        height={!isPageWide ? "100%" : "auto"}
         onHide={props.onhide}
-        width={modalWidth + "%"}
+        width={modalWidth}
         borderRadius={"12px"}
         token={props.token}
         itinary_id={props.itinary_id}
         zIndex={props?.zIndex}
+        className="overflow-y-hidden"
+        overflow="hidden"
       >
-        <div style={{ padding: "20px" }}>
+          <ImgContainer style={{
+            display: showImage ? "block" : "none",
+            height: "calc(100vh - 570px)",
+            overflow: "hidden"
+          }}>
+            <ImageLoader
+              noLazy
+              url={"media/themes/auth.png"}
+              height="560px"
+              width="100%"
+              
+              onload={() => setShowImage(true)}
+            ></ImageLoader>
+
+            <ImgTagsContainer>
+              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide? "max-w-[334px]" : "max-w-[100%]"}`}>
+                Your Personalized Travel Journey Starts with a Tap
+              </div>
+              <div className="flex gap-4">
+                {tags?.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 flex items-center justify-center rounded-[60px] border border-white/40 bg-[rgba(255,255,255,0.36)] backdrop-blur-[4px] cursor-pointer"
+                  >
+                    <Image src={item?.src} width={20} height={20} alt="social" />
+                  </a>
+                ))}
+              </div>
+            </ImgTagsContainer>
+
+          </ImgContainer>
+        <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
           <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess}></Login>
         </div>
       </Modal>

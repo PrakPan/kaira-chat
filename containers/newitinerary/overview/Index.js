@@ -41,10 +41,10 @@ const Overview = (props) => {
     <div className="flex flex-col gap-2">
       <GridContainer className="gap-2">
         <div className="flex justify-between">
-        <Heading>
+        <div className={`${isDesktop?"Heading":"Heading2SB font-semibold"}`}>
           {props.title}
-        </Heading>
-        {isDesktop&&<TravelPartnerContact itinerary={props?.itinerary} />}
+        </div>
+        <TravelPartnerContact itinerary={props?.itinerary} />
         </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
