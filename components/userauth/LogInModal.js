@@ -20,6 +20,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import { RxCross2 } from "react-icons/rx";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -66,19 +67,6 @@ const OtpContainer = styled.div`
 const CountryImg = styled(Image)`
   background-position: cover;
   alt: "";
-`;
-
-const UpdatePhone = styled.p`
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const ResendOtp = styled.p`
-  float: right;
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 var userDetails = {
@@ -129,7 +117,7 @@ const LogIn = React.memo((props) => {
 
       return () => clearInterval(timer);
     }
-  }, [props.otpSent])
+  }, [props.otpSent]);
 
   const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
   const seconds = String(counter % 60).padStart(2, "0");
@@ -231,7 +219,8 @@ const LogIn = React.memo((props) => {
         phone,
         otp,
         userDetails.userName,
-        null, setUserDetailsRequired,
+        null,
+        setUserDetailsRequired,
         whatsapp,
         null,
         props.onSuccess,
@@ -260,9 +249,17 @@ const LogIn = React.memo((props) => {
         trackUserLogin
       );
     } else {
-      props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess, trackUserLogin);
+      props.onAuth(
+        phone,
+        otp,
+        null,
+        null,
+        whatsapp,
+        null,
+        props.onSuccess,
+        trackUserLogin
+      );
     }
-
   };
 
   //Store OTP
@@ -315,11 +312,13 @@ const LogIn = React.memo((props) => {
 
   //Update phone
   const _updatePhoneHandler = () => {
-    props.onUpdate({
-      phone: phone,
-      whatsapp_opt_in: whatsapp,
-    },trackUserAccountUpdate);
-
+    props.onUpdate(
+      {
+        phone: phone,
+        whatsapp_opt_in: whatsapp,
+      },
+      trackUserAccountUpdate
+    );
   };
 
   const _handlePhoneUpdate = () => {
@@ -433,148 +432,182 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className="pt-[36px] px-[32px] h-max">
+    <div className={`${isPageWide ? "pt-[36px] px-[32px]" : "pt-[19px] pb-[13px] px-[16px] h-full"} h-max`}>
       <div className="flex flex-col gap-[24px] h-full">
-        {!props?.otpSent ? <div>
-          {!props.noheading && (
-            <div
-              style={{
-                fontSize: "32px",
-                textAlign: "left",
-                margin: isPageWide
-                  ? "0 0rem 32px 0rem"
-                  : "0rem 0rem 1rem 0.5rem",
-                fontWeight: "700",
-              }}
-            >
-              {!props?.onSuccess ? <>
-                <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "Welcome to"}</h1>
-                <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "The Tarzan Way!"}</h1>
-              </> :
-                <>
-                  <h1 className="text-bold font-700">{props.loginmessage ? props.loginmessage : "Sign in to access your plan"}</h1>
-                </>}
-            </div>
-          )}
-
-          {(props.token && !props.phone) ||
-            (props.token && props.phone === "null") ? (
-            <p
-              style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
-              className="text-[32px] text-center"
-            >
-              This is where your experience captain can reach you to personalize
-              your plan.
-            </p>
-          ) : null}
-
-          {(props.token && !props.phone) ||
-            (props.token && props.phone == "null") ? (
-            <form noValidate>
-              <div className="Body2R_14 mb-[6px]">Phone Number</div>
-              <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
-                <div
-                  className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
-                  onClick={() => setOpenCountryCodeOption(true)}
-                >
-                  <CountryImg
-                    height="30"
-                    width="30"
-                    objectFit="cover"
-                    src={
-                      props.CountryCodes ? props.CountryCodes[extension].img : ""
-                    }
-                  ></CountryImg>
-                  {/* <FiChevronDown /> */}
-                </div>
-                {openCountryCodeOption && (
-                  <CountryCodeDropdown
-                    onClose={() => setOpenCountryCodeOption(false)}
-                    CountryCodes={props.CountryCodes}
-                    handleExtensionChangeOption={handleExtensionChangeOption}
-                    setOpenCountryCodeOption={setOpenCountryCodeOption}
-                  />
-                )}
-                {mobileInput}
-              </MobileNumberContainer>
-
-              <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-                {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-                OTP on WhatsApp
-                <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
-              </WhatsappCheckBox>
-
-              <Button
-                onclick={_updatePhoneHandler}
-                error={props.mobileFail ? true : false}
-                loading={props.loading}
-                margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
-                width="100%"
-                bgColor="#F7E700"
-                fontWeight="500"
-                fontSize="16px"
-                borderWidth="1px"
-                hoverColor="white"
-                hoverBgColor="black"
-                boxShadow="0px 2px 0px #ECEAEA"
-                borderRadius="8px"
+        {!isPageWide && <div className="flex justify-end">
+        <RxCross2
+          style={{
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            zIndex: 999,
+          }}
+            onClick={props.onhide}
+          />
+        </div>}
+        {!props?.otpSent ? (
+          <div>
+            {!props.noheading && (
+              <div
+                style={{
+                  fontSize: "32px",
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "0 0rem 32px 0rem"
+                    : "0rem 0rem 1rem 0.5rem",
+                  fontWeight: "700",
+                }}
               >
-                Complete Signup
-              </Button>
-            </form>
-          ) : (
-            <form noValidate>
-              <div className="Body2R_14 mb-[6px]">Phone Number</div>
-              <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
-                <div
-                  className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
-                  onClick={() => setOpenCountryCodeOption(true)}
-                >
-                  <div className="flex gap-3">
+                {!props?.onSuccess ? (
+                  <>
+                    <h1 className="text-bold font-700">
+                      {props.loginmessage ? props.loginmessage : "Welcome to"}
+                    </h1>
+                    <h1 className="text-bold font-700">
+                      {props.loginmessage
+                        ? props.loginmessage
+                        : "The Tarzan Way!"}
+                    </h1>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="text-bold font-700">
+                      {props.loginmessage
+                        ? props.loginmessage
+                        : "Sign in to access your plan"}
+                    </h1>
+                  </>
+                )}
+              </div>
+            )}
+
+            {(props.token && !props.phone) ||
+            (props.token && props.phone === "null") ? (
+              <p
+                style={{ margin: "0 1rem 2rem 1rem", fontWeight: "700" }}
+                className="text-[32px] text-center"
+              >
+                This is where your experience captain can reach you to
+                personalize your plan.
+              </p>
+            ) : null}
+
+            {(props.token && !props.phone) ||
+            (props.token && props.phone == "null") ? (
+              <form noValidate>
+                <div className="Body2R_14 mb-[6px]">Phone Number</div>
+                <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
+                  <div
+                    className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
+                    onClick={() => setOpenCountryCodeOption(true)}
+                  >
                     <CountryImg
                       height="30"
                       width="30"
                       objectFit="cover"
                       src={
-                        props.CountryCodes ? props.CountryCodes[extension].img : ""
+                        props.CountryCodes
+                          ? props.CountryCodes[extension].img
+                          : ""
                       }
                     ></CountryImg>
-                    <div className="Body2R_14">{props?.CountryCodes[extension].label || +91}</div>
+                    {/* <FiChevronDown /> */}
                   </div>
-                </div>
+                  {openCountryCodeOption && (
+                    <CountryCodeDropdown
+                      onClose={() => setOpenCountryCodeOption(false)}
+                      CountryCodes={props.CountryCodes}
+                      handleExtensionChangeOption={handleExtensionChangeOption}
+                      setOpenCountryCodeOption={setOpenCountryCodeOption}
+                    />
+                  )}
+                  {mobileInput}
+                </MobileNumberContainer>
 
-                {openCountryCodeOption && (
-                  <CountryCodeDropdown
-                    onClose={() => setOpenCountryCodeOption(false)}
-                    CountryCodes={props.CountryCodes}
-                    handleExtensionChangeOption={handleExtensionChangeOption}
-                    setOpenCountryCodeOption={setOpenCountryCodeOption}
-                  />
-                )}
-                <div className="Body2R_14">{mobileInput}</div>
-              </MobileNumberContainer>
+                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+                  {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}{" "}
+                  Receive OTP on WhatsApp
+                  <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
+                </WhatsappCheckBox>
 
-              <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-                {whatsapp ? <ImCheckboxChecked className="text-[#3A85FC]" /> : <ImCheckboxUnchecked />}
-                <div className="Body2R_14">Receive OTP on Whatsapp</div>
-              </WhatsappCheckBox>
+                <Button
+                  onclick={_updatePhoneHandler}
+                  error={props.mobileFail ? true : false}
+                  loading={props.loading}
+                  margin={props.nospacing ? "4rem 0 2rem 0" : "2rem 0"}
+                  width="100%"
+                  bgColor="#F7E700"
+                  fontWeight="500"
+                  fontSize="16px"
+                  borderWidth="1px"
+                  hoverColor="white"
+                  hoverBgColor="black"
+                  boxShadow="0px 2px 0px #ECEAEA"
+                  borderRadius="8px"
+                >
+                  Complete Signup
+                </Button>
+              </form>
+            ) : (
+              <form noValidate>
+                <div className="Body2R_14 mb-[6px]">Phone Number</div>
+                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
+                  <div
+                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
+                    onClick={() => setOpenCountryCodeOption(true)}
+                  >
+                    <div className="flex gap-3">
+                      <CountryImg
+                        height="30"
+                        width="30"
+                        objectFit="cover"
+                        src={
+                          props.CountryCodes
+                            ? props.CountryCodes[extension].img
+                            : ""
+                        }
+                      ></CountryImg>
+                      <div className="Body2R_14">
+                        {props?.CountryCodes[extension].label || +91}
+                      </div>
+                    </div>
+                  </div>
 
+                  {openCountryCodeOption && (
+                    <CountryCodeDropdown
+                      onClose={() => setOpenCountryCodeOption(false)}
+                      CountryCodes={props.CountryCodes}
+                      handleExtensionChangeOption={handleExtensionChangeOption}
+                      setOpenCountryCodeOption={setOpenCountryCodeOption}
+                    />
+                  )}
+                  <div className="Body2R_14">{mobileInput}</div>
+                </MobileNumberContainer>
 
-              <ReCAPTCHA
-                size="invisible"
-                sitekey={RECAPTCHA_SITE_KEY}
-                ref={recaptchaRef}
-                onChange={onRecaptchaChange}
-                className="hidden"
-              />
-            </form>
-          )}
-        </div> : userDetailsRequired ?
+                <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
+                  {whatsapp ? (
+                    <ImCheckboxChecked className="text-[#3A85FC]" />
+                  ) : (
+                    <ImCheckboxUnchecked />
+                  )}
+                  <div className="Body2R_14">Receive OTP on Whatsapp</div>
+                </WhatsappCheckBox>
+
+                <ReCAPTCHA
+                  size="invisible"
+                  sitekey={RECAPTCHA_SITE_KEY}
+                  ref={recaptchaRef}
+                  onChange={onRecaptchaChange}
+                  className="hidden"
+                />
+              </form>
+            )}
+          </div>
+        ) : userDetailsRequired ? (
           <div className="flex flex-col gap-[24px]">
             <div
               style={{
                 fontSize: "32px",
-                textAlign: "left",
+                textAlign: isPageWide ? "left" : "center",
                 fontWeight: "700",
               }}
             >
@@ -599,19 +632,21 @@ const LogIn = React.memo((props) => {
                 </div>
               ) : null}
 
-              {props.newUser || (props.otpSent && !props.email) ?
+              {props.newUser || (props.otpSent && !props.email) ? (
                 <div className="flex flex-col gap-[6px] mt-[20px]">
                   <div className="Body2M_14">Email</div>
                   {email}
-                </div> : null}
+                </div>
+              ) : null}
             </div>
-          </div> :
+          </div>
+        ) : (
           <div>
             {!props.noheading && (
               <div
                 style={{
                   fontSize: "32px",
-                  textAlign: "left",
+                  textAlign: isPageWide ? "left" : "center",
                   fontWeight: "700",
                 }}
               >
@@ -620,25 +655,29 @@ const LogIn = React.memo((props) => {
             )}
 
             <div className="flex flex-col gap-[24px]">
-
-              <div
-                className="Body1R_16 text-[#6E757A]"
-              >
+              <div className={`Body1R_16 text-[#6E757A] ${isPageWide ? "text-left" : "text-center"}`}>
                 We’ve sent a 4-digit OTP to your registered phone number.
               </div>
 
               {props.otpSent ? password : null}
-              <div className="Body1R_16 text-[#6E757A;]"> You can resend OTP in <span className="text-black Body1M_16">{minutes}:{seconds}</span></div>
+              <div className="Body1R_16 text-[#6E757A;]">
+                {" "}
+                You can resend OTP in{" "}
+                <span className="text-black Body1M_16">
+                  {minutes}:{seconds}
+                </span>
+              </div>
             </div>
 
             <ReCAPTCHA
-                size="invisible"
-                sitekey={RECAPTCHA_SITE_KEY}
-                ref={recaptchaRef}
-                onChange={onRecaptchaChange}
-                className="hidden"
-              />
-          </div>}
+              size="invisible"
+              sitekey={RECAPTCHA_SITE_KEY}
+              ref={recaptchaRef}
+              onChange={onRecaptchaChange}
+              className="hidden"
+            />
+          </div>
+        )}
 
         {!props.otpSent ? (
           <Button
@@ -660,11 +699,30 @@ const LogIn = React.memo((props) => {
             Continue
           </Button>
         ) : (
-          <div className={`flex flex-col gap-[16px] ${!userDetailsRequired ? `${counter == 0 && !userDetailsRequired ? "mt-[80px]" : "mt-[120px]"}` : "mt-[46px]"}`}>
-            {counter == 0 && !userDetailsRequired && <div className="flex gap-[16px] justify-center">
-              <div className="Body1R_16 text-[#6E757A;]">Didn't receive OTP?</div>
-              <div className="Body1R_16 text-[#3A85FC] cursor-pointer" onClick={verifyRecaptchaHandler}>Resend OTP</div>
-            </div>}
+          <div
+            className={`flex flex-col gap-[16px] ${
+              !userDetailsRequired
+                ? `${
+                    counter == 0 && !userDetailsRequired
+                      ? "mt-[80px]"
+                      : "mt-[120px]"
+                  }`
+                : "mt-[46px]"
+            }`}
+          >
+            {counter == 0 && !userDetailsRequired && (
+              <div className="flex gap-[16px] justify-center">
+                <div className="Body1R_16 text-[#6E757A;]">
+                  Didn't receive OTP?
+                </div>
+                <div
+                  className="Body1R_16 text-[#3A85FC] cursor-pointer"
+                  onClick={verifyRecaptchaHandler}
+                >
+                  Resend OTP
+                </div>
+              </div>
+            )}
             <Button
               onclick={submitOtpHandler}
               width="100%"
@@ -685,7 +743,7 @@ const LogIn = React.memo((props) => {
           </div>
         )}
         <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
-          <div className="Body2R_14 text-[#6E757A]">
+          <div className={`Body2R_14 text-[#6E757A] ${isPageWide ? "text-left" : "text-center"}`}>
             By continuing, you agree to our{" "}
             <Link
               href="/privacy-policy"
@@ -693,8 +751,8 @@ const LogIn = React.memo((props) => {
               target="_blank"
             >
               Terms of Service
-            </Link>
-            {" "} and acknowlege you've read our{" "}
+            </Link>{" "}
+            and acknowlege you've read our{" "}
             <Link
               href="/privacy-policy"
               style={{ textDecoration: "none" }}
@@ -750,7 +808,16 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp, country, onSuccess,trackUserLogin) =>
+    onAuth: (
+      mobile,
+      password,
+      name,
+      email,
+      whatsapp,
+      country,
+      onSuccess,
+      trackUserLogin
+    ) =>
       dispatch(
         authaction.auth(
           mobile,
@@ -768,8 +835,8 @@ const mapDispatchToProps = (dispatch) => {
     onResetLogin: () => dispatch(authaction.authResetLogin()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
-    onUpdate: (response, trackUserAccountUpdate) => 
-  dispatch(authaction.changeUserDetails(response, trackUserAccountUpdate)),
+    onUpdate: (response, trackUserAccountUpdate) =>
+      dispatch(authaction.changeUserDetails(response, trackUserAccountUpdate)),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
     getCountryCodes: () => dispatch(getCountryCodes()),
   };
