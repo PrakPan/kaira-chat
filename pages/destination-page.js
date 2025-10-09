@@ -4,11 +4,11 @@ import HeroSection from "../components/revamp/destination/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
-const Testimonials = () => {
+const DestinationPage = () => {
   return (
     <>
       <Head>
-        <title>Testimonials | Travel India | The Tarzan Way </title>
+        <title>DestinationPage | Travel India | The Tarzan Way </title>
         <meta name="robots" content="noindex"></meta>
 
         <meta
@@ -17,7 +17,7 @@ const Testimonials = () => {
         ></meta>
         <meta
           property="og:title"
-          content="Testimonials | Travel India | The Tarzan Way "
+          content="DestinationPage | Travel India | The Tarzan Way "
         />
         <meta
           property="og:description"
@@ -31,7 +31,7 @@ const Testimonials = () => {
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/testimonials`}
+          href={`https://thetarzanway.com/DestinationPage`}
         ></link>
       </Head>
 
@@ -45,4 +45,4 @@ const Testimonials = () => {
   );
 };
 
-export default Testimonials;
+export default DestinationPage;

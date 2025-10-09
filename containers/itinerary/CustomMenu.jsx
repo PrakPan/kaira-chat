@@ -7,7 +7,6 @@ const MenuItem = styled.div`
   cursor: pointer;
   width: max-content;
   padding: 10px 24px 10px 24px;
-  margin-left: 4px;
   color: #01202B;
   position: relative;
 

@@ -98,13 +98,13 @@ const NavigationMenu = (props) => {
         <div className="hover-pointer" onClick={() => router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority />
         </div>
-        {isMidScreen && <SearchInput />}
+        {isMidScreen &&pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
         <ul className={styles.menuList} role="menubar">
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          {pathname!="/dashboard"&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
+          {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
                   My Trips
           </button>}
           {localStorage.getItem("access_token") ? (
@@ -129,7 +129,7 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex  gap-4 md:hidden">
-        {pathname!="/dashboard"&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
+        {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
                   My Trips
         </button>}
           <MobileMenu 

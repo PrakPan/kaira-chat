@@ -305,7 +305,7 @@ const Activity = (props) => {
   return (
     <>
       <div className=" lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white border-radius-10 p-2 border-1">
-        <div className="w-full flex flex-row items-center gap-2 bg-white">
+        <div className="w-full flex flex-row items-start md:items-center gap-2 bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -342,7 +342,7 @@ const Activity = (props) => {
               {props.element.heading}
             </div>
 
-            <div className="flex flex-row items-center text-[12px] font-montserrat">
+            <div className="flex flex-row items-center text-[12px] mt-[4px]">
               <div className="pr-[8px]">
                 <Image
                   src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
@@ -352,9 +352,9 @@ const Activity = (props) => {
                 />
               </div>
 
-              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
 
-              {props.element?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+              {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
                 <div className="Body3M_12">
                   {props.element?.rating}
                 </div>
@@ -367,7 +367,7 @@ const Activity = (props) => {
           </div>
         </div>
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[8px] flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px]  flex-row-reverse justify-end' : ''}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
@@ -610,7 +610,7 @@ const Recommendation = (props) => {
             </div>
 
 
-            <div className="flex flex-row items-center text-[12px] font-montserrat mt-1">
+            <div className="flex flex-row items-center text-[12px] mt-[4px]">
               <div className="pr-[8px]">
                 <Image
                   src={'/assets/Itinerary/restaurant.svg'}
@@ -622,7 +622,7 @@ const Recommendation = (props) => {
 
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
-              {props.element?.restaurants?.[0]?.rating ? <div className="flex border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+              {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
                 <div className="Body3M_12">
                   {props.element?.restaurants?.[0]?.rating}
                 </div>
@@ -636,7 +636,7 @@ const Recommendation = (props) => {
         </div>
 
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] mt-[8px] flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] flex-row-reverse justify-end' : ''}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"

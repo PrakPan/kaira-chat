@@ -1,18 +1,50 @@
 import React from "react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
+// import "swiper/css/navigation";
 
 const ItineraryCard = ({ itinerary, onClick }) => {
+  // Normalize images: itinerary.image could be array or single
+  const images = Array.isArray(itinerary.image)
+    ? itinerary.image
+    : [itinerary.image];
+
   return (
-    <div className="w-[384px] cursor-pointer" onClick={onClick}>
-      {/* Image Container */}
-      <div className="bg-[#e4e4e4] h-[424px] overflow-hidden rounded-[24px] relative">
-        <img
-          src={itinerary.image}
-          alt={itinerary.title}
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
+    <div className="w-full">
+      {/* Image / Carousel Container */}
+      <div className="bg-[#e4e4e4] h-[424px] overflow-hidden rounded-[24px] relative group">
+        <Swiper
+          modules={[Pagination, Navigation]}
+          pagination={{ clickable: true }}
+          // navigation={{ clickable: true }}
+          className="h-full"
+          style={{ height: "424px" }}
+        >
+          {images.map((img, idx) => (
+            <SwiperSlide
+              key={idx}
+              className="h-full"
+              style={{ cursor: "pointer" }}
+            >
+              <div className="w-full h-full relative">
+                <Image
+                  src={img}
+                  alt={`${itinerary.title} ${idx + 1}`}
+                  fill
+                  className="object-cover object-center"
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
 
         {/* Tags Overlay */}
-        <div className="absolute top-6 left-6 flex flex-wrap gap-2">
+        <div className="pointer-events-none absolute top-6 left-6 flex flex-wrap gap-2 z-10">
           {itinerary.tags.map((tag, index) => (
             <div
               key={index}
@@ -25,62 +57,44 @@ const ItineraryCard = ({ itinerary, onClick }) => {
           ))}
         </div>
 
-        {/* Arrow Button */}
-        <div className="absolute top-6 right-6">
-          <div className="w-12 h-12 relative">
-            <div className="absolute bottom-[-16.67%] left-[-8.33%] right-[-8.33%] top-0">
-              <div className="w-full h-full bg-white rounded-full"></div>
-            </div>
-            <div className="absolute flex items-center justify-center left-[7px] top-[7px] w-6 h-6">
-              <div className="flex-none rotate-[315deg]">
-                <div className="bg-[#f7e700] relative w-6 h-6 rounded-sm flex items-center justify-center">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    className="text-white"
-                  >
-                    <path
-                      d="M3 9L9 3M9 3H3M9 3V9"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
+        {/* Arrow Icon */}
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+          <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 group-hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
+            <FontAwesomeIcon
+              icon={faArrowUp}
+              className="text-black group-hover:text-black text-xs sm:text-sm transition-colors duration-300 transform rotate-45"
+            />
           </div>
         </div>
 
-        {/* Bottom Dots Indicator */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-16 h-2">
-          <div className="flex space-x-1">
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            <div className="w-2 h-2 bg-white/50 rounded-full"></div>
-            <div className="w-2 h-2 bg-white/50 rounded-full"></div>
-          </div>
-        </div>
+        {/* Override Swiper bullets inside the card */}
+        <style jsx>{`
+          :global(.swiper) {
+            --swiper-theme-color: #f7e700;
+          }
+          :global(.swiper-pagination-bullet) {
+            background: rgba(255, 255, 255, 0.6);
+            opacity: 1;
+          }
+          :global(.swiper-pagination-bullet-active) {
+            background: #f7e700; /* primary color */
+          }
+          /* Position bullets at bottom inside card */
+          :global(.swiper-pagination) {
+            bottom: 16px !important;
+          }
+        `}</style>
       </div>
 
       {/* Content Below Image */}
-      <div className="mt-6">
-        {/* Title */}
+      <div className="mt-2">
         <h3 className="text-black text-base font-semibold mb-2 leading-6 h-8 flex items-center">
           {itinerary.title}
         </h3>
-
-        {/* Route */}
-        <p className="text-[#6e757a] text-sm mb-6 leading-5 h-6 flex items-center">
+        <p className="text-[#6e757a] text-sm mb-2 leading-5 h-6 flex items-center">
           {itinerary.route}
         </p>
-
-        {/* Divider */}
-        <div className="w-full h-px bg-gray-200 mb-4"></div>
-
-        {/* Highlights */}
+        <div className="w-full h-px bg-gray-200 mb-3"></div>
         <div className="space-y-1 mb-6">
           {itinerary.highlights.map((highlight, index) => (
             <div key={index} className="flex items-start h-6">
@@ -100,26 +114,23 @@ const ItineraryCard = ({ itinerary, onClick }) => {
             </div>
           ))}
         </div>
-
-        {/* Price Section */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col">
           <div className="flex items-center space-x-3">
             <div>
-              <p className="text-black text-lg font-semibold h-8 flex items-center">
-                {itinerary.price}
-                <span className="text-sm font-normal ml-1">for 2 people</span>
-              </p>
-              <p className="text-[#6e757a] text-base line-through h-8 flex items-center">
+              <p className="text-[#6e757a] text-base line-through h-8 flex items-center mb-0">
                 {itinerary.originalPrice}
               </p>
             </div>
+            <div className="bg-[#5cba66] rounded-full px-2 py-1 h-6 flex items-center justify-center">
+              <span className="text-white text-xs font-semibold">
+                {itinerary.discount}
+              </span>
+            </div>
           </div>
-
-          <div className="bg-[#5cba66] rounded-full px-2 py-1 h-6 flex items-center justify-center">
-            <span className="text-white text-xs font-semibold">
-              {itinerary.discount}
-            </span>
-          </div>
+          <p className="text-black text-lg font-semibold h-8 flex items-center">
+            {itinerary.price}
+            <span className="text-sm font-normal ml-2 mt-1">for 2 people</span>
+          </p>
         </div>
       </div>
     </div>

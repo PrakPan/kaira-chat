@@ -90,7 +90,7 @@ const GroupType = (props) => {
                 className="flex gap-2 flex-row center-div"
                 clicked={_isPreferenceAdded(filter.display)}
               >
-                <Image src={filter.icon} alt={filter.display} width={15} height={15} />
+                <Image src={`/${filter.icon}`} alt={filter.display} width={15} height={15} />
                 {filter.display}
               </StyledButton>
             </div>

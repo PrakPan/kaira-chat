@@ -1734,6 +1734,7 @@ a {
 .MediumIndigoOutlinedButton {
   display: flex;
   width: 131px;
+  height: 40px;
   padding: 8px var(--Xl, 16px);
   justify-content: center;
   align-items: center;
@@ -1757,6 +1758,13 @@ a {
   border: 1px solid var(--primary-colours-primary-midnight-indigo, #07213A);
   background: transparent;
   cursor: pointer;
+}
+
+.Heading{
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 48px;
 }
 
 .Heading1SB {

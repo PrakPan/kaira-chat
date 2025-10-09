@@ -1,5 +1,17 @@
 import React from "react";
 import ItineraryCard from "./ItineraryCard";
+import { Japan, backgroundImage } from "../assets";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronLeft,
+  faArrowRight,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 const MostLovedItinerariesSection = () => {
   // Sample itinerary data - replace with your actual data
@@ -12,8 +24,7 @@ const MostLovedItinerariesSection = () => {
       originalPrice: "₹2,25,000",
       discount: "10% off",
       tags: ["Best for Couples", "Romantic"],
-      image:
-        "https://s3-alpha-sig.figma.com/img/dfb5/0425/b48d8f32ee2514abeb5fcbc7b5e82700?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=W8PO-4H6-VmW1PNXdc2ZU9zmY9JXs2WFxHODQfPPEuD8ESDVmRYeTg06avzAU67ZzpKhBbq9EJcrZA9Jkf6MHkWKNipDcaMrn7LlEHwrv6bxQvNSLLpTd8y7RjxLLI~ekpn3Y1rKRnHy-u0RyjX~v4bvQvZu5D0xFWoyxbAststKuOgdZviRkG0YLLbMADv0P8tOxfrCJIaDEsV~ABiRbQbya9aCh5xy0v9tjZasE5H3C6LR8VX3Vi0NAmARWxZw73pTtRus~vYOzSfnthMqfHYeZ26WRFoPOvgp~AkZsitiaNB~AisQKKbgE8awQzDGbSjdO8FJV~os838fg6MncQ__",
+      image: [Japan, Japan, Japan],
       highlights: [
         "Sunset Cruise along the Riviera.",
         "Beachfront Stroll & Private Dinner. +5",
@@ -27,8 +38,7 @@ const MostLovedItinerariesSection = () => {
       originalPrice: "₹2,25,000",
       discount: "10% off",
       tags: ["Adventure", "Cultural"],
-      image:
-        "https://s3-alpha-sig.figma.com/img/82b9/f3e5/10b321fcbbe901f518eb46f202633cde?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=NK3Ch2bruw7zZGmoU0zHgBma4TC8Elly~~Vt4GZUoPvtns1ReX-Cqc-VQwF~2WRZDm7NnYhIlEhuZq7zStbJlgZ5XzB-6tFNAOZy3folAvHhD4b57Z4uaDSUHUSTUZHRG5kDtOkQrbomnmevsxJ5R1nidY1eQCEh5uRRJOcJlQ-6paKdNIjQqJ25d~sF0WzsfHpr5mg-ojiT55GeMfOPEyi0bxygVbLU4jSt38D01chzpExW6yOe3RMchr8LA8EjRjzXPq0u3IT9pm87m5gGcVDG0oxihYe~t4brL3COWqHhbt6MDaAXyaudGX7RxibQo~hBbN0cVkKR0OnGxG1smA__",
+      image: [Japan, Japan, Japan],
       highlights: [
         "Sunset Cruise along the Riviera.",
         "Beachfront Stroll & Private Dinner. +5",
@@ -42,8 +52,91 @@ const MostLovedItinerariesSection = () => {
       originalPrice: "₹2,25,000",
       discount: "10% off",
       tags: ["Hidden Gem", "Historical"],
-      image:
-        "https://s3-alpha-sig.figma.com/img/9e37/5647/320ecb5a881ae6a228e570271b027071?Expires=1759708800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=a7VngbQxqfbwgxQwr6bPulRY9~kRYpKOUUPVtqgHLJlUZkXi~6b5hORmvdV8t3~bdIozqhMP4vCoNcJjvhJrBgS~6h62kmem-pmXVLqd03NJMiW~7JsSMTC2otcc37Ms~YXTt~75rVtzJeigngI2CB3ly2uyDgHLwQNrsJBVYmM12zq6N3TaWDGlkkVOppoQBhc62ype-mDl12N46ef0udXgC-2xuQOACs1ay5M1sLjkx5j6~mT5wvDIkMc1im8YCqnlme26gJhZgl4jFaJLDWjvvufQxAsM5DC9uqHF-2WL3vP0Wb-X6kxW~jV05fH5DplAQysVq7bUTZZ~xbaeog__",
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 4,
+      title: "Romance & Riviera Escape.",
+      route: "Paris(3N) → Nice(3N) → Avignon(1N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Best for Couples", "Romantic"],
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 5,
+      title: "Alpine Adventures & Cultural Charm.",
+      route: "Lyon(2N) → Chamonix(3N) → Annecy(2N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Adventure", "Cultural"],
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 6,
+      title: "Historic Heart & Countryside Bliss.",
+      route: "Paris(3N) → Loire Valley(2N) → Bordeaux(2N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Hidden Gem", "Historical"],
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 7,
+      title: "Romance & Riviera Escape.",
+      route: "Paris(3N) → Nice(3N) → Avignon(1N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Best for Couples", "Romantic"],
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 8,
+      title: "Alpine Adventures & Cultural Charm.",
+      route: "Lyon(2N) → Chamonix(3N) → Annecy(2N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Adventure", "Cultural"],
+      image: [Japan, Japan, Japan],
+      highlights: [
+        "Sunset Cruise along the Riviera.",
+        "Beachfront Stroll & Private Dinner. +5",
+      ],
+    },
+    {
+      id: 9,
+      title: "Historic Heart & Countryside Bliss.",
+      route: "Paris(3N) → Loire Valley(2N) → Bordeaux(2N)",
+      price: "₹1,75,000",
+      originalPrice: "₹2,25,000",
+      discount: "10% off",
+      tags: ["Hidden Gem", "Historical"],
+      image: [Japan, Japan, Japan],
       highlights: [
         "Sunset Cruise along the Riviera.",
         "Beachfront Stroll & Private Dinner. +5",
@@ -65,17 +158,60 @@ const MostLovedItinerariesSection = () => {
           </p>
         </div>
 
-        {/* Itineraries Grid */}
-        <div className="flex flex-wrap justify-center gap-6 lg:gap-8">
-          {itineraries.map((itinerary) => (
-            <ItineraryCard
-              key={itinerary.id}
-              itinerary={itinerary}
-              onClick={() => {
-                console.log(`Clicked on ${itinerary.title}`);
-              }}
-            />
-          ))}
+        {/* Itineraries Slider */}
+        <div className="relative px-2 sm:px-0">
+          <Swiper
+            style={{ height: "677px" }}
+            modules={[Navigation]}
+            spaceBetween={24}
+            slidesPerView={3}
+            navigation={{
+              nextEl: ".MostLovedItinerariesSection-next",
+              prevEl: ".MostLovedItinerariesSection-prev",
+              clickable: true,
+            }}
+            breakpoints={{
+              640: { slidesPerView: 1, spaceBetween: 16 },
+              768: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 2, spaceBetween: 24 },
+              1280: { slidesPerView: 3, spaceBetween: 28 },
+            }}
+            className="py-6"
+          >
+            {itineraries.map((itinerary) => (
+              <SwiperSlide key={itinerary.id} className="flex justify-center">
+                <ItineraryCard
+                  itinerary={itinerary}
+                  onClick={() => {
+                    console.log(`Clicked on ${itinerary.title}`);
+                  }}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          {/* Custom Prev Button */}
+          <div className="MostLovedItinerariesSection-prev" aria-hidden>
+            <div className="absolute left-3 sm:left-1 top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronLeft}
+                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Next Button */}
+          <div className="MostLovedItinerariesSection-next" aria-hidden>
+            <div className="absolute right-3 sm:right-1 top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -165,7 +165,7 @@ function ChatSection(props) {
                 {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" :  "Analyzing your Itinerary"}    <div className={styles.typingDots}>
                     <span></span><span></span><span></span>
                 </div></span></div>}
-                {finalized_status=="PENDING" && <div className={styles.typingIndicator}><span className={styles.thinking}>Fetching your itinerary<div className={styles.typingDots}></div> </span></div>}
+                {finalized_status=="PENDING" && <div className={styles.typingIndicator}><span className={styles.thinking}>Fetching your itinerary<div className={styles.typingDots}><span></span><span></span><span></span></div> </span></div>}
                 </>
                 }
                 

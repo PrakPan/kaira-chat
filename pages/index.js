@@ -4,6 +4,8 @@ import HeroSection from "../components/revamp/home/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
+import FullSlider from "../components/revamp/home/FullSlider";
+import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
@@ -127,6 +129,8 @@ const Home = (props) => {
         <HeroSection />
         <JourneySimplified />
         <PlacesBragSection />
+        <MostLovedItinerariesSection />
+        <FullSlider />
         <TravelVibeSection />
         <WhereNextSection />
         <WhatMakesUsSection />
