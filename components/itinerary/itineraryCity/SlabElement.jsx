@@ -305,7 +305,7 @@ const Activity = (props) => {
   return (
     <>
       <div className=" lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white border-radius-10 p-2 border-1">
-        <div className="w-full flex flex-row items-start md:items-center gap-2 bg-white">
+        <div className="w-full flex flex-row items-start md:items-center gap-sm bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -329,7 +329,7 @@ const Activity = (props) => {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col max-ph:mb-sm">
             <div
               onClick={() =>
                 handleActivity(

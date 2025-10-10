@@ -16,12 +16,10 @@ const DetailsContainer = styled.div`
   justify-content: space-between;
   gap: 10;
   flex-direction: column-reverse;
-  margin: 0 auto 2vh auto;
   padding: 0 0rem;
   @media screen and (min-width: 768px) {
     flex-direction: row-reverse;
     padding: 0;
-    margin: auto auto auto auto;
   }
 `;
 
@@ -150,7 +148,7 @@ const Details = (props) => {
   }
 
   return (
-    <div id="brief" className="mb-[40px] mt-[20px]">
+    <div id="brief" className="mb-3xl mt-lg max-ph:mt-xl max-ph:mb-xl">
       <DetailsContainer>
 
         <RoutesRow className="flex w-full justify-between">

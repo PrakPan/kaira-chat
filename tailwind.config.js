@@ -75,7 +75,7 @@ module.exports = {
         "auto": "auto",
         "zero": "0px",
         "xxs": "4px",
-        "xxs-md" : "6px",
+        "xxs-md": "6px",
         "xs": "8px",
         "sm": "12px",
         "sm-md": "14px",
@@ -133,6 +133,9 @@ module.exports = {
         dotted: "dotted",
         double: "double",
         none: "none",
+      },
+      boxShadow: {
+        'soft': '0 4px 34px rgba(195, 195, 195, 0.25)',
       },
       screens: {
         'max-xs': { max: '429px' },
