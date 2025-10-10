@@ -492,6 +492,8 @@ useEffect(() => {
           show={showCalendar}
           onHide={() => closeModal(false)}
           borderRadius="20px"
+          paddingX="20px"
+          paddingY="20px"
         >
           <AirbnbCalendar
             valueStart={new Date(itinerary?.start_date)}
@@ -510,6 +512,8 @@ useEffect(() => {
           onHide={() => closeModal(false)}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
         >
           <AirbnbCalendarMobile
             valueStart={new Date(itinerary?.start_date)}

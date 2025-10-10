@@ -65,6 +65,8 @@ export default function TravelPartnerContact(props) {
           backgroundColor: "rgba(0,0,0,0.4)",
           backdropFilter: "blur(1px)",
         }} // <- add this
+        paddingX="20px"
+        paddingY="20px"
       >
         <Settings />
       </ModalWithBackdrop>:
@@ -73,6 +75,8 @@ export default function TravelPartnerContact(props) {
         onHide={() => setShowSettings(false)}
         width="100%"
         height="max-content"
+        paddingX="16px"
+        paddingY="31px"
       >
         <Settings />
       </BottomModal>

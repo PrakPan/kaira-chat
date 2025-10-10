@@ -24,7 +24,7 @@ export default function RouteOverviewModal({ setShowRouteOverview }) {
         })
     }
     return (
-        <div className="max-w-[611px] p-[20px]">
+        <div className="max-w-[611px]">
 
             <h2 className="Heading2SB">
                 Route Overview

@@ -199,8 +199,8 @@ const AirbnbCalendarMobile = (props) => {
 
   return (
     <div className="w-full max-w-[650px]">
-      <div className="flex flex-col p-[20px] gap-[20px]">
-        <div className="px-8 py-6 border-b border-gray-200 w-full text-center">
+      <div className="flex flex-col  gap-[20px]">
+        <div className="border-b border-gray-200 w-full text-center pb-[20px]">
           <h2 className="text-[20px] font-semibold text-gray-900 mb-2">When do you want to travel?</h2>
           <div className="flex items-center justify-center space-x-4 text-[14px]">
             <span className="font-medium">{formatDateRange(selectedDates)}</span>

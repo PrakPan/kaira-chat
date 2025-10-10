@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import useChat from './hook/UseChat';
 import Dictate from './Dictate';
-
+import Image from 'next/image';
 const Container = styled.div`
   background: #F7F5F5;
   border-radius: 12px;
@@ -53,7 +53,10 @@ const ChipsContainer = styled.div`
    display:flex;
    margin-bottom: 10px;
    gap: 10px;
-   flex-wrap: wrap;
+   overflow-x: auto;
+   ::-webkit-scrollbar {
+    display: none;
+}
 `
 
 
@@ -70,10 +73,13 @@ const SingleChips = styled.button`
 `
 
 const SubmitButton = styled.button`
-  &:disabled {      
-   filter: grayscale(1);
-    cursor: not-allowed;
-  }
+background: #FFD602;
+height: 32px;
+width: 32px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
 `
 
 
@@ -167,7 +173,7 @@ function AskQuery() {
                                 <SubmitButton disabled={isSubmitDisabled || disableQuerySection} onClick={(e) => {
                                     e.preventDefault();
                                     handleSubmitQuery()
-                                }}><img src="/assets/chatbot/query-submit.png" /></SubmitButton>
+                                }}><Image src="/send.svg" width={16} height={16} className='px-[]'/></SubmitButton>
                             </div>
                         </div>
                     </div>

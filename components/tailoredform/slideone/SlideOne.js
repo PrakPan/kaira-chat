@@ -144,6 +144,9 @@ const SlideOne = (props) => {
         closeIcon={true}
         onHide={() => setShowCalendar(false)}
         borderRadius={"12px"}
+        paddingX="20px"
+        paddingY="20px"
+        
         animation={false}
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
@@ -162,6 +165,8 @@ const SlideOne = (props) => {
           onHide={() => setShowCalendar(false)}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
         >
           <AirbnbCalendarMobile
             valueStart={valueStart}
