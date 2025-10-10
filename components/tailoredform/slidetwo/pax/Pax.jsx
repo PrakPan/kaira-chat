@@ -109,11 +109,13 @@ const Pax = (props) => {
         onHide={() => setIsRoomExpanded(false)}
         borderRadius={"12px"}
         animation={false}
+        paddingX="20px"
+        paddingY="20px"
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
         <>
 
-          <div className="border-[1px] bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg p-3 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
+          <div className=" bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg  overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
             <div className="min-w-[367px]">
               <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
                 <div className="Heading2SB">Room Configuration</div>
@@ -158,8 +160,10 @@ const Pax = (props) => {
           onHide={() => setIsRoomExpanded(false)}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
         >
-          <div className="w-[100%] p-[20px]">
+          <div className="w-[100%]">
             <div className="">
               <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
                 <div className="Heading2SB">Room Configuration</div>

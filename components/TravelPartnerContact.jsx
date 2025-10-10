@@ -38,7 +38,7 @@ export default function TravelPartnerContact(props) {
               />
             </button>
             {share && (
-              <div className="absolute top-10 right-0 z-[99]">
+              <div>
                 <SocialShareDesktop
                   social_title={props?.itinerary?.social_title}
                   social_description={props?.social_description}
@@ -65,6 +65,8 @@ export default function TravelPartnerContact(props) {
           backgroundColor: "rgba(0,0,0,0.4)",
           backdropFilter: "blur(1px)",
         }} // <- add this
+        paddingX="20px"
+        paddingY="20px"
       >
         <Settings />
       </ModalWithBackdrop>:
@@ -73,6 +75,8 @@ export default function TravelPartnerContact(props) {
         onHide={() => setShowSettings(false)}
         width="100%"
         height="max-content"
+        paddingX="16px"
+        paddingY="31px"
       >
         <Settings />
       </BottomModal>

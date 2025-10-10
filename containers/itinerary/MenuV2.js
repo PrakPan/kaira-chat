@@ -858,7 +858,6 @@ const SimpleTabsV2 = (props) => {
 
       {isPageWide ? (
         <SplitScreen
-          classStyle="min-h-[600px]"
           isPageWide
           leftWidth={5}
           rightWidth={5}

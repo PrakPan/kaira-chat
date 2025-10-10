@@ -228,7 +228,7 @@ export const SocialShareDesktop = ({
   return (
     // <div onClick={(e) => closeShare(e)} className={`z-[2000] fixed inset-0`}>
     <div
-      className={`z-[1038] w-fit drop-shadow-2xl shadow-2xl border-2 border-black rounded-md transition-all popup ${open && "open-popup"}`}
+      className={`z-[99] absolute top-10 right-0 w-fit drop-shadow-2xl shadow-2xl border-2 border-black rounded-md transition-all popup ${open && "open-popup"}`}
     >
       <div
         ref={ref}

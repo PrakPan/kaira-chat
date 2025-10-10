@@ -168,10 +168,10 @@ function MyApp({ Component, pageProps, store }) {
                 anonymousId: "abc",
               });
               setJupiterInitialized(true);
-              console.log(`✅ Jupiter initialized via ${method}`);
+              
               return;
             } catch (error) {
-              console.error(`Error with ${method}:`, error);
+              
             }
           }
         }
@@ -181,7 +181,7 @@ function MyApp({ Component, pageProps, store }) {
       if (initializationAttempts.current < maxAttempts) {
         setTimeout(tryInitialize, 1000);
       } else {
-        console.warn('⚠️ Jupiter Analytics initialization failed');
+        
         setJupiterInitialized(true);
       }
     };
