@@ -24,6 +24,7 @@ import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
+import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -269,7 +270,7 @@ const Homepage = (props) => {
         eventDates={props.eventDates}
       />
       </>:<>
-      <HeroBanner
+      {/* <HeroBanner
         image={props.experienceData.image}
         page_id={props.page_id}
         type={props.type}
@@ -280,7 +281,13 @@ const Homepage = (props) => {
         subheading={props.experienceData.banner_text}
         page={"State Page"}
         eventDates={props.eventDates}
-      />
+      /> */}
+
+      <HeroSection title={validateTextSize(
+            `Craft a personalized itinerary to ${props.data.name} now!`,
+            9,
+            `Craft a trip to ${props.data.name} now!`
+          )}/>
 
       <SetWidthContainer>
         <PathNavigation path={props.experienceData.path} />

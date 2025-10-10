@@ -25,6 +25,7 @@ import Poi from "../../containers/newcityplanner/pois/Index";
 import Activity from "../../containers/newcityplanner/activities/Index";
 import { logEvent } from "../../services/ga/Index.js";
 import H3 from "../../components/heading/H3";
+import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -114,7 +115,7 @@ const Index = (props) => {
 
   return (
     <div>
-      {isPageWide ? (
+      {/* {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
             openTailoredModal(router, props.data.id, props.data.name)
@@ -132,17 +133,22 @@ const Index = (props) => {
             openTailoredModal(router, props.data.id, props.data.name)
           }
         />
-      )}
+      )} */}
 
       <div>
-        <HeroBanner
+        <HeroSection title={validateTextSize(
+            `Craft a personalized itinerary to ${props.data.name} now!`,
+            9,
+            `Craft a trip to ${props.data.name} now!`
+          )}/>
+        {/* <HeroBanner
           image={props?.data?.image}
           page_id={props?.data?.id}
           type={props?.type}
           destination={props?.data?.name}
           title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}
-        />
+        /> */}
         <SetWidthContainer>
           <PathNavigation path={props?.data?.path} />
 

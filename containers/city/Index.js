@@ -9,6 +9,7 @@ import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import validateTextSize from "../../services/textSizeValidator";
 import openTailoredModal from "../../services/openTailoredModal";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
+import HeroSection from "../../components/revamp/destination/HeroSection";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -38,7 +39,7 @@ const Experience = (props) => {
         className=""
         style={isPageWide ? { minHeight: "100vh" } : {}}
       >
-        {isPageWide ? (
+        {/* {isPageWide ? (
           <DesktopPersonaliseBanner
             onclick={() =>
               openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
@@ -56,9 +57,9 @@ const Experience = (props) => {
               openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
             }
           />
-        )}
+        )} */}
         <div>
-          <HeroBanner
+          {/* <HeroBanner
             image={props.cityData.images[0].image}
             destination={convertDbNameToCapitalFirst(props.cityData.name)}
             cities={props.reccomendedCitiesData}
@@ -66,6 +67,14 @@ const Experience = (props) => {
             page={"City Page"}
             page_id={props?.page_id}
             type={props?.type}
+          /> */}
+
+          <HeroSection title={validateTextSize(
+            `Craft a personalized itinerary to ${props.data.name} now!`,
+            9,
+            `Craft a trip to ${props.data.name} now!`
+          )} 
+          image={props.cityData.images[0].image}
           />
 
           <NewMenu

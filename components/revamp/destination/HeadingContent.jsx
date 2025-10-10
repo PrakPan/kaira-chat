@@ -66,7 +66,7 @@ const HeadingContent = ({ title, subtitle }) => {
   return (
     <div ref={containerRef} className={styles.headingContent}>
       <div ref={headingRef}>
-        <h1 className={`${styles.title} heading-text`}>Bonjour, Paris! </h1>
+        <h1 className={`${styles.title} heading-text`}>{`${title || `Bonjour, Paris!` }`} </h1>
         <h1 className={`${styles.title} heading-text`}>
           Crafted by AI, Inspired by You.
         </h1>

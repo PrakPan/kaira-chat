@@ -36,6 +36,8 @@ import Overview from "../themes/Overview.jsx";
 import Element from "../newcityplanner/elements/Index.js";
 import LocationsBlog from "../../components/containers/plannerlocations/Index.js";
 import Activity from "../newcityplanner/activities/Index.js";
+import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -119,7 +121,7 @@ const Index = (props) => {
 
   return (
     <div>
-      {isPageWide ? (
+      {/* {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
             openTailoredModal(
@@ -149,17 +151,25 @@ const Index = (props) => {
             )
           }
         />
-      )}
+      )} */}
+      {/* <HeroSection/> */}
 
       <div>
-        <HeroBanner
+        {/* <HeroBanner
           image={props.data.image}
           page_id={props.data.id}
           title={`${convertDbNameToCapitalFirst(props.data.slug)} Trip Planner`}
           page={"Continent Page"}
           type={props.type}
           destination={props.destination}
-        />
+        /> */}
+        <HeroSection title={validateTextSize(
+            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
+              props.data.slug
+            )} now!`,
+            9,
+            `Craft a trip to ${props.data.destination} now!`
+          )}/>
 
         <SetWidthContainer>
           <PathNavigation path={props.data.path} />
