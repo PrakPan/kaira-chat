@@ -1,5 +1,5 @@
 import React from "react";
-
+import Image from "next/image";
 const ModalWithBackdrop = ({
   show,
   onHide,
@@ -11,12 +11,14 @@ const ModalWithBackdrop = ({
   backdropStyle = {},
   children,
   mobileWidth = "90%",
+  paddingX = "0px",
+  paddingY = "0px",
 }) => {
   if (!show) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-[${paddingX}] py-[${paddingY}]`}
       style={backdropStyle}
       onClick={onHide} // close modal when clicking outside
     >
@@ -29,15 +31,23 @@ const ModalWithBackdrop = ({
           maxWidth: mobileWidth,
           height,
           borderRadius,
+          paddingLeft: paddingX,
+          paddingRight: paddingX,
+          paddingTop: paddingY,
+          paddingBottom: paddingY,
         }}
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside
       >
         {closeIcon && (
           <button
             onClick={onHide}
-            className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl font-bold"
+            style={{
+              position: 'absolute',
+              top: paddingY,
+              right: paddingY,
+            }}
           >
-            &times;
+            <div className="p-[3.75px]"><Image src="/close.svg" width={10.5} height={10.5} /></div>
           </button>
         )}
         {children}

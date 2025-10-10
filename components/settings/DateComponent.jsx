@@ -8,7 +8,7 @@ import AirbnbCalendar from "../calendar";
 import BottomModal from "../ui/LowerModal";
 import AirbnbCalendarMobile from "../calendar/MobileCalendar";
 import useMediaQuery from "../../hooks/useMedia";
-const DateComponent = () => {
+const DateComponent = (props) => {
   const startDateString = useSelector((state)=>state.Itinerary.start_date);
   const endDateString = useSelector((state)=>state.Itinerary.end_date);
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -37,7 +37,7 @@ const DateComponent = () => {
     <div>
         <div>
         <div>
-          <div className="Body2R_14 mb-[4px]">When</div>
+          <div className="Body2R_14 mb-[4px]">{props.settings ? 'Dates' : "When"}</div>
           <div className="relative w-full">
             <StyledFigmaBox
               value={
@@ -70,6 +70,8 @@ const DateComponent = () => {
         onHide={() => setShowCalendar(false)}
         borderRadius={"12px"}
         animation={false}
+        paddingX="20px"
+        paddingY="20px"
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
         <AirbnbCalendar
@@ -87,6 +89,8 @@ const DateComponent = () => {
           onHide={() => setShowCalendar(false)}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
         >
           <AirbnbCalendarMobile
             valueStart={date.start_date}

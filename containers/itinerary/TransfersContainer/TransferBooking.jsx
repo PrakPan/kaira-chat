@@ -114,7 +114,7 @@ const TransferBooking = ({
 
   const handleAddTransfer = () => {
 
-    trackTransferBookingAdd(router.query.id,transferId,id);
+    trackTransferBookingChange(router.query.id,transferId,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -133,7 +133,7 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
-    trackTransferCardClicked(router.query.id,book?.id || booking_id,'transfer_section');
+    trackTransferCardClicked(router.query.id,book?.id || booking_id,'transfer_section',oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
     // if(isAirport){
     //   setAirportBookingId(book?.id)
     // }

@@ -302,8 +302,8 @@ const Enquiry = (props) => {
       number_of_children: slideThreeData.numberOfChildren,
       number_of_infants: slideThreeData.numberOfInfants,
       room_configuration: slideThreeData.roomConfiguration,
-      add_flights: slideThreeData.addHotels,
-      add_hotels: slideThreeData.addFlights,
+      add_flights: slideThreeData.addFlights,
+      add_hotels: slideThreeData.addHotels,
       add_transfers_and_activities: slideThreeData.addInclusions,
       hotel_types: slideFourData.hotelType,
       meal_preferences: slideFourData.mealPreferences,
@@ -546,6 +546,8 @@ const Enquiry = (props) => {
                       backgroundColor: "rgba(0,0,0,0.4)",
                       backdropFilter: "blur(1px)",
                     }} // <- add this
+                    paddingX="20px"
+                    paddingY="20px"
                   >
                     <RouteOverviewModal
                       setShowRouteOverview={setShowRouteOverview}
@@ -557,6 +559,8 @@ const Enquiry = (props) => {
                     onHide={() => setShowRouteOverview(false)}
                     width="100%"
                     height="max-content"
+                    paddingX="20px"
+                    paddingY="20px"
                   >
                     <RouteOverviewModal
                       setShowRouteOverview={setShowRouteOverview}

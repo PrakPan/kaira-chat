@@ -228,9 +228,9 @@ const AirbnbCalendar = (props) => {
 
   return (
     <div className='w-[611px]'>
-      <div className="flex flex-col p-[20px] gap-5">
+      <div className="flex flex-col gap-5">
         <div className='flex flex-col gap-[20px] w-full'>
-          <div className="px-8 py-6 border-b border-gray-200 w-full">
+          <div className="border-b border-gray-200 w-full pb-[20px]">
             <div className="flex justify-between items-center w-full">
               <div className='text-center w-full'>
                 <h2 className="text-[20px] font-semibold text-gray-900 mb-4">When do you want to travel?</h2>

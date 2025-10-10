@@ -882,7 +882,7 @@ useEffect(() => {
 const handleEdit = async (combo, book) => {
   const bookingType = book?.booking_type || booking_type;
   setTransferType(bookingType);
-  trackTransferBookingChange(router.query.id,bookingIdToDelete,id);
+  trackTransferBookingChange(router.query.id,bookingIdToDelete,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
   setIsIntracity(false);
   if (combo) {
     setComboDetails(true);
@@ -928,7 +928,7 @@ const handleEdit = async (combo, book) => {
   };
 
   const handleAddTransfer = () => {
-    trackTransferBookingAdd(router.query.id,bookingIdToDelete,id);
+    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

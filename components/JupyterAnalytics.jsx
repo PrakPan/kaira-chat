@@ -19,7 +19,7 @@ export default function JupiterAnalytics({
         flushInterval
       };
       
-      console.log('🔧 Jupiter Config set:', window.JUPITER_CONFIG);
+      // console.log('🔧 Jupiter Config set:', window.JUPITER_CONFIG);
     }
   }, [apiEndpoint, apiKey, userId, batchSize, flushInterval]);
 
@@ -44,13 +44,13 @@ export default function JupiterAnalytics({
         src="/jupyter-partytown.js"
         strategy="afterInteractive"
         onLoad={() => {
-          console.log('✅ Jupiter Analytics loaded in web worker');
+          // console.log('✅ Jupiter Analytics loaded in web worker');
           
           // Check if it initialized
           setTimeout(() => {
             if (typeof window !== 'undefined' && window.JupiterAnalytics) {
               const state = window.JupiterAnalytics.getState();
-              console.log('📊 Jupiter Analytics State:', state);
+              // console.log('📊 Jupiter Analytics State:', state);
             }
           }, 2000);
         }}

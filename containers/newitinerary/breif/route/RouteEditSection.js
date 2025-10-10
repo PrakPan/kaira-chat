@@ -756,6 +756,7 @@ const RouteEditSection = (props) => {
 
         {itineraryLoading && <Spinner isEdit={true} />}
         {!isDesktop && (
+          <>
           <div className={`w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}>
             {props.children}
 
@@ -766,8 +767,26 @@ const RouteEditSection = (props) => {
               </div>
             )}
           </div>
+          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+          {editDestination && !itineraryLoading ? (
+            <div className="w-full relative flex flex-row justify-center gap-5 px-3">
+              <EditDestinations
+                destinations={destinations}
+                setDestinations={setDestinations}
+                destinationRef={destinationRef}
+                startDate={startDate}
+                setEndDate={setEndDate}
+                setLocationsLatLong={props.setLocationsLatLong}
+                setDestinationChanges={setDestinationChanges}
+              />
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+          </>
         )}
-        <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
+        {isDesktop && <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
           {editDestination && !itineraryLoading ? (
             <div className="w-full flex flex-row justify-center gap-5">
               <EditDestinations
@@ -805,17 +824,19 @@ const RouteEditSection = (props) => {
             // />
             ""
           )}
-        </div>
+        </div>}
 
         {!itineraryLoading && (
+          <div className={`w-full md:w-[85%] ${isDesktop ? "" : "px-3"}`}>
           <ActionPanel
             setEdit={props.setEdit}
             editDestination={editDestination}
             setEditDestination={setEditDestination}
             handleSaveButton={handleSaveButton}
-            itineraryLoading={itineraryLoading}
-            handleClose={handleClose}
-          />
+              itineraryLoading={itineraryLoading}
+              handleClose={handleClose}
+            />
+          </div>
         )}
 
         {!isDesktop && (
@@ -2586,7 +2607,7 @@ export const ActionPanel = (props) => {
   } = props;
 const isDesktop = useMediaQuery("(min-width:768px)");
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`p-4 ${!isDesktop && "gap-2"}`}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`${!isDesktop && "gap-2"}`}>
       <button className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`} onClick={
         editDestination
           ? () => handleClose()

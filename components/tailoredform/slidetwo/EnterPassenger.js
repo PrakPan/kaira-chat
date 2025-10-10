@@ -210,7 +210,7 @@ const EnterPassenger = (props) => {
 
   return (
     <div>
-      <StyledText className="mb-[4px]">Who's Going</StyledText>
+      <StyledText className="mb-[4px]">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
         {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers
       </StyledBox>
@@ -228,9 +228,11 @@ const EnterPassenger = (props) => {
         }}
         borderRadius={"12px"}
         animation={false}
+        paddingX="20px"
+        paddingY="20px"
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
-        <div className="flex flex-col justify-between items-center h-[436px] p-[20px] overflow-y-auto">
+        <div className="flex flex-col justify-between items-center h-[436px] overflow-y-auto">
           <HeaderRow>
             <div className="Heading2SB">Who's Going?</div>
             <div className="Body2R_14">{adults + children + infants} Travelers</div>
@@ -296,8 +298,10 @@ const EnterPassenger = (props) => {
           }}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
           >
-          <div className="flex flex-col justify-between items-center h-[436px] p-[20px] overflow-y-auto">
+          <div className="flex flex-col justify-between items-center h-[436px] overflow-y-auto">
             <HeaderRow>
               <div className="Heading2SB">Who's Going?</div>
               <div className="Body2R_14">{adults + children + infants} Travelers</div>
