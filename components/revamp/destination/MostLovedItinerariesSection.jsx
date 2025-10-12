@@ -164,17 +164,28 @@ const MostLovedItinerariesSection = () => {
             style={{ height: "677px" }}
             modules={[Navigation]}
             spaceBetween={24}
-            slidesPerView={3}
+            slidesPerView={1}
             navigation={{
               nextEl: ".MostLovedItinerariesSection-next",
               prevEl: ".MostLovedItinerariesSection-prev",
               clickable: true,
             }}
             breakpoints={{
-              640: { slidesPerView: 1, spaceBetween: 16 },
-              768: { slidesPerView: 2, spaceBetween: 20 },
-              1024: { slidesPerView: 2, spaceBetween: 24 },
-              1280: { slidesPerView: 3, spaceBetween: 28 },
+              // when window width is >= 640px
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 16,
+              },
+              // when window width is >= 768px
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              // when window width is >= 1024px
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
             }}
             className="py-6"
           >

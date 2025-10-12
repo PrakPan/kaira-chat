@@ -139,7 +139,7 @@ const PlacesBragSection = () => {
             breakpoints={{
               // when window width is >= 640px
               640: {
-                slidesPerView: 1.5,
+                slidesPerView: 1,
                 spaceBetween: 16,
               },
               // when window width is >= 768px
