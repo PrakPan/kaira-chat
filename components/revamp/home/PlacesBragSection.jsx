@@ -156,7 +156,7 @@ const PlacesBragSection = () => {
           >
             {destinations.map((destination) => (
               <SwiperSlide key={destination.id}>
-                <div className="w-full px-1">
+                <div className="w-full">
                   <DestinationCard
                     title={destination.title}
                     description={destination.description}
