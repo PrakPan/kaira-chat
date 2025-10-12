@@ -1,49 +1,55 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-// Register the useGSAP plugin once
+// Register GSAP plugin
 gsap.registerPlugin(useGSAP);
+
+// Disable lag smoothing to prevent micro jumps on macOS resume
+gsap.ticker.lagSmoothing(false);
+
+// --- SSR-safe helpers ---
+// Returns true if user prefers reduced motion
+export const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Returns true if running on Safari
+export const isSafari = () => {
+  if (typeof navigator === "undefined") return false;
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+};
+
+// Run animation code only if motion is allowed
+export const runIfMotionAllowed = (fn) => {
+  if (!prefersReducedMotion()) fn();
+};
 
 // Common animation configurations
 export const ANIMATION_CONFIG = {
-  // Common easing functions
   ease: {
     backOut: "back.out(1.7)",
     powerOut: "power2.out",
     powerInOut: "power2.inOut",
   },
-
-  // Common animation durations
   duration: {
     fast: 0.8,
     medium: 1,
     slow: 3,
   },
-
-  // Common initial states
   initialStates: {
-    fromBottom: {
-      y: 100,
-      opacity: 0,
-    },
-    fromBottomSmall: {
-      y: 30,
-      opacity: 0,
-    },
-    hidden: {
-      opacity: 0,
-    },
+    fromBottom: { y: 100, opacity: 0 },
+    fromBottomSmall: { y: 30, opacity: 0 },
+    hidden: { opacity: 0 },
   },
-
-  // Common stagger configurations
   stagger: {
-    short: { amount: 0.3, from: "start" },
-    medium: { amount: 0.4, from: "start" },
-    long: { amount: 1.2, from: "start" },
+    short: { each: 0.05, from: "start" },
+    medium: { each: 0.08, from: "start" },
+    long: { each: 0.12, from: "start" },
   },
 };
 
-// Utility function for creating entrance animations
+// 🪄 Utility: Entrance animation
 export const createEntranceAnimation = (elements, config = {}) => {
   const {
     duration = ANIMATION_CONFIG.duration.fast,
@@ -59,77 +65,82 @@ export const createEntranceAnimation = (elements, config = {}) => {
     ease,
     stagger,
     delay,
+    force3D: true, // GPU acceleration
+    willChange: "transform, opacity",
   };
 };
 
-// Utility function for creating floating animations
+// 🌊 Utility: Floating animation (simplified infinite loop)
 export const createFloatingSequence = (timeline, elements, config = {}) => {
   const {
-    movements = [
-      { y: -8, duration: 3, stagger: { amount: 0.3, from: "start" } },
-      { y: 8, duration: 3, stagger: { amount: 0.3, from: "center" } },
-      { y: -5, duration: 2.5, stagger: { amount: 0.2, from: "end" } },
-      { y: 0, duration: 2, stagger: { amount: 0.4, from: "random" } },
-    ],
+    y = 8,
+    duration = 3,
+    stagger = { each: 0.15, from: "center" },
     startDelay = "+=0.5",
   } = config;
 
-  movements.forEach((movement, index) => {
-    const position = index === 0 ? startDelay : undefined;
+  runIfMotionAllowed(() => {
     timeline.to(
       elements,
       {
-        ...movement,
+        y,
         ease: ANIMATION_CONFIG.ease.powerInOut,
+        duration,
+        repeat: -1,
+        yoyo: true,
+        stagger,
+        force3D: true,
+        willChange: "transform",
       },
-      position
+      startDelay
     );
   });
 
   return timeline;
 };
 
-// Utility function for creating floating icon animations (for WhatMakesUsSection)
+// 🌈 Utility: Floating icon animations (optimized for macOS)
 export const createFloatingIconAnimations = (iconRefs) => {
   const icons = iconRefs.map((ref) => ref.current).filter(Boolean);
+  const timelines = [];
 
-  icons.forEach((icon, index) => {
-    if (icon) {
-      // Create floating animation with different parameters for each icon
-      gsap.to(icon, {
-        y: `${10 + index * 3}px`, // Different floating heights
-        x: `${5 + index * 2}px`, // Slight horizontal movement
-        rotation: `${2 + index}deg`, // Slight rotation
-        duration: 2 + index * 0.3, // Different durations
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: index * 0.2, // Staggered start times
-      });
-
-      // Add a secondary floating motion
-      gsap.to(icon, {
-        scale: 1.05,
-        duration: 1.5 + index * 0.2,
-        ease: "power2.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: index * 0.1,
-      });
-    }
-  });
-
-  // Return cleanup function
-  return () => {
-    icons.forEach((icon) => {
+  runIfMotionAllowed(() => {
+    icons.forEach((icon, index) => {
       if (icon) {
-        gsap.killTweensOf(icon);
+        // GPU compositing hints
+        gsap.set(icon, {
+          willChange: "transform, opacity",
+          transform: "translate3d(0, 0, 0)",
+          backfaceVisibility: "hidden",
+        });
+
+        // Single continuous floating timeline
+        const tl = gsap.timeline({ repeat: -1, yoyo: true });
+
+        tl.to(icon, {
+          y: `${10 + index * 3}px`,
+          x: `${5 + index * 2}px`,
+          rotation: `${2 + index}deg`,
+          scale: 1.05,
+          duration: 2 + index * 0.3,
+          ease: "power2.inOut",
+          delay: index * 0.2,
+          force3D: true,
+          willChange: "transform",
+        });
+
+        timelines.push(tl);
       }
     });
+  });
+
+  // Cleanup
+  return () => {
+    timelines.forEach((tl) => tl.kill());
   };
 };
 
-// Utility function for splitting text into animated words
+// ✂️ Utility: Split text into animated words
 export const splitTextIntoWords = (container, selector = ".heading-text") => {
   const headings = container.querySelectorAll(selector);
 
@@ -137,13 +148,12 @@ export const splitTextIntoWords = (container, selector = ".heading-text") => {
     const text = heading.textContent;
     const words = text.split(" ");
 
-    // Clear the heading and rebuild with wrapped words
     heading.innerHTML = words
       .map(
         (word) =>
-          `<span class="word" style="display: inline-block; overflow: hidden;">
-        <span style="display: inline-block;">${word}</span>
-      </span>`
+          `<span class="word" style="display:inline-block;overflow:hidden;will-change:transform,opacity;">
+             <span style="display:inline-block;transform:translate3d(0,0,0);backface-visibility:hidden;">${word}</span>
+           </span>`
       )
       .join(" ");
   });
@@ -151,7 +161,7 @@ export const splitTextIntoWords = (container, selector = ".heading-text") => {
   return container.querySelectorAll(".word span");
 };
 
-// Utility function for creating sequential content animations
+// 🧩 Utility: Sequential content animations
 export const createSequentialContentAnimation = (
   timeline,
   elements,
@@ -163,17 +173,21 @@ export const createSequentialContentAnimation = (
     ease = ANIMATION_CONFIG.ease.powerOut,
   } = config;
 
-  elements.forEach((element, index) => {
-    timeline.to(
-      element,
-      {
-        opacity: 1,
-        y: 0,
-        duration,
-        ease,
-      },
-      delays[index] || "+=0.2"
-    );
+  runIfMotionAllowed(() => {
+    elements.forEach((element, index) => {
+      timeline.to(
+        element,
+        {
+          opacity: 1,
+          y: 0,
+          duration,
+          ease,
+          force3D: true,
+          willChange: "transform, opacity",
+        },
+        delays[index] || "+=0.2"
+      );
+    });
   });
 
   return timeline;
