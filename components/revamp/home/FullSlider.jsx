@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Japan } from "../assets";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -13,6 +13,25 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 const FullSlider = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [slideCount, setSlideCount] = useState(0);
+  const swiperRef = useRef(null);
+
+  const handleSwiper = (swiper) => {
+    swiperRef.current = swiper;
+    setActiveIndex(swiper.activeIndex);
+    // For non-loop mode, slideCount = slides.length
+    // For loop mode, Swiper duplicates slides, so subtract loopedSlides*2
+    const count = swiper.loopedSlides
+      ? swiper.slides.length - swiper.loopedSlides * 2
+      : swiper.slides.length;
+    setSlideCount(count);
+  };
+
+  const handleSlideChange = (swiper) => {
+    setActiveIndex(swiper.activeIndex);
+  };
+
   return (
     <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-4 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -25,6 +44,8 @@ const FullSlider = () => {
               prevEl: ".fullslider-prev",
               clickable: true,
             }}
+            onSwiper={handleSwiper}
+            onSlideChange={handleSlideChange}
             className=""
           >
             {[1, 2, 3, 4, 5].map((i) => (
@@ -47,7 +68,9 @@ const FullSlider = () => {
           {/* Custom Prev Button */}
           <div className="fullslider-prev" aria-hidden>
             <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+              <div
+                className={`w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer${activeIndex === 0 ? " cursor-not-allowed opacity-40 pointer-events-none" : ""}`}
+              >
                 <FontAwesomeIcon
                   icon={faChevronLeft}
                   className="text-black group-hover:text-black text-md transition-colors duration-300 transform "
@@ -59,7 +82,9 @@ const FullSlider = () => {
           {/* Custom Next Button */}
           <div className="fullslider-next" aria-hidden>
             <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+              <div
+                className={`w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer${activeIndex === slideCount - 1 ? " cursor-not-allowed opacity-40 pointer-events-none" : ""}`}
+              >
                 <FontAwesomeIcon
                   icon={faChevronRight}
                   className="text-black hover:text-black text-md transition-colors duration-300 transform "
