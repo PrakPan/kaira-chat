@@ -4,8 +4,17 @@ import gsap from "gsap";
 // Register GSAP plugin
 gsap.registerPlugin(useGSAP);
 
-// Disable lag smoothing to prevent micro jumps on macOS resume
-gsap.ticker.lagSmoothing(false);
+// Apply global performance tuning
+export const setupGSAPPerformance = () => {
+  gsap.ticker.lagSmoothing(500, 33); // smooths Safari / Mac frame drops
+  gsap.defaults({
+    force3D: true, // improves GPU acceleration
+    overwrite: "auto",
+  });
+};
+
+// Always run performance setup globally
+setupGSAPPerformance();
 
 // --- SSR-safe helpers ---
 // Returns true if user prefers reduced motion
