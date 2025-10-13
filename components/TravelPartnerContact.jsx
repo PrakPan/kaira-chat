@@ -68,7 +68,7 @@ export default function TravelPartnerContact(props) {
         paddingX="20px"
         paddingY="20px"
       >
-        <Settings />
+        <Settings setShowSettings={setShowSettings}/>
       </ModalWithBackdrop>:
       <BottomModal
         show={showSettings == true}

@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { RxCross2 } from "react-icons/rx";
 const ModalWithBackdrop = ({
   show,
   onHide,
@@ -47,7 +48,13 @@ const ModalWithBackdrop = ({
               right: paddingY,
             }}
           >
-            <div className="p-[3.75px]"><Image src="/close.svg" width={10.5} height={10.5} /></div>
+            <RxCross2
+          style={{
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            zIndex: 999,
+          }}
+          />
           </button>
         )}
         {children}

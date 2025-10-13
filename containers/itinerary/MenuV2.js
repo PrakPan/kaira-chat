@@ -334,10 +334,6 @@ const SimpleTabsV2 = (props) => {
   return (
     <div
       className={classes.root}
-      style={{
-        paddingTop: "20px",
-        paddingBottom: isPageWide <= 768 ? "42px" : "20px",
-      }}
     >
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
@@ -828,7 +824,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           </div>
 
-          <div className="fixed z-[999] bottom-[50px] right-[10px] ">
+          <div className="fixed z-[9] bottom-[70px] right-[10px] ">
             <Button borderWidth="0px" onclick={() => handleChatBotOpen(true)}>
               <Image
                 src={"/assets/chatbot/chatbot-avaatar.svg"}
@@ -1250,7 +1246,7 @@ const SimpleTabsV2 = (props) => {
         ) : null}
       </Modal>
 
-      <div className={isPageWide ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed" : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-[16px] py-[12px]"}>
+      <div className={isPageWide ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed" : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"}>
         {props?.displayText ? <ItineraryStatusLoader
           displayText={props?.displayText}
           isVisible={props?.shouldShowLoader()}

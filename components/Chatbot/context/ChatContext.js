@@ -32,7 +32,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [disableQuerySection, setDisableQuerySection] = useState(false);
   const socketRef = useRef(null);
-  const token = localStorage.getItem("access_token");
+  // const token = localStorage.getItem("access_token");
   const itinerary = useSelector((state) => state.Itinerary);
   const stays = useSelector((state) => state.Stays);
   const dispatch = useDispatch();
@@ -53,23 +53,24 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const {trackTransferBookingDelete} = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
-
+  const token =useSelector((state) => state.auth.token);
 
 
   useEffect(() => {
-    if (!itinearyId) return;
+    if (!itinearyId || !token) return;
+    console.log("initial run bot")
     // console.log("initial run bot")
     getAllChatHistory(itinearyId);
     if (sessionId) {
       showChatHistoryById(sessionId, true);
     } 
-  }, [itinearyId]);
+  }, [itinearyId,token]);
   useEffect(() => {
-    if (!itinearyId) return;
+    if (!itinearyId || !token) return;
     if (!sessionId && finalized_status === "SUCCESS") {
       connect(null);
     }
-  }, [finalized_status]);
+  }, [finalized_status,token]);
 
   const connect = (id = null) => {
     if (reconnecting) return;
