@@ -24,6 +24,14 @@ const Settings = (props) => {
   const [selectedPreferences, setSelectedPreferences] = useState(
     useSelector((state) => state.Itinerary.selected_preferences)||[]
   );
+  const handleSetSelectedPreferences=(preference)=>{
+    if(selectedPreferences.includes(preference)){
+      setSelectedPreferences(selectedPreferences.filter((p) => p !== preference));
+    }
+    else{
+      setSelectedPreferences([...selectedPreferences, preference]);
+    }
+  }
   const startDateString = useSelector((state)=>state.Itinerary.start_date);
   const endDateString = useSelector((state)=>state.Itinerary.end_date);
 
@@ -105,7 +113,7 @@ const Settings = (props) => {
           <Preferences
             tailoredFormModal={false}
             selectedPreferences={selectedPreferences}
-            setSelectedPreferences={setSelectedPreferences}
+            setSelectedPreferences={handleSetSelectedPreferences}
           ></Preferences>
         </div>
       </div>

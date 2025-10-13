@@ -4,7 +4,7 @@ import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
 import { Body1M_16 } from "../../new-ui/Body";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddFlights, setAddHotels, setAddInclusions, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, togglePreference } from "../../../store/actions/slideOneActions";
+import { setAddFlights, setAddHotels, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, togglePreference } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -29,7 +29,6 @@ const SlideThree = (props) => {
     roomConfiguration,
     addHotels,
     addFlights,
-    addInclusions,
   } = useSelector((state) => state.tailoredInfoReducer.slideThree);
   const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideThree.selectedPreferences)||[];
   const setSelectedPrefrences=(value)=>{
@@ -91,7 +90,7 @@ const SlideThree = (props) => {
       }
       <div>
         <Body1M_16 className="mb-[12px]">Pick Your Inclusions</Body1M_16>
-        <Section className="flex  justify-between items-center ">
+        <Section className="grid grid-cols-3 justify-between items-center">
 
           <label
             htmlFor="add-hotels"
@@ -109,7 +108,7 @@ const SlideThree = (props) => {
 
           <label
             htmlFor="add-flights"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer justify-self-center"
           >
             <input
               id="add-flights"
@@ -121,19 +120,7 @@ const SlideThree = (props) => {
             <div className="Body2R_14">Flights</div>
           </label>
 
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              checked={addInclusions}
-              onChange={(e) => dispatch(setAddInclusions(e.target.checked))}
-              className = "focus:outline-none cursor-pointer"
-                />
-                <div className="Body2R_14">Activities + Transfers</div>
-          </label>
+          <div></div>
         </Section>
       </div>
     </Container>

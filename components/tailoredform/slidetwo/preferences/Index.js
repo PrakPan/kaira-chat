@@ -69,12 +69,7 @@ const GroupType = (props) => {
   const dispatch = useDispatch();
   const _isPreferenceAdded = (preference) => props?.selectedPreferences.includes(preference);
   const _handleClick = (preference) => {
-    if(props?.selectedPreferences.includes(preference)){
-      props.setSelectedPreferences(props?.selectedPreferences.filter((p) => p !== preference));
-    }
-    else{
-      props.setSelectedPreferences([...props?.selectedPreferences, preference]);
-    }
+    props.setSelectedPreferences(preference);
   };
 
   return (
