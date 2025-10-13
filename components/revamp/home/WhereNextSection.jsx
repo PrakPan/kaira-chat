@@ -1,41 +1,33 @@
 import React from "react";
 import Image from "next/image";
 import Button from "../common/components/button";
-import { Japan } from "../assets";
+import { Pinned, Japan } from "../assets";
 import Link from "next/link";
 
 const WhereNextSection = () => {
-  // Traveler avatars data - using simple color-coded initials for now
-  const travelers = [
+  // Statistics data
+  const stats = [
     {
-      id: 1,
-      name: "Sarah",
-      bgColor: "#FF6B6B",
+      value: "100K+",
+      label: "Happy Travellers & Counting",
     },
     {
-      id: 2,
-      name: "Mike",
-      bgColor: "#4ECDC4",
+      value: "500+",
+      label: "Total Tour Destinations",
     },
     {
-      id: 3,
-      name: "Emma",
-      bgColor: "#45B7D1",
-    },
-    {
-      id: 4,
-      name: "Alex",
-      bgColor: "#96CEB4",
+      value: "4.8",
+      label: "Rated By Travellers",
     },
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-2 sm:px-6 lg:px-8 bg-white">
+    <section
+      className="py-8 pb-0 px-2 sm:px-6 lg:px-8"
+      style={{ backgroundColor: "#FEFFC0" }}
+    >
       <div className="max-w-7xl mx-auto">
-        <div
-          className="rounded-2xl lg:rounded-3xl p-8 lg:p-12"
-          style={{ backgroundColor: "#FEF7B0" }}
-        >
+        <div className="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content Side */}
             <div className="order-2 lg:order-1">
@@ -72,84 +64,33 @@ const WhereNextSection = () => {
                 </Link>
               </div>
 
-              {/* Travelers Section */}
-              <div className="flex flex-col gap-3">
-                {/* Avatar Stack */}
-                <div className="flex -space-x-3">
-                  {travelers.map((traveler, index) => (
-                    <div
-                      key={traveler.id}
-                      className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative"
-                      style={{
-                        zIndex: index + 1,
-                      }}
-                    >
-                      <Image
-                        src={Japan}
-                        alt={`${traveler.name} profile picture`}
-                        fill
-                        className="object-cover"
-                      />
+              {/* Statistics Section */}
+              <div className="grid grid-cols-3 gap-4 sm:gap-6">
+                {stats.map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+                      {stat.value}
                     </div>
-                  ))}
-                </div>
-
-                {/* Count Text */}
-                <div
-                  style={{ fontSize: "14px" }}
-                  className="font-normal text-gray-700"
-                >
-                  <span className="font-medium">
-                    10k+ Travellers and Counting
-                  </span>
-                </div>
+                    <div className="text-xs sm:text-sm text-gray-700 font-medium leading-tight">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Image Side */}
             <div className="order-1 lg:order-2">
-              <div className="relative rounded-2xl lg:rounded-3xl overflow-hidden shadow-lg">
+              <div className="relative overflow-hidden">
                 {/* Main Image */}
-                <div className="relative aspect-[4/3] sm:aspect-[16/12] lg:aspect-[4/3]">
+                <div className="relative h-[400px] sm:h-[500px] lg:h-[600px]">
                   <Image
-                    src={Japan}
+                    src={Pinned}
                     alt="Beautiful Italy coastal town with colorful buildings and boats"
                     fill
                     className="object-cover"
                     priority
                   />
-
-                  {/* Gradient Overlay */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "linear-gradient(180deg, rgba(0, 0, 0, 0.00) 60%, rgba(0, 0, 0, 0.60) 100%)",
-                    }}
-                  />
-
-                  {/* Location Badge */}
-                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6">
-                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                      </svg>
-                      <span className="text-white text-sm font-medium">
-                        Italy
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import image8 from "./sample/8.png";
 import image9 from "./sample/9.png";
 
 import Japan from "./japan.png";
+import Pinned from "./pinned.png";
 import backgroundImage from "./bg.png";
 import cta from "./cta.png";
 import TTW from "./ttw.svg";
@@ -31,6 +32,7 @@ export {
   Japan,
   cta,
   Paris,
+  Pinned,
 };
 
 // Alternative descriptive names
