@@ -115,10 +115,9 @@ const MidSectionV2 = (props) => {
   const {trackTransferBookingAdd,trackTransferBookingChange} =  useAnalytics();
 
   const handleAddTransfer = () => {
-    if(props.cityTransferBookings?.id){
-      trackTransferBookingChange(router.query.id,props?.transferId,id);
-    }
-    trackTransferBookingAdd(router.query.id,props?.transferId,id);
+    
+      trackTransferBookingChange(router.query.id,props?.transferId,props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
+   
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

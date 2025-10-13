@@ -10,7 +10,7 @@ const StaysContainer = (props) => {
     <div id="stays" className="mt-5">
       <div
         id="staysBooking"
-        className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit"
+        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit"
       >
         Stays
         <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>

@@ -8,28 +8,15 @@ import AirbnbCalendar from "../calendar";
 import BottomModal from "../ui/LowerModal";
 import AirbnbCalendarMobile from "../calendar/MobileCalendar";
 import useMediaQuery from "../../hooks/useMedia";
-const DateComponent = () => {
-  const startDateString = useSelector((state)=>state.Itinerary.start_date);
-  const endDateString = useSelector((state)=>state.Itinerary.end_date);
+const DateComponent = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
-  const [date, setDate] = useState({
-    type: "fixed",
-    start_date: startDateString ? new Date(startDateString) : null,
-    end_date: endDateString ? new Date(endDateString) : null,
-    month: "",
-    duration: ""
-  });
   const handleOnCalenderApplyDates = (values) => {
-    setDate({
-      ...date,
-      start_date: values.start,
-      end_date: values.end
-    });
+    props.handleApplyDates(values);
   }
   const [showCalendar, setShowCalendar] = useState(false);
   const SetDateType = (value) => {
-    setDate({
-      ...date,
+    props.setDate({
+      ...props.date,
       type: value
     });
   }
@@ -37,13 +24,13 @@ const DateComponent = () => {
     <div>
         <div>
         <div>
-          <div className="Body2R_14 mb-[4px]">When</div>
+          <div className="Body2R_14 mb-[4px]">{props.settings ? 'Dates' : "When"}</div>
           <div className="relative w-full">
             <StyledFigmaBox
               value={
-                date.type === "fixed" ? (date.start_date && date.end_date
-                  ? `${getHumanDate(date.start_date.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(date.end_date.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
-                  : "") : date.type === "flexible" ? (new Date(date.month).toLocaleString("default", { month: "long" }) + ", " + date.duration + " days") : date.duration + " days"
+                props.date.type === "fixed" ? (props.date.start_date && props.date.end_date
+                  ? `${getHumanDate(props.date.start_date.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(props.date.end_date.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
+                  : "") : props.date.type === "flexible" ? (new Date(props.date.month).toLocaleString("default", { month: "long" }) + ", " + props.date.duration + " days") : props.date.duration + " days"
               }
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10  Body2M_14`}
@@ -70,16 +57,19 @@ const DateComponent = () => {
         onHide={() => setShowCalendar(false)}
         borderRadius={"12px"}
         animation={false}
+        paddingX="20px"
+        paddingY="20px"
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >
         <AirbnbCalendar
-          valueStart={date.start_date}
-          valueEnd={date.end_date}
+          valueStart={props.date.start_date}
+          valueEnd={props.date.end_date}
           onChangeDate={handleOnCalenderApplyDates}
           setShowCalendar={setShowCalendar}
           setDateType={SetDateType}
-          dateType={date.type}
-          date={date}
+          dateType={props.date.type}
+          date={props.date}
+          isNotForm={true}
         />
       </ModalWithBackdrop> : <>
         <BottomModal
@@ -87,15 +77,18 @@ const DateComponent = () => {
           onHide={() => setShowCalendar(false)}
           width="100%"
           height="max-content"
+          paddingX="20px"
+          paddingY="20px"
         >
           <AirbnbCalendarMobile
-            valueStart={date.start_date}
-            valueEnd={date.end_date}
+            valueStart={props.date.start_date}
+            valueEnd={props.date.end_date}
             onChangeDate={handleOnCalenderApplyDates}
             setShowCalendar={setShowCalendar}
             setDateType={SetDateType}
-            dateType={date.type}
-            date={date}
+            dateType={props.date.type}
+            date={props.date}
+            isNotForm={true}
           />
         </BottomModal>
       </>}

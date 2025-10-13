@@ -94,7 +94,7 @@ const NavigationMenu = (props) => {
 
   return (
     <>
-      <nav className={styles.navigationMenu + " " + props.className} role="navigation">
+      <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
         <div className="hover-pointer" onClick={() => router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority />
         </div>
@@ -104,9 +104,13 @@ const NavigationMenu = (props) => {
           <li className="mr-4"></li>
           {desktopMenuItems}
           <li></li>
-          {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
+          {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
                   My Trips
+          </button>}</>:<>
+          {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
+                  Create a trip
           </button>}
+          </>}
           {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
             name={props.name}
@@ -129,9 +133,11 @@ const NavigationMenu = (props) => {
 
         {/* Hamburger Menu Button */}
         <div className="flex  gap-4 md:hidden">
-        {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
+        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
                   My Trips
-        </button>}
+        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
+                  Create a trip
+        </button>}</>}
           <MobileMenu 
           id={props.id}
           _openAllNotificationsHandler={_openAllNotificationsHandler}

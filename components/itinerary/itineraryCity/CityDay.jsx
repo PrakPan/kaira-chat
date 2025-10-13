@@ -26,6 +26,7 @@ const DivideSlabElement = styled.div`
     font-weight: 500;
     font-size: 12px;
     color: #A09E9E;
+    min-height: 45px
 `
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -156,7 +157,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                 totalElements={elements.length} 
               />
 
-              {index !== elements.length - 1 ? <DivideSlabElement> 2h </DivideSlabElement> : null}
+              {index !== elements.length - 1  ? <DivideSlabElement>  {props?.city?.nextTime ? '2h' : '' } </DivideSlabElement> : null}
             </>
           ))}
 

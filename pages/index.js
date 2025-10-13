@@ -30,6 +30,7 @@ import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
 import Login from "../components/modals/Login";
+
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();

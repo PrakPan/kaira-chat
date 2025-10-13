@@ -746,7 +746,7 @@ const LogIn = React.memo((props) => {
           <div className={`Body2R_14 text-[#6E757A] ${isPageWide ? "text-left" : "text-center"}`}>
             By continuing, you agree to our{" "}
             <Link
-              href="/privacy-policy"
+              href="/terms-conditions"
               style={{ textDecoration: "none" }}
               target="_blank"
             >

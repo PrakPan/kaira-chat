@@ -70,11 +70,11 @@ export default class MyDocument extends Document {
             type="text/partytown"
             dangerouslySetInnerHTML={{
               __html: `
-                console.log('📦 Loading Jupiter Analytics...');
+               
                 if (typeof importScripts === 'function') {
                   try {
                     importScripts('/jupyter-partytown.js');
-                    console.log('✅ Jupiter script loaded via importScripts');
+                   
                   } catch (e) {
                     console.error('❌ ImportScripts failed:', e);
                   }
