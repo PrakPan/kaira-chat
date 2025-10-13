@@ -53,6 +53,10 @@ const SlideOne = (props) => {
       dispatch(setAnytimeDate(values.duration))
     }
   }
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideThree.selectedPreferences)||[];
+  const setSelectedPrefrences=(value)=>{
+    dispatch(togglePreference(value));
+  }
   const CITIES = null;
   const SetDateType = (value) => {
     dispatch(setDateType(value))
@@ -131,8 +135,8 @@ const SlideOne = (props) => {
         <div className="mt-[12px]">
           <Preferences
             tailoredFormModal={props.tailoredFormModal}
-            selectedPreferences={props.selectedPreferences}
-            setSelectedPreferences={props.setSelectedPreferences}
+            selectedPreferences={selectedPreferences}
+            setSelectedPreferences={setSelectedPrefrences}
           ></Preferences>
         </div>
       </Section>
