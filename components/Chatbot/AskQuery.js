@@ -54,6 +54,8 @@ const ChipsContainer = styled.div`
    margin-bottom: 10px;
    gap: 10px;
    overflow-x: auto;
+   scrollbar-width: none;
+  -ms-overflow-style: none;
    ::-webkit-scrollbar {
     display: none;
 }
@@ -140,7 +142,7 @@ function AskQuery() {
     return (
         <GrowTextAreaBox>
             <Container>
-                <ChipsContainer>
+                <ChipsContainer className='scroll-x-hidden'>
                     {quickReplies.map((item, index) => <>
                         <SingleChips key={index} onClick={() => handleQuickReplies(item)} >
                             {item}

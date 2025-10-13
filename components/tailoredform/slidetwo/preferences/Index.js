@@ -67,10 +67,14 @@ const Container = styled.div`
 
 const GroupType = (props) => {
   const dispatch = useDispatch();
-  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)
-  const _isPreferenceAdded = (preference) => selectedPreferences.includes(preference);
+  const _isPreferenceAdded = (preference) => props?.selectedPreferences.includes(preference);
   const _handleClick = (preference) => {
-    dispatch(togglePreference(preference));
+    if(props?.selectedPreferences.includes(preference)){
+      props.setSelectedPreferences(props?.selectedPreferences.filter((p) => p !== preference));
+    }
+    else{
+      props.setSelectedPreferences([...props?.selectedPreferences, preference]);
+    }
   };
 
   return (

@@ -16,19 +16,6 @@ import styles from "../../revamp/home/NavigationMenu.module.scss";
 import Button from "../../revamp/common/components/button";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
-const Container = styled.div`
-  background-color: white;
-  padding: 0 5vw;
-  position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
-  top: 0 !important;
-  width: 100vw;
-  height: 72px;
-  z-index: 1500;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
-`;
-
 const DropdownContainer = styled.div`
   position: absolute;
   top: 100%;
@@ -73,34 +60,6 @@ const StyledLink = styled(Link)`
   color: #01202b;
 `;
 
-const RedDot = styled.div`
-  width: 1rem;
-  padding: 0.15rem 0.25rem;
-  height: 1rem;
-  line-height: 1;
-  font-size: 0.75rem;
-  border-radius: 50%;
-  background-color: #f7e700;
-  display: inline-block;
-  position: relative;
-  top: -1rem;
-  left: 2.95rem;
-  z-index: 1000;
-  color: black;
-`;
-
-const CompanyName = styled.div`
-  position: absolute;
-  left: 33px;
-  top: 18px;
-  font-size: 14px;
-  font-weight: 600;
-  @media screen and (min-width: 768px) {
-    left: 34px;
-    top: 23px;
-  }
-`;
-
 const Heading = styled.p`
   font-style: normal;
   font-weight: 500;
@@ -112,25 +71,6 @@ const Heading = styled.p`
   padding: 0 1rem;
 `;
 
-const HamburgerIcon = (
-  <div style={{ opacity: 0.9 }}>
-    <div
-      style={{
-        borderBottom: "2px solid",
-        width: "1.7rem",
-        marginBottom: "0.3rem",
-      }}
-    ></div>
-    <div
-      style={{
-        borderBottom: "2px solid",
-        width: "1rem",
-        marginBottom: "0.3rem",
-      }}
-    ></div>
-    <div style={{ borderBottom: "2px solid", width: "1.2rem" }}></div>
-  </div>
-);
 
 const Mobile = (props) => {
   const router = useRouter();
@@ -178,12 +118,6 @@ const Mobile = (props) => {
   var LinksArr = [
     {
       type: "main",
-      onclick: () => _handleNotifications(),
-      text: "Notifications",
-      icon: "media/icons/navigation/bell.png",
-    },
-    {
-      type: "main",
       link: "/dashboard",
       text: "My Trips",
       icon: "media/icons/navigation/trip.svg",
@@ -193,12 +127,6 @@ const Mobile = (props) => {
       link: "http://blog.thetarzanway.com/",
       text: "Travel Feed",
       icon: "media/icons/navigation/chat.png",
-    },
-    {
-      type: "main",
-      onclick: () => openTailoredModal(router),
-      text: "Tailor-made travel",
-      icon: "media/icons/navigation/page.png",
     },
     {
       type: "main",
@@ -338,7 +266,7 @@ const Mobile = (props) => {
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
             <div onClick={props.handleCTAClick}>Login/Signup</div>
           </ListItem>:<>
-          <ListItem style={{ backgroundColor: "#F8F8F8" }}>
+          <ListItem style={{ backgroundColor: "#F8F8F8" }} className="cursor-pointer" onClick={()=>router.push("/dashboard")}>
             <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
             <div>My Profile</div>
           </ListItem>
@@ -351,7 +279,7 @@ const Mobile = (props) => {
           {OtherLinksDiv}
 
           {props.token && (
-            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); trackUserLogout(id); }}>
+            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); trackUserLogout(id); }} className="cursor-pointer">
               <ImageLoader
                 leftalign
                 url={"media/icons/navigation/logout.png"}
