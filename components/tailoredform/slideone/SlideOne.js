@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { setAnytimeDate, setCalendarDates, setDateType, setFixedDate, setFlexibleDate } from "../../../store/actions/slideOneActions";
 import { getHumanDate } from "../../../services/getHumanDate";
+import { togglePreference } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -53,8 +54,9 @@ const SlideOne = (props) => {
       dispatch(setAnytimeDate(values.duration))
     }
   }
-  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideThree.selectedPreferences)||[];
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)||[];
   const setSelectedPrefrences=(value)=>{
+    console.log("value", value);
     dispatch(togglePreference(value));
   }
   const CITIES = null;
