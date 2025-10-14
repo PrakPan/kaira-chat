@@ -145,7 +145,7 @@ const MostLovedItinerariesSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-8 lg:px-16 bg-white">
+    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
@@ -163,18 +163,29 @@ const MostLovedItinerariesSection = () => {
           <Swiper
             style={{ height: "677px" }}
             modules={[Navigation]}
-            spaceBetween={24}
-            slidesPerView={3}
+            spaceBetween={16}
+            slidesPerView={1}
             navigation={{
               nextEl: ".MostLovedItinerariesSection-next",
               prevEl: ".MostLovedItinerariesSection-prev",
               clickable: true,
             }}
             breakpoints={{
-              640: { slidesPerView: 1, spaceBetween: 16 },
-              768: { slidesPerView: 2, spaceBetween: 20 },
-              1024: { slidesPerView: 2, spaceBetween: 24 },
-              1280: { slidesPerView: 3, spaceBetween: 28 },
+              // when window width is >= 640px
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 16,
+              },
+              // when window width is >= 768px
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              // when window width is >= 1024px
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
             }}
             className="py-6"
           >

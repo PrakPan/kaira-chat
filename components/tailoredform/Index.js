@@ -81,6 +81,7 @@ const Enquiry = (props) => {
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
+  const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -150,6 +151,9 @@ const Enquiry = (props) => {
 
   const _prevSlideHandler = () => {
     if (slideIndex) {
+      if(slideIndex == 1){
+        setIsRouteChanged(false);
+      }
       router.push({
         pathname: "/new-trip",
         query: {
@@ -531,6 +535,7 @@ const Enquiry = (props) => {
                   }
                   errors={errors}
                   completeItineraryCreate={completeItineraryCreate}
+                  setIsRouteChanged={setIsRouteChanged}
                 ></Flickity>
                 {isDesktop ? (
                   <ModalWithBackdrop
@@ -620,7 +625,7 @@ const Enquiry = (props) => {
                     >
                       Skip
                     </button>
-                    <Button
+                    {isRouteChanged ?<Button
                       fontSize="1rem"
                       padding="0.5rem 2rem"
                       fontWeight="500"
@@ -629,6 +634,7 @@ const Enquiry = (props) => {
                       borderWidth="1px"
                       bgColor="#07213A"
                       zIndex={9999}
+                      disabled={!isRouteChanged}
                       onclick={() => {
                         initiateItineraryCreate();
                         // router.push({
@@ -646,8 +652,19 @@ const Enquiry = (props) => {
                         width: "100%",
                       }}
                     >
-                      Continue
-                    </Button>
+                      Update Itinerary Route
+                    </Button>:                    <button
+                      className={`LargeIndigoButton ${
+                        !isDesktop && "w-1/2"
+                      } cursor-not-allowed`}
+                      style={{
+                        maxWidth: isDesktop ? "500px" : "50%",
+                        width: "100%",
+                      }}
+                      disabled={true}
+                    >
+                      Update Itinerary Route
+                    </button>}
                   </div>
                 )}
 

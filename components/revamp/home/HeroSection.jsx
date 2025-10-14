@@ -34,22 +34,23 @@ const HeroSection = ({ title, subtitle }) => {
       // Only start animation if all images are loaded and animation hasn't started yet
       if (!allImagesLoaded || animationStarted) return;
 
-      // Set initial state - images are below viewport and invisible
+      // Set initial state - images are below viewport and invisible (original behavior)
       gsap.set(imageRefs.current, {
         ...ANIMATION_CONFIG.initialStates.fromBottom,
         transformOrigin: "center bottom",
+        willChange: "transform, opacity", // perf hint without changing animation values
       });
 
-      // Create timeline for coordinated animations
+      // Create timeline for coordinated animations (original sequence)
       const tl = gsap.timeline();
 
-      // Initial pop-up animation with stagger effect
+      // Initial pop-up animation with stagger effect (original helper)
       tl.to(imageRefs.current, createEntranceAnimation(imageRefs.current));
 
-      // Add floating animation sequence
+      // Floating animation sequence (original helper)
       createFloatingSequence(tl, imageRefs.current);
 
-      // Make the floating animation repeat infinitely
+      // Infinite repeat (original)
       tl.repeat(-1);
 
       // Mark animation as started

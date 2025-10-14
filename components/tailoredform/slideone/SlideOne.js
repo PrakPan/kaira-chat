@@ -54,8 +54,9 @@ const SlideOne = (props) => {
       dispatch(setAnytimeDate(values.duration))
     }
   }
-  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideThree.selectedPreferences)||[];
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)||[];
   const setSelectedPrefrences=(value)=>{
+    console.log("value", value);
     dispatch(togglePreference(value));
   }
   const CITIES = null;

@@ -6,6 +6,7 @@ import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import FullSlider from "../components/revamp/home/FullSlider";
 import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
+import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
@@ -131,6 +132,7 @@ const Home = (props) => {
         <JourneySimplified />
         <PlacesBragSection />
         <MostLovedItinerariesSection />
+        <TravelerMadeItinerariesSection />
         <FullSlider />
         <TravelVibeSection />
         <WhereNextSection />

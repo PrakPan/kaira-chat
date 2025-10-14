@@ -49,6 +49,7 @@ const FlickityComp = (props) => {
             setLocationsLatLong={props.setLocationsLatLong}
             locationsLatLong={props.locationsLatLong}
             className="flex-1"
+            setIsRouteChanged={props.setIsRouteChanged}
           >
 
           </SlideTwo>

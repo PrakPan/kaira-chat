@@ -6,9 +6,8 @@ import Pax from "../tailoredform/slidetwo/pax/Pax";
 import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
-const Settings = (props) => {
+const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
-  const stays = useSelector((state) => state.Stays);
   const [roomConfiguration, setRoomConfiguration] = useState(
     useSelector((state) => state.Itinerary?.hotels_config?.room_configuration)
   );
@@ -46,18 +45,18 @@ const Settings = (props) => {
   const handleApplyDates = (dates) => {
     setDate({
       ...date,
-      start_date: values.start,
-      end_date: values.end
+      start_date: dates.start,
+      end_date: dates.end
     });
   }
   const handleCancel = () => {
-    props.setShowSettings(false);
+    setShowSettings(false);
   }
   const handleUpdate = () => {
     const req={
       date:{
-      start_date:date.start_date,
-      end_date:date.end_date,
+      start_date:date.start_date.toISOString().split("T")[0],
+      end_date:date.end_date.toISOString().split("T")[0],
       },
       passengers:{
         number_of_adults:numberOfAdults,
@@ -67,7 +66,7 @@ const Settings = (props) => {
       room_configuration:roomConfiguration,
       selected_preferences:selectedPreferences,
       }
-      console.log(req);
+      handleApply(req);
     }
   
   return (
@@ -78,7 +77,7 @@ const Settings = (props) => {
 
       <DateComponent settings={true} handleApplyDates={handleApplyDates} setDate={setDate} date={date}/>
 
-      {(!stays||stays.length === 0) ? (
+      {!isHotelsPresent ? (
         <EnterPassenger
           roomConfiguration={roomConfiguration}
           setRoomConfiguration={setRoomConfiguration}
