@@ -346,19 +346,6 @@
     
     analyticsState.isInitialized = true;
     
-    console.log('✅ Jupiter Analytics initialized:', {
-      sessionId: analyticsState.sessionId,
-      anonymousId: analyticsState.anonymousId,
-      userIp: analyticsState.userIp,
-      apiEndpoint: analyticsState.apiEndpoint,
-      batchSize: analyticsState.batchSize
-    });
-
-    // Track initialization
-    track('analytics_initialized', {
-      version: '1.0.0',
-      user_agent: navigator.userAgent
-    });
   };
 
   // Initialize client-side tracking
