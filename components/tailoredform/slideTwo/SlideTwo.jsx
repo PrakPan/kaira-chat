@@ -103,6 +103,7 @@ const RouteEditSection = (props) => {
                         setDestinationChanges={setDestinationChanges}
                         isAddMode={isAddMode}
                         setIsAddMode={setIsAddMode}
+                        setIsRouteChanged={props.setIsRouteChanged}
                     />
                     {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges })}
                 </div>
@@ -129,7 +130,7 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);
 
 
-export const EditPanel = ({ editDestination, setEditDestination }) => {
+export const EditPanel = ({ editDestination, setEditDestination, setIsRouteChanged }) => {
     function handleEditPanel(editDates = false) {
         if (editDates) {
             setEditDestination(false);
@@ -146,6 +147,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
                 event_action: "Edit Destinations",
             },
         });
+        setIsRouteChanged(true);
     }
 
     return (
@@ -196,6 +198,7 @@ export const EditDestinations = (props) => {
                                     props?.setIsAddMode(false)
                                     console.log("close add destination called close: ",props.isAddMode)
                                 }}
+                                setIsRouteChanged={props.setIsRouteChanged}
                                 setPopUp={props.setIsAddMode} // Add this to prevent conflicts
                             />
                         </div>
@@ -249,6 +252,7 @@ export const DragDrop = (props) => {
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
                     totalDestinations={destinations.length}
+                    setIsRouteChanged={props.setIsRouteChanged}
                 />
             </div>
 
@@ -262,6 +266,7 @@ export const DragDrop = (props) => {
                         updateDestinationsDates,
                         setDestinationChanges,
                         logEvent,
+                        setIsRouteChanged: props.setIsRouteChanged
                     })
                 }
             >
@@ -299,6 +304,7 @@ export const DragDrop = (props) => {
                                                         setDestinationChanges={setDestinationChanges}
                                                         destinationRef={destinationRef}
                                                         totalDestinations={destinations.length}
+                                                        setIsRouteChanged={props.setIsRouteChanged}
                                                     />
                                                 </div>
                                             )}
@@ -323,6 +329,7 @@ export const DragDrop = (props) => {
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
                     onClose={() => setPopUp(false)}
+                    setIsRouteChanged={props.setIsRouteChanged}
                 />
             )}
 
@@ -339,6 +346,7 @@ export const DragDrop = (props) => {
                 setDestinationChanges={setDestinationChanges}
                 destinationRef={destinationRef}
                 totalDestinations={destinations.length}
+                setIsRouteChanged={props.setIsRouteChanged}
             />
         </div>
     );
@@ -377,6 +385,7 @@ export const Destination = (props) => {
                     setDestinationChanges={setDestinationChanges}
                     destinationRef={destinationRef}
                     onClose={() => setPopUp(false)}
+                    setIsRouteChanged={props.setIsRouteChanged}
                 />
             )}
 
@@ -425,7 +434,7 @@ export const Destination = (props) => {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                handleEditDestination(setPopUp);
+                                handleEditDestination(setPopUp, props.setIsRouteChanged);
                             }}
                             className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
                         >
@@ -441,7 +450,8 @@ export const Destination = (props) => {
                                         setDestinations,
                                         updateLatLong,
                                         updateDestinationsDates,
-                                        setDestinationChanges
+                                        setDestinationChanges,
+                                        props.setIsRouteChanged
                                     )
                                 }
                                 className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
@@ -479,7 +489,8 @@ export const DestinationPopUp = (props) => {
         setPopUp,
         setDestinationChanges,
         destinationRef,
-        onClose
+        onClose,
+        setIsRouteChanged
     } = props;
 
     const [search, setSearch] = useState(
@@ -637,6 +648,7 @@ export const DestinationPopUp = (props) => {
                                 updateLatLong,
                                 setPopUp: null, // Don't auto-close, let handleClose handle it
                                 isAddMode,
+                                setIsRouteChanged
                             });
                         }
 

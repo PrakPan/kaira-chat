@@ -3,7 +3,7 @@ import { FaInfoCircle } from "react-icons/fa";
 function renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges }) {
   return (
     <div
-      className={`w-full md:w-[50%] flex flex-col gap-3 items-center h-[260px] md:h-[600px] ${
+      className={`w-full md:w-[50%] flex flex-col gap-3 items-center h-[260px] md:h-[629px] ${
         isDesktop ? `sm:h-[${containerHeight}px]` : "mb-4"
       }`}
     >

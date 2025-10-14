@@ -292,6 +292,7 @@ export const handleDragEnd = ({
   updateDestinationsDates,
   setDestinationChanges,
   logEvent,
+  setIsRouteChanged
 }) => {
   if (!result.destination) return;
 
@@ -309,7 +310,7 @@ export const handleDragEnd = ({
   updateLatLong(items);
   setDestinationChanges(true);
   setDestinations(items);
-
+  setIsRouteChanged(true);
   logEvent({
     action: "Route Edit",
     params: {
@@ -379,7 +380,7 @@ export const handleRemoveDestination = (
 };
 
 // Handle editing a destination
-export const handleEditDestination = (setPopUp) => {
+export const handleEditDestination = (setPopUp, setIsRouteChanged) => {
     setPopUp(true);
 
     logEvent({
@@ -391,6 +392,7 @@ export const handleEditDestination = (setPopUp) => {
             event_action: "Edit destination",
         },
     });
+    setIsRouteChanged(true);
 };
 
 
@@ -482,9 +484,10 @@ export const handleUpdateDestination = ({
   updateLatLong,
   setPopUp,
   isAddMode = false, // new flag for add mode
-}) => {
+  setIsRouteChanged
+  }) => {
   setDestinationChanges(true);
-
+  setIsRouteChanged(true);
   setDestinations((prev) => {
     const destinations = [...prev];
     const updatedDestination = {

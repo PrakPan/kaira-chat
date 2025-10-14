@@ -115,39 +115,45 @@ const Pax = (props) => {
       >
         <>
 
-          <div className=" bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col gap-3 rounded-lg  overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar w-full">
-            <div className="min-w-[367px]">
-              <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
+          <div className="bg-white z-50 left-0 md:left-0 md:right-0 top-[50px] flex flex-col rounded-lg max-h-[70vh] md:max-h-[60vh] w-full">
+            {/* Fixed Header */}
+            <div className="bg-white border-b border-gray-200 p-6 flex-shrink-0">
+              <div className="flex flex-col justify-center items-center gap-[12px]">
                 <div className="Heading2SB">Room Configuration</div>
                 <div className="Body2R_14">{totalAdults} Adults, {totalChildren} Children</div>
               </div>
-              <div className="h-[1px] items-stretch bg-[#E5E5E5] mb-[20px]"></div>
-              {rooms.map((room, index) => (
-                <Room
-                  key={index}
-                  index={index}
-                  data={room}
-                  setRooms={setRooms}
-                  showError={showError}
-                  removeRoom={removeRoom}
-                />
-              ))}
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-auto hide-scrollbar">
+              <div className="min-w-[367px] p-6">
+                {rooms.map((room, index) => (
+                  <Room
+                    key={index}
+                    index={index}
+                    data={room}
+                    setRooms={setRooms}
+                    showError={showError}
+                    removeRoom={removeRoom}
+                  />
+                ))}
 
-              <div className="flex justify-end mt-4 gap-2">
-                <button
-                  onClick={handleAddRoom}
-                  className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
-                  disabled={rooms.length >= 8}
-                >
-                  + Add Room
-                </button>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <div className="flex justify-end w-full gap-2">
-                  <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
+                <div className="flex justify-end mt-4 gap-2">
+                  <button
+                    onClick={handleAddRoom}
+                    className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
+                    disabled={rooms.length >= 8}
+                  >
+                    + Add Room
+                  </button>
                 </div>
-
+              </div>
+            </div>
+            
+            {/* Fixed Apply Button */}
+            <div className="bg-white  flex-shrink-0">
+              <div className="flex justify-end w-full gap-2 max-w-md mx-auto">
+                <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
               </div>
             </div>
           </div>
@@ -163,39 +169,45 @@ const Pax = (props) => {
           paddingX="20px"
           paddingY="20px"
         >
-          <div className="w-[100%]">
-            <div className="">
-              <div className="flex flex-col justify-center items-center gap-[12px] mb-[20px]">
+          <div className="w-[100%] flex flex-col max-h-[80vh]">
+            {/* Fixed Header */}
+            <div className="bg-white border-b border-gray-200 p-6 flex-shrink-0">
+              <div className="flex flex-col justify-center items-center gap-[12px]">
                 <div className="Heading2SB">Room Configuration</div>
                 <div className="Body2R_14">{totalAdults} Adults, {totalChildren} Children</div>
               </div>
-              <div className="h-[1px] items-stretch bg-[#E5E5E5] mb-[20px]"></div>
-              {rooms.map((room, index) => (
-                <Room
-                  key={index}
-                  index={index}
-                  data={room}
-                  setRooms={setRooms}
-                  showError={showError}
-                  removeRoom={removeRoom}
-                />
-              ))}
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-auto hide-scrollbar">
+              <div className="p-6">
+                {rooms.map((room, index) => (
+                  <Room
+                    key={index}
+                    index={index}
+                    data={room}
+                    setRooms={setRooms}
+                    showError={showError}
+                    removeRoom={removeRoom}
+                  />
+                ))}
 
-              <div className="flex justify-end mt-4 gap-2">
-                <button
-                  onClick={handleAddRoom}
-                  className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
-                  disabled={rooms.length >= 8}
-                >
-                  + Add Room
-                </button>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <div className="flex justify-end w-full gap-2">
-                  <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
+                <div className="flex justify-end mt-4 gap-2">
+                  <button
+                    onClick={handleAddRoom}
+                    className="text-[#3A85FC] font-inter text-[14px] font-normal leading-[22px] underline"
+                    disabled={rooms.length >= 8}
+                  >
+                    + Add Room
+                  </button>
                 </div>
-
+              </div>
+            </div>
+            
+            {/* Fixed Apply Button */}
+            <div className="bg-white border-t border-gray-200 p-4 flex-shrink-0">
+              <div className="flex justify-end w-full gap-2 max-w-md mx-auto">
+                <ApplyButton className="w-1/2" onClick={handleDone}>Apply</ApplyButton>
               </div>
             </div>
           </div>
