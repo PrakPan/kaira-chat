@@ -94,14 +94,49 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
           highlights: ["4 exciting activities included", "4 premium stays. +2"],
           pax: 2,
         },
+         {
+          id: 2,
+          title: "5N Tropical Escape to Andaman & Nicobar",
+          route: "Port Blair(1N) → Neil Island(1N) → Havelock(2N)",
+          price: "₹1,28,952",
+          originalPrice: "₹1,41,847",
+          discount: "10% off",
+          tags: ["Best for Couples", "Island Paradise"],
+          image: ["https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800"],
+          highlights: ["4 exciting activities included", "4 premium stays. +2"],
+          pax: 2,
+        },
+         {
+          id: 3,
+          title: "5N Tropical Escape to Andaman & Nicobar",
+          route: "Port Blair(1N) → Neil Island(1N) → Havelock(2N)",
+          price: "₹1,28,952",
+          originalPrice: "₹1,41,847",
+          discount: "10% off",
+          tags: ["Best for Couples", "Island Paradise"],
+          image: ["https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800"],
+          highlights: ["4 exciting activities included", "4 premium stays. +2"],
+          pax: 2,
+        },
+         {
+          id: 4,
+          title: "5N Tropical Escape to Andaman & Nicobar",
+          route: "Port Blair(1N) → Neil Island(1N) → Havelock(2N)",
+          price: "₹1,28,952",
+          originalPrice: "₹1,41,847",
+          discount: "10% off",
+          tags: ["Best for Couples", "Island Paradise"],
+          image: ["https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800"],
+          highlights: ["4 exciting activities included", "4 premium stays. +2"],
+          pax: 2,
+        },
       ];
 
-  console.log("Itineraries",itineraries)
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
+    <section className="px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full max-w-7xl mx-auto">
-        {/* <div className="text-center mb-12 lg:mb-16">
+        {itineraries?.[0]?.id === 1 && <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-4xl font-bold text-black mb-4 leading-tight">
             Our Most Loved Itineraries.
           </h2>
@@ -109,7 +144,7 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
             These itineraries are traveler favorites, packed with iconic sights,
             hidden gems, and unforgettable moments in every stop.
           </p>
-        </div> */}
+        </div>}
 
         <div className="relative  sm:px-0">
           <Swiper

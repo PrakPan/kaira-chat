@@ -18,6 +18,7 @@ const DestinationCard = ({
   onClick,
   className = "",
   showImageText = true,
+  placesBragSection,
   ...props
 }) => {
   // console.log("tags in destination card:",one_liner_description,showImageText)
@@ -32,7 +33,7 @@ const DestinationCard = ({
       {/* Background Image with Next.js Image */}
       <div className="absolute inset-0">
         <Image
-          src={`${imgUrlEndPoint}${image}` || image}
+          src={placesBragSection ? image : `${imgUrlEndPoint}${image}` || image}
           alt={title}
           fill
           className="object-cover"
