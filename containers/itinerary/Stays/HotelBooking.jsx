@@ -483,7 +483,7 @@ const starRating = (rating, length) => {
           >
             <div className={`relative flex lg:flex-row w-full flex-col gap-4`}>
               <div
-                className={`relative lg:h-[12rem] lg:w-[35%] w-full  h-[12rem]`}
+                className={`relative lg:h-[12rem] lg:w-[40%] w-full  h-[12rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader

@@ -1184,7 +1184,7 @@ useEffect(() => {
   return (
     <Container>
       <PinWrapper>
-        {upPresent && <VerticalLine height="30px" gradient="top" />}
+        {upPresent && <VerticalLine height={"50px"} gradient="top" />}
         {upPresent && downPresent ? (
           <Pin length={length}  pinColour={pinColour}/>
         ) : (
@@ -1208,7 +1208,7 @@ useEffect(() => {
             />
           </svg>
         )}
-        {downPresent && <VerticalLine height="30px" gradient="bottom" />}
+        {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
       </PinWrapper>
 
       <div

@@ -95,8 +95,10 @@ const RoomType = (props) => {
               >
                 <div className="relative flex lg:flex-row w-full flex-col gap-4">
                   {room?.images?.length > 0 && (
-                    <div className="relative lg:h-[12rem] lg:w-[45%] w-full  h-[12rem]">
+                    <div className="relative w-[70%] max-ph:w-full h-[12rem] ">
+               
                       <ImageCarousel images={room?.images} />
+        
                     </div>
                   )}
 
