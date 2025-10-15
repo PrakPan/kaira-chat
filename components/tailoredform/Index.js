@@ -396,8 +396,9 @@ const Enquiry = (props) => {
         <div className="flex flex-col items-center justify-center  h-full">
           <div
             style={{ padding: "0 1rem", width: "100%" }}
-            className="h-max  font-inter flex flex-col gap-[46px]"
+            className="h-max  font-inter flex flex-col gap-[30px]"
           >
+            <div className="flex flex-col gap-[24px]">
             {slideIndex && !isDesktop ? (
               <div>
                 <BiArrowBack
@@ -409,7 +410,7 @@ const Enquiry = (props) => {
             ) : (
               <></>
             )}
-            <div className="w-full flex items-center justify-between mt-[20px]">
+            <div className={`w-full flex items-center justify-between ${isDesktop&&"mt-[20px]"}`}>
               {isDesktop && (
                 <div
                   style={{
@@ -489,6 +490,7 @@ const Enquiry = (props) => {
                   </text>
                 </svg>
               </div>
+            </div>
             </div>
             <div className="flex flex-col items-center">
               <div id="login" className="z-[1650]">
@@ -615,7 +617,7 @@ const Enquiry = (props) => {
                       alignItems: "center",
                       width: "100%",
                     }}
-                    className={`p-4 ${!isDesktop && "gap-2"}`}
+                    className={`p-4 bg-[#ffffff] z-[10] ${!isDesktop && "fixed bottom-0 w-full gap-2 right-[4px] "}`}
                   >
                     <button
                       className={`LargeIndigoOutlinedButton ${
