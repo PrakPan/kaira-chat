@@ -24,6 +24,21 @@ import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import HeroBannerLadakh from "../../components/containers/HeroBanner/HeroBannerLadakh.js";
+import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
+import validateTextSize from "../../services/textSizeValidator.js";
+import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DestinationCard from "../../components/revamp/common/components/card/DestinationCard.jsx";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -269,7 +284,7 @@ const Homepage = (props) => {
         eventDates={props.eventDates}
       />
       </>:<>
-      <HeroBanner
+      {/* <HeroBanner
         image={props.experienceData.image}
         page_id={props.page_id}
         type={props.type}
@@ -280,7 +295,9 @@ const Homepage = (props) => {
         subheading={props.experienceData.banner_text}
         page={"State Page"}
         eventDates={props.eventDates}
-      />
+      /> */}
+
+      <HeroSection title={props.experienceData.banner_heading} subtitle={props.experienceData.banner_text} image={`${imgUrlEndPoint}${props.experienceData.image}`}/>
 
       <SetWidthContainer>
         <PathNavigation path={props.experienceData.path} />
@@ -297,12 +314,83 @@ const Homepage = (props) => {
               ? "Top locations across " + convertDbNameToCapitalFirst(props.experienceData?.slug)
               : "Top Locations"}
           </H3>
-          <Locations
+          {/* <Locations
             locations={props.experienceData.locations}
             viewall
             page={"State Page"}
             state={props?.experienceData?.destination}
-          ></Locations>
+          ></Locations> */}
+          <div className="relative px-2 sm:px-0">
+          <Swiper
+            style={{ height: "376px" }}
+            modules={[Navigation]}
+            spaceBetween={16}
+            slidesPerView={1}
+            navigation={{
+              nextEl: ".PlacesBragSection-next",
+              prevEl: ".PlacesBragSection-prev",
+              clickable: true,
+            }}
+            breakpoints={{
+              // when window width is >= 640px
+              640: {
+                slidesPerView: 1.5,
+                spaceBetween: 16,
+              },
+              // when window width is >= 768px
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              // when window width is >= 1024px
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+            }}
+          >
+           {props.experienceData.locations.map((destination) => (
+      <SwiperSlide key={destination.id}>
+        <div className="w-full px-1">
+          <DestinationCard
+            title={destination.title || destination.name}
+            description={destination.description || destination.tagline}
+            image={destination.image}
+            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
+            gradientOverlay={destination.gradientOverlay}
+            onClick={() => {
+              console.log(`Clicked on ${destination.name || destination.title}`);
+            }}
+          />
+        </div>
+      </SwiperSlide>
+    ))}
+          </Swiper>
+          {/* Custom Prev Button */}
+          <div className="PlacesBragSection-prev" aria-hidden>
+            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronLeft}
+                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Next Button */}
+          <div className="PlacesBragSection-next" aria-hidden>
+            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+          
         </>
 
         {headings.map((heading, index) => (
@@ -349,10 +437,11 @@ const Homepage = (props) => {
             >
               Trips by our users
             </H3>
-            <Experiences
+            <MostLovedItinerariesSection apiItineraries={userItineraries}/>
+            {/* <Experiences
               experiences={userItineraries}
               page={"State Page"}
-            ></Experiences>
+            ></Experiences> */}
           </>
         ) : null}
 
@@ -512,14 +601,84 @@ const Homepage = (props) => {
             >
               Other Destinations
             </H3>
-            <OldLocations
+            {/* <OldLocations
               locations={props.locations}
               page_id={props.experienceData.id}
               destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
               viewall
               country={country}
               planner
-            ></OldLocations>
+            ></OldLocations> */}
+                 <div className="relative px-2 sm:px-0">
+          <Swiper
+            style={{ height: "376px" }}
+            modules={[Navigation]}
+            spaceBetween={16}
+            slidesPerView={1}
+            navigation={{
+              nextEl: ".PlacesBragSection-next",
+              prevEl: ".PlacesBragSection-prev",
+              clickable: true,
+            }}
+            breakpoints={{
+              // when window width is >= 640px
+              640: {
+                slidesPerView: 1.5,
+                spaceBetween: 16,
+              },
+              // when window width is >= 768px
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              // when window width is >= 1024px
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+            }}
+          >
+           {props.locations.map((destination) => (
+      <SwiperSlide key={destination.id}>
+        <div className="w-full px-1">
+          <DestinationCard
+            title={destination.title || destination.name}
+            description={destination.description || destination.tagline}
+            image={destination.image}
+            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
+            gradientOverlay={destination.gradientOverlay}
+            onClick={() => {
+              console.log(`Clicked on ${destination.name || destination.title}`);
+            }}
+          />
+        </div>
+      </SwiperSlide>
+    ))}
+          </Swiper>
+          {/* Custom Prev Button */}
+          <div className="PlacesBragSection-prev" aria-hidden>
+            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronLeft}
+                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Next Button */}
+          <div className="PlacesBragSection-next" aria-hidden>
+            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                />
+              </div>
+            </div>
+          </div>
+        </div>
           </>
         ) : null}
 

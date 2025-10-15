@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import styled from "styled-components";
 import Image from "next/image";
 import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
+import { getDate } from "../../../helper/ConvertDateFormat";
 
 const SectionHeading = styled.div`
    font-weight: 500;
@@ -106,7 +107,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
       return {
         ...booking,
         id: booking.id,
-        currentDayLabel: `Day ${props.index + 1}, ${convertDateFormat(props?.day?.date)}`,
+        currentDayLabel: `Day ${props.index + 1}, ${getDate(props?.day?.date)}`,
           // date: formattedCheckIn === formattedCheckOut
           //   ? `Day ${index + 1}, ${formattedCheckIn}`
           //   : `${formattedCheckIn} to ${formattedCheckOut}`,

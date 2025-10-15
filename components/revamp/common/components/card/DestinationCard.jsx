@@ -2,19 +2,28 @@ import React from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { imgUrlEndPoint } from "../../../../theme/ThemeConstants";
+import { AiFillStar } from "react-icons/ai";
 
 const DestinationCard = ({
   title,
+  one_liner_description,
   description,
+  rating,
+  reviewCount,
   image,
   tags = [],
   gradientOverlay = "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
   height = "376px",
   onClick,
   className = "",
+  showImageText = true,
+  placesBragSection,
   ...props
 }) => {
+  // console.log("tags in destination card:",one_liner_description,showImageText)
   return (
+    <div className="w-full">
     <div
       className={`relative group cursor-pointer rounded-lg sm:rounded-2xl overflow-hidden w-full ${className}`}
       style={{ height }}
@@ -24,7 +33,7 @@ const DestinationCard = ({
       {/* Background Image with Next.js Image */}
       <div className="absolute inset-0">
         <Image
-          src={image}
+          src={placesBragSection ? image : `${imgUrlEndPoint}${image}` || image}
           alt={title}
           fill
           className="object-cover"
@@ -32,12 +41,14 @@ const DestinationCard = ({
           priority
         />
         {/* Gradient Overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: gradientOverlay,
-          }}
-        />
+        {showImageText && (
+            <div
+              className="absolute inset-0"
+              style={{
+                background: gradientOverlay,
+              }}
+            />
+          )}
       </div>
 
       {/* Tags */}
@@ -46,7 +57,7 @@ const DestinationCard = ({
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="px-2 sm:px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs sm:text-sm font-medium rounded-full border border-white/30"
+              className="px-2 sm:px-3 py-1 bg-[#F2F2F2E5] backdrop-blur-sm text-black text-xs sm:text-sm font-medium rounded-full border border-white/30"
             >
               {tag}
             </span>
@@ -65,15 +76,53 @@ const DestinationCard = ({
       </div>
 
       {/* Content */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-        <h3 className="text-white font-semibold mb-2 text-lg sm:text-xl">
-          {title}
-        </h3>
-        <p className="text-white/90 leading-relaxed text-sm">{description}</p>
-      </div>
+      {showImageText && (
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 z-10">
+            <h3 className="text-white font-semibold mb-2 text-lg sm:text-xl">
+              {title}
+            </h3>
+            <p className="text-white/90 leading-relaxed text-sm">
+              {one_liner_description || description}
+            </p>
+          </div>
+        )}
+
+        
+
 
       {/* Hover Effect Overlay removed (no hover) */}
     </div>
+
+   {showImageText === false && (
+        <div className="pt-3 sm:pt-4" style={{ backgroundColor: 'white', minHeight: '80px' }}>
+          <h3 className="text-gray-900 font-semibold mb-1 text-base text-md" style={{ color: '#000' }}>
+            {title}
+          </h3>
+          <p className="text-gray-600 text-sm mb-2 line-clamp-2" style={{ color: '#666' }}>
+            {one_liner_description || description}
+          </p>
+
+          {/* Rating Section */}
+          {(rating || reviewCount) ? (
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, index) => (
+                <AiFillStar
+                  key={index}
+                  style={{ width: '16px', height: '16px', color: '#FBBF24' }}
+                />
+              ))}
+              {reviewCount ? (
+                <span className="text-gray-600 text-sm ml-1" style={{ color: '#666' }}>
+                  {rating} ({reviewCount.toLocaleString()})
+                </span>
+              ): null}
+            </div>
+          ): null}
+        </div>
+      )}
+      </div>
+
+    
   );
 };
 

@@ -93,7 +93,7 @@ export default function TravelPartnerContact(props) {
       dispatch(
         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
       );
-      // fetchItinerary();
+      fetchItinerary();
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
     }
@@ -102,7 +102,8 @@ export default function TravelPartnerContact(props) {
   const handleApply=async(data)=>{
     try {
       const req=data
-      if(isHotelsPresent){
+      console.log("req is: ",req)
+      if(req.add_hotels==true){
         req.passengers=mergePassengers(req.room_configuration)
       }
       else{

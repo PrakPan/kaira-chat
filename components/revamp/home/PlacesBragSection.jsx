@@ -179,6 +179,7 @@ const PlacesBragSection = () => {
               <SwiperSlide key={destination.id}>
                 <div className="w-full">
                   <DestinationCard
+                    placesBragSection={true}
                     title={destination.title}
                     description={destination.description}
                     image={destination.image}
