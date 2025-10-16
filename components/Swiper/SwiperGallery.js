@@ -71,7 +71,7 @@ const SwiperGallery = (props) => {
           {props.images.map((image, index) => (
             <>
               <SwiperSlide className="relative min-w-[50vw] max-w-[50vw] max-h-[60vh] max-ph:!min-h-[350px] max-ph:!max-h-[400px]  max-ph:!min-w-[100%] max-ph:!max-w-[100%]" key={index}>
-                <img className="w-full rounded-6xl max-ph:!rounded-none" src={image.image || image}
+                <img className="w-full rounded-6xl max-ph:!rounded-none" src={props?.imgUrlEndPoint ? props.imgUrlEndPoint + image.image : image.image || image}
                   onError={(e) => {
                     e.currentTarget.src = "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }} />
@@ -101,7 +101,7 @@ const SwiperGallery = (props) => {
         {props.images.map((image, index) => (
           <SwiperSlide key={index}>
             <img
-              src={image.image || image}
+              src={props?.imgUrlEndPoint ? props.imgUrlEndPoint + image.image : image.image || image}
               alt="hotel"
               onError={(e) => {
                 console.log(e)
