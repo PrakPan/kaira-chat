@@ -806,7 +806,8 @@ export const PlanYourTripButton = (props) => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-5 bg-white">
+    
+    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-md  w-fit mx-auto hover:opacity-90 cursor-pointer">
       <SecondaryButton onClick={handlePlanButton} className={props?.className}>
         {props.text
           ? props.text
