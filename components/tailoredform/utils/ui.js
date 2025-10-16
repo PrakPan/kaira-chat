@@ -10,4 +10,7 @@ export const StyledFigmaBox = styled.input`
   width:100%;
   border-radius: var(--S, 6px);
   border: 1px solid var(--Text-Colors-Stroke, #E5E5E5); 
+  &::placeholder {
+    font-weight: 400;
+  }
   `

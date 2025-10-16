@@ -133,7 +133,6 @@ function ChatSection(props) {
                         />
                     }
                     <div>
-                        <div className="Body1M_16">Hi, I'm the TarzanWay AI 👋</div>
                         <div className="Body2R_14">I can see you're not logged in. Please log in to continue </div>
                         <div className="Body2R_14">chatting and unlock your personalized travel experience.</div>
                         <LoginButton onClick={handleShowLogin} className='mt-[24px]'>

@@ -330,7 +330,7 @@ const ChildAge = ({ child, age, index, setChildAges, showError }) => {
           <AgeInput
             key={index}
             type="number"
-            min="2"
+            min="0"
             max="12"
             value={age ?? ""}
             onChange={handleChange}

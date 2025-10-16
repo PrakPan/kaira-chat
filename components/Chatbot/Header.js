@@ -62,8 +62,8 @@ function Header() {
                         <Image
                             src={cachedAvatar}
                             alt="ticket"
-                            width={20}
-                            height={20}
+                            width={48}
+                            height={48}
                             className="mt-[6px]"
                         />
                     }
