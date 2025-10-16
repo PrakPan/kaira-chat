@@ -24,7 +24,7 @@ const TravelerMadeItinerariesSection = () => {
       creator: "Jatin Sharma",
       creatorAvatar: Japan,
       tags: ["Best for Couples", "Romantic"],
-      image: Japan,
+      image: [Japan, Japan, Japan],
     },
     {
       id: 2,
@@ -35,7 +35,7 @@ const TravelerMadeItinerariesSection = () => {
       creator: "Create",
       creatorAvatar: null,
       tags: ["Adventure", "Cultural"],
-      image: Japan,
+      image: [Japan, Japan, Japan],
     },
     {
       id: 3,
@@ -46,7 +46,7 @@ const TravelerMadeItinerariesSection = () => {
       creator: "Aayush and Family",
       creatorAvatar: Japan,
       tags: ["Hidden Gem", "Historical"],
-      image: Japan,
+      image: [Japan, Japan, Japan],
     },
     {
       id: 4,
