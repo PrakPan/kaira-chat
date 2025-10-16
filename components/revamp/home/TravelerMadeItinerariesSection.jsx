@@ -73,7 +73,7 @@ const TravelerMadeItinerariesSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
@@ -89,7 +89,7 @@ const TravelerMadeItinerariesSection = () => {
         </div>
 
         {/* Itineraries Slider */}
-        <div className="relative">
+        <div className="relative px-2 sm:px-0">
           <Swiper
             style={{ height: "677px" }}
             modules={[Navigation]}
@@ -133,11 +133,11 @@ const TravelerMadeItinerariesSection = () => {
 
           {/* Custom Prev Button */}
           <div className="TravelerMadeItinerariesSection-prev" aria-hidden>
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-10 h-10 bg-white border border-gray-200 shadow-md hover:bg-gray-50 rounded-full flex items-center justify-center transform transition-all duration-300 hover:scale-110 cursor-pointer">
+            <div className="absolute left-3 sm:left-1 top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className="text-gray-600 text-sm transition-colors duration-300"
+                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
                 />
               </div>
             </div>
@@ -145,11 +145,11 @@ const TravelerMadeItinerariesSection = () => {
 
           {/* Custom Next Button */}
           <div className="TravelerMadeItinerariesSection-next" aria-hidden>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-10 h-10 bg-white border border-gray-200 shadow-md hover:bg-gray-50 rounded-full flex items-center justify-center transform transition-all duration-300 hover:scale-110 cursor-pointer">
+            <div className="absolute right-3 sm:right-1 top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}
-                  className="text-gray-600 text-sm transition-colors duration-300"
+                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
                 />
               </div>
             </div>

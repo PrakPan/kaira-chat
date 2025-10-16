@@ -264,7 +264,7 @@ const NewFooter = (props) => {
             />
             <button
               type="submit"
-              className="bg-black text-white border-none px-6 py-3 rounded-lg font-semibold text-sm cursor-pointer whitespace-nowrap transition-all duration-300 hover:bg-gray-800 sm:rounded-none sm:rounded-lg w-full sm:w-auto sm:mt-0"
+              className="bg-black text-white border-none px-6 py-3 rounded font-semibold text-sm cursor-pointer whitespace-nowrap transition-all duration-300 hover:bg-gray-800 sm:rounded-none sm:rounded-lg w-full sm:w-auto sm:mt-0"
             >
               Subscribe
             </button>
