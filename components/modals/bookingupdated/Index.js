@@ -129,14 +129,14 @@ const Booking = (props) => {
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const [hasUserSearched, setHasUserSearched] = useState(false);
-  const [defaultBudget, setDefaultBudget] = useState({ price_lower_range: 1000, price_upper_range: 9000, });
+  const [defaultBudget, setDefaultBudget] = useState({ price_lower_range: 0, price_upper_range: 10000, });
   const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
     budget: {
-      price_lower_range: 1000,
-      price_upper_range: 9000,
+      price_lower_range: null,
+      price_upper_range: null,
     },
     star_category: null,
     sort: "price: low to high",
@@ -292,8 +292,8 @@ const Booking = (props) => {
       free_breakfast: false,
       is_refundable: false,
       budget: {
-        price_lower_range: 1000,
-        price_upper_range: 9000,
+        price_lower_range: null,
+        price_upper_range: null,
       },
       star_category: null,
       sort: "price: low to high",
@@ -326,8 +326,8 @@ const Booking = (props) => {
       free_breakfast: false,
       is_refundable: false,
       budget: {
-        price_lower_range: 1000,
-        price_upper_range: 10000,
+        price_lower_range: null,
+        price_upper_range: null,
       },
       star_category: null,
       sort: "price: low to high",
@@ -850,6 +850,7 @@ const Booking = (props) => {
               ) : null}
 
 
+
               {isFilterChangesApplied &&
                 <>
                   <hr className="mt-md" />
@@ -875,6 +876,7 @@ const Booking = (props) => {
                     filtersState={filtersState}
                     FILTERS={filtersObj}
                     filters={filters}
+                    defaultBudget={defaultBudget}
                     isFilterChangesApplied={isFilterChangesApplied}
                     _addFilterHandler={_addFilterHandler}
                     _removeFilterHandler={_removeFilterHandler}

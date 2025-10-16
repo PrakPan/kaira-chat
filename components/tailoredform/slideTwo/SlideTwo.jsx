@@ -564,7 +564,7 @@ export const DestinationPopUp = (props) => {
                         value={search}
                         onChange={(e) => handleSearchInput(e, setSearch)}
                         placeholder="Search Destination"
-                        className="focus:outline-none w-full"
+                        className="focus:outline-none w-full placeholder:font-weight-400"
                     />
                     <RxCrossCircled
                         onClick={() => setSearch("")}

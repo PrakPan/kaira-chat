@@ -13,7 +13,7 @@ export default function Filters(props) {
   const [selectedFacilities, setSelectedFacilities] = useState((props?.filters?.facilities?.length == 0 || !props?.filters?.facilities) ? [] : props?.filters?.facilities);
   const [selectedTags, setSelectedTags] = useState((props?.filters?.tags?.length == 0 || !props?.filters?.tags) ? [] : props?.filters?.tags);
   const [selectedTypes, setSelectedTypes] = useState((props?.filters?.type?.length == 0 || !props?.filters?.type) ? ["All"] : props?.filters?.type);
-  const [budget, setBudget] = useState([props.filters.budget.price_lower_range, props.filters.budget.price_upper_range]);
+  const [budget, setBudget] = useState([props.filters.budget.price_lower_range || props.defaultBudget.price_lower_range, props.filters.budget.price_upper_range || props.defaultBudget.price_upper_range]);
   const [selectedStarCategory, setSelectedStarCategory] = useState(props.filters.star_category || []);
 
   const handleApply = () => {

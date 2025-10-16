@@ -16,6 +16,7 @@ import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import BackArrow from "../../ui/BackArrow";
+import Image from "next/image";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -89,7 +90,7 @@ const ErrorContainer = styled.div`
 
 const ViewHotelDetails = (props) => {
 
-  console.log("plan is:",props?.currentBooking)
+  console.log("plan is:", props?.currentBooking)
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const { drawer, booking_id, idx, city_id } = router.query;
@@ -110,7 +111,7 @@ const ViewHotelDetails = (props) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
-    if (props.show && drawer!=="showHotelDetail") {
+    if (props.show && drawer !== "showHotelDetail") {
       fetchDetails();
     }
   }, [props.id, props.show, props.provider]);
@@ -206,15 +207,15 @@ const ViewHotelDetails = (props) => {
     props.setUpdateBookingState(true);
     let stayBookings = props.plan;
     let index = stayBookings.findIndex(item => {
-    const sameCity = item.itinerary_city_id == props?.itinerary_city_id;
-    const sameBooking = item.id == props?.bookingId;
+      const sameCity = item.itinerary_city_id == props?.itinerary_city_id;
+      const sameBooking = item.id == props?.bookingId;
 
-  const duplicateCityCount = stayBookings.filter(
-    b => b.itinerary_city_id == props?.itinerary_city_id
-  ).length;
+      const duplicateCityCount = stayBookings.filter(
+        b => b.itinerary_city_id == props?.itinerary_city_id
+      ).length;
 
-  return duplicateCityCount > 1 ? (sameCity && sameBooking) : sameCity;
-});
+      return duplicateCityCount > 1 ? (sameCity && sameBooking) : sameCity;
+    });
 
     const requestData = {
       rates: rates,
@@ -225,7 +226,7 @@ const ViewHotelDetails = (props) => {
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
       source: props.provider,
-      booking_id: props?.bookingId!=""?props?.bookingId:null,
+      booking_id: props?.bookingId != "" ? props?.bookingId : null,
       itinerary_city: props?.itinerary_city_id,
       city_id: props.currentBooking.city_id,
     };
@@ -292,15 +293,15 @@ const ViewHotelDetails = (props) => {
       backdrop
       className=""
       onHide={props.onHide}
-      style={{zIndex:1252}}
+      style={{ zIndex: 1252 }}
       width={"50vw"}
       mobileWidth={"100vw"}
     >
       {!loading ? (
         <Container>
-          <BackContainer className=" ">
-            <BackArrow handleClick={props.onHide} />
-          </BackContainer>
+          <div className="my-xl">
+            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.onHide(e)} />
+          </div>
           {!error ? (
             <div>
               {" "}

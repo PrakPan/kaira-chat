@@ -22,12 +22,11 @@ const FullScreenGallery = (props) => {
       className="fixed top-0 right-0 w-full h-[100vh] bg-trans-black_70 pt-[0.5rem] max-ph:bg-text-white"
       style={{ zIndex: "2000" }}
     >
-      <div className="container mt-5xl cursor-pointer max-ph:!p-0">
+      <div className="container mt-7xl cursor-pointer max-ph:!p-0">
         <span onClick={props.closeGalleryHandler} className="w-[30px] h-[30px] bg-text-white flex items-center justify-center rounded-circle absolute right-[20%]  max-ph:top-[25px] max-ph:right-[20px]">
           {svgIcons.close}
         </span>
 
-        <p className="max-ph:vissible text-md-lg font-600 text-xl-sm ml-md"> Photo Gallery </p>
 
         <SwiperGallery
           images={props.images}

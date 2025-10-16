@@ -78,6 +78,7 @@ module.exports = {
         "xxs": "4px",
         "xxs-md": "6px",
         "xs": "8px",
+        "xs-md": "10px",
         "sm": "12px",
         "sm-md": "14px",
         "md": "16px",
@@ -172,7 +173,6 @@ module.exports = {
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
-
         },
         // Secondary Colors
         secondary: {
@@ -201,6 +201,10 @@ module.exports = {
           chinesWhite: "#F9F9F9",
           error: "#FA3530"
         },
+        tag : {
+          sky:"#2AB0FC",
+          grass:"#5CBA66"
+        }
       },
       keyframes: {
         slideDown: {

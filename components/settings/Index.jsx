@@ -70,6 +70,7 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
       room_configuration:roomConfiguration,
       selected_preferences:selectedPreferences,
       }
+      console.log("req is: ",req)
       handleApply(req);
     }
   

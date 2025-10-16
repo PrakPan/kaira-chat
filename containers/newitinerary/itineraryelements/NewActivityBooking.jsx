@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { getIndianPrice } from "../../../services/getIndianPrice";
@@ -51,7 +51,7 @@ export default function NewActivityBooking(props) {
   };
 
   return (
-    <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
+    <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md">
       {isDesktop ? <div id="Activity" className={`flex gap-1  flex-col justify-start `}>
         <div
           style={{
@@ -168,7 +168,7 @@ export default function NewActivityBooking(props) {
             <div className="flex flex-col gap-3 text-[#01202B]  w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
-                  <div className="text-[20px] font-semibold">
+                  <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
                     {(props?.data?.display_name || props.data?.name) ? (props?.data?.display_name || props.data.name) : null}
                   </div>
                 </div>
@@ -229,8 +229,8 @@ export default function NewActivityBooking(props) {
             </div>
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
-                <div className="flex flex-col md:flex-row gap-2">
-                  <div className="text-[24px] font-bold">
+                <div className="flex flex-col md:flex-row gap-2 items-baseline">
+                  <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
                     <span
                       className="!font-[lexend]"
                       style={{ fontFamily: "Lexend" }}
@@ -239,7 +239,7 @@ export default function NewActivityBooking(props) {
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
-                  <div className="text-[14px] text-[#6E757A] self-end mb-1">
+                  <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">
                     for {props.data.pricing.total_pax} people*
                   </div>
                 </div>
@@ -263,18 +263,9 @@ export default function NewActivityBooking(props) {
                   </TransparentButton>
                 </div>
               ) : (
-                <Button
-                  bgColor={"#F7E700"}
-                  borderRadius="8px"
-                  fontWeight="400"
-                  hoverColor="white"
-                  height={"full"}
-                  className="p-[12px]"
-                  borderWidth={"1px"}
-                  onclick={() => handleClick(props.data?.id)}
-                >
-                  View Details
-                </Button>
+                <button onClick={() => handleClick(props.data?.id)} className="ttw-btn-secondary max-ph:w-full">
+                  Details
+                </button>
               )}
             </div>
           </div>
@@ -384,7 +375,7 @@ export default function NewActivityBooking(props) {
             </div>
           </div>
 
-          <div className="text-[20px] font-semibold">
+          <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
             {props.data?.name || props?.display_name ? props.data.name : null}
           </div>
 
@@ -494,7 +485,7 @@ export default function NewActivityBooking(props) {
           <div className="flex flex-row items-center justify-between py-1">
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
-                <div className="text-[24px] font-bold">
+                <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
                   <span>₹</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
@@ -524,19 +515,9 @@ export default function NewActivityBooking(props) {
             </div>
           ) : (
             <div className="w-full flex justify-end">
-              <Button
-                bgColor={"#F7E700"}
-                borderRadius="8px"
-                fontWeight="400"
-                hoverColor="white"
-                height={"full"}
-                className="p-[12px] !w-full"
-                width={"100%"}
-                borderWidth={"1px"}
-                onclick={() => handleClick(props.data?.id)}
-              >
-                View Details
-              </Button>
+               <button onClick={() => handleClick(props.data?.id)} className="ttw-btn-secondary max-ph:w-full">
+                  Details
+                </button>
             </div>
             // <div
             //   className="h-full text-blue underline cursor-pointer"
@@ -570,10 +551,8 @@ export default function NewActivityBooking(props) {
         setShowDrawer={props?.setShowDrawer}
       />
       {props.data?.is_recommended && (
-        // <div className="absolute top-6 -left-2 z-[1]">
-        <div className="absolute top-6 left-5 z-[1]">
-          {/* <RecommendedBadge /> */}
-          <div className="flex items-center gap-1 bg-[#5CBA66] text-white text-13px px-3 py-2 rounded-xl text-[12px]">
+        <div > {/* <RecommendedBadge /> */}
+          <div className=" bg-tag-grass text-white absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-xl left-xl">
 
             <span>Recommended</span>
           </div>
