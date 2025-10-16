@@ -31,6 +31,7 @@ const FullScreenGallery = (props) => {
         <SwiperGallery
           images={props.images}
           mercury={props.mercury}
+          imgUrlEndPoint={props.imgUrlEndPoint}
         ></SwiperGallery>
       </div>
     </div>

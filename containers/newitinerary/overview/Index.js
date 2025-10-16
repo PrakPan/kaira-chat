@@ -67,9 +67,9 @@ const Overview = (props) => {
           setEditRoute={props.setEditRoute}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
-        {isDesktop&&<SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
+        {(isDesktop && props?.images?.length > 0 ) && <SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
       </div>
-      {!isDesktop&&<SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
+      {(!isDesktop && props?.images?.length > 0 )&&<SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
 
       {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
