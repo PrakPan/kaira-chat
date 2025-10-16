@@ -323,6 +323,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
       case "poiAdd":
         dispatch(updateSinglePoiDetails(payload.data));
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${payload.data.heading} added successfully`,
+            heading: "Success!",
+          })
+        );
         break;
 
       case "createFlightBooking":
