@@ -2,7 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
-import { hotelSearch } from "../../../services/bookings/FetchAccommodations";
+import {
+  hotelSearch,
+  hotelSearchAutocomplete,
+} from "../../../services/bookings/FetchAccommodations";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
@@ -20,7 +23,7 @@ import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
-import axios from 'axios';
+import axios from "axios";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -116,6 +119,7 @@ const Booking = (props) => {
     facilities: null,
     tags: null,
     trace_id: null,
+    hotel_id: null,
     occupancies: itinerary?.hotels_config?.room_configuration || [
       { adults: 1, childAges: [] },
     ],
@@ -132,8 +136,12 @@ const Booking = (props) => {
   });
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
   const dispatch = useDispatch();
-  const debouncedSearch = useDebounce(selectSearch);
+
+  const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
+  const [selectedHotelId, setSelectedHotelId] = useState(null); 
+ 
 
   const currentBooking = {
     check_in: props?.check_in || props?.currentBooking?.check_in,
@@ -144,32 +152,28 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-    if (
-      props?.showBookingModal &&
-      currentBooking?.check_in 
-    ) {
-      console.log("filters useEffect triggered", filters);
+    if (props?.showBookingModal && currentBooking?.check_in) {
+      // console.log("filters useEffect triggered", filters);
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
   }, [filters.applyFilter]);
 
   useEffect(() => {
-  return () => {
-    if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel('Component unmounted');
-    }
-  };
-}, []);
+    return () => {
+      if (cancelTokenRef.current) {
+        cancelTokenRef.current.cancel("Component unmounted");
+      }
+    };
+  }, []);
 
   useEffect(() => {
-    if (debouncedSearch.length > 2||hasUserSearched) {
-      console.log("searching in debounced search")
-       setHasUserSearched(true);
-      setMoreOptionsJSX([]);
-      fetchHotelsFilter();
+    if (selectSearch.length > 3 && !selectedHotelId) {
+      // ADD THE CHECK
+      setHasUserSearched(true);
+      fetchHotelsAutocomplete();
     }
-  }, [debouncedSearch]);
+  }, [selectSearch]);
 
   // useEffect(() => {
   //   setMoreOptionsJSX([]);
@@ -227,10 +231,17 @@ const Booking = (props) => {
 
   const handleClearSearch = () => {
     setSelectedSearch("");
-  };
+    setSelectedHotelId(null);
+    setSearchResults([]);
 
+    // Trigger search to show all hotels again
+    setFilters((prev) => ({
+      ...prev,
+      applyFilter: !prev.applyFilter,
+    }));
+  };
   const _addFilterHandler = (filter, heading) => {
-    console.log("add filter handler called")
+    console.log("add filter handler called");
     setFilters((prev) => ({
       ...prev,
       [heading]: filter,
@@ -305,14 +316,14 @@ const Booking = (props) => {
 
   const fetchHotelsFilter = () => {
     if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
-     setFetchingIsError({
-    error: false,
-    errorMsg: "",
-  });
-      if (cancelTokenRef.current) {
-    cancelTokenRef.current.cancel('New request initiated');
-  }
- cancelTokenRef.current = axios.CancelToken.source();
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
+    if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel("New request initiated");
+    }
+    cancelTokenRef.current = axios.CancelToken.source();
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -324,6 +335,7 @@ const Booking = (props) => {
       check_in: getDate(currentBooking?.check_in),
       check_out: getDate(currentBooking?.check_out),
       city_id: currentBooking?.city_id || props?.selectedBooking?.city_id,
+      hotel_id: selectedHotelId,
       filter_by: {
         price_lower_range: filters.budget.price_lower_range,
         price_upper_range: filters.budget.price_upper_range,
@@ -356,7 +368,6 @@ const Booking = (props) => {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
         cancelToken: cancelTokenRef.current.token,
-
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -460,38 +471,81 @@ const Booking = (props) => {
       })
       .catch((err) => {
         if (axios.isCancel(err)) {
-        console.log('Request cancelled:', err.message);
-        
-        return;
-      }
+          console.log("Request cancelled:", err.message);
+
+          return;
+        }
         setLoading(false);
         setUpdateLoadingState(false);
         setMoreOptionsJSX([]);
 
-       
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-       
+  };
+
+  const fetchHotelsAutocomplete = () => {
+    if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel("New request initiated");
+    }
+    cancelTokenRef.current = axios.CancelToken.source();
+
+    try {
+      if (!selectSearch || selectSearch.trim().length < 3) {
+        setSearchResults([]);
+        return;
+      }
+
+      setAutocompleteLoading(true); 
+
+      hotelSearchAutocomplete
+        .get(`?q=${selectSearch}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          cancelToken: cancelTokenRef.current.token,
+        })
+        .then((res) => {
+          setSearchResults(res.data || []);
+          setAutocompleteLoading(false); 
+        })
+        .catch((err) => {
+          if (axios.isCancel(err)) {
+            console.log("Request cancelled:", err.message);
+            return;
+          }
+          setAutocompleteLoading(false); 
+          setSearchResults([]);
+
+          if (err?.response.status == 400) {
+            setPaginationStatus(() => ({
+              traceId: null,
+              page: 1,
+              totalPages: 1,
+            }));
+          }
+        });
+    } catch (error) {
+      setAutocompleteLoading(false); 
+    }
   };
 
   const fetchHotels = () => {
     try {
       if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
 
-       setFetchingIsError({
-    error: false,
-    errorMsg: "",
-  });
+      setFetchingIsError({
+        error: false,
+        errorMsg: "",
+      });
 
       if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel('New request initiated');
-    }
-    
-    
-    cancelTokenRef.current = axios.CancelToken.source();
+        cancelTokenRef.current.cancel("New request initiated");
+      }
+
+      cancelTokenRef.current = axios.CancelToken.source();
       setLoading(true);
       setUpdateLoadingState(true);
       setNoResults(false);
@@ -503,6 +557,7 @@ const Booking = (props) => {
         check_in: getDate(currentBooking?.check_in),
         check_out: getDate(currentBooking?.check_out),
         city_id: currentBooking?.city_id,
+        hotel_id: selectedHotelId,
         filter_by: {
           price_lower_range: filters.budget.price_lower_range,
           price_upper_range: filters.budget.price_upper_range,
@@ -640,13 +695,13 @@ const Booking = (props) => {
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
-        console.log('Request cancelled:', err.message);
-        
-        return;
-      }
+            console.log("Request cancelled:", err.message);
+
+            return;
+          }
           setLoading(false);
           setUpdateLoadingState(false);
-          
+
           if (err?.response.status == 400) {
             setPaginationStatus(() => ({
               traceId: null,
@@ -664,11 +719,20 @@ const Booking = (props) => {
             error: true,
             errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
-          
         });
     } catch (error) {
       console.log("error in accommodation search:", error);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion) => {
+    setSelectedSearch(suggestion.name);
+    setSearchResults([]);
+    setSelectedHotelId([suggestion.id.toString()]);
+    setFilters((prev) => ({
+      ...prev,
+      applyFilter: !prev.applyFilter,
+    }));
   };
 
   if (props?.token)
@@ -716,6 +780,8 @@ const Booking = (props) => {
                 selectSearch={selectSearch}
                 setSelectedSearch={setSelectedSearch}
                 fetchHotels={fetchHotels}
+                fetchHotelsAutocomplete={fetchHotelsAutocomplete}
+                searchResults={searchResults}
                 resetPaginationStatus={resetPaginationStatus}
                 setMoreOptionsJSX={setMoreOptionsJSX}
                 clickType={props?.clickType}
@@ -726,6 +792,11 @@ const Booking = (props) => {
                   ]
                 }
                 handleClose={handleClose}
+                handleSuggestionSelect={handleSuggestionSelect}
+                autocompleteLoading={autocompleteLoading}
+                handleClearSearch={handleClearSearch}
+                selectedHotelId={selectedHotelId}
+                setSelectedHotelId={setSelectedHotelId}
               ></SectionOne>
 
               <SectionTwo

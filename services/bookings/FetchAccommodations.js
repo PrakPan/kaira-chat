@@ -10,3 +10,7 @@ export default fetchaccommodations;
 export const hotelSearch = axios.create({
   baseURL: MERCURY_HOST + '/api/v1/hotels/search/',
 });
+
+export const hotelSearchAutocomplete = axios.create({
+  baseURL: MERCURY_HOST + '/api/v1/hotels/search/autocomplete',
+});
