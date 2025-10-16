@@ -7,6 +7,8 @@ import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
 const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
+  const [addHotels, setAddHotels] = useState(isHotelsPresent);
+  const [addFlights, setAddFlights] = useState(false);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [roomConfiguration, setRoomConfiguration] = useState(
     useSelector((state) => state.Itinerary?.hotels_config?.room_configuration)
@@ -63,9 +65,12 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
         number_of_children:numberOfChildren,
         number_of_infants:numberOfInfants,
       },
+      add_hotels:addHotels,
+      add_flights:addFlights,
       room_configuration:roomConfiguration,
       selected_preferences:selectedPreferences,
       }
+      console.log("req is: ",req)
       handleApply(req);
     }
   
@@ -77,7 +82,7 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
 
       <DateComponent settings={true} handleApplyDates={handleApplyDates} setDate={setDate} date={date}/>
 
-      {!isHotelsPresent ? (
+      {!addHotels ? (
         <EnterPassenger
           roomConfiguration={roomConfiguration}
           setRoomConfiguration={setRoomConfiguration}
@@ -92,7 +97,7 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
         />
       ) : (
         <div>
-          <div className="Body2R_14 mb-[8px]">Room Configuration</div>
+          <div className="Body2R_14 mb-[8px]">Travellers and Rooms</div>
           <Pax
             numberOfAdults={numberOfAdults}
             setNumberOfAdults={setNumberOfAdults}
@@ -106,6 +111,43 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
           />
         </div>
       )}
+
+<div>
+        <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
+        <div className="grid grid-cols-3 justify-between items-center">
+
+          <label
+            htmlFor="add-hotels"
+            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
+          >
+            <input
+              id="add-hotels"
+              type="checkbox"
+              checked={addHotels}
+              onChange={(e) => setAddHotels(e.target.checked)}
+              className="focus:outline-none cursor-pointer"
+            />
+            <div className="Body2R_14">Stay</div>
+          </label>
+
+          <label
+            htmlFor="add-flights"
+            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer justify-self-center"
+          >
+            <input
+              id="add-flights"
+              type="checkbox"
+              checked={addFlights}
+              onChange={(e) => setAddFlights(e.target.checked)}
+              className="focus:outline-none cursor-pointer"
+            />
+            <div className="Body2R_14">Flights</div>
+          </label>
+
+          <div></div>
+        </div>
+      </div>
+
       <div>
         <div className="Body1M_16">Choose your experience</div>
         <div className="mt-[12px]">

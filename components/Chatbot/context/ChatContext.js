@@ -48,29 +48,28 @@ export const ChatProvider = ({ itinearyId, children }) => {
     );
     return oldSessionIds[itinearyId] || null;
   });
-  const {id} = useSelector(state => state.auth);
+  const { id } = useSelector((state) => state.auth);
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const {trackTransferBookingDelete} = useAnalytics();
+  const { trackTransferBookingDelete } = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
-  const token =useSelector((state) => state.auth.token);
-
+  const token = useSelector((state) => state.auth.token);
 
   useEffect(() => {
     if (!itinearyId || !token) return;
-    console.log("initial run bot")
+    console.log("initial run bot");
     // console.log("initial run bot")
     getAllChatHistory(itinearyId);
     if (sessionId) {
       showChatHistoryById(sessionId, true);
-    } 
-  }, [itinearyId,token]);
+    }
+  }, [itinearyId, token]);
   useEffect(() => {
     if (!itinearyId || !token) return;
     if (!sessionId && finalized_status === "SUCCESS") {
       connect(null);
     }
-  }, [finalized_status,token]);
+  }, [finalized_status, token]);
 
   const connect = (id = null) => {
     if (reconnecting) return;
@@ -110,17 +109,16 @@ export const ChatProvider = ({ itinearyId, children }) => {
         // const interval = setInterval (() => {
         //   if(finalized_status=="SUCCESS"){
 
-            const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
-            if (socketRef.current?.readyState === WebSocket.OPEN) {
-              socketRef.current.send(
-                JSON.stringify({ message: initialPrompt, token })
-              );
-            }
-            // clearInterval(interval);
+        const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          socketRef.current.send(
+            JSON.stringify({ message: initialPrompt, token })
+          );
+        }
+        // clearInterval(interval);
 
         //   }
         // }, 1000);
-        
       }
     };
 
@@ -301,11 +299,25 @@ export const ChatProvider = ({ itinearyId, children }) => {
       case "createAccommodationBooking":
         dispatch(updateSingleStayCityAndCheckInWise(payload.data));
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${payload.data.name} hotel added successfully`,
+            heading: "Success!",
+          })
+        );
         break;
 
       case "createActivityBooking":
         updateActivityBooking(payload.data);
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${payload.data.activity.name} activity added successfully`,
+            heading: "Success!",
+          })
+        );
         break;
 
       case "poiAdd":
@@ -316,29 +328,54 @@ export const ChatProvider = ({ itinearyId, children }) => {
       case "createFlightBooking":
         fetchAllTransferBooking(itinearyId);
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-        break;
-
-      case "deleteAccommodationBooking":
-        deleteAccommodationBooking(payload.data);
-        dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-        break;
-
-      case "deleteActivityBooking":
-        deleteActivityBooking(payload.data);
-        dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-        break;
-      case "deleteFlightBooking":
-        if(payload.data.status == 204){
-        dispatch(updateTransferBookings(payload.data.booking_id	));
-        trackTransferBookingDelete(itinearyId, payload.data.booking_id, id);
-        dispatch(SetCallPaymentInfo(!CallPaymentInfo));
         dispatch(
           openNotification({
             type: "success",
-            text: "Booking deleted Successfully",
+            text: `${payload.data.name} added successfully`,
             heading: "Success!",
           })
         );
+        break;
+
+      case "deleteAccommodationBooking":
+        if (payload.data.status == 204) {
+          deleteAccommodationBooking(payload.data);
+          dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+          dispatch(
+            openNotification({
+              type: "success",
+              text: "Booking deleted Successfully",
+              heading: "Success!",
+            })
+          );
+        }
+        break;
+
+      case "deleteActivityBooking":
+        if (payload.data.status == 204) {
+          deleteActivityBooking(payload.data);
+          dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+          dispatch(
+            openNotification({
+              type: "success",
+              text: "Activity deleted Successfully",
+              heading: "Success!",
+            })
+          );
+        }
+        break;
+      case "deleteFlightBooking":
+        if (payload.data.status == 204) {
+          dispatch(updateTransferBookings(payload.data.booking_id));
+          trackTransferBookingDelete(itinearyId, payload.data.booking_id, id);
+          dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+          dispatch(
+            openNotification({
+              type: "success",
+              text: "Booking deleted Successfully",
+              heading: "Success!",
+            })
+          );
         }
         break;
 

@@ -26,6 +26,9 @@ const InputContainer = styled.input`
     outline: none;
   }
   border: none;
+  &::placeholder {
+    font-weight: 400;
+  }
 
   @media screen and (min-width: 768px) {
   }
@@ -130,7 +133,7 @@ const SearchInput = (props) => {
         <div style={{ display: "flex" }}>
           <InputContainer
             onFocus={props.onfocus}
-            className="Body2M_14"
+            className="Body2M_14 placeholder:font-weight-400"
             onBlur={_handleBlur}
             placeholder="Enter the start Location"
             value={search}

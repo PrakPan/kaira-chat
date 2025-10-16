@@ -1245,7 +1245,7 @@ const HotelBookingDetails = (props) => {
                       </DetailsContainer>
 
 
-                      {data?.hotel_details?.check_in?.instructions.length > 0 &&
+                      {data?.hotel_details?.check_in?.instructions?.length > 0 &&
                         <>
                           <div className="mt-lg">
                             <div className="text-sm-xl font-600 leading-xl mb-xxs-md">Check In Instructions</div>

@@ -8,8 +8,9 @@ import BottomModal from "./ui/LowerModal";
 import { MERCURY_HOST } from "../services/constants";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { setItineraryStatus } from "../store/actions/itineraryStatus";
-
+import setItineraryStatus  from "../store/actions/itineraryStatus";
+import {axiosGetItineraryStatus} from "../services/itinerary/daybyday/preview";
+import { useDispatch } from "react-redux";
 const divideTravellers = (val) => {
   let distribution = [];
 
@@ -58,13 +59,13 @@ const divideTravellers = (val) => {
 };
 
 const mergePassengers=(data)=>{
-  const number_of_adults=data.room_configuration.reduce((acc,curr)=>acc+curr.adults,0)
-  const number_of_children=data.room_configuration.reduce((acc,curr)=>acc+curr.children,0)
-  const number_of_infants=data.room_configuration.reduce((acc,curr)=>acc+curr.infants,0)
+  const number_of_adults=data.reduce((acc,curr)=>acc+curr.adults,0)
+  const number_of_children=data.reduce((acc,curr)=>acc+curr.children,0)
+  const number_of_infants=data.reduce((acc,curr)=>acc+curr.infants,0)
   return {
-    numberOfAdults:number_of_adults,
-    numberOfChildren:number_of_children,
-    numberOfInfants:number_of_infants,
+    number_of_adults:number_of_adults,
+    number_of_children:number_of_children,
+    number_of_infants:number_of_infants||0,
   }
 }
 
@@ -76,6 +77,7 @@ export default function TravelPartnerContact(props) {
   const [isHotelsPresent,setIsHotelsPresent]=useState(true);
   const router = useRouter();
   const itinerary_id = router.query.id;
+  const dispatch = useDispatch();
 
   const fetchItineraryStatus = async (itineraryId = router.query.id) => {
     try {
@@ -93,27 +95,41 @@ export default function TravelPartnerContact(props) {
       dispatch(
         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
       );
-      // fetchItinerary();
+      fetchItinerary();
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+    }
+  };
+  const fetchItinerary = async () => {
+    try{
+    props?.resetRef();
+    props.fetchData(true);
+    }
+    catch(err){
+      console.error("[ERROR]: fetchItineraryStatus: ", err.message);
     }
   };
 
   const handleApply=async(data)=>{
     try {
       const req=data
-      if(isHotelsPresent){
+      console.log("req is: ",req)
+      if(req.add_hotels==true){
         req.passengers=mergePassengers(req.room_configuration)
       }
       else{
         req.room_configuration=divideTravellers(req.passengers)
-      }
-      const res = await axios.post(`${MERCURY_HOST}//api/v1/itinerary/${itinerary_id}/itinerary-edit/`,req,{
+      } 
+      Promise.resolve(axios.post(`${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/itinerary-edit/`,req,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
+      })).then((res)=>{
+        fetchItineraryStatus(itinerary_id);
+        // setShowSettings(false);
+      }).catch((err)=>{
+        console.log("error is:",err)
       })
-      fetchItineraryStatus();
     } catch (err) {
       console.log("error is:",err)
     }

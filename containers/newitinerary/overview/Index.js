@@ -44,7 +44,7 @@ const Overview = (props) => {
         <div className={`${isDesktop?"Heading":"Heading2SB font-semibold"}`}>
           {props.title}
         </div>
-        <TravelPartnerContact itinerary={props?.itinerary} />
+        <TravelPartnerContact itinerary={props?.itinerary} resetRef={props?.resetRef} fetchData={props?.fetchData}/>
         </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
