@@ -110,29 +110,31 @@ export default function TravelPartnerContact(props) {
     }
   };
 
-  const handleApply=async(data)=>{
-    try {
-      const req=data
-      console.log("req is: ",req)
-      if(req.add_hotels==true){
-        req.passengers=mergePassengers(req.room_configuration)
-      }
-      else{
-        req.room_configuration=divideTravellers(req.passengers)
-      } 
-      Promise.resolve(axios.post(`${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/itinerary-edit/`,req,{
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })).then((res)=>{
-        fetchItineraryStatus(itinerary_id);
-        // setShowSettings(false);
-      }).catch((err)=>{
-        console.log("error is:",err)
-      })
-    } catch (err) {
-      console.log("error is:",err)
+  const handleApply = (data) => {
+    const req = data;
+    
+    if (req.add_hotels == true) {
+      req.passengers = mergePassengers(req.room_configuration);
+    } else {
+      req.room_configuration = divideTravellers(req.passengers);
     }
+
+    return axios.post(`${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/itinerary-edit/`, req, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+    })
+    .then((res) => {
+      fetchItineraryStatus(itinerary_id);
+      return res;
+    })
+    .catch((err) => {
+      console.log("error is:", err);
+      throw err;
+    })
+    .finally(() => {
+      setShowSettings(false);
+    });
   }
   return (
     <div className="flex items-center gap-3">

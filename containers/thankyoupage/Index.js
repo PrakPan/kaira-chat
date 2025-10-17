@@ -20,6 +20,9 @@ import Continentcarousel from "../../components/continentcarousel/continentcarou
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
+import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
+import HeroSection from "../../components/revamp/destination/HeroSection";
+
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -141,7 +144,23 @@ const Index = (props) => {
 
   return (
     <div>
-      <HeroBanner
+      <HeroSection
+          image={
+          isPageWide
+            ? `${imgUrlEndPoint}media/website/thank-you-banner.jpg`
+            : `${imgUrlEndPoint}media/website/homepage-banner-mobile.png`
+        }
+        destinationType={"city-planner"}
+        title={
+          
+            `Thank you for putting your faith in us`
+       
+        }
+        subtitle={`It takes one step to begin the journey of a thousand miles. We will get in touch with you within 12 hours. :)`}
+        _startPlanningFunction={() => openTailoredModal(router)}
+        page={"Thank you Page"}
+        />
+      {/* <HeroBanner
         image={
           isPageWide
             ? "media/website/thank-you-banner.jpg"
@@ -164,7 +183,7 @@ const Index = (props) => {
         }
         _startPlanningFunction={() => openTailoredModal(router)}
         page={"Thank you Page"}
-      />
+      /> */}
 
       <div
         style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}

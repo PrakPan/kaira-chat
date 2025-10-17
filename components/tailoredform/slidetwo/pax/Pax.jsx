@@ -314,7 +314,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
 
 const ChildAge = ({ child, age, index, setChildAges, showError }) => {
   const handleChange = (e) => {
-    const value = e.target.value ? parseInt(e.target.value, 10) : "";
+    const value = e.target.value ? parseInt(e.target.value, 10) : 0;
     setChildAges((prev) =>
       prev.map((a, i) => (i === index ? value : a))
     );
@@ -326,13 +326,13 @@ const ChildAge = ({ child, age, index, setChildAges, showError }) => {
         <div className="Body2M_14">Age of Child {index+1}</div>
 
         <div className="flex items-center gap-2">
-          <CounterButton onClick={() => handleChange({ target: { value: age - 1 } })} disabled={age <= 2}>−</CounterButton>
+          <CounterButton onClick={() => handleChange({ target: { value: age - 1 } })} disabled={age <= 0}>−</CounterButton>
           <AgeInput
             key={index}
             type="number"
             min="0"
             max="12"
-            value={age ?? ""}
+            value={age}
             onChange={handleChange}
             disabled
           />

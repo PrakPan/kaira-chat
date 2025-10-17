@@ -135,7 +135,7 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
 
   return (
     <section className="px-0 sm:px-4 lg:px-8 bg-white">
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full mx-auto py-12 sm:py-16 lg:py-24">
         {itineraries?.[0]?.id === 1 && <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-4xl font-bold text-black mb-4 leading-tight">
             Our Most Loved Itineraries.
