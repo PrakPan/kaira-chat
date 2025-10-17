@@ -30,7 +30,7 @@ const MobileSearch = (props) => {
   }, []);
 
   return (
-    <Container>
+    <Container id="desktop-search-container">
       <BlackContainer onClick={props.onclose}></BlackContainer>
 
       <Bar
