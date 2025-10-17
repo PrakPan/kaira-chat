@@ -69,7 +69,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props.continetCarousel}
         destination={convertDbNameToCapitalFirst(props.Data.slug)}
         type={props.Type}
-      ></ContinentPage>x
+      ></ContinentPage>
     </Layout>
   );
 };

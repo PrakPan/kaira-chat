@@ -131,7 +131,7 @@ const Home = (props) => {
         <HeroSection />
         <JourneySimplified />
         <PlacesBragSection />
-        <MostLovedItinerariesSection />
+        <MostLovedItinerariesSection className={'max-w-7xl'} />
         <TravelerMadeItinerariesSection />
         <FullSlider />
         <TravelVibeSection />

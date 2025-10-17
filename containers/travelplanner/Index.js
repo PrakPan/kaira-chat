@@ -39,6 +39,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -718,6 +719,8 @@ const Homepage = (props) => {
         </H3>
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
+
+        <CtaBoardingSection />
       </SetWidthContainer>
       </>}
     </div>

@@ -77,7 +77,7 @@ const transformItineraryData = (apiItineraries) => {
   });
 };
 
-const MostLovedItinerariesSection = ({ apiItineraries }) => {
+const MostLovedItinerariesSection = ({ apiItineraries,className }) => {
   // Transform API data or use sample data for demo
   const itineraries = apiItineraries 
     ? transformItineraryData(apiItineraries)
@@ -135,7 +135,7 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
 
   return (
     <section className="px-0 sm:px-4 lg:px-8 bg-white">
-      <div className="w-full mx-auto py-12 sm:py-16 lg:py-24">
+      <div className={`w-full mx-auto py-4 sm:py-4 lg:py-4 pb-0 ${className}`}>
         {itineraries?.[0]?.id === 1 && <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-4xl font-bold text-black mb-4 leading-tight">
             Our Most Loved Itineraries.
@@ -189,8 +189,8 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
           </Swiper>
 
           <div className="custom-prev" aria-hidden="true">
-            <div className="absolute left-3 sm:left-1 top-1/3 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div className="absolute -left-3  top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
@@ -199,8 +199,8 @@ const MostLovedItinerariesSection = ({ apiItineraries }) => {
           </div>
 
           <div className="custom-next" aria-hidden="true">
-            <div className="absolute right-3 sm:right-1 top-1/3 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div className="absolute -right-3  top-1/3 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
