@@ -146,7 +146,6 @@ const Enquiry = (props) => {
   const _submitDataHandler = () => {
     setIsSubmitting(true);
     completeItineraryCreate();
-    setIsSubmitting(false);
   };
 
   const _prevSlideHandler = () => {
@@ -297,7 +296,6 @@ const Enquiry = (props) => {
   };
 
   const completeItineraryCreate = () => {
-    console.log("completeItineraryCreate called");
     const data = {
       source,
       itinerary_id: itineraryId,
@@ -308,8 +306,8 @@ const Enquiry = (props) => {
       room_configuration: slideThreeData.roomConfiguration,
       add_flights: slideThreeData.addFlights,
       add_hotels: slideThreeData.addHotels,
-      add_transfers_and_activities: slideThreeData.addInclusions,
-      hotel_types: slideFourData.hotelType,
+      // add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType.map((s)=>parseInt(s)),
       meal_preferences: slideFourData.mealPreferences,
       special_request: slideFourData.specialRequests,
     };

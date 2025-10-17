@@ -6,10 +6,15 @@ import Pax from "../tailoredform/slidetwo/pax/Pax";
 import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
+import { useDispatch } from "react-redux";
+import setItinerary  from "../../store/actions/itinerary";
+import { openNotification } from "../../store/actions/notification";
 const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
+  const dispatch = useDispatch();
   const [addHotels, setAddHotels] = useState(isHotelsPresent);
   const [addFlights, setAddFlights] = useState(false);
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const [isLoading, setIsLoading] = useState(false);
   const [roomConfiguration, setRoomConfiguration] = useState(
     useSelector((state) => state.Itinerary?.hotels_config?.room_configuration)
   );
@@ -55,6 +60,7 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
     setShowSettings(false);
   }
   const handleUpdate = () => {
+    setIsLoading(true);
     const req={
       date:{
       start_date:date.start_date.toISOString().split("T")[0],
@@ -70,8 +76,22 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
       room_configuration:roomConfiguration,
       selected_preferences:selectedPreferences,
       }
-      console.log("req is: ",req)
-      handleApply(req);
+        handleApply(req).then((res)=>{
+          dispatch(openNotification({
+            type: "success",
+            text: "Itinerary updated successfully",
+            heading: "Success!",
+          }));
+        }).catch((err)=>{
+          console.log("error is:",err);
+          dispatch(openNotification({
+            type: "error",
+            text: "Something went wrong",
+            heading: "Error!",
+          }));
+        }).finally(()=>{
+          setIsLoading(false);
+        });
     }
   
   return (
@@ -160,7 +180,7 @@ const Settings = ({setShowSettings, isHotelsPresent,handleApply}) => {
       </div>
 
       <div className={`${isDesktop ? "flex justify-end" : "w-full"}`}>
-        <Buttons handleCancel={handleCancel} handleUpdate={handleUpdate} />
+        <Buttons handleCancel={handleCancel} handleUpdate={handleUpdate} isLoading={isLoading}/>
       </div>
     </div>
   );

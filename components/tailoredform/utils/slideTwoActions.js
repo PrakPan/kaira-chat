@@ -356,7 +356,8 @@ export const handleRemoveDestination = (
     setDestinations,
     updateLatLong,
     updateDestinationsDates,
-    setDestinationChanges
+    setDestinationChanges,
+    setIsRouteChanged
 ) => {
     e.stopPropagation();
     setDestinationChanges(true);
@@ -368,6 +369,7 @@ export const handleRemoveDestination = (
         return updatedDestinations;
     });
 
+    setIsRouteChanged(true)
     logEvent({
         action: "Route Edit",
         params: {

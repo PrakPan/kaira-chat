@@ -257,7 +257,7 @@ const EnterPassenger = (props) => {
               <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
                 <PassengerLabel>
                   <div className="Body2M_14">Children</div>
-                  <div className="subtitle">Ages 2 to 12</div>
+                  <div className="subtitle">Ages 0 to 12</div>
                 </PassengerLabel>
                 <CounterBox>
                   <CounterButton onClick={() => handleChildrenChange(children - 1)} disabled={children <= 0}>−</CounterButton>
