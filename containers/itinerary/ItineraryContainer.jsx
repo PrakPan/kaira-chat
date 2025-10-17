@@ -10,8 +10,7 @@ import axiosdaybydayinstance, {
 } from "../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../services/itinerary/brief/preview";
 import * as authaction from "../../store/actions/auth";
-import { ITINERARY_STATUSES } from "../../services/constants";
-import { TRAVELER_ITINERARIES } from "../../services/constants";
+import { ITINERARY_STATUSES, MERCURY_HOST, TRAVELER_ITINERARIES } from "../../services/constants";
 import axiosPoiRoutes from "../../services/itinerary/brief/route";
 import axiosbookingupdateinstance from "../../services/bookings/UpdateBookings";
 import Overview from "../newitinerary/overview/Index";
@@ -39,6 +38,7 @@ import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
 import setCart from "../../store/actions/Cart";
 import NotesPopup from "./NotesPopup";
+import axios from "axios";
 
 const Container = styled.div`
   width: 100%;
@@ -255,14 +255,30 @@ const ItineraryContainer = (props) => {
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
   const [oldOne, setOldOne] = useState(false);
-
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
-
   const [notes, setNotes] = useState(null);
   const [showNotesPopup, setShowNotesPopup] = useState(false);
+  const [gallery, setGallery] = useState([]);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const response = await axios.get(`${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`);
+        setGallery(response.data);
+      } catch (err) {
+        console.error("Error fetching gallery:", err);
+      } finally {
+      }
+    };
+
+    if (props.id) {
+      fetchGallery();
+    }
+  }, [props.id]);
+
 
    const resetRef = () => {
     itinerarySuccessRef.current = false;
@@ -282,28 +298,6 @@ const ItineraryContainer = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  // const newDate = addDaysToDate(dateString, 2);
-  // console.log(newDate);
-
-  //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  //   console.log("Transfer Booking",transferBooking);
-
-  // useEffect(() => {
-  //   if (hasRendered.current) {
-  //     if (props.token) getPaymentHandler();
-  //   } else hasRendered.current = true;
-  // }, [props.token]);
-
-  // useEffect(() => {
-  //   if (props.itinerary.name !== "Loading Itinerary") {
-  //     let activities =[];
-  //     if(props?.mercuryItinerary)
-  //      activities = getItineraryActivities();
-  //     else
-  //     activities = getItineraryActivitiesOld();
-  //     props.setItineraryActivities(activities);
-  //   }
-  // }, [props.itinerary]);
 
   const getItineraryActivities = () => {
     let itenaryActivities = [];
@@ -1414,13 +1408,14 @@ const ItineraryContainer = (props) => {
   isLoggedIn={!!props.token} 
   onClose={() => setShowNotesPopup(false)}
 />
+
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
         itinerary={props?.itinerary}
         group_type={group_type || props.itinerary?.group_type}
         duration_time={duration_time || props.itinerary?.duration_time}
-        images={props.itinerary.images}
+        images={gallery}
         travellerType={travellerType}
         start_date={
           props?.plan

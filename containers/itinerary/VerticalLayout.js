@@ -748,7 +748,8 @@ const CityItem = ({
   firstCity,
   lastCity,
   bookingIdToDelete,
-  pinColour
+  pinColour,
+  isLast
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1182,9 +1183,9 @@ useEffect(() => {
 
 
   return (
-    <Container>
+    <Container className={`${isLast && "mb-[60px]"}`}>
       <PinWrapper>
-        {upPresent && <VerticalLine height="30px" gradient="top" />}
+        {upPresent && <VerticalLine height={"50px"} gradient="top" />}
         {upPresent && downPresent ? (
           <Pin length={length}  pinColour={pinColour}/>
         ) : (
@@ -1208,11 +1209,11 @@ useEffect(() => {
             />
           </svg>
         )}
-        {downPresent && <VerticalLine height="30px" gradient="bottom" />}
+        {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
       </PinWrapper>
 
       <div
-        className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]"
+        className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
           } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         {/* City and Duration Section - Aligned with Pin */}

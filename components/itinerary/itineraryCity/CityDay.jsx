@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import styled from "styled-components";
 import Image from "next/image";
 import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
+import { getDate } from "../../../helper/ConvertDateFormat";
 
 const SectionHeading = styled.div`
    font-weight: 500;
@@ -106,7 +107,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
       return {
         ...booking,
         id: booking.id,
-        currentDayLabel: `Day ${props.index + 1}, ${convertDateFormat(props?.day?.date)}`,
+        currentDayLabel: `Day ${props.index + 1}, ${getDate(props?.day?.date)}`,
           // date: formattedCheckIn === formattedCheckOut
           //   ? `Day ${index + 1}, ${formattedCheckIn}`
           //   : `${formattedCheckIn} to ${formattedCheckOut}`,
@@ -126,7 +127,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
     <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
       <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 ' : ''}`}>
         <div className={`flex items-center justify-between ${!viewMore ? ' bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px]' : 'mb-[12px]'}`} >
-          <div className={`Body2M_14`}> Day {props.index + 1} |  <span> - {getHumanDateWithYearv2(props?.day?.date)}</span></div>
+          <div className={`Body2M_14`}> Day {props.index + 1} |  <span>  {getHumanDateWithYearv2(props?.day?.date)}</span></div>
           <button
             onClick={() => setViewMore((prev) => !prev)}
             className="flex items-center text-sm font-semibold"

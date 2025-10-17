@@ -69,7 +69,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props.continetCarousel}
         destination={convertDbNameToCapitalFirst(props.Data.slug)}
         type={props.Type}
-      ></ContinentPage>
+      ></ContinentPage>x
     </Layout>
   );
 };
@@ -139,7 +139,6 @@ export async function getStaticProps(context) {
 
   try {
     for (let i = 0; i < contientTheme.length; i++) {
-      console.log("continent path is:",contientTheme[i].path)
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${contientTheme[i].path}`

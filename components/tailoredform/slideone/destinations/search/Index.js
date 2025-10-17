@@ -5,7 +5,7 @@ import SearchResults from "./results/Index";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
 import { useRouter } from "next/router";
 import { connect } from "react-redux";
-
+import { useSelector } from "react-redux";
 const Container = styled.div`
   width: 100%;
 
@@ -17,7 +17,7 @@ const Search = (props) => {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hotLocationsData, setHotLocationsData] = useState(props.hotLocations);
+  const hotlocationsData = useSelector((state) => state.HotLocationSearch)?.locations || [];
   const [showHotLocations, setShowHotLocations] = useState(false);
   const { query } = useRouter();
 
@@ -117,7 +117,7 @@ const Search = (props) => {
           inbox_id={props.inbox_id}
           setDestination={props.setDestination}
           top="2.75rem"
-          results={hotLocationsData}
+          results={hotlocationsData}
           setSearchFinalized={props.setSearchFinalized}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}

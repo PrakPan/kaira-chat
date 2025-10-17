@@ -37,10 +37,10 @@ export default function ActivityDetails(props) {
   const [selectedPackage, setSelectedPackage] = useState(null);
 
   useEffect(() => {
-  if (props.data?.prices?.length > 0) {
-    setSelectedPackage(props.data.prices[0]);
-  }
-}, [props.data?.prices]);
+    if (props.data?.prices?.length > 0) {
+      setSelectedPackage(props.data.prices[0]);
+    }
+  }, [props.data?.prices]);
 
   useEffect(() => {
     if (props.data?.amenities?.length) {
@@ -76,14 +76,14 @@ export default function ActivityDetails(props) {
       return;
     }
     const bookingData = {
-    ...e,
-    result_index: selectedPackage?.result_index
-  };
-  
-  props.updatedActivityBooking(bookingData).then(() => {
-    setLoading(false);
-    props?.handleCloseDrawer(e);
-  });
+      ...e,
+      result_index: selectedPackage?.result_index
+    };
+
+    props.updatedActivityBooking(bookingData).then(() => {
+      setLoading(false);
+      props?.handleCloseDrawer(e);
+    });
   };
 
   const handleAmenityChange = async (index, included) => {
@@ -103,12 +103,9 @@ export default function ActivityDetails(props) {
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
       <div className="flex flex-col gap-4  mb-[100px]">
-        <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+        <div className="mt-xl">
+          <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
         </div>
-        {/* <div className="flex justify-between">
-          <div className="text-[24px] font-semibold">Activity Details</div>
-        </div> */}
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
             Updating
@@ -117,9 +114,8 @@ export default function ActivityDetails(props) {
         )}
 
         <div
-          className={`flex flex-col gap-4 ${
-            props.updateAmenities && "opacity-50"
-          }`}
+          className={`flex flex-col gap-4 ${props.updateAmenities && "opacity-50"
+            }`}
         >
           <div className="h-[180px] md:h-[300px] relative">
             <div style={{ display: imageLoaded ? "initial" : "none" }}>
@@ -156,8 +152,8 @@ export default function ActivityDetails(props) {
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
                       : props.data?.ideal_duration_unit
-                          ?.toLowerCase()
-                          ?.slice(0, -1)}
+                        ?.toLowerCase()
+                        ?.slice(0, -1)}
                   </div>
                 </div>
               ) : (
@@ -179,7 +175,7 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <div className="text-[20px] font-[800]">{props.data?.display_name || props.data.name}</div>
+              <div className="text-md-lg leading-xl-sm font-600 mb-0">{props.data?.display_name || props.data.name}</div>
             </div>
             <Pax pax={props?.filterState} setPax={props?.setFilterState} />
 
@@ -459,57 +455,55 @@ export default function ActivityDetails(props) {
             </div>
           ) : null}
 
-         {props?.data?.prices && props?.data?.prices?.length && (
-  <div className="mb-4">
-    <h3 className="font-medium text-base mb-3">Package Options</h3>
-    
-    <div className="flex flex-col gap-3">
-      {props.data.prices.map((packageItem, index) => (
-        <div
-          key={packageItem.result_index}
-          className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
-            selectedPackage?.result_index === packageItem.result_index
-              ? 'border-yellow-400 bg-yellow-50'
-              : 'border-gray-200 bg-white hover:border-gray-300'
-          }`}
-          onClick={() => setSelectedPackage(packageItem)}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div 
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedPackage?.result_index === packageItem.result_index
-                    ? 'border-yellow-400 bg-yellow-400'
-                    : 'border-gray-300'
-                }`}
-              >
-                {selectedPackage?.result_index === packageItem.result_index && (
-                  <div className="w-2 h-2 rounded-full bg-white"></div>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <div className="font-medium text-gray-900">
-                  {packageItem.description}
-                </div>
-                <div className="text-sm text-gray-600">
-                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
-                </div>
+          {props?.data?.prices && props?.data?.prices?.length && (
+            <div className="mb-4">
+              <h3 className="font-medium text-base mb-3">Package Options</h3>
+
+              <div className="flex flex-col gap-3">
+                {props.data.prices.map((packageItem, index) => (
+                  <div
+                    key={packageItem.result_index}
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${selectedPackage?.result_index === packageItem.result_index
+                        ? 'border-yellow-400 bg-yellow-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                      }`}
+                    onClick={() => setSelectedPackage(packageItem)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPackage?.result_index === packageItem.result_index
+                              ? 'border-yellow-400 bg-yellow-400'
+                              : 'border-gray-300'
+                            }`}
+                        >
+                          {selectedPackage?.result_index === packageItem.result_index && (
+                            <div className="w-2 h-2 rounded-full bg-white"></div>
+                          )}
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="font-medium text-gray-900">
+                            {packageItem.description}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-lg">
+                          ₹{getIndianPrice(Math.round(packageItem.total_price))}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          per package
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="text-right">
-              <div className="font-bold text-lg">
-                ₹{getIndianPrice(Math.round(packageItem.total_price))}
-              </div>
-              <div className="text-sm text-gray-600">
-                per package
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+          )}
         </div>
         {props?.data?.cancellation_policies && (
           <>
@@ -543,27 +537,21 @@ export default function ActivityDetails(props) {
               </div>
             )} */}
             {selectedPackage?.total_price && (
-        <div className="font-bold">
-          <span className="text-[34px]">
-            ₹
-            {selectedPackage?.total_price && selectedPackage?.total_price > 0
-              ? getIndianPrice(Math.round(selectedPackage.total_price))
-              : selectedPackage.total_price}
-          </span>
-        </div>
-      )}
+              <div className="font-bold">
+                <span className="text-[34px]">
+                  ₹
+                  {selectedPackage?.total_price && selectedPackage?.total_price > 0
+                    ? getIndianPrice(Math.round(selectedPackage.total_price))
+                    : selectedPackage.total_price}
+                </span>
+              </div>
+            )}
           </>
-          <Button
-            onclick={handleUpdate}
-            bgColor={"#F7E700"}
-            borderRadius="8px"
-            hoverBgColor="black"
-            fontWeight="400"
-            height={"full"}
-            loading={loading}
-          >
-            <div>{props.data?.city && "Add to Itinerary"}</div>
-          </Button>
+
+  
+          <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
+            Add to Itinerary
+          </button>
         </div>
         <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">

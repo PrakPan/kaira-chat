@@ -1,6 +1,7 @@
 export const isBeforeToday = (date) => {
   if (!date) return false;
   const todayMidnight = new Date();
+  todayMidnight.setDate(todayMidnight.getDate() + 1);
   todayMidnight.setHours(0, 0, 0, 0);
   return date < todayMidnight;
 };

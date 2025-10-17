@@ -27,7 +27,7 @@ export const getStars = (rating) => {
 };
 
 const SlabElement = (props) => {
-  const {trackActivityBookingAdd,trackActivityCardClicked,trackPoiCardClicked} = useAnalytics();
+  const { trackActivityBookingAdd, trackActivityCardClicked, trackPoiCardClicked } = useAnalytics();
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
@@ -170,10 +170,10 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type, dayIndex) => {
-    if(type==='activity'){
-    props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
-    }if(type==='poi'){
-    props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
+    if (type === 'activity') {
+      props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
+    } if (type === 'poi') {
+      props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
     }
     router.push(
       {
@@ -304,8 +304,8 @@ const Activity = (props) => {
 
   return (
     <>
-      <div className=" lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white border-radius-10 p-2 border-1">
-        <div className="w-full flex flex-row items-start md:items-center gap-sm bg-white">
+      <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
+        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -320,8 +320,8 @@ const Activity = (props) => {
             <ImageLoader
               borderRadius={"10px"}
               style={{
-                width: "50px",
-                height: "50px",
+                width: "88px",
+                height: "82px",
                 cursor: "pointer",
                 margin: "auto",
               }}
@@ -329,7 +329,7 @@ const Activity = (props) => {
             />
           </div>
 
-          <div className="flex flex-col max-ph:mb-sm">
+          <div className="flex flex-col max-ph:mb-sm gap-xxs-md max-ph:gap-xs">
             <div
               onClick={() =>
                 handleActivity(
@@ -337,12 +337,12 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }
-              className={`${isPageWide?"Body2M_14":"Body3M_12"}`}
+              className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
               {props.element.heading}
             </div>
 
-            <div className="flex flex-row items-center text-[12px] mt-[4px]">
+            <div className="flex flex-row items-center text-sm ">
               <div className="pr-[8px]">
                 <Image
                   src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
@@ -364,14 +364,22 @@ const Activity = (props) => {
               </div>
                 : null}
             </div>
+
+            <div className="flex flex-row gap-xs flex-wrap ">
+              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+              ))}
+
+            </div>
           </div>
         </div>
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px]  flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
+            className="-mt-sm"
             onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
             <Menu
               id="basic-menu"
@@ -400,7 +408,7 @@ const Activity = (props) => {
               {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
             </Menu>
           </div>
-          <div>
+          <div className="max-ph:hidden">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -576,8 +584,8 @@ const Recommendation = (props) => {
 
   return (
     <>
-      <div className="lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between bg-white border-radius-10 p-2 border-1">
-        <div className="w-full flex flex-row items-center gap-2 bg-white">
+      <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
+        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
@@ -587,8 +595,8 @@ const Recommendation = (props) => {
             <ImageLoader
               borderRadius={"10px"}
               style={{
-                width: "50px",
-                height: "50px",
+                width: "88px",
+                height: "82px",
                 cursor: "pointer",
                 margin: "auto",
               }}
@@ -596,7 +604,7 @@ const Recommendation = (props) => {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col max-ph:mb-sm gap-xxs-md max-ph:gap-xs">
             <div
               onClick={() =>
                 handleActivity(
@@ -604,13 +612,13 @@ const Recommendation = (props) => {
                   "restaurant"
                 )
               }
-              className={`${isPageWide?"Body2M_14":"Body3M_12"}`}
+              className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
               {props.element.heading}
             </div>
 
 
-            <div className="flex flex-row items-center text-[12px] mt-[4px]">
+            <div className="flex flex-row items-center text-sm">
               <div className="pr-[8px]">
                 <Image
                   src={'/assets/Itinerary/restaurant.svg'}
@@ -632,15 +640,23 @@ const Recommendation = (props) => {
               </div>
                 : null}
             </div>
+
+              <div className="flex flex-row gap-xs flex-wrap ">
+              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+              ))}
+
+            </div>
           </div>
         </div>
 
 
-        <div className={`flex gap-3 items-center ${!isPageWide ? 'ml-[60px] flex-row-reverse justify-end' : ''}`}>
+        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
           <div> <IconButton size="small" id="basic-button"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
+            className="-mt-sm"
             onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
             <Menu
               id="basic-menu"
@@ -669,9 +685,9 @@ const Recommendation = (props) => {
               {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
             </Menu>
           </div>
-          <div>
+          <div className="max-ph:hidden">
             <button
-              onClick={(e) => {   
+              onClick={(e) => {
                 e.stopPropagation();
                 handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
               }}

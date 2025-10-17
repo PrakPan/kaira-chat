@@ -13,6 +13,9 @@ const Card = styled.div`
   width: 100%;
   margin: 0;
   animation: 1s ${fadeInAnimation};
+  @media screen and (max-width: 768px) {
+    margin-bottom:100px;
+  }
 `;
 const FlickityComp = (props) => {
   const router=useRouter()
@@ -49,6 +52,7 @@ const FlickityComp = (props) => {
             setLocationsLatLong={props.setLocationsLatLong}
             locationsLatLong={props.locationsLatLong}
             className="flex-1"
+            setIsRouteChanged={props.setIsRouteChanged}
           >
 
           </SlideTwo>

@@ -45,37 +45,37 @@ function MyApp({ Component, pageProps, store }) {
     cleanExpiredLocalStorage();
   }, []);
 
-  useEffect(() => {
-    if(currentPath=="") {
-      setCurrentPath(newPath)
-      return
-    }
-    const handleStart = (url) => {
-      const isSameItineraryPage = currentPath===newPath
+  // useEffect(() => {
+  //   if(currentPath=="") {
+  //     setCurrentPath(newPath)
+  //     return
+  //   }
+  //   const handleStart = (url) => {
+  //     const isSameItineraryPage = currentPath===newPath
       
-      if (isSameItineraryPage) {
-        return;
-      }
-      setCurrentPath(newPath)
+  //     if (isSameItineraryPage) {
+  //       return;
+  //     }
+  //     setCurrentPath(newPath)
       
-      setLoading(true);
-    };
+  //     setLoading(true);
+  //   };
     
-    const handleComplete = (url) => {
-      setCurrentPath(newPath);
-      setLoading(false);
-    };
+  //   const handleComplete = (url) => {
+  //     setCurrentPath(newPath);
+  //     setLoading(false);
+  //   };
 
-    router.events.on("routeChangeStart", handleStart);
-    router.events.on("routeChangeComplete", handleComplete);
-    router.events.on("routeChangeError", handleComplete);
+  //   router.events.on("routeChangeStart", handleStart);
+  //   router.events.on("routeChangeComplete", handleComplete);
+  //   router.events.on("routeChangeError", handleComplete);
 
-    return () => {
-      router.events.off("routeChangeStart", handleStart);
-      router.events.off("routeChangeComplete", handleComplete);
-      router.events.off("routeChangeError", handleComplete);
-    };
-  }, [router, currentPath]);
+  //   return () => {
+  //     router.events.off("routeChangeStart", handleStart);
+  //     router.events.off("routeChangeComplete", handleComplete);
+  //     router.events.off("routeChangeError", handleComplete);
+  //   };
+  // }, [router, currentPath]);
 
   function setupTokenExpiryWatcher() {
     if (typeof window === 'undefined') return;

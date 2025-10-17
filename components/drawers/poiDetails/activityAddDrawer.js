@@ -636,17 +636,13 @@ const formattedDate =
       {error == null ? (
         <>
           <div
-            className={`!font-[lexend] overflow-y-scroll`}
+            className={`overflow-y-scroll px-lg max-ph:px-sm`}
             style={{ height: `${height}px` }}
           >
-            <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
-              <div className="flex flex-row gap-[20px] justify-between w-full items-center">
-                <div className="flex flex-row gap-3 items-center">
-                  <BackArrow
-                    handleClick={handleCloseDrawer}
-                  />
-                </div>
-              </div>
+            <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto">
+                   <div>
+                      <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => handleCloseDrawer(e)} />
+                    </div>
               <div className="flex max-sm:flex-col max-sm:!items-start justify-between w-full items-center">
                 <div className=" line-clamp-1 text-[24px] font-semibold ">
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}

@@ -81,6 +81,7 @@ const Enquiry = (props) => {
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
+  const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -145,11 +146,13 @@ const Enquiry = (props) => {
   const _submitDataHandler = () => {
     setIsSubmitting(true);
     completeItineraryCreate();
-    setIsSubmitting(false);
   };
 
   const _prevSlideHandler = () => {
     if (slideIndex) {
+      if(slideIndex == 1){
+        setIsRouteChanged(false);
+      }
       router.push({
         pathname: "/new-trip",
         query: {
@@ -293,7 +296,6 @@ const Enquiry = (props) => {
   };
 
   const completeItineraryCreate = () => {
-    console.log("completeItineraryCreate called");
     const data = {
       source,
       itinerary_id: itineraryId,
@@ -304,8 +306,8 @@ const Enquiry = (props) => {
       room_configuration: slideThreeData.roomConfiguration,
       add_flights: slideThreeData.addFlights,
       add_hotels: slideThreeData.addHotels,
-      add_transfers_and_activities: slideThreeData.addInclusions,
-      hotel_types: slideFourData.hotelType,
+      // add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType.map((s)=>parseInt(s)),
       meal_preferences: slideFourData.mealPreferences,
       special_request: slideFourData.specialRequests,
     };
@@ -392,8 +394,9 @@ const Enquiry = (props) => {
         <div className="flex flex-col items-center justify-center  h-full">
           <div
             style={{ padding: "0 1rem", width: "100%" }}
-            className="h-max  font-inter flex flex-col gap-[46px]"
+            className="h-max  font-inter flex flex-col gap-[30px]"
           >
+            <div className="flex flex-col gap-[24px]">
             {slideIndex && !isDesktop ? (
               <div>
                 <BiArrowBack
@@ -405,7 +408,7 @@ const Enquiry = (props) => {
             ) : (
               <></>
             )}
-            <div className="w-full flex items-center justify-between mt-[20px]">
+            <div className={`w-full flex items-center justify-between ${isDesktop&&"mt-[20px]"}`}>
               {isDesktop && (
                 <div
                   style={{
@@ -486,6 +489,7 @@ const Enquiry = (props) => {
                 </svg>
               </div>
             </div>
+            </div>
             <div className="flex flex-col items-center">
               <div id="login" className="z-[1650]">
                 <Login
@@ -531,6 +535,7 @@ const Enquiry = (props) => {
                   }
                   errors={errors}
                   completeItineraryCreate={completeItineraryCreate}
+                  setIsRouteChanged={setIsRouteChanged}
                 ></Flickity>
                 {isDesktop ? (
                   <ModalWithBackdrop
@@ -610,7 +615,7 @@ const Enquiry = (props) => {
                       alignItems: "center",
                       width: "100%",
                     }}
-                    className={`p-4 ${!isDesktop && "gap-2"}`}
+                    className={`p-4 bg-[#ffffff] z-[10] ${!isDesktop && "fixed bottom-0 w-full gap-2 right-[4px] "}`}
                   >
                     <button
                       className={`LargeIndigoOutlinedButton ${
@@ -620,7 +625,7 @@ const Enquiry = (props) => {
                     >
                       Skip
                     </button>
-                    <Button
+                    {isRouteChanged ?<Button
                       fontSize="1rem"
                       padding="0.5rem 2rem"
                       fontWeight="500"
@@ -629,6 +634,7 @@ const Enquiry = (props) => {
                       borderWidth="1px"
                       bgColor="#07213A"
                       zIndex={9999}
+                      disabled={!isRouteChanged}
                       onclick={() => {
                         initiateItineraryCreate();
                         // router.push({
@@ -646,8 +652,19 @@ const Enquiry = (props) => {
                         width: "100%",
                       }}
                     >
-                      Continue
-                    </Button>
+                      Update Itinerary Route
+                    </Button>:                    <button
+                      className={`LargeIndigoButton ${
+                        !isDesktop && "w-1/2"
+                      } cursor-not-allowed`}
+                      style={{
+                        maxWidth: isDesktop ? "500px" : "50%",
+                        width: "100%",
+                      }}
+                      disabled={true}
+                    >
+                      Update Itinerary Route
+                    </button>}
                   </div>
                 )}
 

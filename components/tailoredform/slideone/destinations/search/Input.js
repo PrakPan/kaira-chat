@@ -19,6 +19,9 @@ const Container = styled.input`
     outline: none;
   }
   border: none;
+  &::placeholder {
+    font-weight: 400;
+  }
 
   @media screen and (min-width: 768px) {
   }
@@ -66,7 +69,7 @@ const SearchInput = (props) => {
       readOnly={props.eventDates ? true : false}
       placeholder="Search destination"
       value={value}
-      className="Body2M_14"
+      className="Body2M_14 placeholder:font-weight-400"
       onChange={(e) => setValue(e.target.value)}
     ></Container>
   );

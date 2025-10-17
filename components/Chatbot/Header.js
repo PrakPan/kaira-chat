@@ -4,6 +4,8 @@ import HistoryIcon from '@mui/icons-material/History';
 import useChat from './hook/UseChat';
 import Button from './../ui/button/Index';
 import { IconButton } from '@mui/material';
+import useCachedImage from '../../hooks/useCachedImage';
+import Image from "next/image";
 
 
 const Container = styled.div`
@@ -23,7 +25,6 @@ const Heading = styled.p`
     font-size : 20px;
     font-weight: 600;
     margin-bottom : 0px;
-    font-family: Montserrat;
 `
 const SubText = styled.p`
   font-size : 14px;
@@ -32,7 +33,6 @@ const SubText = styled.p`
   opacity: 0.5;
   padding-bottom: 10px;
   border-bottom : 1px solid #EBE1E1;
-  font-family: Montserrat;
 `
 
 const ButtonWrapper = styled.div`
@@ -46,16 +46,33 @@ const ButtonWrapper = styled.div`
 
 
 function Header() {
+  const cachedAvatar = useCachedImage(
+    "/assets/chatbot/chatbot-avaatar.svg",
+    "chatbot-avatar",
+    24 * 60 * 60 * 1000     
+);
 
     const { handleOpenChatHistory, newSessionStart } = useChat();
 
     return (
         <>
             <Container>
-                <div>
-                <Heading className='font-montserrat'>Hey, I’m Kaira — Your AI Travel Buddy.
+                <div className="flex gap-[10px] items-start">
+                {cachedAvatar &&
+                        <Image
+                            src={cachedAvatar}
+                            alt="ticket"
+                            width={48}
+                            height={48}
+                            className="mt-[6px]"
+                        />
+                    }
+                    <div>
+                <Heading >
+                    <span> Hey, I’m Kaira — Your AI Travel Buddy.</span>
                 </Heading>
                 <SubText>Ready to plan your perfect trip? Let’s customize your itinerary together!</SubText>
+                </div>
                 </div>
                 <ButtonWrapper className=" float-right">
                     <IconButton onClick={newSessionStart}>

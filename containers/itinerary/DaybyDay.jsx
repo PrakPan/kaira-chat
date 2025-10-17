@@ -537,6 +537,7 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
+            isLast={true}
           />
         </div>
       </div>
