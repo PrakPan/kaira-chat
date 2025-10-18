@@ -17,12 +17,7 @@ import restartBot from "../helper/RestartBot";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupyterAnalytics from "../components/jupyterAnalytics";
-
-
-
-
-
+import JupyterAnalytics from "../components/JupyterAnalytics";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -169,6 +164,7 @@ function MyApp({ Component, pageProps, store }) {
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        {/* <title>Plan your trip with The Tarzan Way</title> */}
       </Head>
       <body>
         <Script
