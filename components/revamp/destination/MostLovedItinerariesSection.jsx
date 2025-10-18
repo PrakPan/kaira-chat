@@ -181,8 +181,13 @@ const MostLovedItinerariesSection = ({ apiItineraries,className }) => {
                 <ItineraryCard
                   itinerary={itinerary}
                   onClick={() => {
-                    console.log(`Clicked on ${itinerary.title}`);
-                  }}
+                              console.log(itinerary,
+                                `Clicked on ${
+                                  itinerary.name || itinerary.title
+                                }`
+                              );
+                               window.location.replace("/" + "itinerary/" + itinerary.id);
+                      }}
                 />
               </SwiperSlide>
             ))}

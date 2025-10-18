@@ -55,6 +55,11 @@ import ActivityCard from "../newcityplanner/activities/ActivityCard.js";
 import PoiCard from "../newcityplanner/pois/PoiCard.js";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
+import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
+import styles from "../../styles/pages/revamp/home.module.scss";
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -280,7 +285,7 @@ const handleCloseDrawer = () => {
                   )
                 }
                 borderWidth="1px"
-                fontWeight="500"
+                fontWeight="300"
                 borderRadius="8px"
                 margin="2rem auto"
                 padding="0.8rem 2rem"
@@ -321,7 +326,7 @@ const handleCloseDrawer = () => {
               )
             }
             borderWidth="1px"
-            fontWeight="500"
+            fontWeight="300"
             borderRadius="8px"
             margin="2rem auto"
             padding="0.8rem 2rem"
@@ -1052,7 +1057,7 @@ const handleCloseDrawer = () => {
               );
             })}
 
-          <H3
+          {/* <H3
             style={{
               margin: "3.5rem 0 3.5rem 0",
               textAlign: isPageWide ? "left" : "center",
@@ -1065,7 +1070,9 @@ const handleCloseDrawer = () => {
               page_id={props.data.id}
               destination={props.data.destination}
             ></BannerTwo>
-          </div>
+          </div> */}
+
+          <JourneySimplified />
 
           {props.continetCarousel.length ? (
             <>
@@ -1087,7 +1094,7 @@ const handleCloseDrawer = () => {
                   handlePlanButtonClick("Plan your trip anywhere in the world")
                 }
                 borderWidth="1px"
-                fontWeight="500"
+                fontWeight="300"
                 borderRadius="8px"
                 margin="2rem auto"
                 padding="0.8rem 2rem"
@@ -1101,7 +1108,7 @@ const handleCloseDrawer = () => {
             <></>
           )}
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
@@ -1109,9 +1116,12 @@ const handleCloseDrawer = () => {
           >
             Why plan with us?
           </H3>
-          <WhyPlanWithUs page_id={props.data.id} />
+          <WhyPlanWithUs page_id={props.data.id} /> */}
 
-          <H3
+
+          <WhatMakesUsSection />
+
+          {/* <H3
             style={{
               margin: "4rem 0 2.5rem 0",
               textAlign: isPageWide ? "left" : "center",
@@ -1119,7 +1129,9 @@ const handleCloseDrawer = () => {
           >
             What our customers say?
           </H3>
-          <Reviews></Reviews>
+          <Reviews></Reviews> */}
+
+          <CurveImageGallery />
 
           <H3
             style={{

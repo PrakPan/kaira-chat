@@ -18,11 +18,11 @@ import { useAnalytics } from "../../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
-  const { trackPageView } = useAnalytics();
+  // const { trackPageView } = useAnalytics();
   useEffect(() => {
-    console.log("props states are:", props);
+    // console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props.Data?.name} Page`)
+    // trackPageView(props.Type, `${props.Data?.name} Page`)
   }, []);
 
   const faq = [

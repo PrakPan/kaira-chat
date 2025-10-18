@@ -44,6 +44,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
+import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -251,6 +254,7 @@ const Index = (props) => {
                                 destination.name || destination.title
                               }`
                             );
+                            window.location.replace("/" + destination.path);
                           }}
                         />
                       </div>
@@ -636,6 +640,7 @@ const Index = (props) => {
                                 destination.name || destination.title
                               }`
                             );
+                            window.location.replace("/" + destination.path);
                           }}
                         />
                       </div>
@@ -696,7 +701,7 @@ const Index = (props) => {
             </>
           ) : null}
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: isPageWide ? "3rem 0rem" : "2.5rem 0.5rem 0rem 0.5rem",
@@ -707,7 +712,9 @@ const Index = (props) => {
           <BannerTwo
             page_id={props.data.id}
             destination={props.data.name}
-          ></BannerTwo>
+          ></BannerTwo> */}
+
+          <JourneySimplified />
 
           {props.locations && props.locations.length ? (
             <>
@@ -779,6 +786,7 @@ const Index = (props) => {
                                 destination.name || destination.title
                               }`
                             );
+                            window.location.replace("/" + destination.path);
                           }}
                         />
                       </div>
@@ -874,7 +882,7 @@ const Index = (props) => {
             <></>
           )}
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: "3.5rem 0 3.5rem 0",
@@ -885,9 +893,10 @@ const Index = (props) => {
           <WhyPlanWithUs
             page_id={props.data.id}
             destination={props.data.name}
-          />
+          /> */}
+          <WhatMakesUsSection />
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: "4rem 0 2.5rem 0",
@@ -895,7 +904,9 @@ const Index = (props) => {
           >
             Happy Community of The Tarzan Way
           </H3>
-          <Reviews></Reviews>
+          <Reviews></Reviews> */}
+
+          <CurveImageGallery />
 
           <H3
             style={{

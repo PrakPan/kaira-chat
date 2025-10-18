@@ -14,13 +14,13 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
-  const { trackPageView } = useAnalytics();
+  // const { trackPageView } = useAnalytics();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props.destination} Page`);
+    // trackPageView(props.Type, `${props.destination} Page`);
   }, []);
 
   return (

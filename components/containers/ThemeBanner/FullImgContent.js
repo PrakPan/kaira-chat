@@ -147,7 +147,7 @@ const FullImgContent = (props) => {
         <Button
           padding={isPageWide ? "0.75rem 1rem" : "0.5rem 0.75rem"}
           fontSize={isPageWide ? "18px" : "15px"}
-          fontWeight={isPageWide ? "500" : "400"}
+          fontWeight={isPageWide ? "300" : "300"}
           bgColor="#f7e700"
           borderRadius="7px"
           color="black"

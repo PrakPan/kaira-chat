@@ -14,7 +14,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
   
 
   return (
-    <div className="w-full">
+    <div className="w-full" onClick={onClick} style={{ cursor: "pointer" }}>
       <div className="bg-gray-200 h-[424px] overflow-hidden rounded-3xl relative group">
         <Swiper
           modules={[Navigation]}

@@ -19,7 +19,6 @@ const HeroSection = ({ title, subtitle, image }) => {
   const [loadedImages, setLoadedImages] = useState(0);
   const [animationStarted, setAnimationStarted] = useState(false);
 
-  console.log("Img",image)
 
   // Use prop image if provided (single or array), otherwise use default heroImages
   const imagesToUse = image 
