@@ -108,7 +108,7 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
-      {(props?.slug === 'japan' || props?.slug === 'bali' || props?.slug === 'singapore' || props?.slug === 'dubai') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />}
+      {(props?.slug === 'japan' || props?.slug === 'bali' || props?.slug === 'singapore' || props?.slug === 'dubai' || props?.slug === 'malaysia' || props?.slug === 'thailand' || props?.slug === 'europe-continent') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>

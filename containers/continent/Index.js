@@ -36,6 +36,7 @@ import Overview from "../themes/Overview.jsx";
 import Element from "../newcityplanner/elements/Index.js";
 import LocationsBlog from "../../components/containers/plannerlocations/Index.js";
 import Activity from "../newcityplanner/activities/Index.js";
+import ThemeHeadline from "../travelplanner/ThemeHeadines.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -119,6 +120,7 @@ const Index = (props) => {
 
   return (
     <div>
+      {(props?.data?.slug === 'europe-continent') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
@@ -205,7 +207,7 @@ const Index = (props) => {
           ) : null}
 
           {/* <MapGridContainer> */}
-          <Overview
+          {props?.data?.slug != 'europe-continent' && <Overview
             heading={props.data.overview_heading}
             text={props.data.overview_text}
             image={props.data.overview_image}
@@ -213,7 +215,7 @@ const Index = (props) => {
             page_id={props.data.id}
             type={props.type}
             destination={convertDbNameToCapitalFirst(props.data.slug)}
-          ></Overview>
+          ></Overview>}
 
           {/* <MapContainer>
               {props.data.cities && props.data.cities.length ? (
@@ -226,7 +228,7 @@ const Index = (props) => {
             </MapContainer> */}
           {/* </MapGridContainer> */}
 
-          <Button
+          {/* <Button
             onclick={() =>
               handlePlanButtonClick(
                 `A little about ${props?.data?.destination}`
@@ -239,7 +241,7 @@ const Index = (props) => {
             padding="0.5rem 2rem"
           >
             Create your travel plan now!
-          </Button>
+          </Button> */}
 
           {props?.data?.components?.length > 0 &&
             props?.data?.components?.map((component) => (
