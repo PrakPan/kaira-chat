@@ -108,7 +108,7 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
-      {/* {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />} */}
+      {(props?.slug === 'japan' || props?.slug === 'bali' || props?.slug === 'singapore' || props?.slug === 'dubai') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
@@ -227,7 +227,7 @@ export default function ThemePage(props) {
         {props.experienceData.overview_heading &&
         props.experienceData.overview_text &&
         props?.slug !== "ladakh" &&
-        props?.slug !== "thailand" ? (
+        props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
