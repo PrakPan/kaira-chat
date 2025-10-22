@@ -54,7 +54,7 @@ const DestinationCard = ({
       {/* Tags */}
       {tags.length > 0 && (
         <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
-          {tags.map((tag, index) => (
+          {tags.slice(0, 2).map((tag, index) => (
             <span
               key={index}
               className="px-2 sm:px-3 py-1 bg-[#F2F2F2E5] backdrop-blur-sm text-black text-xs sm:text-sm font-medium rounded-full border border-white/30"

@@ -14,7 +14,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
   
 
   return (
-    <div className="w-full">
+    <div className="w-full" onClick={onClick} style={{ cursor: "pointer" }}>
       <div className="bg-gray-200 h-[424px] overflow-hidden rounded-3xl relative group">
         <Swiper
           modules={[Navigation]}
@@ -78,7 +78,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
           {itinerary.route}
         </p>
         <div className="w-full h-px bg-gray-200 mb-3"></div>
-        <div className="space-y-1 mb-6">
+        <div className="space-y-1 mb-3">
           {itinerary.highlights.map((highlight, index) => (
             <div key={index} className="flex items-start h-6">
               <div className="w-1.5 h-1.5 bg-gray-600 rounded-full mt-2 mr-2 flex-shrink-0"></div>

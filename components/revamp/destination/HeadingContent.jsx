@@ -66,16 +66,17 @@ const HeadingContent = ({ title, subtitle }) => {
   return (
     <div ref={containerRef} className={styles.headingContent}>
       <div ref={headingRef}>
-        <h1 className={`${styles.title} heading-text`}>{`${title || `Bonjour, Paris!` }`} </h1>
+        <h1 className={`${styles.title} heading-text`}>{`${title || '' }`} </h1>
         <h1 className={`${styles.title} heading-text`}>
           Crafted by AI, Inspired by You.
         </h1>
       </div>
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
         <p className={`${styles.subtitle} text-text-focused`}>
-          From hidden cafés to iconic landmarks, your Paris trip is crafted with
+          {/* From hidden cafés to iconic landmarks, your Paris trip is crafted with
           smart planning and a <br /> personal touch—so every moment feels made
-          just for you.
+          just for you. */}
+          No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates.
         </p>
       </div>
       <div ref={buttonRef}>
