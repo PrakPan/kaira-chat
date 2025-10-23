@@ -58,6 +58,33 @@ export function buildRoutes(startCity, endCity, basicRoute = []) {
   return routesArray;
 }
 
+// Build routes from destinations array
+export function buildRoutesFromDestinations(destinations) {
+  if (!destinations || destinations.length === 0) {
+    return [];
+  }
+
+  return destinations.map((dest, index) => {
+    const cityData = dest.cityData || {};
+    
+    return {
+      name: cityData.city_name || cityData.name || cityData.text || '',
+      latitude: cityData.latitude || cityData.lat,
+      longitude: cityData.longitude || cityData.long,
+      type: dest.startingCity ? "start" : dest.endingCity ? "end" : "stop",
+      city_id: cityData.city_id,
+      place_id: cityData.place_id,
+      duration: cityData.duration,
+      nights: cityData.nights,
+      checkin_date: cityData.checkin_date,
+      checkout_date: cityData.checkout_date,
+      color: cityData.color,
+      // Include all other properties from cityData
+      ...cityData
+    };
+  });
+}
+
 // Build destinations from routes
 export function buildDestinations(routes, itinerary, getDate, CITY_COLOR_CODES) {
   const cities = [];
