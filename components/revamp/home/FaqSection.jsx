@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
-const FaqSection = () => {
+const FaqSection = ({Faqs}) => {
   const [openFaq, setOpenFaq] = useState(0); // First FAQ open by default
 
   const faqData = [
@@ -72,7 +72,7 @@ const FaqSection = () => {
 
         {/* FAQ Items */}
         <div className="space-y-0">
-          {faqData.map((faq, index) => (
+          {(Faqs || faqData).map((faq, index) => (
             <div
               key={index}
               className="border-b border-gray-200 last:border-b-0"

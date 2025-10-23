@@ -51,6 +51,15 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.jsx";
+import ActivityCard from "../newcityplanner/activities/ActivityCard.js";
+import PoiCard from "../newcityplanner/pois/PoiCard.js";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
+import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
+import styles from "../../styles/pages/revamp/home.module.scss";
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -93,6 +102,16 @@ const Index = (props) => {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
+  const [activeDrawer, setActiveDrawer] = useState(null);
+
+const handleOpenDrawer = (data, type) => {
+  setActiveDrawer({ data, type });
+};
+
+const handleCloseDrawer = () => {
+  setActiveDrawer(null);
+};
+
   const handlePlanButton = (pageId, destination, type) => {
     handlePlanButtonClick;
   };
@@ -133,48 +152,7 @@ const Index = (props) => {
 
   return (
     <div>
-      {/* {isPageWide ? (
-        <DesktopPersonaliseBanner
-          onclick={() =>
-            openTailoredModal(
-              router,
-              props.data.id,
-              convertDbNameToCapitalFirst(props.data.slug),
-              props.type
-            )
-          }
-          text={validateTextSize(
-            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
-              props.data.slug
-            )} now!`,
-            9,
-            `Craft a trip to ${props.data.destination} now!`
-          )}
-        ></DesktopPersonaliseBanner>
-      ) : (
-        <MobileBanner
-          cityName={props.data.destination}
-          onClick={() =>
-            openTailoredModal(
-              router,
-              props.data.id,
-              convertDbNameToCapitalFirst(props.data.slug),
-              props.type
-            )
-          }
-        />
-      )} */}
-      {/* <HeroSection/> */}
-
       <div>
-        {/* <HeroBanner
-          image={props.data.image}
-          page_id={props.data.id}
-          title={`${convertDbNameToCapitalFirst(props.data.slug)} Trip Planner`}
-          page={"Continent Page"}
-          type={props.type}
-          destination={props.destination}
-        /> */}
         <HeroSection
           title={validateTextSize(
             `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
@@ -203,15 +181,6 @@ const Index = (props) => {
                   .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                   .join(" ")}
               </H3>
-              {/* <SwiperLocations
-                locations={props.locations}
-                page_id={props.data.id}
-                destination={props.data.destination}
-                viewall
-                country
-                page={"Continent Page"}
-                continent={props?.data?.destination}
-              ></SwiperLocations> */}
               <div className="relative px-2 sm:px-0">
                 <Swiper
                   style={{ height: "376px" }}
@@ -274,25 +243,36 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                {/* Custom Prev Button */}
                 <div className="PlacesBragSection-prev" aria-hidden>
-                  <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <div
+                    className="absolute left-3 sm:left-1 z-10"
+                    style={{
+                      top: "calc(376px / 2)",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                       <FontAwesomeIcon
                         icon={faChevronLeft}
-                        className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                        className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Custom Next Button */}
+                {/* Custom Next Button - centered to image height (376px) */}
                 <div className="PlacesBragSection-next" aria-hidden>
-                  <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <div
+                    className="absolute right-3 sm:right-1 z-10"
+                    style={{
+                      top: "calc(376px / 2)",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                       <FontAwesomeIcon
                         icon={faChevronRight}
-                        className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                        className="text-white hover:text-white text-md transition-colors duration-300 transform"
                       />
                     </div>
                   </div>
@@ -305,7 +285,7 @@ const Index = (props) => {
                   )
                 }
                 borderWidth="1px"
-                fontWeight="500"
+                fontWeight="300"
                 borderRadius="8px"
                 margin="2rem auto"
                 padding="0.8rem 2rem"
@@ -346,7 +326,7 @@ const Index = (props) => {
               )
             }
             borderWidth="1px"
-            fontWeight="500"
+            fontWeight="300"
             borderRadius="8px"
             margin="2rem auto"
             padding="0.8rem 2rem"
@@ -357,53 +337,61 @@ const Index = (props) => {
           </Button>
 
           {props?.data?.components?.length > 0 &&
-            props?.data?.components?.map((component) => (
-              <>
-                <div className="space-y-12 mt-5">
-                  <div className="space-y-3">
-                    <PrimaryHeading className="mx-auto text-center">
-                      {component?.heading}
-                    </PrimaryHeading>
-                    <SecondaryHeading className="mx-auto text-center">
-                      {component.text}
-                    </SecondaryHeading>
-                  </div>
+            props?.data?.components?.map((component) => {
+              const isActivityOrPoi =
+                component.carousel.toLowerCase().includes("activity") ||
+                component.carousel.toLowerCase().includes("poi");
+              return (
+                <>
+                  <div className="space-y-12 mt-5">
+                    <div className="space-y-3">
+                      <PrimaryHeading
+                        className={`mx-auto text-center ${
+                          isActivityOrPoi ? "text-left" : ""
+                        }`}
+                      >
+                        {component?.heading}
+                      </PrimaryHeading>
+                      <SecondaryHeading className="mx-auto text-center">
+                        {component.text}
+                      </SecondaryHeading>
+                    </div>
 
-                  {component.carousel === "destination-1" ? (
-                    <>
-                      <Destination1Carousel
-                        handlePlanButton={handlePlanButtonClick}
-                        setDestination={setDestination}
-                        packages={[
-                          ...component.cities,
-                          ...component.states,
-                          ...component.countries,
-                        ]}
-                      />
-                      <PlanYourTripButton
-                        page_id={props.data.id}
-                        destination={convertDbNameToCapitalFirst(
-                          props.data.slug
-                        )}
-                        type={props?.type}
-                      />
-                    </>
-                  ) : component.carousel === "destination-2" ? (
-                    <>
-                      <Element
-                        data={component.elements}
-                        elements={component?.elements}
-                        city={component?.name}
-                        // handlePlanButtonClick={()=>{}}
-                        // {handlePlanButtonClick}
-                        slug={props?.slug}
-                        page={"Country Page"}
-                      />
-                      <PlanYourTripButton text={"Plan Itinerary For Free"} />
-                    </>
-                  ) : component.carousel === "destination-3" ? (
-                    <>
-                      {/* <SwiperLocations
+                    {component.carousel === "destination-1" ? (
+                      <>
+                        <Destination1Carousel
+                          handlePlanButton={handlePlanButtonClick}
+                          setDestination={setDestination}
+                          packages={[
+                            ...component.cities,
+                            ...component.states,
+                            ...component.countries,
+                          ]}
+                        />
+                        <PlanYourTripButton
+                          page_id={props.data.id}
+                          destination={convertDbNameToCapitalFirst(
+                            props.data.slug
+                          )}
+                          type={props?.type}
+                        />
+                      </>
+                    ) : component.carousel === "destination-2" ? (
+                      <>
+                        <Element
+                          data={component.elements}
+                          elements={component?.elements}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={props?.slug}
+                          page={"Country Page"}
+                        />
+                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                      </>
+                    ) : component.carousel === "destination-3" ? (
+                      <>
+                        {/* <SwiperLocations
                         locations={component?.countries}
                         page_id={component?.id}
                         destination={component?.name}
@@ -413,107 +401,6 @@ const Index = (props) => {
                         continent={component?.countries}
                       ></SwiperLocations> */}
 
-                      <div className="relative px-2 sm:px-0">
-                        <Swiper
-                          style={{ height: "386px" }}
-                          modules={[Navigation]}
-                          spaceBetween={16}
-                          slidesPerView={1}
-                          navigation={{
-                            nextEl: ".PlacesBragSection-next",
-                            prevEl: ".PlacesBragSection-prev",
-                            clickable: true,
-                          }}
-                          breakpoints={{
-                            // when window width is >= 640px
-                            640: {
-                              slidesPerView: 1.5,
-                              spaceBetween: 16,
-                            },
-                            // when window width is >= 768px
-                            768: {
-                              slidesPerView: 2,
-                              spaceBetween: 20,
-                            },
-                            // when window width is >= 1024px
-                            1024: {
-                              slidesPerView: 3,
-                              spaceBetween: 24,
-                            },
-                          }}
-                        >
-                          {component?.countries.map((destination) => (
-                            <SwiperSlide key={destination.id}>
-                              <div className="w-full px-1">
-                                <DestinationCard
-                                  title={destination.title || destination.name}
-                                  description={
-                                    destination.one_liner_description ||
-                                    destination.tagline
-                                  }
-                                  one_liner_description={
-                                    destination.one_liner_description
-                                  }
-                                  image={destination.image}
-                                  tags={
-                                    destination.tags ||
-                                    (destination.continent
-                                      ? [destination.continent]
-                                      : [])
-                                  }
-                                  gradientOverlay={destination.gradientOverlay}
-                                  onClick={() => {
-                                    console.log(
-                                      `Clicked on ${
-                                        destination.name || destination.title
-                                      }`
-                                    );
-                                    window.location.replace(
-                                      "/" + destination.path
-                                    );
-                                  }}
-                                />
-                              </div>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        {/* Custom Prev Button */}
-                        <div className="PlacesBragSection-prev" aria-hidden>
-                          <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronLeft}
-                                className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Custom Next Button */}
-                        <div className="PlacesBragSection-next" aria-hidden>
-                          <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronRight}
-                                className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <PlanYourTripButton
-                        text={"Create your travel plan now!"}
-                      />
-                    </>
-                  ) : component.carousel === "destination-4" ? (
-                    <>
-                      <div className="space-y-4">
-                        {/* <Locations
-                          locations={component?.cities}
-                          page={"Continent Page"}
-                          viewall
-                        ></Locations> */}
                         <div className="relative px-2 sm:px-0">
                           <Swiper
                             style={{ height: "386px" }}
@@ -543,7 +430,7 @@ const Index = (props) => {
                               },
                             }}
                           >
-                            {component?.cities.map((destination) => (
+                            {component?.countries.map((destination) => (
                               <SwiperSlide key={destination.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
@@ -582,70 +469,198 @@ const Index = (props) => {
                               </SwiperSlide>
                             ))}
                           </Swiper>
-                          {/* Custom Prev Button */}
                           <div className="PlacesBragSection-prev" aria-hidden>
-                            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                                 <FontAwesomeIcon
                                   icon={faChevronLeft}
-                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
                                 />
                               </div>
                             </div>
                           </div>
 
-                          {/* Custom Next Button */}
+                          {/* Custom Next Button - centered to image height (376px) */}
                           <div className="PlacesBragSection-next" aria-hidden>
-                            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                                 <FontAwesomeIcon
                                   icon={faChevronRight}
-                                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
                                 />
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </>
-                  ) : component.carousel === "destination-5" ? (
-                    <>
-                      <Poi
-                        elevation={component?.elevation}
-                        data={component?.data}
-                        thingsToDoPage={component?.thingsToDoPage}
-                        pois={component?.pois}
-                        city={component?.name}
-                      />
-                    </>
-                  ) : component.carousel === "destination-6" ? (
-                    <>
-                      <Continentcarousel
-                        data={props.continetCarousel}
-                        page={"Country Page"}
-                      ></Continentcarousel>
-                      <PlanYourTripButton
-                        text={"Create your travel plan now!"}
-                      />
-                    </>
-                  ) : component.carousel === "state-1" ? (
-                    <>
-                      <LocationsBlog
-                        locations={component?.states}
-                        page_id={component?.id}
-                        destination={component?.name}
-                        viewall
-                        country={component?.name}
-                        planner
-                        page={"Country Page"}
-                      ></LocationsBlog>
-                      <PlanYourTripButton
-                        text={"Create your travel plan now!"}
-                      />
-                    </>
-                  ) : component.carousel === "Activity-2" ? (
-                    <>
-                      {/* <Activity
+
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : component.carousel === "destination-4" ? (
+                      <>
+                        <div className="space-y-4">
+                          {/* <Locations
+                          locations={component?.cities}
+                          page={"Continent Page"}
+                          viewall
+                        ></Locations> */}
+                          <div className="relative px-2 sm:px-0">
+                            <Swiper
+                              style={{ height: "386px" }}
+                              modules={[Navigation]}
+                              spaceBetween={16}
+                              slidesPerView={1}
+                              navigation={{
+                                nextEl: ".PlacesBragSection-next",
+                                prevEl: ".PlacesBragSection-prev",
+                                clickable: true,
+                              }}
+                              breakpoints={{
+                                // when window width is >= 640px
+                                640: {
+                                  slidesPerView: 1.5,
+                                  spaceBetween: 16,
+                                },
+                                // when window width is >= 768px
+                                768: {
+                                  slidesPerView: 2,
+                                  spaceBetween: 20,
+                                },
+                                // when window width is >= 1024px
+                                1024: {
+                                  slidesPerView: 3,
+                                  spaceBetween: 24,
+                                },
+                              }}
+                            >
+                              {component?.cities.map((destination) => (
+                                <SwiperSlide key={destination.id}>
+                                  <div className="w-full px-1">
+                                    <DestinationCard
+                                      title={
+                                        destination.title || destination.name
+                                      }
+                                      description={
+                                        destination.one_liner_description ||
+                                        destination.tagline
+                                      }
+                                      one_liner_description={
+                                        destination.one_liner_description
+                                      }
+                                      image={destination.image}
+                                      tags={
+                                        destination.tags ||
+                                        (destination.continent
+                                          ? [destination.continent]
+                                          : [])
+                                      }
+                                      gradientOverlay={
+                                        destination.gradientOverlay
+                                      }
+                                      onClick={() => {
+                                        console.log(
+                                          `Clicked on ${
+                                            destination.name ||
+                                            destination.title
+                                          }`
+                                        );
+                                        window.location.replace(
+                                          "/" + destination.path
+                                        );
+                                      }}
+                                    />
+                                  </div>
+                                </SwiperSlide>
+                              ))}
+                            </Swiper>
+                            <div className="PlacesBragSection-prev" aria-hidden>
+                              <div
+                                className="absolute left-3 sm:left-1 z-10"
+                                style={{
+                                  top: "calc(376px / 2)",
+                                  transform: "translateY(-50%)",
+                                }}
+                              >
+                                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                  <FontAwesomeIcon
+                                    icon={faChevronLeft}
+                                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Custom Next Button - centered to image height (376px) */}
+                            <div className="PlacesBragSection-next" aria-hidden>
+                              <div
+                                className="absolute right-3 sm:right-1 z-10"
+                                style={{
+                                  top: "calc(376px / 2)",
+                                  transform: "translateY(-50%)",
+                                }}
+                              >
+                                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                  <FontAwesomeIcon
+                                    icon={faChevronRight}
+                                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    ) : component.carousel === "destination-5" ? (
+                      <>
+                        <Poi
+                          elevation={component?.elevation}
+                          data={component?.data}
+                          thingsToDoPage={component?.thingsToDoPage}
+                          pois={component?.pois}
+                          city={component?.name}
+                        />
+                      </>
+                    ) : component.carousel === "destination-6" ? (
+                      <>
+                        <Continentcarousel
+                          data={props.continetCarousel}
+                          page={"Country Page"}
+                        ></Continentcarousel>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : component.carousel === "state-1" ? (
+                      <>
+                        <LocationsBlog
+                          locations={component?.states}
+                          page_id={component?.id}
+                          destination={component?.name}
+                          viewall
+                          country={component?.name}
+                          planner
+                          page={"Country Page"}
+                        ></LocationsBlog>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : component.carousel === "Activity-2" ? (
+                      <>
+                        {/* <Activity
                         data={component.activities}
                         activities={component?.activities}
                         city={component?.name}
@@ -654,272 +669,277 @@ const Index = (props) => {
                         slug={props?.slug}
                         page={"Country Page"}
                       /> */}
-                      <div className="relative px-2 sm:px-0">
-                        <Swiper
-                          style={{ height: "auto" }}
-                          modules={[Navigation]}
-                          spaceBetween={16}
-                          slidesPerView={1}
-                          navigation={{
-                            nextEl: ".PlacesBragSection-next",
-                            prevEl: ".PlacesBragSection-prev",
-                            clickable: true,
-                          }}
-                          breakpoints={{
-                            // when window width is >= 640px
-                            640: {
-                              slidesPerView: 1.5,
-                              spaceBetween: 16,
-                            },
-                            // when window width is >= 768px
-                            768: {
-                              slidesPerView: 2,
-                              spaceBetween: 20,
-                            },
-                            // when window width is >= 1024px
-                            1024: {
-                              slidesPerView: 3,
-                              spaceBetween: 24,
-                            },
-                          }}
-                        >
-                          {component?.activities.map((destination) => (
-                            <SwiperSlide key={destination.id}>
-                              <div className="w-full px-1">
-                                <DestinationCard
-                                  title={destination.title || destination.name}
-                                  description={
-                                    destination.one_liner_description ||
-                                    destination.tagline
-                                  }
-                                  one_liner_description={
-                                    destination.one_liner_description
-                                  }
-                                  image={destination.image}
-                                  rating={destination.rating}
-                                  reviewCount={destination.user_ratings_total}
-                                  showImageText={false}
-                                  tags={
-                                    destination.tags ||
-                                    (destination.continent
-                                      ? [destination.continent]
-                                      : [])
-                                  }
-                                  gradientOverlay={destination.gradientOverlay}
-                                  onClick={() => {
-                                    console.log(
-                                      `Clicked on ${
-                                        destination.name || destination.title
-                                      }`
-                                    );
-                                    window.location.replace(
-                                      "/" + destination.path
-                                    );
-                                  }}
+                        <div className="relative px-2 sm:px-0">
+                          <Swiper
+                            style={{ height: "auto" }}
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            navigation={{
+                              nextEl: ".PlacesBragSection-next",
+                              prevEl: ".PlacesBragSection-prev",
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              // when window width is >= 640px
+                              640: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                              },
+                              // when window width is >= 768px
+                              768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                              },
+                              // when window width is >= 1024px
+                              1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 24,
+                              },
+                            }}
+                          >
+                           {component?.activities.map((activity) => (
+          <SwiperSlide key={activity.id}>
+            <div className="w-full px-1">
+              <DestinationCard
+                title={activity.title || activity.name}
+                description={
+                  activity.one_liner_description ||
+                  activity.tagline
+                }
+                one_liner_description={
+                  activity.one_liner_description
+                }
+                image={activity.image}
+                rating={activity.rating}
+                reviewCount={activity.user_ratings_total}
+                showImageText={false}
+                tags={
+                  activity.tags ||
+                  (activity.continent
+                    ? [activity.continent]
+                    : [])
+                }
+                gradientOverlay={activity.gradientOverlay}
+                onClick={() => handleOpenDrawer(activity, 'activity')}
+              />
+            </div>
+          </SwiperSlide>
+        ))}
+                          </Swiper>
+                          <div className="PlacesBragSection-prev" aria-hidden>
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronLeft}
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
                                 />
                               </div>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        {/* Custom Prev Button */}
-                        <div className="PlacesBragSection-prev" aria-hidden>
-                          <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronLeft}
-                                className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                              />
                             </div>
                           </div>
-                        </div>
 
-                        {/* Custom Next Button */}
-                        <div className="PlacesBragSection-next" aria-hidden>
-                          <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronRight}
-                                className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <PlanYourTripButton text={"Plan Itinerary For Free"} />
-                    </>
-                  ) : component.carousel === "itinerary-1" ? (
-                    <>
-                      {/* <Itinerary1Carousel itineraries={component.itineraries} /> */}
-                      <MostLovedItinerariesSection
-                        apiItineraries={component.itineraries}
-                      />
-                      <PlanYourTripButton
-                        page_id={props.data.id}
-                        destination={convertDbNameToCapitalFirst(
-                          props.data.slug
-                        )}
-                        type={props?.type}
-                      />
-                    </>
-                  ) : component.carousel === "itinerary-2" ? (
-                    <div className="w-full relative">
-                      {props.slug === "honeymoon-2025" && (
-                        <>
-                          <Image
-                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
-                            className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
-                            alt="Tilted Hearts"
-                            height={300}
-                            width={500}
-                            style={{
-                              opacity: "50%",
-                            }}
-                          />
-
-                          <Image
-                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
-                            className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
-                            alt="Tilted Hearts"
-                            height={300}
-                            width={500}
-                            style={{
-                              opacity: "50%",
-                            }}
-                          />
-                        </>
-                      )}
-
-                      <Itinerary2Carousel elements={component.elements} />
-                    </div>
-                  ) : component.carousel === "activity-1" ? (
-                    <>
-                      {/* <Activity1Carousel activities={component.activities} />{" "} */}
-                      <div className="relative px-2 sm:px-0">
-                        <Swiper
-                          style={{ height: "auto" }}
-                          modules={[Navigation]}
-                          spaceBetween={16}
-                          slidesPerView={1}
-                          navigation={{
-                            nextEl: ".PlacesBragSection-next",
-                            prevEl: ".PlacesBragSection-prev",
-                            clickable: true,
-                          }}
-                          breakpoints={{
-                            // when window width is >= 640px
-                            640: {
-                              slidesPerView: 1.5,
-                              spaceBetween: 16,
-                            },
-                            // when window width is >= 768px
-                            768: {
-                              slidesPerView: 2,
-                              spaceBetween: 20,
-                            },
-                            // when window width is >= 1024px
-                            1024: {
-                              slidesPerView: 3,
-                              spaceBetween: 24,
-                            },
-                          }}
-                        >
-                          {component?.activities.map((destination) => (
-                            <SwiperSlide key={destination.id}>
-                              <div className="w-full px-1">
-                                <DestinationCard
-                                  title={destination.title || destination.name}
-                                  description={
-                                    destination.one_liner_description ||
-                                    destination.tagline
-                                  }
-                                  one_liner_description={
-                                    destination.one_liner_description
-                                  }
-                                  image={destination.image}
-                                  rating={destination.rating}
-                                  reviewCount={destination.user_ratings_total}
-                                  showImageText={false}
-                                  tags={
-                                    destination.tags ||
-                                    (destination.continent
-                                      ? [destination.continent]
-                                      : [])
-                                  }
-                                  gradientOverlay={destination.gradientOverlay}
-                                  onClick={() => {
-                                    console.log(
-                                      `Clicked on ${
-                                        destination.name || destination.title
-                                      }`
-                                    );
-                                    window.location.replace(
-                                      "/" + destination.path
-                                    );
-                                  }}
+                          {/* Custom Next Button - centered to image height (376px) */}
+                          <div className="PlacesBragSection-next" aria-hidden>
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronRight}
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
                                 />
                               </div>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        {/* Custom Prev Button */}
-                        <div className="PlacesBragSection-prev" aria-hidden>
-                          <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronLeft}
-                                className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                              />
                             </div>
                           </div>
                         </div>
+                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                      </>
+                    ) : component.carousel === "itinerary-1" ? (
+                      <>
+                        {/* <Itinerary1Carousel itineraries={component.itineraries} /> */}
+                        <MostLovedItinerariesSection
+                          apiItineraries={component.itineraries}
+                        />
+                        <PlanYourTripButton
+                          page_id={props.data.id}
+                          destination={convertDbNameToCapitalFirst(
+                            props.data.slug
+                          )}
+                          type={props?.type}
+                        />
+                      </>
+                    ) : component.carousel === "itinerary-2" ? (
+                      <div className="w-full relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <>
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
 
-                        {/* Custom Next Button */}
-                        <div className="PlacesBragSection-next" aria-hidden>
-                          <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronRight}
-                                className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                              />
-                            </div>
-                          </div>
-                        </div>
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
+                          </>
+                        )}
+
+                        <Itinerary2Carousel elements={component.elements} />
                       </div>
-                      <PlanYourTripButton
-                        page_id={props.data.id}
-                        destination={convertDbNameToCapitalFirst(
-                          props.data.slug
-                        )}
-                        type={props?.type}
-                      />
-                    </>
-                  ) : component.carousel === "review-1" ? (
-                    <div className="relative">
-                      {props.slug === "honeymoon-2025" && (
-                        <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
-                          <Image
-                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                            className="object-fill"
-                            alt="Tilted Hearts"
-                            height={200}
-                            width={200}
-                            style={{ transform: "rotate(45deg)" }}
-                          />
-                        </div>
-                      )}
+                    ) : component.carousel === "activity-1" ? (
+                      <>
+                        {/* <Activity1Carousel activities={component.activities} />{" "} */}
+                        <div className="relative px-2 sm:px-0">
+                          <Swiper
+                            style={{ height: "auto" }}
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            navigation={{
+                              nextEl: ".PlacesBragSection-next",
+                              prevEl: ".PlacesBragSection-prev",
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              // when window width is >= 640px
+                              640: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                              },
+                              // when window width is >= 768px
+                              768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                              },
+                              // when window width is >= 1024px
+                              1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 24,
+                              },
+                            }}
+                          >
+                            {component?.activities.map((activity) => (
+          <SwiperSlide key={activity.id}>
+            <div className="w-full px-1">
+              <DestinationCard
+                title={activity.title || activity.name}
+                description={
+                  activity.one_liner_description ||
+                  activity.tagline
+                }
+                one_liner_description={
+                  activity.one_liner_description
+                }
+                image={activity.image}
+                rating={activity.rating}
+                reviewCount={activity.user_ratings_total}
+                showImageText={false}
+                tags={
+                  activity.tags ||
+                  (activity.continent
+                    ? [activity.continent]
+                    : [])
+                }
+                gradientOverlay={activity.gradientOverlay}
+                onClick={() => handleOpenDrawer(activity, 'activity')}
+              />
+            </div>
+          </SwiperSlide>
+        ))}
+                          </Swiper>
+                          {/* Custom Prev Button */}
+                          <div className="PlacesBragSection-prev" aria-hidden>
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronLeft}
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
-                      <Reviews1Carousel reviews={component.reviews} />
-                      <PlanYourTripButton
-                        page_id={props.data.id}
-                        destination={convertDbNameToCapitalFirst(
-                          props.data.slug
+                          {/* Custom Next Button - centered to image height (376px) */}
+                          <div className="PlacesBragSection-next" aria-hidden>
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronRight}
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <PlanYourTripButton
+                          page_id={props.data.id}
+                          destination={convertDbNameToCapitalFirst(
+                            props.data.slug
+                          )}
+                          type={props?.type}
+                        />
+                      </>
+                    ) : component.carousel === "review-1" ? (
+                      <div className="relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                              className="object-fill"
+                              alt="Tilted Hearts"
+                              height={200}
+                              width={200}
+                              style={{ transform: "rotate(45deg)" }}
+                            />
+                          </div>
                         )}
-                        type={props?.type}
-                      />
-                    </div>
-                  ) : component.carousel == "poi-1" ? (
-                    <>
-                      {/* <Poi
+
+                        <Reviews1Carousel reviews={component.reviews} />
+                        <PlanYourTripButton
+                          page_id={props.data.id}
+                          destination={convertDbNameToCapitalFirst(
+                            props.data.slug
+                          )}
+                          type={props?.type}
+                        />
+                      </div>
+                    ) : component.carousel == "poi-1" ? (
+                      <>
+                        {/* <Poi
                         data={props?.data}
                         pois={component.pois}
                         city={props.destination}
@@ -927,113 +947,117 @@ const Index = (props) => {
                         removeDelete={true}
                         removeChange={true}
                       /> */}
-                      <div className="relative px-2 sm:px-0">
-                        <Swiper
-                          style={{ height: "auto" }}
-                          modules={[Navigation]}
-                          spaceBetween={16}
-                          slidesPerView={1}
-                          navigation={{
-                            nextEl: ".PlacesBragSection-next",
-                            prevEl: ".PlacesBragSection-prev",
-                            clickable: true,
-                          }}
-                          breakpoints={{
-                            // when window width is >= 640px
-                            640: {
-                              slidesPerView: 1.5,
-                              spaceBetween: 16,
-                            },
-                            // when window width is >= 768px
-                            768: {
-                              slidesPerView: 2,
-                              spaceBetween: 20,
-                            },
-                            // when window width is >= 1024px
-                            1024: {
-                              slidesPerView: 3,
-                              spaceBetween: 24,
-                            },
-                          }}
-                        >
-                          {component?.pois.map((destination) => (
-                            <SwiperSlide key={destination.id}>
-                              <div className="w-full px-1">
-                                <DestinationCard
-                                  title={destination.title || destination.name}
-                                  description={
-                                    destination.one_liner_description ||
-                                    destination.tagline
-                                  }
-                                  one_liner_description={
-                                    destination.one_liner_description
-                                  }
-                                  image={destination.image}
-                                  rating={destination.rating}
-                                  reviewCount={destination.user_ratings_total}
-                                  showImageText={false}
-                                  tags={
-                                    destination.tags ||
-                                    (destination.continent
-                                      ? [destination.continent]
-                                      : [])
-                                  }
-                                  gradientOverlay={destination.gradientOverlay}
-                                  onClick={() => {
-                                    console.log(
-                                      `Clicked on ${
-                                        destination.name || destination.title
-                                      }`
-                                    );
-                                    window.location.replace(
-                                      "/" + destination.path
-                                    );
-                                  }}
+                        <div className="relative px-2 sm:px-0">
+                          <Swiper
+                            style={{ height: "auto" }}
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            navigation={{
+                              nextEl: ".PlacesBragSection-next",
+                              prevEl: ".PlacesBragSection-prev",
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              // when window width is >= 640px
+                              640: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                              },
+                              // when window width is >= 768px
+                              768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                              },
+                              // when window width is >= 1024px
+                              1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 24,
+                              },
+                            }}
+                          >
+                             {component?.pois.map((poi) => (
+          <SwiperSlide key={poi.id}>
+            <div className="w-full px-1">
+              <DestinationCard
+                title={poi.title || poi.name}
+                description={
+                  poi.one_liner_description ||
+                  poi.tagline
+                }
+                one_liner_description={
+                  poi.one_liner_description
+                }
+                image={poi.image}
+                rating={poi.rating}
+                reviewCount={poi.user_ratings_total}
+                showImageText={false}
+                tags={
+                  poi.tags ||
+                  (poi.continent
+                    ? [poi.continent]
+                    : [])
+                }
+                gradientOverlay={poi.gradientOverlay}
+                onClick={() => handleOpenDrawer(poi, 'poi')}
+              />
+            </div>
+          </SwiperSlide>
+        ))}
+                          </Swiper>
+                          {/* Custom Prev Button */}
+                          <div className="PlacesBragSection-prev" aria-hidden>
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronLeft}
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
                                 />
                               </div>
-                            </SwiperSlide>
-                          ))}
-                        </Swiper>
-                        {/* Custom Prev Button */}
-                        <div className="PlacesBragSection-prev" aria-hidden>
-                          <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronLeft}
-                                className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                              />
+                            </div>
+                          </div>
+
+                          {/* Custom Next Button - centered to image height (376px) */}
+                          <div className="PlacesBragSection-next" aria-hidden>
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(376px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronRight}
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
 
-                        {/* Custom Next Button */}
-                        <div className="PlacesBragSection-next" aria-hidden>
-                          <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-                            <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                              <FontAwesomeIcon
-                                icon={faChevronRight}
-                                className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        {/* <Poi1Carousel pois={component.pois} /> */}
+                        <PlanYourTripButton
+                          page_id={props.data.id}
+                          destination={convertDbNameToCapitalFirst(
+                            props.data.slug
+                          )}
+                          type={props?.type}
+                        />
+                      </>
+                    ) : null}
+                  </div>
+                </>
+              );
+            })}
 
-                      {/* <Poi1Carousel pois={component.pois} /> */}
-                      <PlanYourTripButton
-                        page_id={props.data.id}
-                        destination={convertDbNameToCapitalFirst(
-                          props.data.slug
-                        )}
-                        type={props?.type}
-                      />
-                    </>
-                  ) : null}
-                </div>
-              </>
-            ))}
-
-          <H3
+          {/* <H3
             style={{
               margin: "3.5rem 0 3.5rem 0",
               textAlign: isPageWide ? "left" : "center",
@@ -1046,7 +1070,9 @@ const Index = (props) => {
               page_id={props.data.id}
               destination={props.data.destination}
             ></BannerTwo>
-          </div>
+          </div> */}
+
+          <JourneySimplified />
 
           {props.continetCarousel.length ? (
             <>
@@ -1068,7 +1094,7 @@ const Index = (props) => {
                   handlePlanButtonClick("Plan your trip anywhere in the world")
                 }
                 borderWidth="1px"
-                fontWeight="500"
+                fontWeight="300"
                 borderRadius="8px"
                 margin="2rem auto"
                 padding="0.8rem 2rem"
@@ -1082,7 +1108,7 @@ const Index = (props) => {
             <></>
           )}
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
@@ -1090,9 +1116,12 @@ const Index = (props) => {
           >
             Why plan with us?
           </H3>
-          <WhyPlanWithUs page_id={props.data.id} />
+          <WhyPlanWithUs page_id={props.data.id} /> */}
 
-          <H3
+
+          <WhatMakesUsSection />
+
+          {/* <H3
             style={{
               margin: "4rem 0 2.5rem 0",
               textAlign: isPageWide ? "left" : "center",
@@ -1100,7 +1129,9 @@ const Index = (props) => {
           >
             What our customers say?
           </H3>
-          <Reviews></Reviews>
+          <Reviews></Reviews> */}
+
+          <CurveImageGallery />
 
           <H3
             style={{
@@ -1124,6 +1155,35 @@ const Index = (props) => {
         }}
         show={showTailoredModal}
       />
+
+      <CtaBoardingSection />
+
+       {activeDrawer?.type === 'poi' && (
+  <POIDetailsDrawer
+    show={true}
+    iconId={activeDrawer.data.id}
+    handleCloseDrawer={handleCloseDrawer}
+    name={activeDrawer.data.name}
+    id={activeDrawer.data.id}
+    activityData={{
+    type:"poi",
+    id:activeDrawer.data.id
+  }}
+    removeDelete={true}
+    removeChange={true}
+  />
+)}
+
+{activeDrawer?.type === 'activity' && (
+  <POIDetailsDrawer
+    show={true}
+    ActivityiconId={activeDrawer.data.id}
+    handleCloseDrawer={handleCloseDrawer}
+    name={activeDrawer.data.name}
+    removeDelete={true}
+  >
+  </POIDetailsDrawer>
+)}
     </div>
   );
 };

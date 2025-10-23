@@ -28,6 +28,9 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
+import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -90,9 +93,9 @@ const P = styled.p`link
 
 const Menu = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const router=useRouter()
+  const router = useRouter();
   const handlePlanButtonClick = () => {
-    openTailoredModal(router, props.data.id, props.data.name,props.type)
+    openTailoredModal(router, props.data.id, props.data.name, props.type);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -119,7 +122,9 @@ const Menu = (props) => {
           >
             Trips by our users to {props.data.name}
           </H3>
-          <MostLovedItinerariesSection apiItineraries={props.data.itineraries}/>
+          <MostLovedItinerariesSection
+            apiItineraries={props.data.itineraries}
+          />
           {/* <TopRecommendations itineraries={props.data.itineraries} /> */}
         </MenuItem>
       )}
@@ -161,80 +166,100 @@ const Menu = (props) => {
             handlePlanButtonClick={handlePlanButtonClick}
           /> */}
 
-           <div className="relative px-2 sm:px-0">
-          <Swiper
-            style={{ height: "auto" }}
-            modules={[Navigation]}
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
-              clickable: true,
-            }}
-            breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1.5,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-          >
-           {props.data.activities.map((destination) => (
-      <SwiperSlide key={destination.id}>
-        <div className="w-full px-1">
-          <DestinationCard 
-            title={destination.title || destination.name}
-            description={destination.description || destination.tagline}
-            image={destination.image}
-            rating={destination.rating}
-            reviewCount={destination.user_ratings_total}
-            showImageText={false}
-            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
-            gradientOverlay={destination.gradientOverlay}
-            onClick={() => {
-              console.log(`Clicked on ${destination.name || destination.title}`);
-            }}
-          />
-        </div>
-      </SwiperSlide>
-    ))}
-          </Swiper>
-          {/* Custom Prev Button */}
-          <div className="PlacesBragSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                />
+          <div className="relative px-2 sm:px-0">
+            <Swiper
+              style={{ height: "auto" }}
+              modules={[Navigation]}
+              spaceBetween={16}
+              slidesPerView={1}
+              navigation={{
+                nextEl: ".PlacesBragSection-next",
+                prevEl: ".PlacesBragSection-prev",
+                clickable: true,
+              }}
+              breakpoints={{
+                // when window width is >= 640px
+                640: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 16,
+                },
+                // when window width is >= 768px
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                },
+                // when window width is >= 1024px
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+            >
+              {props.data.activities.map((destination) => (
+                <SwiperSlide key={destination.id}>
+                  <div className="w-full px-1">
+                    <DestinationCard
+                      title={destination.title || destination.name}
+                      description={
+                        destination.description || destination.tagline
+                      }
+                      image={destination.image}
+                      rating={destination.rating}
+                      reviewCount={destination.user_ratings_total}
+                      showImageText={false}
+                      tags={
+                        destination.tags ||
+                        (destination.continent ? [destination.continent] : [])
+                      }
+                      gradientOverlay={destination.gradientOverlay}
+                       onClick={() => {
+                              console.log(
+                                `Clicked on ${
+                                  destination.name || destination.title
+                                }`
+                              );
+                              window.location.replace("/" + destination.path);
+                      }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="PlacesBragSection-prev" aria-hidden>
+              <div
+                className="absolute left-3 sm:left-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Custom Next Button */}
-          <div className="PlacesBragSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                />
+            {/* Custom Next Button - centered to image height (376px) */}
+            <div className="PlacesBragSection-next" aria-hidden>
+              <div
+                className="absolute right-3 sm:right-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-          
         </MenuItem>
       ) : null}
 
@@ -258,78 +283,99 @@ const Menu = (props) => {
             removeChange={true}
           /> */}
           <div className="relative px-2 sm:px-0">
-          <Swiper
-            style={{ height: "auto" }}
-            modules={[Navigation]}
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
-              clickable: true,
-            }}
-            breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1.5,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-          >
-           {props.data.pois.map((destination) => (
-      <SwiperSlide key={destination.id}>
-        <div className="w-full px-1">
-          <DestinationCard 
-            title={destination.title || destination.name}
-            description={destination.description || destination.tagline}
-            image={destination.image}
-            rating={destination.rating}
-            reviewCount={destination.user_ratings_total}
-            showImageText={false}
-            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
-            gradientOverlay={destination.gradientOverlay}
-            onClick={() => {
-              console.log(`Clicked on ${destination.name || destination.title}`);
-            }}
-          />
-        </div>
-      </SwiperSlide>
-    ))}
-          </Swiper>
-          {/* Custom Prev Button */}
-          <div className="PlacesBragSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                />
+            <Swiper
+              style={{ height: "auto" }}
+              modules={[Navigation]}
+              spaceBetween={16}
+              slidesPerView={1}
+              navigation={{
+                nextEl: ".PlacesBragSection-next",
+                prevEl: ".PlacesBragSection-prev",
+                clickable: true,
+              }}
+              breakpoints={{
+                // when window width is >= 640px
+                640: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 16,
+                },
+                // when window width is >= 768px
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                },
+                // when window width is >= 1024px
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+              }}
+            >
+              {props.data.pois.map((destination) => (
+                <SwiperSlide key={destination.id}>
+                  <div className="w-full px-1">
+                    <DestinationCard
+                      title={destination.title || destination.name}
+                      description={
+                        destination.description || destination.tagline
+                      }
+                      image={destination.image}
+                      rating={destination.rating}
+                      reviewCount={destination.user_ratings_total}
+                      showImageText={false}
+                      tags={
+                        destination.tags ||
+                        (destination.continent ? [destination.continent] : [])
+                      }
+                      gradientOverlay={destination.gradientOverlay}
+                       onClick={() => {
+                              console.log(
+                                `Clicked on ${
+                                  destination.name || destination.title
+                                }`
+                              );
+                              window.location.replace("/" + destination.path);
+                            }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="PlacesBragSection-prev" aria-hidden>
+              <div
+                className="absolute left-3 sm:left-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Custom Next Button */}
-          <div className="PlacesBragSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                />
+            {/* Custom Next Button - centered to image height (376px) */}
+            <div className="PlacesBragSection-next" aria-hidden>
+              <div
+                className="absolute right-3 sm:right-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </MenuItem>
       )}
 
@@ -341,12 +387,12 @@ const Menu = (props) => {
           data={props.data}
         /> */}
         <H3
-        style={{
-          marginBlock: isPageWide ? "3.5rem" : "1.5rem",
-        }}
-      >
-        Nearby Locations to {props.data.name}
-      </H3>
+          style={{
+            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+          }}
+        >
+          Nearby Locations to {props.data.name}
+        </H3>
         <div className="relative px-2 sm:px-0">
           <Swiper
             style={{ height: "376px" }}
@@ -376,43 +422,61 @@ const Menu = (props) => {
               },
             }}
           >
-           {props.nearbyCities.map((destination) => (
-      <SwiperSlide key={destination.id}>
-        <div className="w-full px-1">
-          <DestinationCard 
-            title={destination.title || destination.name}
-            description={destination.description || destination.tagline}
-            image={destination.image}
-            
-            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
-            gradientOverlay={destination.gradientOverlay}
-            onClick={() => {
-              console.log(`Clicked on ${destination.name || destination.title}`);
-            }}
-          />
-        </div>
-      </SwiperSlide>
-    ))}
+            {props.nearbyCities.map((destination) => (
+              <SwiperSlide key={destination.id}>
+                <div className="w-full px-1">
+                  <DestinationCard
+                    title={destination.title || destination.name}
+                    description={destination.description || destination.tagline}
+                    image={destination.image}
+                    tags={
+                      destination.tags ||
+                      (destination.continent ? [destination.continent] : [])
+                    }
+                    gradientOverlay={destination.gradientOverlay}
+                    onClick={() => {
+                              console.log(
+                                `Clicked on ${
+                                  destination.name || destination.title
+                                }`
+                              );
+                              window.location.replace("/" + destination.path);
+                      }}
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
           </Swiper>
-          {/* Custom Prev Button */}
           <div className="PlacesBragSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div
+              className="absolute left-3 sm:left-1 z-10"
+              style={{
+                top: "calc(376px / 2)",
+                transform: "translateY(-50%)",
+              }}
+            >
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
+                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
                 />
               </div>
             </div>
           </div>
 
-          {/* Custom Next Button */}
+          {/* Custom Next Button - centered to image height (376px) */}
           <div className="PlacesBragSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div
+              className="absolute right-3 sm:right-1 z-10"
+              style={{
+                top: "calc(376px / 2)",
+                transform: "translateY(-50%)",
+              }}
+            >
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
+                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
                 />
               </div>
             </div>
@@ -480,7 +544,7 @@ const Menu = (props) => {
       )}
 
       <MenuItem id="Why">
-        <H3
+        {/* <H3
           style={{
             lineHeight: "48px",
             marginBlock: isPageWide ? "3.5rem" : "1.5rem",
@@ -491,11 +555,12 @@ const Menu = (props) => {
         <WhyPlanWithUs
           page_id={props.data.id}
           destination={props.destination}
-        />
+        /> */}
+         <WhatMakesUsSection />
       </MenuItem>
 
       <MenuItem id="Customers">
-        <H3
+         {/* <H3
           style={{
             lineHeight: "48px",
             marginBlock: isPageWide ? "3.5rem" : "1.5rem",
@@ -504,7 +569,9 @@ const Menu = (props) => {
         >
           Happy Community of The Tarzan Way
         </H3>
-        <Reviews />
+        <Reviews />  */}
+        <Carousel3D/>
+       
       </MenuItem>
 
       <MenuItem>
@@ -519,6 +586,8 @@ const Menu = (props) => {
         </H3>
         <AsSeenIn />
         <ChatWithUs />
+
+        <CtaBoardingSection />
       </MenuItem>
     </MenuContainer>
   );

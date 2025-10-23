@@ -82,7 +82,7 @@ const Locations = (props) => {
   };
 
   if (props.hotlocations) {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < props.hotlocations.length; i++) {
       const data = props.hotlocations[i];
       if(props.hotlocations[i]?.name){
       locations.push(

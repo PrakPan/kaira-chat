@@ -174,7 +174,7 @@ const Carousel3D = () => {
                 </div>
               ))}
             </div>
-            <div className="swiper-pagination"></div>
+            <div className="swiper-pagination hidden"></div>
           </div>
         </div>
       </div>

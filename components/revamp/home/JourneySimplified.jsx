@@ -287,7 +287,7 @@ const JourneySimplified = () => {
             }}
             className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
           >
-            + Get Free Travel Consultation
+            + Create a free trip now!
           </Button>
           </Link>
         </div>

@@ -39,6 +39,10 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
+import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
+import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -95,9 +99,7 @@ const Homepage = (props) => {
               data={props.experienceData.itineraries[i]}
               key={props.experienceData.itineraries[i].short_text}
               hardcoded={
-                props.experienceData.itineraries[i].payment_info
-                  ? true
-                  : false
+                props.experienceData.itineraries[i].payment_info ? true : false
               }
               filter={
                 props.experienceData.itineraries[i].experience_filters
@@ -118,17 +120,14 @@ const Homepage = (props) => {
               cost={
                 props.experienceData.itineraries[i].payment_info
                   ? props.experienceData.itineraries[i].payment_info.length
-                    ? props.experienceData.itineraries[i].payment_info[0]
-                        .cost
+                    ? props.experienceData.itineraries[i].payment_info[0].cost
                     : null
                   : null
               }
               duration_number={
                 props.experienceData.itineraries[i].duration_number
               }
-              duration_unit={
-                props.experienceData.itineraries[i].duration_unit
-              }
+              duration_unit={props.experienceData.itineraries[i].duration_unit}
               location={
                 props.experienceData.itineraries[i]["experience_region"]
               }
@@ -147,9 +146,7 @@ const Homepage = (props) => {
               data={props.experienceData.itineraries[i]}
               key={props.experienceData.itineraries[i].short_text}
               hardcoded={
-                props.experienceData.itineraries[i].payment_info
-                  ? true
-                  : false
+                props.experienceData.itineraries[i].payment_info ? true : false
               }
               filter={
                 props.experienceData.itineraries[i].experience_filters
@@ -170,17 +167,14 @@ const Homepage = (props) => {
               cost={
                 props.experienceData.itineraries[i].payment_info
                   ? props.experienceData.itineraries[i].payment_info.length
-                    ? props.experienceData.itineraries[i].payment_info[0]
-                        .cost
+                    ? props.experienceData.itineraries[i].payment_info[0].cost
                     : null
                   : null
               }
               duration_number={
                 props.experienceData.itineraries[i].duration_number
               }
-              duration_unit={
-                props.experienceData.itineraries[i].duration_unit
-              }
+              duration_unit={props.experienceData.itineraries[i].duration_unit}
               location={
                 props.experienceData.itineraries[i]["experience_region"]
               }
@@ -220,7 +214,9 @@ const Homepage = (props) => {
 
   useEffect(() => {
     // The counter changed!
-    setOverviewHeading(`A little about ${convertDbNameToCapitalFirst(props.experienceData.slug)}`);
+    setOverviewHeading(
+      `A little about ${convertDbNameToCapitalFirst(props.experienceData.slug)}`
+    );
     return () => setOverviewHeading(null);
   }, [router.query.link, props.experienceData]);
 
@@ -270,21 +266,24 @@ const Homepage = (props) => {
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      {props?.experienceData?.slug=="ladakh"?<>
-        <HeroBannerLadakh
-        image={props.experienceData.image}
-        page_id={props.page_id}
-        type={props.type}
-        destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
-        cities={props.experienceData.locations}
-        children_cities={props.experienceData.children}
-        title={props.experienceData.banner_heading}
-        subheading={props.experienceData.banner_text}
-        page={"State Page"}
-        eventDates={props.eventDates}
-      />
-      </>:<>
-      {/* <HeroBanner
+      {props?.experienceData?.slug == "ladakh" ? (
+        <>
+          <HeroBannerLadakh
+            image={props.experienceData.image}
+            page_id={props.page_id}
+            type={props.type}
+            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
+            cities={props.experienceData.locations}
+            children_cities={props.experienceData.children}
+            title={props.experienceData.banner_heading}
+            subheading={props.experienceData.banner_text}
+            page={"State Page"}
+            eventDates={props.eventDates}
+          />
+        </>
+      ) : (
+        <>
+          {/* <HeroBanner
         image={props.experienceData.image}
         page_id={props.page_id}
         type={props.type}
@@ -297,193 +296,223 @@ const Homepage = (props) => {
         eventDates={props.eventDates}
       /> */}
 
-      <HeroSection title={props.experienceData.banner_heading} subtitle={props.experienceData.banner_text} image={`${imgUrlEndPoint}${props.experienceData.image}`}/>
+          <HeroSection
+            title={props.experienceData.banner_heading}
+            subtitle={props.experienceData.banner_text}
+            image={`${imgUrlEndPoint}${props.experienceData.image}`}
+          />
 
-      <SetWidthContainer>
-        <PathNavigation path={props.experienceData.path} />
-        <>
-          <H3
-            style={{
-              textAlign: isPageWide ? "left" : "center",
-              margin: isPageWide
-                ? "2.5rem 0 4.5rem 0"
-                : "2.5rem 0.5rem 1.5rem 0.5rem",
-            }}
-          >
-            {props.experienceData.slug
-              ? "Top locations across " + convertDbNameToCapitalFirst(props.experienceData?.slug)
-              : "Top Locations"}
-          </H3>
-          {/* <Locations
+          <SetWidthContainer>
+            <PathNavigation path={props.experienceData.path} />
+            <>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "2.5rem 0 4.5rem 0"
+                    : "2.5rem 0.5rem 1.5rem 0.5rem",
+                }}
+              >
+                {props.experienceData.slug
+                  ? "Top locations across " +
+                    convertDbNameToCapitalFirst(props.experienceData?.slug)
+                  : "Top Locations"}
+              </H3>
+              {/* <Locations
             locations={props.experienceData.locations}
             viewall
             page={"State Page"}
             state={props?.experienceData?.destination}
           ></Locations> */}
-          <div className="relative px-2 sm:px-0">
-          <Swiper
-            style={{ height: "376px" }}
-            modules={[Navigation]}
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
-              clickable: true,
-            }}
-            breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1.5,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-          >
-           {props.experienceData.locations.map((destination) => (
-      <SwiperSlide key={destination.id}>
-        <div className="w-full px-1">
-          <DestinationCard
-            title={destination.title || destination.name}
-            description={destination.description || destination.tagline}
-            image={destination.image}
-            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
-            gradientOverlay={destination.gradientOverlay}
-            onClick={() => {
-              console.log(`Clicked on ${destination.name || destination.title}`);
-            }}
-          />
-        </div>
-      </SwiperSlide>
-    ))}
-          </Swiper>
-          {/* Custom Prev Button */}
-          <div className="PlacesBragSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                />
+              <div className="relative px-2 sm:px-0">
+                <Swiper
+                  style={{ height: "376px" }}
+                  modules={[Navigation]}
+                  spaceBetween={16}
+                  slidesPerView={1}
+                  navigation={{
+                    nextEl: ".PlacesBragSection-next",
+                    prevEl: ".PlacesBragSection-prev",
+                    clickable: true,
+                  }}
+                  breakpoints={{
+                    // when window width is >= 640px
+                    640: {
+                      slidesPerView: 1.5,
+                      spaceBetween: 16,
+                    },
+                    // when window width is >= 768px
+                    768: {
+                      slidesPerView: 2,
+                      spaceBetween: 20,
+                    },
+                    // when window width is >= 1024px
+                    1024: {
+                      slidesPerView: 3,
+                      spaceBetween: 24,
+                    },
+                  }}
+                >
+                  {props.experienceData.locations.map((destination) => (
+                    <SwiperSlide key={destination.id}>
+                      <div className="w-full px-1">
+                        <DestinationCard
+                          title={destination.title || destination.name}
+                          description={
+                            destination.description || destination.tagline
+                          }
+                          image={destination.image}
+                          tags={
+                            destination.tags ||
+                            (destination.continent
+                              ? [destination.continent]
+                              : [])
+                          }
+                          gradientOverlay={destination.gradientOverlay}
+                          onClick={() => {
+                            console.log(
+                              `Clicked on ${
+                                destination.name || destination.title
+                              }`
+                            );
+                            window.location.replace("/" + destination.path);
+                          }}
+                        />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+                <div className="PlacesBragSection-prev" aria-hidden>
+                  <div
+                    className="absolute left-3 sm:left-1 z-10"
+                    style={{
+                      top: "calc(376px / 2)",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                      <FontAwesomeIcon
+                        icon={faChevronLeft}
+                        className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Custom Next Button - centered to image height (376px) */}
+                <div className="PlacesBragSection-next" aria-hidden>
+                  <div
+                    className="absolute right-3 sm:right-1 z-10"
+                    style={{
+                      top: "calc(376px / 2)",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                      <FontAwesomeIcon
+                        icon={faChevronRight}
+                        className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
 
-          {/* Custom Next Button */}
-          <div className="PlacesBragSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                />
+            {headings.map((heading, index) => (
+              <div key={index}>
+                <H3
+                  style={{
+                    textAlign: isPageWide ? "left" : "center",
+                    margin: isPageWide
+                      ? "2.5rem 0 2.5rem 0"
+                      : "2.5rem 0.5rem 1.5rem 0.5rem",
+                  }}
+                >
+                  {heading.name}
+                </H3>
+                <Experiences
+                  experiences={heading?.itineraries}
+                  page={"State Page"}
+                ></Experiences>
+
+                {index % 2 ? (
+                  <Button
+                    onclick={() => handlePlanButtonClick(heading.name)}
+                    borderWidth="1px"
+                    fontWeight="500"
+                    borderRadius="6px"
+                    margin="2rem auto"
+                    padding="0.5rem 2rem"
+                  >
+                    Create your travel plan now!
+                  </Button>
+                ) : null}
               </div>
-            </div>
-          </div>
-        </div>
-          
-        </>
+            ))}
 
-        {headings.map((heading, index) => (
-          <div key={index}>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              {heading.name}
-            </H3>
-            <Experiences
-              experiences={heading?.itineraries}
-              page={"State Page"}
-            ></Experiences>
-
-            {index % 2 ? (
-              <Button
-                onclick={() => handlePlanButtonClick(heading.name)}
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
-            ) : null}
-          </div>
-        ))}
-
-        {userItineraries.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              Trips by our users
-            </H3>
-            <MostLovedItinerariesSection apiItineraries={userItineraries}/>
-            {/* <Experiences
+            {userItineraries.length ? (
+              <>
+                <H3
+                  style={{
+                    textAlign: isPageWide ? "left" : "center",
+                    margin: isPageWide
+                      ? "2.5rem 0 2.5rem 0"
+                      : "2.5rem 0.5rem 1.5rem 0.5rem",
+                  }}
+                >
+                  Trips by our users
+                </H3>
+                <MostLovedItinerariesSection apiItineraries={userItineraries} />
+                {/* <Experiences
               experiences={userItineraries}
               page={"State Page"}
             ></Experiences> */}
-          </>
-        ) : null}
+              </>
+            ) : null}
 
-        <MapGridContainer>
-          <Overview
-            locations={props.experienceData.locations}
-            overview_heading={overviewHeading}
-            overview_text={props.experienceData.short_description}
-          ></Overview>
-          <MapContainer>
-            {props.experienceData.locations &&
-            props.experienceData.locations.length ? (
-              <MapBox
-                InfoWindowContainer={InfoWindowContainer}
+            <MapGridContainer>
+              <Overview
                 locations={props.experienceData.locations}
-                height="300px"
-              />
-            ) : (
-              <></>
-            )}
-          </MapContainer>
-        </MapGridContainer>
-        <Button
-          onclick={() =>
-            handlePlanButtonClick(
-              `A little about ${props?.experienceData?.slug}`
-            )
-          }
-          borderWidth="1px"
-          fontWeight="500"
-          borderRadius="6px"
-          margin="2rem auto"
-          padding="0.5rem 2rem"
-        >
-          {props.experienceData.page_type !== "Theme"
-            ? `Craft a trip to ${convertDbNameToCapitalFirst(props.experienceData.slug)} now!`
-            : "Create your travel plan now!"}
-        </Button>
-      </SetWidthContainer>
+                overview_heading={overviewHeading}
+                overview_text={props.experienceData.short_description}
+              ></Overview>
+              <MapContainer>
+                {props.experienceData.locations &&
+                props.experienceData.locations.length ? (
+                  <MapBox
+                    InfoWindowContainer={InfoWindowContainer}
+                    locations={props.experienceData.locations}
+                    height="300px"
+                  />
+                ) : (
+                  <></>
+                )}
+              </MapContainer>
+            </MapGridContainer>
+            <Button
+              onclick={() =>
+                handlePlanButtonClick(
+                  `A little about ${props?.experienceData?.slug}`
+                )
+              }
+              borderWidth="1px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="2rem auto"
+              padding="0.5rem 2rem"
+            >
+              {props.experienceData.page_type !== "Theme"
+                ? `Craft a trip to ${convertDbNameToCapitalFirst(
+                    props.experienceData.slug
+                  )} now!`
+                : "Create your travel plan now!"}
+            </Button>
+          </SetWidthContainer>
 
-      <SetWidthContainer>
-        <H3
+          <SetWidthContainer>
+            <JourneySimplified />
+            {/* <H3
           style={{
             textAlign: isPageWide ? "left" : "center",
             margin: isPageWide ? "3rem 0" : "2.5rem 0.5rem 0rem 0.5rem",
@@ -497,31 +526,31 @@ const Homepage = (props) => {
             destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
             cities={props.experienceData.locations}
           ></BannerTwo>
-        </div>
+        </div> */}
 
-        {TTWItineraries.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              Tarzan Way Community Top Picks
-            </H3>
-            <Experiences
-              mobileGrid
-              experiences={
-                showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
-              }
-              page={"State Page"}
-            ></Experiences>
-          </>
-        ) : null}
+            {TTWItineraries.length ? (
+              <>
+                <H3
+                  style={{
+                    textAlign: isPageWide ? "left" : "center",
+                    margin: isPageWide
+                      ? "2.5rem 0 2.5rem 0"
+                      : "2.5rem 0.5rem 1.5rem 0.5rem",
+                  }}
+                >
+                  Tarzan Way Community Top Picks
+                </H3>
+                <Experiences
+                  mobileGrid
+                  experiences={
+                    showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
+                  }
+                  page={"State Page"}
+                ></Experiences>
+              </>
+            ) : null}
 
-        {!TTWItineraries.length || isPageWide ? null : showMore ? (
+            {/* {!TTWItineraries.length || isPageWide ? null : showMore ? (
           <Button
             onclick={() =>
               handlePlanButtonClick(`Tarzan Way Community Top Picks`)
@@ -558,50 +587,52 @@ const Homepage = (props) => {
           >
             Unlock your adventure
           </Button>
-        ) : null}
-      </SetWidthContainer>
+        ) : null} */}
+          </SetWidthContainer>
 
-      <DesktopBanner
-        loading={desktopBannerLoading}
-        onclick={() =>
-          openTailoredModal(
-            router,
-            props.experienceData.id,
-            convertDbNameToCapitalFirst(props.experienceData.slug)
-          )
-        }
-        text={`Craft a personalized itinerary${
-          props.experienceData.slug
-            ? " to " + convertDbNameToCapitalFirst(props.experienceData.slug) + " now"
-            : ""
-        }!`}
-      ></DesktopBanner>
+          <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              openTailoredModal(
+                router,
+                props.experienceData.id,
+                convertDbNameToCapitalFirst(props.experienceData.slug)
+              )
+            }
+            text={`Craft a personalized itinerary${
+              props.experienceData.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.experienceData.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
 
-      <div className="hidden-desktop">
-        <MobileBanner
-          handleClick={() =>
-            openTailoredModal(
-              router,
-              props.experienceData.id,
-              convertDbNameToCapitalFirst(props.experienceData.slug)
-            )
-          }
-          city={convertDbNameToCapitalFirst(props.experienceData.slug)}
-        />
-      </div>
+          <div className="hidden-desktop">
+            <MobileBanner
+              handleClick={() =>
+                openTailoredModal(
+                  router,
+                  props.experienceData.id,
+                  convertDbNameToCapitalFirst(props.experienceData.slug)
+                )
+              }
+              city={convertDbNameToCapitalFirst(props.experienceData.slug)}
+            />
+          </div>
 
-      <SetWidthContainer>
-        {props.locations && props.locations.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
-              }}
-            >
-              Other Destinations
-            </H3>
-            {/* <OldLocations
+          <SetWidthContainer>
+            {props.locations && props.locations.length ? (
+              <>
+                <H3
+                  style={{
+                    textAlign: isPageWide ? "left" : "center",
+                    margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                  }}
+                >
+                  Other Destinations
+                </H3>
+                {/* <OldLocations
               locations={props.locations}
               page_id={props.experienceData.id}
               destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
@@ -609,80 +640,103 @@ const Homepage = (props) => {
               country={country}
               planner
             ></OldLocations> */}
-                 <div className="relative px-2 sm:px-0">
-          <Swiper
-            style={{ height: "376px" }}
-            modules={[Navigation]}
-            spaceBetween={16}
-            slidesPerView={1}
-            navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
-              clickable: true,
-            }}
-            breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1.5,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-            }}
-          >
-           {props.locations.map((destination) => (
-      <SwiperSlide key={destination.id}>
-        <div className="w-full px-1">
-          <DestinationCard
-            title={destination.title || destination.name}
-            description={destination.description || destination.tagline}
-            image={destination.image}
-            tags={destination.tags || (destination.continent ? [destination.continent] : [])}
-            gradientOverlay={destination.gradientOverlay}
-            onClick={() => {
-              console.log(`Clicked on ${destination.name || destination.title}`);
-            }}
-          />
-        </div>
-      </SwiperSlide>
-    ))}
-          </Swiper>
-          {/* Custom Prev Button */}
-          <div className="PlacesBragSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
-                />
-              </div>
-            </div>
-          </div>
+                <div className="relative px-2 sm:px-0">
+                  <Swiper
+                    style={{ height: "376px" }}
+                    modules={[Navigation]}
+                    spaceBetween={16}
+                    slidesPerView={1}
+                    navigation={{
+                      nextEl: ".PlacesBragSection-next",
+                      prevEl: ".PlacesBragSection-prev",
+                      clickable: true,
+                    }}
+                    breakpoints={{
+                      // when window width is >= 640px
+                      640: {
+                        slidesPerView: 1.5,
+                        spaceBetween: 16,
+                      },
+                      // when window width is >= 768px
+                      768: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                      },
+                      // when window width is >= 1024px
+                      1024: {
+                        slidesPerView: 3,
+                        spaceBetween: 24,
+                      },
+                    }}
+                  >
+                    {props.locations.map((destination) => (
+                      <SwiperSlide key={destination.id}>
+                        <div className="w-full px-1">
+                          <DestinationCard
+                            title={destination.title || destination.name}
+                            description={
+                              destination.description || destination.tagline
+                            }
+                            image={destination.image}
+                            tags={
+                              destination.tags ||
+                              (destination.continent
+                                ? [destination.continent]
+                                : [])
+                            }
+                            gradientOverlay={destination.gradientOverlay}
+                            onClick={() => {
+                              console.log(
+                                `Clicked on ${
+                                  destination.name || destination.title
+                                }`
+                              );
+                              window.location.replace("/" + destination.path);
+                            }}
+                          />
+                        </div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                  <div className="PlacesBragSection-prev" aria-hidden>
+                    <div
+                      className="absolute left-3 sm:left-1 z-10"
+                      style={{
+                        top: "calc(376px / 2)",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                        <FontAwesomeIcon
+                          icon={faChevronLeft}
+                          className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-          {/* Custom Next Button */}
-          <div className="PlacesBragSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white hover:text-white text-md transition-colors duration-300 transform "
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-          </>
-        ) : null}
+                  {/* Custom Next Button - centered to image height (376px) */}
+                  <div className="PlacesBragSection-next" aria-hidden>
+                    <div
+                      className="absolute right-3 sm:right-1 z-10"
+                      style={{
+                        top: "calc(376px / 2)",
+                        transform: "translateY(-50%)",
+                      }}
+                    >
+                      <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                        <FontAwesomeIcon
+                          icon={faChevronRight}
+                          className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : null}
 
-        <H3
+            {/* <H3
           style={{
             textAlign: isPageWide ? "left" : "center",
             margin: "3.5rem 0 3.5rem 0",
@@ -694,9 +748,10 @@ const Homepage = (props) => {
           page_id={props.experienceData.id}
           destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
           cities={props.experienceData.locations}
-        />
+        /> */}
+            <WhatMakesUsSection />
 
-        <H3
+            {/* <H3
           style={{
             textAlign: isPageWide ? "left" : "center",
             margin: "4rem 0 2.5rem 0",
@@ -704,22 +759,26 @@ const Homepage = (props) => {
         >
           Happy Community of The Tarzan Way
         </H3>
-        <Reviews></Reviews>
-      </SetWidthContainer>
+        <Reviews></Reviews> */}
+            <Carousel3D />
+          </SetWidthContainer>
 
-      <SetWidthContainer>
-        <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "4rem 0 2.5rem 0",
-          }}
-        >
-          What they say?
-        </H3>
-        <AsSeenIn />
-        <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
-      </SetWidthContainer>
-      </>}
+          <SetWidthContainer>
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: "4rem 0 2.5rem 0",
+              }}
+            >
+              What they say?
+            </H3>
+            <AsSeenIn />
+            <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
+
+            <CtaBoardingSection />
+          </SetWidthContainer>
+        </>
+      )}
     </div>
   );
 };

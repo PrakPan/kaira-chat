@@ -160,11 +160,22 @@ const Mapbox = React.memo((props) => {
   return (
     <MapContainer
       center={mapCenter}
-      zoom={props.defaultZoom || 1}
+      zoom={props.defaultZoom || 6}
+      zoomControl={true}
+      scrollWheelZoom={true}
+      doubleClickZoom={true}
+      touchZoom={true}
+      boxZoom={true}
+      keyboard={true}
+      dragging={true}
+      zoomSnap={0.5}
+      zoomDelta={0.5}
+      wheelPxPerZoomLevel={120}
       style={{
         height: props.height || "100%",
         width: "100%",
         borderRadius: "1rem",
+        zIndex: 1,
       }}
     >
       <ReactLeafletGoogleLayer apiKey={GOOGLE_MAPS_API_KEY} />
