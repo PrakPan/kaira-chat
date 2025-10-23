@@ -160,6 +160,7 @@ const Index = (props) => {
           title={`${convertDbNameToCapitalFirst(props.data.slug)} Trip Planner`}
           page={"Continent Page"}
           type={props.type}
+          slug={props?.data?.slug}
           destination={props.destination}
         />
 

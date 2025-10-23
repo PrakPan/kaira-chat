@@ -161,7 +161,7 @@ const FullImgContent = (props) => {
       {isPageWide && (
         <div style={{ marginTop: "1.2rem" }}>
           <TailoredForm
-            page_id={props.page_id}
+            page_id={props?.slug == 'europe-continent' ? 15 : props.page_id}
             type={props?.type}
             children_cities={props.children_cities}
             destination={props.destination}
@@ -216,7 +216,7 @@ const FullImgContent = (props) => {
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
-        page_id={props.page_id}
+        page_id={props?.slug == 'europe-continent' ? 15 : props.page_id}
         type={props?.type}
         children_cities={props.children_cities}
         destination={props.destination}
