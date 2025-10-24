@@ -377,7 +377,7 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+              {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))}
 
@@ -653,7 +653,7 @@ const Recommendation = (props) => {
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+              {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))}
 
