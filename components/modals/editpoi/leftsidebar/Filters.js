@@ -37,7 +37,7 @@ export default function CheckboxLabels(props) {
                 defaultChecked={filter === props.default ? true : false}
               />
             }
-            label={<Label className="font-lexend">{filter}</Label>}
+            label={<Label className="">{filter}</Label>}
           />
         ))}
       </FormGroup>

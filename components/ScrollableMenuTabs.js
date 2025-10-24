@@ -61,23 +61,32 @@ const ScrollableMenuTabs = ({
   classStyle,
   scrollOffSet,
   tripsPage,
+  scrollContainerRef,
+  handleActiveTab
 }) => {
-  const [activeItem, setActiveItem] = useState(0);
+  const [activeItem, setActiveItem] = useState(items[0].id);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");
+  let manuallyClick = false
 
   const handleSelect = (index, itemId) => {
+    manuallyClick = true;
     setActiveItem(itemId);
-    logEvent({
-      action: "Navigation",
-      params: {
-        page: "Itinerary Page ",
-        event_category: "Button Click",
-        event_label: items[index]?.label,
-        event_action: "Navigation Bar",
-      },
-    });
+    if (handleActiveTab) {
+      handleActiveTab(itemId)
+    } else {
+      logEvent({
+        action: "Navigation",
+        params: {
+          page: "Itinerary Page ",
+          event_category: "Button Click",
+          event_label: items[index]?.label,
+          event_action: "Navigation Bar",
+        },
+      });
+    }
+    manuallyClick = false
   };
 
   function isActive(link) {
@@ -92,9 +101,15 @@ const ScrollableMenuTabs = ({
     }
   };
 
-  const debounceFun = useDebounce(handleScroll, 500);
+  const onActiveTabChange = (ind, tabid) => {
+    if (!manuallyClick) {
+      setActiveItem(tabid)
+    }
+  }
 
-  const { markerPos, ...markerHandlers } = useNavigationMarker();
+  const debounceFun = useDebounce(handleScroll, 500);
+  const sectionIds = items.map(item => item.id);
+  const { markerPos, ...markerHandlers } = useNavigationMarker(scrollContainerRef, sectionIds, onActiveTabChange);
 
   return (
     <NavbarContainer

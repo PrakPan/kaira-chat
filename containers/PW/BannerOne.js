@@ -42,7 +42,7 @@ const Banner = (props) => {
             width="20%"
             widthmobile="35%"
           ></ImageLoader>
-          <Text className="text-center font-lexend">Customizable Trips</Text>
+          <Text className="text-center ">Customizable Trips</Text>
         </div>
         <div className="center-div">
           <ImageLoader
@@ -50,7 +50,7 @@ const Banner = (props) => {
             width="20%"
             widthmobile="35%"
           ></ImageLoader>
-          <Text className="text-center font-lexend">10000+ Customers</Text>
+          <Text className="text-center ">10000+ Customers</Text>
         </div>
         <div className="center-div">
           <ImageLoader
@@ -58,7 +58,7 @@ const Banner = (props) => {
             width="20%"
             widthmobile="35%"
           ></ImageLoader>
-          <Text className="text-center font-lexend">4.9 / 5.0 Rating </Text>
+          <Text className="text-center ">4.9 / 5.0 Rating </Text>
         </div>
         <div className="center-div">
           <ImageLoader
@@ -66,7 +66,7 @@ const Banner = (props) => {
             width="20%"
             widthmobile="35%"
           ></ImageLoader>
-          <Text className="text-center font-lexend">Live Support</Text>
+          <Text className="text-center ">Live Support</Text>
         </div>
       </GridContainer>
     </Container>

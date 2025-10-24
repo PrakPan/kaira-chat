@@ -1062,7 +1062,6 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
   };
 
 
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if click is outside both input containers
@@ -1112,7 +1111,7 @@ const handleWarningCancel = () => {
             margin: "auto",
             height: isPageWide ? "80vh" : "40vh",
           }}
-          className="center-div font-lexend"
+          className="center-div "
         >
           <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
           Please wait while we update your flight
@@ -1122,7 +1121,7 @@ const handleWarningCancel = () => {
 
     if (isFetchingError.error) {
       return (
-        <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+        <div className="flex flex-row items-center justify-center h-[80vh] text-center ">
           {isFetchingError.errorMsg}
         </div>
       );
@@ -1130,7 +1129,7 @@ const handleWarningCancel = () => {
 
     if (noResults) {
       return (
-        <p className="font-lexend text-center h-[80vh] flex items-center justify-center">
+        <p className=" text-center h-[80vh] flex items-center justify-center">
           Oops, we couldn't find what you were searching!
         </p>
       );

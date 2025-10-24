@@ -258,7 +258,7 @@ const HotelsBooking = (props) => {
     <div id="stays" className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16">
       <div
         id="staysBooking"
-        className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
+        className="cursor-pointer  mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
       >
         Stays
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -279,7 +279,7 @@ const HotelsBooking = (props) => {
             duration={1.3}
             ydistance={25}
           >
-            <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+            <div className="text-white   px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
               {isError.errorMsg}
             </div>
           </Slide>

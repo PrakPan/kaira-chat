@@ -35,7 +35,7 @@ const marks = [
     label: (
       <div
         style={{ marginLeft: "50%", fontWeight: "600" }}
-        className="font-lexend"
+        className=""
       >
         {"₹3,000"}
         <div style={{ fontSize: "0.65rem", fontWeight: "300" }}>
@@ -62,7 +62,7 @@ const marks = [
           textAlign: "right",
           fontWeight: "600",
         }}
-        className="font-lexend"
+        className=""
       >
         {"₹10,000"}
         <div

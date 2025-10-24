@@ -72,7 +72,7 @@ const Generalbutton = (props) => {
   return (
     <Generalbuttonstyle
       type="button"
-      className="font-lexend"
+      className={props?.className}
       onClick={props.onclick}
       color={props.color}
       borderRadius={props.borderRadius}

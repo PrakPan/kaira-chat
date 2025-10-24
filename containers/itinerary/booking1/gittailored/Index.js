@@ -108,8 +108,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail[
@@ -137,8 +137,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail[
@@ -158,8 +158,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -184,8 +184,8 @@ const Details = (props) => {
                     }}
                     className={
                       props.blur
-                        ? "font-lexend text-enter blurry-text"
-                        : "font-lexend text-enter"
+                        ? " text-enter blurry-text"
+                        : " text-enter"
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail["name"]}
@@ -209,8 +209,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {props.payment.costings_breakdown[booking].detail["name"]}
@@ -224,8 +224,8 @@ const Details = (props) => {
                       }}
                       className={
                         props.blur
-                          ? "font-lexend text-enter blurry-text"
-                          : "font-lexend text-enter"
+                          ? " text-enter blurry-text"
+                          : " text-enter"
                       }
                     >
                       {"₹ " +
@@ -408,8 +408,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {"STARTING DATE "}
@@ -428,8 +428,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               PAX
@@ -450,8 +450,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {props.payment.meta_info
@@ -479,7 +479,7 @@ const Details = (props) => {
                 style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-lexend"
+                className=""
                 style={{
                   marginRight: "1rem",
                   display: "inline",
@@ -493,7 +493,7 @@ const Details = (props) => {
                 style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-lexend"
+                className=""
                 style={{
                   marginRight: "1rem",
                   display: "inline",
@@ -507,7 +507,7 @@ const Details = (props) => {
                 style={{ marginRight: "0.25rem" }}
               ></FontAwesomeIcon>
               <p
-                className="font-lexend"
+                className=""
                 style={{
                   marginRight: "1rem",
                   display: "inline",
@@ -560,8 +560,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {"Service Fee"}
@@ -577,8 +577,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {"₹ " +
@@ -606,8 +606,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {"GST"}
@@ -623,8 +623,8 @@ const Details = (props) => {
               }}
               className={
                 props.blur
-                  ? "font-lexend text-enter blurry-text"
-                  : "font-lexend text-enter"
+                  ? " text-enter blurry-text"
+                  : " text-enter"
               }
             >
               {"₹ " + getIndianPrice(Math.round(props.payment.gst / 100))}
@@ -637,7 +637,7 @@ const Details = (props) => {
         props.payment.coupon ? (
           props.payment.coupon.code ? (
             <div
-              className="text-center font-lexend"
+              className="text-center "
               style={{ marginBottom: "1rem" }}
             >
               {"Coupon Applied: " + props.payment.coupon.code}
@@ -657,7 +657,7 @@ const Details = (props) => {
         <StrikedCost
           show_per_person_cost={props.payment.show_per_person_cost}
           coupon={props.payment.coupon}
-          className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+          className={props.blur ? " blurry-text" : ""}
         >
           <FontAwesomeIcon
             style={{ marginRight: "2px" }}
@@ -670,7 +670,7 @@ const Details = (props) => {
         <INR
           show_per_person_cost={props.payment.show_per_person_cost}
           coupon={props.payment.coupon}
-          className={props.blur ? "font-lexend blurry-text" : "font-lexend"}
+          className={props.blur ? " blurry-text" : ""}
         >
           <FontAwesomeIcon
             style={{ marginRight: "0.25rem" }}
@@ -681,7 +681,7 @@ const Details = (props) => {
           ) + " /-"}
         </INR>
       </div>
-      <p className="font-lexend text-center">Per Member</p>
+      <p className=" text-center">Per Member</p>
       {props.token ? null : (
         <Button
           borderRadius="5px"
@@ -739,7 +739,7 @@ const Details = (props) => {
         ITINERARY_STATUSES.itinerary_finalized ? (
           <p
             onClick={() => setShowRegisteredUsers(true)}
-            className="hover-pointer font-lexend text-center"
+            className="hover-pointer  text-center"
             style={{ fontSize: "0.85rem", textDecoration: "underline" }}
           >
             Registered Members
@@ -820,7 +820,7 @@ const Details = (props) => {
       </Button>
       <div
         style={{ color: "blue", margin: "1rem 0 0 0", fontSize: "0.85rem" }}
-        className=" text-center hover-pointer font-lexend"
+        className=" text-center hover-pointer "
         onClick={() => setShowTerms(true)}
       >
         Terms & Conditions

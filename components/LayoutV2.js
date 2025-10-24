@@ -31,7 +31,7 @@ const LayoutV2 = (props) => {
   }, [router.isReady, router.asPath]);
 
   return (
-    <div className="layout">
+    <div className="layout h-full">
       <Header
         staticnav={props.staticnav}
         PW={props.PW}

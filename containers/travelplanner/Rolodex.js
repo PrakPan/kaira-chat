@@ -65,7 +65,7 @@ const Text = styled.p`
 
 const Rolodex = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <Text>As per your</Text>
       <div>
         <Word>Pocket</Word>

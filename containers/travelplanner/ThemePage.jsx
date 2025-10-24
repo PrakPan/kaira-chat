@@ -14,7 +14,6 @@ import Destination1Carousel from "../../components/theme/Destination1Carousel.js
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
-import Navigation from "../../components/theme/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
@@ -51,6 +50,10 @@ import { Padding } from "@mui/icons-material";
 import CurvedSwiper from "../../components/theme/CurveImageGallery.jsx";
 import JourneyType from "../../components/theme/journeyType.jsx";
 import OverviewThailand from "../themes/OverviewThailand.jsx";
+import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
+import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
+import CarouselNavigation from "../../components/theme/Navigation.jsx";
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -109,7 +112,7 @@ export default function ThemePage(props) {
   return (
     <div className="mb-5">
       {/* {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />} */}
-      {isPageWide ? (
+      {/* {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
             openTailoredModal(
@@ -135,7 +138,7 @@ export default function ThemePage(props) {
             )
           }
         />
-      )}
+      )} */}
 
       {props?.slug === "ladakhh" ? (
         <>
@@ -160,17 +163,20 @@ export default function ThemePage(props) {
           />
         </>
       ) : (
-        <ThemeBanner
-          image={props.experienceData.image}
-          page_id={props.experienceData.id}
-          destination={props.experienceData.destination}
-          cities={props.experienceData.locations}
-          children_cities={props.experienceData.children}
-          title={props.experienceData.banner_heading}
-          subheading={props.experienceData.banner_text}
-          page={"State Page"}
-          slug={props.slug}
-        />
+        // <ThemeBanner
+        //   image={props.experienceData.image}
+        //   page_id={props.experienceData.id}
+        //   destination={props.experienceData.destination}
+        //   cities={props.experienceData.locations}
+        //   children_cities={props.experienceData.children}
+        //   title={props.experienceData.banner_heading}
+        //   subheading={props.experienceData.banner_text}
+        //   page={"State Page"}
+        //   slug={props.slug}
+        // />
+         <HeroSection title={props.experienceData.banner_heading}
+         subtitle={props.experienceData.banner_text}
+          image={`${imgUrlEndPoint}${props.experienceData.image}`}/>
       )}
       {props.slug === "ladakh" && <LadakhLogo />}
 
@@ -278,7 +284,7 @@ export default function ThemePage(props) {
                       <PrimaryHeading> {component.heading}</PrimaryHeading>
                     )}
 
-                    <Navigation slug={props?.slug} components={navComponents} />
+                    <CarouselNavigation slug={props?.slug} components={navComponents} />
 
                     <PlanYourTripButton text={"Plan Itinerary For Free"} />
                   </div>
@@ -439,9 +445,10 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
-                        <Itinerary1Carousel
+                        {/* <Itinerary1Carousel
                           itineraries={component.itineraries}
-                        />
+                        /> */}
+                         < MostLovedItinerariesSection apiItineraries={component.itineraries} />
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
                             className={
@@ -618,7 +625,7 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "Image Caraousel" ? (
                       <>
-                        <ImageCarousel />
+                        <ImageCarousel slug={props?.slug} />
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                         />
@@ -799,7 +806,8 @@ export const PlanYourTripButton = (props) => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-5 bg-white">
+    
+    <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-md  w-fit mx-auto hover:opacity-90 cursor-pointer">
       <SecondaryButton onClick={handlePlanButton} className={props?.className}>
         {props.text
           ? props.text

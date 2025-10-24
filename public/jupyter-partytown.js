@@ -6,7 +6,6 @@
 (function() {
   'use strict';
   
-  console.log('🚀 Jupiter Analytics loading in web worker...');
   
   // Analytics state
   let analyticsState = {
@@ -141,20 +140,17 @@
     const event = createEvent(eventName, properties);
     analyticsState.queue.push(event);
     
-    console.log(`📊 Queued: ${eventName} (Queue: ${analyticsState.queue.length})`);
     
     // Immediate flush for critical events
     const criticalEvents = ['payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
     const shouldFlushNow = criticalEvents.includes(eventName);
     
     if (shouldFlushNow) {
-      console.log(`🚨 Critical event ${eventName}, flushing immediately`);
       flushEvents();
     } else if (analyticsState.queue.length >= analyticsState.batchSize) {
-      console.log(`📦 Batch size reached (${analyticsState.batchSize}), flushing...`);
+     
       flushEvents();
     } else if (analyticsState.queue.length >= analyticsState.maxQueueSize) {
-      console.log(`⚠️ Max queue size reached (${analyticsState.maxQueueSize}), forcing flush!`);
       flushEvents();
     } else {
       scheduleFlush();
@@ -169,7 +165,6 @@
     
     analyticsState.flushTimer = setTimeout(() => {
       if (analyticsState.queue.length > 0) {
-        console.log(`⏰ Auto-flush triggered (${analyticsState.queue.length} events)`);
         flushEvents();
       }
       analyticsState.flushTimer = null;
@@ -190,8 +185,6 @@
     const events = [...analyticsState.queue];
     analyticsState.queue = [];
 
-    console.log(`📤 Flushing ${events.length} events`);
-
     if (events.length === 1) {
       // Send single event
       await sendSingleEvent(events[0]);
@@ -209,7 +202,6 @@
   // Send single event to /v1/events
   const sendSingleEvent = async (event) => {
     try {
-      console.log(`📤 Sending single event: ${event.event}`);
       
       fetch(`${analyticsState.apiEndpoint}/v1/events`, {
         method: 'POST',
@@ -220,19 +212,18 @@
         body: JSON.stringify(event)
       }).then(response => {
         if (response.ok) {
-          console.log(`✅ Single event sent: ${event.event}`);
+        
           analyticsState.stats.eventsSent++;
         } else {
-          console.error(`❌ Single event failed: ${response.status}`);
+         
           handleFailedEvent(event, `HTTP ${response.status}`);
         }
       }).catch(error => {
-        console.error(`❌ Single event network error:`, error);
+       
         handleFailedEvent(event, error.message);
       });
 
     } catch (error) {
-      console.error(`❌ Single event send error:`, error);
       handleFailedEvent(event, error.message);
     }
   };
@@ -249,7 +240,7 @@
   // Send batch to /v1/events/batch
   const sendBatch = async (batch, batchNumber) => {
     try {
-      console.log(`📦 Sending batch ${batchNumber} (${batch.length} events)`);
+     
       
       fetch(`${analyticsState.apiEndpoint}/v1/events/batch`, {
         method: 'POST',
@@ -260,20 +251,20 @@
         body: JSON.stringify(batch)
       }).then(response => {
         if (response.ok) {
-          console.log(`✅ Batch ${batchNumber} sent successfully (${batch.length} events)`);
+         
           analyticsState.stats.batchesSent++;
           analyticsState.stats.eventsSent += batch.length;
         } else {
-          console.error(`❌ Batch ${batchNumber} failed: ${response.status}`);
+        
           handleFailedBatch(batch, `HTTP ${response.status}`);
         }
       }).catch(error => {
-        console.error(`❌ Batch ${batchNumber} network error:`, error);
+       
         handleFailedBatch(batch, error.message);
       });
 
     } catch (error) {
-      console.error(`❌ Batch ${batchNumber} send error:`, error);
+     
       handleFailedBatch(batch, error.message);
     }
   };
@@ -287,7 +278,7 @@
       analyticsState.failedQueue.push(event);
       analyticsState.stats.eventsRetried++;
     } else {
-      console.error(`💀 Event ${event.event} permanently failed after ${analyticsState.maxRetries} retries`);
+     
       analyticsState.stats.eventsFailed++;
     }
     
@@ -306,7 +297,7 @@
     const retryDelay = analyticsState.retryDelay * Math.pow(2, Math.min(3, analyticsState.stats.eventsRetried));
     
     analyticsState.retryTimer = setTimeout(async () => {
-      console.log(`🔄 Retrying ${analyticsState.failedQueue.length} failed events...`);
+      
       
       const retryEvents = [...analyticsState.failedQueue];
       analyticsState.failedQueue = [];
@@ -326,7 +317,7 @@
 
   // Initialize analytics
   const initializeAnalytics = async (config = {}) => {
-    console.log('🔧 Initializing Jupiter Analytics...', config);
+   
     
     analyticsState.sessionId = generateUUID();
     analyticsState.anonymousId = getOrCreateAnonymousId();
@@ -509,15 +500,12 @@
 
   // Bulk tracking
   const trackBulk = (events) => {
-    console.log(`📦 Bulk tracking ${events.length} events`);
     
     const trackedEvents = events.map(({ eventName, properties }) => {
       const event = createEvent(eventName, properties);
       analyticsState.queue.push(event);
       return event;
     });
-    
-    console.log(`📊 Bulk queued: ${events.length} events (Queue: ${analyticsState.queue.length})`);
     
     // Force flush for bulk operations
     if (analyticsState.queue.length >= analyticsState.batchSize) {
@@ -547,7 +535,6 @@
 
   // Manual flush
   const forceFlush = () => {
-    console.log('🔧 Manual flush triggered');
     return flushEvents();
   };
 

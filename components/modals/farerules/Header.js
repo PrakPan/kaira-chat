@@ -14,7 +14,7 @@ const Container = styled.div`
 
 const Section = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <FontAwesomeIcon
         className="hover-pointer"
         icon={faChevronLeft}

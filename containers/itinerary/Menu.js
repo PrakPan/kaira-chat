@@ -257,7 +257,7 @@ const SimpleTabs = (props) => {
               id={i}
               style={{ minWidth: locationtabwidth }}
               className={
-                "font-lexend center-div border-top " +
+                " center-div border-top " +
                 (location == i ? "bg-yellow font-bold" : "bg-white")
               }
               onClick={(event) => _setLocationHandler(event)}
@@ -324,13 +324,13 @@ const SimpleTabs = (props) => {
           style={{ zIndex: "2" }}
           indicatorColor=""
         >
-          <Tab label="Brief" className="font-lexend experience-tab" />
+          <Tab label="Brief" className=" experience-tab" />
 
-          <Tab label="Itinerary" className="font-lexend experience-tab" />
+          <Tab label="Itinerary" className=" experience-tab" />
           {!isGroup ? (
-            <Tab label="Booking" className="font-lexend experience-tab" />
+            <Tab label="Booking" className=" experience-tab" />
           ) : (
-            <Tab label="Register" className="font-lexend experience-tab" />
+            <Tab label="Register" className=" experience-tab" />
           )}
         </Tabs>
 
@@ -356,7 +356,7 @@ const SimpleTabs = (props) => {
 
                   {props.payment ? (
                     !props.payment.is_registration_needed ? (
-                      <Cost className="font-lexend">
+                      <Cost className="">
                         {"₹ " +
                           getIndianPrice(
                             Math.round(
@@ -366,7 +366,7 @@ const SimpleTabs = (props) => {
                           " /-"}
                       </Cost>
                     ) : (
-                      <GITCost className="font-lexend">
+                      <GITCost className="">
                         {"₹ " +
                           getIndianPrice(
                             Math.round(

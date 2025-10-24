@@ -47,19 +47,19 @@ export default function TemporaryDrawer(props) {
             id="filter-budget"
             key="filter-budget"
             label={"Budget"}
-            className={"booking-filter-tab font-lexend"}
+            className={"booking-filter-tab "}
           ></Tab>
           <Tab
             id="filter-type"
             key="filter-type"
             label={"Type"}
-            className={"booking-filter-tab font-lexend"}
+            className={"booking-filter-tab "}
           ></Tab>
           <Tab
             id="filter-starcategory"
             key="filter-starcategory"
             label={"Star Rating"}
-            className={"booking-filter-tab font-lexend"}
+            className={"booking-filter-tab "}
           ></Tab>
         </Tabs>
         <Drawer anchor={"bottom"} open={state} onClose={toggleDrawer(false)}>

@@ -3,7 +3,7 @@ import { MdRestaurant } from "react-icons/md";
 const ItineraryFoodElementM = (props) => {
   return (
     <>
-      <div className="font-lexend">
+      <div className="">
         <div className="flex flex-col">
           <div className="flex flex-row ">
             <div className="text-center">

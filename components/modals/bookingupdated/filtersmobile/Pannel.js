@@ -68,7 +68,7 @@ const Pannel = (props) => {
         ></GrFormClose>
       </div>
 
-      <Heading className="font-lexend hidden-desktop">{props.heading}</Heading>
+      <Heading className=" hidden-desktop">{props.heading}</Heading>
       {props.heading !== "Star Category" ? (
         <div style={{ margin: "0 auto" }}>
           <FormGroup
@@ -109,7 +109,7 @@ const Pannel = (props) => {
                     }
                   />
                 }
-                label={<Label className="font-lexend">{currentfilter}</Label>}
+                label={<Label className="">{currentfilter}</Label>}
               />
             ))}
           </FormGroup>

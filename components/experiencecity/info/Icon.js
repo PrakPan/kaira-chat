@@ -25,7 +25,7 @@ const Icon = (props) => {
     <Container className="border-thin">
       <IconLine>
         <S3Icon location={props.location} icon={props.icon}></S3Icon>
-        <IconTagLine className="font-lexend">
+        <IconTagLine className="">
           {props.icon.toUpperCase()}
         </IconTagLine>
       </IconLine>

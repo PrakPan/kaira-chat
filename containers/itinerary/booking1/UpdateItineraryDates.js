@@ -12,6 +12,11 @@ import moment from "moment";
 import styled from "styled-components";
 import { openNotification } from "../../../store/actions/notification";
 import { useDispatch } from "react-redux";
+import AirbnbCalendar from "../../../components/calendar";
+import Modal from "../../../components/ui/Modal";
+import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
+import AirbnbCalendarMobile from "../../../components/calendar/MobileCalendar";
+import BottomModal from "../../../components/ui/LowerModal";
 
 const StyledDateRangeContainer = styled.div`
   .DateRangePicker {
@@ -272,7 +277,14 @@ const UpdateItineraryDates = ({
   const [isLoading, setIsLoading] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
-
+  const [dateType, setDateType] = useState("fixed");
+const date={
+  type:"fixed",
+  start_date:new Date(startDate)?.toISOString(),
+  end_date:new Date(endDate)?.toISOString(),
+  month:"",
+  duration:""
+}
   const [momentStartDate, setMomentStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
   );
@@ -316,13 +328,13 @@ useEffect(() => {
   const formatDateRangeDisplay = () => {
     const start = isEditing ? momentStartDate : (itinerary?.start_date ? moment(itinerary.start_date) : null);
     const end = isEditing ? momentEndDate : (itinerary?.end_date ? moment(itinerary.end_date) : null);
-    
+
     if (!start || !end) return "Select dates";
-    
+
     if (convertDFormat) {
       return `${convertDFormat(start.format('YYYY-MM-DD'))} - ${convertDFormat(end.format('YYYY-MM-DD'))}`;
     }
-    
+
     return `${start.format('YYYY-MM-DD')} - ${end.format('YYYY-MM-DD')}`;
   };
 
@@ -344,7 +356,7 @@ useEffect(() => {
   };
 
   const handleCancel = () => {
-    if(setShowEditDate){
+    if (setShowEditDate) {
       setShowEditDate(true);
     }
     setFocusedInput(null);
@@ -359,22 +371,25 @@ useEffect(() => {
     setFocusedInput(null);
   };
 
-  const handleUpdateDates = async () => {
+  const handleOnCalenderApplyDates = (values) => {
+    handleUpdateDates(values);
+  }
+
+  const handleUpdateDates = async (dateObj) => {
     if (
-      !momentStartDate ||
-      !momentEndDate ||
-      !momentStartDate.isBefore(momentEndDate)
+      !dateObj.start ||
+      !dateObj.end
     ) {
       alert("Please select valid dates. End date must be after start date.");
       return;
     }
-
     setIsLoading(true);
-
     const payload = {
-      start_date: momentStartDate.format("YYYY-MM-DD"),
-      end_date: momentEndDate.format("YYYY-MM-DD"),
+      start_date: moment(dateObj.start).format("YYYY-MM-DD"),
+      end_date: moment(dateObj.end).format("YYYY-MM-DD"),
     };
+
+    console.log(payload);
 
     axiosUpdateItineraryDates
       .post(`${router.query.id}/update-dates/`, payload, {
@@ -403,21 +418,24 @@ useEffect(() => {
         let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
         console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
         dispatch(openNotification({
-                  type: "error",
-                  text: errorMsg,
-                  heading: "Error!",
-                }));
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        }));
       });
   };
 
+  const closeModal = () => {
+    setShowCalendar(false);
+    setIsEditing(false);
+  }
+
   return (
-     <div className={showAsModal ? "flex flex-row items-center gap-2 absolute overflow-visible z-[8] mt-[1.3rem]" : "w-full"}>
+    <div className="">
       {/* Date display with pen icon */}
-  {showAsModal ? (
-<>
-      <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
+      <div className="font-400 text-black flex flex-row items-center gap-2">
         {!isEditing ? (
-          <div className="min-w-max">
+          <div className="min-w-max ">
             {convertDFormat
               ? convertDFormat(itinerary?.start_date)
               : itinerary?.start_date}{" "}
@@ -433,7 +451,7 @@ useEffect(() => {
         )}
 
         {/* Show pencil icon when not editing, reset button when editing */}
-        {!isMobile  ? !isEditing ? (
+        {!isEditing ? (
           <button
             onClick={handleEditClick}
             className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 hover:text-blue-500 hover:scale-110 active:scale-90"
@@ -447,7 +465,7 @@ useEffect(() => {
           <div className="cursor-pointer text-blue underline text-sm" onClick={handleCancel}>
             Reset
           </div>
-        ) : ''}
+        ) }
       </div>
 
       {/* Update button - show only when editing and dates are selected */}
@@ -455,11 +473,10 @@ useEffect(() => {
         <button
           onClick={handleUpdateDates}
           disabled={isLoading}
-          className={`px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${
-            isLoading
-              ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-[#e6cc00]"
-          }`}
+          className={`px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${isLoading
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:bg-[#e6cc00]"
+            }`}
         >
           {isLoading ? "Applying..." : "Apply Date Change!"}
         </button>
@@ -467,110 +484,50 @@ useEffect(() => {
 
       {/* Calendar overlay - positioned absolutely but relative to this container */}
       {showCalendar && (
-        <>
-          <MobileOverlay onClick={() => setShowCalendar(false)} />
+        <div>
+        {!isMobile?<ModalWithBackdrop
+          centered
+          closeIcon={true}
+          backdrop
+          show={showCalendar}
+          onHide={() => closeModal(false)}
+          borderRadius="20px"
+          paddingX="20px"
+          paddingY="20px"
+        >
+          <AirbnbCalendar
+            valueStart={new Date(itinerary?.start_date)}
+            valueEnd={new Date(itinerary?.end_date)}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={() => closeModal(false)}
+            dateType={dateType}
+            setDateType={setDateType}
+            date={date}
+            isNotForm={true}
+          />
+        </ModalWithBackdrop>:
 
-          <div className={`${isMobile ? "hidden fixed" : "absolute top-full left-0"} z-[8]`}>
-            <StyledDateRangeContainer $show={showCalendar}>
-              <div className={`${isMobile ? "p-4" : "mb-1"}`}>
-                {/* Mobile header */}
-                {isMobile && (
-                  <div className="flex items-center justify-between mb-1 pt-2">
-                    <button
-                      onClick={() => setShowCalendar(false)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      <FaX size={16} /> 
-                    </button>
-                  </div>
-                )}
-
-                <DateRangePicker
-                  displayFormat="DD MMM YYYY"
-                  startDate={momentStartDate}
-                  startDateId="startDate"
-                  endDate={momentEndDate}
-                  endDateId="endDate"
-                  onDatesChange={({ startDate, endDate }) => {
-                    setMomentStartDate(startDate);
-                    setMomentEndDate(endDate);
-
-                    // Update string dates for API
-                    if (startDate) {
-                      setStartDate(startDate.format("YYYY-MM-DD"));
-                    }
-                    if (endDate) {
-                      setEndDate(endDate.format("YYYY-MM-DD"));
-                    }
-
-                    // Clear end date when selecting new start date
-                    if (
-                      startDate &&
-                      momentEndDate &&
-                      startDate.isAfter(momentEndDate)
-                    ) {
-                      setMomentEndDate(null);
-                      setEndDate("");
-                    }
-
-                    // Hide calendar when both dates are selected
-                    if (startDate && endDate) {
-                      setShowCalendar(false);
-                      setFocusedInput(null);
-                    }
-                  }}
-                  focusedInput={focusedInput}
-                  onFocusChange={(focusedInput) => {
-                    setFocusedInput(focusedInput);
-                  }}
-                  isOutsideRange={(day) => day.isBefore(moment(), "day")}
-                  numberOfMonths={isMobile ? 1 : 2}
-                  orientation="horizontal"
-                  noBorder={true}
-                  readOnly={true}
-                  keepOpenOnDateSelect={false}
-                  reopenPickerOnClearDates={false}
-                  hideKeyboardShortcutsPanel={true}
-                  daySize={isMobile ? 40 : 39}
-                  
-                />
-              </div>
-            </StyledDateRangeContainer>
-          </div>
-        </>
-      )}  </>) : (
-      <>
-        <div className="flex flex-row items-center justify-between gap-4 mb-4">
-          <div className="text-[15px] font-400 text-black flex flex-row items-center gap-2">
-            <div className="min-w-max">
-              {formatDateRangeDisplay()}
-            </div>
-          </div>
-          
-          <button 
-            onClick={handleCancel}
-            className="text-blue-600 underline text-sm hover:text-blue-800 transition-colors"
-          >
-            Reset
-          </button>
+        <BottomModal
+          show={showCalendar}
+          onHide={() => closeModal(false)}
+          width="100%"
+          height="max-content"
+          paddingX="20px"
+          paddingY="20px"
+        >
+          <AirbnbCalendarMobile
+            valueStart={new Date(itinerary?.start_date)}
+            valueEnd={new Date(itinerary?.end_date)}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={() => closeModal(false)}
+            setDateType={setDateType}
+            dateType={dateType}
+            date={date}
+            isNotForm={true}
+          />
+        </BottomModal>}
         </div>
-
-        {!showCalendar && momentStartDate && momentEndDate && (
-          <div className="mb-4">
-            <button
-              onClick={handleUpdateDates}
-              disabled={isLoading}
-              className={`w-full px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity ${
-                isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#e6cc00]"
-              }`}
-            >
-              {isLoading ? "Applying..." : "Apply Date Change!"}
-            </button>
-          </div>
-        )}
-      </>
-    )}
-     
+      )}
     </div>
   );
 };

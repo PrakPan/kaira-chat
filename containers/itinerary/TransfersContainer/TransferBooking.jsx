@@ -4,13 +4,26 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
+import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
+import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
-import { getModeIcon } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
+import TransferEditDrawer, {
+  getModeIcon,
+} from "../../../components/drawers/routeTransfer/TransferEditDrawer";
+import Details from "./FlightDetail2";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import {
+  updateAirportTransferBooking,
+  updateTransferBookings,
+} from "../../../store/actions/transferBookingsStore";
+import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
+import TransferDrawer from "../TransferDrawer";
 import PickupDropDrawer from "../PickupDropDrawer";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -79,7 +92,7 @@ const TransferBooking = ({
   transferId,
 }) => {
 
-  console.log("BKing",booking);
+  // console.log("BKing",booking);
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -101,7 +114,7 @@ const TransferBooking = ({
 
   const handleAddTransfer = () => {
 
-    trackTransferBookingAdd(router.query.id,transferId,id);
+    trackTransferBookingChange(router.query.id,transferId,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -120,7 +133,7 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
-    trackTransferCardClicked(router.query.id,book?.id || booking_id,'transfer_section');
+    trackTransferCardClicked(router.query.id,book?.id || booking_id,'transfer_section',oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
     // if(isAirport){
     //   setAirportBookingId(book?.id)
     // }
@@ -210,7 +223,7 @@ const TransferBooking = ({
               ) : (
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
-                  <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
+                  <div className="mt-3 ml-1 md:ml-7 flex flex-col">
                     <div className=" w-full items-center">
                       <div className="font-medium text-[15px] flex items-center gap-2">
                         <div className="text-[#C5C1C1]">
@@ -421,7 +434,7 @@ const TransferBooking = ({
                                 <div className="pr-2">
                                   <button
                                     onClick={()=>handleRoute(booking)}
-                                    className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                     className="hidden md:!block ttw-btn-secondary"
                                   >
                                     View Details
                                   </button>
@@ -494,7 +507,7 @@ const TransferBooking = ({
                               <div className="pr-2 w-full">
                                 <button
                                   onClick={()=>handleRoute(booking)}
-                                  className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                   className="md:hidden ttw-btn-secondary"
                                 >
                                   View Details
                                 </button>
@@ -570,7 +583,7 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                   <div
                     key={index}
-                    className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
+                    className="mt-3 ml-1 md:ml-7 flex flex-col"
                   >
                     <div className=" w-full items-center">
                       <div className="font-medium text-[15px]  inline flex items-center gap-2">
@@ -793,7 +806,7 @@ const TransferBooking = ({
                                   ) : (
                                     <button
                                       onClick={()=>handleRoute(booking)}
-                                      className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                       className="ttw-btn-secondary"
                                     >
                                       {/* Add Taxi */}
                                       View Details
@@ -804,7 +817,7 @@ const TransferBooking = ({
                                 <div className="pr-2">
                                   <button
                                     onClick={()=>handleRoute(booking)}
-                                    className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                     className="ttw-btn-secondary"
                                   >
                                     {/* Add Taxi */}
                                     View Details
@@ -940,7 +953,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
   };
 
   return (
-    <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
+    <div className="mt-3 ml-1 md:ml-7 flex flex-col items-center justify-center ">
       <div className=" w-full items-center">
         {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name &&
           booking?.transfer_details?.items[0]?.segments[
@@ -1004,7 +1017,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
               <div>
                 <button
                   onClick={()=>handleRoute(booking)}
-                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                  className="ttw-btn-secondary"
                 >
                   View Details
                 </button>
@@ -1042,7 +1055,7 @@ const FlightBooking = ({ booking, type, booking_type, booking_id,oCityData,dCity
             <div className="flex justify-end mt-4 pr-2 w-full">
               <button
                 onClick={()=>handleRoute(booking)}
-                className="w-full md:w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                 className="ttw-btn-secondary"
               >
                 View Details
               </button>

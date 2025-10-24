@@ -78,7 +78,7 @@ const KeyBenefits = (props) => {
       <Card>
         <ImageNumber>1</ImageNumber>
         <ImageText>
-          <ImageHeading className="font-lexend">
+          <ImageHeading className="">
             Unique and Immersive
           </ImageHeading>
           <br />
@@ -97,7 +97,7 @@ const KeyBenefits = (props) => {
       <Card>
         <ImageNumber>2</ImageNumber>
         <ImageText>
-          <ImageHeading className="font-lexend">
+          <ImageHeading className="">
             Unique and Immersive
           </ImageHeading>
           <br />
@@ -116,7 +116,7 @@ const KeyBenefits = (props) => {
       <Card>
         <ImageNumber>3</ImageNumber>
         <ImageText>
-          <ImageHeading className="font-lexend">
+          <ImageHeading className="">
             Feedback and reports
           </ImageHeading>
           <br />

@@ -26,13 +26,16 @@ const Container = styled.div`
 `;
 
 const Line2 = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+  background-image:
+    linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 12px 3px, 100% 3px;
+  background-size:
+    12px 3px,
+    100% 3px;
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
@@ -52,13 +55,16 @@ const Line2 = styled.hr`
 `;
 
 const Line = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+  background-image:
+    linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 8px 3px, 100% 3px;
+  background-size:
+    8px 3px,
+    100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
@@ -109,10 +115,9 @@ const MidSectionV2 = (props) => {
   const {trackTransferBookingAdd,trackTransferBookingChange} =  useAnalytics();
 
   const handleAddTransfer = () => {
-    if(props.cityTransferBookings?.id){
-      trackTransferBookingChange(router.query.id,props?.transferId,id);
-    }
-    trackTransferBookingAdd(router.query.id,props?.transferId,id);
+    
+      trackTransferBookingChange(router.query.id,props?.transferId,props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
+   
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -187,7 +192,6 @@ const MidSectionV2 = (props) => {
   else if (props?.route && props?.route?.transfers) hidemidsection = false;
   else hidemidsection = true;
 
-
   const [isHovered, setIsHovered] = useState(false);
   const popupStyle = {
     display: isHovered ? "block" : "none",
@@ -200,7 +204,7 @@ const MidSectionV2 = (props) => {
   };
 
   return (
-    <Container className={`font-lexend`} hidemidsection={hidemidsection}>
+    <Container className={``} hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>

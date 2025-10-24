@@ -3,7 +3,7 @@ import { dateIsValid } from "./isDateDDMMYYY";
 export const getHumanDateWithYear = (dateString) => {
   if (!dateIsValid(dateString)) return dateString;
   else {
-    let d = dateString.split("/");
+    let d = dateString.split("/") || dateString.split("-");
 
     let date = new Date(d[2], d[1] - 1, d[0]);
     const months = [

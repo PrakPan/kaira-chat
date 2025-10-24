@@ -13,7 +13,7 @@ const Location = (props) => {
   return (
     <Container>
       <Address>
-        <p className="font-lexend" style={{ fontWeight: "300" }}>
+        <p className="" style={{ fontWeight: "300" }}>
           {props.data.addr2}
         </p>
       </Address>

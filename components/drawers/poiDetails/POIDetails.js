@@ -22,6 +22,16 @@ import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
 
+const svgIcons = {
+  "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
+    <path d="M12.75 3.48827C10.8075 3.29577 8.85333 3.1966 6.905 3.1966C5.75 3.1966 4.595 3.25494 3.44 3.3716L2.25 3.48827" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M5.45801 2.89897L5.58634 2.13481C5.67967 1.58064 5.74967 1.16647 6.73551 1.16647H8.26384C9.24968 1.16647 9.32551 1.60397 9.41301 2.14064L9.54134 2.89897" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M11.4956 5.33183L11.1164 11.206C11.0522 12.1218 10.9997 12.8335 9.37224 12.8335H5.62724C3.99974 12.8335 3.94724 12.1218 3.88307 11.206L3.50391 5.33183" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M6.52539 9.625H8.46789" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M6.04199 7.29147H8.95866" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+}
+
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -54,9 +64,7 @@ const Container = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 32px;
   font-family: Lexend;
-  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
 const BackContainer = styled.div`
@@ -266,18 +274,10 @@ const POIDetails = (props) => {
   return (
     <>
       {props?.data ? (
-        <Container itineraryDrawer={props.itineraryDrawer}>
-          {!props.itineraryDrawer ? (
-            <div>
-              <BackContainer className="flex justify-between font-lexend">
-                <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
-              </BackContainer>
-            </div>
-          ) : (
-            <BackContainer className="flex justify-between font-lexend">
-              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
-            </BackContainer>
-          )}
+        <Container className="px-lg max-ph:px-sm gap-xl" itineraryDrawer={props.itineraryDrawer}>
+          <div className="mt-[1rem]">
+            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
+          </div>
           <div className="flex justify-between">
             <Title>{props.data.name}</Title>
             {!(props?.removeChange === true) && (
@@ -305,7 +305,7 @@ const POIDetails = (props) => {
                     src={
                       props?.data?.extra_images?.[0]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 0"
                     fill
@@ -333,7 +333,7 @@ const POIDetails = (props) => {
                     src={
                       props?.data?.extra_images?.[1]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 1"
                     fill
@@ -361,7 +361,7 @@ const POIDetails = (props) => {
                     src={
                       props?.data?.extra_images?.[2]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 2"
                     fill
@@ -389,7 +389,7 @@ const POIDetails = (props) => {
                     src={
                       props?.data?.extra_images?.[3]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 3"
                     fill
@@ -420,7 +420,7 @@ const POIDetails = (props) => {
                       src={
                         props?.data?.extra_images?.[0]
                           ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                       }
                       alt="Image 0"
                       fill
@@ -444,22 +444,22 @@ const POIDetails = (props) => {
                   </Child>
 
                   <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
-                      <Image
-                        src={
-                          props?.data?.extra_images?.[1]
-                            ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                            : "/media/icons/bookings/notfounds/noroom.png"
-                        }
-                        alt="Image 0"
-                        fill
-                        className="object-cover"
-                        onLoad={() => OnImageLoad(1)}
-                        onError={(e) => {
-                          e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                          OnImageError(1);
-                        }}
-                        priority
-                      />
+                    <Image
+                      src={
+                        props?.data?.extra_images?.[1]
+                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                      }
+                      alt="Image 0"
+                      fill
+                      className="object-cover"
+                      onLoad={() => OnImageLoad(1)}
+                      onError={(e) => {
+                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                        OnImageError(1);
+                      }}
+                      priority
+                    />
                     <div
                       style={{
                         display: !ImagesLoaded[1] ? "initial" : "none",
@@ -472,22 +472,22 @@ const POIDetails = (props) => {
                   </Child>
 
                   <Child area="1 / 7 / 5 / 11" className="div3">
-                      <Image
-                        src={
-                          props?.data?.extra_images?.[2]
-                            ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                            : "/media/icons/bookings/notfounds/noroom.png"
-                        }
-                        alt="Image 0"
-                        fill
-                        className="object-cover"
-                        onLoad={() => OnImageLoad(2)}
-                        onError={(e) => {
-                          e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                          OnImageError(2);
-                        }}
-                        priority
-                      />
+                    <Image
+                      src={
+                        props?.data?.extra_images?.[2]
+                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                      }
+                      alt="Image 0"
+                      fill
+                      className="object-cover"
+                      onLoad={() => OnImageLoad(2)}
+                      onError={(e) => {
+                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                        OnImageError(2);
+                      }}
+                      priority
+                    />
                     <div
                       style={{
                         display: !ImagesLoaded[2] ? "initial" : "none",
@@ -503,22 +503,22 @@ const POIDetails = (props) => {
             ) : props?.data?.extra_images?.length == 2 ? (
               <GridImage>
                 <Child area="1 / 1 / 5 / 6" className="div1 ">
-                    <Image
-                      src={
-                        props?.data?.extra_images?.[0]
-                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
-                      }
-                      alt="Image 0"
-                      fill
-                      className="object-cover"
-                      onLoad={() => OnImageLoad(0)}
-                      onError={(e) => {
-                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                        OnImageError(0);
-                      }}
-                      priority
-                    />
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[0]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(0)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(0);
+                    }}
+                    priority
+                  />
                   <div
                     style={{
                       display: !ImagesLoaded[0] ? "initial" : "none",
@@ -531,22 +531,22 @@ const POIDetails = (props) => {
                 </Child>
 
                 <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
-                    <Image
-                      src={
-                        props?.data?.extra_images?.[1]
-                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
-                      }
-                      alt="Image 0"
-                      fill
-                      className="object-cover"
-                      onLoad={() => OnImageLoad(1)}
-                      onError={(e) => {
-                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                        OnImageError(1);
-                      }}
-                      priority
-                    />
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[1]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(1)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(1);
+                    }}
+                    priority
+                  />
                   <div
                     style={{
                       display: !ImagesLoaded[1] ? "initial" : "none",
@@ -559,33 +559,33 @@ const POIDetails = (props) => {
                 </Child>
               </GridImage>
             ) : (
-                <Child style={{ height: "19rem" }}>
-                    <Image
-                      src={
-                        props?.data?.extra_images?.[0]
-                          ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
-                      }
-                      alt="Image 0"
-                      fill
-                      className="object-cover"
-                      onLoad={() => OnImageLoad(0)}
-                      onError={(e) => {
-                        e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-                        OnImageError(0);
-                      }}
-                      priority
-                    />
-                  <div
-                    style={{
-                      display: !ImagesLoaded[0] ? "initial" : "none",
-                      height: "100%",
-                      overflow: "hidden",
-                    }}
-                  >
-                    <SkeletonCard lottieDimension={"50rem"} />
-                  </div>
-                </Child>
+              <Child style={{ height: "19rem" }}>
+                <Image
+                  src={
+                    props?.data?.extra_images?.[0]
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 0"
+                  fill
+                  className="object-cover"
+                  onLoad={() => OnImageLoad(0)}
+                  onError={(e) => {
+                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                    OnImageError(0);
+                  }}
+                  priority
+                />
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension={"50rem"} />
+                </div>
+              </Child>
             )}
           </>
           <div className="">
@@ -645,11 +645,10 @@ const POIDetails = (props) => {
                         <div key={i} className="flex gap-[22px] mb-2">
                           <div className="text-[14px] font-semibold">{day}</div>
                           <div
-                            className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
-                              time == "Closed"
+                            className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
                                 ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
                                 : ""
-                            }`}
+                              }`}
                           >
                             {time}
                           </div>
@@ -806,15 +805,15 @@ const POIDetails = (props) => {
 
               {!(props?.removeDelete == true) && props?.version != "v1" && (
                 <button
-                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                  className="ttw-btn-fill-error"
                   onClick={handleDelete}
                 >
                   <div style={{ position: "relative" }}>
                     <div
-                      className="flex gap-1 items-center p-1"
+                      className="flex gap-1 items-center"
                       style={loading ? { visibility: "hidden" } : {}}
                     >
-                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                      {svgIcons.delete}
                       Remove from Itinerary
                     </div>
                     {loading && (
@@ -842,7 +841,7 @@ const POIDetails = (props) => {
             backdrop
             width={"50%"}
             mobileWidth={"100%"}
-            className="font-lexend"
+            className=""
             style={{ zIndex: 1505 }}
             onHide={() => setShowDrawer(false)}
           >

@@ -336,7 +336,7 @@ const Day_I_Container = (props) => {
   };
 
   return (
-    <Container id={`day${props.indexDay + 1}`} className="font-lexend">
+    <Container id={`day${props.indexDay + 1}`} className="">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
           <div

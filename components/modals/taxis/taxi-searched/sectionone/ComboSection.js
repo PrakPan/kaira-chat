@@ -228,7 +228,7 @@ const ComboSection = (props) => {
   if (!props.data) return null;
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <TaxiCard>
         <ImageContainer>
           {/* {props.data?.taxi_category?.image ? (

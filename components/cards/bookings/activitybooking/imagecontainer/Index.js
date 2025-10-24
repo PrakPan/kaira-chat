@@ -90,7 +90,7 @@ const Booking = (props) => {
           props.images.length ? (
             <PhotosButton
               onClick={() => props._setImagesHandler(imagesarr)}
-              className="font-lexend"
+              className=""
             >
               All Photos
             </PhotosButton>
@@ -105,11 +105,11 @@ const Booking = (props) => {
             display: "flex",
           }}
         >
-          <EditButton className="font-lexend" style={{ marginRight: "0.5rem" }}>
+          <EditButton className="" style={{ marginRight: "0.5rem" }}>
             Activity
           </EditButton>
           {props.star_category ? (
-            <EditButton className="font-lexend">
+            <EditButton className="">
               {props.star_category + " star"}
             </EditButton>
           ) : null}

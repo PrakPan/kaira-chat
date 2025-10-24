@@ -60,7 +60,7 @@ const Locations = (props) => {
             fit="cover"
             hoverpointer
           />
-          <ImageText className="center-div text-center font-lexend">
+          <ImageText className="center-div text-center ">
             {props.hotlocations[i].name}
           </ImageText>
         </LocationContainer>
@@ -81,7 +81,7 @@ const Locations = (props) => {
             fit="cover"
             hoverpointer
           />
-          <ImageText className="center-div text-center font-lexend">
+          <ImageText className="center-div text-center ">
             {""}
           </ImageText>
         </LocationContainer>
@@ -91,7 +91,7 @@ const Locations = (props) => {
 
   return (
     <div>
-      <Heading className="font-lexend">Top Locations</Heading>
+      <Heading className="">Top Locations</Heading>
       <Container>{locations}</Container>
     </div>
   );

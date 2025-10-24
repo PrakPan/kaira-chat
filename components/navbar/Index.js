@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as logout from "../../store/actions/logout";
 import * as authaction from "../../store/actions/auth";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { OverlayScrollbars } from "overlayscrollbars";
 import "overlayscrollbars/overlayscrollbars.css";
 import IndexDesktop from "./Desktop";
@@ -12,7 +12,7 @@ import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import { closeTailoredModal } from "../../services/openTailoredModal";
 import { useRouter } from "next/router";
 
-const Navbar = React.memo((props) => {
+const Navbar = ((props) => {
   let isPageWide = media("(min-width: 768px)");
   const [scrollbarInstance, setScrollbarInstance] = useState(null);
   const [hideNav, setHideNav] = useState(false);
@@ -22,7 +22,9 @@ const Navbar = React.memo((props) => {
   let [notifications, setNotifications] = useState([]);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
+  const dispatch=useDispatch();
 
+  
   useEffect(() => {
     if (router.isReady) {
       const queries = router.query;
@@ -50,6 +52,8 @@ const Navbar = React.memo((props) => {
     window.scrollTo(0, scrollPosition);
     setScrollbarInstance(newScrollbarInstance);
   }, [isPageWide, props.overflow]);
+
+  console.log("show login is: ",props.showLogin)
 
   useEffect(() => {
     let prevScroll = window.pageYOffset;
@@ -82,7 +86,7 @@ const Navbar = React.memo((props) => {
   const _openAllNotificationsHandler = () => {};
 
   return (
-    <div className="font-lexend">
+    <div className="">
       <div className="hidden-desktop">
         {!hideNav && (
           <NewMobile
@@ -127,8 +131,8 @@ const Navbar = React.memo((props) => {
       </div>
 
       <LogInModal
-        show={showLoginModal}
-        onhide={() => setShowLoginModal(false)}
+        show={props.showLogin}
+        onhide={()=>authaction.authCloseLogin()}
       ></LogInModal>
 
       <TailoredFormMobileModal
@@ -149,6 +153,7 @@ const mapStateToProps = (state) => {
     name: state.auth.name,
     image: state.auth.image,
     overflow: state.scroll.overflow,
+    showLogin: state.auth.showLogin,
   };
 };
 

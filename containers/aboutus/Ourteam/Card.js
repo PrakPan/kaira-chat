@@ -63,9 +63,9 @@ const Card = (props) => {
           borderRadius="50%"
           widthmobile="40%"
         />
-        <Name className="font-lexend">{props.name}</Name>
-        <Designation className="font-lexend">{props.tagline}</Designation>
-        <Designation className="font-lexend">{props.designation}</Designation>
+        <Name className="">{props.name}</Name>
+        <Designation className="">{props.tagline}</Designation>
+        <Designation className="">{props.designation}</Designation>
         <Description className="font-nunito">{props.text}</Description>
       </Container>
     );
@@ -80,10 +80,10 @@ const Card = (props) => {
           borderRadius="50%"
           url={props.url}
         />
-        <Name className="font-lexend">{props.name}</Name>
-        {/* <Tagline className="font-lexend"> The "I have an idea" guy</Tagline> */}
-        <Designation className="font-lexend">{props.tagline}</Designation>
-        <Designation className="font-lexend">{props.designation}</Designation>
+        <Name className="">{props.name}</Name>
+        {/* <Tagline className=""> The "I have an idea" guy</Tagline> */}
+        <Designation className="">{props.tagline}</Designation>
+        <Designation className="">{props.designation}</Designation>
         <Description className="font-nunito">{props.text}.</Description>
       </Container>
     );

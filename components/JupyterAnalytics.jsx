@@ -22,7 +22,7 @@ export default function JupyterAnalytics({
         flushInterval
       };
       
-      console.log('Jupiter Config set:', window.JUPITER_CONFIG);
+      // console.log('🔧 Jupiter Config set:', window.JUPITER_CONFIG);
     }
   }, [apiEndpoint, apiKey, userId, batchSize, flushInterval]);
 
@@ -47,20 +47,40 @@ export default function JupyterAnalytics({
   };
 
   return (
-    <Script
-      key={scriptKey}
-      src="/jupyter-partytown.js"
-      type="text/partytown"
-      onLoad={checkAnalyticsLoaded}
-      onError={(e) => {
-        console.error('Script load error:', e);
-        if (retryCount < maxRetries) {
+    <>
+      {/* Partytown configuration */}
+      <Script
+        id="partytown-config"
+        strategy="beforeInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            partytown = {
+              forward: ['JupiterAnalytics', 'JUPITER_CONFIG'],
+              debug: ${process.env.NODE_ENV === 'development'}
+            };
+          `,
+        }}
+      />
+
+      {/* Load Jupiter Analytics in web worker */}
+      <Script
+        src="/jupyter-partytown.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          // console.log('✅ Jupiter Analytics loaded in web worker');
+          
+          // Check if it initialized
           setTimeout(() => {
-            setRetryCount(prev => prev + 1);
-            setScriptKey(prev => prev + 1);
-          }, 3000);
-        }
-      }}
-    />
+            if (typeof window !== 'undefined' && window.JupiterAnalytics) {
+              const state = window.JupiterAnalytics.getState();
+              // console.log('📊 Jupiter Analytics State:', state);
+            }
+          }, 2000);
+        }}
+        onError={(e) => {
+          console.error('❌ Jupiter Analytics load failed:', e);
+        }}
+      />
+    </>
   );
 }

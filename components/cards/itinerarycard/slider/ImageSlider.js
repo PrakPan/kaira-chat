@@ -69,8 +69,8 @@ const ImageSlider = (props) => {
               style={{ fontSize: "1rem", margin: "0rem 0.5rem 0 0" }}
             />
             <div>
-              <TagHeading className="font-lexend">LOCATIONS</TagHeading>
-              <TagText className="font-lexend">
+              <TagHeading className="">LOCATIONS</TagHeading>
+              <TagText className="">
                 {props.locations.join(" ")}
               </TagText>
             </div>
@@ -81,8 +81,8 @@ const ImageSlider = (props) => {
               style={{ fontSize: "1rem", margin: "0rem 0.5rem 0 0" }}
             />
             <div>
-              <TagHeading className="font-lexend">DURATION</TagHeading>
-              <TagText className="font-lexend">{props.duration}</TagText>
+              <TagHeading className="">DURATION</TagHeading>
+              <TagText className="">{props.duration}</TagText>
             </div>
           </TagContainer>
         </div>
@@ -92,8 +92,8 @@ const ImageSlider = (props) => {
             style={{ fontSize: "1rem", margin: "0rem 0.5rem 0 0" }}
           />
           <div>
-            <TagHeading className="font-lexend">BUDGET</TagHeading>
-            <TagText className="font-lexend">{props.budget}</TagText>
+            <TagHeading className="">BUDGET</TagHeading>
+            <TagText className="">{props.budget}</TagText>
           </div>
         </TagContainer>
       </TagsContainer>

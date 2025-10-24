@@ -114,7 +114,7 @@ const Accommodation = (props) => {
         style={{ display: "flex", alignItems: "center" }}
         onClick={props.setShowDetails}
       >
-        <Name className="font-lexend hover-pointer">{props.name}</Name>
+        <Name className=" hover-pointer">{props.name}</Name>
       </div>
       <TagsContainer onClick={props.setShowDetails}>
         {props.star ? (
@@ -140,7 +140,7 @@ const Accommodation = (props) => {
             widthmobile="2rem"
           ></ImageLoader>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <RoomText className="font-lexend">
+            <RoomText className="">
               <span>
                 {props.number_of_rooms ? props.number_of_rooms + " x " : "1 x "}
               </span>
@@ -150,7 +150,7 @@ const Accommodation = (props) => {
         </div>
         {props.rating && color !== "red" ? (
           <RatingContainer
-            className="font-lexend hidden-mobile"
+            className=" hidden-mobile"
             style={{ backgroundColor: color, lineHeight: "1" }}
           >
             <IoStarSharp
@@ -186,7 +186,7 @@ const Accommodation = (props) => {
           }}
         >
           {props.accommodation.price_lower_range_ext ? (
-            <Cost className="font-lexend">
+            <Cost className="">
               {"₹ " +
                 getIndianPrice(
                   Math.round(props.accommodation.price_lower_range_ext / 100)

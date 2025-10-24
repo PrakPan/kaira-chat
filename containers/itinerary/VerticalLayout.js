@@ -25,12 +25,12 @@ import TransferPickupDropButton from "./TransferPickupDropButton";
 import PickupDropDrawer from "./PickupDropDrawer";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { useAnalytics } from "../../hooks/useAnalytics";
+import useMediaQuery from "../../components/media";
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-left: 6%;
 `;
 
 const VerticalLine = styled.div`
@@ -85,24 +85,24 @@ const AirportBookingItem = ({
       case "Flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       case "Taxi":
       case "Car":
-        return <IoCar className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "Bus":
         return (
           <FaBus
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       default:
@@ -468,14 +468,14 @@ const AirportBookingItem = ({
 
     // Add "Add" options for missing pickup/drop if supports transfers
     if (supportsTransfers(bookingMode)) {
-      if (!hasDrop) {
+      if (!hasDrop && !firstCity) {
         allBookingsWithTypes.push({
           displayType: "Add Drop",
           isAdd: true,
           addType: "drop",
         });
       }
-      if (!hasPickup) {
+      if (!hasPickup && !lastCity) {
         allBookingsWithTypes.push({
           displayType: "Add Pickup",
           isAdd: true,
@@ -666,7 +666,7 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className="text-blue font-[500] text-[14px] hover:underline cursor-pointer"
+            className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -747,11 +747,14 @@ const CityItem = ({
   destinationLong,
   firstCity,
   lastCity,
-  bookingIdToDelete
+  bookingIdToDelete,
+  pinColour,
+  isLast
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const isDesktop = useMediaQuery("(min-width:767px)");
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -781,24 +784,24 @@ const CityItem = ({
       case "flight":
         return (
           <MdOutlineFlightTakeoff
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       case "taxi":
       case "car":
-        return <IoCar className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoCar className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "train":
-        return <IoMdTrain className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdTrain className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "ferry":
-        return <IoMdBoat className="text-2xl" size={16} color={"#1F1F1F"} />;
+        return <IoMdBoat className="text-2xl" size={16} color={"#a5a5a5"} />;
       case "bus":
         return (
           <FaBus
-            className="text-2xl text-[#1F1F1F]"
+            className="text-2xl text-[#a5a5a5]"
             size={16}
-            color={"#1F1F1F"}
+            color={"#a5a5a5"}
           />
         );
       default:
@@ -880,7 +883,7 @@ useEffect(() => {
 const handleEdit = async (combo, book) => {
   const bookingType = book?.booking_type || booking_type;
   setTransferType(bookingType);
-  trackTransferBookingChange(router.query.id,bookingIdToDelete,id);
+  trackTransferBookingChange(router.query.id,bookingIdToDelete,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
   setIsIntracity(false);
   if (combo) {
     setComboDetails(true);
@@ -926,7 +929,7 @@ const handleEdit = async (combo, book) => {
   };
 
   const handleAddTransfer = () => {
-    trackTransferBookingAdd(router.query.id,bookingIdToDelete,id);
+    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -1144,6 +1147,7 @@ useEffect(() => {
         );
       }
       setIsTransferDrawerOpen(false);
+      handleClose();
       setTransferDrawerType(null);
       setSelectedTransferBooking(null);
     } catch (error) {
@@ -1179,14 +1183,12 @@ useEffect(() => {
 
 
 
-console.log("HandleEdit",airportBookingId,booking_id,bookingId)
-
   return (
-    <Container>
+    <Container className={`${isLast && "mb-[60px]"}`}>
       <PinWrapper>
-        {upPresent && <VerticalLine height="50px" gradient="top" />}
+        {upPresent && <VerticalLine height={"50px"} gradient="top" />}
         {upPresent && downPresent ? (
-          <Pin length={length} />
+          <Pin length={length}  pinColour={pinColour}/>
         ) : (
           <svg
             width="24"
@@ -1208,11 +1210,11 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
             />
           </svg>
         )}
-        {downPresent && <VerticalLine height="50px" gradient="bottom" />}
+        {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
       </PinWrapper>
 
       <div
-        className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]"
+        className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
           } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         {/* City and Duration Section - Aligned with Pin */}
@@ -1220,7 +1222,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className="">{city}</div>}
+          {!(upPresent && downPresent) && <div className={`${isDesktop?"Body1M_16":"Body2M_14"}`}>{city}</div>}
 
           {transfers_status === "PENDING" ? (
             upPresent && downPresent ? (
@@ -1253,7 +1255,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
                               {correctIcon(mode)}
                               {i < booking?.children?.length - 1 && (
                                 <span>
-                                  <RiArrowDropRightLine size={18} />
+                                  <RiArrowDropRightLine size={18} color={'#a5a5a5'} />
                                 </span>
                               )}
                             </React.Fragment>
@@ -1275,7 +1277,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
                             handleEdit(transfer_type === "combo", booking);
                         }}
                       >
-                        <div className="group-hover:text-blue">
+                        <div className={`${isDesktop?"Body1M_16":"Body2M_14"} group-hover:text-blue `}>
                           {upPresent && downPresent ? city : ""}
                         </div>
                         {upPresent && downPresent && (
@@ -1290,7 +1292,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
 
                       {/* Duration */}
                       {duration && (
-                        <div className="font-[400] text-[12px]">
+                        <div className="Body3R_12">
                           Duration: {duration}
                         </div>
                       )}
@@ -1299,7 +1301,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
                 ) : isPageWide ? (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer from {origin_city_name} to{" "}
                     {destination_city_name}
@@ -1307,7 +1309,7 @@ console.log("HandleEdit",airportBookingId,booking_id,bookingId)
                 ) : (
                   <button
                     onClick={handleAddTransfer}
-                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer
                   </button>

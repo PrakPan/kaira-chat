@@ -1201,7 +1201,7 @@ const PickupDropDrawer = ({
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={onClose}
       mobileWidth="100vw"
       width={"50vw"}

@@ -21,7 +21,7 @@ const City = styled.div`
 
 const Itinerary = (props) => {
   return (
-    <div className="font-lexend">
+    <div className="">
       <CitiesContainer>
         <City
           className="border-thin"

@@ -8,7 +8,9 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
 import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
-import axiosRoundTripInstance, { axiosMulticityRoundTripInstance } from "../../../services/itinerary/brief/roundTripSuggestion";
+import axiosRoundTripInstance, {
+  axiosMulticityRoundTripInstance,
+} from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import Button from "../../../components/ui/button/Index";
@@ -48,7 +50,10 @@ import {
 } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
-import { setTransfersBookings, updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
+import {
+  setTransfersBookings,
+  updateSingleTransferBooking,
+} from "../../../store/actions/transferBookingsStore";
 import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
 import { TbArrowBack } from "react-icons/tb";
@@ -99,7 +104,9 @@ const TRANSFER_TYPES = {
     name: "MULTICITYROUNDTRIP",
     label: "Multi-City/Round Trip Taxi"
   },
-};
+    name: "MULTICITYROUNDTRIP",
+    label: "Multi-City/Round Trip Taxi"
+  }
 
 const TransferEditDrawer = (props) => {
   const {
@@ -140,7 +147,8 @@ const TransferEditDrawer = (props) => {
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
-  const [loadingMulticityTransfers, setLoadingMulticityTransfers] = useState(true);
+  const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
+    useState(true);
   const [transfersError, setTransfersError] = useState(null);
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
@@ -195,7 +203,18 @@ const TransferEditDrawer = (props) => {
     return newDate.format("YYYY-MM-DD");
   };
 
-  console.log("IsMulti", booking_type, transferType);
+  // console.log("IsMulti", booking_type, transferType);
+  useEffect(() => {
+    if (showDrawer) {
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.documentElement.style.overflow = "auto";
+    };
+  }, [showDrawer]);
+
+  // console.log("IsMulti",booking_type,transferType);
   const fetchRoutes = () => {
     setLoadingTransfers(true);
     setLoadingMulticityTransfers(true);
@@ -594,7 +613,7 @@ const TransferEditDrawer = (props) => {
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend pb-0 md:pb-[100px]"
+      className=" pb-0 md:pb-[100px]"
       width={"50vw"}
       mobileWidth={"100vw"}
       onHide={() => {
@@ -664,7 +683,10 @@ const TransferEditDrawer = (props) => {
         />
       } */}
 
-        {(loadingTransfers && transferType === TRANSFER_TYPES.ONEWAYTRIP.name) || (loadingMulticityTransfers && transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
+        {(loadingTransfers &&
+          transferType === TRANSFER_TYPES.ONEWAYTRIP.name) ||
+        (loadingMulticityTransfers &&
+          transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
             <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
               {/* <div className="flex items-center justify-center">
@@ -2759,7 +2781,7 @@ const NewMultiModeContainer = ({
 
             <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
               <h2 className="text-xl font-semibold mb-1 pr-8">
-                Transfer Update Warning!
+                Dates Change Warning!
               </h2>
 
               <div className="text-gray-700 mb-6">
@@ -3621,9 +3643,7 @@ const RoundTripSuggestion = ({
                 className="flex flex-row items-center gap-2"
               >
                 <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="text-[14px] font-normal">
-                  {route?.name}
-                </div>
+                <div className="text-[14px] font-normal">{route?.name}</div>
               </div>
             ))}
           </div>
@@ -3666,7 +3686,10 @@ const RoundTripSuggestion = ({
                   <div className="text-[#636366] text-[14px] font-normal">
                     {price.transfer_details?.model_name || price.transfer_details?.type}:{" "}
                     <span className="text-black font-bold">
-                      ₹{getIndianPrice(Math.floor(price?.transfer_details?.total))}
+                      ₹
+                      {getIndianPrice(
+                        Math.floor(price?.transfer_details?.total)
+                      )}
                     </span>
                   </div>
                   {(viewDetails[i] || true) && (
@@ -3817,9 +3840,7 @@ const MultiCityTripSuggestion = ({
                 className="flex flex-row items-center gap-2"
               >
                 <div className="w-1 h-1 bg-black rounded-full"></div>
-                <div className="text-[14px] font-normal">
-                  {route?.name}
-                </div>
+                <div className="text-[14px] font-normal">{route?.name}</div>
               </div>
             ))}
           </div>

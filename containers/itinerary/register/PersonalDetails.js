@@ -119,7 +119,7 @@ export default function SignIn(props) {
                 alignItems: "center",
                 fontSize: "1rem",
               }}
-              className="font-lexend"
+              className=""
             >
               <p style={{ margin: "0" }}>
                 I agree to the{" "}

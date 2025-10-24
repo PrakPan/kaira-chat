@@ -21,7 +21,7 @@ const Ammenities = (props) => {
     if (props.data.hotel_facilities) {
       for (var i = 0; i < props.data.hotel_facilities.length; i++) {
         ammenities_arr.push(
-          <Ammenity className="font-lexend">
+          <Ammenity className="">
             {props.data.hotel_facilities[i]}
           </Ammenity>
         );

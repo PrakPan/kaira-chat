@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { ImSearch } from "react-icons/im";
 import SkeletonCard from "../../../../ui/SkeletonCard";
 import Link from "next/link";
+import Image from "next/image";
 
 const Container = styled.div`
   margin: 1rem;
@@ -22,9 +23,9 @@ const LocationContainer = styled(Link)`
   display: flex;
   gap: 12px;
   align-items: center;
-  border-radius: 50px;
+  border-radius: 10px;
   &:hover {
-    background: #f0f0f0;
+    background: #FEFFC0;
     cursor: pointer;
   }
 `;
@@ -126,12 +127,14 @@ const NewResults = (props) => {
       <Container>
         {props.results.map((e) => (
           <LocationContainer key={e.resource_id} href={"/" + e.path}>
-            <MarkerContainer>
+            {!e?.image ? <MarkerContainer>
               <ImSearch />
-            </MarkerContainer>
+            </MarkerContainer> :
+              <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + e?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
+            }
             <Text>
               <div>{e.name}</div>
-              {e.parent ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{e.parent}</p> : e?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{getParent(e.path)}</p> : null }
+              {e.parent ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{e.parent}</p> : e?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{getParent(e.path)}</p> : null}
             </Text>
           </LocationContainer>
         ))}

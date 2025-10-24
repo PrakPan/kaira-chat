@@ -36,7 +36,7 @@ const Menu = (props) => {
     <Container className="" style={{}}>
       <SetWidthContainer>
         <div
-          className="font-lexend  hover-pointer"
+          className="  hover-pointer"
           style={{ color: "white", display: "flex" }}
           onClick={() => setShowTerms(true)}
         >
@@ -73,7 +73,7 @@ const Menu = (props) => {
           }
         >
           <div
-            className="font-lexend hidden-mobile hover-pointer center-div"
+            className=" hidden-mobile hover-pointer center-div"
             style={{ marginRight: "0.5rem", lineHeight: "1" }}
           >
             Connect on WhatsApp
@@ -102,7 +102,7 @@ const Menu = (props) => {
           }
         >
           <div
-            className="font-lexend hidden-mobile hover-pointer center-div"
+            className=" hidden-mobile hover-pointer center-div"
             style={{ marginRight: "0.5rem", lineHeight: "1" }}
           >
             Connect on WhatsApp

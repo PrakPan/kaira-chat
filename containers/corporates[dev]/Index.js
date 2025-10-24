@@ -64,11 +64,11 @@ const CardListItem = styled.li`
 `;
 
 const HowitWorksHeadingsArr = [
-  <HowItWorksHeading className="font-lexend">Leisure Travel</HowItWorksHeading>,
+  <HowItWorksHeading className="">Leisure Travel</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-lexend">Booking Needs</HowItWorksHeading>,
+  <HowItWorksHeading className="">Booking Needs</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-lexend">
+  <HowItWorksHeading className="">
     Support & Conferences
   </HowItWorksHeading>,
 ];

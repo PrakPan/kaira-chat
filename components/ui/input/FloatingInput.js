@@ -75,7 +75,7 @@ const FloatingInput = forwardRef((props, ref) => {
         style={props.ContainerStyle}
         height={props.height}
         width={props.width}
-        className="font-lexend"
+        className=""
       >
         <Input
           {...props}

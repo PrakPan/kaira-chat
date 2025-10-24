@@ -135,67 +135,63 @@ export default function TemporaryDrawer(props) {
 
             <div className="w-full flex flex-row justify-between">
 
-            <div className="w-[40%]">
-            <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
-            </div>
-             <StarCategory
+              <div className="w-[40%]">
+                <PriceRange budget={props?.budget} setBudget={props?.setBudget} setFilters={props?.setFilters} handleBudgetChange={props?.handleBudgetChange} />
+              </div>
+              <StarCategory
                 starCategory={props.FILTERS.star_category}
                 selectedStarCategory={selectedStarCategory}
                 setSelectedStarCategory={setSelectedStarCategory}
               />
 
-              </div>
+            </div>
 
             <div className="w-full flex flex-row justify-between">
 
-               <div className="w-[50%] flex flex-col gap-3 justify-center">
+              <div className="w-[50%] flex flex-col gap-3 justify-center">
 
 
-              <div className="w-fit flex flex-row gap-5">
-                <button
-                  onClick={handleRefundable}
-                  className="flex flex-row items-center gap-1 cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={refundable} />
-                  Refundable
-                </button>
+                <div className="w-fit flex flex-row gap-5">
+                  <button
+                    onClick={handleRefundable}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={refundable} />
+                    Refundable
+                  </button>
 
-                <button
-                  onClick={handleFreeBreakfast}
-                  className="flex flex-row items-center gap-1 cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={freeBreakfast} />
-                  Free Breakfast
-                </button>
+                  <button
+                    onClick={handleFreeBreakfast}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={freeBreakfast} />
+                    Free Breakfast
+                  </button>
+                </div>
               </div>
+
+              {/* 
+              <Travelers
+                filters={props.filters}
+                setFilters={props.setFilters}
+              /> */}
+
             </div>
-             
-              <div className="w-fit">
-                <Travelers
-                  filters={props.filters}
-                  setFilters={props.setFilters}
-                />
-              </div>
-            </div>
-
-           
-
-
           </div>
         )}
 
-        {!isPageWide && (
+        {/* {!isPageWide && (
           <div className="w-[90%] mx-auto">
 
             <Travelers filters={props.filters} setFilters={props.setFilters} />
           </div>
-        )}
+        )} */}
 
         {!props.loading && props?.totalCount ? (
           <div className="flex flex-row items-center justify-between px-4 mt-3">
             <div className="text-sm font-normal w-[95%] md:w-fit">
-              Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
-              stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
+              {/* Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
+              stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "} */}
               <div
                 style={{
                   display: "inline",
@@ -311,12 +307,6 @@ export default function TemporaryDrawer(props) {
                 </button>
                 {props?.showFilters && (
                   <div
-                    // className={`
-                    //   z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
-                    //   min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
-                    //   max-[583px]:absolute max-[583px]:bottom-0 max-[583px]:w-full
-                    //   ${props?.showFilters ? 'opacity-100' : 'opacity-0'} transition-all
-                    // `}
                     ref={filtersRef}
                     key={1}
                   >

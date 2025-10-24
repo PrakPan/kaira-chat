@@ -45,7 +45,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -62,7 +62,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -79,7 +79,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -96,7 +96,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -113,7 +113,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend "
+            className=" "
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -130,7 +130,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >
@@ -147,7 +147,7 @@ const Menu = (props) => {
           duration={500}
         >
           <MenuItem
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "300" }}
             onClick={props.hideMenu}
           >

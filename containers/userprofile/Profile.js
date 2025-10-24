@@ -281,7 +281,7 @@ const Profile = (props) => {
             </div>
           ) : (
             <div className="flex flex-row gap-2 items-center">
-              <Name className="font-lexend">{props.name}</Name>
+              <Name className="">{props.name}</Name>
               <MdEdit
                 onClick={(e) => {
                   e.stopPropagation();
@@ -341,14 +341,14 @@ const Profile = (props) => {
         <DetailsContainer>
           {isPageWide ? (
             <SectionHeading
-              className="font-lexend"
+              className=""
               style={{ fontWeight: "700", marginBottom: "2rem" }}
             >
               Your Profile
             </SectionHeading>
           ) : null}
 
-          <DetailHeading className="font-lexend">
+          <DetailHeading className="">
             <div>Contact Number</div>
           </DetailHeading>
 
@@ -446,7 +446,7 @@ const Profile = (props) => {
             </DetailHeading>
           </div>
 
-          <DetailHeading className="font-lexend" style={{ clear: "both" }}>
+          <DetailHeading className="" style={{ clear: "both" }}>
             <div>Email</div>
           </DetailHeading>
 

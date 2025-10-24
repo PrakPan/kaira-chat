@@ -20,6 +20,23 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
+let availableColors = [...CITY_COLOR_CODES];
+let usedColors = [];
+
+const getCityColor = (index) => {
+  if (availableColors.length === 0) {
+    availableColors = [...CITY_COLOR_CODES];
+    usedColors = [];
+  }
+  if (typeof index !== "number" || isNaN(index) || index < 0) {
+    index = 0;
+  }
+  const color = availableColors[index % availableColors.length];
+  usedColors.push(color);
+  availableColors = availableColors.filter(c => c !== color);
+  return color;
+};
+
 const DaybyDay = ({
   transferBookings,
   width,
@@ -35,9 +52,10 @@ const DaybyDay = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   setShowLoginModal,
+  index,
   ...props
 }) => {
-const router=useRouter()
+  const router = useRouter()
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
@@ -67,7 +85,7 @@ const router=useRouter()
     }
   }, [itineraryDaybyDay]);
 
-  function handleClickAc(i, data, city_id,itinerary_city_id, clickType) {
+  function handleClickAc(i, data, city_id, itinerary_city_id, clickType) {
     let id = stayBookings[i]?.["id"];
     let cityId =
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
@@ -113,14 +131,13 @@ const router=useRouter()
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-5 ${
-          !isPageWide ? "" : "max-w-[54vw]"
-        }`}
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[54vw]"
+          }`}
       >
-        <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
+        {/* <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
           Day By Day Itinerary
           <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
-        </h1>
+        </h1> */}
 
         {/* to navigate between cities in frontend */}
         {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
@@ -130,7 +147,6 @@ const router=useRouter()
             setShowLoginModal={setShowLoginModal}
             key={startCity?.place_id}
             city={startCity?.city_name}
-            pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
             upPresent={false}
@@ -152,10 +168,11 @@ const router=useRouter()
             destinationHotelName={stay?.[0]?.name ? stay[0]?.name : null}
             sourceLat={startCity?.latitude}
             sourceLong={startCity?.longitude}
-            destinationLat={stay?.[0] ? stay[0]?.lat: null}
-            destinationLong={stay?.[0] ? stay[0]?.long: null}
+            destinationLat={stay?.[0] ? stay[0]?.lat : null}
+            destinationLong={stay?.[0] ? stay[0]?.long : null}
             destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
             key={2}
+            pinColour={getCityColor(index)}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
               ":" +
@@ -164,58 +181,57 @@ const router=useRouter()
             city={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.name
             }
             booking={
               transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
               ]
             }
             duration={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.duration
             }
             booking_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
             }
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[
                 itineraryDaybyDay?.cities?.[0]?.id
-              ]?.filter((book)=> book?.is_airport_pickup) || []),
+              ]?.filter((book) => book?.is_airport_pickup) || []),
               ...(transferBooking?.airport?.[startCity?.gmaps_place_id]?.filter(
                 (book) =>
                   book?.is_airport_drop &&
                   book?.check_in?.split(" ")[0] <=
-                    itineraryDaybyDay?.cities?.[0]?.start_date
+                  itineraryDaybyDay?.cities?.[0]?.start_date
               ) || []),
             ])}
             transfer_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.transfer_type
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             downPresent={true}
             upPresent={true}
             booking_id={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
+                ":" +
+                itineraryDaybyDay?.cities?.[0]?.id
               ]?.id
             }
             width={width}
@@ -223,15 +239,15 @@ const router=useRouter()
             origin_city_id={startCity?.gmaps_place_id || startCity?.city_id}
             destination_city_id={itineraryDaybyDay?.cities?.[0]?.city?.id}
             origin_city_name={transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
-              ]?.transfer_details?.source?.name || startCity?.city_name}
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
+            ]?.transfer_details?.source?.name || startCity?.city_name}
             destination_city_name={transferBookings?.intercity?.[
-                startCity?.gmaps_place_id +
-                  ":" +
-                  itineraryDaybyDay?.cities?.[0]?.id
-              ]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[0]?.city?.name}
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
+            ]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[0]?.city?.name}
             // setBookingId={setBookingId}
             oCityData={startCity}
             dCityData={itineraryDaybyDay?.cities?.[0]}
@@ -247,14 +263,14 @@ const router=useRouter()
             var idMapping =
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
-            const cityHotels = stay?.filter(hotel => 
-    hotel?.itinerary_city_id === city?.id
-  ) || [];
+            const cityHotels = stay?.filter(hotel =>
+              hotel?.itinerary_city_id === city?.id
+            ) || [];
 
-  const totalDuration = cityHotels.reduce(
-    (total, hotel) => total + (hotel?.duration || 0), 
-    0
-  ) || city?.duration;
+            const totalDuration = cityHotels.reduce(
+              (total, hotel) => total + (hotel?.duration || 0),
+              0
+            ) || city?.duration;
 
             let sourceKey = city?.id;
             let airportBookings = [
@@ -287,7 +303,7 @@ const router=useRouter()
                   setItinerary={setItinerary}
                   activityBookings={activityBookings}
                   setActivityBookings={setActivityBookings}
-                  
+
                   idMapping={transferBookings?.intercity?.[idMapping]?.id}
                   setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
@@ -306,14 +322,14 @@ const router=useRouter()
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
-                      hotelName={stay?.[index]?.name ? stay[index]?.name: null}
+                      hotelName={stay?.[index]?.name ? stay[index]?.name : null}
                       sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index+ 1] ? stay[index+1]?.city_gmaps_place_id: itineraryDaybyDay?.cities[index+1]?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
                       sourceLat={stay?.[index] ? stay[index]?.lat : null}
                       sourceLong={stay?.[index] ? stay[index]?.long : null}
-                      destinationLat={stay?.[index+ 1] ? stay[index+1]?.lat: null}
-                      destinationLong={stay?.[index+ 1] ? stay[index+1]?.long: null}
-                      destinationHotelName={stay?.[index+ 1]?.name ? stay[index+1]?.name: null}
+                      destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}
+                      destinationLong={stay?.[index + 1] ? stay[index + 1]?.long : null}
+                      destinationHotelName={stay?.[index + 1]?.name ? stay[index + 1]?.name : null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -332,7 +348,7 @@ const router=useRouter()
                       transfer_type={
                         transferBookings?.intercity?.[idMapping]?.transfer_type
                       }
-                      pinColour={CITY_COLOR_CODES[index % 7]}
+                      pinColour={getCityColor(index)}
                       onClick={() => alert(`Clicked`)}
                       upPresent={true}
                       downPresent={true}
@@ -350,7 +366,7 @@ const router=useRouter()
                       destination_city_name={
                         transferBookings?.intercity?.[idMapping]?.transfer_details?.destination?.name || itineraryDaybyDay?.cities?.[index + 1]?.city?.name
                       }
-                      
+
                       oCityData={itineraryDaybyDay?.cities?.[index]}
                       dCityData={itineraryDaybyDay?.cities?.[index + 1]}
                       selectedBooking={selectedBooking}
@@ -374,7 +390,7 @@ const router=useRouter()
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name: null}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
             sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
             sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
             sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
@@ -387,15 +403,15 @@ const router=useRouter()
                 (booking) =>
                   booking?.is_airport_pickup &&
                   booking?.check_in?.split(" ")[0] >=
-                    itineraryDaybyDay?.cities?.[
-                      itineraryDaybyDay?.cities?.length - 1
-                    ]?.start_date
+                  itineraryDaybyDay?.cities?.[
+                    itineraryDaybyDay?.cities?.length - 1
+                  ]?.start_date
               ) || []),
               ...(transferBooking?.airport?.[
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id
-              ]?.filter((book)=>book?.is_airport_drop) || []),
+              ]?.filter((book) => book?.is_airport_drop) || []),
             ])}
             intracityBookings={
               transferBooking?.intracity[
@@ -404,12 +420,12 @@ const router=useRouter()
                 ]?.id
               ]
                 ? sortByCheckIn(
-                    transferBooking?.intracity[
-                      itineraryDaybyDay?.cities?.[
-                        itineraryDaybyDay?.cities?.length - 1
-                      ]?.id
-                    ]
-                  )
+                  transferBooking?.intracity[
+                  itineraryDaybyDay?.cities?.[
+                    itineraryDaybyDay?.cities?.length - 1
+                  ]?.id
+                  ]
+                )
                 : []
             }
             city={
@@ -417,24 +433,24 @@ const router=useRouter()
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.name
             }
             booking={transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
-              ]}
+              itineraryDaybyDay?.cities?.[
+                itineraryDaybyDay?.cities?.length - 1
+              ]?.id +
+              ":" +
+              endCity?.gmaps_place_id
+            ]}
             booking_type={
               transferBookings?.intercity?.[
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.booking_type
             }
             transfer_type={
@@ -442,8 +458,8 @@ const router=useRouter()
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.transfer_type
             }
             duration={
@@ -451,11 +467,11 @@ const router=useRouter()
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.duration
             }
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
             upPresent={true}
             downPresent={true}
@@ -464,8 +480,8 @@ const router=useRouter()
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.id
             }
             width={width}
@@ -480,18 +496,18 @@ const router=useRouter()
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
+                ":" +
+                endCity?.gmaps_place_id
               ]?.transfer_details?.source?.name || itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                 ?.city?.name
             }
             destination_city_name={transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id +
-                  ":" +
-                  endCity?.gmaps_place_id
-              ]?.transfer_details?.destination?.name || endCity?.city_name}
+              itineraryDaybyDay?.cities?.[
+                itineraryDaybyDay?.cities?.length - 1
+              ]?.id +
+              ":" +
+              endCity?.gmaps_place_id
+            ]?.transfer_details?.destination?.name || endCity?.city_name}
             // setBookingId={setBookingId}
             oCityData={
               itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
@@ -509,7 +525,7 @@ const router=useRouter()
             setShowLoginModal={setShowLoginModal}
             key={endCity?.place_id}
             city={endCity?.city_name}
-            pinColour={CITY_COLOR_CODES[0 % 7]}
+            pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
             upPresent={false}
@@ -521,6 +537,7 @@ const router=useRouter()
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
+            isLast={true}
           />
         </div>
       </div>

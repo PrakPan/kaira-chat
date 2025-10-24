@@ -89,7 +89,7 @@ const Itinerary = (props) => {
               color: "white !important",
             }}
             label={getHumanDate(props.day_slabs[i].slab)}
-            className="itinerary-day-tab font-lexend"
+            className="itinerary-day-tab "
           ></Tab>
         );
         day_slabs_jsx.push([]);

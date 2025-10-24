@@ -60,12 +60,12 @@ const TransferDrawer = ({
   isAirport,
   AirportTransferType,
   setIsTransferDrawerOpen,
+ isSightseeing,
   combo,
   booking_id,
   transferType,
- isSightseeing,
 }) => {
-  const handleClose=useHandleClose()
+  const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
   const [error,setError]=useState(false)
@@ -75,6 +75,7 @@ const TransferDrawer = ({
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
+  const [isDrawerOpen,setIsDrawerOpen] = useState(show);
     const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
@@ -531,13 +532,19 @@ const TransferDrawer = ({
     );
   };
 
+
+  const handleClose = () => {
+    setIsDrawerOpen(false);
+  handleDrawerClose();
+  }
+
   return (
     <Drawer
-      show={show}
+      show={isDrawerOpen}
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={handleClose}
       mobileWidth="100vw"
       width={"50vw"}

@@ -1,0 +1,151 @@
+// ===============================================
+// THETARZANWAY STYLE GUIDE
+// ===============================================
+
+// ===== COLOR VARIABLES =====
+$colors: (
+  // Primary Colors
+  primary-yellow: #f7e700,
+  primary-indigo: #07213a,
+
+  // Secondary Colors
+  secondary-green: #4caf50,
+  secondary-blue: #2196f3,
+  secondary-coral: #ff6b6b,
+  secondary-red: #f44336,
+
+  // Text Colors
+  text-focused: #333333,
+  text-default: #6b7280,
+  text-placeholder: #c7c7c7,
+  text-disabled: #e5e5e5,
+  text-white: #ffffff,
+  text-stroke: #f8f8f8,
+  text-background: #f8f8f8,
+
+  // Basic Colors
+  white: #ffffff,
+  black: #000000,
+
+  // Minimal grays for components
+  gray-light: #f5f5f5,
+  gray-medium: #e4e4e4,
+  gray-dark: #9ca3af,
+
+  // Status Colors
+  success: #10b981,
+  warning: #f59e0b,
+  error: #ef4444,
+  info: #3b82f6
+);
+
+// ===== COLOR HELPER FUNCTION =====
+@function color($name) {
+  @return map-get($colors, $name);
+}
+
+// ===== TYPOGRAPHY VARIABLES =====
+$font-families: (
+  primary: (
+    "Inter",
+    sans-serif,
+  ),
+);
+
+$font-weights: (
+  thin: 100,
+  extralight: 200,
+  light: 300,
+  regular: 400,
+  medium: 500,
+  semibold: 600,
+  bold: 700,
+  extrabold: 800,
+  black: 900,
+);
+
+$font-sizes: (
+  xs: 10px,
+  sm: 12px,
+  base: 14px,
+  md: 16px,
+  lg: 18px,
+  xl: 20px,
+  xxl: 24px,
+  xxxl: 28px,
+  display: 32px,
+);
+
+$line-heights: (
+  tight: 1.2,
+  normal: 1.4,
+  relaxed: 1.6,
+  loose: 1.8,
+);
+
+// ===== SPACING VARIABLES =====
+$spacing: (
+  xs: 4px,
+  sm: 8px,
+  md: 12px,
+  lg: 16px,
+  xl: 20px,
+  xxl: 24px,
+  xxxl: 32px,
+  xxxxl: 40px,
+  huge: 48px,
+  massive: 64px,
+);
+
+// ===== BORDER RADIUS =====
+$border-radius: (
+  none: 0,
+  sm: 4px,
+  base: 8px,
+  md: 12px,
+  lg: 16px,
+  xl: 20px,
+  full: 50%,
+  pill: 9999px,
+);
+
+// ===== SHADOWS =====
+$shadows: (
+  none: none,
+  sm: 0 1px 2px rgba(0, 0, 0, 0.05),
+  base: 0 1px 3px rgba(0, 0, 0, 0.1),
+  md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  xxl: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+  custom: 0px 0px 50px rgba(0, 0, 0, 0.25),
+);
+
+// ===== HELPER FUNCTIONS =====
+@function font-family($name) {
+  @return map-get($font-families, $name);
+}
+
+@function font-weight($name) {
+  @return map-get($font-weights, $name);
+}
+
+@function font-size($name) {
+  @return map-get($font-sizes, $name);
+}
+
+@function line-height($name) {
+  @return map-get($line-heights, $name);
+}
+
+@function spacing($name) {
+  @return map-get($spacing, $name);
+}
+
+@function border-radius($name) {
+  @return map-get($border-radius, $name);
+}
+
+@function shadow($name) {
+  @return map-get($shadows, $name);
+}

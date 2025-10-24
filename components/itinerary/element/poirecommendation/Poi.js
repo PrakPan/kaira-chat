@@ -40,10 +40,10 @@ const FoodData = (props) => {
         ></ImageLoader>
       </div>
       <TextContainer>
-        <Heading className="font-lexend">
+        <Heading className="">
           {props.data ? props.data.heading : null}
         </Heading>
-        <Text className="font-lexend">
+        <Text className="">
           {props.data ? props.data.text.substring(0, 150) + "..." : null}
         </Text>
       </TextContainer>

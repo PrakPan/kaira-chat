@@ -36,7 +36,7 @@ const Section = (props) => {
   };
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div
           style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}
         >
@@ -52,7 +52,7 @@ const Section = (props) => {
           <div style={{ display: "flex", gap: "1rem" }}>
             {props.data.check_in ? (
               <div>
-                <Heading className="font-lexend">Trip Start</Heading>
+                <Heading className="">Trip Start</Heading>
                 <Text className="font-nunito">
                   {getDate(props.data.check_in)}
                 </Text>
@@ -60,7 +60,7 @@ const Section = (props) => {
             ) : null}
             {props.data.check_out ? (
               <div>
-                <Heading className="font-lexend">Trip End</Heading>
+                <Heading className="">Trip End</Heading>
                 <Text className="font-nunito">
                   {getDate(props.data.check_out)}
                 </Text>
@@ -75,7 +75,7 @@ const Section = (props) => {
               alignItems: "flex-end",
             }}
           >
-            <Heading className="font-lexend">
+            <Heading className="">
               {props.data.costings_breakdown
                 ? props.data.costings_breakdown.duration
                   ? props.data.costings_breakdown.duration.text
@@ -101,7 +101,7 @@ const Section = (props) => {
           ></ImageLoader>
           <div style={{ display: "flex", gap: "1rem" }}>
             <div className="centerdiv">
-              <Heading className="font-lexend">
+              <Heading className="">
                 {props.data.costings_breakdown
                   ? props.data.costings_breakdown.distance
                     ? props.data.costings_breakdown.distance.text

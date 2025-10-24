@@ -29,7 +29,7 @@ const HoverConainer = styled.div`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <HoverConainer
           onClick={
             props.token && !props.is_registration_needed
@@ -60,7 +60,7 @@ const Section = (props) => {
         >
           <div
             style={{ lineHeight: "1", fontSize: "13px" }}
-            className="font-lexend"
+            className=""
           >
             {props.is_selecting ? (
               <Spinner size={16} margin="0 0 0 0.25rem"></Spinner>
@@ -89,7 +89,7 @@ const Section = (props) => {
           </div>
         </HoverConainer>
         <div className="center-di">
-          <Cost className="font-lexend"></Cost>
+          <Cost className=""></Cost>
         </div>
       </Container>
     );

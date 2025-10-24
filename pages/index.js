@@ -1,10 +1,26 @@
 import Head from "next/head";
-import HomepageContainer from "../containers/homepage/Index";
-import Layout from "../components/Layout";
-import { connect } from "react-redux";
+// import HomepageContainer from "../containers/homepage/Index";
+import HeroSection from "../components/revamp/home/HeroSection";
+import NavigationMenu from "../components/revamp/home/NavigationMenu";
+import JourneySimplified from "../components/revamp/home/JourneySimplified";
+import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
+import FullSlider from "../components/revamp/home/FullSlider";
+import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
+import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
+import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
+import WhereNextSection from "../components/revamp/home/WhereNextSection";
+import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
+import CurveImageGallery from "../components/theme/CurveImageGallery";
+import FaqSection from "../components/revamp/home/FaqSection";
+import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
+import NewFooter from "../components/newfooter/Index";
+
+// import Layout from "../components/Layout";
+import { connect, useSelector } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
 import { useEffect } from "react";
+import styles from "../styles/pages/revamp/home.module.scss";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
@@ -12,15 +28,17 @@ import axioslocationsinstance from "../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
+import { useRouter } from "next/router";
+import Login from "../components/modals/Login";
 
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
-
+  const router = useRouter();
   return (
-    <Layout>
+    <>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta
@@ -42,6 +60,16 @@ const Home = (props) => {
         ></meta>
 
         <link rel="canonical" href={`https://thetarzanway.com`}></link>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
 
         <script
           type="application/ld+json"
@@ -89,15 +117,40 @@ const Home = (props) => {
         />
       </Head>
 
-      <HomepageContainer
+      {/* <HomepageContainer
         asiaLocations={props.asiaLocations}
         europeLocations={props.europeLocations}
         token={props.token}
         locations={props.locations}
         ThemeData={props.ThemeData}
         continetCarousel={props.continetCarousel}
-      ></HomepageContainer>
-    </Layout>
+      ></HomepageContainer> */}
+
+      <div className={styles.ttwRevamp}>
+        <NavigationMenu />
+        <HeroSection />
+        <JourneySimplified />
+        <PlacesBragSection />
+        <MostLovedItinerariesSection className={'max-w-7xl'} />
+        <TravelerMadeItinerariesSection />
+        <FullSlider />
+        <TravelVibeSection />
+        <WhereNextSection />
+        <WhatMakesUsSection />
+        <CurveImageGallery />
+        <FaqSection />
+        <CtaBoardingSection />
+      </div>
+      <NewFooter page="Homepage" />
+      {/* <div id="login" className="width-[100%] z-[1650]">
+        <Login
+          show={props.showLogin}
+          onhide={props.authCloseLogin}
+          itinary_id={props?.itinary_id}
+          zIndex={"3300"}
+        />
+      </div> */}
+    </>
   );
 };
 
@@ -126,17 +179,19 @@ export async function getStaticProps() {
   var continetCarousel = [];
   let Count = null;
   let hotLocationSearch = [];
-  let pageId = PagesToIdMapping["asia/india"]!=undefined?PagesToIdMapping["asia/india"]:"";
+  let pageId =
+    PagesToIdMapping["asia/india"] != undefined
+      ? PagesToIdMapping["asia/india"]
+      : "";
   try {
     const pageListResponse = await axios.get(
       `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
 
-    locations = pageListResponse.data.data.country.states
+    locations = pageListResponse.data.data.country.states;
   } catch (err) {
     console.log("[ERROR][PageListResponse:getStaticProps]: ", err.message);
   }
-
 
   try {
     const ThemeDataRes = await axiospagelistinstance.get(
@@ -171,7 +226,7 @@ export async function getStaticProps() {
         europeLocations = countrydetailsResponse.data.data.countries;
       }
 
-      let hot_data =  countrydetailsResponse.data.data.countries.filter(
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
         (country) => country.is_hot_location
       );
       hot_data = hot_data.slice(0, 6);
@@ -181,12 +236,13 @@ export async function getStaticProps() {
         hot_destinations: hot_data,
       });
     } catch (err) {
-      console.log(`[ERROR][CountryDetails for ${continetCarouselResponse[i].destination}]:`, err.message);
+      console.log(
+        `[ERROR][CountryDetails for ${continetCarouselResponse[i].destination}]:`,
+        err.message
+      );
     }
   }
 
-
-  
   try {
     const response = await axioslocationsinstance.get("hot_destinations/");
     if (response.data?.length) {

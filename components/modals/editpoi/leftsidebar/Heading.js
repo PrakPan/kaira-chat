@@ -9,5 +9,5 @@ const Heading = styled.p`
 `;
 
 export default function CheckboxLabels(props) {
-  return <Heading className="font-lexend">{props.heading}</Heading>;
+  return <Heading className="">{props.heading}</Heading>;
 }

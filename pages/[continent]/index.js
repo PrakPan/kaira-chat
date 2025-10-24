@@ -14,13 +14,13 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
-  const { trackPageView } = useAnalytics();
+  // const { trackPageView } = useAnalytics();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props.destination} Page`);
+    // trackPageView(props.Type, `${props.destination} Page`);
   }, []);
 
   return (
@@ -139,7 +139,6 @@ export async function getStaticProps(context) {
 
   try {
     for (let i = 0; i < contientTheme.length; i++) {
-      console.log("continent path is:",contientTheme[i].path)
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${contientTheme[i].path}`

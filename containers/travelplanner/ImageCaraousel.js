@@ -20,31 +20,33 @@ const ImageCarousel = ({ slug, images = [], title = "The Gallery Section" }) => 
 
   let sampleImages = [];
 
+
+
   if(slug == "la-tomatina-spain-2025"){
-   sampleImages.push(
-    `${imgUrlEndPoint}media/themes/la tomatina festival/1.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/2.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/2126.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/4.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/5.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/la.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/ll.jpg`,
-    `${imgUrlEndPoint}media/themes/la tomatina festival/gg.jpg`,
-   );
+    sampleImages = [
+      `${imgUrlEndPoint}media/themes/la tomatina festival/1.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/2.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/2126.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/4.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/5.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/la.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/ll.jpg`,
+      `${imgUrlEndPoint}media/themes/la tomatina festival/gg.jpg`,
+    ];
   }
 
-   if(slug == "japan-in-autumn-2025"){
-    sampleImages.push(
-    `${imgUrlEndPoint}media/themes/Yukata or kimono rental + cultural photo walk web.png`,
-    `${imgUrlEndPoint}media/themes/Traditional tea ceremony under maple trees web.png`,
-    `${imgUrlEndPoint}media/themes/Guided foliage walks with a local web.png`,
-    `${imgUrlEndPoint}media/themes/fuji five lakes web.png`,
-    `${imgUrlEndPoint}media/themes/kanazawa web.png`,
-    `${imgUrlEndPoint}media/themes/Onsen stays in fall mountain towns web.png`,
-    `${imgUrlEndPoint}media/themes/nikko web.png`,
-    `${imgUrlEndPoint}media/themes/kyoto web.png`,
-    );
-   }
+  if(slug == "japan-in-autumn-2025"){
+    sampleImages = [
+      `${imgUrlEndPoint}media/themes/Yukata or kimono rental + cultural photo walk web.png`,
+      `${imgUrlEndPoint}media/themes/Traditional tea ceremony under maple trees web.png`,
+      `${imgUrlEndPoint}media/themes/Guided foliage walks with a local web.png`,
+      `${imgUrlEndPoint}media/themes/fuji five lakes web.png`,
+      `${imgUrlEndPoint}media/themes/kanazawa web.png`,
+      `${imgUrlEndPoint}media/themes/Onsen stays in fall mountain towns web.png`,
+      `${imgUrlEndPoint}media/themes/nikko web.png`,
+      `${imgUrlEndPoint}media/themes/kyoto web.png`,
+    ];
+  }
 
   const displayImages = images.length > 0 ? images : sampleImages;
   const slidesToShow = 4; 
@@ -71,6 +73,8 @@ const ImageCarousel = ({ slug, images = [], title = "The Gallery Section" }) => 
 
   const totalPages = Math.ceil(displayImages.length / 4);
   const currentPage = Math.floor(currentIndex / 4);
+
+
 
 return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">

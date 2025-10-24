@@ -95,7 +95,7 @@ const NewItenaryDBDMob = (props) => {
   return (
     <Wrapper id="itinerary">
       {" "}
-      <div className="font-lexend font-bold text-2xl mb-[2.4rem] mt-4">
+      <div className=" font-bold text-2xl mb-[2.4rem] mt-4">
         {" "}
         Day By Day Itinerary
       </div>

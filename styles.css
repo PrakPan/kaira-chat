@@ -1,3 +1,9 @@
+
+/* Globally applied Inter font on priority */
+*:not(.fa):not(.glyphicon) {
+    font-family: Inter !important;
+}
+
 /* Freshchat bot */
 #fc_frame{
   z-index: 100 !important;
@@ -796,9 +802,7 @@ b {
   font-family: 'Poppins', sans-serif !important;
 }
 
-.font-lexend {
-  font-family: 'Lexend', sans-serif !important;
-}
+
 
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
@@ -1568,4 +1572,233 @@ a {
 
 .css-3dah0e-MuiModal-root-MuiDialog-root {
   z-index: 1602 !important;
+}
+
+.Body1M_16 {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+.Body1R_16 {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+}
+
+.Body2M_14 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.Body2R_14 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+}
+
+.Body3M_12 {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+.Body3R_12 {
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.Body1M_10 {
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 500; 
+}
+
+.Body1R_10 {
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 400; 
+}
+
+/* Disabled Button */
+.DisabledButton {
+  display: flex;
+  width: 131px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  border-radius: var(--M, 8px);
+  background: var(--text-colors-text-disabled, #F0F0F0);
+}
+
+/* Indigo Buttons */
+.SmallIndigoButton {
+  display: flex;
+  width: 131px;
+  height: 30px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-midnight-indigo, #07213A);
+}
+
+.MediumIndigoButton {
+  display: flex;
+  width: 131px;
+  height: 40px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-midnight-indigo, #07213A);
+}
+
+.LargeIndigoButton {
+  display: flex;
+  width: 131px;
+  height: 50px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-midnight-indigo, #07213A);
+}
+
+.SmallYellowButton {
+  display: flex;
+  width: 131px;
+  height: 30px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-yellow-color, #F7E700);
+}
+
+.MediumYellowButton {
+  display: flex;
+  width: 131px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-yellow-color, #F7E700);
+}
+
+.LargeYellowButton {
+  display: flex;
+  width: 131px;
+  height: 50px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  color:white;
+  background: var(--primary-colours-primary-yellow-color, #F7E700);
+}
+
+.IndigoOutlinedButton {
+  display: flex;
+  width: 131px;
+  height: 30px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  border: 1px solid var(--primary-colours-primary-midnight-indigo, #07213A);
+  background: transparent;
+  cursor: pointer;
+}
+
+.MediumIndigoOutlinedButton {
+  display: flex;
+  width: 131px;
+  height: 40px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  border-radius: var(--M, 8px);
+  border: 1px solid var(--primary-colours-primary-midnight-indigo, #07213A);
+  background: transparent;
+  cursor: pointer;
+}
+
+.LargeIndigoOutlinedButton {
+  display: flex;
+  width: 131px;
+  height: 50px;
+  padding: 8px var(--Xl, 16px);
+  justify-content: center;
+  align-items: center;
+  gap: var(--Xs, 4px);
+  flex-shrink: 0;
+  border-radius: var(--M, 8px);
+  border: 1px solid var(--primary-colours-primary-midnight-indigo, #07213A);
+  background: transparent;
+  cursor: pointer;
+}
+
+.Heading{
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 48px;
+}
+
+.Heading1SB {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.Heading1M {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.Heading2SB {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.Heading2M {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 500;
+}
+
+.Heading3SB {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.Heading3M {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 500;
 }

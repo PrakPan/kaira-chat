@@ -150,7 +150,7 @@ const NewPoiDetailsDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className="font-lexend overflow-y-hidden"
+      className=" overflow-y-hidden"
       onHide={props.handleCloseDrawer}
     >
       <ToastContainer />

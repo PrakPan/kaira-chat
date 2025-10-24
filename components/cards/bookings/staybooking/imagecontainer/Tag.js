@@ -33,7 +33,7 @@ const Span = styled.span`
 
 const Tag = (props) => {
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <Span>{props.tag.toUpperCase()}</Span>
     </Container>
   );

@@ -71,7 +71,7 @@ const WhyTarzan = () => {
         aligndesktop="center"
         bold
         margin={!isPageWide ? "3rem 0 3rem 0" : "3rem"}
-        className="text-center font-lexend"
+        className="text-center "
       >
         Why The Tarzan Way?
       </Heading>
@@ -85,7 +85,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/transparency.png"}
           />
-          <SubHeading className="font-lexend">{content[0].heading}</SubHeading>
+          <SubHeading className="">{content[0].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[0].text}</Text>
           ) : null}
@@ -98,7 +98,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/personalise.png"}
           />
-          <SubHeading className="font-lexend">{content[1].heading}</SubHeading>
+          <SubHeading className="">{content[1].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[1].text}</Text>
           ) : null}
@@ -111,7 +111,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/community.png"}
           />
-          <SubHeading className="font-lexend">{content[2].heading}</SubHeading>
+          <SubHeading className="">{content[2].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[2].text}</Text>
           ) : null}
@@ -124,7 +124,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/culture.png"}
           />
-          <SubHeading className="font-lexend">{content[3].heading}</SubHeading>
+          <SubHeading className="">{content[3].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[3].text}</Text>
           ) : null}
@@ -137,7 +137,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/flexibility.png"}
           />
-          <SubHeading className="font-lexend">{content[4].heading}</SubHeading>
+          <SubHeading className="">{content[4].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[4].text}</Text>
           ) : null}
@@ -150,7 +150,7 @@ const WhyTarzan = () => {
             dimensions={{ height: 150, width: 150 }}
             url={"media/icons/whyus/color-line/service.png"}
           />
-          <SubHeading className="font-lexend">{content[5].heading}</SubHeading>
+          <SubHeading className="">{content[5].heading}</SubHeading>
           {isPageWide ? (
             <Text className="text-center font-nunito">{content[5].text}</Text>
           ) : null}

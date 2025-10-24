@@ -1,7 +1,6 @@
 import * as actionTypes from "./actionsTypes";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 import { logoutinstance } from "../../services/user/auth";
-import restartBot from "../../helper/RestartBot";
 
 export const authLogout = () => {
   return {
@@ -39,7 +38,6 @@ export const logout = () => {
         localStorage.removeItem("user_image");
        
 
-        restartBot()
         dispatch(authLogout());
       })
       .catch((err) => {

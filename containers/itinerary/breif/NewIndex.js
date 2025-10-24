@@ -8,6 +8,7 @@ import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
 import { useParams, useSearchParams } from "next/navigation.js";
+import Image from "next/image.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -15,12 +16,10 @@ const DetailsContainer = styled.div`
   justify-content: space-between;
   gap: 10;
   flex-direction: column-reverse;
-  margin: 0 auto 2vh auto;
   padding: 0 0rem;
   @media screen and (min-width: 768px) {
     flex-direction: row-reverse;
     padding: 0;
-    margin: auto auto auto auto;
   }
 `;
 
@@ -33,15 +32,26 @@ const RouteComponent = styled.div`
   }
 `;
 
+const RoutesRow = styled.div`
+border-radius: 6px;
+background: #FFF9EB;
+display: flex;
+padding: 8px;
+align-items: flex-start;
+align-self: stretch;
+font-size: 14px;
+font-weight: 500;
+line-height: 22px;
+  
+`
+
 const Details = (props) => {
   const router = useRouter();
-  const [active, setActive] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
-  const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
-  const searchParams = useSearchParams();
-  const {drawer}=router?.query
+  const [routeView, setRouteView] = useState(false)
+  const { drawer } = router?.query
 
   const CITY_COLOR_CODES = [
     "#359EBF", //  # shade of blue
@@ -138,9 +148,29 @@ const Details = (props) => {
   }
 
   return (
-    <div id="brief" className="mt-8">
+    <div id="brief" className="mb-3xl mt-lg max-ph:mt-xl max-ph:mb-xl">
       <DetailsContainer>
-        <div
+
+        <RoutesRow className="flex w-full justify-between">
+          <div className="flex gap-[10px]">
+            {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
+            <span className="Body2M_14">Trip Summary</span></div>
+          <button
+            className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
+            onClick={() =>
+              router.push({
+                pathname: `/itinerary/${router?.query?.id}`,
+                query: {
+                  drawer: "handleEditRoute",
+                },
+              })
+            }
+          >
+            View
+          </button>
+
+        </RoutesRow>
+        {/* <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
           id="MapcontainerRoute"
         >
@@ -192,14 +222,14 @@ const Details = (props) => {
               findDayIdByCityId={findDayIdByCityId}
             />
           </div>
-        </RouteComponent>
+        </RouteComponent> */}
       </DetailsContainer>
 
-      {drawer=="handleEditRoute"&& (
+      {drawer == "handleEditRoute" && (
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
-          editRoute={drawer=="handleEditRoute"}
+          editRoute={drawer == "handleEditRoute"}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}

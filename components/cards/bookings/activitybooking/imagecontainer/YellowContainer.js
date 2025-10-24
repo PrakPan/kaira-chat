@@ -67,14 +67,14 @@ const Booking = (props) => {
         }}
       >
         <div>
-          <Heading className="font-lexend">
+          <Heading className="">
             {props.heading} {StarsJSX}
           </Heading>
         </div>
         {props.price && !props.are_prices_hidden ? (
           <div
             style={{ fontSize: "1rem", overflow: "hidden", fontWeight: "600" }}
-            className="font-lexend center-div"
+            className=" center-div"
           >
             {"₹ " + IndianPrice + "/-"}
           </div>
@@ -82,7 +82,7 @@ const Booking = (props) => {
       </div>
       <DetailsContainer>
         {props.city ? (
-          <Detail className="font-lexend">
+          <Detail className="">
             <FontAwesomeIcon
               icon={faMapMarkerAlt}
               style={{ margin: "0 0.25rem 0 0" }}
@@ -93,7 +93,7 @@ const Booking = (props) => {
           <div></div>
         )}
         {props.duration ? (
-          <Detail className="font-lexend" style={{ textAlign: "right" }}>
+          <Detail className="" style={{ textAlign: "right" }}>
             {props.duration + " Night(s) "}
           </Detail>
         ) : (

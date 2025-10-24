@@ -71,9 +71,9 @@ const Terms = () => {
 
   return (
     <>
-      <Heading className="font-lexend">Privacy & Policy</Heading>
+      <Heading className="">Privacy & Policy</Heading>
 
-      <Container className="font-lexend">
+      <Container className="">
         {isPageWide && (
           <Linkcardstyle>
             <Navbar />

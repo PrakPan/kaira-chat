@@ -422,7 +422,7 @@ const Section = (props) => {
                   alt="Select"
                   style={{ width: "1.25rem", height: "1.25rem" }}
                 /> */}
-                {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
+                {/* <span className="" style={{ fontSize: "14px" }}>
         Select
       </span> */}
               </label>

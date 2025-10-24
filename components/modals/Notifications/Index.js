@@ -91,7 +91,7 @@ const Enquiry = (props) => {
           )}
 
           {notificationsArr.length > 1 ? (
-            <ClearAll className="font-lexend" onClick={_clearAllHandler}>
+            <ClearAll className="" onClick={_clearAllHandler}>
               Clear All
             </ClearAll>
           ) : null}

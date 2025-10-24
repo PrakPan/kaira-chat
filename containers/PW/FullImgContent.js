@@ -99,7 +99,7 @@ const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container className="font-lexend center-di text-center">
+    <Container className=" center-di text-center">
       <PaddingContianer>
         <Heading>Physics Wallah Holidays</Heading>
 

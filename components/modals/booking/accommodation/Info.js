@@ -55,7 +55,7 @@ const Accommodation = (props) => {
       <div
         style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}
       >
-        <Name className="font-lexend">
+        <Name className="">
           {props.name}
           <BsInfoCircle style={{ marginLeft: "0.25rem" }}></BsInfoCircle>
         </Name>
@@ -83,7 +83,7 @@ const Accommodation = (props) => {
             fontSize: "0.75rem",
             margin: "0 0 0.25rem 0",
           }}
-          className="font-lexend"
+          className=""
         >
           {"" + props.room_type}
         </p>
@@ -94,7 +94,7 @@ const Accommodation = (props) => {
               fontSize: "0.75rem",
               margin: "0 0 0.5rem 0",
             }}
-            className="font-lexend"
+            className=""
           >
             Breakfast Included
           </p>
@@ -105,7 +105,7 @@ const Accommodation = (props) => {
         ></FontAwesomeIcon>
       </div>
       <RightBottomContainer>
-        <Cost className="font-lexend">
+        <Cost className="">
           <FaArrowUp
             style={{
               fontWeight: "600",

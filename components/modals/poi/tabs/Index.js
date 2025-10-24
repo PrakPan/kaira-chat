@@ -68,7 +68,7 @@ const Tabscomponent = (props) => {
             />
           }
           label="About"
-          className="poi-tab font-lexend"
+          className="poi-tab "
         ></Tab>
         <Tab
           icon={
@@ -80,7 +80,7 @@ const Tabscomponent = (props) => {
             />
           }
           label="Getting Around"
-          className="poi-tab font-lexend"
+          className="poi-tab "
         ></Tab>
         <Tab
           icon={
@@ -92,7 +92,7 @@ const Tabscomponent = (props) => {
             />
           }
           label="Entry Fees"
-          className="poi-tab font-lexend"
+          className="poi-tab "
         ></Tab>
 
         <Tab
@@ -105,7 +105,7 @@ const Tabscomponent = (props) => {
             />
           }
           label="Tips"
-          className="poi-tab font-lexend"
+          className="poi-tab "
         ></Tab>
         <Tab
           icon={
@@ -117,7 +117,7 @@ const Tabscomponent = (props) => {
             />
           }
           label="Timings"
-          className="poi-tab font-lexend"
+          className="poi-tab "
         ></Tab>
       </Tabs>
       <TabPanel value={value} index={0}>

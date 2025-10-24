@@ -1,6 +1,5 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { MdOutlineStar, MdStarHalf } from "react-icons/md";
-import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { FaLocationDot } from "react-icons/fa6";
 import ImageLoader from "../../ImageLoader";
 import media from "../../media";
@@ -8,22 +7,37 @@ import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { FaEllipsis } from "react-icons/fa6";
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import axios from "axios";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { useDispatch, useSelector } from "react-redux";
+import setItinerary from "../../../store/actions/itinerary";
+import { openNotification } from "../../../store/actions/notification";
+import { MERCURY_HOST } from "../../../services/constants";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 export const getStars = (rating) => {
-  const stars = [];
-  for (let i = 0; i < Math.floor(rating); i++) {
-    stars.push(<MdOutlineStar className="text-[#FFD201]" />);
-  }
-  if (Math.floor(rating) < rating) {
-    stars.push(<MdStarHalf className="text-[#FFD201]" />);
-  }
 
+  var stars = [];
+  for (let i = 0; i < Math.floor(rating); i++) {
+    stars.push(<FaStar key={i} />);
+  }
+  if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
   return stars;
+  // const stars = [];
+  // stars.push(<MdOutlineStar className="text-primary-stars" />);
+
+  // return stars;
 };
 
+// 
+
 const SlabElement = (props) => {
-  const {trackActivityBookingAdd,trackActivityCardClicked,trackPoiCardClicked} = useAnalytics();
+  const { trackActivityBookingAdd, trackActivityCardClicked, trackPoiCardClicked } = useAnalytics();
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
@@ -38,6 +52,7 @@ const SlabElement = (props) => {
           trackPoiCardClicked={trackActivityCardClicked}
           cityID={props?.cityID}
           cityName={props?.cityName}
+          totalElements={props.totalElements}
         />
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation
@@ -56,14 +71,102 @@ const SlabElement = (props) => {
 
 export default SlabElement;
 
+
+const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_city_id, dayIndex, slabIndex, position, heading) => {
+  try {
+    const res = await axios.post(
+      `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/element/move/`,
+      {
+        itinerary_city_id: itinerary_city_id,
+        day_by_day_index: dayIndex,
+        element_index: slabIndex,
+        position: position
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      }
+    );
+
+    const newItinerary = JSON.parse(JSON.stringify(itinerary));
+    let itineraryCities = [];
+    if (res?.status === 200) {
+      itineraryCities = newItinerary.cities.map((city) => {
+        const cityTemp = { ...city };
+        if (city.id === itinerary_city_id) {
+          const day = cityTemp.day_by_day[dayIndex];
+          if (!day) return cityTemp;
+          const slabElements = [...day.slab_elements];
+          const fromIndex = slabIndex;
+          const toIndex = position;
+          if (
+            fromIndex >= 0 &&
+            fromIndex < slabElements.length &&
+            toIndex >= 0 &&
+            toIndex < slabElements.length
+          ) {
+            const [moved] = slabElements.splice(fromIndex, 1);
+            slabElements.splice(toIndex, 0, moved);
+          }
+          day.slab_elements = slabElements;
+        }
+        return cityTemp;
+      });
+    }
+
+    newItinerary.cities = itineraryCities;
+    dispatch(setItinerary(newItinerary));
+    // handleCloseMenue();
+    dispatch(
+      openNotification({
+        type: "success",
+        text: `${heading} has been moved successfully.`,
+        heading: "Success!",
+      })
+    );
+  } catch (error) {
+    // handleCloseMenue();
+    console.log("error is:", error);
+    const errorMsg =
+      error?.response?.data?.errors?.[0]?.message?.[0] ||
+      error.message ||
+      "Something went wrong! Please try after some time.";
+    dispatch(
+      openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      })
+    );
+  }
+}
+
 const Activity = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 769px)");
   const router = useRouter();
+  const dispatch = useDispatch();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const itinerary = useSelector((state) => state.Itinerary);
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+
+  const handleClick = (event) => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.setProperty("overflow", "visible", "important");
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenue = () => {
+    setAnchorEl(null);
+    document.documentElement.style.overflow = "auto";
+  };
+
   const { drawer, poi_id, type } = router?.query;
-  const activityData= {
+  const activityData = {
     id: poi_id,
     type: type,
   };
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     router.push(
@@ -76,11 +179,11 @@ const Activity = (props) => {
     );
   };
 
-  const handleActivity = async (poi, type,dayIndex) => {
-    if(type==='activity'){
-    props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
-    }if(type==='poi'){
-    props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi,'day_by_day_ellapse');
+  const handleActivity = async (poi, type, dayIndex) => {
+    if (type === 'activity') {
+      props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
+    } if (type === 'poi') {
+      props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
     }
     router.push(
       {
@@ -89,7 +192,7 @@ const Activity = (props) => {
           drawer: "showPoiDetail",
           poi_id: poi?.booking?.id || poi?.poi,
           type: type,
-          dayIndex:props?.dayIndex,
+          dayIndex: props?.dayIndex,
         },
       },
       undefined,
@@ -97,16 +200,6 @@ const Activity = (props) => {
         scroll: false,
       }
     );
-    // setActivityData(() => ({
-    //   id: poi?.booking?.id
-    //     ? poi?.booking?.id
-    //     : poi?.poi
-    //     ? poi?.poi
-    //     : poi?.activity
-    //     ? poi?.activity
-    //     : null,
-    //   type: type,
-    // }));
 
     logEvent({
       action: "Details_View",
@@ -119,10 +212,110 @@ const Activity = (props) => {
     });
   };
 
+
+  const handleDelete = async (e) => {
+    try {
+      let res;
+      if (props?.element?.poi != null) {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
+          {
+            data: {
+              itinerary_city_id: props?.itinerary_city_id,
+              day_by_day_index: props?.dayIndex,
+              poi_index: props?.slabIndex,
+            },
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+      } else {
+        res = await axios.delete(
+          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.element?.booking?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+      }
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+      let itineraryCities = [];
+
+      if ((props?.element?.poi != null && res?.status === 200) || (props?.element?.booking?.id && res?.status === 204)) {
+        if (props?.element?.poi != null) {
+          itineraryCities = newItinerary.cities.map((city) => {
+            const cityTemp = city;
+            if (city.id === props?.itinerary_city_id) {
+              cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+                props?.slabIndex,
+                1
+              );
+            }
+            return cityTemp;
+          });
+        }
+        else {
+          itineraryCities = newItinerary.cities.map((city) => {
+            if (city.id === props?.itinerary_city_id) {
+              city.day_by_day.forEach((day, index) => {
+                if (day?.slab_elements) {
+                  day.slab_elements = day.slab_elements.filter(
+                    (item) => item?.booking?.id !== props?.element?.booking?.id
+                  );
+                }
+              });
+
+              city.activities = city.activities?.filter(
+                (item) => item?.id !== props?.element?.booking?.id
+              );
+            }
+            return city;
+          });
+        }
+      }
+
+      newItinerary.cities = itineraryCities;
+      dispatch(setItinerary(newItinerary));
+      handleCloseMenue();
+      dispatch(
+        openNotification({
+          type: "success",
+          text: `${props.element.heading} has been removed from your itinerary`,
+          heading: "Success!",
+        })
+      );
+    } catch (error) {
+      handleCloseMenue();
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        })
+      );
+    }
+    // setLoading(false);
+  };
+
+  const handleMoveElement = async (position) => {
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    handleCloseMenue()
+  }
+
+
   return (
     <>
-      <div className="hidden lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="w-full flex flex-row items-center gap-3 bg-white">
+      <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
+        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -132,13 +325,13 @@ const Activity = (props) => {
                   : props?.element?.element_type
               )
             }
-            className="md:w-[12%] cursor-pointer"
+            className="cursor-pointer"
           >
             <ImageLoader
-              borderRadius={"5px"}
+              borderRadius={"10px"}
               style={{
-                width: isPageWide ? "60px" : "50px",
-                height: isPageWide ? "60px" : "50px",
+                width: "88px",
+                height: "82px",
                 cursor: "pointer",
                 margin: "auto",
               }}
@@ -146,7 +339,7 @@ const Activity = (props) => {
             />
           </div>
 
-          <div className="flex flex-col md:ml-[10px]">
+          <div className="flex flex-col max-ph:mb-sm gap-xxs-md max-ph:gap-xs">
             <div
               onClick={() =>
                 handleActivity(
@@ -154,195 +347,102 @@ const Activity = (props) => {
                   props?.element?.poi != null ? "poi" : "activity"
                 )
               }
-              className="w-fit font-medium text-[16px] cursor-pointer"
+              className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
               {props.element.heading}
             </div>
 
-            <div className="flex flex-row gap-2 items-center text-sm">
-              {props?.element?.poi ? (
-                <div className="w-max items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
-                  Self Exploration
-                </div>
-              ) : (
-                <>
-                  <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
-                    Activity
-                  </div>
-                </>
-              )}
+            <div className="flex flex-row items-center text-sm ">
+              <div className="pr-[8px]">
+                <Image
+                  src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
+                  alt="ticket"
+                  width={18}
+                  height={18}
+                />
+              </div>
 
-              {props?.element?.activity != null ? (
-                <div className="flex justify-between hidden lg:!flex  items-center">
-                  <div className="flex gap-3">
-                    {props?.element?.booking?.pax && (
-                      <div className="flex text-[12px] font-medium items-center gap-1">
-                        <Image
-                          src="/ticket.svg"
-                          alt="ticket"
-                          width={13.33}
-                          height={10.67}
-                        />
-                        {props?.element?.booking?.pax} ticket
-                        {props?.element?.booking?.pax > 1 ? "s" : ""}
-                      </div>
-                    )}
-                    {props.element?.booking?.duration &&
-                      props.element?.booking?.duration !== "0 hours" && (
-                        <div className="flex text-[12px] font-medium items-center gap-1">
-                          <Image
-                            src="/clock.svg"
-                            alt="clock"
-                            width={13.33}
-                            height={10.67}
-                          />
-                          {props.element?.booking?.duration}
-                        </div>
-                      )}
-                  </div>
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
+
+              {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="flex items-center text-primary-stars">
+                  {getStars(props.element?.rating)}&nbsp;
                 </div>
-              ) : (
-                <div className="flex">
-                  <div className="flex  items-center">
-                    {getStars(props.element?.rating)}
-                  </div>
-                  <div className=" text-[#7A7A7A] text-[12px]">
-                    {props.element?.rating}
-                  </div>
+                <div className="Body3M_12">
+                  {props.element?.rating}
                 </div>
-              )}
+
+              </div>
+                : null}
+            </div>
+
+            <div className="flex flex-row gap-xs flex-wrap ">
+              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+              ))}
+
             </div>
           </div>
         </div>
 
-        <button
-          onClick={() =>
-            handleActivity(
-              props?.element,
-              props?.element?.poi != null ? "poi" : "activity"
-            )
-          }
-          className="hidden lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
-        >
-          View Details
-        </button>
-      </div>
-
-      <div className="lg:hidden">
-        <div className="flex flex-col gap-3 md:flex-row  md:justify-between">
-          <div className="w-full flex flex-row  gap-3 bg-white">
-            <div
-              onClick={() =>
+        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
+          <div> <IconButton size="small" id="basic-button"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            className="-mt-sm"
+            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenue}
+              disableScrollLock
+              slotProps={{
+                list: {
+                  'aria-labelledby': 'basic-button',
+                },
+              }}
+              anchorOrigin={
+                isPageWide
+                  ? { horizontal: "right", }
+                  : undefined
+              }
+              transformOrigin={
+                isPageWide
+                  ? { horizontal: "right" }
+                  : undefined
+              }
+            >
+              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
+              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
+            </Menu>
+          </div>
+          <div className="max-ph:hidden">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 handleActivity(
                   props?.element,
-                  props?.element?.poi != "undefined"
-                    ? "poi"
-                    : props?.element?.element_type
+                  props?.element?.poi != null ? "poi" : "activity"
                 )
-              }
-              className="md:w-[12%] cursor-pointer"
-            >
-              <ImageLoader
-                borderRadius={"5px"}
-                style={{
-                  width: isPageWide ? "60px" : "50px",
-                  height: isPageWide ? "60px" : "50px",
-                  cursor: "pointer",
-                  margin: "auto",
-                }}
-                url={props.element?.icon}
-              />
-            </div>
-
-            <div className=" md:ml-[10px] w-full flex flex-col gap-1">
-              <div
-                onClick={() =>
-                  handleActivity(
-                    props?.element,
-                    props?.element?.poi != null ? "poi" : "activity"
-                  )
-                }
-                className="w-fit font-medium text-[16px] cursor-pointer"
-              >
-                {props.element.heading}
-              </div>
-
-              <div className="w-fulltext-sm flex flex-col gap-1">
-                {props?.element?.poi ? (
-                  <div className="w-max items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
-                    Self Exploration
-                  </div>
-                ) : (
-                  <>
-                    <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
-                      Activity
-                    </div>
-                  </>
-                )}
-                {props?.element?.activity != null ? (
-                  <div className="flex justify-between lg:hidden">
-                    <div className="flex gap-3">
-                      <div className="flex text-[12px] font-medium items-center gap-1">
-                        <Image
-                          src="/ticket.svg"
-                          alt="ticket"
-                          width={13.33}
-                          height={10.67}
-                        />
-                        {props?.element?.booking?.pax} ticket
-                        {props?.element?.booking?.pax > 1 ? "s" : ""}
-                      </div>
-                      {props.element?.booking?.duration &&
-                        props.element?.booking?.duration !== "0 hours" && (
-                          <div className="flex text-[12px] font-medium items-center gap-1">
-                            <Image
-                              src="/clock.svg"
-                              alt="clock"
-                              width={13.33}
-                              height={10.67}
-                            />
-                            {props.element?.booking?.duration}
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex">
-                    <>
-                      <div className="!flex  items-center">
-                        {getStars(props.element?.rating)}
-                      </div>
-                      <div className=" text-[#7A7A7A] text-[12px]">
-                        {props.element?.rating}
-                      </div>
-                    </>
-                  </div>
-                )}
-
-                <button
-                  onClick={() =>
-                    handleActivity(
-                      props?.element,
-                      props?.element?.poi != null ? "poi" : "activity"
-                    )
-                  }
-                  className="!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
+              }}
+              className="IndigoOutlinedButton !w-[78px] Body2M_14">
+              Details
+            </button>
           </div>
         </div>
-      </div>
+      </div >
 
-      {drawer === "showPoiDetail" &&
+      {
+        drawer === "showPoiDetail" &&
         String(poi_id) ===
-          String(
-            props?.element?.booking?.id ||
-              props.element?.poi ||
-              props.element?.activity
-          ) && (
+        String(
+          props?.element?.booking?.id ||
+          props.element?.poi ||
+          props.element?.activity
+        ) && (
           <POIDetailsDrawer
             itineraryDrawer
             show={true}
@@ -365,19 +465,36 @@ const Activity = (props) => {
             cityName={props?.cityName}
             removeDelete={false}
           />
-        )}
+        )
+      }
     </>
   );
 };
 
 const Recommendation = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const itinerary = useSelector((state) => state.Itinerary);
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const [showDrawer, setShowDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
   });
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.setProperty("overflow", "visible", "important");
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenue = () => {
+    setAnchorEl(null);
+    document.documentElement.style.overflow = "auto";
+  };
+
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -402,25 +519,95 @@ const Recommendation = (props) => {
     });
   };
 
+  const handleDelete = async (e) => {
+    try {
+      let res;
+      res = await axios.delete(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/restaurant/delete/`,
+        {
+          data: {
+            itinerary_city_id: props?.itinerary_city_id,
+            day_by_day_index: props?.dayIndex,
+            restaurant_index: props?.slabIndex
+          },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+
+      console.log(res);
+
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+      let itineraryCities = [];
+
+      if (res?.status === 200) {
+        itineraryCities = newItinerary.cities.map((city) => {
+          const cityTemp = city;
+          if (city.id === props?.itinerary_city_id) {
+            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+              props?.slabIndex,
+              1
+            );
+          }
+          return cityTemp;
+        });
+      }
+
+      newItinerary.cities = itineraryCities;
+      dispatch(setItinerary(newItinerary));
+      handleCloseMenue();
+      dispatch(
+        openNotification({
+          type: "success",
+          text: `${props.element.heading} has been removed from your itinerary`,
+          heading: "Success!",
+        })
+      );
+    } catch (error) {
+      handleCloseMenue();
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        })
+      );
+    }
+    // setLoading(false);
+  };
+
+
+  const handleMoveElement = async (position) => {
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    handleCloseMenue()
+  }
+
   if (props.element.type === "Meal Recommendation") {
     return <MealRecommendation element={props.element} />;
   }
 
   return (
     <>
-      <div className="hidden lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="w-full flex flex-row items-center gap-3 bg-white">
+      <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
+        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
               handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
             }
-            className="md:w-[12%] cursor-pointer"
+            className="cursor-pointer"
           >
             <ImageLoader
-              borderRadius={"5px"}
+              borderRadius={"10px"}
               style={{
-                width: isPageWide ? "60px" : "50px",
-                height: isPageWide ? "60px" : "50px",
+                width: "88px",
+                height: "82px",
                 cursor: "pointer",
                 margin: "auto",
               }}
@@ -428,7 +615,7 @@ const Recommendation = (props) => {
             />
           </div>
 
-          <div className="flex flex-col md:ml-[10px]">
+          <div className="flex flex-col max-ph:mb-sm gap-xxs-md max-ph:gap-xs">
             <div
               onClick={() =>
                 handleActivity(
@@ -436,116 +623,89 @@ const Recommendation = (props) => {
                   "restaurant"
                 )
               }
-              className="w-fit font-medium text-[16px] cursor-pointer"
+              className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
               {props.element.heading}
             </div>
 
-            <div className="flex flex-row gap-2 items-center text-sm">
-              <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm">
-                <div className="flex items-center">
-                  <Image
-                    src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
-                    height={12}
-                    width={12}
-                    className="object-contain"
-                  />
+
+            <div className="flex flex-row items-center text-sm">
+              <div className="pr-[8px]">
+                <Image
+                  src={'/assets/Itinerary/restaurant.svg'}
+                  alt="ticket"
+                  width={18}
+                  height={18}
+                />
+              </div>
+
+              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
+
+              {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="flex items-center text-primary-stars">
+                  {getStars(props.element?.restaurants?.[0]?.rating)}&nbsp;
                 </div>
-                <div>Restaurant</div>
+                <div className="Body3M_12">
+                  {props.element?.restaurants?.[0]?.rating}
+                </div>
               </div>
-              <div className="hidden lg:!flex items-center">
-                {getStars(props.element?.restaurants?.[0]?.rating)}
-              </div>
-              <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
-                {props.element?.restaurants?.[0]?.rating}
-              </div>
+                : null}
+            </div>
+
+            <div className="flex flex-row gap-xs flex-wrap ">
+              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+              ))}
+
             </div>
           </div>
         </div>
 
-        <button
-          onClick={() =>
-            handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
-          }
-          className="hidden lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
-        >
-          View Details
-        </button>
-      </div>
 
-      <div className="lg:hidden">
-        <div className="flex flex-col gap-3 md:flex-row  md:justify-between">
-          <div className="w-full flex flex-row  gap-3 bg-white">
-            <div
-              onClick={() =>
-                handleActivity(
-                  props?.element?.restaurants?.[0]?.id,
-                  "restaurant"
-                )
+        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
+          <div> <IconButton size="small" id="basic-button"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            className="-mt-sm"
+            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenue}
+              disableScrollLock
+              slotProps={{
+                list: {
+                  'aria-labelledby': 'basic-button',
+                },
+              }}
+              anchorOrigin={
+                isPageWide
+                  ? { horizontal: "right", }
+                  : undefined
               }
-              className="md:w-[12%] cursor-pointer"
+              transformOrigin={
+                isPageWide
+                  ? { horizontal: "right" }
+                  : undefined
+              }
             >
-              <ImageLoader
-                borderRadius={"5px"}
-                style={{
-                  width: isPageWide ? "60px" : "50px",
-                  height: isPageWide ? "60px" : "50px",
-                  cursor: "pointer",
-                  margin: "auto",
-                }}
-                url={props.element?.icon}
-              />
-            </div>
-
-            <div className=" md:ml-[10px] w-full flex flex-col gap-1">
-              <div
-                onClick={() =>
-                  handleActivity(
-                    props?.element?.restaurants?.[0]?.id,
-                    "restaurant"
-                  )
-                }
-                className="w-fit font-medium text-[16px] cursor-pointer"
-              >
-                {props.element.heading}
-              </div>
-
-              <div className="w-fulltext-sm flex flex-col gap-1">
-                <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm w-max">
-                  <div className="flex items-center">
-                    <Image
-                      src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
-                      height={12}
-                      width={12}
-                      className="object-contain"
-                    />
-                  </div>
-                  <div>Restaurant</div>
-                </div>
-                <div className="flex justify-between lg:hidden">
-                  <div className="flex gap-1">
-                    <div className="flex flex-row items-center">
-                      {getStars(props.element?.restaurants?.[0]?.rating)}
-                    </div>
-                    <div className="text-[#7A7A7A] text-[12px]">
-                      {props.element?.restaurants?.[0]?.rating}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() =>
-                    handleActivity(
-                      props?.element?.restaurants?.[0]?.id,
-                      "restaurant"
-                    )
-                  }
-                  className="!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
+              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
+              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
+              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
+            </Menu>
+          </div>
+          <div className="max-ph:hidden">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
+              }}
+              className="IndigoOutlinedButton !w-[78px] Body2M_14"
+            >
+              Details
+            </button>
           </div>
         </div>
       </div>

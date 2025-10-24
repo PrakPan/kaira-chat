@@ -114,7 +114,7 @@ const SearchPannel = (props) => {
             autoFocus
             onChange={_onChangeHandler}
             value={inputValue}
-            className="font-lexend"
+            className=""
             placeholder="Where do you want to go?"
           ></Search>
           <ImSearch

@@ -51,7 +51,7 @@ const SelectedCity = (props) => {
       <div style={{ display: "inline" }}>
         <Name
           style={{ visibility: props.city_id ? "visible" : "hidden" }}
-          className="font-lexend"
+          className=""
         >
           {props.name ? props.name : "L"}
         </Name>

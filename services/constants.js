@@ -29,6 +29,8 @@ export const SENTRY_ENV = process.env.NEXT_PUBLIC_SENTRY_ENV;
 
 export const SENTRY_RELEASE = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
+export const CHATBOT_SOCKET_HOST=process.env.NEXT_PUBLIC_CHATBOT_SOCKET_HOST
+
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",
   itinerary_not_created: "ITINERARY_NOT_CREATED",

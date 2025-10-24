@@ -24,7 +24,7 @@ const Progress = (props) => {
         className="font-nunito"
         style={{ textAlign: "center", fontWeight: "300", letterSpacing: "1px" }}
       >
-        <em className="font-lexend">{"Negotiating for the best pricing"}</em>
+        <em className="">{"Negotiating for the best pricing"}</em>
       </p>
     </ProgressContainer>
   );

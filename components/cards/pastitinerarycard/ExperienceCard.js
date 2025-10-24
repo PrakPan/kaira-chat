@@ -121,7 +121,7 @@ const ExperienceCard = (props) => {
 
       <ContentContainer className="text-center">
         <HeadingContainer>
-          <Heading className="font-lexend">{props.experience}</Heading>
+          <Heading className="">{props.experience}</Heading>
         </HeadingContainer>
 
         <TextContainer className="font-nunito">

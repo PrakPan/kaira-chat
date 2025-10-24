@@ -90,7 +90,7 @@ const Experiences = (props) => {
           ></ImageLoader>
         </ImageFade>
 
-        <BlackContainer continent={props.continent} className="font-lexend">
+        <BlackContainer continent={props.continent} className="">
           {ImageLoaded ? (
             <div className="px-3">
               <H2

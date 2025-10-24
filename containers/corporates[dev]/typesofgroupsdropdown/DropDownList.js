@@ -54,7 +54,7 @@ const DropDownList = () => {
   return (
     <div>
       <WidthContainer>
-        <HeadingContainer className="font-lexend" rotate={rotate1}>
+        <HeadingContainer className="" rotate={rotate1}>
           <Heading>For Old Age</Heading>
         </HeadingContainer>
       </WidthContainer>
@@ -65,7 +65,7 @@ const DropDownList = () => {
       </Paragraph>
 
       <WidthContainer>
-        <HeadingContainer className="font-lexend" rotate={rotate2}>
+        <HeadingContainer className="" rotate={rotate2}>
           <Heading>For Startups </Heading>
         </HeadingContainer>
       </WidthContainer>
@@ -76,7 +76,7 @@ const DropDownList = () => {
       </Paragraph>
 
       <WidthContainer>
-        <HeadingContainer className="font-lexend" rotate={rotate3}>
+        <HeadingContainer className="" rotate={rotate3}>
           <Heading>For Corporates </Heading>
         </HeadingContainer>
       </WidthContainer>
@@ -87,7 +87,7 @@ const DropDownList = () => {
       </Paragraph>
 
       <WidthContainer>
-        <HeadingContainer className="font-lexend" rotate={rotate4}>
+        <HeadingContainer className="" rotate={rotate4}>
           <Heading>For Institutions </Heading>
         </HeadingContainer>
       </WidthContainer>

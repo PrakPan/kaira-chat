@@ -44,7 +44,7 @@ const POIDetailsSkeleton = (props) => {
 
   return (
     <Container>
-      {/* <BackContainer className=" font-lexend">
+      {/* <BackContainer className=" ">
         <BackArrow handleClick={props.onHide}/>
       </BackContainer> */}
 

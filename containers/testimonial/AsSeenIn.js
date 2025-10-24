@@ -229,14 +229,14 @@ const AsSeenIn = (props) => {
           ) : null}
         </GridContainer>
         <ContentContainer>
-          <ReviewHeading className="font-lexend">
+          <ReviewHeading className="">
             {Quotes[selected]}
           </ReviewHeading>
           {!props.disablelinks ? (
             <ReadFull
               href={Urls[selected]}
               target="_blank"
-              className="font-lexend"
+              className=""
             >
               Full Article
             </ReadFull>

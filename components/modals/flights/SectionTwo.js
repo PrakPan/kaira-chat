@@ -14,7 +14,7 @@ const Section = (props) => {
     type: ["Hotel", "Stay", "Hotel", "Stay", "Hotel", "Stay", "Hotel", "Stay"],
   };
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <FiltersMobile filters={FILTERS}></FiltersMobile>
     </Container>
   );

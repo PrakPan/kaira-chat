@@ -80,7 +80,7 @@ const TransferContainerForMissing = ({
         duration={1.3}
         ydistance={25}
       >
-        <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-green-500 rounded-lg  text-center font-normal text-sm ">
+        <div className="text-white   px-2 py-1 border-2 border-red bg-green-500 rounded-lg  text-center font-normal text-sm ">
           {isSucess.errorMsg}
         </div>
       </Slide>

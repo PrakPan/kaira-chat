@@ -18,59 +18,59 @@ import { useAnalytics } from "../../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
-  const { trackPageView } = useAnalytics();
+  // const { trackPageView } = useAnalytics();
   useEffect(() => {
-    console.log("props states are:", props);
+    // console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props.Data?.name} Page`)
+    // trackPageView(props.Type, `${props.Data?.name} Page`)
   }, []);
 
   const faq = [
-            {
-                "question": "What makes The Tarzan Way's 2025 proposal services unique?",
-                "answer": "The Tarzan Way’s Proposal 2025 services are designed for unforgettable, hyper-personalized proposals. We curate dreamy locations, unique themes, and exclusive experiences, all tailored to your love story—ensuring a magical “Yes!” moment like no other!"
-            },
-            {
-                "question": "Can I customize my itinerary?",
-                "answer": "Absolutely! The Tarzan Way offers fully customizable honeymoon itineraries to match your preferences, travel style, and budget. Whether you want a romantic beach escape, an adventurous mountain retreat, or a cultural experience, we can tailor your trip to perfection."
-            },
-            {
-                "question": "Can I plan a surprise proposal with your team?",
-                "answer": "Of course! Our team specializes in discreetly planning surprise proposals while ensuring every detail is perfect."
-            },
-            {
-                "question": "Do you offer travel and accommodation assistance along with the proposal?",
-                "answer": "Yes! We can take care of flights, hotels, transportation, and everything needed for a stress-free proposal trip."
-            },
-            {
-                "question": "Can we include adventure activities in our proposal package?-",
-                "answer": "Absolutely! You can add adventure activities like trekking, scuba diving, or paragliding to make your honeymoon exciting."
-            },
-            {
-                "question": "Can I propose at a specific landmark or private venue?",
-                "answer": "Yes! We can help arrange proposals at iconic landmarks, private villas, resorts, or any special location of your choice."
-            },
-            {
-                "question": "Can you help with ring presentation ideas?",
-                "answer": "Of course! Whether you want the ring hidden in a dessert, presented by a scuba diver, or delivered by a drone, we can make it happen!"
-            },
-            {
-                "question": "How does The Tarzan Way ensure a stress-free proposal?",
-                "answer": "The Tarzan Way ensures a stress-free proposal by taking care of each and everything- from your stays, transfers to proposal bookings. We make sure to make your day THE BEST."
-            },
-            {
-                "question": "What are some unique proposal ideas you offer?",
-                "answer": "We offer ideas like proposing under the Northern Lights in Iceland, a hot air balloon proposal in Jaipur, or a shikara proposal in Kashmir."
-            },
-            {
-                "question": "What are your cancellation and refund policies?",
-                "answer": "Our policies depend on the destination and package. Please refer to our cancellation guidelines or contact us for details."
-            },
-            {
-                "question": "Which place is best for a proposal?",
-                "answer": "The best place for a proposal depends on your love story! Whether it's a private beach, a breathtaking mountain peak, a historic castle, or a dreamy candlelit setup, The Tarzan Way curates the perfect destination based on your partner’s preferences, making the moment truly unforgettable."
-            }
-        ]
+    {
+      "question": "What makes The Tarzan Way's 2025 proposal services unique?",
+      "answer": "The Tarzan Way’s Proposal 2025 services are designed for unforgettable, hyper-personalized proposals. We curate dreamy locations, unique themes, and exclusive experiences, all tailored to your love story—ensuring a magical “Yes!” moment like no other!"
+    },
+    {
+      "question": "Can I customize my itinerary?",
+      "answer": "Absolutely! The Tarzan Way offers fully customizable honeymoon itineraries to match your preferences, travel style, and budget. Whether you want a romantic beach escape, an adventurous mountain retreat, or a cultural experience, we can tailor your trip to perfection."
+    },
+    {
+      "question": "Can I plan a surprise proposal with your team?",
+      "answer": "Of course! Our team specializes in discreetly planning surprise proposals while ensuring every detail is perfect."
+    },
+    {
+      "question": "Do you offer travel and accommodation assistance along with the proposal?",
+      "answer": "Yes! We can take care of flights, hotels, transportation, and everything needed for a stress-free proposal trip."
+    },
+    {
+      "question": "Can we include adventure activities in our proposal package?-",
+      "answer": "Absolutely! You can add adventure activities like trekking, scuba diving, or paragliding to make your honeymoon exciting."
+    },
+    {
+      "question": "Can I propose at a specific landmark or private venue?",
+      "answer": "Yes! We can help arrange proposals at iconic landmarks, private villas, resorts, or any special location of your choice."
+    },
+    {
+      "question": "Can you help with ring presentation ideas?",
+      "answer": "Of course! Whether you want the ring hidden in a dessert, presented by a scuba diver, or delivered by a drone, we can make it happen!"
+    },
+    {
+      "question": "How does The Tarzan Way ensure a stress-free proposal?",
+      "answer": "The Tarzan Way ensures a stress-free proposal by taking care of each and everything- from your stays, transfers to proposal bookings. We make sure to make your day THE BEST."
+    },
+    {
+      "question": "What are some unique proposal ideas you offer?",
+      "answer": "We offer ideas like proposing under the Northern Lights in Iceland, a hot air balloon proposal in Jaipur, or a shikara proposal in Kashmir."
+    },
+    {
+      "question": "What are your cancellation and refund policies?",
+      "answer": "Our policies depend on the destination and package. Please refer to our cancellation guidelines or contact us for details."
+    },
+    {
+      "question": "Which place is best for a proposal?",
+      "answer": "The best place for a proposal depends on your love story! Whether it's a private beach, a breathtaking mountain peak, a historic castle, or a dreamy candlelit setup, The Tarzan Way curates the perfect destination based on your partner’s preferences, making the moment truly unforgettable."
+    }
+  ]
 
   return (
     <Layout
@@ -98,11 +98,10 @@ const TravelPlanner = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="keywords"
-          content={`${
-            Array.isArray(props?.Data?.meta_keywords)
+          content={`${Array.isArray(props?.Data?.meta_keywords)
               ? props?.Data?.meta_keywords.join(", ")
               : props?.Data?.meta_keywords
-          }`}
+            }`}
         ></meta>
 
         <link
@@ -141,7 +140,7 @@ export async function getStaticPaths() {
       paths.push({
         params: {
           continent: continentSlug,
-          country: countrySlug.toLowerCase().replace(/ /g, "_"),
+          country: countrySlug.replace(/ /g, "_"),
           state: stateSlug,
         },
       });
@@ -154,13 +153,25 @@ export async function getStaticPaths() {
   }
 
   return {
-    paths: paths,
-    fallback: false,
+    paths:paths,
+    fallback:false
+  }
+  return {
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+          state: "madeira",
+        },
+      },
+    ], fallback: false,
   };
 }
 
 export async function getStaticProps(context) {
   const { continent, country, state } = context.params;
+
   const path = `${continent}/${country}/${state}`;
 
   let data = null;
@@ -168,18 +179,18 @@ export async function getStaticProps(context) {
   let hotLocationSearch = [];
   let Type = "State";
   let Id = PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "";
-
+  console.log("id is: ",Id)
   let isThemePage = false;
   //mercury api
   await axios
     .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then((res) => {
-     const stateData = res.data.data.state;
-     data = stateData;
-    if (stateData.page_data && Object.keys(stateData.page_data).length > 0) {
-      isThemePage = true;
-    }
-  })
+      const stateData = res.data.data.state;
+      data = stateData;
+      if (stateData.page_data!=null && Object.keys(stateData.page_data).length > 0) {
+        isThemePage = true;
+      }
+    })
     .catch((err) => {
       console.log(
         `[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `,
@@ -225,94 +236,16 @@ export async function getStaticProps(context) {
 
   return {
     props: {
-    Data: data,
-    locations,
-    path,
-    hotLocationSearch,
-    page_id: PagesToIdMapping[path] || "",
-    Type,
-    pageData: isThemePage,
-  },
+      Data: data,
+      locations,
+      path,
+      hotLocationSearch,
+      page_id: PagesToIdMapping[path] || "",
+      Type,
+      pageData: isThemePage,
+    },
   };
 }
-
-// export async function getStaticProps(context) {
-//   var locations = [];
-//   let data = null;
-//   let hotLocationSearch = [];
-//   let pageId = "";
-//   let Type = "Country";
-//   console.log("start date:",new Date())
-//   const { continent, country, state } = context.params;
-//   const path = `${continent}/${country}/${state}`;
-//   try {
-//     const res = await axios.get(
-//       `${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`
-//     );
-//     if (res?.data?.path) {
-//       pageId = res?.data?.path?.id;
-//       Type = res.data.path.type;
-//     }
-//   } catch (err) {
-//     console.error("Path api error:", err);
-//   }
-
-//   try {
-//     const res = await axiosTravelPlannerInstance.get(
-//       `/?link=${context.params.state}`
-//     );
-//     data = res.data;
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-//       err.message
-//     );
-//   }
-
-//   if (!data) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-
-//   try {
-//     const loc = await axiospagelistinstance.get(
-//       `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
-//     );
-//     locations = loc.data;
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
-//       err.message
-//     );
-//   }
-
-//   try {
-//     const response = await axioslocationsinstance.get(
-//       `hot_destinations/?state=${state}/`
-//     );
-//     if (response.data?.length) {
-//       hotLocationSearch = response.data;
-//     }
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
-//       err.message
-//     );
-//   }
-//   console.log("end date:",new Date())
-
-//   return {
-//     props: {
-//       Data: data,
-//       locations,
-//       path,
-//       hotLocationSearch,
-//       page_id: pageId,
-//       Type,
-//     },
-//   };
-// }
 
 const mapDispatchToProps = (dispatch) => {
   return {

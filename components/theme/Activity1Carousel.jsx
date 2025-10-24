@@ -116,8 +116,8 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         data={data}
         removeDelete={true}
         removeChange
-     / >
-        <PlanYourTripButton />
+     />
+        {/* <PlanYourTripButton /> */}
     </Container>
   );
 };

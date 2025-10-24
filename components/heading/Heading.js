@@ -46,7 +46,7 @@ const HHeading = (props) => {
     <Container props={props}>
       <Heading
         props={props}
-        className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
+        className={props.blur ? "blurry-text " : ""}
       >
         {props.children}
       </Heading>

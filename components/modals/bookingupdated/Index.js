@@ -23,7 +23,12 @@ import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
-import axios from "axios";
+import axios from 'axios';
+import Travelers from "./filtersmobile/Travelers";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import Filters from "./filtersmobile/Filters";
+import FilterChips from "./filtersmobile/FilterChips";
+import { IconButton } from "@mui/material";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -75,6 +80,28 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const SortContainer = styled.div`
+  position: absolute;
+  z-index:20;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background: white;
+  border-radius: 0.5rem;
+  right: 0;
+  padding: 0.5rem;
+`;
+
+const SortItem = styled.div`
+  text-align: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 1.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  :hover {
+    background: #f7f3f3;
+  };
+  color:#000
+`;
+
 const Booking = (props) => {
   const [paginationStatus, setPaginationStatus] = useState({
     traceId: null,
@@ -105,12 +132,14 @@ const Booking = (props) => {
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const [hasUserSearched, setHasUserSearched] = useState(false);
+  const [defaultBudget, setDefaultBudget] = useState({ price_lower_range: 0, price_upper_range: 10000, });
+  const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
     budget: {
-      price_lower_range: 1000,
-      price_upper_range: 9000,
+      price_lower_range: null,
+      price_upper_range: null,
     },
     star_category: null,
     sort: "price: low to high",
@@ -130,10 +159,14 @@ const Booking = (props) => {
     type: [],
     star_category: [1, 2, 3, 4, 5],
     user_ratings: [1, 2, 3, 4, 5],
-    sort: ["Price: low to high", "Price: high to low"],
+    user_ratings_label: { 1: 'Poor', 2: 'Fair', 3: 'Average', 4: 'Good', 5: 'Excellent' },
+    sort: ["Price: Low to High", "Price: High to Low"],
     facilities: [],
     tags: [],
   });
+  const [cloneFilters, setCloneFilter] = useState({});
+  const [SelectedSort, setSelectedSort] = useState("Sort");
+  const [sortShow, setSortShow] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -152,8 +185,11 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-    if (props?.showBookingModal && currentBooking?.check_in) {
-      // console.log("filters useEffect triggered", filters);
+    if (
+      props?.showBookingModal &&
+      currentBooking?.check_in
+    ) {
+      console.log("filters useEffect triggered", filters);
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
@@ -162,16 +198,17 @@ const Booking = (props) => {
   useEffect(() => {
     return () => {
       if (cancelTokenRef.current) {
-        cancelTokenRef.current.cancel("Component unmounted");
+        cancelTokenRef.current.cancel('Component unmounted');
       }
     };
   }, []);
 
   useEffect(() => {
-    if (selectSearch.length > 3 && !selectedHotelId) {
-      // ADD THE CHECK
+    if (debouncedSearch.length > 2 || hasUserSearched) {
+      console.log("searching in debounced search")
       setHasUserSearched(true);
-      fetchHotelsAutocomplete();
+      setMoreOptionsJSX([]);
+      fetchHotelsFilter();
     }
   }, [selectSearch]);
 
@@ -266,6 +303,27 @@ const Booking = (props) => {
   };
 
   const _removeFilterHandler = (heading) => {
+    setFilters({
+      free_breakfast: false,
+      is_refundable: false,
+      budget: {
+        price_lower_range: null,
+        price_upper_range: null,
+      },
+      star_category: null,
+      sort: "price: low to high",
+      type: null,
+      user_ratings: null,
+      facilities: null,
+      tags: null,
+      trace_id: null,
+      occupancies: itinerary?.hotels_config?.room_configuration || [
+        { adults: 1, childAges: [] },
+      ],
+      applyFilter: false,
+      page: 1,
+    });
+
     let oldfilters = {
       budget: "",
       type: "",
@@ -283,8 +341,8 @@ const Booking = (props) => {
       free_breakfast: false,
       is_refundable: false,
       budget: {
-        price_lower_range: 1000,
-        price_upper_range: 10000,
+        price_lower_range: null,
+        price_upper_range: null,
       },
       star_category: null,
       sort: "price: low to high",
@@ -321,8 +379,9 @@ const Booking = (props) => {
       errorMsg: "",
     });
     if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel("New request initiated");
+      cancelTokenRef.current.cancel('New request initiated');
     }
+    setCloneFilter(JSON.parse(JSON.stringify(filters)));
     cancelTokenRef.current = axios.CancelToken.source();
     setLoading(true);
     setUpdateLoadingState(true);
@@ -471,7 +530,7 @@ const Booking = (props) => {
       })
       .catch((err) => {
         if (axios.isCancel(err)) {
-          console.log("Request cancelled:", err.message);
+          console.log('Request cancelled:', err.message);
 
           return;
         }
@@ -479,57 +538,13 @@ const Booking = (props) => {
         setUpdateLoadingState(false);
         setMoreOptionsJSX([]);
 
+
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-  };
 
-  const fetchHotelsAutocomplete = () => {
-    if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel("New request initiated");
-    }
-    cancelTokenRef.current = axios.CancelToken.source();
-
-    try {
-      if (!selectSearch || selectSearch.trim().length < 3) {
-        setSearchResults([]);
-        return;
-      }
-
-      setAutocompleteLoading(true); 
-
-      hotelSearchAutocomplete
-        .get(`?q=${selectSearch}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          cancelToken: cancelTokenRef.current.token,
-        })
-        .then((res) => {
-          setSearchResults(res.data || []);
-          setAutocompleteLoading(false); 
-        })
-        .catch((err) => {
-          if (axios.isCancel(err)) {
-            console.log("Request cancelled:", err.message);
-            return;
-          }
-          setAutocompleteLoading(false); 
-          setSearchResults([]);
-
-          if (err?.response.status == 400) {
-            setPaginationStatus(() => ({
-              traceId: null,
-              page: 1,
-              totalPages: 1,
-            }));
-          }
-        });
-    } catch (error) {
-      setAutocompleteLoading(false); 
-    }
   };
 
   const fetchHotels = () => {
@@ -542,8 +557,9 @@ const Booking = (props) => {
       });
 
       if (cancelTokenRef.current) {
-        cancelTokenRef.current.cancel("New request initiated");
+        cancelTokenRef.current.cancel('New request initiated');
       }
+
 
       cancelTokenRef.current = axios.CancelToken.source();
       setLoading(true);
@@ -695,7 +711,7 @@ const Booking = (props) => {
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
-            console.log("Request cancelled:", err.message);
+            console.log('Request cancelled:', err.message);
 
             return;
           }
@@ -719,21 +735,17 @@ const Booking = (props) => {
             error: true,
             errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
+
         });
     } catch (error) {
       console.log("error in accommodation search:", error);
     }
   };
 
-  const handleSuggestionSelect = (suggestion) => {
-    setSelectedSearch(suggestion.name);
-    setSearchResults([]);
-    setSelectedHotelId([suggestion.id.toString()]);
-    setFilters((prev) => ({
-      ...prev,
-      applyFilter: !prev.applyFilter,
-    }));
-  };
+  const resetSort = () => {
+    setSelectedSort("Sort");
+    _addFilterHandler("price: low to high", "sort");
+  }
 
   if (props?.token)
     return (
@@ -743,7 +755,7 @@ const Booking = (props) => {
           anchor={"right"}
           backdrop
           style={{ zIndex: 1251 }}
-          className="font-lexend "
+          className=" "
           onHide={handleClose}
           width={"50vw"}
           mobileWidth={"100vw"}
@@ -764,14 +776,14 @@ const Booking = (props) => {
                   duration={1.3}
                   ydistance={25}
                 >
-                  <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                  <div className="text-white   px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
                     {isError.errorMsg}
                   </div>
                 </Slide>
               )}
             </div>
 
-            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900] px-xl">
               <SectionOne
                 booking_city={
                   currentBooking?.city_name || props?.selectedBooking?.city_name
@@ -786,6 +798,7 @@ const Booking = (props) => {
                 setMoreOptionsJSX={setMoreOptionsJSX}
                 clickType={props?.clickType}
                 setFilters={setFilters}
+                setShowFilters={setShowFilters}
                 hotelsConf={
                   itinerary?.hotels_config?.room_configuration || [
                     { adults: 1, childAges: [] },
@@ -799,28 +812,105 @@ const Booking = (props) => {
                 setSelectedHotelId={setSelectedHotelId}
               ></SectionOne>
 
-              <SectionTwo
-                loading={loading}
-                showFilter={props?.showFilter}
-                setshowFilter={props?.setshowFilter}
-                filtersState={filtersState}
-                FILTERS={filtersObj}
-                _updateStarFilterHandler={_updateStarFilterHandler}
-                updateUserStarHandler={updateUserStarHandler}
-                _removeFilterHandler={_removeFilterHandler}
-                _addFilterHandler={_addFilterHandler}
-                booking_city={
-                  currentBooking?.city_name || props?.selectedBooking?.city_name
-                }
-                No_of_stays={totalCount}
-                payment={props?.payment}
-                plan={props?.plan || props?.booking}
-                TotalCount={totalCount}
-                setShowFilters={setShowFilters}
-                showFilters={showFilters}
-                filters={filters}
-                setFilters={setFilters}
-              ></SectionTwo>
+              <div className="mt-xs">
+                <Travelers filters={filters} setFilters={setFilters} />
+              </div>
+
+
+              {totalCount ? (
+                <div className="flex flex-row items-center justify-between mt-lg">
+                  <div className="font-400 text-sm-md leading-xl text-text-spacegrey">
+                    Showing {totalCount ? `${totalCount} ` : null}
+                    stays in {currentBooking?.city_name || props?.selectedBooking?.city_name}
+                  </div>
+
+
+                  <div>
+                    <div className="text-sm font-normal w-[95%] md:w-fit relative">
+                      <div
+                        className="ttw-sort-button whitespace-nowrap relative cursor-pointer"
+                        onClick={() => {
+                          setSortShow(!sortShow);
+                        }}
+                      >
+
+                        <img className="inline mr-xs" src="/assets/stays/sort-icon.svg" />
+                        <b className="inline max-ph:hidden">
+                          {SelectedSort}
+                        </b>
+                        {SelectedSort != "Sort" &&
+                          <IconButton onClick={(e) => {
+                            resetSort();
+                            e.stopPropagation();
+                          }} className="!ml-xxs">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="black" />
+                            </svg>
+                          </IconButton>
+                        }
+                        {sortShow ? (
+                          <SortContainer>
+                            {filtersObj["sort"].map((e, i) => (
+                              <SortItem
+                                key={i}
+                                onClick={() => {
+                                  setSelectedSort(e);
+                                  _addFilterHandler(e.toLowerCase(), "sort");
+                                }}
+                                selected={e === SelectedSort}
+                              >
+                                {e}
+                              </SortItem>
+                            ))}
+                          </SortContainer>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+
+
+              {isFilterChangesApplied &&
+                <>
+                  <hr className="mt-md" />
+                  <FilterChips
+                    defaultBudget={defaultBudget}
+                    filters={cloneFilters}
+                    filtersState={filtersState}
+                    FILTERS={filtersObj}
+                    _addFilterHandler={_addFilterHandler}
+                    _updateStarFilterHandler={_updateStarFilterHandler}
+                    updateUserStarHandler={updateUserStarHandler}
+                    setFilters={setFilters}
+                    setIsFilterChangesApplied={setIsFilterChangesApplied}
+                  />
+                </>
+              }
+
+              {showFilters && (
+                <div
+                >
+                  <Filters
+                    showFilter={showFilters}
+                    filtersState={filtersState}
+                    FILTERS={filtersObj}
+                    filters={filters}
+                    defaultBudget={defaultBudget}
+                    isFilterChangesApplied={isFilterChangesApplied}
+                    _addFilterHandler={_addFilterHandler}
+                    _removeFilterHandler={_removeFilterHandler}
+                    _updateStarFilterHandler={_updateStarFilterHandler}
+                    updateUserStarHandler={updateUserStarHandler}
+                    setshowFilter={setShowFilters}
+                    setFilters={setFilters}
+                    setIsFilterChangesApplied={setIsFilterChangesApplied}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-center sticky top-2/3 z-[900]">
@@ -842,7 +932,7 @@ const Booking = (props) => {
                     color: "red",
                     margin: "1rem",
                   }}
-                  className="text-center font-lexend"
+                  className="text-center "
                 >
                   You're not authorized to take this action, please contact your
                   experience captain.
@@ -858,7 +948,7 @@ const Booking = (props) => {
                         margin: "auto",
                         height: isPageWide ? "80vh" : "40vh",
                       }}
-                      className="center-div text-center font-lexend"
+                      className="center-div text-center "
                     >
                       <LoadingLottie
                         height={"5rem"}
@@ -870,10 +960,10 @@ const Booking = (props) => {
                   ) : null}
 
                   {!loading &&
-                  isFetchingError.error &&
-                  moreOptionsJSX?.length == 0 ? (
+                    isFetchingError.error &&
+                    moreOptionsJSX?.length == 0 ? (
                     <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
-                      <div className="flex flex-row items-center justify-center text-center font-lexend">
+                      <div className="flex flex-row items-center justify-center text-center px-lg">
                         {isFetchingError.errorMsg}
                       </div>
                       <GetInTouchContainer>
@@ -926,20 +1016,20 @@ const Booking = (props) => {
 
                         {paginationStatus.page <
                           paginationStatus.totalPages && (
-                          <div className="mt-3">
-                            {/* {viewMoreStatus ? ( */}
-                            <Button
-                              boxShadow
-                              onclickparam={null}
-                              onclick={fetchHotels}
-                              margin="0.25rem auto"
-                              borderWidth="1px"
-                              borderRadius="2rem"
-                              padding="0.25rem 1rem"
-                            >
-                              View More
-                            </Button>
-                            {/* // ) : selectSearch !== "" ? (
+                            <div className="mt-3">
+                              {/* {viewMoreStatus ? ( */}
+                              <Button
+                                boxShadow
+                                onclickparam={null}
+                                onclick={fetchHotels}
+                                margin="0.25rem auto"
+                                borderWidth="1px"
+                                borderRadius="2rem"
+                                padding="0.25rem 1rem"
+                              >
+                                View More
+                              </Button>
+                              {/* // ) : selectSearch !== "" ? (
                               //   <Button
                               //     boxShadow
                               //     onclickparam={null}
@@ -952,15 +1042,15 @@ const Booking = (props) => {
                               //     Show All
                               //   </Button>
                               // ) : null} */}
-                          </div>
-                        )}
+                            </div>
+                          )}
                       </div>
                     </OptionsContainer>
                   ) : null}
 
                   {!loading && noResults ? (
                     <OptionsContainer className="px-2 center-div space-y-5">
-                      <div className="font-lexend center-div text-center">
+                      <div className=" center-div text-center">
                         Oops, we couldn't find what you were searching but we
                         are already adding new and approved accommodations to
                         our database everyday!
@@ -1027,25 +1117,6 @@ const Booking = (props) => {
                 />
               </FloatingView>
             )}
-            {/* <ViewHotelDetails
-              mercury={true}
-              check_in={props?.selectedBooking.check_in}
-              check_out={props?.selectedBooking.check_out}
-              _setImagesHandler={props?._setImagesHandler}
-              onHide={() => setShowDetails(false)}
-              id={props?.currentBooking?.agoda_accommodation}
-              currentBooking={props?.currentBooking}
-              show={showDetails}
-              handleClick={props?.handleClick}
-              setStayBookings={props?.setStayBookings}
-              itineraryDaybyDay={props?.itineraryDaybyDay}
-              occupancies={filters.occupancies}
-              setShowLoginModal={props?.setShowLoginModal}
-              handleClose={handleClose}
-              city_id={props?.selectedBooking?.cityId}
-              plan={props.plan}
-              itinerary_city_id={props.itinerary_city_id}
-            ></ViewHotelDetails> */}
           </>
         </Drawer>
       </div>

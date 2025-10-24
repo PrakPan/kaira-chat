@@ -1,33 +1,34 @@
 import styled, { keyframes } from "styled-components";
 import SlideOne from "./slideone/SlideOne";
-import SlideTwo from "./slidetwo/SlideTwo";
+import SlideThree from "./slidetwo/SlideThree";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
-import SlideThree from "./slidethree/SlideThree";
-
+import SlideFour from "./slidefour/SlideFour";
+import SlideTwo from "./slideTwo/SlideTwo";
+import { useRouter } from "next/router";
+import SlideFive from "./slideFive/SlideFive";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Card = styled.div`
   width: 100%;
   margin: 0;
   animation: 1s ${fadeInAnimation};
+  @media screen and (max-width: 768px) {
+    margin-bottom:100px;
+  }
 `;
-
 const FlickityComp = (props) => {
+  const router=useRouter()
+    const slideIndex = Number(router.query.slideIndex) || 0;
   return (
-    <div style={{ width: "100%" }} className="">
-      {!props.slideIndex ? (
+    <div style={{ width: "100%" }} className="font-inter h-full">
+      {(!slideIndex || slideIndex==0) ? (
         <Card>
           <SlideOne
             initialInputId={props.initialInputId}
-            focusedDate={props.focusedDate}
-            flexible={props.flexible}
-            setFlexible={props.setFlexible}
-            setFocusedDate={props.setFocusedDate}
             tailoredFormModal={props.tailoredFormModal}
             startingLocation={props.startingLocation}
             setStartingLocation={props.setStartingLocation}
-            children_cities={props.children_cities}
             showSearchStarting={props.showSearchStarting}
             setShowSearchStarting={props.setShowSearchStarting}
             destination={props.destination}
@@ -36,94 +37,46 @@ const FlickityComp = (props) => {
             cities={props.cities}
             setDestination={props.setDestination}
             selectedCities={props.selectedCities}
-            setSelectedCities={props.setSelectedCities}
-            valueStart={props.valueStart}
-            valueEnd={props.valueEnd}
-            setValueStart={props.setValueStart}
-            setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
             selectedPreferences={props.selectedPreferences}
             setSelectedPreferences={props.setSelectedPreferences}
+            errors={props.errors}
           ></SlideOne>
         </Card>
       ) : null}
 
-      {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
-        <Card>
+      {slideIndex === 1 ? (
+        <Card className="flex flex-col h-full">
           <SlideTwo
-            numberOfAdults={props.numberOfAdults}
-            tailoredFormModal={props.tailoredFormModal}
-            setNumberOfAdults={props.setNumberOfAdults}
-            numberOfChildren={props.numberOfChildren}
-            setNumberOfChildren={props.setNumberOfChildren}
-            numberOfInfants={props.numberOfInfants}
-            setNumberOfInfants={props.setNumberOfInfants}
-            groupType={props.groupType}
-            setGroupType={props.setGroupType}
-            setBudget={props.setBudget}
-            selectedPreferences={props.selectedPreferences}
-            setSelectedPreferences={props.setSelectedPreferences}
-            setSubmitSecondSlide={props.setSubmitSecondSlide}
-            setRoomConfiguration={props.setRoomConfiguration}
-            priceRange={props.priceRange}
-            setPriceRange={props.setPriceRange}
-            addHotels={props.addHotels}
-            setAddHotels={props.setAddHotels}
-            addFlights={props.addFlights}
-            setAddFlights={props.setAddFlights}
-            destination={props.destination}
-            defaultPriceRange={props.defaultPriceRange}
-          ></SlideTwo>
+            routes={props?.route}
+            setLocationsLatLong={props.setLocationsLatLong}
+            locationsLatLong={props.locationsLatLong}
+            className="flex-1"
+            setIsRouteChanged={props.setIsRouteChanged}
+          >
+
+          </SlideTwo>
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 ? (
-        props.addHotels ? (
+      {slideIndex === 2 ? (
+        <Card>
           <SlideThree
-            numberOfAdults={props.numberOfAdults}
-            setNumberOfAdults={props.setNumberOfAdults}
-            numberOfChildren={props.numberOfChildren}
-            setNumberOfChildren={props.setNumberOfChildren}
-            numberOfInfants={props.numberOfInfants}
-            setNumberOfInfants={props.setNumberOfInfants}
-            roomConfiguration={props.roomConfiguration}
-            setRoomConfiguration={props.setRoomConfiguration}
-            addHotels={props.addHotels}
-            setAddHotels={props.setAddHotels}
-            groupType={props.groupType}
-            setBudget={props.setBudget}
-            setPriceRange={props.setPriceRange}
-            destination={props.destination}
-            defaultPriceRange={props.defaultPriceRange}
-          />
-        ) : (
-          <Login
-            nospacing
-            noheading
-            noicons
-            hideloginclose
-            noclose
-            onSuccess={() => {
-              props.setSlideIndex((prev) => prev - 1);
-              props.setLoginComplete(true);
-            }}
-          ></Login>
-        )
+            setSubmitSecondSlide={props.setSubmitSecondSlide}
+          ></SlideThree>
+        </Card>
       ) : null}
 
-      {props.slideIndex === 3 && (!props.token || props.phone === "null") ? (
-        <Login
-          nospacing
-          noheading
-          noicons
-          hideloginclose
-          noclose
-          onSuccess={() => {
-            props.setSlideIndex((prev) => prev - 1);
-            props.setLoginComplete(true);
-          }}
-        ></Login>
-      ) : null}
+      {slideIndex === 3 ?
+      <Card> 
+        <SlideFour/> 
+        </Card> : null}
+
+      {slideIndex == 4 &&
+        <div>
+          <SlideFive completeItineraryCreate={props.completeItineraryCreate}/>
+        </div>
+      }
     </div>
   );
 };
