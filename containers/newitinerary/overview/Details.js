@@ -70,8 +70,8 @@ const DateRow = styled.div`
 };
 
 const Details = (props) => {
-  console.log("profil",props?.itinerary)
-  console.log("profil",props?.itinerary)
+  // console.log("profil",props?.itinerary)
+  // console.log("profil",props?.itinerary)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
   const dispatch = useDispatch();

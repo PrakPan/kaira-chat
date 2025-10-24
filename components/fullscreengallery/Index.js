@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import SwiperGallery from "../Swiper/SwiperGallery";
+import Image from "next/image";
 
 const Cross = styled.p`
   color: white;
@@ -23,9 +24,13 @@ const FullScreenGallery = (props) => {
       style={{ zIndex: "2000" }}
     >
       <div className="container mt-7xl cursor-pointer max-ph:!p-0">
-        <span onClick={props.closeGalleryHandler} className="w-[30px] h-[30px] bg-text-white flex items-center justify-center rounded-circle absolute right-[20%]  max-ph:top-[25px] max-ph:right-[20px]">
-          {svgIcons.close}
+        <span onClick={props.closeGalleryHandler} className="w-[30px] h-[30px] bg-text-white flex items-center justify-center rounded-circle absolute right-[20%]  max-ph:top-[25px] max-ph:left-[20px]">
+          <span className="max-ph:hidden">{svgIcons.close} </span>
+          <span className="hidden max-ph:!block">
+            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} />
+          </span>
         </span>
+
 
 
         <SwiperGallery

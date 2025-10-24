@@ -468,14 +468,14 @@ const AirportBookingItem = ({
 
     // Add "Add" options for missing pickup/drop if supports transfers
     if (supportsTransfers(bookingMode)) {
-      if (!hasDrop) {
+      if (!hasDrop && !firstCity) {
         allBookingsWithTypes.push({
           displayType: "Add Drop",
           isAdd: true,
           addType: "drop",
         });
       }
-      if (!hasPickup) {
+      if (!hasPickup && !lastCity) {
         allBookingsWithTypes.push({
           displayType: "Add Pickup",
           isAdd: true,
@@ -1147,6 +1147,7 @@ useEffect(() => {
         );
       }
       setIsTransferDrawerOpen(false);
+      handleClose();
       setTransferDrawerType(null);
       setSelectedTransferBooking(null);
     } catch (error) {

@@ -173,6 +173,7 @@ module.exports = {
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
+          stars: "#FFD201"
         },
         // Secondary Colors
         secondary: {

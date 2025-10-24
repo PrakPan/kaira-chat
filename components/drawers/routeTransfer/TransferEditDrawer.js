@@ -203,7 +203,7 @@ const TransferEditDrawer = (props) => {
     return newDate.format("YYYY-MM-DD");
   };
 
-  console.log("IsMulti", booking_type, transferType);
+  // console.log("IsMulti", booking_type, transferType);
   useEffect(() => {
     if (showDrawer) {
       document.documentElement.style.overflow = "hidden";
@@ -214,7 +214,7 @@ const TransferEditDrawer = (props) => {
     };
   }, [showDrawer]);
 
-  console.log("IsMulti",booking_type,transferType);
+  // console.log("IsMulti",booking_type,transferType);
   const fetchRoutes = () => {
     setLoadingTransfers(true);
     setLoadingMulticityTransfers(true);
