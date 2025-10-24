@@ -152,14 +152,15 @@ const ItineraryCity = (props) => {
                         </div>
                         </div>
                         <div className="flex flex-row items-center border-l pl-[8px] ">
-                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
+                            <span className="text-primary-stars flex">{hotel?.rating && hotel?.rating !== 0
+                            ? getStars(hotel?.rating)
+                            : null} </span>
+                            <div className=" text-[12px] ml-1 font-[500]">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
                           </div>
-                          {hotel?.rating && hotel?.rating !== 0
-                            ? getStars(hotel?.rating)
-                            : null}{" "}
+                        
                         </div></>}
                       </div>
                   </div>

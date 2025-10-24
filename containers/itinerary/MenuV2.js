@@ -89,7 +89,7 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const {trackGetInTouchClicked} = useAnalytics();
+  const { trackGetInTouchClicked } = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
 
   useEffect(() => {
@@ -148,7 +148,7 @@ const SimpleTabsV2 = (props) => {
       RoutesData,
       TransfersData
     );
-    console.log(totalcityslabs,"total city slabs");
+    // console.log(totalcityslabs, "total city slabs");
   }, [props.breif, props.routes, props.cities]);
 
   const _GetInTouch = () => {
@@ -178,7 +178,7 @@ const SimpleTabsV2 = (props) => {
             text: res.data.message,
             heading: "Request received.",
           });
-          trackGetInTouchClicked(itneraryId,props?.payment?.discounted_cost,'Rupees');
+          trackGetInTouchClicked(itneraryId, props?.payment?.discounted_cost, 'Rupees');
           setLoading(false);
         })
         .catch((err) => {
@@ -283,8 +283,7 @@ const SimpleTabsV2 = (props) => {
     });
   };
 
-  const handleFooterBannerMobile = (lebel) => {
-    console.log("is this");
+  const handleFooterBannerMobile = (label) => {
     setShowFooterBannerMobile(!showFooterBannerMobile);
 
     logEvent({
@@ -292,7 +291,7 @@ const SimpleTabsV2 = (props) => {
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
-        event_label: lebel,
+        event_label: label,
         event_action: "Navigation Bar",
       },
     });
@@ -864,69 +863,69 @@ const SimpleTabsV2 = (props) => {
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
             />
-              <div id={"Itenary"}
-                className={activeTab === "Itinerary" ? "block" : "hidden"}>
-                {props.mercuryItinerary
-                  ? props?.itineraryDaybyDay && (
-                    <DaybyDay
-                      mercuryItinerary={props?.mercuryItinerary}
-                      activityBookings={props?.activityBookings}
-                      setActivityBookings={props?.setActivityBookings}
-                      transferBookings={props?.transferBookings}
-                      setTransferBookings={props?.setTransferBookings}
-                      setItinerary={props?.setItinerary}
-                      itinerary={props?.itinerary}
-                      loadbookings={props?.loadbookings}
-                      payment={props.payment}
-                      stayBookings={stays}
-                      setStayBookings={props.setStayBookings}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      getPaymentHandler={props.getPaymentHandler}
-                      _updateFlightBookingHandler={
-                        props._updateFlightBookingHandler
-                      }
-                      _updateTaxiBookingHandler={
-                        props._updateTaxiBookingHandler
-                      }
-                      setShowBookingModal={(val) =>
-                        props.setShowStayBookingModal(val)
-                      }
-                      showBookingModal={props.showStayBookingModal}
-                      setHideBookingModal={props.setHideBookingModal}
-                      setShowLoginModal={setShowLoginModal}
-                      _GetInTouch={_GetInTouch}
-                    />
-                  )
-                  : props?.itinerary && (
-                    <NewItenaryMain
-                      setShowLoginModal={setShowLoginModal}
-                      plan={props.plan}
-                      payment={props.payment}
-                      city_slabs={props?.breif?.city_slabs}
-                      itinerary={props?.itinerary}
-                      setItinerary={props.setItinerary}
-                      getPaymentHandler={props.getPaymentHandler}
-                      token={props.token}
-                      transferBookings={props.transferBookings}
-                      stayBookings={props.stayBookings}
-                      activityBookings={props.activityBookings}
-                      getAccommodationAndActivitiesHandler={
-                        props.getAccommodationAndActivitiesHandler
-                      }
-                      setShowBookingModal={() =>
-                        props.setShowBookingModal(true)
-                      }
-                      _GetInTouch={_GetInTouch}
-                    ></NewItenaryMain>
-                  )}
-              </div>
+            <div id={"Itenary"}
+              className={activeTab === "Itinerary" ? "block" : "hidden"}>
+              {props.mercuryItinerary
+                ? props?.itineraryDaybyDay && (
+                  <DaybyDay
+                    mercuryItinerary={props?.mercuryItinerary}
+                    activityBookings={props?.activityBookings}
+                    setActivityBookings={props?.setActivityBookings}
+                    transferBookings={props?.transferBookings}
+                    setTransferBookings={props?.setTransferBookings}
+                    setItinerary={props?.setItinerary}
+                    itinerary={props?.itinerary}
+                    loadbookings={props?.loadbookings}
+                    payment={props.payment}
+                    stayBookings={stays}
+                    setStayBookings={props.setStayBookings}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={
+                      props._updateStayBookingHandler
+                    }
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    _updateTaxiBookingHandler={
+                      props._updateTaxiBookingHandler
+                    }
+                    setShowBookingModal={(val) =>
+                      props.setShowStayBookingModal(val)
+                    }
+                    showBookingModal={props.showStayBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
+                  />
+                )
+                : props?.itinerary && (
+                  <NewItenaryMain
+                    setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
+                    payment={props.payment}
+                    city_slabs={props?.breif?.city_slabs}
+                    itinerary={props?.itinerary}
+                    setItinerary={props.setItinerary}
+                    getPaymentHandler={props.getPaymentHandler}
+                    token={props.token}
+                    transferBookings={props.transferBookings}
+                    stayBookings={props.stayBookings}
+                    activityBookings={props.activityBookings}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
+                    setShowBookingModal={() =>
+                      props.setShowBookingModal(true)
+                    }
+                    _GetInTouch={_GetInTouch}
+                  ></NewItenaryMain>
+                )}
+            </div>
 
-          <div id={"Booking"}
-           className={activeTab === "Bookings" ? "block" : "hidden"}>
+            <div id={"Booking"}
+              className={activeTab === "Bookings" ? "block" : "hidden"}>
               {isGroup ? (
                 <div id={"Stays"}>
                   <Register></Register>
@@ -1150,7 +1149,7 @@ const SimpleTabsV2 = (props) => {
         </SplitScreen>
       ) : null}
 
-      <Modal
+      {/* <Modal
         centered
         show={showFooterBannerMobile}
         backdrop
@@ -1158,7 +1157,8 @@ const SimpleTabsV2 = (props) => {
         onCLose={() => setShowFooterBannerMobile(false)}
         onHide={() => {}}
         borderRadius={"12px"}
-      >
+      > */}
+      {showFooterBannerMobile && <>
         {props.payment ? (
           <>
             {!props.payment.is_registration_needed ? (
@@ -1201,6 +1201,7 @@ const SimpleTabsV2 = (props) => {
                   setShowFooterBannerMobile={() =>
                     setShowFooterBannerMobile(false)
                   }
+                  openPaymentDrawer={true}
                   blur={props.blur}
                   loading={loading}
                   social_title={props?.social_title}
@@ -1244,7 +1245,9 @@ const SimpleTabsV2 = (props) => {
             )}
           </>
         ) : null}
-      </Modal>
+      </>
+      }
+      {/* </Modal> */}
 
       <div className={isPageWide ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed" : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"}>
         {props?.displayText ? <ItineraryStatusLoader
@@ -1298,7 +1301,7 @@ const SimpleTabsV2 = (props) => {
               {props?.payment && (
                 <div className="text-[12px] text-[#6E757A]">
                   {props?.payment?.pay_only_for_one ||
-                  props?.payment?.show_per_person_cost
+                    props?.payment?.show_per_person_cost
                     ? "Per Person"
                     : props.payment?.is_estimated_price
                       ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
@@ -1313,31 +1316,31 @@ const SimpleTabsV2 = (props) => {
                       ? props?.payment?.pay_only_for_one ||
                         props?.payment?.show_per_person_cost
                         ? getIndianPrice(
+                          Math.round(
                             Math.round(
-                              Math.round(
-                                props.payment.per_person_discounted_cost
-                              ) / 100
-                            )
+                              props.payment.per_person_discounted_cost
+                            ) / 100
                           )
+                        )
                         : getIndianPrice(
-                            Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
-                            )
+                          Math.round(
+                            Math.round(props.payment.discounted_cost) / 100
                           )
+                        )
                       : props?.payment?.pay_only_for_one ||
-                          props?.payment?.show_per_person_cost
+                        props?.payment?.show_per_person_cost
                         ? getIndianPrice(
+                          Math.round(
                             Math.round(
-                              Math.round(
-                                props.payment.per_person_discounted_cost
-                              )
+                              props.payment.per_person_discounted_cost
                             )
                           )
+                        )
                         : getIndianPrice(
-                            Math.round(
-                              Math.round(props.payment.discounted_cost)
-                            )
-                          )}
+                          Math.round(
+                            Math.round(props.payment.discounted_cost)
+                          )
+                        )}
                     {"/-"}
                   </span>
                 </div>
@@ -1368,10 +1371,10 @@ const SimpleTabsV2 = (props) => {
                   (props.payment?.itinerary_status ===
                     ITINERARY_STATUSES?.itinerary_finalized ||
                     pricing_status === "SUCCESS") &&
-                  !props.payment?.paid_user &&
-                  // props.payment?.user_allowed_to_pay ? (
-                  (props.payment.total_cost > 0 ||
-                    props?.payment?.discounted_cost > 0) ? (
+                    !props.payment?.paid_user &&
+                    // props.payment?.user_allowed_to_pay ? (
+                    (props.payment.total_cost > 0 ||
+                      props?.payment?.discounted_cost > 0) ? (
                     <div className="">
                       <button
                         className="ttw-btn-secondary-fill"

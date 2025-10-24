@@ -300,6 +300,7 @@ const NewSummaryContainer = (props) => {
           social_description={props?.social_description}
           itineraryName={props.itinerary.name}
           itineraryImage={props?.itinerary?.images?.[0]}
+          openPaymentDrawer={props.openPaymentDrawer}
         />
       )}
     </SummaryContainer>

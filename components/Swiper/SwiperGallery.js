@@ -37,12 +37,12 @@ const Container = styled.div`
 
 @media (max-width: 768px) {
     .swiper-button-next{
-    top: 30%;
+    top: 35%;
     right: 5%;
 }
 
 .swiper-button-prev{
-    top: 30%;
+    top: 35%;
     left: 5%;
  }
 }
@@ -52,9 +52,11 @@ const Container = styled.div`
 
 const SwiperGallery = (props) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(1); // start from 1
 
   return (
     <Container>
+      <div className="hidden max-ph:!flex justify-between items-baseline px-xl mb-lg"> <span className="text-black leading-xl-sm text-md-lg font-600">Photo Gallery</span> <span className="text-sm font-400 text-text-spacegrey">{currentIndex}/{props.images.length}</span> </div>
       <div className="min-w-[50vw] max-w-[50vw] max-h-[60vh] justify-center mx-auto min-h-auto mb-3xl max-ph:!min-h-[350px] max-ph:!max-h-[400px]  max-ph:!min-w-[100%] max-ph:!max-w-[100%]">
         <Swiper
           style={{
@@ -66,6 +68,9 @@ const SwiperGallery = (props) => {
           navigation={true}
           thumbs={{ swiper: thumbsSwiper }}
           modules={[FreeMode, Navigation, Thumbs]}
+          onSlideChange={(swiper) => {
+            setCurrentIndex(swiper.realIndex + 1);
+          }}
           className="mySwiper2"
         >
           {props.images.map((image, index) => (

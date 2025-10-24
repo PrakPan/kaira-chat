@@ -90,7 +90,7 @@ const ErrorContainer = styled.div`
 
 const ViewHotelDetails = (props) => {
 
-  console.log("plan is:", props?.currentBooking)
+  // console.log("plan is:", props?.currentBooking)
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const { drawer, booking_id, idx, city_id } = router.query;

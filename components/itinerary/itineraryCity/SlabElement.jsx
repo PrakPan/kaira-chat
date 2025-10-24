@@ -18,13 +18,23 @@ import setItinerary from "../../../store/actions/itinerary";
 import { openNotification } from "../../../store/actions/notification";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 export const getStars = (rating) => {
-  const stars = [];
-  stars.push(<MdOutlineStar className="text-[#FFD201]" />);
 
+  var stars = [];
+  for (let i = 0; i < Math.floor(rating); i++) {
+    stars.push(<FaStar key={i} />);
+  }
+  if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
   return stars;
+  // const stars = [];
+  // stars.push(<MdOutlineStar className="text-primary-stars" />);
+
+  // return stars;
 };
+
+// 
 
 const SlabElement = (props) => {
   const { trackActivityBookingAdd, trackActivityCardClicked, trackPoiCardClicked } = useAnalytics();
@@ -355,12 +365,13 @@ const Activity = (props) => {
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
 
               {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="flex items-center text-primary-stars">
+                  {getStars(props.element?.rating)}&nbsp;
+                </div>
                 <div className="Body3M_12">
                   {props.element?.rating}
                 </div>
-                <div className="flex items-center">
-                  {getStars(props.element?.rating)}
-                </div>
+
               </div>
                 : null}
             </div>
@@ -631,17 +642,17 @@ const Recommendation = (props) => {
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
               {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                <div className="flex items-center text-primary-stars">
+                  {getStars(props.element?.restaurants?.[0]?.rating)}&nbsp;
+                </div>
                 <div className="Body3M_12">
                   {props.element?.restaurants?.[0]?.rating}
-                </div>
-                <div className="flex items-center">
-                  {getStars(props.element?.restaurants?.[0]?.rating)}
                 </div>
               </div>
                 : null}
             </div>
 
-              <div className="flex flex-row gap-xs flex-wrap ">
+            <div className="flex flex-row gap-xs flex-wrap ">
               {["Hidden Gem", "Family-Friendly"].map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))}
