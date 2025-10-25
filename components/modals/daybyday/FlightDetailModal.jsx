@@ -15,6 +15,7 @@ import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 import { TbArrowBack } from "react-icons/tb";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+// import { get } from "react-scroll/modules/mixins/scroller";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 0;
@@ -52,6 +53,7 @@ const FlightDetailModal = ({
   // setHandleShow,
   error,
   setShowLoginModal,
+  getPaymentHandler,
   handleEditRoute
 }) => {
   const router = useRouter();
@@ -82,6 +84,7 @@ const FlightDetailModal = ({
 
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
+        getPaymentHandler();
         trackTransferBookingDelete(router.query.id,booking_id,id);
         setLoading(false);
         dispatch(

@@ -212,6 +212,7 @@ const TransferDrawer = ({
                 transferData?.transfer_details?.items?.[0]?.fare_rule?.[0]
               }
               booking_id={transferData?.id}
+              getPaymentHandler={getPaymentHandler}
               setShowDetails={null}
               name={transferData?.name}
               isEmbedded={true}
@@ -563,6 +564,7 @@ const TransferDrawer = ({
                 fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
                 booking_id={data?.id}
                 name={city}
+                getPaymentHandler={getPaymentHandler}
                 setShowLoginModal={setShowLoginModal}
                 onChange={true}
                 handleClose={handleClose}
