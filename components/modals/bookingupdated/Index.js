@@ -171,6 +171,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const dispatch = useDispatch();
+  const debouncedSearch = useDebounce(selectSearch);
 
   const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
   const [selectedHotelId, setSelectedHotelId] = useState(null); 
@@ -792,7 +793,7 @@ const Booking = (props) => {
                 selectSearch={selectSearch}
                 setSelectedSearch={setSelectedSearch}
                 fetchHotels={fetchHotels}
-                fetchHotelsAutocomplete={fetchHotelsAutocomplete}
+                // fetchHotelsAutocomplete={fetchHotelsAutocomplete}
                 searchResults={searchResults}
                 resetPaginationStatus={resetPaginationStatus}
                 setMoreOptionsJSX={setMoreOptionsJSX}
@@ -805,7 +806,7 @@ const Booking = (props) => {
                   ]
                 }
                 handleClose={handleClose}
-                handleSuggestionSelect={handleSuggestionSelect}
+                // handleSuggestionSelect={handleSuggestionSelect}
                 autocompleteLoading={autocompleteLoading}
                 handleClearSearch={handleClearSearch}
                 selectedHotelId={selectedHotelId}

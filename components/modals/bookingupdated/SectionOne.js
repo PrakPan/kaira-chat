@@ -26,11 +26,10 @@ const svgIcons = {
 const Section = (props) => {
   const searchHandler = (e) => {
     if (props.selectSearch.trim().length > 3) {
-      props.fetchHotelsAutocomplete();
+      // props.fetchHotelsAutocomplete();
     }
   };
 
-  console.log("SEARCH RESULTS:", props.searchResults);
 
   return (
     <div>

@@ -367,7 +367,7 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
-        trackHotelBookingDelete(router.query.id, props?.id)
+        // trackHotelBookingDelete(router.query.id, props?.id)
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
         newItinerary.cities = newItinerary.cities.map((item) => {

@@ -162,7 +162,7 @@ const starRating = (rating, length) => {
 
 
   const handleViewDetails = (value) => {
-    trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
+    // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -193,7 +193,7 @@ const starRating = (rating, length) => {
 
   const handleChangeHotel = (e, label, value, clickType) => {
     e.stopPropagation();
-    trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
+    // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
     if (token) {
       router.push(
         {
