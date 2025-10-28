@@ -161,7 +161,7 @@ const FlightDetailModal = ({
                   </Generalbuttonstyle> */}
                   <button className="ttw-btn-secondary"
                     onClick={() => {
-                      handleClose()
+                      // handleClose()
                       handleEditRoute()
                     }}
                   >

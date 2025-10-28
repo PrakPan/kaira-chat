@@ -1,9 +1,10 @@
 import React from "react";
 import { Japan } from "../assets";
 import { TravelVibeCard } from "../common/components/card";
-
+import { useRouter } from "next/router";
 const TravelVibeSection = () => {
   // Sample travel vibe data - replace with your actual data
+  const router = useRouter();
   const travelVibes = [
     {
       id: 1,
@@ -13,6 +14,7 @@ const TravelVibeSection = () => {
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"theme/honeymoon-2025"
     },
     {
       id: 2,
@@ -22,6 +24,7 @@ const TravelVibeSection = () => {
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"theme/road-trips-2025"
     },
     {
       id: 3,
@@ -31,6 +34,7 @@ const TravelVibeSection = () => {
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"theme/perfect-proposals-2025"
     },
     {
       id: 4,
@@ -40,6 +44,7 @@ const TravelVibeSection = () => {
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"theme/japan-cherry-blossom"
     },
     {
       id: 5,
@@ -49,6 +54,7 @@ const TravelVibeSection = () => {
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"theme/europe-under-1-lakh-2025"
     },
   ];
 
@@ -82,7 +88,7 @@ const TravelVibeSection = () => {
               gradientOverlay={travelVibes[0].gradientOverlay}
               height="376px"
               onClick={() => {
-                console.log(`Clicked on ${travelVibes[0].title}`);
+                router.push(travelVibes[0].link);
               }}
             />
           </div>
@@ -97,7 +103,7 @@ const TravelVibeSection = () => {
               gradientOverlay={travelVibes[1].gradientOverlay}
               height="376px"
               onClick={() => {
-                console.log(`Clicked on ${travelVibes[1].title}`);
+                router.push(travelVibes[1].link);
               }}
             />
           </div>
@@ -113,7 +119,7 @@ const TravelVibeSection = () => {
               gradientOverlay={travelVibes[2].gradientOverlay}
               height="376px"
               onClick={() => {
-                console.log(`Clicked on ${travelVibes[2].title}`);
+                router.push(travelVibes[2].link);
               }}
             />
           </div>
@@ -128,7 +134,7 @@ const TravelVibeSection = () => {
               gradientOverlay={travelVibes[3].gradientOverlay}
               height="376px"
               onClick={() => {
-                console.log(`Clicked on ${travelVibes[3].title}`);
+                router.push(travelVibes[3].link);
               }}
             />
           </div>
@@ -143,7 +149,7 @@ const TravelVibeSection = () => {
               gradientOverlay={travelVibes[4].gradientOverlay}
               height="376px"
               onClick={() => {
-                console.log(`Clicked on ${travelVibes[4].title}`);
+                router.push(travelVibes[4].link);
               }}
             />
           </div>

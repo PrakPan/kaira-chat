@@ -24,6 +24,7 @@ const PlacesBragSection = () => {
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/japan",
     },
     {
       id: 2,
@@ -34,6 +35,7 @@ const PlacesBragSection = () => {
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"europe/france/paris",
     },
     {
       id: 3,
@@ -44,6 +46,7 @@ const PlacesBragSection = () => {
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/maldives",
     },
     {
       id: 4,
@@ -54,6 +57,7 @@ const PlacesBragSection = () => {
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/japan",
     },
     {
       id: 5,
@@ -64,6 +68,7 @@ const PlacesBragSection = () => {
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"europe/france/paris",
     },
     {
       id: 6,
@@ -74,6 +79,7 @@ const PlacesBragSection = () => {
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/maldives",
     },
     {
       id: 7,
@@ -84,6 +90,7 @@ const PlacesBragSection = () => {
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/japan",
     },
     {
       id: 8,
@@ -94,6 +101,7 @@ const PlacesBragSection = () => {
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"europe/france/paris",
     },
     {
       id: 9,
@@ -104,6 +112,7 @@ const PlacesBragSection = () => {
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link:"asia/maldives",
     },
   ];
 
@@ -184,6 +193,7 @@ const PlacesBragSection = () => {
                     description={destination.description}
                     image={destination.image}
                     tags={destination.tags}
+                    link={destination.link}
                     gradientOverlay={destination.gradientOverlay}
                     onClick={() => {
                       console.log(`Clicked on ${destination.title}`);
@@ -194,8 +204,28 @@ const PlacesBragSection = () => {
             ))}
           </Swiper>
 
+          <div className="custom-prev" aria-hidden="true">
+            <div className="absolute -left-3  top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div className="custom-next" aria-hidden="true">
+            <div className="absolute -right-3  top-1/2 -translate-y-1/2 z-10">
+              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div> 
+
           {/* Custom Prev Button */}
-          <div className="fullslider-prev" aria-hidden>
+          {/* <div className="fullslider-prev" aria-hidden>
             <div className="absolute left-3 sm:left-1 top-1/2 -translate-y-1/2 z-10">
               <div
                 className={`w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer${activeIndex === 0 ? " cursor-not-allowed opacity-40 pointer-events-none" : ""}`}
@@ -206,10 +236,10 @@ const PlacesBragSection = () => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Custom Next Button */}
-          <div className="fullslider-next" aria-hidden>
+          {/* <div className="fullslider-next" aria-hidden>
             <div className="absolute right-3 sm:right-1 top-1/2 -translate-y-1/2 z-10">
               <div
                 className={`w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer${activeIndex === slideCount - 1 ? " cursor-not-allowed opacity-40 pointer-events-none" : ""}`}
@@ -220,7 +250,7 @@ const PlacesBragSection = () => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

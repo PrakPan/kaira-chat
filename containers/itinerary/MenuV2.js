@@ -925,7 +925,7 @@ const SimpleTabsV2 = (props) => {
             </div>
 
             <div id={"Booking"}
-              className={activeTab === "Bookings" ? "block" : "hidden"}>
+              className={activeTab === "Bookings" ? "block mb-[100px]" : "hidden"}>
               {isGroup ? (
                 <div id={"Stays"}>
                   <Register></Register>
