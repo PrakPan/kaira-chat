@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../../../theme/ThemeConstants";
 import { AiFillStar } from "react-icons/ai";
-
+import { useRouter } from "next/router";
 const DestinationCard = ({
   title,
   one_liner_description,
@@ -19,11 +19,17 @@ const DestinationCard = ({
   className = "",
   showImageText = true,
   placesBragSection,
+  link,
   ...props
 }) => {
+  const router = useRouter();
   // console.log("tags in destination card:",one_liner_description,showImageText)
   return (
-    <div className="w-full">
+    <div onClick={() => {
+      if (link) {
+        router.push(link);
+      }
+    }} className="w-full">
     <div
       className={`relative group cursor-pointer rounded-lg sm:rounded-2xl overflow-hidden w-full ${className}`}
       style={{ height }}
@@ -121,7 +127,6 @@ const DestinationCard = ({
         </div>
       )}
       </div>
-
     
   );
 };

@@ -35,6 +35,7 @@ const ActivitiesSummary = (props) => {
       console.log("error is:", error);
     }
   };
+  console.log("props is: ", props);
 
   return (
     <>
