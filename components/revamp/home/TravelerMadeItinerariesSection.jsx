@@ -132,9 +132,10 @@ const TravelerMadeItinerariesSection = () => {
           </Swiper>
 
           {/* Custom Prev Button */}
-          <div className="TravelerMadeItinerariesSection-prev" aria-hidden>
-            <div className="absolute left-3 sm:left-1 top-1/3 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+          <div className="absolute inset-x-0 top-0 h-[424px] z-30 pointer-events-none">
+            <div aria-hidden>
+              <div className="absolute -left-3 top-1/2 -translate-y-1/2">
+                <div className="TravelerMadeItinerariesSection-prev w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer pointer-events-auto">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
                   className="text-white group-hover:text-white text-md transition-colors duration-300 transform "
@@ -142,16 +143,19 @@ const TravelerMadeItinerariesSection = () => {
               </div>
             </div>
           </div>
+          </div>
 
           {/* Custom Next Button */}
-          <div className="TravelerMadeItinerariesSection-next" aria-hidden>
-            <div className="absolute right-3 sm:right-1 top-1/3 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm   hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+          <div className="absolute inset-x-0 top-0 h-[424px] z-30 pointer-events-none">
+            <div aria-hidden>
+              <div className="absolute -right-2  top-1/2 -translate-y-1/2">
+                <div className="TravelerMadeItinerariesSection-next w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer pointer-events-auto">
                 <FontAwesomeIcon
                   icon={faChevronRight}
                   className="text-white hover:text-white text-md transition-colors duration-300 transform "
                 />
               </div>
+            </div>
             </div>
           </div>
         </div>

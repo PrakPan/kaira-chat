@@ -74,7 +74,7 @@ const FlickityComp = (props) => {
 
       {slideIndex == 4 &&
         <div>
-          <SlideFive completeItineraryCreate={props.completeItineraryCreate}/>
+          <SlideFive completeItineraryCreate={props.completeItineraryCreate} isloading={props.isloading}/>
         </div>
       }
     </div>
