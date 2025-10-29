@@ -22,16 +22,19 @@ const Container = styled.div`
     position: fixed;
 }
 
+.swiper-button-next, .swiper-button-prev{
+    background: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    }
+
 .swiper-button-next::after, .swiper-button-prev::after {
     font-size: 12px !important;
-    background: #fff;
     kus: c;
     align-items: center;
     justify-content: center;
     display: flex;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
     color: #000
 }
 
@@ -80,7 +83,7 @@ const SwiperGallery = (props) => {
                   onError={(e) => {
                     e.currentTarget.src = "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }} />
-                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
+                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute bottom-md left-1/2 -translate-x-1/2 whitespace-nowrap">
                   {image?.caption}
                 </div>
               </SwiperSlide>
