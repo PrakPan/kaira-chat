@@ -17,103 +17,70 @@ const PlacesBragSection = () => {
   const destinations = [
     {
       id: 1,
-      title: "Japan",
+      title: "Thailand",
       description:
         "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
+      link: "asia/thailand",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/168442180095400023460388183594.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055006Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=14655279971ea38eaad7903d5bcb548a6335c1ce5b8dc9f6d9a910e8b4117572"
     },
     {
       id: 2,
-      title: "Paris",
+      title: "Vietnam",
       description:
         "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
+      link: "europe/vietnam",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/175871326394452381134033203125.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055141Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f097d6c46826180f8cdb4a2936c6bedc98e47ae5e70cc9373f34888dcafd9656"
     },
     {
       id: 3,
-      title: "Maldives",
+      title: "Malaysia",
       description:
         "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
+      link: "asia/malaysia",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/168442089471308898925781250000.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055253Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=89f4e5d0159dc2494ef538fb6367427139dd6f88a4ee1f1339517e8a2945f7f0"
     },
     {
       id: 4,
-      title: "Japan",
+      title: "Dubai",
       description:
         "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
+      link: "asia/united_arab_emirates/dubai",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/cities/175731712356781172752380371094.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055357Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=86c433736a7eba03bcfc24415310dc27b58718b9b172f202538b307ba0611f59"
     },
     {
       id: 5,
-      title: "Paris",
+      title: "Singapore",
       description:
         "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
+      link: "asia/singapore/singapore/singapore",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/cities/170359716563205981254577636719.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055803Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3d3813f713e0689a7ade2af46218a28c14c1fc1b9117e8ca87bec95bbc27976"
     },
     {
       id: 6,
-      title: "Maldives",
+      title: "Bali",
       description:
         "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
-    },
-    {
-      id: 7,
-      title: "Japan",
-      description:
-        "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
-      tags: ["Hidden Gem"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
-    },
-    {
-      id: 8,
-      title: "Paris",
-      description:
-        "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
-      tags: ["Trending", "Best for Couples"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
-    },
-    {
-      id: 9,
-      title: "Maldives",
-      description:
-        "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
-      tags: ["Under 1 Lakh"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
-    },
+      link: "asia/indonesia/bali",
+      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/states/168449479198298645019531250000.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T060016Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=991e9bdbf2697b228e494479c3e557ec9131c2af9adc477d86055bac324df3a5"
+    }
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
