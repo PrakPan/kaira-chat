@@ -1,7 +1,4 @@
 import React from "react";
-import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -49,7 +46,7 @@ const ItineraryCard = ({ itinerary, onClick }) => {
         </div>
 
         <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
-          <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 group-hover:bg-yellow-400 rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
+          <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 group-hover:bg-[#f7e700] rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
             <svg className="w-4 h-4 text-black transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>

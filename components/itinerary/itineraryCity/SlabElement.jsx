@@ -365,11 +365,12 @@ const Activity = (props) => {
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
 
               {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                <div className="flex items-center text-primary-stars">
-                  {getStars(props.element?.rating)}&nbsp;
-                </div>
+                
                 <div className="Body3M_12">
-                  {props.element?.rating}
+                  {props.element?.rating}&nbsp;
+                </div>
+                <div className="flex items-center text-primary-stars">
+                  <Image src="/star.svg" width={16} height={16} alt="star" />
                 </div>
 
               </div>
@@ -377,7 +378,7 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+              {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))}
 
@@ -642,18 +643,18 @@ const Recommendation = (props) => {
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
 
               {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                <div className="flex items-center text-primary-stars">
-                  {getStars(props.element?.restaurants?.[0]?.rating)}&nbsp;
-                </div>
                 <div className="Body3M_12">
                   {props.element?.restaurants?.[0]?.rating}
+                </div>
+                <div className="flex items-center text-primary-stars">
+                  {getStars(props.element?.restaurants?.[0]?.rating)}&nbsp;
                 </div>
               </div>
                 : null}
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {["Hidden Gem", "Family-Friendly"].map((item, i) => (
+              {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
               ))}
 

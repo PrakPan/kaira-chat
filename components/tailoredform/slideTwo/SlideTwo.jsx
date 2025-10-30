@@ -20,7 +20,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import useMediaQuery from "../../media";
 import { logEvent } from "../../../services/ga/Index";
 import { openNotification } from "../../../store/actions/notification";
-import { buildDestinations, buildRoutes, CustomMapPin, getItemStyle, handleDestinationSearch, handleDragEnd, handleEditDestination, handleRemoveDestination, handleSearchInput, handleSetDestination, handleSetNights, handleUpdateDestination, updateDestinationsDates, updateLatLong, validateDates } from "../utils/slideTwoActions";
+import { buildDestinations, buildRoutes, buildRoutesFromDestinations, CustomMapPin, getItemStyle, handleDestinationSearch, handleDragEnd, handleEditDestination, handleRemoveDestination, handleSearchInput, handleSetDestination, handleSetNights, handleUpdateDestination, updateDestinationsDates, updateLatLong, validateDates } from "../utils/slideTwoActions";
 import renderRoutesMapSection from "../utils/renderRoutesMapSection";
 
 const CITY_COLOR_CODES = [
@@ -47,7 +47,6 @@ const DottedLine = styled.div`
 const RouteEditSection = (props) => {
     const itinerary = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData);
     const isDesktop = useMediaQuery("(min-width:768px)");
-
     const routes = useMemo(
         () => buildRoutes(itinerary?.start_city, itinerary?.end_city, itinerary?.basic_route || []),
         [itinerary]
@@ -55,29 +54,28 @@ const RouteEditSection = (props) => {
 
     const startDate = getDate(itinerary?.basic_route?.[0]?.start_date);
     const [endDate, setEndDate] = useState(getDate(props?.plan?.end_date || props?.itinerary?.end_date));
-    const [destinations, setDestinations] = useState([]);
+    const [destinations, setDestinations] = useState(buildDestinations(routes, itinerary, getDate, CITY_COLOR_CODES));
     const [destinationChanges, setDestinationChanges] = useState(false);
     const [isValidDates, setIsValidDates] = useState(true);
     const [invalidDateError, setInvalidDateError] = useState(null);
     const [isAddMode, setIsAddMode] = useState(false);
     const destinationRef = useRef(null);
+    const [mapRoutes, setMapRoutes] = useState(routes);
 
     const [containerHeight, setContainerHeight] = useState(0);
 
 
-    useEffect(()=>{
-        console.log("close add destination called ",isAddMode)
-    },[isAddMode])
+    // const routes = useMemo(() => {
+    //     if (destinations.length > 0) {
+    //         return buildRoutesFromDestinations(destinations);
+    //     }
+    //     return buildRoutes(itinerary?.start_city, itinerary?.end_city, itinerary?.basic_route || []);
+    // }, [destinations, itinerary]);
 
-    useEffect(() => {
-        if (routes.length) {
-            const cities = buildDestinations(routes, itinerary, getDate, CITY_COLOR_CODES);
-            setDestinations(cities);
-        }
-    }, [routes]);
-
+    
     useEffect(() => {
         if (destinations.length) {
+            setMapRoutes(buildRoutesFromDestinations(destinations));
             setIsValidDates(validateDates(destinations, startDate, endDate, setInvalidDateError));
         }
     }, [destinations, startDate, endDate]);
@@ -87,9 +85,9 @@ const RouteEditSection = (props) => {
             className="w-full h-full relative  flex flex-col bg-white items-center  overflow-y-auto hide-scrollbar"
         >
 
-            <div className="w-full h-full  hide-scrollbar overflow-y-auto ">
+            <div className="w-full h-full  hide-scrollbar overflow-y-auto" style={{ pointerEvents: 'auto' }}>
 
-                {!isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges })}
+                {!isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}
 
                 <div className="w-full h-full flex flex-col sm:flex-row justify-start gap-5">
                     <EditDestinations
@@ -105,7 +103,7 @@ const RouteEditSection = (props) => {
                         setIsAddMode={setIsAddMode}
                         setIsRouteChanged={props.setIsRouteChanged}
                     />
-                    {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges })}
+                    {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}
                 </div>
             </div>
         </div>

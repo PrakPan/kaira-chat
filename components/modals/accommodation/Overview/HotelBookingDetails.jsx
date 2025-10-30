@@ -544,7 +544,7 @@ const HotelBookingDetails = (props) => {
                 )}
               </div>
 
-              <div className="overflow-y-auto" style={{ 'height': `calc( 100vh - 195px` }}>
+              <div className="overflow-y-auto" ref={scrollableTabRef}  style={{ 'height': `calc( 100vh - 195px` }}>
 
                 {/* Gallery Start  */}
                 {isDesktop ? (
@@ -1174,7 +1174,7 @@ const HotelBookingDetails = (props) => {
                 )}
 
                 {/* Tabs Start  */}
-                <div className="h-full flex flex-col">
+                <div className="flex flex-col">
                   <div className="sticky top-0 z-10 bg-white border-b-sm border-solid border-text-disabled">
                     <ScrollableMenuTabs
                       classStyle="w-100"
@@ -1183,7 +1183,7 @@ const HotelBookingDetails = (props) => {
                       handleActiveTab={_handleMenuTabsChange} />
                   </div>
 
-                  <div ref={scrollableTabRef} className="overflow-y-auto" style={{ 'height': `calc( 100vh - 195px` }}>
+                  <div>
                     <div id="section-1">
                       {data?.hotel_details?.description ? (
                         <div className="flex flex-col gap-1">

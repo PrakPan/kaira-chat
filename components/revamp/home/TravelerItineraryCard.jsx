@@ -43,7 +43,7 @@ const TravelerItineraryCard = ({ itinerary, onClick }) => {
         </Swiper>
 
         {/* Tags Overlay */}
-        <div className="pointer-events-none absolute top-6 left-6 flex flex-wrap gap-2 z-10">
+        <div className="pointer-events-none absolute top-6 left-6 flex flex-wrap gap-2 ">
           {itinerary.tags.map((tag, index) => (
             <div
               key={index}
@@ -57,7 +57,7 @@ const TravelerItineraryCard = ({ itinerary, onClick }) => {
         </div>
 
         {/* Arrow Icon */}
-        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-10">
+        <div className="absolute top-3 sm:top-4 right-3 sm:right-4 ">
           <div className="w-8 sm:w-10 h-8 sm:h-10 bg-white/80 backdrop-blur-sm border border-white/30 group-hover:!bg-primary-yellow rounded-full flex items-center justify-center transform transition-all duration-300 sm:group-hover:scale-110">
             <FontAwesomeIcon
               icon={faArrowUp}

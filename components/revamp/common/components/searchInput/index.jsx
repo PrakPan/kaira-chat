@@ -6,16 +6,33 @@ import useDebounce from "../../../../../hooks/useDebounce";
 import axiossearchinstance from "../../../../../services/search/searchsuggest";
 import { useRouter } from "next/router";
 import NewResults from "../../../../search/header/desktop/pannel/NewResults";
-import Locations from "../../../../search/homepage/mobile/pannel/Locations";
+import Locations from "../../../../search/header/desktop/pannel/Locations";
 import { MERCURY_HOST } from "../../../../../services/constants";
 import axios from "axios";
+import SearchPannel from "../../../../search/header/desktop/pannel/Index";
+import { ImSearch } from "react-icons/im";
+import DesktopSearch from "../../../../search/header/desktop/Index";
+import useMediaQuery from "../../../../media";
 
 const SearchContainer = styled.div`
   position: relative;
   width: 416px;
   border-radius: 8px;
-  border: 1px solid var(--Text-Colors-Stroke, #e5e5e5);
   background: #fff;
+`;
+const Container = styled.div`
+  background-color: white;
+  border-radius: 5px 5px 1rem 1rem !important;
+  text-align: left;
+  position: absolute;
+  width: 37%;
+
+  top: 15px;
+  z-index: 101;
+  left: 26%;
+  @media screen and (min-width: 950px) {
+    left: 32%;
+  }
 `;
 
 const SearchInputWrapper = styled.div`
@@ -31,55 +48,25 @@ const SearchInputWrapper = styled.div`
   }
 `;
 
-const SearchIcon = styled(FontAwesomeIcon)`
-  color: #6c757d;
-  margin-right: 12px;
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-  transition: color 0.3s ease;
+const TopContainer = styled.div`
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 6px;
+  border-color: #e4e4e4;
+  width: 100%;
+  margin: auto;
+  height: 50px;
+  z-index: 101;
+  background-color: white;
 `;
 
-const StyledInput = styled.input`
-  flex: 1;
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 16px;
-  color: #495057;
-  font-family: inherit;
-
-  &::placeholder {
-    color: #adb5bd;
-    font-weight: 400;
-  }
-`;
-
-const ResultsContainer = styled.ul`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #e5e5e5;
-  border-top: none;
-  max-height: 240px;
-  overflow-y: auto;
-  border-radius: 0 0 8px 8px;
-  z-index: 1000;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-`;
-
-const ResultItem = styled.li`
-  padding: 10px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #f8f9fa;
+const Search = styled.input`
+  border: none !important;
+  width: 80%;
+  margin-top: 12px;
+  margin-inline: 40px;
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -91,14 +78,18 @@ const SearchInput = ({
   className = "",
   ...props
 }) => {
-  const router = useRouter()
+  const router = useRouter();
+  const ref = useRef();
   const [inputValue, setInputValue] = useState(value || "");
+  const isTablet = useMediaQuery("(max-width: 768px)");
+  const isdesktop = useMediaQuery("(min-width: 768px)");
+  const ismobile = useMediaQuery("(max-width: 480px)");
   const [results, setResults] = useState([]);
   const [hotLocationsData, setHotLocationsData] = useState([]);
 
   const debouncedSearch = useDebounce(inputValue, 400);
-  const [isSearchOpened, setIsSearchOpened] = useState(false)
-  const searchRef = useRef(null)
+  const [isSearchOpened, setIsSearchOpened] = useState(false);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     if (!debouncedSearch) {
@@ -125,16 +116,18 @@ const SearchInput = ({
     };
     try {
       if (hotLocationsData?.length == 0) {
-        axios.get(`${MERCURY_HOST}/api/v1/geos/search/hot_destinations`).then((response) => {
-          setHotLocationsData(response.data);
-        });
+        axios
+          .get(`${MERCURY_HOST}/api/v1/geos/search/hot_destinations`)
+          .then((response) => {
+            setHotLocationsData(response.data);
+          });
       }
     } catch (error) {
-      console.log("error in getting hote dstinations: ", error)
+      console.log("error in getting hote dstinations: ", error);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [])
+  }, []);
 
   const handleInputChange = (e) => {
     const newValue = e.target.value;
@@ -157,36 +150,38 @@ const SearchInput = ({
     }
   };
 
-
   return (
-    <SearchContainer className={`${className} relative`}>
-      <SearchInputWrapper onClick={handleContainerClick}>
-        <SearchIcon icon={faSearch} />
-        <StyledInput
-          id="search-input"
-          type="text"
-          placeholder={placeholder}
-          value={value !== undefined ? value : inputValue}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          onClick={() => setIsSearchOpened(true)}
-          {...props}
-        />
-      </SearchInputWrapper>
-      <div ref={searchRef} className="absolute bg-white mt-0">
-        {isSearchOpened && <>
-          {inputValue?.length > 0 ? <NewResults
-            setPannelClose={setIsSearchOpened}
-            results={results}
-            inputValue={inputValue}
-          /> : <Locations
-            setPannelClose={setIsSearchOpened}
-            hotlocations={hotLocationsData}
-          ></Locations>}
-        </>}
-      </div>
-    </SearchContainer>
+    <div>
+      {!isSearchOpened && <div
+        className="center-div h-full"
+        onClick={() => setIsSearchOpened(true)}
+
+      >
+        <TopContainer>
+          <SearchContainer>
+            <Search placeholder="Where do you want to go?"></Search>
+            <ImSearch
+              style={{
+                position: "absolute",
+                top: "17px",
+                left: "13px",
+                color: "#B0BABF",
+                pointerEvents: "none",
+              }}
+            />
+          </SearchContainer>
+        </TopContainer>
+      </div>}
+
+      {isSearchOpened ? (
+        <DesktopSearch onclose={() => setIsSearchOpened(false)}></DesktopSearch>
+      ) : (
+        <div></div>
+      )}
+    </div>
   );
 };
 
 export default SearchInput;
+
+

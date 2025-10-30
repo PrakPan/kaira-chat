@@ -313,6 +313,7 @@ const Enquiry = (props) => {
     };
 
     setIsSubmitting(true);
+    setIsLoading(true);
     localStorage.removeItem("MyPlans");
     itineraryComplete
       .post("", data, {
@@ -341,6 +342,7 @@ const Enquiry = (props) => {
       .catch((err) => {
         console.log("ERROR >>>", err);
         setIsSubmitting(false);
+        setIsLoading(false);
         setError(err.message);
       });
   };
@@ -536,6 +538,7 @@ const Enquiry = (props) => {
                   errors={errors}
                   completeItineraryCreate={completeItineraryCreate}
                   setIsRouteChanged={setIsRouteChanged}
+                  isloading={isLoading}
                 ></Flickity>
                 {isDesktop ? (
                   <ModalWithBackdrop
@@ -690,7 +693,8 @@ const Enquiry = (props) => {
                       borderWidth="1px"
                       bgColor="#07213A"
                       onclick={_SlideThreeSubmitHandler}
-                      loading={isLoading && submitted}
+                      loading={isLoading}
+                      disabled={isLoading}
                       height="50px"
                       color="white"
                     >
