@@ -169,7 +169,7 @@ const Homepage = (props) => {
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />
+      <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Nov 30`} />
       <HeroBanner
         image={
           isPageWide

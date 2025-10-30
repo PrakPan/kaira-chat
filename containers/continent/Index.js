@@ -120,7 +120,7 @@ const Index = (props) => {
 
   return (
     <div>
-      {(props?.data?.slug === 'europe-continent') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Oct 31`} />}
+      {(props?.data?.slug === 'europe-continent') && <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Nov 30`} />}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
