@@ -5,9 +5,9 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
-  // output: "export",
-  // trailingSlash: true,
-  // skipTrailingSlashRedirect: true,
+  output: "export",
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
 
   images: {
     unoptimized: true,
