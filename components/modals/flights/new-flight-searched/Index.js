@@ -9,16 +9,25 @@ import Details from "../../../../containers/itinerary/TransfersContainer/FlightD
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import media from "../../../media";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import Drawer from "../../../ui/Drawer";
+import BackArrow from "../../../ui/BackArrow";
 
 const Container = styled.div`
-  width: 95%;
+  width: 100%;
   background-color: white;
   margin: auto;
   ${(props) =>
     props.isSelected &&
     "background : #FFFBBB ; border : 1px solid #F7E700!important"};
-  height: 100%;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
   @media screen and (min-width: 768px) {
     background: white;
     width: 100%;
@@ -39,179 +48,321 @@ function convertMinutesToHours(minutes) {
 const Flight = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const [viewMore, setViewMore] = useState(false);
+  const [showFareDrawer,setShowFareDrawer] = useState(false)
+  const [selectedFareData, setSelectedFareData] = useState(null);
+
   let isPageWide = media("(min-width: 768px)");
   const handleView = () => {
     setViewMore((prev) => !prev);
   };
   return (
     <Container
-      className="relative border-b p-2 space-y-2 overflow-visible"
+      className="relative border-b p-3 space-y-3 overflow-visible"
       isSelected={props.isSelected}
     >
-      <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between mt-2 md:mt-0">
-        <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
-          <div className="flex gap-2 items-center justify-center">
-            <LogoContainer data={props.data} width={32} height={32} />
-            <div className="text-sm font-semibold">
-              {props.data?.segments?.[0]?.airline?.name}{" "}
-              {isPageWide && (
-                <>
-                  |{" "}
-                  <span className="font-normal">
-                    {props.data?.segments?.[0]?.airline?.code}-
-                    {props.data?.segments?.[0]?.airline?.flight_number}
-                  </span>
-                </>
+      {/* {props.data.other_results.length > 0 ?<div className="absolute -top-1 px-[0.7rem] py-2 -left-1 bg-[#FD6D6C] text-white rounded-lg text-[14px]">{props.data.other_results.length}</div> : null} */}
+      {/* Header Section with Logo, Airline Name, and Price */}
+      <div className="flex flex-row gap-2 justify-between md:items-start items-center">
+        <div className="flex flex-row items-center gap-3">
+          <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: isPageWide ? '48px' : '40px', height: isPageWide ? '48px' : '40px' }}>
+            <LogoContainer data={props.data} width={isPageWide ? 48 : 40} height={isPageWide ? 48 : 40} />
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+              {props.data?.segments?.[0]?.airline?.name}
+              {props.data?.is_refundable && (
+                <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                  Refundable
+                </span>
               )}
             </div>
+            <div className="text-xs md:text-sm text-gray-600">
+              {props.data?.segments?.[0]?.airline?.code}-
+              {props.data?.segments?.[0]?.airline?.flight_number}
+            </div>
           </div>
-          {props.data?.is_refundable && isPageWide && (
-            <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-1 mb-0 rounded-md text-xs font-medium">
-              Refundable
-            </p>
-          )}
         </div>
         {isPageWide && (
-          <div className="text-lg font-bold flex flex-col">
-            {props.data?.final_fare
-              ? `₹${getIndianPrice(props.data?.final_fare)}/-`
-              : null}
-            <span className="font-normal text-sm">
-              for{" "}
-              {props?.pax?.adults + props?.pax?.children + props?.pax?.infants}{" "}
-              people
-            </span>
+          <div className="text-right">
+            <div className="text-md md:text-md font-bold">
+              {props.data?.final_fare
+                ? `₹${getIndianPrice(props.data?.final_fare)}`
+                : null}
+            </div>
+            <div className="text-xs text-gray-500">per person</div>
           </div>
         )}
-        {props.data?.is_refundable && !isPageWide && (
-          <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-1 mb-0 rounded-md text-xs font-medium h-fit">
-            Refundable
-          </p>
-        )}
       </div>
 
-      <div className="flex flex-col w-full gap-1 md:flex-row md:items-center md:justify-between">
-        <div className="w-[99%] md:w-[70%] ">
-          <FlightDetails
-            data={props.data}
-            origin={props.data?.segments[0]?.origin}
-            destination={
-              props.data?.segments[props.data?.segments?.length - 1]
-                ?.destination
-            }
-            duration={
-              typeof props.data?.total_duration == "number"
-                ? convertMinutesToHours(props.data?.total_duration)
-                : props.data?.total_duration
-            }
-            isNonStop={props.data?.segments?.length === 1}
-            numStops={props.data?.segments?.length - 1}
-            segments={props.data?.segments}
-            setShowDetails={setShowDetails}
-          />
-        </div>
-        {isPageWide ? (
-          <PriceContainer
-            data={{
-              resultIndex: props.data?.result_index,
-              finalFare: props.data?.final_fare,
-              isRefundable: props.data?.is_refundable,
-              duration:
-                props.data?.segments[props.data?.segments?.length - 1]
-                  ?.destination?.arrival_time,
-            }}
-            isSelected={props.isSelected}
-            selectedBooking={props.selectedBooking}
-            _updateBookingHandler={props._updateBookingHandler}
-            provider={props.provider}
-            onSelect={props?.onSelect}
-            trace_id={props?.trace_id}
-            onFlightSelect={props?.onFlightSelect}
-            edge={props?.edge}
-            booking_id={props?.booking_id}
-          />
-        ) : (
-          ""
-        )}
-      </div>
+      {/* Flight Details Section */}
+      <div className="flex flex-row w-full justify-between items-center">
+        <FlightDetails
+          data={props.data}
+          origin={props.data?.segments[0]?.origin}
+          destination={
+            props.data?.segments[props.data?.segments?.length - 1]
+              ?.destination
+          }
+          duration={
+            typeof props.data?.total_duration == "number"
+              ? convertMinutesToHours(props.data?.total_duration)
+              : props.data?.total_duration
+          }
+          isNonStop={props.data?.segments?.length === 1}
+          numStops={props.data?.segments?.length - 1}
+          segments={props.data?.segments}
+          setShowDetails={setShowDetails}
+        />
 
-      <div className="flex justify-between items-center mb-2 md:mb-0">
         {isPageWide && (
-          <div className="ml-0">
-            {!viewMore ? (
-              <ViewMoreButton text="View Details" handler={handleView} />
-            ) : (
-              <ViewMoreButton text="Hide Details" handler={handleView} />
-            )}
+        <div className="flex ">
+          <div 
+            className="text-blue underline text-sm font-medium cursor-pointer flex items-end"
+            onClick={handleView}
+          >
+            {viewMore ? "Hide Details" : "View Details"}
+            <RiArrowDropDownLine
+              className={`text-lg transition-all duration-200 ${
+                viewMore ? "rotate-180" : ""
+              }`}
+            />
           </div>
-        )}
-
-        {!isPageWide && (
-          <div className="text-lg font-bold flex flex-col mt-2 ">
-            {props.data?.final_fare ? (
-              <div className="flex" onClick={handleView}>
-                {`₹${getIndianPrice(props.data?.final_fare)}/-`}{" "}
-                <RiArrowDropDownLine
-                  className={` text-2xl  mt-1 transition-all duration-100 ${
-                    viewMore ? "-rotate-180 " : "rotate-180 animate-bounce"
-                  }`}
-                ></RiArrowDropDownLine>
-              </div>
-            ) : null}
-            <span className="font-normal text-sm">
-              for{" "}
-              {props?.pax?.adults + props?.pax?.children + props?.pax?.infants}{" "}
-              people
-            </span>
-          </div>
-        )}
-
-        {!isPageWide && (
-          <PriceContainer
-            data={{
-              resultIndex: props.data?.result_index,
-              finalFare: props.data?.final_fare,
-              isRefundable: props.data?.is_refundable,
-              duration:
-                props.data?.segments[props.data?.segments?.length - 1]
-                  ?.destination?.arrival_time,
-            }}
-            isSelected={props.isSelected}
-            selectedBooking={props.selectedBooking}
-            _updateBookingHandler={props._updateBookingHandler}
-            provider={props.provider}
-            onSelect={props?.onSelect}
-            trace_id={props?.trace_id}
-            onFlightSelect={props?.onFlightSelect}
-            edge={props?.edge}
-            booking_id={props?.booking_id}
-          />
-        )}
-      </div>
-
-      {viewMore && (
-        <div
-          className={`mt-2 w-full lg:block flex flex-col p-1 md:p-5 cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA]`}
-        >
-          <Details
-            segments={props.data?.segments}
-            provider={props.provider}
-            resultIndex={props.data?.result_index}
-            setShowDetails={setShowDetails}
-            individual={props?.individual}
-            originCityId={props.originCityId}
-            destinationCityId={props.destinationCityId}
-            setTransferBookingsIntercity={props.setTransferBookingsIntercity}
-            edge={props?.edge}
-            getPaymentHandler={props.getPaymentHandler}
-            booking_id={props?.selectedBooking?.id}
-            combo={props?.combo}
-            setShowLoginModal={props?.setShowLoginModal}
-          />
         </div>
       )}
+      </div>
+
+      {/* Mobile: Price and View Details Row */}
+      {!isPageWide && (
+        <div className="flex justify-between items-center pt-2 border-t">
+          <div className="text-left">
+            <div className="text-md font-bold">
+              {props.data?.final_fare
+                ? `₹${getIndianPrice(props.data?.final_fare)}`
+                : null}
+            </div>
+            <div className="text-sm text-gray-600">per person</div>
+          </div>
+          <div 
+            className="text-blue-600 text-sm font-medium cursor-pointer flex items-center gap-1"
+            onClick={handleView}
+          >
+            View Details
+            <RiArrowDropDownLine
+              className={`text-2xl transition-all duration-200 ${
+                viewMore ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </div>
+      )}
+
+{viewMore && (
+  <div className="mt-4">
+
+    {props.data?.other_results && props.data.other_results.length > 0 ? (
+      <FareOptionsTable 
+        otherResults={props.data.other_results}
+        onSelectFare={(selectedFare) => {
+          // Handle fare selection if needed
+          console.log('Selected fare:', selectedFare);
+        }}
+        setSelectedFareData={setSelectedFareData}
+        pax={props?.pax}
+        setShowFareDrawer={setShowFareDrawer}
+      />
+    ) : (
+      <Details
+        segments={props.data?.segments}
+        provider={props.provider}
+        resultIndex={props.data?.result_index}
+        setShowDetails={setShowDetails}
+        individual={props?.individual}
+        originCityId={props.originCityId}
+        destinationCityId={props.destinationCityId}
+        setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+        edge={props?.edge}
+        getPaymentHandler={props.getPaymentHandler}
+        booking_id={props?.selectedBooking?.id}
+        combo={props?.combo}
+        setShowLoginModal={props?.setShowLoginModal}
+      />
+    )}
+  </div>
+)}
+
+    <Drawer
+        show={showFareDrawer}
+        anchor={"right"}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className=" pb-0 md:pb-[100px]"
+        width={"50vw"}
+        mobileWidth={"100vw"}
+        onHide={() => {
+          setShowFareDrawer(false);
+        }}
+      >
+        <div className="p-4">
+          <BackArrow />
+          <div className="text-xl py-2 font-semibold">
+            Flight from {selectedFareData?.segments?.[0]?.origin?.city_name || props.data?.segments[0]?.origin?.city_name} to {selectedFareData?.segments?.[selectedFareData?.segments?.length - 1]?.destination?.city_name || props.data?.segments[props.data?.segments?.length - 1]?.destination?.city_name}
+          </div>
+          <div className="p-4 border rounded-lg border-gray-400 mt-1">
+            <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2">
+              <div className="flex flex-row items-center gap-3">
+                <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: isPageWide ? '48px' : '40px', height: isPageWide ? '48px' : '40px' }}>
+                  <LogoContainer data={selectedFareData || props.data} width={isPageWide ? 48 : 40} height={isPageWide ? 48 : 40} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+                    {selectedFareData?.segments?.[0]?.airline?.name || props.data?.segments?.[0]?.airline?.name}
+                    {(selectedFareData?.is_refundable || props.data?.is_refundable) && (
+                      <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                        Refundable
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs md:text-sm text-gray-600">
+                    {selectedFareData?.segments?.[0]?.airline?.code || props.data?.segments?.[0]?.airline?.code}-
+                    {selectedFareData?.segments?.[0]?.airline?.flight_number || props.data?.segments?.[0]?.airline?.flight_number}
+                  </div>
+                </div>
+              </div>
+              {isPageWide && (
+                <div className="text-right">
+                  <div className="text-md md:text-md font-bold">
+                    {(selectedFareData?.final_fare || props.data?.final_fare)
+                      ? `₹${getIndianPrice(selectedFareData?.final_fare || props.data?.final_fare)}`
+                      : null}
+                  </div>
+                  <div className="text-xs text-gray-500">per person</div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-row w-full justify-between items-center">
+              <FlightDetails
+                data={selectedFareData || props.data}
+                origin={selectedFareData?.segments?.[0]?.origin || props.data?.segments[0]?.origin}
+                destination={
+                  selectedFareData?.segments?.[selectedFareData?.segments?.length - 1]?.destination ||
+                  props.data?.segments[props.data?.segments?.length - 1]?.destination
+                }
+                duration={
+                  typeof (selectedFareData?.total_duration || props.data?.total_duration) == "number"
+                    ? convertMinutesToHours(selectedFareData?.total_duration || props.data?.total_duration)
+                    : (selectedFareData?.total_duration || props.data?.total_duration)
+                }
+                isNonStop={(selectedFareData?.segments?.length || props.data?.segments?.length) === 1}
+                numStops={(selectedFareData?.segments?.length || props.data?.segments?.length) - 1}
+                segments={selectedFareData?.segments || props.data?.segments}
+                setShowDetails={setShowDetails}
+              />
+            </div>
+  
+            <div className="mt-2">
+              <Details
+                segments={selectedFareData?.segments}
+                provider={props.provider}
+                resultIndex={selectedFareData?.result_index}
+                setShowDetails={setShowDetails}
+                individual={props?.individual}
+                originCityId={props.originCityId}
+                destinationCityId={props.destinationCityId}
+                setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                edge={props?.edge}
+                getPaymentHandler={props.getPaymentHandler}
+                booking_id={props?.selectedBooking?.id}
+                combo={props?.combo}
+                setShowLoginModal={props?.setShowLoginModal}
+              />
+            </div>
+          </div>
+        </div>
+      </Drawer>
     </Container>
+
+
   );
 };
 
+
+const FareOptionsTable = ({ otherResults, onSelectFare, pax, setShowFareDrawer, setSelectedFareData}) => {
+  const getIndianPrice = (price) => {
+    return new Intl.NumberFormat('en-IN').format(price);
+  };
+
+  if (!otherResults || otherResults.length === 0) {
+    return null;
+  }
+
+  const totalPax = (pax?.adults || 0) + (pax?.children || 0) + (pax?.infants || 0);
+
+  return (
+    <div className="bg-white rounded-lg overflow-hidden mt-2">
+      {/* Header */}
+      <div className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-3 px-2 py-1 border-b">
+        <div className="text-base font-normal text-gray-500">Cabin Bag</div>
+        <div className="text-base font-normal text-gray-500">Class</div>
+        <div className="text-base font-normal text-gray-500">Refundable</div>
+        <div className="text-base font-normal text-gray-500 text-left">
+           For {totalPax} {totalPax === 1 ? 'person' : 'persons'}
+        </div>
+        <div className="w-16 text-[14px] font-normal text-gray-500 text-left">Fare Rule</div>
+      </div>
+
+      {/* Rows */}
+      <div className="">
+        {otherResults.map((result, index) => (
+          <div 
+            key={result.result_index || index}
+            className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-gray-50 transition-colors items-start"
+          >
+            <div className="text-base text-gray-900">
+              {result.segments?.[0]?.cabin_baggage_allowance || '7 Kg'}
+            </div>
+            <div className="text-base text-gray-900">
+              {result.segments?.[0]?.cabin_class?.replace(' Class', '') || 'Economy'}
+            </div>
+            <div className="text-base text-gray-900">
+              {result.is_refundable ? 'Yes' : 'No'}
+            </div>
+            <div className="text-base font-normal text-gray-900 text-left">
+              ₹{getIndianPrice(result.final_fare)}
+            </div>
+            <div className="flex items-start justify-start gap-1">
+              <button 
+                className="flex items-center justify-center"
+                onClick={() => {
+    setSelectedFareData(result);
+    setTimeout(() => {
+      setShowFareDrawer(true);
+    }, 0);
+  }}
+                title="View details"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 18 18" fill="none">
+                  <path d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z" fill="#2AB0FC"/>
+                </svg>
+              </button>
+              <p className="text-gray-400 justify-center items-center">|</p>
+              <input 
+                type="checkbox" 
+                className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
+                onChange={(e) => {
+                  if (e.target.checked && onSelectFare) {
+                    onSelectFare(result);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
 export default Flight;
+

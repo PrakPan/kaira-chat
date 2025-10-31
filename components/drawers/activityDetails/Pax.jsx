@@ -87,22 +87,36 @@ export const Pax = ({ pax, setPax, combo,limit=null }) => {
   }, [showPaxMobile]);
 
   return (
-    <div className={`relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer ${combo ?'z-[14]' :`z-[14]` }`}>
+    <div className={`relative w-full h-fit flex flex-row items-center justify-between rounded-lg cursor-pointer ${combo ?'z-[14]' :`z-[14]` }`}>
       <div
         onClick={() => {
           setShowPax((prev) => !prev);
         }}
-        className="flex items-center bg-[#F5F5F5] px-[16px] py-[8px] rounded-[4px]"
+       className="flex items-center w-full bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between"
       >
-        <div className="text-[10px] md:text-[14px] font-medium">Travellers</div>
-        <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
+        
+        <div className="flex flex-row items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="12" viewBox="0 0 17 12" fill="none">
+  <path d="M11.7524 6.8475C12.7799 7.545 13.4999 8.49 13.4999 9.75V12H16.4999V9.75C16.4999 8.115 13.8224 7.1475 11.7524 6.8475Z" fill="#ACACAC"/>
+  <path d="M10.4999 6C12.1574 6 13.4999 4.6575 13.4999 3C13.4999 1.3425 12.1574 0 10.4999 0C10.1474 0 9.81744 0.0749998 9.50244 0.18C10.1249 0.9525 10.4999 1.935 10.4999 3C10.4999 4.065 10.1249 5.0475 9.50244 5.82C9.81744 5.925 10.1474 6 10.4999 6Z" fill="#ACACAC"/>
+  <path d="M6 6C7.6575 6 9 4.6575 9 3C9 1.3425 7.6575 0 6 0C4.3425 0 3 1.3425 3 3C3 4.6575 4.3425 6 6 6ZM6 1.5C6.825 1.5 7.5 2.175 7.5 3C7.5 3.825 6.825 4.5 6 4.5C5.175 4.5 4.5 3.825 4.5 3C4.5 2.175 5.175 1.5 6 1.5Z" fill="#ACACAC"/>
+  <path d="M6 6.75C3.9975 6.75 0 7.755 0 9.75V12H12V9.75C12 7.755 8.0025 6.75 6 6.75ZM10.5 10.5H1.5V9.7575C1.65 9.2175 3.975 8.25 6 8.25C8.025 8.25 10.35 9.2175 10.5 9.75V10.5Z" fill="#ACACAC"/>
+</svg>
+        <div className="text-sm text-[#212529] font-400 max-ph:hidden">Travellers</div>
+        <div className="text-sm text-[#212529] font-400">&nbsp;|&nbsp;</div>
         <div className="flex">
-          <div className="text-[10px] font-medium">
-           { combo ? `${adults} A, ${children} C and ${infants} I` :`${adults} Adults and ${children} Children` }
+          <div className="text-sm text-[#212529] font-400">
+           {`${adults} Adults`}
+            {/* , ${children} C and ${infants} I` :`${adults} Adults and ${children} Children` } */}
+          
           </div>
-          <IoIosArrowDown />
+          
         </div>
+        </div>
+
+        <IoIosArrowDown  />
       </div>
+      
 
       {showPax && (
         <div

@@ -32,6 +32,8 @@ import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 import { FaX } from "react-icons/fa6";
 import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
+import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
+import FlightFilters from "./new-flight-searched/FlightFilters";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -1154,6 +1156,8 @@ const handleWarningCancel = () => {
       return <Skeleton />;
     }
 
+    console.log("ShowFilter",showFilter)
+
     return (
       <OptionsContainer id="options">
         <div style={{ clear: "right" }}>
@@ -1362,6 +1366,9 @@ const handleWarningCancel = () => {
           handleFiltersChange={handleFiltersChange}
           setIsTimeOnlyChange={setIsTimeOnlyChange}
         />
+      {flightCount ? <div className="text-[14px] text-gray-400 px-2 py-3">
+        Showing {flightCount} flights
+      </div> : null}
 
         <GridContainer style={{ clear: "right" }}>
           <ContentContainer style={{ position: "relative" }}>
@@ -1396,6 +1403,8 @@ const handleWarningCancel = () => {
           mercury={true}
           booking_id={props?.booking_id}
         />
+
+        {showFilter && <FlightFilters showFilter={showFilter} setShowFilter={setShowFilter}/>}
       </div>
     );
 
@@ -1427,6 +1436,184 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(ComboFlight);
 
+// const SearchSection = ({
+//   sourceInput,
+//   destinationInput,
+//   handleSourceInputChange,
+//   handleDestinationInputChange,
+//   handleSourceSelect,
+//   handleDestinationSelect,
+//   showSourceSuggestions,
+//   showDestinationSuggestions,
+//   sourceSuggestions,
+//   destinationSuggestions,
+//   sourceError,
+//   destinationError,
+//   sourceInputRef,
+//   destinationInputRef,
+//   loading,
+//   validateInputs,
+//   setShowSourceSuggestions,
+//   setShowDestinationSuggestions,
+//   _FetchFlightsHandler,
+//   setDestinationInput,
+//   setSourceInput,
+// }) => {
+//   const handleLocationChange = () => {
+//     setDestinationInput(sourceInput);
+//     setSourceInput(destinationInput);
+//     _FetchFlightsHandler();
+//   };
+
+//   return (
+//     // Your existing SearchSection JSX here
+//   <div className="mb-2">
+//   <div className="flex items-center justify-between">
+//     {/* Source Input */}
+//     <div className="flex items-center justify-center gap-2 w-full">
+//       {/* From Input */}
+//       <div className="relative flex-1 min-w-0">
+//         {/* <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+//           From <FiNavigation color="red" />
+//         </label> */}
+//         <div className="relative overflow-hidden">
+//           <PiAirplaneTakeoff />
+//           <input
+//             ref={sourceInputRef}
+//             type="text"
+//             value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
+//             onChange={(e) => {
+//               handleSourceInputChange(e.target.value);
+//               setShowSourceSuggestions(true);
+//             }}
+//             placeholder="Select source airport"
+//             className={`w-full px-3 py-2 pl-8 ${sourceInput.code ? 'pr-8' : 'pr-3'}  bg-[#F9F9F9] rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm text-[#212529] font-normal truncate ${
+//               sourceError ? "border-red-500" : ""
+//             }`}
+//             style={{ textOverflow: 'ellipsis' }}
+//           />
+//           {/* {sourceInput.code && (
+//             <FiCheckCircle
+//               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+//               size={16}
+//             />
+//           )} */}
+//         </div>
+//         {/* Error positioned absolutely to not affect layout */}
+//         {sourceError && (
+//           <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+//             {sourceError}
+//           </div>
+//         )}
+//         {showSourceSuggestions && sourceSuggestions.length > 0 && (
+//           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+//             {sourceSuggestions.map((suggestion) => (
+//               <div
+//                 key={suggestion.id}
+//                 onClick={() => handleSourceSelect(suggestion)}
+//                 className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+//               >
+//                 <div className="text-xs text-gray-900">{suggestion.name}</div>
+//               </div>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+
+//       {/* Swap Icon - Centered and aligned */}
+//       <div className="flex items-center justify-center px-2 sm:px-3 flex-shrink-0">
+//         <FaExchangeAlt
+//           onClick={handleLocationChange}
+//           className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
+//           size={14}
+//         />
+//       </div>
+
+//       {/* To Input */}
+//       <div className="relative flex-1 min-w-0">
+//         {/* <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+//           To <FiMapPin color="green" />
+//         </label> */}
+//         <div className="relative overflow-hidden">
+//           <PiAirplaneLanding/>
+//           <input
+//             ref={destinationInputRef}
+//             type="text"
+//             value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
+//             onChange={(e) => {
+//               handleDestinationInputChange(e.target.value);
+//               setShowDestinationSuggestions(true);
+//             }}
+//             placeholder="Select destination airport"
+//             className={`w-full px-3 py-2 pl-8 ${destinationInput.code ? 'pr-8' : 'pr-3'}  bg-[#F9F9F9] rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate text-[#212529] font-normal ${
+//               destinationError ? "border-red-500" : ""
+//             }`}
+//             style={{ textOverflow: 'ellipsis' }}
+//           />
+//           {/* {destinationInput.code && (
+//             <FiCheckCircle
+//               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+//               size={16}
+//             />
+//           )} */}
+//         </div>
+//         {/* Error positioned absolutely to not affect layout */}
+//         {destinationError && (
+//           <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+//             {destinationError}
+//           </div>
+//         )}
+//         {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+//           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+//             {destinationSuggestions.map((suggestion) => (
+//               <div
+//                 key={suggestion.id}
+//                 onClick={() => handleDestinationSelect(suggestion)}
+//                 className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+//               >
+//                 <div className="text-xs text-gray-900">{suggestion.name}</div>
+//               </div>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+
+//       {/* Search Button - Fixed height and alignment */}
+//       {/* <div className="flex items-center ml-2 sm:ml-4 flex-shrink-0">
+//         <Generalbutton
+//           fontSize="0.8rem"
+//           width="auto"
+//           padding="0.4rem 1rem"
+//           fontWeight="500"
+//           margin="0"
+//           borderRadius="6px"
+//           borderWidth="1px"
+//           bgColor="#f7e700"
+//           loading={loading}
+//           onclick={() => {
+//             if (validateInputs()) {
+//               setShowSourceSuggestions(false);
+//               setShowDestinationSuggestions(false);
+//               _FetchFlightsHandler();
+//             }
+//           }}
+//           disabled={loading}
+//           className="relative flex items-center justify-center min-w-[80px] sm:min-w-[120px] h-[38px] whitespace-nowrap text-xs sm:text-sm"
+//         >
+//           {loading ? (
+//             <PulseLoader size={6} speedMultiplier={0.6} color="#000" />
+//           ) : (
+//             <span>Search</span>
+//           )}
+//         </Generalbutton>
+//       </div> */}
+//     </div>
+//   </div>
+// </div>
+//   );
+// };
+
+
 const SearchSection = ({
   sourceInput,
   destinationInput,
@@ -1457,147 +1644,184 @@ const SearchSection = ({
   };
 
   return (
-    // Your existing SearchSection JSX here
-  <div className="mb-4">
-  <div className="flex items-center justify-between">
-    {/* Source Input */}
-    <div className="flex items-center gap-2 w-full">
-      {/* From Input */}
-      <div className="relative flex-1 min-w-0">
-        <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-          From <FiNavigation color="red" />
-        </label>
-        <div className="relative overflow-hidden">
-          <input
-            ref={sourceInputRef}
-            type="text"
-            value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
-            onChange={(e) => {
-              handleSourceInputChange(e.target.value);
-              setShowSourceSuggestions(true);
-            }}
-            placeholder="Select source airport"
-            className={`w-full px-3 py-2 pl-8 ${sourceInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
-              sourceError ? "border-red-500" : "border-gray-300"
-            }`}
-            style={{ textOverflow: 'ellipsis' }}
-          />
-          {sourceInput.code && (
-            <FiCheckCircle
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-              size={16}
+    <div className="w-full mb-2">
+      {/* Desktop Layout */}
+      <div className="max-ph:hidden md:flex items-center gap-4 mb-0 ">
+        {/* Source Input */}
+        <div className="relative flex-1">
+          <div className="relative">
+            <PiAirplaneTakeoff className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              ref={sourceInputRef}
+              type="text"
+              value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
+              onChange={(e) => {
+                handleSourceInputChange(e.target.value);
+                setShowSourceSuggestions(true);
+              }}
+              placeholder="Select source airport"
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
+                sourceError ? "ring-2 ring-red-500" : ""
+              }`}
             />
+          </div>
+          {sourceError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+              {sourceError}
+            </div>
+          )}
+          {showSourceSuggestions && sourceSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {sourceSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleSourceSelect(suggestion)}
+                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {/* Error positioned absolutely to not affect layout */}
-        {sourceError && (
-          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
-            {sourceError}
-          </div>
-        )}
-        {showSourceSuggestions && sourceSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-            {sourceSuggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                onClick={() => handleSourceSelect(suggestion)}
-                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-              >
-                <div className="text-xs text-gray-900">{suggestion.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Swap Icon - Centered and aligned */}
-      <div className="flex items-center justify-center px-2 sm:px-3 mt-6 flex-shrink-0">
-        <FaExchangeAlt
-          onClick={handleLocationChange}
-          className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
-          size={14}
-        />
-      </div>
+        {/* Swap Icon */}
+        <div className="flex-shrink-0">
+          <button
+            onClick={handleLocationChange}
+            className="w-9 h-9 flex items-center justify-center bg-[#F7E700] rounded-lg hover:bg-[#e6d600] transition-colors"
+          >
+            <FaExchangeAlt className="text-gray-700" size={15} />
+          </button>
+        </div>
 
-      {/* To Input */}
-      <div className="relative flex-1 min-w-0">
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-          To <FiMapPin color="green" />
-        </label>
-        <div className="relative overflow-hidden">
-          <input
-            ref={destinationInputRef}
-            type="text"
-            value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
-            onChange={(e) => {
-              handleDestinationInputChange(e.target.value);
-              setShowDestinationSuggestions(true);
-            }}
-            placeholder="Select destination airport"
-            className={`w-full px-3 py-2 pl-8 ${destinationInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
-              destinationError ? "border-red-500" : "border-gray-300"
-            }`}
-            style={{ textOverflow: 'ellipsis' }}
-          />
-          {destinationInput.code && (
-            <FiCheckCircle
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-              size={16}
+        {/* Destination Input */}
+        <div className="relative flex-1">
+          <div className="relative">
+            <PiAirplaneLanding className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              ref={destinationInputRef}
+              type="text"
+              value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
+              onChange={(e) => {
+                handleDestinationInputChange(e.target.value);
+                setShowDestinationSuggestions(true);
+              }}
+              placeholder="Select destination airport"
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
+                destinationError ? "ring-2 ring-red-500" : ""
+              }`}
             />
+          </div>
+          {destinationError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+              {destinationError}
+            </div>
+          )}
+          {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {destinationSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleDestinationSelect(suggestion)}
+                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {/* Error positioned absolutely to not affect layout */}
-        {destinationError && (
-          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
-            {destinationError}
-          </div>
-        )}
-        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-            {destinationSuggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                onClick={() => handleDestinationSelect(suggestion)}
-                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-              >
-                <div className="text-xs text-gray-900">{suggestion.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Search Button - Fixed height and alignment */}
-      <div className="flex items-center ml-2 sm:ml-4 mt-6 flex-shrink-0">
-        <Generalbutton
-          fontSize="0.8rem"
-          width="auto"
-          padding="0.4rem 1rem"
-          fontWeight="500"
-          margin="0"
-          borderRadius="6px"
-          borderWidth="1px"
-          bgColor="#f7e700"
-          loading={loading}
-          onclick={() => {
-            if (validateInputs()) {
-              setShowSourceSuggestions(false);
-              setShowDestinationSuggestions(false);
-              _FetchFlightsHandler();
-            }
-          }}
-          disabled={loading}
-          className="relative flex items-center justify-center min-w-[80px] sm:min-w-[120px] h-[38px] whitespace-nowrap text-xs sm:text-sm"
-        >
-          {loading ? (
-            <PulseLoader size={6} speedMultiplier={0.6} color="#000" />
-          ) : (
-            <span>Search</span>
+      {/* Mobile Layout */}
+      <div className="flex md:hidden  items-center gap-2 mb-0">
+        {/* Source Input */}
+        <div className="relative flex-1 min-w-0">
+          <div className="relative">
+            <PiAirplaneTakeoff className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              ref={sourceInputRef}
+              type="text"
+              value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code.substring(0, 2)}...` : ''}`}
+              onChange={(e) => {
+                handleSourceInputChange(e.target.value);
+                setShowSourceSuggestions(true);
+              }}
+              placeholder="Source"
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
+                sourceError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {sourceError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+              {sourceError}
+            </div>
           )}
-        </Generalbutton>
+          {showSourceSuggestions && sourceSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {sourceSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleSourceSelect(suggestion)}
+                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Swap Icon */}
+        <div className="flex-shrink-0">
+          <button
+            onClick={handleLocationChange}
+            className="w-7 h-8 py-2 flex items-center justify-center bg-[#F7E700] rounded-md hover:bg-[#e6d600] transition-colors"
+          >
+            <FaExchangeAlt className="text-gray-700" size={14} />
+          </button>
+        </div>
+
+        {/* Destination Input */}
+        <div className="relative flex-1 min-w-0">
+          <div className="relative">
+            <PiAirplaneLanding className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              ref={destinationInputRef}
+              type="text"
+              value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
+              onChange={(e) => {
+                handleDestinationInputChange(e.target.value);
+                setShowDestinationSuggestions(true);
+              }}
+              placeholder="Destination"
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
+                destinationError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {destinationError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+              {destinationError}
+            </div>
+          )}
+          {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {destinationSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleDestinationSelect(suggestion)}
+                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-</div>
   );
 };

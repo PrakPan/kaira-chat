@@ -43,9 +43,9 @@ body {
     font-family: Lexend !important;
 }
 
-. {
+/* . {
     font-family: Lexend;
-}
+} */
 
 .next-link {
     color: black;
@@ -330,6 +330,14 @@ a.termsnavunderlinelink {
     font-size: 16px;
 }
 
+.input-padding {
+    display: flex;
+    padding: 8px 24px;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--border-radius-md);
+}
+
 .ttw-btn-secondary-fill:hover{
   background: var(--color-midnight-indigo-hover);
 }
@@ -484,4 +492,15 @@ a.termsnavunderlinelink {
 .drawerContainer{
     border-radius: 0px;
 }
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
 }
