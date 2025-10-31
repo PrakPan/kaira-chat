@@ -30,6 +30,7 @@ import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
 import Login from "../components/modals/Login";
+import MyTripsSection from "../components/revamp/destination/mytrips";
 
 const Home = (props) => {
   useEffect(() => {
@@ -130,8 +131,8 @@ const Home = (props) => {
         <NavigationMenu />
         <HeroSection />
         <JourneySimplified />
+        {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         <PlacesBragSection />
-        <MostLovedItinerariesSection className={'max-w-7xl'} />
         <TravelerMadeItinerariesSection />
         <FullSlider />
         <TravelVibeSection />
