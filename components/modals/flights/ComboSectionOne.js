@@ -256,23 +256,35 @@ const ComboSection = (props) => {
   }, [showTimeDropdown, showSortDropdown, showCalendar]);
 
   const handleCalendarChange = (dateData) => {
-    if (dateData.start) {
-      const selectedDateTime = dayjs(dateData.start);
-      const formattedDate = selectedDateTime.format("DD MMM, YYYY");
-      setSelectedDate(formattedDate);
-      
-      const currentTime = dayjs(preferred_departure_time);
-      const newDateTime = selectedDateTime
-        .hour(currentTime.hour())
-        .minute(currentTime.minute())
-        .second(currentTime.second());
-      
-      if (updatePreferredDepartureTime) {
-        updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
-      }
-      setShowCalendar(false);
+  if (dateData.start) {
+    setIsLoading(true);
+    const selectedDateTime = dayjs(dateData.start);
+    const formattedDate = selectedDateTime.format("DD MMM, YYYY");
+    setSelectedDate(formattedDate);
+    
+    const currentTime = dayjs(preferred_departure_time);
+    const newDateTime = selectedDateTime
+      .hour(currentTime.hour())
+      .minute(currentTime.minute())
+      .second(currentTime.second());
+    
+    if (updatePreferredDepartureTime) {
+      updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
-  };
+    
+    // Add debounce timer
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+    
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    
+    setDebounceTimer(timer);
+    setShowCalendar(false);
+  }
+};
 
   return (
     <div className="font-sans w-full mx-auto bg-white">

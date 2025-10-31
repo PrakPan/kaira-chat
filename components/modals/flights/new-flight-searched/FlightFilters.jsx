@@ -110,6 +110,7 @@ export default function FlightFilters(props) {
     setSelectedTime(slot.display);
     setDepartureTime(slot.value);
     setShowTimeDropdown(false);
+    // Don't call setPreferredDepartureTime here - wait for Apply button
   };
 
   const handleApply = () => {

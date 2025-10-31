@@ -44,16 +44,15 @@ const AirbnbCalendarSingleMonth = (props) => {
     });
   };
 
-  const handleDateClick = (date) => {
-    // For single date selection
-    setSelectedDates({ start: date, end: null });
-    handleApplyDates();
-  };
+ const handleDateClick = (date) => {
+  // For single date selection
+  setSelectedDates({ start: date, end: null });
+  // Pass the date immediately instead of using state
+  props.onChangeDate({ start: date, end: null, month: currentMonth });
+  props.setShowCalendar(false);
+};
 
-  const handleApplyDates = () => {
-    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth })
-    props.setShowCalendar(false)
-  }
+
 
   const renderMonthGrid = (days) => (
     <div>

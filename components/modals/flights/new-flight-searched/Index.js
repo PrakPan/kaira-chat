@@ -11,6 +11,7 @@ import media from "../../../media";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import Drawer from "../../../ui/Drawer";
 import BackArrow from "../../../ui/BackArrow";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   width: 100%;
@@ -23,11 +24,11 @@ const Container = styled.div`
   border-radius: 8px;
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
-  
+
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
-  
+
   @media screen and (min-width: 768px) {
     background: white;
     width: 100%;
@@ -48,8 +49,9 @@ function convertMinutesToHours(minutes) {
 const Flight = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const [viewMore, setViewMore] = useState(false);
-  const [showFareDrawer,setShowFareDrawer] = useState(false)
+  const [showFareDrawer, setShowFareDrawer] = useState(false);
   const [selectedFareData, setSelectedFareData] = useState(null);
+  const [selectedFareIndex, setSelectedFareIndex] = useState(null);
 
   let isPageWide = media("(min-width: 768px)");
   const handleView = () => {
@@ -64,8 +66,18 @@ const Flight = (props) => {
       {/* Header Section with Logo, Airline Name, and Price */}
       <div className="flex flex-row gap-2 justify-between md:items-start items-center">
         <div className="flex flex-row items-center gap-3">
-          <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: isPageWide ? '48px' : '40px', height: isPageWide ? '48px' : '40px' }}>
-            <LogoContainer data={props.data} width={isPageWide ? 48 : 40} height={isPageWide ? 48 : 40} />
+          <div
+            className="rounded-full overflow-hidden flex-shrink-0"
+            style={{
+              width: isPageWide ? "48px" : "40px",
+              height: isPageWide ? "48px" : "40px",
+            }}
+          >
+            <LogoContainer
+              data={props.data}
+              width={isPageWide ? 48 : 40}
+              height={isPageWide ? 48 : 40}
+            />
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
@@ -100,8 +112,7 @@ const Flight = (props) => {
           data={props.data}
           origin={props.data?.segments[0]?.origin}
           destination={
-            props.data?.segments[props.data?.segments?.length - 1]
-              ?.destination
+            props.data?.segments[props.data?.segments?.length - 1]?.destination
           }
           duration={
             typeof props.data?.total_duration == "number"
@@ -115,20 +126,20 @@ const Flight = (props) => {
         />
 
         {isPageWide && (
-        <div className="flex ">
-          <div 
-            className="text-blue underline text-sm font-medium cursor-pointer flex items-end"
-            onClick={handleView}
-          >
-            {viewMore ? "Hide Details" : "View Details"}
-            <RiArrowDropDownLine
-              className={`text-lg transition-all duration-200 ${
-                viewMore ? "rotate-180" : ""
-              }`}
-            />
+          <div className="flex ">
+            <div
+              className="text-blue underline text-sm font-medium cursor-pointer flex items-end"
+              onClick={handleView}
+            >
+              {viewMore ? "Hide Details" : "View Details"}
+              <RiArrowDropDownLine
+                className={`text-lg transition-all duration-200 ${
+                  viewMore ? "rotate-180" : ""
+                }`}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
 
       {/* Mobile: Price and View Details Row */}
@@ -142,7 +153,7 @@ const Flight = (props) => {
             </div>
             <div className="text-sm text-gray-600">per person</div>
           </div>
-          <div 
+          <div
             className="text-blue-600 text-sm font-medium cursor-pointer flex items-center gap-1"
             onClick={handleView}
           >
@@ -156,41 +167,49 @@ const Flight = (props) => {
         </div>
       )}
 
-{viewMore && (
-  <div className="mt-4">
+      {viewMore && (
+        <div className="mt-4">
+          {props.data?.other_results && props.data.other_results.length > 0 ? (
+            <FareOptionsTable
+  otherResults={props.data.other_results}
+  onSelectFare={props.onSelect}
+  provider={props?.provider}
+  _updateBookingHandler={props?._updateBookingHandler}
+  selectedBooking={props?.selectedBooking}
+  trace_id={props?.trace_id}
+  onFlightSelect={props?.onFlightSelect}
+  edge={props?.edge}
+  booking_id={props?.booking_id}
+  selectedResultIndex={
+    props?.selectedBooking?.result_index || props.data?.result_index
+  } 
+  setSelectedFareData={setSelectedFareData}
+  pax={props?.pax}
+  setShowFareDrawer={setShowFareDrawer}
+  selectedFareIndex={selectedFareIndex}
+  setSelectedFareIndex={setSelectedFareIndex}
+/>
+          ) : (
+            <Details
+              segments={props.data?.segments}
+              provider={props.provider}
+              resultIndex={props.data?.result_index}
+              setShowDetails={setShowDetails}
+              individual={props?.individual}
+              originCityId={props.originCityId}
+              destinationCityId={props.destinationCityId}
+              setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+              edge={props?.edge}
+              getPaymentHandler={props.getPaymentHandler}
+              booking_id={props?.selectedBooking?.id}
+              combo={props?.combo}
+              setShowLoginModal={props?.setShowLoginModal}
+            />
+          )}
+        </div>
+      )}
 
-    {props.data?.other_results && props.data.other_results.length > 0 ? (
-      <FareOptionsTable 
-        otherResults={props.data.other_results}
-        onSelectFare={(selectedFare) => {
-          // Handle fare selection if needed
-          console.log('Selected fare:', selectedFare);
-        }}
-        setSelectedFareData={setSelectedFareData}
-        pax={props?.pax}
-        setShowFareDrawer={setShowFareDrawer}
-      />
-    ) : (
-      <Details
-        segments={props.data?.segments}
-        provider={props.provider}
-        resultIndex={props.data?.result_index}
-        setShowDetails={setShowDetails}
-        individual={props?.individual}
-        originCityId={props.originCityId}
-        destinationCityId={props.destinationCityId}
-        setTransferBookingsIntercity={props.setTransferBookingsIntercity}
-        edge={props?.edge}
-        getPaymentHandler={props.getPaymentHandler}
-        booking_id={props?.selectedBooking?.id}
-        combo={props?.combo}
-        setShowLoginModal={props?.setShowLoginModal}
-      />
-    )}
-  </div>
-)}
-
-    <Drawer
+      <Drawer
         show={showFareDrawer}
         anchor={"right"}
         backdrop
@@ -203,36 +222,65 @@ const Flight = (props) => {
         }}
       >
         <div className="p-4">
-          <BackArrow />
+          <BackArrow
+            handleClick={() => {
+              setShowFareDrawer(false);
+            }}
+          />
           <div className="text-xl py-2 font-semibold">
-            Flight from {selectedFareData?.segments?.[0]?.origin?.city_name || props.data?.segments[0]?.origin?.city_name} to {selectedFareData?.segments?.[selectedFareData?.segments?.length - 1]?.destination?.city_name || props.data?.segments[props.data?.segments?.length - 1]?.destination?.city_name}
+            Flight from{" "}
+            {selectedFareData?.segments?.[0]?.origin?.city_name ||
+              props.data?.segments[0]?.origin?.city_name}{" "}
+            to{" "}
+            {selectedFareData?.segments?.[
+              selectedFareData?.segments?.length - 1
+            ]?.destination?.city_name ||
+              props.data?.segments[props.data?.segments?.length - 1]
+                ?.destination?.city_name}
           </div>
           <div className="p-4 border rounded-lg border-gray-400 mt-1">
             <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2">
               <div className="flex flex-row items-center gap-3">
-                <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: isPageWide ? '48px' : '40px', height: isPageWide ? '48px' : '40px' }}>
-                  <LogoContainer data={selectedFareData || props.data} width={isPageWide ? 48 : 40} height={isPageWide ? 48 : 40} />
+                <div
+                  className="rounded-full overflow-hidden flex-shrink-0"
+                  style={{
+                    width: isPageWide ? "48px" : "40px",
+                    height: isPageWide ? "48px" : "40px",
+                  }}
+                >
+                  <LogoContainer
+                    data={selectedFareData || props.data}
+                    width={isPageWide ? 48 : 40}
+                    height={isPageWide ? 48 : 40}
+                  />
                 </div>
                 <div className="flex flex-col gap-1">
                   <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
-                    {selectedFareData?.segments?.[0]?.airline?.name || props.data?.segments?.[0]?.airline?.name}
-                    {(selectedFareData?.is_refundable || props.data?.is_refundable) && (
+                    {selectedFareData?.segments?.[0]?.airline?.name ||
+                      props.data?.segments?.[0]?.airline?.name}
+                    {(selectedFareData?.is_refundable ||
+                      props.data?.is_refundable) && (
                       <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
                         Refundable
                       </span>
                     )}
                   </div>
                   <div className="text-xs md:text-sm text-gray-600">
-                    {selectedFareData?.segments?.[0]?.airline?.code || props.data?.segments?.[0]?.airline?.code}-
-                    {selectedFareData?.segments?.[0]?.airline?.flight_number || props.data?.segments?.[0]?.airline?.flight_number}
+                    {selectedFareData?.segments?.[0]?.airline?.code ||
+                      props.data?.segments?.[0]?.airline?.code}
+                    -
+                    {selectedFareData?.segments?.[0]?.airline?.flight_number ||
+                      props.data?.segments?.[0]?.airline?.flight_number}
                   </div>
                 </div>
               </div>
               {isPageWide && (
                 <div className="text-right">
                   <div className="text-md md:text-md font-bold">
-                    {(selectedFareData?.final_fare || props.data?.final_fare)
-                      ? `₹${getIndianPrice(selectedFareData?.final_fare || props.data?.final_fare)}`
+                    {selectedFareData?.final_fare || props.data?.final_fare
+                      ? `₹${getIndianPrice(
+                          selectedFareData?.final_fare || props.data?.final_fare
+                        )}`
                       : null}
                   </div>
                   <div className="text-xs text-gray-500">per person</div>
@@ -243,23 +291,42 @@ const Flight = (props) => {
             <div className="flex flex-row w-full justify-between items-center">
               <FlightDetails
                 data={selectedFareData || props.data}
-                origin={selectedFareData?.segments?.[0]?.origin || props.data?.segments[0]?.origin}
+                origin={
+                  selectedFareData?.segments?.[0]?.origin ||
+                  props.data?.segments[0]?.origin
+                }
                 destination={
-                  selectedFareData?.segments?.[selectedFareData?.segments?.length - 1]?.destination ||
-                  props.data?.segments[props.data?.segments?.length - 1]?.destination
+                  selectedFareData?.segments?.[
+                    selectedFareData?.segments?.length - 1
+                  ]?.destination ||
+                  props.data?.segments[props.data?.segments?.length - 1]
+                    ?.destination
                 }
                 duration={
-                  typeof (selectedFareData?.total_duration || props.data?.total_duration) == "number"
-                    ? convertMinutesToHours(selectedFareData?.total_duration || props.data?.total_duration)
-                    : (selectedFareData?.total_duration || props.data?.total_duration)
+                  typeof (
+                    selectedFareData?.total_duration ||
+                    props.data?.total_duration
+                  ) == "number"
+                    ? convertMinutesToHours(
+                        selectedFareData?.total_duration ||
+                          props.data?.total_duration
+                      )
+                    : selectedFareData?.total_duration ||
+                      props.data?.total_duration
                 }
-                isNonStop={(selectedFareData?.segments?.length || props.data?.segments?.length) === 1}
-                numStops={(selectedFareData?.segments?.length || props.data?.segments?.length) - 1}
+                isNonStop={
+                  (selectedFareData?.segments?.length ||
+                    props.data?.segments?.length) === 1
+                }
+                numStops={
+                  (selectedFareData?.segments?.length ||
+                    props.data?.segments?.length) - 1
+                }
                 segments={selectedFareData?.segments || props.data?.segments}
                 setShowDetails={setShowDetails}
               />
             </div>
-  
+
             <div className="mt-2">
               <Details
                 segments={selectedFareData?.segments}
@@ -269,7 +336,9 @@ const Flight = (props) => {
                 individual={props?.individual}
                 originCityId={props.originCityId}
                 destinationCityId={props.destinationCityId}
-                setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                setTransferBookingsIntercity={
+                  props.setTransferBookingsIntercity
+                }
                 edge={props?.edge}
                 getPaymentHandler={props.getPaymentHandler}
                 booking_id={props?.selectedBooking?.id}
@@ -281,88 +350,232 @@ const Flight = (props) => {
         </div>
       </Drawer>
     </Container>
-
-
   );
 };
 
-
-const FareOptionsTable = ({ otherResults, onSelectFare, pax, setShowFareDrawer, setSelectedFareData}) => {
+const FareOptionsTable = ({
+  otherResults,
+  onSelectFare,
+  pax,
+  setShowFareDrawer,
+  setSelectedFareData,
+  selectedBooking,
+  _updateBookingHandler,
+  provider,
+  trace_id,
+  onFlightSelect,
+  edge,
+  booking_id,
+  selectedResultIndex, // Add this to track which option is selected
+  selectedFareIndex,
+  setSelectedFareIndex,
+}) => {
+  const router = useRouter();
+  
   const getIndianPrice = (price) => {
-    return new Intl.NumberFormat('en-IN').format(price);
+    return new Intl.NumberFormat("en-IN").format(price);
   };
 
   if (!otherResults || otherResults.length === 0) {
     return null;
   }
 
-  const totalPax = (pax?.adults || 0) + (pax?.children || 0) + (pax?.infants || 0);
+  const totalPax =
+    (pax?.adults || 0) + (pax?.children || 0) + (pax?.infants || 0);
+
+const handleFareSelect = (result) => {
+  // Set the selected fare index
+  setSelectedFareIndex(result.result_index);
+  
+  // Call onFlightSelect if provided
+  onFlightSelect?.();
+
+  if (onSelectFare) {
+    // If onSelect is provided (similar to PriceContainer logic)
+    onSelectFare({
+      ...result,
+      resultIndex: result.result_index,
+      arrival_time: result?.duration,
+      booking_type: "Flight",
+      trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
+    });
+  } else if (_updateBookingHandler) {
+    // If _updateBookingHandler is provided
+    _updateBookingHandler({
+      booking_id: selectedBooking?.id || booking_id,
+      itinerary_id: selectedBooking?.itinerary_id || router.query.id,
+      result_index: result.result_index,
+      flightProvider: provider,
+      edge: edge,
+    });
+  }
+};
+
+  const isSelected = (result) => {
+    return selectedResultIndex === result.result_index;
+  };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden mt-2">
-      {/* Header */}
-      <div className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-3 px-2 py-1 border-b">
-        <div className="text-base font-normal text-gray-500">Cabin Bag</div>
-        <div className="text-base font-normal text-gray-500">Class</div>
-        <div className="text-base font-normal text-gray-500">Refundable</div>
-        <div className="text-base font-normal text-gray-500 text-left">
-           For {totalPax} {totalPax === 1 ? 'person' : 'persons'}
+    <>
+      {/* Desktop View - Table Layout */}
+      <div className="max-ph:hidden md:block bg-white rounded-lg overflow-hidden mt-2">
+        {/* Header */}
+        <div className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-3 px-2 py-1 border-b">
+          <div className="text-base font-normal text-gray-500">Cabin Bag</div>
+          <div className="text-base font-normal text-gray-500">Class</div>
+          <div className="text-base font-normal text-gray-500">Refundable</div>
+          <div className="text-base font-normal text-gray-500 text-left">
+            For {totalPax} {totalPax === 1 ? "person" : "persons"}
+          </div>
+          <div className="w-16 text-[14px] font-normal text-gray-500 text-left">
+            Fare Rule
+          </div>
         </div>
-        <div className="w-16 text-[14px] font-normal text-gray-500 text-left">Fare Rule</div>
+
+        {/* Rows */}
+        <div className="">
+          {otherResults.map((result, index) => (
+            <div
+              key={result.result_index || index}
+              className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-gray-50 transition-colors items-start"
+            >
+              <div className="text-base text-gray-900">
+                {result.segments?.[0]?.cabin_baggage_allowance || "7 Kg"}
+              </div>
+              <div className="text-base text-gray-900">
+                {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
+                  "Economy"}
+              </div>
+              <div className="text-base text-gray-900">
+                {result.is_refundable ? "Yes" : "No"}
+              </div>
+              <div className="text-base font-normal text-gray-900 text-left">
+                ₹{getIndianPrice(result.final_fare)}
+              </div>
+              <div className="flex items-start justify-start gap-1">
+                <button
+                  className="flex items-center justify-center"
+                  onClick={() => {
+                    setSelectedFareData(result);
+                    setTimeout(() => {
+                      setShowFareDrawer(true);
+                    }, 0);
+                  }}
+                  title="View details"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="22"
+                    height="22"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z"
+                      fill="#2AB0FC"
+                    />
+                  </svg>
+                </button>
+                <p className="text-gray-400 justify-center items-center">|</p>
+            <input
+  type="checkbox"
+  className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
+  checked={selectedFareIndex === result.result_index}
+  onChange={(e) => {
+    if (e.target.checked) {
+      handleFareSelect(result);
+    }
+  }}
+/>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Rows */}
-      <div className="">
+      {/* Mobile View - Card Layout */}
+      <div className="md:hidden space-y-3 mt-2">
         {otherResults.map((result, index) => (
-          <div 
+          <div
             key={result.result_index || index}
-            className="grid grid-cols-[1fr_1fr_1fr_1.5fr_auto] gap-4 px-2 py-2 hover:bg-gray-50 transition-colors items-start"
+            className="bg-white rounded-lg border border-gray-200 overflow-hidden"
           >
-            <div className="text-base text-gray-900">
-              {result.segments?.[0]?.cabin_baggage_allowance || '7 Kg'}
-            </div>
-            <div className="text-base text-gray-900">
-              {result.segments?.[0]?.cabin_class?.replace(' Class', '') || 'Economy'}
-            </div>
-            <div className="text-base text-gray-900">
-              {result.is_refundable ? 'Yes' : 'No'}
-            </div>
-            <div className="text-base font-normal text-gray-900 text-left">
-              ₹{getIndianPrice(result.final_fare)}
-            </div>
-            <div className="flex items-start justify-start gap-1">
-              <button 
-                className="flex items-center justify-center"
-                onClick={() => {
-    setSelectedFareData(result);
-    setTimeout(() => {
-      setShowFareDrawer(true);
-    }, 0);
+            {/* Card Header */}
+            <div className="bg-gray-50 px-4 py-2.5 flex items-center justify-between border-b border-gray-200">
+              <h3 className="text-base font-medium text-gray-700">Details</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  className="p-1"
+                  onClick={() => {
+                    setSelectedFareData(result);
+                    setTimeout(() => {
+                      setShowFareDrawer(true);
+                    }, 0);
+                  }}
+                  title="View details"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z"
+                      fill="#2AB0FC"
+                    />
+                  </svg>
+                </button>
+          <input
+  type="checkbox"
+  className="w-5 h-5 cursor-pointer accent-blue-600"
+  checked={selectedFareIndex === result.result_index}
+  onChange={(e) => {
+    if (e.target.checked) {
+      handleFareSelect(result);
+    }
   }}
-                title="View details"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 18 18" fill="none">
-                  <path d="M5.25 12.75H10.5V11.25H5.25V12.75ZM5.25 9.75H12.75V8.25H5.25V9.75ZM5.25 6.75H12.75V5.25H5.25V6.75ZM3.75 15.75C3.3375 15.75 2.98438 15.6031 2.69063 15.3094C2.39687 15.0156 2.25 14.6625 2.25 14.25V3.75C2.25 3.3375 2.39687 2.98438 2.69063 2.69063C2.98438 2.39687 3.3375 2.25 3.75 2.25H14.25C14.6625 2.25 15.0156 2.39687 15.3094 2.69063C15.6031 2.98438 15.75 3.3375 15.75 3.75V14.25C15.75 14.6625 15.6031 15.0156 15.3094 15.3094C15.0156 15.6031 14.6625 15.75 14.25 15.75H3.75ZM3.75 14.25H14.25V3.75H3.75V14.25Z" fill="#2AB0FC"/>
-                </svg>
-              </button>
-              <p className="text-gray-400 justify-center items-center">|</p>
-              <input 
-                type="checkbox" 
-                className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
-                onChange={(e) => {
-                  if (e.target.checked && onSelectFare) {
-                    onSelectFare(result);
-                  }
-                }}
-              />
+/>
+              </div>
+            </div>
+
+            {/* Card Content */}
+            <div className="px-4 py-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Cabin Bag</span>
+                <span className="text-gray-900 text-base font-medium">
+                  {result.segments?.[0]?.cabin_baggage_allowance || "7 kg"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Class</span>
+                <span className="text-gray-900 text-base font-medium">
+                  {result.segments?.[0]?.cabin_class?.replace(" Class", "") ||
+                    "Economy"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Refundable</span>
+                <span className="text-gray-900 text-base font-medium">
+                  {result.is_refundable ? "Yes" : "No"}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500 text-sm">Price per person</span>
+                <span className="text-gray-900 text-lg font-semibold">
+                  ₹{getIndianPrice(result.final_fare)}
+                </span>
+              </div>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
-
 export default Flight;
-
