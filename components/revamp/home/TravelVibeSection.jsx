@@ -2,6 +2,8 @@ import React from "react";
 import { Japan } from "../assets";
 import { TravelVibeCard } from "../common/components/card";
 import { useRouter } from "next/router";
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
+
 const TravelVibeSection = () => {
   // Sample travel vibe data - replace with your actual data
   const router = useRouter();
@@ -10,7 +12,7 @@ const TravelVibeSection = () => {
       id: 1,
       title: "Honeymoon Trip Planner",
       description: "ROMANTIC ESCAPES",
-      image: Japan, // Replace with actual honeymoon image
+      image: `${imgUrlEndPoint}/media/page/173815280124938845634460449219/.jpg`, // Replace with actual honeymoon image
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -20,7 +22,7 @@ const TravelVibeSection = () => {
       id: 2,
       title: "Road Trips 2025",
       description: "DRIVE DIARIES",
-      image: Japan, // Replace with actual road trip image
+      image: `${imgUrlEndPoint}/media/page/174860004456110548973083496094/.jpg`, // Replace with actual road trip image
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -30,7 +32,7 @@ const TravelVibeSection = () => {
       id: 3,
       title: "Perfect Proposals",
       description: "SAY YES SPOTS",
-      image: Japan, // Replace with actual proposal image
+      image: `${imgUrlEndPoint}/media/page/174120792530050110816955566406/.png`, // Replace with actual proposal image
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -40,7 +42,7 @@ const TravelVibeSection = () => {
       id: 4,
       title: "Japan In Autumn",
       description: "GOLDEN GATEWAYS",
-      image: Japan, // Replace with actual Japan autumn image
+      image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`, // Replace with actual Japan autumn image
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -50,7 +52,7 @@ const TravelVibeSection = () => {
       id: 5,
       title: "Europe Under 1 Lakh",
       description: "BIG TRIPS, SMALL BUDGET",
-      image: Japan, // Replace with actual Europe image
+      image: `${imgUrlEndPoint}/media/page/174236505833778285980224609375/.jpg`, // Replace with actual Europe image
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",

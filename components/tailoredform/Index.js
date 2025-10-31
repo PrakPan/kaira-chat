@@ -655,7 +655,7 @@ const Enquiry = (props) => {
                         width: "100%",
                       }}
                     >
-                      Update Itinerary Route
+                      Update and Continue
                     </Button>:                    <button
                       className={`LargeIndigoButton ${
                         !isDesktop && "w-1/2"
@@ -664,9 +664,16 @@ const Enquiry = (props) => {
                         maxWidth: isDesktop ? "500px" : "50%",
                         width: "100%",
                       }}
-                      disabled={true}
+                      onClick={() => {
+                        router.push({
+                          pathname: "/new-trip",
+                          query: {
+                            slideIndex: slideIndex + 1,
+                          },
+                        });
+                      }}
                     >
-                      Update Itinerary Route
+                     Continue
                     </button>}
                   </div>
                 )}
