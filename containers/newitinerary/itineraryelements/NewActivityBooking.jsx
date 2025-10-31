@@ -51,7 +51,7 @@ export default function NewActivityBooking(props) {
   };
 
   return (
-    <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md">
+    <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md w-full">
       {isDesktop ? <div id="Activity" className={`flex gap-1  flex-col justify-start `}>
         <div
           style={{

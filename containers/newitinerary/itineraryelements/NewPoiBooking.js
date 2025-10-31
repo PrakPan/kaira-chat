@@ -72,7 +72,7 @@ export default function NewPoiBooking(props) {
   };
 
   return (
-    <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md">
+    <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md w-100">
       {isDesktop ? <div
         id="poi"
         className={`relative flex gap-1  flex-col justify-start`}
