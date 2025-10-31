@@ -11,109 +11,76 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 const PlacesBragSection = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
     {
       id: 1,
-      title: "Japan",
+      title: "Thailand",
       description:
         "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
+      link: "asia/thailand",
+      image:`${imgUrlEndPoint}/media/countries/168442180095400023460388183594.jpg`
     },
     {
       id: 2,
-      title: "Paris",
+      title: "Vietnam",
       description:
         "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
+      link: "europe/vietnam",
+      image:`${imgUrlEndPoint}/media/countries/175871326394452381134033203125.png`
     },
     {
       id: 3,
-      title: "Maldives",
+      title: "Malaysia",
       description:
         "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
+      link: "asia/malaysia",
+      image:`${imgUrlEndPoint}/media/countries/168442089471308898925781250000.jpg`
     },
     {
       id: 4,
-      title: "Japan",
+      title: "Dubai",
       description:
         "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
       tags: ["Hidden Gem"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
+      link: "asia/united_arab_emirates/dubai",
+      image:`${imgUrlEndPoint}/media/cities/175731712356781172752380371094.jpg`
     },
     {
       id: 5,
-      title: "Paris",
+      title: "Singapore",
       description:
         "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
       tags: ["Trending", "Best for Couples"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
+      link: "asia/singapore/singapore/singapore",
+      image:`${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`
     },
     {
       id: 6,
-      title: "Maldives",
+      title: "Bali",
       description:
         "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
       tags: ["Under 1 Lakh"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
-    },
-    {
-      id: 7,
-      title: "Japan",
-      description:
-        "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      image: Japan, // Replace with actual image path
-      tags: ["Hidden Gem"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/japan",
-    },
-    {
-      id: 8,
-      title: "Paris",
-      description:
-        "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      image: Japan, // Replace with actual image path
-      tags: ["Trending", "Best for Couples"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "europe/france/paris",
-    },
-    {
-      id: 9,
-      title: "Maldives",
-      description:
-        "Sun, sand, and serious main character energy — Maldives is calling!",
-      image: Japan, // Replace with actual image path
-      tags: ["Under 1 Lakh"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/maldives",
-    },
+      link: "asia/indonesia/bali",
+      image:`${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`
+    }
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
