@@ -231,7 +231,7 @@ export default function ActivityDetails(props) {
               </div>
             )}
           </div>
-          {props.data?.hotel_pickup_included ? (
+          {props?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
                 src="/hotelPickupIncluded.svg"

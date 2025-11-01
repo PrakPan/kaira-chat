@@ -170,25 +170,29 @@ const Flight = (props) => {
       {viewMore && (
         <div className="mt-4">
           {props.data?.other_results && props.data.other_results.length > 0 ? (
-            <FareOptionsTable
-  otherResults={props.data.other_results}
-  onSelectFare={props.onSelect}
-  provider={props?.provider}
-  _updateBookingHandler={props?._updateBookingHandler}
-  selectedBooking={props?.selectedBooking}
-  trace_id={props?.trace_id}
-  onFlightSelect={props?.onFlightSelect}
-  edge={props?.edge}
-  booking_id={props?.booking_id}
-  selectedResultIndex={
-    props?.selectedBooking?.result_index || props.data?.result_index
-  } 
-  setSelectedFareData={setSelectedFareData}
-  pax={props?.pax}
-  setShowFareDrawer={setShowFareDrawer}
-  selectedFareIndex={selectedFareIndex}
-  setSelectedFareIndex={setSelectedFareIndex}
-/>
+      <FareOptionsTable
+              otherResults={props.data.other_results}
+              onSelectFare={props.onSelect}
+              provider={props?.provider}
+              _updateBookingHandler={props?._updateBookingHandler}
+              selectedBooking={props?.selectedBooking}
+              trace_id={props?.trace_id}
+              onFlightSelect={props?.onFlightSelect}
+              edge={props?.edge}
+              booking_id={props?.booking_id}
+              selectedResultIndex={
+                props?.selectedBooking?.result_index || props.data?.result_index
+              }
+              setSelectedFareData={setSelectedFareData}
+              pax={props?.pax}
+              setShowFareDrawer={setShowFareDrawer}
+              // PASS NEW PROPS
+              selectedFlight={props.selectedFlight}
+              setSelectedFlight={props.setSelectedFlight}
+              selectedFareInFlight={props.selectedFareInFlight}
+              setSelectedFareInFlight={props.setSelectedFareInFlight}
+              flightIndex={props.flightIndex}
+            />
           ) : (
             <Details
               segments={props.data?.segments}
@@ -366,9 +370,13 @@ const FareOptionsTable = ({
   onFlightSelect,
   edge,
   booking_id,
-  selectedResultIndex, // Add this to track which option is selected
-  selectedFareIndex,
-  setSelectedFareIndex,
+  selectedResultIndex,
+  // NEW PROPS
+  selectedFlight,
+  setSelectedFlight,
+  selectedFareInFlight,
+  setSelectedFareInFlight,
+  flightIndex,
 }) => {
   const router = useRouter();
   
@@ -383,36 +391,49 @@ const FareOptionsTable = ({
   const totalPax =
     (pax?.adults || 0) + (pax?.children || 0) + (pax?.infants || 0);
 
-const handleFareSelect = (result) => {
-  // Set the selected fare index
-  setSelectedFareIndex(result.result_index);
-  
-  // Call onFlightSelect if provided
-  onFlightSelect?.();
+  const handleFareSelect = (result) => {
+    const currentlySelected = 
+      selectedFlight === flightIndex && 
+      selectedFareInFlight === result.result_index;
+    
+    if (currentlySelected) {
+      // UNCHECK: Clear selection
+      setSelectedFlight(null);
+      setSelectedFareInFlight(null);
+      return;
+    }
+    
+    // CHECK: Set new selection
+    setSelectedFlight(flightIndex);
+    setSelectedFareInFlight(result.result_index);
+    
+    // Call onFlightSelect if provided
+    onFlightSelect?.();
 
-  if (onSelectFare) {
-    // If onSelect is provided (similar to PriceContainer logic)
-    onSelectFare({
-      ...result,
-      resultIndex: result.result_index,
-      arrival_time: result?.duration,
-      booking_type: "Flight",
-      trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
-    });
-  } else if (_updateBookingHandler) {
-    // If _updateBookingHandler is provided
-    _updateBookingHandler({
-      booking_id: selectedBooking?.id || booking_id,
-      itinerary_id: selectedBooking?.itinerary_id || router.query.id,
-      result_index: result.result_index,
-      flightProvider: provider,
-      edge: edge,
-    });
-  }
-};
+    if (onSelectFare) {
+      onSelectFare({
+        ...result,
+        resultIndex: result.result_index,
+        arrival_time: result?.duration,
+        booking_type: "Flight",
+        trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
+      });
+    } else if (_updateBookingHandler) {
+      _updateBookingHandler({
+        booking_id: selectedBooking?.id || booking_id,
+        itinerary_id: selectedBooking?.itinerary_id || router.query.id,
+        result_index: result.result_index,
+        flightProvider: provider,
+        edge: edge,
+      });
+    }
+  };
 
   const isSelected = (result) => {
-    return selectedResultIndex === result.result_index;
+    return (
+      selectedFlight === flightIndex && 
+      selectedFareInFlight === result.result_index
+    );
   };
 
   return (
@@ -477,16 +498,12 @@ const handleFareSelect = (result) => {
                   </svg>
                 </button>
                 <p className="text-gray-400 justify-center items-center">|</p>
-            <input
-  type="checkbox"
-  className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
-  checked={selectedFareIndex === result.result_index}
-  onChange={(e) => {
-    if (e.target.checked) {
-      handleFareSelect(result);
-    }
-  }}
-/>
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 cursor-pointer accent-blue-600 items-center justify-center mt-[3px]"
+                  checked={isSelected(result)}
+                  onChange={() => handleFareSelect(result)}
+                />
               </div>
             </div>
           ))}
@@ -527,16 +544,12 @@ const handleFareSelect = (result) => {
                     />
                   </svg>
                 </button>
-          <input
-  type="checkbox"
-  className="w-5 h-5 cursor-pointer accent-blue-600"
-  checked={selectedFareIndex === result.result_index}
-  onChange={(e) => {
-    if (e.target.checked) {
-      handleFareSelect(result);
-    }
-  }}
-/>
+                <input
+                  type="checkbox"
+                  className="w-5 h-5 cursor-pointer accent-blue-600"
+                  checked={isSelected(result)}
+                  onChange={() => handleFareSelect(result)}
+                />
               </div>
             </div>
 

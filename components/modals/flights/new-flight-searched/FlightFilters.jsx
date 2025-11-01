@@ -11,7 +11,7 @@ export default function FlightFilters(props) {
   ]);
   const [tripType, setTripType] = useState(props.filters?.trip_type || "one_way");
   const [stops, setStops] = useState(props.filters?.stops || []);
-  const [departureTime, setDepartureTime] = useState(props.filters?.departure_time || "10:00");
+  const [departureTime, setDepartureTime] = useState(props.filters?.departure_time || "00:00");
   const [airlines, setAirlines] = useState(props.selectedAirlines || []);
   const [fareType, setFareType] = useState(props.filters?.fare_type || []);
   const [showAllAirlines, setShowAllAirlines] = useState(false);
@@ -20,18 +20,7 @@ export default function FlightFilters(props) {
   const [selectedTime, setSelectedTime] = useState(null);
 
   // All airlines data
-  const allAirlines = props.airlineCodes || [
-    { code: "LH", name: "Lufthansa" },
-    { code: "AI", name: "Air India" },
-    { code: "EK", name: "Emirates" },
-    { code: "QR", name: "Qatar Airways" },
-    { code: "SQ", name: "Singapore Airlines" },
-    { code: "EY", name: "Etihad Airways" },
-    { code: "AC", name: "Air Canada" },
-    { code: "BA", name: "British Airways" },
-    { code: "AF", name: "Air France" },
-    { code: "KL", name: "KLM" }
-  ];
+  const allAirlines = props.airlineCodes || [];
 
   const visibleAirlines = showAllAirlines ? allAirlines : allAirlines.slice(0, 7);
 
@@ -114,35 +103,58 @@ export default function FlightFilters(props) {
   };
 
   const handleApply = () => {
-    const newFilters = {
-      price_range: priceRange,
-      trip_type: tripType,
-      stops: stops,
-      departure_time: departureTime,
-      airlines: airlines.join(","),
-      fare_type: fareType,
-      non_stop_flights: stops.includes("non_stop")
-    };
+  // Convert departureTime (HH:mm) to full ISO datetime
+  let fullDepartureDateTime = props.filters?.preferred_departure_time;
+  if (departureTime) {
+    const [hours, minutes] = departureTime.split(":");
+    const baseDateTime = dayjs(props.filters?.preferred_departure_time || new Date());
+    fullDepartureDateTime = baseDateTime
+      .hour(parseInt(hours))
+      .minute(parseInt(minutes))
+      .second(0)
+      .millisecond(0)
+      .format("YYYY-MM-DDTHH:mm:ss");
+  }
 
-    if (props.handleFiltersChange) {
-      props.handleFiltersChange(newFilters);
-    } else {
-      props.setFiltersState(newFilters);
-    }
-
-    if (props.setSelectedAirlines) {
-      props.setSelectedAirlines(airlines);
-    }
-
-    props.setShowFilter(false);
-    props?.setIsFilterChangesApplied(true);
+  const newFilters = {
+    price_range: priceRange,
+    trip_type: tripType,
+    stops: stops,
+    departure_time: departureTime,
+    airlines: airlines.join(","),
+    fare_type: fareType,
+    non_stop_flights: stops.includes("non_stop")
   };
+
+  if (props.handleFiltersChange) {
+    props.handleFiltersChange(newFilters);
+  } else {
+    props.setFiltersState(newFilters);
+  }
+
+  // Update the preferred departure time with full datetime
+  if (props.setPreferredDepartureTime) {
+    props.setPreferredDepartureTime(fullDepartureDateTime);
+  }
+
+  if (props.setSelectedAirlines) {
+    props.setSelectedAirlines(airlines);
+  }
+
+  // Set this flag to indicate time was changed
+  if (props.setIsTimeOnlyChange) {
+    props.setIsTimeOnlyChange(true);
+  }
+
+  props.setShowFilter(false);
+  props?.setIsFilterChangesApplied(true);
+};
 
   const removeAllFilter = () => {
     setPriceRange([15600, 80000]);
     setTripType("one_way");
     setStops([]);
-    setDepartureTime("10:00");
+    setDepartureTime("00:00");
     setAirlines([]);
     setFareType([]);
     setSelectedTime(null);
@@ -151,7 +163,7 @@ export default function FlightFilters(props) {
       price_range: [15600, 80000],
       trip_type: "one_way",
       stops: [],
-      departure_time: "10:00",
+      departure_time: "00:00",
       airlines: "",
       fare_type: [],
       non_stop_flights: false
@@ -249,7 +261,7 @@ export default function FlightFilters(props) {
             <h3 className="text-base font-500 mb-sm">Stops</h3>
             {[
               { value: 'non_stop', label: 'Non-Stop' },
-              { value: 'with_stop', label: 'With Stop' },
+              { value: 'multiple_stops', label: '1+ Stops' },
             //   { value: 'multiple_stops', label: '1+ Stops' }
             ].map((stop) => (
               <label key={stop.value} className="flex items-center mb-sm cursor-pointer">
@@ -276,13 +288,10 @@ export default function FlightFilters(props) {
           <div className="time-dropdown-container relative">
             <h3 className="text-base font-500 mb-sm">Departure Time</h3>
             <div
-              className="flex items-center justify-between p-2 border border-border-default rounded-lg cursor-pointer bg-white hover:bg-gray-50"
+              className="flex items-center gap-2 p-2 border border-border-default rounded-lg cursor-pointer bg-[#f9f9f9] hover:bg-gray-50"
               onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             >
-              <span className="text-sm font-500">
-                {selectedTime || "Select Time"}
-              </span>
-              <button>
+                  <button>
                 <svg
                   className="w-5 h-5 text-gray-600"
                   fill="none"
@@ -298,6 +307,11 @@ export default function FlightFilters(props) {
                   />
                 </svg>
               </button>
+              <span className="text-sm font-500">
+               
+                {selectedTime || "Select Time"}
+              </span>
+             
             </div>
 
             {showTimeDropdown && (
@@ -322,10 +336,10 @@ export default function FlightFilters(props) {
             )}
           </div>
 
-          <hr className="m-zero" />
+         {!props?.loading && allAirlines.length > 0 ? <hr className="m-zero" /> : null}
 
           {/* Airlines */}
-          <div>
+          {!props?.loading && allAirlines.length > 0 ? <div>
             <h3 className="text-base font-500 mb-sm">Airlines</h3>
             {visibleAirlines.map((airline) => (
               <label key={airline.code} className="flex items-center mb-sm cursor-pointer">
@@ -352,7 +366,7 @@ export default function FlightFilters(props) {
                 +{allAirlines.length - 7} more
               </button>
             )}
-          </div>
+          </div> : null}
 
           <hr className="m-zero" />
 

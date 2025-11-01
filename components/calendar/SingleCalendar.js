@@ -89,28 +89,51 @@ const AirbnbCalendarSingleMonth = (props) => {
     </div>
   );
 
-  const renderCalendarView = () => {
-    const currentMonthDays = getDaysInMonth(currentMonth);
+ const renderCalendarView = () => {
+  const currentMonthDays = getDaysInMonth(currentMonth);
 
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-gray-100 rounded-full">
-            <Image src={"/circle_right.svg"} width={20} height={20} className="transform -scale-x-100" alt="Previous" />
-          </button>
-          <div className="flex justify-center w-full">
-            <Body2M_14>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</Body2M_14>
-          </div>
-          <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
-            <Image src={"/circle_right.svg"} width={20} height={20} alt="Next" />
-          </button>
+  // Define whether the previous month button should be shown
+  const isCurrentMonthOrBefore =
+    currentMonth.getFullYear() === today.getFullYear() &&
+    currentMonth.getMonth() === today.getMonth();
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        {/* Hide or disable "Previous" button when at current month */}
+        <div className="w-[36px] h-[36px] flex items-center justify-center">
+          {!isCurrentMonthOrBefore && (
+            <button
+              onClick={() => navigateMonth(-1)}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <Image
+                src={"/circle_right.svg"}
+                width={20}
+                height={20}
+                className="transform -scale-x-100"
+                alt="Previous"
+              />
+            </button>
+          )}
         </div>
-        <div className="px-4">
-          {renderMonthGrid(currentMonthDays)}
+
+        <div className="flex justify-center w-full">
+          <Body2M_14>
+            {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          </Body2M_14>
         </div>
+
+        <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
+          <Image src={"/circle_right.svg"} width={20} height={20} alt="Next" />
+        </button>
       </div>
-    );
-  };
+
+      <div className="px-4">{renderMonthGrid(currentMonthDays)}</div>
+    </div>
+  );
+};
+
 
   return (
     <div className='w-[350px]'>

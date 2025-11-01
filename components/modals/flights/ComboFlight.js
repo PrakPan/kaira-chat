@@ -235,6 +235,8 @@ const ComboFlight = (props) => {
   const [isTimeOnlyChange, setIsTimeOnlyChange] = useState(false);
   const [isManualSelection, setIsManualSelection] = useState(false);
   const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null); 
+  const [selectedFareInFlight, setSelectedFareInFlight] = useState(null);
 
   const isTraceIdValid = () => {
     if (!traceId || !traceIdTimestamp) return false;
@@ -521,10 +523,10 @@ const ComboFlight = (props) => {
         flight_cabin_class: classType.value,
         // Add all filter parameters
         ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
-        ...(filtersState.stops &&
-          filtersState.stops.length > 0 && {
-            stops: filtersState.stops.join(","),
-          }),
+        // ...(filtersState.stops &&
+        //   filtersState.stops.length > 0 && {
+        //     stops: filtersState.stops.join(","),
+        //   }),
         // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
         ...(filtersState.fare_type &&
           filtersState.fare_type.length > 0 && {
@@ -657,10 +659,10 @@ const ComboFlight = (props) => {
         flight_cabin_class: classType.value,
         // Add these filter parameters
         ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
-        ...(filtersState.stops &&
-          filtersState.stops.length > 0 && {
-            stops: filtersState.stops.join(","),
-          }),
+        // ...(filtersState.stops &&
+        //   filtersState.stops.length > 0 && {
+        //     stops: filtersState.stops.join(","),
+        //   }),
         // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
         ...(filtersState.fare_type &&
           filtersState.fare_type.length > 0 && {
@@ -794,237 +796,248 @@ const ComboFlight = (props) => {
     return regex.test(uuid);
   };
 
-  const _newUpdateBookingHandler = async ({
+ const _newUpdateBookingHandler = async ({
+  booking_id,
+  itinerary_id,
+  result_index,
+  flightProvider,
+  edge,
+}) => {
+  if (props.handleFlightSelect) {
+    props.handleFlightSelect({
+      trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
+      result_index: result_index,
+    });
+  }
+
+  const requestData = {
     booking_id,
-    itinerary_id,
-    result_index,
-    flightProvider,
-    edge,
-  }) => {
-    if (props.handleFlightSelect) {
-      props.handleFlightSelect({
-        trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
-        result_index: result_index,
-      });
-    }
-
-    const requestData = {
-      booking_id,
-      trace_id: traceId || localStorage.getItem(`${flightProvider}_trace_id`),
-      result_indices: [result_index],
-      source_itinerary_city: props?.source_itinerary_city_id,
-      destination_itinerary_city: props?.destination_itinerary_city_id,
-      edge: props?.edge || props?.selectedBooking?.edge,
-    };
-
-    setIsProcessingWarning(true);
-
-    try {
-      // Call warning API
-      const warningResponse = await updateFlightBookingWarning.post(
-        `${itinerary_id}/transfers/flight/warning/`,
-        requestData,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      );
-
-      if (warningResponse?.data?.show_warning === true) {
-        // Show warning modal
-        setWarningMessage(
-          warningResponse.data.warning || "Please confirm this action."
-        );
-        setPendingBookingData({
-          booking_id,
-          itinerary_id,
-          result_index,
-          flightProvider,
-          edge,
-          requestData,
-        });
-        setShowWarningModal(true);
-        setIsProcessingWarning(false);
-      } else {
-        // Proceed directly with booking
-        setIsProcessingWarning(false);
-        await handleBookingConfirm(requestData, itinerary_id);
-      }
-    } catch (error) {
-      setIsProcessingWarning(false);
-      console.error("Warning API failed:", error);
-
-      let errorMsg = "Warning check failed. Please try again.";
-      if (error?.response?.data) {
-        if (error.response.data.errors?.[0]?.message?.[0]) {
-          errorMsg = error.response.data.errors[0].message[0];
-        } else if (error.response.data.message) {
-          errorMsg = error.response.data.message;
-        } else if (typeof error.response.data === "string") {
-          errorMsg = error.response.data;
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
-      }
-
-      props.openNotification({
-        type: "error",
-        text: errorMsg,
-        heading: "Error!",
-      });
-    }
+    trace_id: traceId || localStorage.getItem(`${flightProvider}_trace_id`),
+    result_indices: [result_index],
+    source_itinerary_city: props?.source_itinerary_city_id,
+    destination_itinerary_city: props?.destination_itinerary_city_id,
+    edge: props?.edge || props?.selectedBooking?.edge,
   };
 
-  const handleBookingConfirm = async (requestData, itinerary_id) => {
-    setIsProcessingBooking(true);
-    setUpdateBookingState(true);
+  setIsProcessingWarning(true);
 
-    try {
-      const response = await updateFlightBooking.post(
-        `${itinerary_id}/bookings/flight/`,
+  try {
+    const warningResponse = await updateFlightBookingWarning.post(
+      `${itinerary_id}/transfers/flight/warning/`,
+      requestData,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      }
+    );
+
+    if (warningResponse?.data?.show_warning === true) {
+      setWarningMessage(
+        warningResponse.data.warning || "Please confirm this action."
+      );
+      setPendingBookingData({
+        booking_id,
+        itinerary_id,
+        result_index,
+        flightProvider,
+        edge,
         requestData,
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      );
+      });
+      setShowWarningModal(true);
+      setIsProcessingWarning(false);
+    } else {
+      setIsProcessingWarning(false);
+      await handleBookingConfirm(requestData, itinerary_id);
+    }
+  } catch (error) {
+    setIsProcessingWarning(false);
+    
+    // CLEAR SELECTION ON ERROR
+    setSelectedFlight(null);
+    setSelectedFareInFlight(null);
+    
+    console.error("Warning API failed:", error);
 
-      // Success handling (your existing success logic)
-      props._updateFlightBookingHandler([response.data]);
-      props.getPaymentHandler();
-      setMoreLoadingState(false);
-      setUpdateBookingState(false);
-      setIsProcessingBooking(false);
+    let errorMsg = "Warning check failed. Please try again.";
+    if (error?.response?.data) {
+      if (error.response.data.errors?.[0]?.message?.[0]) {
+        errorMsg = error.response.data.errors[0].message[0];
+      } else if (error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (typeof error.response.data === "string") {
+        errorMsg = error.response.data;
+      }
+    } else if (error.message) {
+      errorMsg = error.message;
+    }
 
-      const updatedTransferBookings = JSON.parse(
-        JSON.stringify(transferBookings?.transferBookings)
-      );
-      const bookingIdToUpdate = requestData?.booking_id;
+    props.openNotification({
+      type: "error",
+      text: errorMsg,
+      heading: "Error!",
+    });
+  }
+};
 
-      if (props?.combo) {
-        // Your existing combo logic...
-        Object.keys(updatedTransferBookings).forEach((category) => {
-          if (updatedTransferBookings[category]) {
-            Object.keys(updatedTransferBookings[category]).forEach((key) => {
-              const booking = updatedTransferBookings[category][key];
-              if (!booking || Object.keys(booking).length === 0) return;
 
-              if (booking?.id === bookingIdToUpdate) {
+const handleBookingConfirm = async (requestData, itinerary_id) => {
+  setIsProcessingBooking(true);
+  setUpdateBookingState(true);
+
+  try {
+    const response = await updateFlightBooking.post(
+      `${itinerary_id}/bookings/flight/`,
+      requestData,
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      }
+    );
+
+    // Success handling
+    props._updateFlightBookingHandler([response.data]);
+    props.getPaymentHandler();
+    setMoreLoadingState(false);
+    setUpdateBookingState(false);
+    setIsProcessingBooking(false);
+
+    const updatedTransferBookings = JSON.parse(
+      JSON.stringify(transferBookings?.transferBookings)
+    );
+    const bookingIdToUpdate = requestData?.booking_id;
+
+    if (props?.combo) {
+      Object.keys(updatedTransferBookings).forEach((category) => {
+        if (updatedTransferBookings[category]) {
+          Object.keys(updatedTransferBookings[category]).forEach((key) => {
+            const booking = updatedTransferBookings[category][key];
+            if (!booking || Object.keys(booking).length === 0) return;
+
+            if (booking?.id === bookingIdToUpdate) {
+              updatedTransferBookings[category][key] = {
+                ...booking,
+                ...response.data,
+              };
+            } else if (
+              booking?.children &&
+              Array.isArray(booking.children) &&
+              booking.children.length > 0
+            ) {
+              let foundMatch = false;
+              const updatedChildren = booking.children.map((childBooking) => {
+                if (childBooking && childBooking.id === bookingIdToUpdate) {
+                  foundMatch = true;
+                  return { ...childBooking, ...response.data };
+                }
+                return childBooking;
+              });
+
+              if (foundMatch) {
                 updatedTransferBookings[category][key] = {
                   ...booking,
-                  ...response.data,
+                  children: updatedChildren,
                 };
-              } else if (
-                booking?.children &&
-                Array.isArray(booking.children) &&
-                booking.children.length > 0
-              ) {
-                let foundMatch = false;
-                const updatedChildren = booking.children.map((childBooking) => {
-                  if (childBooking && childBooking.id === bookingIdToUpdate) {
-                    foundMatch = true;
-                    return { ...childBooking, ...response.data };
-                  }
-                  return childBooking;
-                });
-
-                if (foundMatch) {
-                  updatedTransferBookings[category][key] = {
-                    ...booking,
-                    children: updatedChildren,
-                  };
-                }
               }
-            });
-          }
+            }
+          });
+        }
+      });
+
+      dispatch(setTransfersBookings(updatedTransferBookings));
+      props?.getPaymentHandler();
+
+      if (response?.data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = [
+          "drawer",
+          "booking_id",
+          "flight_modal",
+          "modal",
+          "edit",
+        ];
+        drawerParams.forEach((param) => {
+          url.searchParams.delete(param);
         });
 
-        dispatch(setTransfersBookings(updatedTransferBookings));
-        props?.getPaymentHandler();
+        window.history.replaceState({}, "", url.toString());
 
-        if (response?.data?.is_refresh_needed) {
-          const url = new URL(window.location);
-          const drawerParams = [
-            "drawer",
-            "booking_id",
-            "flight_modal",
-            "modal",
-            "edit",
-          ];
-          drawerParams.forEach((param) => {
-            url.searchParams.delete(param);
-          });
-
-          window.history.replaceState({}, "", url.toString());
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 200);
-        }
-      } else {
-        dispatch(
-          updateSingleTransferBooking(
-            `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
-            response.data
-          )
-        );
-        props?.getPaymentHandler();
-        // if(response?.data?.is_refresh_needed){
-        //   window.location.reload();
-        // }
-        if (response?.data?.is_refresh_needed) {
-          const url = new URL(window.location);
-          const drawerParams = [
-            "drawer",
-            "booking_id",
-            "flight_modal",
-            "modal",
-            "edit",
-          ];
-          drawerParams.forEach((param) => {
-            url.searchParams.delete(param);
-          });
-
-          window.history.replaceState({}, "", url.toString());
-          setTimeout(() => {
-            window.location.reload();
-          }, 200);
-        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
       }
+    } else {
+      dispatch(
+        updateSingleTransferBooking(
+          `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+          response.data
+        )
+      );
+      props?.getPaymentHandler();
+      
+      if (response?.data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = [
+          "drawer",
+          "booking_id",
+          "flight_modal",
+          "modal",
+          "edit",
+        ];
+        drawerParams.forEach((param) => {
+          url.searchParams.delete(param);
+        });
 
-      props.openNotification({
-        type: "success",
-        text: "Flight updated successfully.",
-        heading: "Success!",
-      });
-      props.setHideFlightModal();
-    } catch (error) {
-      setIsProcessingBooking(false);
-      setUpdateBookingState(false);
-      console.error("Booking API failed:", error);
-
-      let errorMsg = "Booking failed. Please try again.";
-      if (error?.response?.data) {
-        if (error.response.data.errors?.[0]?.message?.[0]) {
-          errorMsg = error.response.data.errors[0].message[0];
-        } else if (error.response.data.message) {
-          errorMsg = error.response.data.message;
-        } else if (typeof error.response.data === "string") {
-          errorMsg = error.response.data;
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
+        window.history.replaceState({}, "", url.toString());
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
       }
-
-      props.openNotification({
-        type: "error",
-        text: errorMsg,
-        heading: "Error!",
-      });
     }
-  };
+
+    props.openNotification({
+      type: "success",
+      text: "Flight updated successfully.",
+      heading: "Success!",
+    });
+    props.setHideFlightModal();
+  } catch (error) {
+    setIsProcessingBooking(false);
+    setUpdateBookingState(false);
+    
+    // CLEAR SELECTION ON ERROR
+    setSelectedFlight(null);
+    setSelectedFareInFlight(null);
+    
+    console.error("Booking API failed:", error);
+
+    let errorMsg = "Booking failed. Please try again.";
+    if (error?.response?.data) {
+      if (error.response.data.errors?.[0]?.message?.[0]) {
+        errorMsg = error.response.data.errors[0].message[0];
+      } else if (error.response.data.message) {
+        errorMsg = error.response.data.message;
+      } else if (typeof error.response.data === "string") {
+        errorMsg = error.response.data;
+      }
+    } else if (error.message) {
+      errorMsg = error.message;
+    }
+
+    props.openNotification({
+      type: "error",
+      text: errorMsg,
+      heading: "Error!",
+    });
+  }
+};
+
+// ============================================
+// PART 4: Update handleWarningCancel function
+// ============================================
+
+
 
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
@@ -1160,16 +1173,16 @@ const ComboFlight = (props) => {
 
   useEffect(() => {
     const bothAirportsSelected = sourceInput.code && destinationInput.code;
-    const hasPreferredTime = preferredDepartureTime;
 
-    if (bothAirportsSelected && hasPreferredTime && !loading) {
+
+    if (bothAirportsSelected  && !loading) {
       const timeoutId = setTimeout(() => {
         _FetchFlightsHandler();
       }, 300);
 
       return () => clearTimeout(timeoutId);
     }
-  }, [sourceInput.code, destinationInput.code, preferredDepartureTime]);
+  }, [sourceInput.code, destinationInput.code]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -1204,15 +1217,19 @@ const ComboFlight = (props) => {
     }
   };
 
-  const handleWarningCancel = () => {
-    setShowWarningModal(false);
-    setWarningMessage("");
-    setPendingBookingData(null);
-    setSelectedFlightIndex(null);
-    setUpdateBookingState(false);
-    setIsProcessingWarning(false);
-    setIsProcessingBooking(false);
-  };
+ const handleWarningCancel = () => {
+  setShowWarningModal(false);
+  setWarningMessage("");
+  setPendingBookingData(null);
+  setSelectedFlightIndex(null);
+  setUpdateBookingState(false);
+  setIsProcessingWarning(false);
+  setIsProcessingBooking(false);
+  
+  // CLEAR FARE SELECTION
+  setSelectedFlight(null);
+  setSelectedFareInFlight(null);
+};
 
   const renderFlightContent = () => {
     if (updateBookingState) {
@@ -1273,28 +1290,35 @@ const ComboFlight = (props) => {
         <div style={{ clear: "right" }}>
           {flights.map((flight, index) => (
             <Flight
-              key={index}
-              itinerary_id={props.itinerary_id}
-              data={flight}
-              pax={pax}
-              selectedBooking={props.selectedBooking}
-              _updateBookingHandler={_newUpdateBookingHandler}
-              individual={props?.individual}
-              originCityId={props?.source_itinerary_city_id}
-              provider={flightProvider}
-              destinationCityId={props?.destination_itinerary_city_id}
-              edge={props?.edge || props?.selectedBooking?.edge}
-              setTransferBookingsIntercity={props.setTransferBookingsIntercity}
-              onSelect={props.onSelect}
-              isSelected={selectedFlightIndex === index}
-              onFlightSelect={() => setSelectedFlightIndex(index)}
-              getPaymentHandler={props.getPaymentHandler}
-              combo={props?.combo}
-              booking_id={props?.booking_id}
-              trace_id={
-                traceId || localStorage.getItem(`${flightProvider}_trace_id`)
-              }
-            />
+          key={index}
+          itinerary_id={props.itinerary_id}
+          data={flight}
+          pax={pax}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={_newUpdateBookingHandler}
+          individual={props?.individual}
+          originCityId={props?.source_itinerary_city_id}
+          provider={flightProvider}
+          destinationCityId={props?.destination_itinerary_city_id}
+          edge={props?.edge || props?.selectedBooking?.edge}
+          setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+          onSelect={props.onSelect}
+          isSelected={selectedFlightIndex === index}
+          onFlightSelect={() => setSelectedFlightIndex(index)}
+          getPaymentHandler={props.getPaymentHandler}
+          combo={props?.combo}
+          booking_id={props?.booking_id}
+          trace_id={
+            traceId || localStorage.getItem(`${flightProvider}_trace_id`)
+          }
+          loading={loading}
+          // NEW PROPS FOR FARE SELECTION
+          selectedFlight={selectedFlight}
+          setSelectedFlight={setSelectedFlight}
+          selectedFareInFlight={selectedFareInFlight}
+          setSelectedFareInFlight={setSelectedFareInFlight}
+          flightIndex={index}
+        />
           ))}
 
           {moreLoadingState && <Skeleton />}
@@ -1478,6 +1502,7 @@ const ComboFlight = (props) => {
         {showFilter && (
           <FlightFilters
             showFilter={showFilter}
+            loading={loading}
             setShowFilter={setShowFilter}
             filters={{
               ...filtersState,
