@@ -44,15 +44,16 @@ const AirbnbCalendarSingleMonth = (props) => {
     });
   };
 
- const handleDateClick = (date) => {
-  // For single date selection
-  setSelectedDates({ start: date, end: null });
-  // Pass the date immediately instead of using state
-  props.onChangeDate({ start: date, end: null, month: currentMonth });
-  props.setShowCalendar(false);
-};
+  const handleDateClick = (date) => {
+    // For single date selection
+    setSelectedDates({ start: date, end: null });
+    handleApplyDates();
+  };
 
-
+  const handleApplyDates = () => {
+    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth })
+    props.setShowCalendar(false)
+  }
 
   const renderMonthGrid = (days) => (
     <div>
@@ -89,59 +90,63 @@ const AirbnbCalendarSingleMonth = (props) => {
     </div>
   );
 
- const renderCalendarView = () => {
-  const currentMonthDays = getDaysInMonth(currentMonth);
+  const renderCalendarView = () => {
+    const currentMonthDays = getDaysInMonth(currentMonth);
 
-  // Define whether the previous month button should be shown
-  const isCurrentMonthOrBefore =
-    currentMonth.getFullYear() === today.getFullYear() &&
-    currentMonth.getMonth() === today.getMonth();
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="w-[36px] h-[36px] flex items-center justify-center">
-          {!isCurrentMonthOrBefore && (
-            <button
-              onClick={() => navigateMonth(-1)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <Image
-                src={"/circle_right.svg"}
-                width={20}
-                height={20}
-                className="transform -scale-x-100"
-                alt="Previous"
-              />
-            </button>
-          )}
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <button onClick={() => navigateMonth(-1)} className="p-2 hover:bg-gray-100 rounded-full">
+            <Image src={"/circle_right.svg"} width={20} height={20} className="transform -scale-x-100" alt="Previous" />
+          </button>
+          <div className="flex justify-center w-full">
+            <Body2M_14>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</Body2M_14>
+          </div>
+          <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
+            <Image src={"/circle_right.svg"} width={20} height={20} alt="Next" />
+          </button>
         </div>
-
-        <div className="flex justify-center w-full">
-          <Body2M_14>
-            {months[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-          </Body2M_14>
+        <div className="px-4">
+          {renderMonthGrid(currentMonthDays)}
         </div>
-
-        <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
-          <Image src={"/circle_right.svg"} width={20} height={20} alt="Next" />
-        </button>
       </div>
-
-      <div className="px-4">{renderMonthGrid(currentMonthDays)}</div>
-    </div>
-  );
-};
-
+    );
+  };
 
   return (
     <div className='w-[350px]'>
       <div className="flex flex-col gap-5 p-4">
         <div className='flex flex-col gap-[20px] w-full'>
+          {/* <div className="border-b border-gray-200 w-full pb-[20px]">
+            <div className="flex justify-between items-center w-full">
+              <div className='text-center w-full'>
+                <h2 className="text-[18px] font-semibold text-gray-900 mb-2">Select Date</h2>
+                <div className="flex items-center justify-center space-x-4 text-[14px] font-normal leading-[22px] text-center w-full">
+                  <span className="font-medium">{formatDateRange(selectedDates)}</span>
+                </div>
+              </div>
+            </div>
+          </div> */}
+
           <div className="">
             {renderCalendarView()}
           </div>
 
+          {/* <div className='flex justify-end gap-[12px]'>
+            <MediumIndigoOutlinedButton
+              onClick={() => {
+                setSelectedDates({ start: null, end: null });
+              }}
+            >
+              Clear
+            </MediumIndigoOutlinedButton>
+            <MediumIndigoButton
+              onClick={handleApplyDates}
+              className="px-[26px] py-[8px] bg-gray-900 text-white font-medium rounded-[8px] hover:bg-gray-800 transition-colors"
+            >
+              Apply
+            </MediumIndigoButton>
+          </div> */}
         </div>
       </div>
     </div>
@@ -149,4 +154,3 @@ const AirbnbCalendarSingleMonth = (props) => {
 };
 
 export default AirbnbCalendarSingleMonth;
-

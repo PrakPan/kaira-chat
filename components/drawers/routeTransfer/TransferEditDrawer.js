@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import ReactDOM from "react-dom";
-import { FaX } from "react-icons/fa6";
+import { useEffect, useRef, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown, IoMdClose } from "react-icons/io";
@@ -23,7 +21,7 @@ import { logEvent } from "../../../services/ga/Index";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import media from "../../../components/media";
-import { getDate } from "../../../helper/DateUtils";
+import { addDaysToDate, getDate } from "../../../helper/DateUtils";
 import {
   fetchMulticityRoundtrip,
   fetchTransferMode,
@@ -62,8 +60,6 @@ import { axiosGetTransfers } from "../../../services/itinerary/bookings";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
-import { useGenericAPIModal } from "../../modals/warning/Index";
-import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 80px;
@@ -104,9 +100,7 @@ const TRANSFER_TYPES = {
     name: "MULTICITYROUNDTRIP",
     label: "Multi-City/Round Trip Taxi"
   },
-    name: "MULTICITYROUNDTRIP",
-    label: "Multi-City/Round Trip Taxi"
-  }
+};
 
 const TransferEditDrawer = (props) => {
   const {
@@ -137,7 +131,7 @@ const TransferEditDrawer = (props) => {
     booking_type,
   } = props;
 
-  const actualClose = useHandleClose()
+  const actualClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
@@ -153,8 +147,8 @@ const TransferEditDrawer = (props) => {
   const [selectLoading, setSelectLoading] = useState(false);
   const [isRouteSelected, setIsRouteSelected] = useState(false);
   const [transferType, setTransferType] = useState(
-    booking_type == "multicity" || drawerType == "multicity" ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name : TRANSFER_TYPES.ONEWAYTRIP.name
-  );
+  booking_type == "multicity"  || drawerType == "multicity"? TRANSFER_TYPES.MULTICITYROUNDTRIP.name : TRANSFER_TYPES.ONEWAYTRIP.name
+);
   const [loadingRoundTrip, setLoadingRoundTrip] = useState(false);
   const [loadingMultiCity, setLoadingMultiCity] = useState(false);
   const [updatingTransfer, setUpdatingTransfer] = useState(false);
@@ -185,11 +179,11 @@ const TransferEditDrawer = (props) => {
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
 
-  useEffect(() => {
-    if (booking_type == "multicity" || drawerType == "multicity") {
-      setTransferType(TRANSFER_TYPES.MULTICITYROUNDTRIP.name);
-    }
-  }, [booking_type])
+ useEffect(()=>{
+ if(booking_type == "multicity" || drawerType == "multicity"){
+  setTransferType(TRANSFER_TYPES.MULTICITYROUNDTRIP.name);
+ }
+},[booking_type])
 
   useEffect(() => {
     if (showDrawer) {
@@ -197,13 +191,6 @@ const TransferEditDrawer = (props) => {
     }
   }, [showDrawer]);
 
-
-  const addDaysToDate = (dateString, numberOfDays) => {
-    const newDate = dayjs(dateString).add(numberOfDays, "day");
-    return newDate.format("YYYY-MM-DD");
-  };
-
-  // console.log("IsMulti", booking_type, transferType);
   useEffect(() => {
     if (showDrawer) {
       document.documentElement.style.overflow = "hidden";
@@ -214,10 +201,10 @@ const TransferEditDrawer = (props) => {
     };
   }, [showDrawer]);
 
-  // console.log("IsMulti",booking_type,transferType);
+  console.log("IsMulti",booking_type,transferType);
   const fetchRoutes = () => {
     setLoadingTransfers(true);
-    setLoadingMulticityTransfers(true);
+
     setTransfersError(null);
     // roundTripSuggestion();
 
@@ -248,19 +235,16 @@ const TransferEditDrawer = (props) => {
             setMultiCitySuggestions(response?.data?.suggestions?.[0]);
             setMulticityRoundtripTraceId(response?.data?.trace_id);
             setRoundTripSuggestions(response?.data?.suggestions?.[1]?.data)
-            setLoadingMulticityTransfers(false)
             setLoadingTransfers(false);
           })
           .catch(error => {
             setLoadingTransfers(false);
-            setLoadingMulticityTransfers(false);
             console.error("Error::Fetching Multicity Round Trip");
           })
         : null
     }
-    {
-      booking_type != "multicity" &&
-        (mercury || props?.isMercury)
+    {booking_type != "multicity" && 
+      (mercury || props?.isMercury)
         ? fetchTransferMode
           .post(
             "",
@@ -565,13 +549,13 @@ const TransferEditDrawer = (props) => {
         props?.getPaymentHandler();
         setSelectLoading(false);
         setUpdatingTransfer(false);
-        // setShowDrawer(false);
+        setShowDrawer(false);
         setCurrentStep(0);
       })
       .catch((err) => {
         setSelectLoading(false);
         setUpdatingTransfer(false);
-        // setShowDrawer(false);
+        setShowDrawer(false);
         setCurrentStep(0);
         console.error("Error::While Creating Multicity/RoundTrip Booking", err.message)
         if (err.response?.status === 403) {
@@ -604,8 +588,6 @@ const TransferEditDrawer = (props) => {
   const handleTransferType = (e) => {
     setTransferType(e.target.id);
   };
-
-
 
   return (
     <Drawer
@@ -785,14 +767,14 @@ const TransferEditDrawer = (props) => {
                 transferType={transferType}
                 handleTransferType={handleTransferType}
               />}
-              {(booking_type == "multicity" || roundTripSuggestions || multiCitySuggestions) && (
-                <RadioButton
-                  name="MULTICITYROUNDTRIP"
-                  label="Multi-City/Round Trip Taxi"
-                  transferType={transferType}
-                  handleTransferType={handleTransferType}
-                />
-              )}
+               {(booking_type == "multicity" || roundTripSuggestions || multiCitySuggestions) && (
+    <RadioButton
+      name="MULTICITYROUNDTRIP"
+      label="Multi-City/Round Trip Taxi"
+      transferType={transferType}
+      handleTransferType={handleTransferType}
+    />
+  )}
             </div>
 
             {/* {selectLoading && (
@@ -1069,7 +1051,6 @@ const TransferEditDrawer = (props) => {
                     ) : // Mobile view logic
                       transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
                         <NewMultiModeContainer
-                          useHandleClose={actualClose}
                           key={selectedTransferIndex}
                           booking_id={booking_id}
                           name={transfers[selectedTransferIndex]?.name}
@@ -1101,10 +1082,13 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
+                          selectedTransferHeading={selectedTransferHeading}
+                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
+                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           mercury={mercuryTransfer}
@@ -1116,6 +1100,7 @@ const TransferEditDrawer = (props) => {
                           destination_itinerary_city_id={
                             destination_itinerary_city_id
                           }
+                          setShowDrawer={setShowDrawer}
                           dCityData={dCityData}
                           oCityData={oCityData}
                           openNotification={openNotification}
@@ -1143,7 +1128,6 @@ const TransferEditDrawer = (props) => {
                         />
                       ) : (
                         <RouteContainer
-                          useHandleClose={actualClose}
                           setSelectedMercuryTransfer={setSelectedMercuryTransfer}
                           booking_id={booking_id}
                           key={selectedTransferIndex}
@@ -1162,7 +1146,7 @@ const TransferEditDrawer = (props) => {
                             setShowComboFlightModal(false)
                           }
                           hideDrawer={() => {
-                            actualClose();
+                            setShowDrawer(false);
                             setCurrentStep(0);
                             setIsRouteSelected(false);
                             setShowOtherTrasfer(false);
@@ -1187,10 +1171,13 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
+                          selectedTransferHeading={selectedTransferHeading}
+                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
+                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           individual={props?.individual}
@@ -1201,6 +1188,7 @@ const TransferEditDrawer = (props) => {
                           destination_itinerary_city_id={
                             destination_itinerary_city_id
                           }
+                          setShowDrawer={setShowDrawer}
                           dCityData={dCityData}
                           oCityData={oCityData}
                           openNotification={openNotification}
@@ -1256,39 +1244,39 @@ const TransferEditDrawer = (props) => {
           </div>
         )}
 
-        {transferType === "MULTICITYROUNDTRIP" &&
-          (roundTripSuggestions || multiCitySuggestions) && (
-            <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
-              <div className="flex justify-end items-end px-1 py-3 md:p-0">
-                <button
-                  onClick={() => {
-                    const tripTypeIndex = selectedTripType === 'roundtrip' ? 1 : 0;
-                    handleMultiCitySelect(multicityRoundtripTraceId, tripTypeIndex, selectedCab?.result_index);
-                  }}
-                  className={`
+       {transferType === "MULTICITYROUNDTRIP" &&
+  (roundTripSuggestions || multiCitySuggestions) && (
+    <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+      <div className="flex justify-end items-end px-1 py-3 md:p-0">
+        <button
+          onClick={() => {
+            const tripTypeIndex = selectedTripType === 'roundtrip' ? 1 : 0;
+            handleMultiCitySelect(multicityRoundtripTraceId, tripTypeIndex, selectedCab?.result_index);
+          }}
+          className={`
             px-3 py-2 rounded-lg font-semibold text-base
             transition-all duration-200 ease-in-out
             flex items-center justify-center
             
             ${!selectedCab || updatingTransfer
-                      ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
-                      : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
-                    }
+              ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
+              : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
+            }
           `}
-                  disabled={!selectedCab || updatingTransfer}
-                >
-                  {updatingTransfer ? (
-                    <div className="flex items-end gap-2">
-                      <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                      <span>Updating...</span>
-                    </div>
-                  ) : (
-                    "Update Transfer"
-                  )}
-                </button>
-              </div>
+          disabled={!selectedCab || updatingTransfer}
+        >
+          {updatingTransfer ? (
+            <div className="flex items-end gap-2">
+              <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+              <span>Updating...</span>
             </div>
+          ) : (
+            "Update Transfer"
           )}
+        </button>
+      </div>
+    </div>
+)}
 
 
       </div>
@@ -1441,14 +1429,14 @@ const RouteContainer = (props) => {
     hideDrawer,
     booking_id,
   } = props;
-  const actualClose = useHandleClose()
+  const actualClose = useHandleClose();
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
   const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-  const { number_of_adults, number_of_children, number_of_infants, start_date } =
+  const { number_of_adults, number_of_children, number_of_infants,start_date} =
     useSelector((state) => state.Itinerary);
 
   const handleViewMore = () => {
@@ -1527,11 +1515,11 @@ const RouteContainer = (props) => {
     <>
       <div
         className={` ${transfer?.length > 1
-          ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer[0]?.isSelected
-            ? "border-yellow-300"
-            : ""
-          } border-x-2 border-t-2 border-b-4`
-          : "w-full"
+            ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer[0]?.isSelected
+              ? "border-yellow-300"
+              : ""
+            } border-x-2 border-t-2 border-b-4`
+            : "w-full"
           }`}
       >
         {transfer[0]?.recommended && (
@@ -1673,7 +1661,6 @@ const RouteContainer = (props) => {
                   destinationCityId={
                     dCityData?.city?.id || dCityData?.gmaps_place_id
                   }
-                  
                   sourceRouteCityId={singleTransfer?.source?.city}
                   destinationRouteCityId={singleTransfer?.destination?.city}
                   sourceHubId={singleTransfer?.source?.id}
@@ -1702,7 +1689,6 @@ const RouteContainer = (props) => {
                   number_of_travellers={
                     number_of_adults + number_of_children + number_of_infants
                   }
-                  mode={singleTransfer?.mode}
                   check_in={check_in}
                   currentStep={currentStep}
                   currentModeDepartureDate={currentModeDepartureDate}
@@ -1867,14 +1853,7 @@ const NewMultiModeContainer = ({
   const [transferErrors, setTransferErrors] = useState({});
 
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [warningMessage, setWarningMessage] = useState("");
-  const [pendingBookingData, setPendingBookingData] = useState(null);
-  const [isProcessingWarning, setIsProcessingWarning] = useState(false);
-  const [isProcessingBooking, setIsProcessingBooking] = useState(false);
-
-
-  const { number_of_adults, number_of_children, number_of_infants, start_date } =
+  const { number_of_adults, number_of_children, number_of_infants,start_date } =
     useSelector((state) => state.Itinerary);
   const [pax, setPax] = useState({
     adults: number_of_adults,
@@ -2340,53 +2319,18 @@ const NewMultiModeContainer = ({
     }
   };
 
-  // Add this handleCancel function inside your NewMultiModeContainer component
-
-  const handleCancel = () => {
-    console.log("Cancel handler called - deselecting final result");
-
-    // Find the last selected step (highest index with a selection)
-
-    console.log("Selected Mode Ids",selectedModeIds);
-    let lastSelectedIndex = -1;
-    Object.keys(selectedModeIds).forEach(index => {
-      const numIndex = parseInt(index);
-      if (numIndex > lastSelectedIndex) {
-        lastSelectedIndex = numIndex;
-      }
-    });
-
-    if (lastSelectedIndex >= 0) {
-      setSelectedModeIds((prev) => {
-        const newSelections = { ...prev };
-        delete newSelections[lastSelectedIndex];
-        return newSelections;
-      });
-
-      setSelectedData((prev) => {
-        const newData = [...prev];
-        newData[lastSelectedIndex] = undefined;
-        return newData;
-      });
-
-      console.log(`Deselected result at index ${lastSelectedIndex}`);
-    }
-
-
-    setUpdateLoading(false);
-  };
-
   const handleUpdateTransfer = async () => {
     setUpdateLoading(true);
 
     if (Object.keys(selectedModeIds).length === totalSteps) {
-      const transfersPayload = selectedData.map((item, index) => {
-        const currentTransfer = transfer[index];
+      try {
+        const transfersPayload = selectedData.map((item, index) => {
+          const currentTransfer = transfer[index];
 
-        const transferObj = {
-          booking_type: currentTransfer.mode,
-          edge_id: currentTransfer.id,
-        };
+          const transferObj = {
+            booking_type: currentTransfer.mode,
+            edge_id: currentTransfer.id,
+          };
 
         if (currentTransfer.mode === "Flight") {
           return {
@@ -2420,176 +2364,74 @@ const NewMultiModeContainer = ({
         }
       });
 
-      const baseStartDate = (oCityData?.start_date && oCityData?.duration != null
-        ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : oCityData?.id ? oCityData?.start_date : start_date);
+        const baseStartDate =
+          
+          (oCityData?.start_date && oCityData?.duration != null
+            ? addDaysToDate(oCityData.start_date, oCityData.duration)
+            : oCityData?.id ? oCityData?.start_date : start_date);
+        const requestBody = {
+          destination_itinerary_city: destination_itinerary_city_id,
+          source_itinerary_city: origin_itinerary_city_id
+            ? origin_itinerary_city_id
+            : null,
+          number_of_adults: number_of_adults,
+          number_of_children: number_of_children,
+          number_of_infants: number_of_infants,
+          start_datetime: baseStartDate + "T00:00:00",
+          transfers: transfersPayload,
+        };
 
-      const requestBody = {
-        destination_itinerary_city: destination_itinerary_city_id,
-        source_itinerary_city: origin_itinerary_city_id
-          ? origin_itinerary_city_id
-          : null,
-        number_of_adults: number_of_adults,
-        number_of_children: number_of_children,
-        number_of_infants: number_of_infants,
-        start_datetime: baseStartDate + "T00:00:00",
-        transfers: transfersPayload,
-      };
+        if (selectedBooking) {
+          requestBody.booking_id = selectedBooking?.id || booking_id;
+        }
 
-      if (selectedBooking) {
-        requestBody.booking_id = selectedBooking?.id || booking_id;
-      }
-
-      setIsProcessingWarning(true);
-
-      try {
-        // Call warning API
-        const warningResponse = await updateFlightBookingWarning.post(
-          `${itinerary_id}/transfers/combo/warning/`,
+        const response = await UpdateTransferMode.post(
+          `${itinerary_id}/bookings/transfer/`,
           requestBody,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
 
-        if (warningResponse?.data?.show_warning === true) {
-          // Show warning modal
-          setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
-          setPendingBookingData(requestBody);
-          setShowWarningModal(true);
-          setIsProcessingWarning(false);
-        } else {
-          // Proceed directly with booking
-          setIsProcessingWarning(false);
-          await handleBookingConfirm(requestBody);
-        }
-      } catch (error) {
-        setIsProcessingWarning(false);
+        const data = response.data;
+        dispatch(
+          updateSingleTransferBooking(
+            `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+            data
+          )
+        );
+
+        getPaymentHandler();
+
+        actualClose();
+
+        openNotification({
+          text: `Transfer from ${city || mercury?.source?.city_name} to ${dcity || mercury?.destination?.city_name
+            } has been updated successfully!`,
+          heading: "Success!",
+          type: "success",
+        });
+
         setUpdateLoading(false);
-        handleCancel();
-        console.error("Warning API failed:", error);
-
-        let errorMsg = "Warning check failed. Please try again.";
-        if (error?.response?.data) {
-          if (error.response.data.errors?.[0]?.message?.[0]) {
-            errorMsg = error.response.data.errors[0].message[0];
-          } else if (error.response.data.message) {
-            errorMsg = error.response.data.message;
-          } else if (typeof error.response.data === 'string') {
-            errorMsg = error.response.data;
-          }
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-
+      } catch (error) {
+        setUpdateLoading(false);
+        const errorMsg =
+          error?.response?.data?.errors?.[0]?.message?.[0] ||
+          error.message ||
+          "Error updating Transfers!";
         openNotification({
           text: errorMsg,
           heading: "Error!",
           type: "error",
         });
+        console.error("Error updating transfer:", error);
       }
     } else {
       setUpdateLoading(false);
     }
-  };
-
-  const handleBookingConfirm = async (requestBody) => {
-    setIsProcessingBooking(true);
-
-    try {
-      const response = await UpdateTransferMode.post(
-        `${itinerary_id}/bookings/transfer/`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const data = response.data;
-      dispatch(
-        updateSingleTransferBooking(
-          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          data
-        )
-      );
-
-      getPaymentHandler();
-      actualClose();
-
-      openNotification({
-        text: `Transfer from ${city || mercury?.source?.city_name} to ${dcity || mercury?.destination?.city_name
-          } has been updated successfully!`,
-        heading: "Success!",
-        type: "success",
-      });
-
-
-      setUpdateLoading(false);
-      setIsProcessingBooking(false);
-
-       if (data?.is_refresh_needed) {
-        const url = new URL(window.location);
-        const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
-        drawerParams.forEach(param => {
-          url.searchParams.delete(param);
-        });
-
-        window.history.replaceState({}, '', url.toString());
-        setTimeout(() => {
-          window.location.reload();
-        }, 200);
-      }
-
-    } catch (error) {
-      setUpdateLoading(false);
-      handleCancel();
-      setIsProcessingBooking(false);
-
-      let errorMessage = "Failed to update transfer. Please try again.";
-      if (error?.response?.data) {
-        if (error.response.data.errors?.[0]?.message?.[0]) {
-          errorMessage = error.response.data.errors[0].message[0];
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data;
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
-      openNotification({
-        text: errorMessage,
-        heading: "Error!",
-        type: "error",
-      });
-      console.error("Error updating transfer:", errorMessage);
-    }
-  };
-
-
-  const handleWarningConfirm = async () => {
-    if (pendingBookingData && !isProcessingBooking) {
-      setShowWarningModal(false);
-      await handleBookingConfirm(pendingBookingData);
-      setPendingBookingData(null);
-    }
-  };
-
-  const handleWarningCancel = () => {
-    handleCancel();
-    setShowWarningModal(false);
-    setWarningMessage("");
-
-    setPendingBookingData(null);
-    setUpdateLoading(false);
-    setIsProcessingWarning(false);
-    setIsProcessingBooking(false);
   };
 
   const addDaysToDate = (dateString, numberOfDays) => {
@@ -2608,10 +2450,10 @@ const NewMultiModeContainer = ({
 
     const currentTransfer = transfer[currentStep - 1];
 
-    const baseStartDate =
+    const baseStartDate = 
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : oCityData?.id ? oCityData?.start_date : start_date);
+        :  oCityData?.id ? oCityData?.start_date : start_date);
 
     let calculatedStartTime;
 
@@ -2764,54 +2606,6 @@ const NewMultiModeContainer = ({
 
   return (
     <div className="w-full bg-white">
-      {showWarningModal && ReactDOM.createPortal((
-        <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-          <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-
-            <div className="md:hidden flex justify-center py-2">
-              <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-            </div>
-
-            {!isProcessingBooking && (
-              <button
-                onClick={handleWarningCancel}
-                className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
-              >
-                <FaX size={16} />
-              </button>
-            )}
-
-            <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-              <h2 className="text-xl font-semibold mb-1 pr-8">
-                Dates Change Warning!
-              </h2>
-
-              <div className="text-gray-700 mb-6">
-                <div className="rounded-lg p-2">
-                  {warningMessage}
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-                <button
-                  onClick={handleWarningCancel}
-                  disabled={isProcessingBooking}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  disabled={isProcessingBooking}
-                  onClick={handleWarningConfirm}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
-                >
-                  {isProcessingBooking ? "Processing..." : "Confirm"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ), document.body)}
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -2852,14 +2646,14 @@ const NewMultiModeContainer = ({
                   <div key={index} className="flex items-center">
                     <div
                       className={`flex items-center gap-2 justify-center ${currentStep === index + 1
-                        ? "bg-[#FFF6C2]"
-                        : "bg-[#FAF8E7]"
+                          ? "bg-[#FFF6C2]"
+                          : "bg-[#FAF8E7]"
                         } p-2 rounded-lg h-[48px] w-[120px]`}
                     >
                       <div
                         className={`w-8 h-8 flex items-center justify-center rounded-full ${currentStep === index + 1
-                          ? "bg-yellow-400"
-                          : "bg-gray-200"
+                            ? "bg-yellow-400"
+                            : "bg-gray-200"
                           }`}
                       >
                         <span className="text-sm font-bold">{index + 1}</span>
@@ -2872,8 +2666,8 @@ const NewMultiModeContainer = ({
                     {index < transfer.length - 1 && transfer.length < 3 && (
                       <div
                         className={`h-[2px] ${currentStep === index + 2
-                          ? "bg-yellow-400"
-                          : "bg-gray-400"
+                            ? "bg-yellow-400"
+                            : "bg-gray-400"
                           } mx-1`}
                         style={{
                           width: `${Math.max(
@@ -2968,7 +2762,7 @@ const NewMultiModeContainer = ({
                           setFlightResults((prev) => ({ ...prev, [key]: data }))
                         }
                         selectedData={
-                           selectedModeIds[currentStep - 1] && selectedData && selectedData?.length
+                          selectedData && selectedData?.length
                             ? selectedData?.[currentStep - 1]
                             : null
                         }
@@ -3037,7 +2831,7 @@ const NewMultiModeContainer = ({
                         transferResults={transferResults}
                         setTransferResults={setTransferResults}
                         selectedData={
-                          selectedModeIds[currentStep - 1] && selectedData && selectedData?.length
+                          selectedData && selectedData?.length
                             ? selectedData?.[currentStep - 1]
                             : null
                         }
@@ -3135,9 +2929,9 @@ const NewMultiModeContainer = ({
                                       <div
                                         key={idx}
                                         className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${time.value ===
-                                          currentModeDepartureTime
-                                          ? "bg-yellow-100 font-medium"
-                                          : ""
+                                            currentModeDepartureTime
+                                            ? "bg-yellow-100 font-medium"
+                                            : ""
                                           }`}
                                         onClick={() =>
                                           handleTimeSelect(time.value)
@@ -3383,7 +3177,7 @@ const NewMultiModeContainer = ({
                         <button
                           onClick={handleUpdateTransfer}
                           className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black border border-black ${(Object.keys(selectedModeIds).length !==
-                            totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
+                              totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
                             }`}
                           // ${
                           //   Object.keys(selectedModeIds).length === totalSteps
@@ -3401,7 +3195,7 @@ const NewMultiModeContainer = ({
                               <PulseLoader
                                 size={15}
                                 speedMultiplier={0.6}
-                                color="#000000"
+                                color="#FFFFFF"
                               />
                             ) : (
                               "Update Transfer"
@@ -3417,8 +3211,6 @@ const NewMultiModeContainer = ({
           </div>
         </>
       )}
-
-
     </div>
   );
 };
@@ -3671,8 +3463,8 @@ const RoundTripSuggestion = ({
                     id={price?.result_index}
                     onClick={handleSelectCab}
                     className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab?.result_index == price?.result_index && selectedTripType === 'roundtrip'
-                      ? "border-black"
-                      : "border-[#636366]"
+                        ? "border-black"
+                        : "border-[#636366]"
                       } `}
                   >
                     {selectedCab?.result_index == price?.result_index && selectedTripType === 'roundtrip' && (
@@ -3764,12 +3556,6 @@ const MultiCityTripSuggestion = ({
 
   const handleSelectCab = (cab) => {
     setSelectError(false);
-    // Clear roundtrip selection and set trip type to multicity
-    setSelectedTripType('multicity');
-    setSelectedCab({
-      ...cab,
-      tripType: 'multicity'
-    });
     // Clear roundtrip selection and set trip type to multicity
     setSelectedTripType('multicity');
     setSelectedCab({
@@ -3868,8 +3654,8 @@ const MultiCityTripSuggestion = ({
                     id={price?.result_index}
                     onClick={() => handleSelectCab(price)}
                     className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab?.result_index == price?.result_index && selectedTripType === 'multicity'
-                      ? "border-black"
-                      : "border-[#636366]"
+                        ? "border-black"
+                        : "border-[#636366]"
                       } `}
                   >
                     {selectedCab?.result_index == price?.result_index && selectedTripType === 'multicity' && (
@@ -4075,7 +3861,6 @@ const Cost = styled.p`
     font-size: 1.25rem;
   }
 `;
-
 const OtherTransfer = ({
   getPaymentHandler,
   setShowOtherTrasfer,
@@ -4105,7 +3890,6 @@ const OtherTransfer = ({
   dcity,
   mercury,
   booking_id,
-  mode
 }) => {
   const ref = useRef(null);
   const dateRef = useRef(null);
@@ -4124,11 +3908,6 @@ const OtherTransfer = ({
   const [lastTimeState, setLastTimeState] = useState(null);
   const [lastDateState, setLastDateState] = useState(null);
 
-  // ADD: Flags to prevent multiple API calls
-  const [isBookingInProgress, setIsBookingInProgress] = useState(false);
-  const [loadingRequestKey, setLoadingRequestKey] = useState(null);
-  const abortControllerRef = useRef(null);
-
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -4141,11 +3920,6 @@ const OtherTransfer = ({
   const [departureTime, setDepartureTime] = useState(currentModeDepartureTime);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [departureDate, setDepartureDate] = useState(currentModeDepartureDate);
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [warningMessage, setWarningMessage] = useState("");
-  const [pendingBookingData, setPendingBookingData] = useState(null);
-  const [isProcessingWarning, setIsProcessingWarning] = useState(false);
-  const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
   const [lastRequestData, setLastRequestData] = useState(null);
 
@@ -4161,38 +3935,24 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
-
-  useEffect(() => {
-    if (selectedResult?.transfer && !isBookingInProgress) {
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
-
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-        loadTransfers(selectedResult.transfer, pax, departureDateTime);
-      }
-    }
-  }, [selectedResult?.transfer, token]); // Only depend on transfer and token for initial load
-  // FIXED: Update state when props change with proper guards
+  // Update state when props change
   useEffect(() => {
     if (
       currentModeDepartureDate &&
-      currentModeDepartureDate !== departureDate &&
-      !isBookingInProgress
+      currentModeDepartureDate !== departureDate
     ) {
       setDepartureDate(currentModeDepartureDate);
     }
-  }, [currentModeDepartureDate, isBookingInProgress]);
+  }, [currentModeDepartureDate]);
 
   useEffect(() => {
     if (
       currentModeDepartureTime &&
-      currentModeDepartureTime !== departureTime &&
-      !isBookingInProgress
+      currentModeDepartureTime !== departureTime
     ) {
       setDepartureTime(currentModeDepartureTime);
     }
-  }, [currentModeDepartureTime, isBookingInProgress]);
+  }, [currentModeDepartureTime]);
 
   const generateTimeOptions = () => {
     const options = [];
@@ -4212,34 +3972,16 @@ const OtherTransfer = ({
   };
 
   const handleDateChange = (event) => {
-    if (isBookingInProgress) return;
     const selectedDate = dayjs(event.target.value).format("YYYY-MM-DD");
     setDepartureDate(selectedDate);
   };
 
   const timeOptions = generateTimeOptions();
 
-  // FIXED: Add request deduplication and abort previous requests
-  const loadTransfers = useCallback(async (transferData, paxData, departureDateTime) => {
+  const loadTransfers = async (transferData, paxData, departureDateTime) => {
     if (!transferData?.id) return;
 
     const transferKey = `${transferData.id}-${currentStep}`;
-    const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(paxData)}`;
-
-    // Prevent duplicate requests
-    if (loadingRequestKey === requestKey) {
-      return;
-    }
-
-    // Abort previous request if still pending
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    // Create new abort controller
-    abortControllerRef.current = new AbortController();
-
-    setLoadingRequestKey(requestKey);
     setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
     setError(null);
 
@@ -4256,26 +3998,31 @@ const OtherTransfer = ({
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        signal: abortControllerRef.current.signal,
       });
 
       const data = response.data;
 
       if (data.success && data.data) {
         setTraceId(data.trace_id);
+
+        // Update the dynamic transfer data
         setDynamicTransferData((prev) => ({
           ...prev,
           [transferKey]: data.data,
         }));
+
         setOtherTransfer(data.data);
-        setError(null);
+        setError(null); // Clear error on success
       } else {
         const errorMessage =
           data?.errors?.[0]?.message?.[0] ||
           data?.message ||
           "No transfer options available";
         setError(errorMessage);
+        // Don't clear otherTransfer here - keep previous data visible
+        // setOtherTransfer(null);
 
+        // Clear dynamic transfer data for this key on error
         setDynamicTransferData((prev) => {
           const newData = { ...prev };
           delete newData[transferKey];
@@ -4283,11 +4030,6 @@ const OtherTransfer = ({
         });
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log('Request aborted');
-        return;
-      }
-
       console.error("Error loading transfers:", error);
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
@@ -4304,46 +4046,40 @@ const OtherTransfer = ({
       });
     } finally {
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
-      setLoadingRequestKey(null);
     }
-  }, [token, currentStep]);
+  };
 
-  // FIXED: Debounced useEffect to prevent cascading API calls
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const currentPaxString = JSON.stringify(pax);
-      const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
-      const timeChanged = lastTimeState && lastTimeState !== departureTime;
-      const dateChanged = lastDateState && lastDateState !== departureDate;
+    const currentPaxString = JSON.stringify(pax);
+    const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
+    const timeChanged = lastTimeState && lastTimeState !== departureTime;
+    const dateChanged = lastDateState && lastDateState !== departureDate;
 
-      const isInitialLoad = !lastPaxState && !lastTimeState && !lastDateState;
+    // Call API if any parameter changed AND we have selectedResult.transfer
+    // Also call if we had an error (to retry)
+    if (
+      (paxChanged || timeChanged || dateChanged) &&
+      selectedResult?.transfer && !isResultSelected
+    ) {
+      // Use props values as fallback
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
 
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
 
-      // Only call API if parameters changed AND we're not already processing
-      if (
-        (paxChanged || timeChanged || dateChanged) &&
-        !isInitialLoad && // ADD this condition
-        selectedResult?.transfer &&
-        !isResultSelected &&
-        !isBookingInProgress &&
-        !loadingRequestKey
-      ) {
-        const finalDate = departureDate || currentModeDepartureDate;
-        const finalTime = departureTime || currentModeDepartureTime;
+        // Clear error before making new request but don't clear otherTransfer yet
+        setError(null);
 
-        if (finalDate && finalTime) {
-          const departureDateTime = `${finalDate}T${finalTime}:00`;
-          loadTransfers(selectedResult.transfer, pax, departureDateTime);
-        }
+        // Always use selectedResult.transfer as the source of truth
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
       }
+    }
 
-      // Update last states
-      setLastPaxState(currentPaxString);
-      setLastTimeState(departureTime);
-      setLastDateState(departureDate);
-    }, 300); // Debounce for 300ms
-
-    return () => clearTimeout(timeoutId);
+    // Update last states
+    setLastPaxState(currentPaxString);
+    setLastTimeState(departureTime);
+    setLastDateState(departureDate);
   }, [
     pax,
     departureTime,
@@ -4352,12 +4088,13 @@ const OtherTransfer = ({
     error,
     currentModeDepartureDate,
     currentModeDepartureTime,
-    isResultSelected,
-    isBookingInProgress,
-    loadingRequestKey,
-    loadTransfers
   ]);
 
+  useEffect(() => {
+    if (selectedResult?.transfer && !otherTransfer && !error) {
+      setOtherTransfer(selectedResult.transfer);
+    }
+  }, [selectedResult?.transfer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -4410,6 +4147,19 @@ const OtherTransfer = ({
     }
   }, [selectedResult]);
 
+  useEffect(() => {
+    if (selectedResult?.transfer && !isResultSelected) {
+      // Use props values as fallback
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
+
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      }
+    }
+  }, [selectedResult?.transfer, token]);
+
   const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -4455,9 +4205,8 @@ const OtherTransfer = ({
     handleUpdateTransferWithData(localSelectedData);
   };
 
-  // FIXED: Add guards to prevent multiple simultaneous booking calls
   const handleModeSelect = (index, priceOptionId, selectedPriceData, mode) => {
-    if (updateLoading || isBookingInProgress) {
+    if (updateLoading) {
       return;
     }
 
@@ -4502,19 +4251,15 @@ const OtherTransfer = ({
         newParentData[index] = selectedPriceData;
         setSelectedData(newParentData);
       }
-
       if (handleSelect) {
         handleSelect(transferIndex, selectedPriceData, transfer, mode);
       }
 
-        console.log("newLocalData",newLocalData)
+        
 
-      // FIXED: Use setTimeout to prevent immediate execution during state updates
       setTimeout(() => {
-        if (!isBookingInProgress) {
-          handleUpdateTransferWithData(newLocalData);
-        }
-      }, 100);
+        handleUpdateTransferWithData(newLocalData);
+      }, 50);
     }
   };
 
@@ -4524,7 +4269,6 @@ const OtherTransfer = ({
   };
 
   const handleTimeSelect = (time) => {
-    if (isBookingInProgress) return;
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
   };
@@ -4561,7 +4305,7 @@ const OtherTransfer = ({
         } else if (transferItem.mode === "Taxi") {
           return {
             ...transferObj,
-            trace_id: item.trace_id || traceId,
+             trace_id: item.trace_id || traceId,
             result_index: item.result_index || 0,
             source: item.source || "",
           };
@@ -4574,7 +4318,7 @@ const OtherTransfer = ({
 
           return {
             ...transferObj,
-            trace_id: item.trace_id || traceId,
+             trace_id: item.trace_id || traceId,
             start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
             result_index: resultIndex,
           };
@@ -4586,6 +4330,7 @@ const OtherTransfer = ({
       throw new Error("No valid transfer options selected");
     }
 
+    // Use props values as fallback, ensuring we have valid values
     const dateToUse = newDate || departureDate || currentModeDepartureDate;
     const timeToUse = newTime || departureTime || currentModeDepartureTime;
 
@@ -4615,18 +4360,9 @@ const OtherTransfer = ({
     newTime = null,
     newDate = null
   ) => {
-    // Prevent multiple simultaneous booking calls
-    if (isBookingInProgress) {
-      console.log("Booking already in progress, ignoring duplicate call");
-      return;
-    }
-
-  
-
     try {
       const newRequestBody = buildRequestPayload(updatedData, newTime, newDate);
 
-      // Enhanced duplicate request prevention
       if (
         lastRequestData &&
         newTime === null &&
@@ -4643,83 +4379,8 @@ const OtherTransfer = ({
         setLastRequestData(newRequestBody);
         return;
       }
-
-      // Set flags to prevent duplicate calls
-      setIsBookingInProgress(true);
       setUpdateLoading(true);
-      setIsProcessingWarning(true);
 
-      try {
-        // Call warning API
-        const warningResponse = await updateFlightBookingWarning.post(
-          `${itinerary_id}/transfers/${mode?.toLowerCase()}/warning/`,
-          newRequestBody,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        );
-
-        if (warningResponse?.data?.show_warning === true) {
-          // Show warning modal
-          setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
-          setPendingBookingData({ requestBody: newRequestBody, newTime, newDate });
-          setShowWarningModal(true);
-          setIsProcessingWarning(false);
-        } else {
-          // Proceed directly with booking
-          setIsProcessingWarning(false);
-          await handleBookingConfirm(newRequestBody, newTime, newDate);
-        }
-      } catch (error) {
-        setIsProcessingWarning(false);
-        setIsBookingInProgress(false);
-        setUpdateLoading(false);
-        console.error("Warning API failed:", error);
-
-        let errorMsg = "Warning check failed. Please try again.";
-        if (error?.response?.data) {
-          if (error.response.data.errors?.[0]?.message?.[0]) {
-            errorMsg = error.response.data.errors[0].message[0];
-          } else if (error.response.data.message) {
-            errorMsg = error.response.data.message;
-          } else if (typeof error.response.data === 'string') {
-            errorMsg = error.response.data;
-          }
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-
-        dispatch(
-          openNotification({
-            text: errorMsg,
-            heading: "Error!",
-            type: "error",
-          })
-        );
-      }
-
-      setLastRequestData(newRequestBody);
-    } catch (error) {
-      console.error("Error building request payload:", error);
-      setUpdateLoading(false);
-      setIsBookingInProgress(false);
-      setLoadingOptionId(null);
-      dispatch(
-        openNotification({
-          text: error.message || "Failed to update transfer booking",
-          heading: "Error!",
-          type: "error",
-        })
-      );
-    }
-  };
-
-  const handleBookingConfirm = async (newRequestBody, newTime = null, newDate = null) => {
-    setIsProcessingBooking(true);
-
-    try {
       const response = await UpdateTransferMode.post(
         `${itinerary_id}/bookings/transfer/`,
         newRequestBody,
@@ -4729,16 +4390,15 @@ const OtherTransfer = ({
           },
         }
       );
+      setLastRequestData(newRequestBody);
 
-      setUpdateLoading(false);
-      setIsBookingInProgress(false);
-      setIsProcessingBooking(false);
+      const data = response.data;
       setIsResultSelected(true);
 
       dispatch(
         updateSingleTransferBooking(
           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          response.data
+          data
         )
       );
 
@@ -4755,19 +4415,6 @@ const OtherTransfer = ({
             type: "success",
           })
         );
-
-         if (response.data?.is_refresh_needed) {
-        const url = new URL(window.location);
-        const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
-        drawerParams.forEach(param => {
-          url.searchParams.delete(param);
-        });
-
-        window.history.replaceState({}, '', url.toString());
-        setTimeout(() => {
-          window.location.reload();
-        }, 200);
-      }
       } else {
         const message = newDate
           ? "Departure date updated successfully!"
@@ -4780,77 +4427,26 @@ const OtherTransfer = ({
           })
         );
       }
-
-      setLoadingOptionId(null);
-
     } catch (error) {
-      console.error("Booking API failed:", error);
-      setUpdateLoading(false);
-      setIsBookingInProgress(false);
-      setIsProcessingBooking(false);
-      setLoadingOptionId(null);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error.message ||
+        "Error updating Transfers!";
 
-      let errorMessage = "Failed to update transfer. Please try again.";
-      if (error?.response?.data) {
-        if (error.response.data.errors?.[0]?.message?.[0]) {
-          errorMessage = error.response.data.errors[0].message[0];
-        } else if (error.response.data.message) {
-          errorMessage = error.response.data.message;
-        } else if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data;
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
+      console.error("Error updating transfer:", error);
       dispatch(
         openNotification({
-          text: errorMessage,
+          text: errorMsg,
           heading: "Error!",
           type: "error",
         })
       );
+    } finally {
+      setUpdateLoading(false);
+      setLoadingOptionId(null);
     }
-  };
-
-  const handleWarningConfirm = async () => {
-    if (pendingBookingData && !isProcessingBooking) {
-      setShowWarningModal(false);
-      await handleBookingConfirm(
-        pendingBookingData.requestBody,
-        pendingBookingData.newTime,
-        pendingBookingData.newDate
-      );
-      setPendingBookingData(null);
-    }
-  };
-
-  const handleWarningCancel = () => {
-    setShowWarningModal(false);
-    setWarningMessage("");
-    setPendingBookingData(null);
-
-    // Deselect the current selection
-    setLocalSelectedData((prev) => {
-      const newData = [...prev];
-      newData[currentStep - 1] = undefined;
-      return newData;
-    });
-
-    if (setSelectedData) {
-      setSelectedData((prev) => {
-        const newData = [...prev];
-        newData[currentStep - 1] = undefined;
-        return newData;
-      });
-    }
-
-    // Reset all loading states
-    setUpdateLoading(false);
-    setIsBookingInProgress(false);
-    setLoadingOptionId(null);
-    setIsProcessingWarning(false);
-    setIsProcessingBooking(false);
   };
 
   const formatTimeForDisplay = (timeValue) => {
@@ -4875,7 +4471,6 @@ const OtherTransfer = ({
   };
 
   const handlePaxChange = (newPax) => {
-    if (isBookingInProgress) return;
     setPax(newPax);
   };
 
@@ -4889,10 +4484,9 @@ const OtherTransfer = ({
   };
 
   const retryLoadTransfers = () => {
-    if (isBookingInProgress) return;
-
     if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
       setError(null);
+      // Use props values as fallback
       const finalDate = departureDate || currentModeDepartureDate;
       const finalTime = departureTime || currentModeDepartureTime;
 
@@ -4905,65 +4499,8 @@ const OtherTransfer = ({
     }
   };
 
-  // Cleanup abort controller on unmount
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
-
   return (
     <Container>
-      {showWarningModal && ReactDOM.createPortal((
-        <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-          <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-
-            <div className="md:hidden flex justify-center py-2">
-              <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-            </div>
-
-            {!isProcessingBooking && (
-              <button
-                onClick={handleWarningCancel}
-                className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
-              >
-                <FaX size={16} />
-              </button>
-            )}
-
-            <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-              <h2 className="text-xl font-semibold mb-1 pr-8">
-                Transfer Update Warning!
-              </h2>
-
-              <div className="text-gray-700 mb-6">
-                <div className="rounded-lg p-2">
-                  {warningMessage}
-                </div>
-              </div>
-
-              <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-                <button
-                  onClick={handleWarningCancel}
-                  disabled={isProcessingBooking}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  disabled={isProcessingBooking}
-                  onClick={handleWarningConfirm}
-                  className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
-                >
-                  {isProcessingBooking ? "Processing..." : "Confirm"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      ), document.body)}
       <div className="w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
           {/* Date Dropdown */}
@@ -4978,7 +4515,6 @@ const OtherTransfer = ({
               onDateChange={handleDateChange}
               isOutsideRange={() => false}
               enableOutsideDays={true}
-              disabled={isBookingInProgress}
             />
           </div>
 
@@ -4991,9 +4527,8 @@ const OtherTransfer = ({
               Departure Time
             </div>
             <div
-              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${isBookingInProgress ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              onClick={() => !isBookingInProgress && setShowTimeDropdown((prev) => !prev)}
+              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+              onClick={() => setShowTimeDropdown((prev) => !prev)}
             >
               <span className="text-sm font-medium">
                 {formatTimeForDisplay(departureTime)}
@@ -5016,7 +4551,7 @@ const OtherTransfer = ({
               </button>
             </div>
 
-            {showTimeDropdown && !isBookingInProgress && (
+            {showTimeDropdown && (
               <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {timeOptions.map((time, index) => (
                   <div
@@ -5044,7 +4579,6 @@ const OtherTransfer = ({
             setPax={handlePaxChange}
             showPax={showPax}
             combo={true}
-            disabled={isBookingInProgress}
           />
         </div>
       </div>
@@ -5070,8 +4604,7 @@ const OtherTransfer = ({
             <div className="text-gray-600 text-sm mb-3">{error}</div>
             <button
               onClick={retryLoadTransfers}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm disabled:opacity-50"
-              disabled={isBookingInProgress}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
             >
               Retry
             </button>
@@ -5102,8 +4635,7 @@ const OtherTransfer = ({
             <div
               key={`${otherTransfer.id}-price-${priceIndex}`}
               className={`flex w-full flex-col  justify-between bg-white p-3 md:p-4 border-b
-                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
-                ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}`}
             >
               <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
                 <div className="text-gray-500 mt-1">
@@ -5149,11 +4681,9 @@ const OtherTransfer = ({
 
                     <div
                       className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
-                        } ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                        }`}
                       onClick={() => {
                         if (updateLoading && !isOptionLoading) return;
-                        if (isBookingInProgress && !isOptionLoading) return;
-
                         const selectedPriceData = {
                           ...otherTransfer,
                           selectedPrice: {
@@ -5206,6 +4736,7 @@ const OtherTransfer = ({
     </Container>
   );
 };
+
 
 
 

@@ -1,42 +1,84 @@
 import { useEffect, useState } from "react";
+import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
+import { getStars } from "./SlabElement";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { logEvent } from "../../../services/ga/Index";
+import { toast } from "react-toastify";
+import BackArrow from "../../ui/BackArrow";
+import { openNotification } from "../../../store/actions/notification";
+import FullScreenGallery from "../../fullscreengallery/Index";
+import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
+import media from "../../media";
+import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
-import useMediaQuery from "../../media";
+import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 251;
+  cursor: pointer;
+`;
+
+const Container = styled.div`
+  padding: 0 0.75rem 0.75rem 0.75rem;
+  @media screen and (min-width: 768px) {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+`;
+
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(true);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
-  const [loading, setLoading] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [loading,setLoading] = useState(false);
+  const [showDetails,setShowDetails] =  useState(false);
   const { itinerary_status, hotels_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-  const isDesktop = useMediaQuery("(min-width:767px)");
 
-  const router = useRouter();
-
+  const router=useRouter()
+ 
   const [images, setImages] = useState(null);
+  const dispatch = useDispatch();
 
   // Use cityHotels and totalDuration from props instead of calculating locally
-  const multiHotelStays =
-    props.cityHotels ||
-    stay?.filter((hotel) => {
-      return hotel?.itinerary_city_id === props?.itinerary_city_id;
-    });
+  const multiHotelStays = props.cityHotels || stay?.filter(hotel => {
+    return hotel?.itinerary_city_id === props?.itinerary_city_id;
+  });
 
-  const multiHotelDuration =
-    props.totalDuration ||
-    multiHotelStays?.reduce(
-      (accumulator, currentValue) => accumulator + currentValue?.duration,
-      0
-    ) ||
-    0;
+  const multiHotelDuration = props.totalDuration || multiHotelStays?.reduce(
+    (accumulator, currentValue) => accumulator + currentValue?.duration,
+    0,
+  ) || 0;
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -45,10 +87,11 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
-    console.log("Hii I'm there");
+    console.log("Hii I'm there")
 
-    const targetHotelId =
-      hotelId || stay?.[props?.index]?.id || multiHotelStays?.[0]?.id;
+
+    
+    const targetHotelId = hotelId || (stay?.[props?.index]?.id || multiHotelStays?.[0]?.id);
 
     router.push(
       {
@@ -65,22 +108,45 @@ const ItineraryCity = (props) => {
         scroll: false,
       }
     );
-
+    
+    // await bookingDetails
+    //   .get(
+    //     `/${router?.query?.id}/bookings/accommodation/${targetHotelId}/`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     setData(res.data);
+    //   })
+    //   .catch((err) => {
+    //     dispatch(
+    //       openNotification({
+    //         type: "error",
+    //         text: "unable to get detail",
+    //         heading: "Error!",
+    //       })
+    //     );
+    //     setShowDetails(false);
+    //   });
     setLoading(false);
   };
 
-  const handleStay = (e, label, value, clickType, hotelId) => {
+  const handleStay = (e, label, value, clickType) => {
     e.stopPropagation();
-    if (token) {
-      const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
+    if (token){
+      const index = multiHotelStays.findIndex(h => h?.id === data?.id);
       props?.handleClickAc(
-        index !== -1 ? index : props?.index,
+         index !== -1 ? index : props?.index,
         props?.city,
         props?.city?.city?.id,
         props?.city?.id,
         clickType
       );
-    } else props?.setShowLoginModal(true);
+    }
+    else props?.setShowLoginModal(true);
 
     logEvent({
       action: "Hotel_Add_Change",
@@ -104,11 +170,11 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 rounded-t-lg flex flex-col w-full  border-[#E5E5E5] border-[1px]"
+      className="border-1 rounded-t-lg flex flex-col w-full border-color-light-grey"
     >
-      <div className="px-[16px] py-[12px] flex items-start justify-between rounded-t-lg border-b-[1px] border-[#E5E5E5]  ">
-        <div className="space-y-1 ">
-          <div className={`${!isDesktop ? "Body1M_16" : "Heading3SB"}`}>
+      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey">
+        <div className="space-y-1 font-montserrat">
+          <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
             {" - "}
             {multiHotelDuration}{" "}
@@ -129,69 +195,53 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : multiHotelStays &&
-            multiHotelStays.length > 0 &&
-            hotels_status === "SUCCESS" &&
-            multiHotelStays?.[0]?.id ? (
+          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" && multiHotelStays?.[0]?.id  ? (
             <div className="flex flex-col gap-2">
               {multiHotelStays?.map((hotel, hotelIndex) => {
                 return (
                   <div key={hotel.id} className="flex flex-col gap-1">
-                    <div className="flex flex-row">
-                      {hotel?.name && (
-                        <>
-                          <div className="flex gap-2 pr-[8px] ">
-                            <Image
-                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
-                              height={22}
-                              width={22}
-                              className="object-contain"
-                              alt="Hotel Icon"
-                            />
-                            <div
-                              className={`${
-                                !isDesktop ? "Body3M_12" : "Body2R_14"
-                              } cursor-pointer hover:underline`}
-                              onClick={() => fetchDetails(hotel.id)}
-                            >
-                              {hotel?.name}
-                              {/* ({hotel?.duration} {hotel?.duration === 1 ? "Night" : "Nights"}) */}
-                            </div>
+                    
+                     
+                      <div className="flex flex-row">
+                        { hotel?.name &&<><div className="flex gap-2 pr-[8px] ">
+                         <Image
+                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
+                        height={22}
+                        width={22}
+                        className="object-contain"
+                        alt="Hotel Icon"
+                      />
+                        <div
+                          className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue"
+                          onClick={() => fetchDetails(hotel.id)}
+                        >
+                          {hotel?.name} 
+                          {/* ({hotel?.duration} {hotel?.duration === 1 ? "Night" : "Nights"}) */}
+                        </div>
+                        </div>
+                        <div className="flex flex-row items-center border-l pl-[8px] ">
+                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
+                            {hotel?.rating && hotel?.rating !== 0
+                              ? hotel?.rating
+                              : null}{" "}
                           </div>
-                          <div className="flex flex-row items-center border-l pl-[8px] ">
-                            {hotel?.rating && hotel?.rating !== 0 && (
-                              <div className="flex items-center">
-                                <div className="text-[12px] ml-1 font-[500]">
-                                  {hotel?.rating}
-                                </div>
-                                <span className="text-primary-stars flex ml-1">
-                                  <Image
-                                    src="/star.svg"
-                                    width={16}
-                                    height={16}
-                                    alt="star"
-                                  />
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                          {hotel?.rating && hotel?.rating !== 0
+                            ? getStars(hotel?.rating)
+                            : null}{" "}
+                        </div></>}
+                      </div>
                   </div>
                 );
               })}
             </div>
           ) : (
             <button
-              className={`${
-                !isDesktop ? "Body3M_12" : "Body2R_14"
-              } text-blue cursor-pointer hover:underline`}
+              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
-                handleStay(e, "Add", props.city.city.name, "Add", null)
+                handleStay(e, "Add", props.city.city.name, "Add")
               }
             >
-              + Add a Stay in {props?.city?.city?.name}
+              + Add Stay in {props?.city?.city?.name}
             </button>
           )}
         </div>
@@ -199,7 +249,8 @@ const ItineraryCity = (props) => {
         <button
           onClick={() => setViewMore((prev) => !prev)}
           className="flex items-center text-sm font-semibold"
-        ></button>
+        >
+        </button>
       </div>
 
       {(
