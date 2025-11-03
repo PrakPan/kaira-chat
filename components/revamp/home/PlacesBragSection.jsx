@@ -11,7 +11,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 const PlacesBragSection = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
@@ -19,68 +19,100 @@ const PlacesBragSection = () => {
       id: 1,
       title: "Thailand",
       description:
-        "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      tags: ["Hidden Gem"],
+        "Immerse yourself in a land of vibrant cultures, stunning beaches, and ancient temples that awaken your sense of adventure and wonder.",
+      tags: [
+        "Adventure and Outdoors",
+        "Spiritual",
+        "Nature and Retreat",
+        "Art and Culture",
+        "Hidden Gem",
+        "Very Popular",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/thailand",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/168442180095400023460388183594.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055006Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=14655279971ea38eaad7903d5bcb548a6335c1ce5b8dc9f6d9a910e8b4117572"
+      image: `${imgUrlEndPoint}/media/countries/168442180095400023460388183594.jpg`,
     },
     {
       id: 2,
       title: "Vietnam",
       description:
-        "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      tags: ["Trending", "Best for Couples"],
+        "Venture into a land of vibrant culture, stunning landscapes, and heartfelt history that awakens your sense of wonder.",
+      tags: [
+        "Nature and Retreat",
+        "Heritage",
+        "Art and Culture",
+        "Very Popular",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/vietnam",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/175871326394452381134033203125.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055141Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f097d6c46826180f8cdb4a2936c6bedc98e47ae5e70cc9373f34888dcafd9656"
+      image: `${imgUrlEndPoint}/media/countries/175871326394452381134033203125.png`,
     },
     {
       id: 3,
       title: "Malaysia",
       description:
-        "Sun, sand, and serious main character energy — Maldives is calling!",
-      tags: ["Under 1 Lakh"],
+        "Discover a diverse land where vibrant cultures, lush rainforests, and pristine beaches create an enchanting tapestry of experiences.",
+      tags: [
+        "Adventure and Outdoors",
+        "Spiritual",
+        "Isolated",
+        "Romantic",
+        "Heritage",
+        "Art and Culture",
+        "Shopping",
+        "Nature and Retreat",
+        "Nightlife and Events",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/malaysia",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/countries/168442089471308898925781250000.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055253Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=89f4e5d0159dc2494ef538fb6367427139dd6f88a4ee1f1339517e8a2945f7f0"
+      image: `${imgUrlEndPoint}/media/countries/168442089471308898925781250000.jpg`,
     },
     {
       id: 4,
       title: "Dubai",
       description:
-        "Sippin' matcha, chasing cherry blossoms, and vibin' in Tokyo — Japan hits different.",
-      tags: ["Hidden Gem"],
+        "Experience a dazzling oasis where futuristic skyscrapers, luxurious shopping, and vibrant nightlife create an unforgettable spectacle.",
+        tags: [
+          "Adventure and Outdoors",
+          "Spiritual",
+          "Isolated",
+          "Romantic",
+          "Heritage",
+          "Art and Culture",
+          "Shopping",
+          "Nature and Retreat",
+          "Nightlife and Events",
+        ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/cities/175731712356781172752380371094.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055357Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=86c433736a7eba03bcfc24415310dc27b58718b9b172f202538b307ba0611f59"
+      image: `${imgUrlEndPoint}/media/cities/175731712356781172752380371094.jpg`,
     },
     {
       id: 5,
       title: "Singapore",
       description:
-        "Croissants, couture, and Eiffel Tower vibes — Paris is your next aesthetic drop.",
-      tags: ["Trending", "Best for Couples"],
+        "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
+      tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/singapore/singapore/singapore",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/cities/170359716563205981254577636719.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T055803Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3d3813f713e0689a7ade2af46218a28c14c1fc1b9117e8ca87bec95bbc27976"
+      link: "asia/singapore",
+      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
     },
     {
       id: 6,
       title: "Bali",
       description:
-        "Sun, sand, and serious main character energy — Maldives is calling!",
-      tags: ["Under 1 Lakh"],
+        "Discover a tropical paradise where lush rice terraces and vibrant culture blend into an unforgettable island escape.",
+      tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/indonesia/bali",
-      image:"https://s3-us-west-2.amazonaws.com/thetarzanway-web/media/states/168449479198298645019531250000.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA2XNWS34AKT4UGVW5%2F20251030%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20251030T060016Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=991e9bdbf2697b228e494479c3e557ec9131c2af9adc477d86055bac324df3a5"
-    }
+      image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
+    },
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);

@@ -73,11 +73,12 @@ const ActivitiesSummary = (props) => {
             <div className="flex flex-col gap-4 text-[#01202B] lg:w-[70%]">
               <div className="text-2xl font-semibold ">{props?.item?.name}</div>
 
-              <div className="flex flex-col gap-2 -mt-2">
+              {props?.item?.activity?.address&&<div className="flex flex-col gap-2 -mt-2">
                 <div className="text-sm font-normal">
                   {props?.item?.activity?.address}
                 </div>
-              </div>
+              </div>}
+              <div className="Body2R_14">{props?.item?.activity?.one_liner_description}</div>
               <div className="flex flex-col gap-2">
                 {props?.item.check_in && (
                   <div className="flex flex-row gap-2 items-center">
