@@ -103,7 +103,7 @@ export default function FlightDetails({
           })}
         </span>
         <span className="text-center">
-          {duration || getTime(data?.total_duration)}
+          {duration || getTime(data?.segments?.[0]?.duration)}
         </span>
 
         <span className="flex items-start gap-1">
