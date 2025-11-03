@@ -170,6 +170,8 @@ module.exports = {
       colors: {
         // Primary Colors
         blue: "#3A85FC",
+        lightGreen:"#D5F5D3",
+        lightPink:"#FADADD",
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",

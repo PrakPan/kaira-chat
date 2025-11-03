@@ -231,6 +231,12 @@ const ItineraryCity = (props) => {
           />
         )
       ) : null}
+      <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
+       <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
+            <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
+            <div className="Body2M_14">This is your check out day in Tokyo, take a taxi to Kota Denpasar.</div>
+          </div>
+          </div>
     </div>
   );
 };
