@@ -379,7 +379,7 @@ const Activity = (props) => {
 
             <div className="flex flex-row gap-xs flex-wrap ">
               {props?.element?.tags && props.element.tags.map((item, i) => (
-                <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
+                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-[#07213A] ${i % 2 ? 'bg-lightGreen' : 'bg-lightPink'}`} key={i}>{item}</div>
               ))}
 
             </div>
