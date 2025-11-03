@@ -237,6 +237,8 @@ const ComboFlight = (props) => {
   const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
   const [selectedFlight, setSelectedFlight] = useState(null); 
   const [selectedFareInFlight, setSelectedFareInFlight] = useState(null);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const isTraceIdValid = () => {
     if (!traceId || !traceIdTimestamp) return false;
@@ -387,32 +389,50 @@ const ComboFlight = (props) => {
     }
   };
 
-  useEffect(() => {
-    if (!preferredDepartureTime) return;
 
-    const shouldFetchFlights =
-      (props.showComboFlightModal && props.token && preferredDepartureTime) ||
-      !props?.skipFetch;
+useEffect(() => {
+  if (!preferredDepartureTime) return;
 
-    if (shouldFetchFlights) {
-      const timeoutId = setTimeout(() => {
-        _FetchFlightsHandler();
-        setTimeUpdated(false);
-      }, 50);
+  const shouldFetchFlights =
+    (props.showComboFlightModal && props.token && preferredDepartureTime) ||
+    !props?.skipFetch;
 
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [
-    props.showComboFlightModal,
-    props.token,
-    preferredDepartureTime,
-    isPageWide,
-    props?.skipFetch,
-    pax,
-    filtersState,
-  ]);
+  // Only fetch on initial load
+  if (shouldFetchFlights && !isFilterDrawerOpen && isInitialLoad) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+      setTimeUpdated(false);
+      setIsInitialLoad(false);
+    }, 50);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }
+}, [
+  props.showComboFlightModal,
+  props.token,
+  preferredDepartureTime,
+  isPageWide,
+  props?.skipFetch,
+  isFilterDrawerOpen,
+  isInitialLoad,
+]);
+
+// Add this new useEffect after the initial load useEffect
+useEffect(() => {
+  // Skip if initial load hasn't completed yet
+  if (isInitialLoad || !preferredDepartureTime) return;
+
+  // Only fetch if drawer is closed (to avoid fetch while drawer is opening/closing)
+  if (preferredDepartureTime) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [preferredDepartureTime, pax, filtersState, isInitialLoad]);
 
   // Replace your existing useEffect that handles selectedFlightIndex with this enhanced version:
 
@@ -528,10 +548,9 @@ const ComboFlight = (props) => {
         //     stops: filtersState.stops.join(","),
         //   }),
         // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
-        ...(filtersState.fare_type &&
-          filtersState.fare_type.length > 0 && {
-            fare_type: filtersState.fare_type.join(","),
-          }),
+        ...(filtersState.fare_type != null && {
+  fare_type: filtersState.fare_type,
+}),
         ...(filtersState?.airlines &&
           isTraceIdValid() && { trace_id: traceId }),
       };
@@ -664,10 +683,9 @@ const ComboFlight = (props) => {
         //     stops: filtersState.stops.join(","),
         //   }),
         // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
-        ...(filtersState.fare_type &&
-          filtersState.fare_type.length > 0 && {
-            fare_type: filtersState.fare_type.join(","),
-          }),
+       ...(filtersState.fare_type != null && {
+  fare_type: filtersState.fare_type,
+}),
         ...(shouldSendTraceId && { trace_id: traceId }),
       };
 
@@ -1171,22 +1189,23 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     return isValid;
   };
 
-  useEffect(() => {
-    const bothAirportsSelected = sourceInput.code && destinationInput.code;
 
+useEffect(() => {
+  const bothAirportsSelected = sourceInput.code && destinationInput.code;
 
-    if (bothAirportsSelected  && !loading) {
-      const timeoutId = setTimeout(() => {
-        _FetchFlightsHandler();
-      }, 300);
+  // Only fetch if user manually changed airports after initial load
+  if (bothAirportsSelected && !loading && !isInitialLoad && isManualSelection) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+      setIsManualSelection(false);
+    }, 300);
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [sourceInput.code, destinationInput.code]);
+    return () => clearTimeout(timeoutId);
+  }
+}, [sourceInput.code, destinationInput.code, isInitialLoad, isManualSelection, loading]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both input containers
       const sourceContainer = sourceInputRef.current?.closest(".relative");
       const destinationContainer =
         destinationInputRef.current?.closest(".relative");
@@ -1283,7 +1302,6 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
       return <Skeleton />;
     }
 
-    console.log("ShowFilter", showFilter);
 
     return (
       <OptionsContainer id="options">
@@ -1436,7 +1454,10 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
           showFilter={showFilter}
-          setShowFilter={setShowFilter}
+          setShowFilter={(value) => {
+  setShowFilter(value);
+  setIsFilterDrawerOpen(value);
+}}
           filtersState={filtersState}
           flights={flights}
           airlineCodes={airlineCodes}
@@ -1503,10 +1524,13 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
           <FlightFilters
             showFilter={showFilter}
             loading={loading}
-            setShowFilter={setShowFilter}
+            setShowFilter={(value) => {
+  setShowFilter(value);
+  setIsFilterDrawerOpen(value);
+}}
             filters={{
               ...filtersState,
-              preferred_departure_time: preferredDepartureTime,
+              // preferred_departure_time: preferredDepartureTime,
             }}
             setFiltersState={setFiltersState}
             handleFiltersChange={handleFiltersChange}

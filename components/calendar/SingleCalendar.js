@@ -100,7 +100,6 @@ const AirbnbCalendarSingleMonth = (props) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        {/* Hide or disable "Previous" button when at current month */}
         <div className="w-[36px] h-[36px] flex items-center justify-center">
           {!isCurrentMonthOrBefore && (
             <button

@@ -614,7 +614,7 @@ const TransferEditDrawer = (props) => {
       backdrop
       style={{ zIndex: 1501 }}
       className=" pb-0 md:pb-[100px]"
-      width={"50vw"}
+      width={"55vw"}
       mobileWidth={"100vw"}
       onHide={() => {
         if (showDrawer) actualClose();
@@ -630,7 +630,7 @@ const TransferEditDrawer = (props) => {
       }}
     >
 
-      <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
+      <div className="relative px-3 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
             <>
@@ -2060,8 +2060,10 @@ const NewMultiModeContainer = ({
   };
 
   const timeOptions = generateTimeOptions();
+   console.log("SelectedModeId",selectedModeIds);
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
+   
     const isDeselecting = selectedModeIds[index] === id;
 
     if (isDeselecting) {

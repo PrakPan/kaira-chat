@@ -13,7 +13,11 @@ export default function FlightFilters(props) {
   const [stops, setStops] = useState(props.filters?.stops || []);
   const [departureTime, setDepartureTime] = useState(props.filters?.departure_time || "00:00");
   const [airlines, setAirlines] = useState(props.selectedAirlines || []);
-  const [fareType, setFareType] = useState(props.filters?.fare_type || []);
+  const [fareType, setFareType] = useState(
+  props.filters?.fare_type === true ? 'refundable' 
+  : props.filters?.fare_type === false ? 'non_refundable' 
+  : null
+);
   const [showAllAirlines, setShowAllAirlines] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -72,12 +76,10 @@ export default function FlightFilters(props) {
   };
 
   const handleStopsChange = (stop) => {
-    setStops(prev => 
-      prev.includes(stop) 
-        ? prev.filter(s => s !== stop)
-        : [...prev, stop]
-    );
-  };
+  setStops(prev => 
+    prev.includes(stop) ? [] : [stop]
+  );
+};
 
   const handleAirlineChange = (code) => {
     setAirlines(prev =>
@@ -87,13 +89,9 @@ export default function FlightFilters(props) {
     );
   };
 
-  const handleFareTypeChange = (fare) => {
-    setFareType(prev =>
-      prev.includes(fare)
-        ? prev.filter(t => t !== fare)
-        : [...prev, fare]
-    );
-  };
+const handleFareTypeChange = (fare) => {
+  setFareType(prev => prev === fare ? null : fare);
+};
 
   const handleTimeSelection = (slot) => {
     setSelectedTime(slot.display);
@@ -102,12 +100,13 @@ export default function FlightFilters(props) {
     // Don't call setPreferredDepartureTime here - wait for Apply button
   };
 
-  const handleApply = () => {
+// Update the handleApply function around line 100:
+const handleApply = () => {
   // Convert departureTime (HH:mm) to full ISO datetime
   let fullDepartureDateTime = props.filters?.preferred_departure_time;
   if (departureTime) {
     const [hours, minutes] = departureTime.split(":");
-    const baseDateTime = dayjs(props.filters?.preferred_departure_time || new Date());
+    const baseDateTime = dayjs(props.filters?.preferred_departure_time);
     fullDepartureDateTime = baseDateTime
       .hour(parseInt(hours))
       .minute(parseInt(minutes))
@@ -122,32 +121,35 @@ export default function FlightFilters(props) {
     stops: stops,
     departure_time: departureTime,
     airlines: airlines.join(","),
-    fare_type: fareType,
+    fare_type: fareType === 'refundable' ? true : fareType === 'non_refundable' ? false : null,
     non_stop_flights: stops.includes("non_stop")
   };
 
-  if (props.handleFiltersChange) {
-    props.handleFiltersChange(newFilters);
-  } else {
-    props.setFiltersState(newFilters);
-  }
-
-  // Update the preferred departure time with full datetime
-  if (props.setPreferredDepartureTime) {
-    props.setPreferredDepartureTime(fullDepartureDateTime);
-  }
-
-  if (props.setSelectedAirlines) {
-    props.setSelectedAirlines(airlines);
-  }
-
-  // Set this flag to indicate time was changed
-  if (props.setIsTimeOnlyChange) {
-    props.setIsTimeOnlyChange(true);
-  }
-
+  // Close drawer first before updating filters
   props.setShowFilter(false);
-  props?.setIsFilterChangesApplied(true);
+  
+  // Then update filters and trigger fetch
+  setTimeout(() => {
+    if (props.handleFiltersChange) {
+      props.handleFiltersChange(newFilters);
+    } else {
+      props.setFiltersState(newFilters);
+    }
+
+    if (props.setPreferredDepartureTime) {
+      props.setPreferredDepartureTime(fullDepartureDateTime);
+    }
+
+    if (props.setSelectedAirlines) {
+      props.setSelectedAirlines(airlines);
+    }
+
+    if (props.setIsTimeOnlyChange) {
+      props.setIsTimeOnlyChange(true);
+    }
+
+    props?.setIsFilterChangesApplied(true);
+  }, 100);
 };
 
   const removeAllFilter = () => {
@@ -156,7 +158,7 @@ export default function FlightFilters(props) {
     setStops([]);
     setDepartureTime("00:00");
     setAirlines([]);
-    setFareType([]);
+    setFareType(null);
     setSelectedTime(null);
 
     const clearedFilters = {
@@ -165,7 +167,7 @@ export default function FlightFilters(props) {
       stops: [],
       departure_time: "00:00",
       airlines: "",
-      fare_type: [],
+      fare_type: null,
       non_stop_flights: false
     };
 
@@ -380,11 +382,11 @@ export default function FlightFilters(props) {
               <label key={fare.value} className="flex items-center mb-sm cursor-pointer">
                 <div 
                   className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                    fareType.includes(fare.value) ? 'bg-[#07213A] border-[#07213A]' : 'border-border-default'
+                    fareType === fare.value ? 'bg-[#07213A] border-[#07213A]' : 'border-border-default'
                   }`}
                   onClick={() => handleFareTypeChange(fare.value)}
                 >
-                  {fareType.includes(fare.value) && (
+                  {fareType === fare.value && (
                     <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
                       <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                     </svg>

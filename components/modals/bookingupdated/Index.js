@@ -562,7 +562,7 @@ const Booking = (props) => {
       setAutocompleteLoading(true); 
 
       hotelSearchAutocomplete
-        .get(`?q=${selectSearch}`, {
+        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
