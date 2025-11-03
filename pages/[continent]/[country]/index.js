@@ -10,15 +10,10 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
 import ThemePage from "../../../containers/travelplanner/ThemePage";
-import { useRouter } from "next/router";
-import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
-  const router = useRouter();
-  const { trackPageView } = useAnalytics();
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-     trackPageView(props.Type, `${props?.Data?.name} Page`);
   }, []);
 
   return (
@@ -90,9 +85,20 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
+  // return {
+  //   paths:paths,
+  //   fallback:false
+  // }
   return {
-    paths: paths,
-    fallback: false
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+        },
+      },
+    ],
+    fallback: false,
   };
 }
 
