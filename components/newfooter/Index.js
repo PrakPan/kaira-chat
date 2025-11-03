@@ -44,7 +44,7 @@ const LogoContainer = styled.div`
   position: relative;
   top: -5px;
   img {
-    filter: invert(1);
+    // filter: invert(1);
   }
   .CompanyName {
     position: absolute;
@@ -170,7 +170,7 @@ const NewFooter = (props) => {
                 <ImageLoader
                   dimensions={{ width: 122, height: 100 }}
                   dimensionsMobile={{ width: 120, height: 100 }}
-                  url="media/website/logo-only.svg"
+                  url="media/website/Christmas-Logo-07.png"
                   widthmobile="60px"
                   leftalign
                   height="50px"

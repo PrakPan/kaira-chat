@@ -320,7 +320,7 @@ const Mobile = (props) => {
                 width="3rem"
                 leftalign
                 widthmobile="52px"
-                url={"media/website/logo-only.svg"}
+                url={"media/website/Christmas-Logo-06.png"}
                 noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
