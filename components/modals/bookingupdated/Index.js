@@ -190,7 +190,7 @@ const Booking = (props) => {
       props?.showBookingModal &&
       currentBooking?.check_in
     ) {
-      console.log("filters useEffect triggered", filters);
+    
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
@@ -205,11 +205,10 @@ const Booking = (props) => {
   }, []);
 
   useEffect(() => {
-    if (debouncedSearch.length > 2 || hasUserSearched) {
-      console.log("searching in debounced search")
+    if (selectSearch.length > 3 && !selectedHotelId) {
+      // ADD THE CHECK
       setHasUserSearched(true);
-      setMoreOptionsJSX([]);
-      fetchHotelsFilter();
+      fetchHotelsAutocomplete();
     }
   }, [selectSearch]);
 
@@ -548,6 +547,52 @@ const Booking = (props) => {
 
   };
 
+   const fetchHotelsAutocomplete = () => {
+    if (cancelTokenRef.current) {
+      cancelTokenRef.current.cancel("New request initiated");
+    }
+    cancelTokenRef.current = axios.CancelToken.source();
+
+    try {
+      if (!selectSearch || selectSearch.trim().length < 3) {
+        setSearchResults([]);
+        return;
+      }
+
+      setAutocompleteLoading(true); 
+
+      hotelSearchAutocomplete
+        .get(`?q=${selectSearch}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          cancelToken: cancelTokenRef.current.token,
+        })
+        .then((res) => {
+          setSearchResults(res.data || []);
+          setAutocompleteLoading(false); 
+        })
+        .catch((err) => {
+          if (axios.isCancel(err)) {
+            console.log("Request cancelled:", err.message);
+            return;
+          }
+          setAutocompleteLoading(false); 
+          setSearchResults([]);
+
+          if (err?.response.status == 400) {
+            setPaginationStatus(() => ({
+              traceId: null,
+              page: 1,
+              totalPages: 1,
+            }));
+          }
+        });
+    } catch (error) {
+      setAutocompleteLoading(false); 
+    }
+  };
+
   const fetchHotels = () => {
     try {
       if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
@@ -748,6 +793,16 @@ const Booking = (props) => {
     _addFilterHandler("price: low to high", "sort");
   }
 
+   const handleSuggestionSelect = (suggestion) => {
+    setSelectedSearch(suggestion.name);
+    setSearchResults([]);
+    setSelectedHotelId([suggestion.id.toString()]);
+    setFilters((prev) => ({
+      ...prev,
+      applyFilter: !prev.applyFilter,
+    }));
+  };
+
   if (props?.token)
     return (
       <div>
@@ -793,7 +848,7 @@ const Booking = (props) => {
                 selectSearch={selectSearch}
                 setSelectedSearch={setSelectedSearch}
                 fetchHotels={fetchHotels}
-                // fetchHotelsAutocomplete={fetchHotelsAutocomplete}
+                fetchHotelsAutocomplete={fetchHotelsAutocomplete}
                 searchResults={searchResults}
                 resetPaginationStatus={resetPaginationStatus}
                 setMoreOptionsJSX={setMoreOptionsJSX}
@@ -806,7 +861,7 @@ const Booking = (props) => {
                   ]
                 }
                 handleClose={handleClose}
-                // handleSuggestionSelect={handleSuggestionSelect}
+                handleSuggestionSelect={handleSuggestionSelect}
                 autocompleteLoading={autocompleteLoading}
                 handleClearSearch={handleClearSearch}
                 selectedHotelId={selectedHotelId}
