@@ -46,7 +46,7 @@ const SelectedDestination = (props) => {
               _handleFocusSearch();
             }
       }
-      className="hover-pointer"
+      className="hover-pointer bg-text-white"  
       style={{
         borderRadius: "8px",
         border:

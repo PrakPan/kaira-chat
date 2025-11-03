@@ -16,7 +16,7 @@ const Container = styled.div`
 
 const InnerContainer = styled.div`
   border-radius: 50%;
-  background-color: #fff;
+  background-color: ${(props) => (props.inner ? "#fefcbf" : "#fff")};
   width: 8px;
   height: 8px;
 `;
@@ -30,7 +30,7 @@ const Pin = (props) => {
   // console.log("props1 are:",props)
   return (
     <Container
-      className="center-div"
+      className="center-div "
       pinColour={props.pinColour}
       index={props?.index}
       length={props?.length}
@@ -39,6 +39,7 @@ const Pin = (props) => {
         duration={props.duration}
         pinColour={props.pinColour}
         index={props?.index}
+        inner={props?.inner}
       ></InnerContainer>
     </Container>
   );

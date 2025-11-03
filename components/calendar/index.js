@@ -94,10 +94,10 @@ const AirbnbCalendar = (props) => {
           return (<div
             key={idx}
             className={`flex items-center justify-center relative
-    ${date && isDateInRange(date, selectedDates) ? 'bg-gray-100' : ''}
+    ${date && isDateInRange(date, selectedDates) ? 'bg-primary-jasmineWhite' : ''}
     ${date && isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200' : ''}
-    ${date && isDateRangeStart(date, selectedDates) ? 'bg-gray-100 rounded-l-full' : ''}
-    ${date && isDateRangeEnd(date, selectedDates) ? 'bg-gray-100 rounded-r-full' : ''}
+    ${date && isDateRangeStart(date, selectedDates) ? 'bg-primary-jasmineWhite rounded-l-full' : ''}
+    ${date && isDateRangeEnd(date, selectedDates) ? 'bg-primary-jasmineWhite rounded-r-full' : ''}
     ${date && isDateInRange(date, selectedDates) && isRowStart ? 'rounded-l-full' : ''}
     ${date && isDateInRange(date, selectedDates) && isRowEnd ? 'rounded-r-full' : ''}
     ${date && isDateInHoverRange(date, selectedDates, hoveredDate) && isRowStart ? 'rounded-l-full' : ''}
@@ -116,10 +116,10 @@ const AirbnbCalendar = (props) => {
                 }}
                 onMouseLeave={() => setHoveredDate(null)}
                 disabled={isBeforeToday(date)}
-                className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
+                className={`w-[30px] h-[30px] rounded-full flex items-center justify-center text-[10px] font-400 transition-colors
       ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' : ''}
-      ${isDateSelected(date, selectedDates) ? 'bg-black text-white' :
-                    isDateInRange(date, selectedDates) ? 'hover:bg-gray-200 text-gray-900' :
+      ${isDateSelected(date, selectedDates) ? 'bg-primary-yellow text-pureBlack shadow-md' :
+                    isDateInRange(date, selectedDates) ? 'hover:bg-gray-200 bg-primary-jasmineWhite' :
                       isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200 text-gray-900' :
                         !isBeforeToday(date) ? 'hover:bg-gray-100 text-gray-900' : ''}`}
               >
@@ -252,7 +252,7 @@ const AirbnbCalendar = (props) => {
                     setDateType(type);
                     setCurrentView(type === 'fixed' ? 'calendar' : type === "flexible" ? 'months' : "any");
                   }}
-                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-medium transition-all ${dateType === type ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                  className={`px-[24px] py-[4px] rounded-full text-[14px] font-500 transition-all ${dateType === type ? 'bg-pureBlack text-text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   {capitalizeFirstLetter(type)}

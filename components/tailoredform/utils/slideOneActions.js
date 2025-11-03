@@ -166,10 +166,6 @@ export const Container = styled.div`
   color: black;
   z-index: ${(props) => (props.showBlack ? "1006" : "2")};
   position: relative;
-  background-color: ${(props) =>
-    props.slideIndex || props.tailoredFormModal
-      ? "white"
-      : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
 

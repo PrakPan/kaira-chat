@@ -175,7 +175,9 @@ module.exports = {
         primary: {
           yellow: "#F7E700",
           indigo: "#07213A",
-          stars: "#FFD201"
+          stars: "#FFD201",
+          cornsilk: "#FFFAF5",
+          jasmineWhite: "#FFFFE7"
         },
         // Secondary Colors
         secondary: {
