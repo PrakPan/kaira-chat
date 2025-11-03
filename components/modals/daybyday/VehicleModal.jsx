@@ -155,7 +155,7 @@ const VehicleDetailModal = ({
                     fontSize={"1rem"}
                     padding={"7px 25px"}
                     onClick={() => {
-                      handleClose()
+                      // handleClose()
                       handleEditRoute(data)
                       //setShowTaxi(true);console.log("")
                     }}

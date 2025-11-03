@@ -170,6 +170,7 @@ module.exports = {
       colors: {
         // Primary Colors
         blue: "#3A85FC",
+        pureBlack : '#000',
         lightGreen:"#D5F5D3",
         lightPink:"#FADADD",
         primary: {
