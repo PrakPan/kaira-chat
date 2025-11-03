@@ -353,19 +353,20 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row items-center text-sm ">
-              <div className="pr-[8px]">
+              <div className="pr-[8px] flex gap-[8px]">
                 <Image
                   src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
                   alt="ticket"
                   width={18}
                   height={18}
                 />
+                <div className="text-[#6E757A] Body3R_12">{props?.element?.poi ? "Self Exploration" : "Activity"}</div>
               </div>
 
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
 
               {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                
+
                 <div className="Body3M_12">
                   {props.element?.rating}&nbsp;
                 </div>
@@ -379,7 +380,7 @@ const Activity = (props) => {
 
             <div className="flex flex-row gap-xs flex-wrap ">
               {props?.element?.tags && props.element.tags.map((item, i) => (
-                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-[#07213A] ${i % 2 ? 'bg-lightGreen' : 'bg-lightPink'}`} key={i}>{item}</div>
+                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-[#07213A] ${!i % 2 ? 'bg-lightGreen' : 'bg-lightPink'}`} key={i}>{item}</div>
               ))}
 
             </div>
@@ -631,13 +632,14 @@ const Recommendation = (props) => {
 
 
             <div className="flex flex-row items-center text-sm">
-              <div className="pr-[8px]">
+              <div className="pr-[8px] flex gap-[8px]">
                 <Image
                   src={'/assets/Itinerary/restaurant.svg'}
                   alt="ticket"
                   width={18}
                   height={18}
                 />
+                <div className="text-[#6E757A] Body3R_12">Restaurant</div>
               </div>
 
               <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
