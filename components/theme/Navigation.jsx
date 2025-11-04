@@ -11,6 +11,8 @@ import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
 import Poi from "../../containers/newcityplanner/pois/Index";
 import Itinerary1Carousel from "./Itinerary1Carousel";
+import OldLocations from "../containers/plannerlocations/Index";
+import Activity2 from "../../containers/newcityplanner/activities/Index.js";
 
 export default function Navigation({ components, slug }) {
   let isPageWide = media("(min-width: 768px)");
@@ -56,6 +58,7 @@ export default function Navigation({ components, slug }) {
             component={navItems[activeIndex]}
             handlePlanButton={handlePlanButton}
             setDestination={setDestination}
+            slug={slug}
           />
         </>
       )}
@@ -175,7 +178,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
   );
 };
 
-const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
+const ComponentDisplay = ({ component, handlePlanButton, setDestination, slug}) => (
   <div className="component">
     {component.carousel === "destination-1" ? (
       <Destination1Carousel
@@ -206,7 +209,31 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
         thingsToDoPage={component?.thingsToDoPage}
         pois={component?.pois}
         city={component?.name}
-      />
-    ) : null}
+      /> )
+      : component.carousel === "state-1" ? (
+                      <>
+                        <OldLocations
+                          locations={component?.states}
+                          page_id={component?.id}
+                          destination={component?.name}
+                          viewall
+                          country={component?.name}
+                          planner
+                          page={"Country Page"}
+                        ></OldLocations>
+   </>) : component.carousel === "Activity-2" ? (
+                      <>
+                        <Activity2
+                          data={component.activities}
+                          activities={component?.activities}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={slug}
+                          page={"Country Page"}
+                        />
+                       
+                      </>
+                    ) : null}
   </div>
 );

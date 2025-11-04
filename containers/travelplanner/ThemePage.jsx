@@ -400,6 +400,18 @@ export default function ThemePage(props) {
                         </div>
                       )}
 
+                      {component.type === "Why Choose Us?" &&
+                      // component?.heading ===
+                      //   "How We Keep It Budget-Friendly?" && (
+                        <div>
+                          <BudgetFriendly
+                            page_id={props.experienceData?.id}
+                            destination={props.experienceData?.destination}
+                          ></BudgetFriendly>
+                        </div>
+                      // )
+                      }
+
                     {component.type === "How it works?" && (
                       <div>
                         <BannerTwo
