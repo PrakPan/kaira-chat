@@ -50,6 +50,7 @@ import setCart from "../../../store/actions/Cart";
 import ReactDOM from "react-dom";
 import setItinerary from "../../../store/actions/itinerary";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { updateCartPricing } from "../../../services/sales/Bookings";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -709,7 +710,8 @@ const ItineraryInclusions = ({
   Cart,
   selectedInclusions,
   onToggleInclusion,
-  arePricesHidden
+  arePricesHidden,
+  updatingInclusions ={}
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
     Stays: true,
@@ -717,6 +719,10 @@ const ItineraryInclusions = ({
     Flights: true,
     Activities: true
   });
+
+
+
+
 
   const categorizeBookings = () => {
     const categories = {
@@ -759,6 +765,23 @@ const ItineraryInclusions = ({
       [category]: !prev[category]
     }));
   };
+
+  const updateCartBooking = async () =>{
+     try {
+      setBookingLoading(true);
+      const response = await updateCartPricing.get(`/${ItineraryId}/cart/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+   
+
+     
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+    } finally {
+      setBookingLoading(false);
+    }
+  }
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -828,13 +851,19 @@ const ItineraryInclusions = ({
                   >
                     {/* Checkbox */}
                     <div className="pt-0.5">
-                      <input
-                        type="checkbox"
-                        checked={selectedInclusions[booking.id]}
-                        onChange={() => onToggleInclusion(booking.id)}
-                        className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer"
-                      />
-                    </div>
+  {updatingInclusions[booking.id] ? (
+    <div className="w-4 h-4 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+    </div>
+  ) : (
+    <input
+      type="checkbox"
+      checked={selectedInclusions[booking.id]}
+      onChange={() => onToggleInclusion(booking.id)}
+      className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer"
+    />
+  )}
+</div>
 
                     {/* Booking Details */}
                     <div className="flex-1 min-w-0">
@@ -952,10 +981,10 @@ const Details = (props) => {
   const [couponUsageData, setCouponUsageData] = useState(Cart?.coupon_usage || null);
   const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
-  // Add after existing state declarations
   const [selectedInclusions, setSelectedInclusions] = useState({});
   const [inclusionsExpanded, setInclusionsExpanded] = useState(false);
-  //console.log("Iti",props?.itinerary);
+    const [updatingInclusions, setUpdatingInclusions] = useState({});
+
   const { trackWhatsAppClicked } = useAnalytics();
 
 
@@ -967,18 +996,18 @@ const Details = (props) => {
   }, [props?.openPaymentDrawer])
 
   useEffect(() => {
-    if (Cart?.summary) {
-      const initialSelections = {};
-      Object.values(Cart.summary).forEach(category => {
-        if (category.bookings) {
-          category.bookings.forEach(booking => {
-            initialSelections[booking.id] = true;
-          });
-        }
-      });
-      setSelectedInclusions(initialSelections);
-    }
-  }, [Cart?.summary]);
+  if (Cart?.summary) {
+    const initialSelections = {};
+    Object.values(Cart.summary).forEach(category => {
+      if (category.bookings) {
+        category.bookings.forEach(booking => {
+          initialSelections[booking.id] = booking.selected ?? true;
+        });
+      }
+    });
+    setSelectedInclusions(initialSelections);
+  }
+}, [Cart?.summary]);
 
 
   useEffect(() => {
@@ -1030,47 +1059,97 @@ const Details = (props) => {
     setPax(option);
   };
 
-  const handleToggleInclusion = (bookingId) => {
+  const handleToggleInclusion = async (bookingId) => {
+  setUpdatingInclusions(prev => ({ ...prev, [bookingId]: true }));
+  
+  try {
+    // Toggle the selection first for immediate UI feedback
+    const newSelections = {
+      ...selectedInclusions,
+      [bookingId]: !selectedInclusions[bookingId]
+    };
+    setSelectedInclusions(newSelections);
+
+    // Prepare deselected bookings array
+    const deselectedBookings = [];
+    
+    if (Cart?.summary) {
+      Object.entries(Cart.summary).forEach(([category, data]) => {
+        if (data.bookings && data.bookings.length > 0) {
+          data.bookings.forEach(booking => {
+            // If booking is deselected (false in newSelections)
+            if (!newSelections[booking.id]) {
+              const bookingType = category === 'Stays' ? 'accommodation' :
+                category === 'Flights' ? 'flight' :
+                category === 'Transfers' ? 'transfer' : 'activity';
+              
+              deselectedBookings.push({
+                booking_type: bookingType.toLowerCase(),
+                booking_id: booking.id
+              });
+            }
+          });
+        }
+      });
+    }
+
+    // Call update cart API
+    const response = await updateCartPricing.patch(
+      `/${router.query.id}/cart/`,
+      deselectedBookings,
+      {
+        headers: { Authorization: `Bearer ${props.token}` }
+      }
+    );
+
+    if (response.data) {
+      // Update Redux cart with new response
+      dispatch(setCart(response.data));
+      
+      dispatch(
+        openNotification({
+          text: "Cart updated successfully",
+          heading: "Success",
+          type: "success",
+        })
+      );
+    }
+  } catch (error) {
+    console.error('Error updating cart:', error);
+    
+    // Revert the selection on error
     setSelectedInclusions(prev => ({
       ...prev,
       [bookingId]: !prev[bookingId]
     }));
-  };
+    
+    dispatch(
+      openNotification({
+        text: error?.response?.data?.message || "Failed to update cart",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+  } finally {
+    setUpdatingInclusions(prev => ({ ...prev, [bookingId]: false }));
+  }
+};
 
-  const calculateFilteredTotal = () => {
-    if (!Cart?.summary) return 0;
+ const calculateFilteredTotal = () => {
+  if (!Cart) return 0;
 
-    let total = 0;
+  let total = Cart?.total_bookings_cost || 0;
 
-    // Calculate from summary bookings
-    Object.values(Cart.summary).forEach(category => {
-      if (category.bookings) {
-        category.bookings.forEach(booking => {
-          if (selectedInclusions[booking.id]) {
-            total += booking.booking_cost || 0;
-          }
-        });
-      }
-    });
+  // If total is 0, return 0 early
+  if (total === 0) return 0;
 
-    // If total is 0, return 0 early
-    if (total === 0) return 0;
+  // Apply coupon if applicable
+  if (couponUsageData?.discount) {
+    total = Math.max(0, total - couponUsageData.discount);
+  }
 
-    // Add surcharges proportionally only if prices are not hidden
-    if (
-      // !Cart?.are_prices_hidden && 
-      Cart?.surcharges_and_taxes) {
-      // const selectedRatio = total / (Cart.total_bookings_cost || 1);
-      // total += Cart.surcharges_and_taxes;
-    }
-
-    // Apply coupon if applicable
-    if (couponUsageData?.discount) {
-      total = Math.max(0, total - couponUsageData.discount);
-    }
-
-    return Math.round(total);
-  };
+  return Math.round(total);
+};
 
   const handleCloseDrawer = () => {
     console.log("handle paymenmt close")
@@ -1594,24 +1673,7 @@ const Details = (props) => {
   const hasPlanExpired = (!Cart?.price_valid_until ||
     new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now());
 
-  // useEffect(() => {
-  //   const isItineraryInFuture = () => {
-  //     if (Itinerary?.start_date) return true;
-  //     const startDate = new Date(Itinerary?.start_date);
-  //     const currentDate = new Date();
-  //     currentDate.setHours(0, 0, 0, 0);
-  //     startDate.setHours(0, 0, 0, 0);
-  //     return startDate >= currentDate;
-  //   };
-
-  //   const hasPlanExpired = (!Cart?.price_valid_until ||
-  //     new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now());
-  //   if (isItineraryInFuture() && hasPlanExpired && !Cart?.lock_in_fee_paid && !hasFullPaymentCompleted) {
-  //     setSelectedPaymentOption('lockin');
-  //   } else {
-  //     setSelectedPaymentOption('full');
-  //   }
-  // }, [Cart?.price_valid_until, Cart?.lock_in_fee_paid, hasFullPaymentCompleted, Itinerary?.start_date]);
+  
 
 
 
@@ -2396,11 +2458,12 @@ const Details = (props) => {
                 // Detailed payment view
                 <div>
                   <ItineraryInclusions
-                    Cart={Cart}  // Pass entire Cart instead of costingsBreakdown
-                    selectedInclusions={selectedInclusions}
-                    onToggleInclusion={handleToggleInclusion}
-                    arePricesHidden={Cart?.are_prices_hidden}
-                  />
+  Cart={Cart}
+  selectedInclusions={selectedInclusions}
+  onToggleInclusion={handleToggleInclusion}
+  arePricesHidden={Cart?.are_prices_hidden}
+  updatingInclusions={updatingInclusions}
+/>
 
                   {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !== 0 && <CouponSection
                     appliedCoupon={appliedCoupon}
