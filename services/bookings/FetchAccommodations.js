@@ -5,6 +5,10 @@ const fetchaccommodations = axios.create({
   baseURL: MIS_SERVER_HOST + '/service/accommodation/live_search/',
 });
 
+export const hotelSearchAutocomplete = axios.create({
+  baseURL: MERCURY_HOST + '/api/v1/hotels/search/autocomplete',
+});
+
 export default fetchaccommodations;
 
 export const hotelSearch = axios.create({
