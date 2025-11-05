@@ -8,7 +8,9 @@ import {
     FaCirclePlus,
     FaCalendarDays,
     FaCircleMinus,
+    FaInfoCircle
 } from "react-icons/fa6";
+
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import styled from "styled-components";
@@ -72,7 +74,7 @@ const RouteEditSection = (props) => {
     //     return buildRoutes(itinerary?.start_city, itinerary?.end_city, itinerary?.basic_route || []);
     // }, [destinations, itinerary]);
 
-    
+
     useEffect(() => {
         if (destinations.length) {
             setMapRoutes(buildRoutesFromDestinations(destinations));
@@ -82,29 +84,48 @@ const RouteEditSection = (props) => {
 
     return (
         <div
-            className="w-full h-full relative  flex flex-col bg-white items-center  overflow-y-auto hide-scrollbar"
+            className={`w-full h-full relative  flex flex-col bg-white items-center overflow-y-auto hide-scrollbar ${!isDesktop ? 'p-lg border-sm border-solid border-primary-yellow rounded-xl mb-xl' : ''}`}
         >
-
             <div className="w-full h-full  hide-scrollbar overflow-y-auto" style={{ pointerEvents: 'auto' }}>
-
-                {!isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}
-
-                <div className="w-full h-full flex flex-col sm:flex-row justify-start gap-5">
-                    <EditDestinations
-                        destinations={destinations}
-                        setDestinations={setDestinations}
-                        destinationRef={destinationRef}
-                        startDate={startDate}
-                        setEndDate={setEndDate}
-                        setLocationsLatLong={props.setLocationsLatLong}
-                        locationsLatLong={props.locationsLatLong}
-                        setDestinationChanges={setDestinationChanges}
-                        isAddMode={isAddMode}
-                        setIsAddMode={setIsAddMode}
-                        setIsRouteChanged={props.setIsRouteChanged}
-                    />
+                {!isDesktop && <> {
+                    renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })
+                }
+                    {destinationChanges && (
+                        <div className="flex flex-row items-center gap-2">
+                            <FaInfoCircle className="text-2xl text-yellow-500" />
+                            <div className="text-sm">Changes to be saved</div>
+                        </div>
+                    )}
+                </>
+                }
+                <div className={`${isDesktop ? 'p-lg border-sm border-solid border-primary-yellow rounded-xl' : ''}`}>
+                    <div className={`${isDesktop ? 'z-[99] absolute w-[50%] top-[28px] left-[28px] rounded-[12px] overflow-hidden' : ''}`}>
+                        <EditDestinations
+                            destinations={destinations}
+                            setDestinations={setDestinations}
+                            destinationRef={destinationRef}
+                            startDate={startDate}
+                            setEndDate={setEndDate}
+                            setLocationsLatLong={props.setLocationsLatLong}
+                            locationsLatLong={props.locationsLatLong}
+                            setDestinationChanges={setDestinationChanges}
+                            isAddMode={isAddMode}
+                            setIsAddMode={setIsAddMode}
+                            setIsRouteChanged={props.setIsRouteChanged}
+                            listClasses={`${isDesktop ? 'h-[272px] overflow-y-auto' : ''}`}
+                        />
+                    </div>
                     {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}
                 </div>
+
+                {isDesktop && <>
+                    {destinationChanges && (
+                        <div className="flex flex-row items-center gap-2">
+                            <FaInfoCircle className="text-2xl text-yellow-500" />
+                            <div className="text-sm">Changes to be saved</div>
+                        </div>
+                    )}
+                </>}
             </div>
         </div>
     );
@@ -171,7 +192,7 @@ export const EditDestinations = (props) => {
     const isDesktop = useMediaQuery("(min-width:768px)");
 
     return (
-        <div className="w-full md:w-[50%] lg:w-[55%] lg:p-4 font-inter font-normal flex flex-col items-start justify-start pb-[150px] gap-3">
+        <div className="w-full bg-text-white lg:p-4 font-inter font-normal flex flex-col items-start justify-start gap-3">
             <div className="w-full flex flex-row items-start justify-between">
                 <div className="relative text-[20px] pb-3">Route Preview</div>
                 <div
@@ -181,30 +202,31 @@ export const EditDestinations = (props) => {
                     + Add Destination
                 </div>
                 {(props.isAddMode === true) && (
-                        <div className={`text-black absolute ${isDesktop ? "top-[120px] left-[180px]" : "top-[350px] left-[80px]"}  w-[300px] z-[1000]`}>
-                            <DestinationPopUp
-                                destinationRef={props.destinationRef}
-                                cityData={{}} // empty for new
-                                setDestinations={props.setDestinations}
-                                updateLatLong={(items) =>
-                                    updateLatLong(items, props.locationsLatLong, props.setLocationsLatLong)
-                                }
-                                updateDestinationsDates={updateDestinationsDates}
-                                setDestinationChanges={props.setDestinationChanges}
-                                onSetDestination={(dest) => setNewDestination(dest)}
-                                onClose={() => {
-                                    props?.setIsAddMode(false)
-                                    console.log("close add destination called close: ",props.isAddMode)
-                                }}
-                                setIsRouteChanged={props.setIsRouteChanged}
-                                setPopUp={props.setIsAddMode} // Add this to prevent conflicts
-                            />
-                        </div>
-                    )}
+                    <div className={`text-black absolute ${isDesktop ? "top-[120px] left-[180px]" : "top-[350px] left-[80px]"}  w-[300px] z-[1000]`}>
+                        <DestinationPopUp
+                            destinationRef={props.destinationRef}
+                            cityData={{}} // empty for new
+                            setDestinations={props.setDestinations}
+                            updateLatLong={(items) =>
+                                updateLatLong(items, props.locationsLatLong, props.setLocationsLatLong)
+                            }
+                            updateDestinationsDates={updateDestinationsDates}
+                            setDestinationChanges={props.setDestinationChanges}
+                            onSetDestination={(dest) => setNewDestination(dest)}
+                            onClose={() => {
+                                props?.setIsAddMode(false)
+                                console.log("close add destination called close: ", props.isAddMode)
+                            }}
+                            setIsRouteChanged={props.setIsRouteChanged}
+                            setPopUp={props.setIsAddMode} // Add this to prevent conflicts
+                        />
+                    </div>
+                )}
             </div>
 
             {props.destinations.length ? (
                 <DragDrop
+                    listClasses={props.listClasses}
                     popUp={popUp}
                     setPopUp={setPopUp}
                     updateLatLong={(items) => {
@@ -235,7 +257,7 @@ export const DragDrop = (props) => {
     } = props;
 
     return (
-        <div className="w-full flex flex-col relative">
+        <div className={`w-full flex flex-col relative ${props.listClasses}`}>
             {/* First Destination */}
             <div className="mb-3.5">
                 <Destination
@@ -427,37 +449,37 @@ export const Destination = (props) => {
                     </div>
                 </div>
 
-                {!startingCity && !endingCity && (                    <div className="flex flex-row items-center gap-2">
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleEditDestination(setPopUp, props.setIsRouteChanged);
-                            }}
-                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
-                        >
-                            <MdOutlineEdit size={24} color={"#3B82F6"} />
-                        </div>
-
-                        
-                            <div
-                                onClick={(e) =>
-                                    handleRemoveDestination(
-                                        e,
-                                        index,
-                                        setDestinations,
-                                        updateLatLong,
-                                        updateDestinationsDates,
-                                        setDestinationChanges,
-                                        props.setIsRouteChanged
-                                    )
-                                }
-                                className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
-                            >
-                                <MdOutlineDelete size={24} color="#EF4444" />
-                            </div>
+                {!startingCity && !endingCity && (<div className="flex flex-row items-center gap-2">
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleEditDestination(setPopUp, props.setIsRouteChanged);
+                        }}
+                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
+                    >
+                        <MdOutlineEdit size={24} color={"#3B82F6"} />
                     </div>
-                                            )}
+
+
+                    <div
+                        onClick={(e) =>
+                            handleRemoveDestination(
+                                e,
+                                index,
+                                setDestinations,
+                                updateLatLong,
+                                updateDestinationsDates,
+                                setDestinationChanges,
+                                props.setIsRouteChanged
+                            )
+                        }
+                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
+                    >
+                        <MdOutlineDelete size={24} color="#EF4444" />
+                    </div>
+                </div>
+                )}
 
             </div>
 

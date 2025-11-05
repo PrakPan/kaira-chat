@@ -589,7 +589,7 @@ const Enquiry = (props) => {
                             position: "fixed",
                             left: "1rem",
                             right: "1rem",
-                            bottom: "0",
+                            bottom: "54px",
                           }
                         : {}
                     }
@@ -617,7 +617,7 @@ const Enquiry = (props) => {
                       alignItems: "center",
                       width: "100%",
                     }}
-                    className={`p-4 bg-[#ffffff] z-[10] ${!isDesktop && "fixed bottom-0 w-full gap-2 right-[4px] "}`}
+                    className={`p-4 bg-primary-cornsilk z-[10] ${!isDesktop && "fixed w-full gap-2 right-[4px] bottom-[54px] "}`}
                   >
                     <button
                       className={`LargeIndigoOutlinedButton ${

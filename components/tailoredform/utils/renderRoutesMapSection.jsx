@@ -1,11 +1,10 @@
 import RoutesMap from '../../../containers/itinerary/breif/RoutesMap';
-import { FaInfoCircle } from "react-icons/fa";
 function renderRoutesMapSection({ isDesktop, containerHeight, routes, destinationChanges, key }) {
   console.log("routes is: ", routes)
   return (
     <div
       key={key}
-      className={`w-full md:w-[50%] flex flex-col gap-3 items-center h-[260px] md:h-[629px] ${
+      className={`w-full  flex flex-col gap-3 items-center h-[260px] md:h-[380px] ${
         isDesktop ? `sm:h-[${containerHeight}px]` : "mb-4"
       }`}
     >
@@ -13,12 +12,6 @@ function renderRoutesMapSection({ isDesktop, containerHeight, routes, destinatio
         <RoutesMap key={`routesmap-${key}`} locations={routes.slice(1, routes.length - 1)} />
       </div>
 
-      {destinationChanges && (
-        <div className="flex flex-row items-center gap-2">
-          <FaInfoCircle className="text-2xl text-yellow-500" />
-          <div className="text-sm">Changes to be saved</div>
-        </div>
-      )}
     </div>
   );
 }
