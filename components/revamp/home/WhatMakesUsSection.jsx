@@ -102,20 +102,20 @@ const featuresLeft = [
   {
     icon: <HeartIcon />,
     iconBgColor: "#FAEBEA",
-    title: "Tailored by AI,\nPerfected by People.",
-    desc: "Crafted by AI, perfected by locals — your journey reflects your mood, preferences, and real on-ground hacks.",
+    title: "Smarter Than Any Search Engine.",
+    desc: "AI pulls the best flights, stays & activities from 1100+ platforms — so you don’t waste hours comparing.",
   },
   {
     icon: <LocationIcon />,
     iconBgColor: "#FFF4F0",
-    title: "Routed & Ready.",
-    desc: "Timings sorted, transitions smooth. From hotel check-ins to sunset spots — every day flows like clockwork.",
+    title: "Locals + Experts, On Your Side.",
+    desc: "AI builds, humans perfect. Every trip is fine-tuned by on-ground experts & travel curators who know the real deal.",
   },
   {
     icon: <MagicIcon />,
     iconBgColor: "#FFF9DC",
-    title: "Your Signature Moment.",
-    desc: "One surprise activity or curated experience — our little way of making your trip unforgettable.",
+    title: "Plans That Actually Flow.",
+    desc: "No awkward gaps or wasted days — from airport pickups to late-night food tours, your itinerary just works.",
   },
 ];
 
@@ -123,20 +123,20 @@ const featuresRight = [
   {
     icon: <ShieldIcon />,
     iconBgColor: "#F8F4FE",
-    title: "All-Cover Shield.",
-    desc: "From travel insurance tips to emergency contacts, we've got your back — before, during, and after your trip.",
+    title: "Always a Human Behind\nthe Screen. ",
+    desc: "24×7 WhatsApp concierge. Got stuck, missed a flight, or want a table with a view? One ping and it’s done.",
   },
   {
     icon: <HeadsetIcon />,
     iconBgColor: "#E3F2FD",
-    title: "In Your Pocket.",
-    desc: "24×7 Concierge. Flight delayed? Can't find your cab? Need a café nearby? We're one message away, any time, any day.",
+    title: "Zero Guesswork, All Trust.",
+    desc: "Backed by 1000+ reviews, global partners, and verified local hosts — you only get tried & trusted experiences.",
   },
   {
     icon: <TaskIcon />,
     iconBgColor: "#EBFFED",
-    title: "Plan B, Always Ready.",
-    desc: "If something changes last minute, don't worry — you'll always have an alternate plan ready to go.",
+    title: "No Stress, Just Plan B Ready.",
+    desc: "Weather turned bad? Activity sold out? We’ll swap in an equally amazing alternative before you even ask.",
   },
 ];
 

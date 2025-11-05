@@ -8,8 +8,8 @@ import BottomModal from "./ui/LowerModal";
 import { MERCURY_HOST } from "../services/constants";
 import axios from "axios";
 import { useRouter } from "next/router";
-import setItineraryStatus  from "../store/actions/itineraryStatus";
-import {axiosGetItineraryStatus} from "../services/itinerary/daybyday/preview";
+import setItineraryStatus from "../store/actions/itineraryStatus";
+import { axiosGetItineraryStatus } from "../services/itinerary/daybyday/preview";
 import { useDispatch } from "react-redux";
 const divideTravellers = (val) => {
   let distribution = [];
@@ -58,23 +58,22 @@ const divideTravellers = (val) => {
   return distribution;
 };
 
-const mergePassengers=(data)=>{
-  const number_of_adults=data.reduce((acc,curr)=>acc+curr.adults,0)
-  const number_of_children=data.reduce((acc,curr)=>acc+curr.children,0)
-  const number_of_infants=data.reduce((acc,curr)=>acc+curr.infants,0)
+const mergePassengers = (data) => {
+  const number_of_adults = data.reduce((acc, curr) => acc + curr.adults, 0);
+  const number_of_children = data.reduce((acc, curr) => acc + curr.children, 0);
+  const number_of_infants = data.reduce((acc, curr) => acc + curr.infants, 0);
   return {
-    number_of_adults:number_of_adults,
-    number_of_children:number_of_children,
-    number_of_infants:number_of_infants||0,
-  }
-}
-
+    number_of_adults: number_of_adults,
+    number_of_children: number_of_children,
+    number_of_infants: number_of_infants || 0,
+  };
+};
 
 export default function TravelPartnerContact(props) {
   const [share, setShare] = useState(false);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [showSettings, setShowSettings] = useState(false);
-  const [isHotelsPresent,setIsHotelsPresent]=useState(true);
+  const [isHotelsPresent, setIsHotelsPresent] = useState(true);
   const router = useRouter();
   const itinerary_id = router.query.id;
   const dispatch = useDispatch();
@@ -100,55 +99,68 @@ export default function TravelPartnerContact(props) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
     }
   };
+
   const fetchItinerary = async () => {
-    try{
-    props?.resetRef();
-    props.fetchData(true);
-    }
-    catch(err){
+    try {
+      props?.resetRef();
+      props.fetchData(true);
+    } catch (err) {
       console.error("[ERROR]: fetchItineraryStatus: ", err.message);
     }
   };
 
   const handleApply = (data) => {
     const req = data;
-    
+
     if (req.add_hotels == true) {
       req.passengers = mergePassengers(req.room_configuration);
     } else {
       req.room_configuration = divideTravellers(req.passengers);
     }
 
-    return axios.post(`${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/itinerary-edit/`, req, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    })
-    .then((res) => {
-      fetchItineraryStatus(itinerary_id);
-      return res;
-    })
-    .catch((err) => {
-      console.log("error is:", err);
-      throw err;
-    })
-    .finally(() => {
-      setShowSettings(false);
-    });
-  }
+    return axios
+      .post(
+        `${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/itinerary-edit/`,
+        req,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        fetchItineraryStatus(itinerary_id);
+        return res;
+      })
+      .catch((err) => {
+        console.log("error is:", err);
+        throw err;
+      })
+      .finally(() => {
+        setShowSettings(false);
+      });
+  };
+
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2">
         <button
           className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
           onClick={() => {
-            Promise.resolve(axios.get(`${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/bookings/hotels/?fields=no_of_hotels`)).then((res) => {
-              setIsHotelsPresent(res.data.no_of_hotels > 0);
-            }).catch((err) => {
-              setIsHotelsPresent(false);
-            }).finally(() => {
-              setShowSettings(true)
-            })
+            Promise.resolve(
+              axios.get(
+                `${MERCURY_HOST}/api/v1/itinerary/${itinerary_id}/bookings/hotels/?fields=no_of_hotels`
+              )
+            )
+              .then((res) => {
+                setIsHotelsPresent(res.data.no_of_hotels > 0);
+              })
+              .catch((err) => {
+                setIsHotelsPresent(false);
+              })
+              .finally(() => {
+                setShowSettings(true);
+              });
           }}
         >
           <Image
@@ -159,7 +171,7 @@ export default function TravelPartnerContact(props) {
           />
         </button>
         {isDesktop && (
-          <div className="relative">
+          <>
             <button
               className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
               onClick={() => setShare(true)}
@@ -172,7 +184,11 @@ export default function TravelPartnerContact(props) {
               />
             </button>
             {share && (
-              <div>
+              <>
+                <div
+                  className="fixed inset-0 bg-black/40 z-[1999] backdrop-blur-[1px]"
+                  onClick={() => setShare(false)}
+                />
                 <SocialShareDesktop
                   social_title={props?.itinerary?.social_title}
                   social_description={props?.social_description}
@@ -181,40 +197,50 @@ export default function TravelPartnerContact(props) {
                   share={share}
                   setShare={setShare}
                 />
-              </div>
+              </>
             )}
-          </div>
+          </>
         )}
       </div>
-      {isDesktop ?<ModalWithBackdrop
-        centered
-        show={showSettings == true}
-        mobileWidth="100%"
-        backdrop
-        closeIcon={true}
-        onHide={() => setShowSettings(false)}
-        borderRadius={"12px"}
-        animation={false}
-        backdropStyle={{
-          backgroundColor: "rgba(0,0,0,0.4)",
-          backdropFilter: "blur(1px)",
-        }} // <- add this
-        paddingX="20px"
-        paddingY="20px"
-      >
-        <Settings setShowSettings={setShowSettings} isHotelsPresent={isHotelsPresent} handleApply={handleApply}/>
-      </ModalWithBackdrop>:
-      <BottomModal
-        show={showSettings == true}
-        onHide={() => setShowSettings(false)}
-        width="100%"
-        height="max-content"
-        paddingX="16px"
-        paddingY="31px"
-      >
-        <Settings setShowSettings={setShowSettings} isHotelsPresent={isHotelsPresent} handleApply={handleApply}/>
-      </BottomModal>
-      }
+      {isDesktop ? (
+        <ModalWithBackdrop
+          centered
+          show={showSettings == true}
+          mobileWidth="100%"
+          backdrop
+          closeIcon={true}
+          onHide={() => setShowSettings(false)}
+          borderRadius={"12px"}
+          animation={false}
+          backdropStyle={{
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backdropFilter: "blur(1px)",
+          }}
+          paddingX="20px"
+          paddingY="20px"
+        >
+          <Settings
+            setShowSettings={setShowSettings}
+            isHotelsPresent={isHotelsPresent}
+            handleApply={handleApply}
+          />
+        </ModalWithBackdrop>
+      ) : (
+        <BottomModal
+          show={showSettings == true}
+          onHide={() => setShowSettings(false)}
+          width="100%"
+          height="max-content"
+          paddingX="16px"
+          paddingY="31px"
+        >
+          <Settings
+            setShowSettings={setShowSettings}
+            isHotelsPresent={isHotelsPresent}
+            handleApply={handleApply}
+          />
+        </BottomModal>
+      )}
     </div>
   );
 }
