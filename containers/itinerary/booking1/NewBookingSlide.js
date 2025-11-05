@@ -1059,51 +1059,50 @@ const Details = (props) => {
     setPax(option);
   };
 
-  const handleToggleInclusion = async (bookingId) => {
+const handleToggleInclusion = async (bookingId) => {
   setUpdatingInclusions(prev => ({ ...prev, [bookingId]: true }));
   
   try {
-    // Toggle the selection first for immediate UI feedback
     const newSelections = {
       ...selectedInclusions,
       [bookingId]: !selectedInclusions[bookingId]
     };
     setSelectedInclusions(newSelections);
 
-    // Prepare deselected bookings array
-    const deselectedBookings = [];
+  
+    let bookingType = '';
+    let clickedBooking = null;
     
     if (Cart?.summary) {
       Object.entries(Cart.summary).forEach(([category, data]) => {
         if (data.bookings && data.bookings.length > 0) {
-          data.bookings.forEach(booking => {
-            // If booking is deselected (false in newSelections)
-            if (!newSelections[booking.id]) {
-              const bookingType = category === 'Stays' ? 'accommodation' :
-                category === 'Flights' ? 'flight' :
-                category === 'Transfers' ? 'transfer' : 'activity';
-              
-              deselectedBookings.push({
-                booking_type: bookingType.toLowerCase(),
-                booking_id: booking.id
-              });
-            }
-          });
+          const found = data.bookings.find(booking => booking.id === bookingId);
+          if (found) {
+            clickedBooking = found;
+            bookingType = category === 'Stays' ? 'accommodation' :
+              category === 'Flights' ? 'flight' :
+              category === 'Transfers' ? 'transfer' : 'activity';
+          }
         }
       });
     }
 
-    // Call update cart API
+   
+    const payload = [{
+      booking_type: bookingType.toLowerCase(),
+      booking_id: bookingId,
+      selected: newSelections[bookingId] 
+    }];
+
     const response = await updateCartPricing.patch(
       `/${router.query.id}/cart/`,
-      deselectedBookings,
+      payload, 
       {
         headers: { Authorization: `Bearer ${props.token}` }
       }
     );
 
     if (response.data) {
-      // Update Redux cart with new response
       dispatch(setCart(response.data));
       
       dispatch(
@@ -1138,7 +1137,7 @@ const Details = (props) => {
  const calculateFilteredTotal = () => {
   if (!Cart) return 0;
 
-  let total = Cart?.total_bookings_cost || 0;
+  let total = Cart?.total_payable_amount || 0;
 
   // If total is 0, return 0 early
   if (total === 0) return 0;
