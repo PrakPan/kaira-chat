@@ -14,6 +14,7 @@ const ModalWithBackdrop = ({
   mobileWidth = "90%",
   paddingX = "0px",
   paddingY = "0px",
+  parentClasses=""
 }) => {
   if (!show) return null;
 
@@ -24,7 +25,7 @@ const ModalWithBackdrop = ({
       onClick={onHide} // close modal when clicking outside
     >
       <div
-        className={`bg-white relative shadow-lg ${
+        className={`bg-white relative shadow-lg ${parentClasses} ${
           animation ? "transition-all duration-300 ease-in-out transform scale-100" : ""
         }`}
         style={{

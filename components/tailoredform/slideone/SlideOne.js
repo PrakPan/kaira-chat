@@ -152,7 +152,7 @@ const SlideOne = (props) => {
         borderRadius={"12px"}
         paddingX="20px"
         paddingY="20px"
-        
+        parentClasses={'border-md border-solid border-primary-yellow'}
         animation={false}
         backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
       >

@@ -498,3 +498,13 @@ a.termsnavunderlinelink {
     border-radius: 0px;
 }
 }
+
+.leaflet-top.leaflet-left {
+  right: 10px;
+  left: auto;
+}
+
+.leaflet-control-zoom {
+  margin-right: 10px;
+  margin-top: 10px;
+}

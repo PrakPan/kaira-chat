@@ -86,7 +86,7 @@ const GroupType = (props) => {
             >
               <StyledButton
                 style={{ lineHeight: "1.2", alignItems: "flex-start" }}
-                className="flex gap-2 flex-row center-div"
+                className="flex gap-2 flex-row center-div bg-text-white"
                 clicked={_isPreferenceAdded(filter.display)}
               >
                 <Image src={`/${filter.icon}`} alt={filter.display} width={15} height={15} />
