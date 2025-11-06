@@ -565,6 +565,7 @@ const TransferDrawer = ({
                 handleClose={handleClose}
                 error={error}
                 handleEditRoute={handleEditRoute}
+                data={data}
               />
             )
           ) : loading ? (

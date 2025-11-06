@@ -5192,7 +5192,7 @@ const OtherTransfer = ({
                         ...otherTransfer,
                         selectedPrice: {
                           ...priceOption,
-                          result_index: priceIndex,
+                          result_index: priceOption.result_index,
                         },
                       };
 

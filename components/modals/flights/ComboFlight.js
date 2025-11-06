@@ -1529,9 +1529,9 @@ useEffect(() => {
   setIsFilterDrawerOpen(value);
 }}
             filters={{
-              ...filtersState,
-              // preferred_departure_time: preferredDepartureTime,
-            }}
+    ...filtersState,
+    preferred_departure_time: preferredDepartureTime,  
+  }}
             setFiltersState={setFiltersState}
             handleFiltersChange={handleFiltersChange}
             airlineCodes={airlineCodes}

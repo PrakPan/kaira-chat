@@ -10,8 +10,13 @@ export default function FlightFilters(props) {
     props.filters?.price_range?.[1] || 80000
   ]);
   const [tripType, setTripType] = useState(props.filters?.trip_type || "one_way");
-  const [stops, setStops] = useState(props.filters?.stops || []);
-  const [departureTime, setDepartureTime] = useState(props.filters?.departure_time || "00:00");
+  const [stops, setStops] = useState(['multiple_stops']);
+  const [departureTime, setDepartureTime] = useState(() => {
+  if (props.filters?.preferred_departure_time) {
+    return dayjs(props.filters.preferred_departure_time).format("HH:mm");
+  }
+  return props.filters?.departure_time || "00:00";
+});
   const [airlines, setAirlines] = useState(props.selectedAirlines || []);
   const [fareType, setFareType] = useState(
   props.filters?.fare_type === true ? 'refundable' 
@@ -45,14 +50,15 @@ export default function FlightFilters(props) {
     setTimeSlots(slots);
 
     // Set initial selected time
-    if (departureTime) {
-      const [hours, minutes] = departureTime.split(":");
-      const formattedTime = dayjs()
-        .hour(parseInt(hours))
-        .minute(parseInt(minutes))
-        .format("h:mm A");
-      setSelectedTime(formattedTime);
-    }
+   if (departureTime && props.filters?.preferred_departure_time) {
+  const [hours, minutes] = departureTime.split(":");
+  const baseDate = dayjs(props.filters.preferred_departure_time);
+  const formattedTime = baseDate
+    .hour(parseInt(hours))
+    .minute(parseInt(minutes))
+    .format("h:mm A");
+  setSelectedTime(formattedTime);
+}
   }, [departureTime]);
 
   // Close dropdown when clicking outside
