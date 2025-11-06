@@ -206,7 +206,7 @@ export default function FlightDetails({
                 style={popupStyle}
                 className="z-50 absolute top-full left-1/2 -translate-x-1/2 text-sm flex flex-col gap-3 mt-2"
               >
-                {data?.segments.map((segment, index) => {
+                {data?.segments?.map((segment, index) => {
                   if (index == 0) return null;
                   return (
                     <div key={index} className="relative">

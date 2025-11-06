@@ -235,7 +235,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
       
                   <div className="flex flex-row w-full justify-between items-center p-2">
                     <FlightDetails
-                      data={data}
+                      data={data?.transfer_details?.items?.[0]}
                       origin={
                         segments?.[0]?.origin ||
                         segments[0]?.origin
@@ -249,14 +249,14 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
                       }
                       duration={
                         typeof (
-                          data?.transfer_details?.items?.[0]?.segments?.[0]?.duration ||
+                          data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
                           data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
                         ) == "number"
                           ? convertMinutesToHours(
-                              data?.transfer_details?.items?.[0]?.segments?.[0]?.duration ||
+                              data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
                                 data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
                             )
-                          : data?.transfer_details?.items?.[0]?.segments?.[0]?.duration ||
+                          : data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
                             data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
                       }
                       isNonStop={
@@ -267,7 +267,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
                         (segments?.length ||
                           segments?.length) - 1
                       }
-                      segments={segments || segments}
+                      segments={segments}
                       setShowDetails={setShowDetails}
                     />
                   </div>
