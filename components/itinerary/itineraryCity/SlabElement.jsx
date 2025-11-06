@@ -35,9 +35,21 @@ export const getStars = (rating) => {
 };
 
 // 
+const formatTime = (time24) => {
+  if (!time24) return '';
+  
+  const [hours, minutes] = time24.split(':');
+  const hour = parseInt(hours, 10);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  
+  return `${hour12}:${minutes} ${period}`;
+};
 
 const SlabElement = (props) => {
   const { trackActivityBookingAdd, trackActivityCardClicked, trackPoiCardClicked } = useAnalytics();
+
+  
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
@@ -363,7 +375,15 @@ const Activity = (props) => {
                 <div className="text-[#6E757A] Body3R_12">{props?.element?.poi ? "Self Exploration" : "Activity"}</div>
               </div>
 
-              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div>
+              {(props.element?.start_time || props.element?.end_time) && (
+  <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]">
+    {props.element?.start_time && formatTime(props.element.start_time)}
+    {props.element?.start_time && props.element?.end_time && ' - '}
+    {props.element?.end_time && formatTime(props.element.end_time)}
+  </div>
+)}
+
+              {/* <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div> */}
 
               {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
 
@@ -642,14 +662,21 @@ const Recommendation = (props) => {
                 <div className="text-[#6E757A] Body3R_12">Restaurant</div>
               </div>
 
-              <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div>
+              {/* <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div> */}
+              {(props.element?.restaurants?.[0]?.start_time || props.element?.restaurants?.[0]?.end_time) && (
+  <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]">
+    {props.element?.restaurants?.[0]?.start_time && formatTime(props.element.restaurants?.[0]?.start_time)}
+    {props.element?.restaurants?.[0]?.start_time && props.element?.restaurants?.[0]?.end_time && ' - '}
+    {props.element?.restaurants?.[0]?.end_time && formatTime(props.element.restaurants?.[0]?.end_time)}
+  </div>
+)}
 
               {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
                 <div className="Body3M_12">
-                  {props.element?.restaurants?.[0]?.rating}
+                  {props.element?.restaurants?.[0]?.rating}&nbsp;
                 </div>
                 <div className="flex items-center text-primary-stars">
-                  {getStars(props.element?.restaurants?.[0]?.rating)}&nbsp;
+                  <Image src="/star.svg" width={16} height={16} alt="star" />
                 </div>
               </div>
                 : null}
