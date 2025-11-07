@@ -129,6 +129,62 @@ const ProfileContainer = styled.div`
   }
 `;
 
+const CircularImageWrapper = styled.div`
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  max-width: 2rem;
+  max-height: 2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  
+  /* Force all children to be circular */
+  & > * {
+    border-radius: 50% !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    max-width: 2rem !important;
+    max-height: 2rem !important;
+  }
+  
+  /* Ensure image fills the container properly */
+  img {
+    width: 2rem !important;
+    height: 2rem !important;
+    max-width: 2rem !important;
+    max-height: 2rem !important;
+    object-fit: cover !important;
+  }
+  
+  /* Mobile specific fixes */
+  @media screen and (max-width: 768px) {
+    width: 2rem !important;
+    height: 2rem !important;
+    min-width: 2rem !important;
+    min-height: 2rem !important;
+    max-width: 2rem !important;
+    max-height: 2rem !important;
+    
+    & > * {
+      width: 2rem !important;
+      height: 2rem !important;
+      max-width: 2rem !important;
+      max-height: 2rem !important;
+    }
+    
+    img {
+      width: 2rem !important;
+      height: 2rem !important;
+      max-width: 2rem !important;
+      max-height: 2rem !important;
+    }
+  }
+`;
+
 const ProfileDropDown = (props) => {
   const isPageLoaded = usePageLoaded();
   let profileRef = useRef();
@@ -368,7 +424,7 @@ const ProfileDropDown = (props) => {
         <RedDot className="center-div">1</RedDot>
       ) : null}
 
-      <div className="w-full flex flex-row items-center gap-1">
+      {/* <div className="w-full flex flex-row items-center gap-1">
         <ImageLoader
           borderRadius="50%"
           url={
@@ -391,7 +447,38 @@ const ProfileDropDown = (props) => {
             style={{ color: props.headerColor === "black" ? "white" : "black" }}
           />
         ) : null}
-      </div>
+      </div> */}
+
+      <div className="w-full flex flex-row items-center gap-1">
+  <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
+    <ImageLoader
+      borderRadius="50%"
+      url={
+        props.image && props.image !== "null" && props.image !== null
+          ? props.image
+          : localStorage.getItem("user_image") !== "null" && localStorage.getItem("user_image") !== null
+          ? localStorage.getItem("user_image")
+          : "media/icons/navigation/profile-user.png"
+      }
+      width="2rem"
+      height="2rem"
+      widthmobile="2rem"
+      heightmobile="2rem"
+      dimensions={{ width: 300, height: 300 }}
+      dimensionsMobile={{ width: 300, height: 300 }}
+      noPlaceholder={true}
+    />
+  </CircularImageWrapper>
+  <div className="Body2R_14">{props.name}</div>
+  {isPageLoaded ? (
+    <IoIosArrowDown
+      width="18px"
+      height="18px"
+      onClick={() => setToggleMenu(!toggleMenu)}
+      style={{ color: props.headerColor === "black" ? "white" : "black" }}
+    />
+  ) : null}
+</div>
 
        <DropdownContainer show={toggleMenu}>
         <ListContainer>
