@@ -164,8 +164,6 @@ export const Container = styled.div`
   height: max-content;
   padding: 2px;
   color: black;
-  z-index: ${(props) => (props.showBlack ? "1006" : "2")};
-  position: relative;
   width: 100%;
   border: none !important;
 
@@ -191,9 +189,9 @@ export const BlackContainer = styled.div`
 `;
 
 export const headings = [
-  "Build Your Travel Plan — Easy, Fun, and Just the Way You Like It.",
-  "Route Overview — Customize Your Journey from Start to Finish!",
-  "Let’s Set Things Up — Tell Us Who’s In & What You Need to Make It Perfect?",
-  "Almost there - Just let us know your stay preferences and get your itinerary!",
-  "Awesome! We've got your details.",
+  "Select Your Travel Destinations and Dates",
+  "Customize Your Journey from Start to Finish",
+  "Tell Us Who’s In and What You Need to Make It Perfect",
+  "Let Us Know Your Stay Preferences and Get Your Itinerary",
+  // "Awesome! We've Got Your Details",
 ];

@@ -6,7 +6,7 @@ import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
 import { Body1M_16 } from "../../new-ui/Body";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddFlights, setAddHotels, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, togglePreference } from "../../../store/actions/slideOneActions";
+import { setAddFlights, setAddHotels, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, setAddInclusions , togglePreference } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -30,6 +30,7 @@ const SlideThree = (props) => {
     roomConfiguration,
     addHotels,
     addFlights,
+    addInclusions
   } = useSelector((state) => state.tailoredInfoReducer.slideThree);
 
   useEffect(() => {
@@ -63,7 +64,7 @@ const SlideThree = (props) => {
     <Container>
       <div>
         {/* <Body1M_16 className="mb-[4px]">Group type</Body1M_16> */}
-        <div className="text-xl-md font-600 text-center leading-2xl-md mb-md"> Group Type </div>
+        <div className="text-lg font-600 leading-xl-md mb-md"> Group Type </div>
 
         <GroupComponent
           _handleShowPax={_handleShowPax}
@@ -85,7 +86,7 @@ const SlideThree = (props) => {
         />
       }
       <div>
-        <div className="text-lg font-600 leading-xl-md text-center mb-md"> Pick your inclusions </div>
+        <div className="text-lg font-600 leading-xl-md mb-md"> Pick your inclusions </div>
 
         <div className="flex px-lg flex-col border-sm border-solid border-primary-yellow rounded-xl bg-text-white">
           <div className="border-b-sm border-solid border-text-disabled py-md">
@@ -104,7 +105,7 @@ const SlideThree = (props) => {
             </span>
           </div>
 
-          <div className="py-md">
+          <div className="border-b-sm border-solid border-text-disabled py-md">
             <span className="relative flex items-center ">
               <label
                 className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
@@ -118,6 +119,22 @@ const SlideThree = (props) => {
               </label>
             </span>
           </div>
+
+          <div className="py-md">
+            <span className="relative flex items-center ">
+              <label
+                className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
+                <input
+                  type="checkbox"
+                  checked={addInclusions}
+                  onChange={(e) => dispatch(setAddInclusions(e.target.checked))}
+                  className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
+                />
+                <span className="font-md font-400 text-black">Activities and Transfers</span>
+              </label>
+            </span>
+          </div>
+
         </div>
       </div>
     </Container>

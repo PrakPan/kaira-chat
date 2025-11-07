@@ -20,6 +20,8 @@ const EndDestination = (props) => {
   const [showDestination, setShowDestination] = useState(true);
   const hotLocations = useSelector((state) => state.HotLocationSearch);
 
+  console.log(hotLocations,"hot locations")
+
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
   };
