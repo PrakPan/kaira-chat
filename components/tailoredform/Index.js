@@ -504,7 +504,7 @@ const Enquiry = (props) => {
                 />
               </div>
               <div
-                className={`${slideIndex == 1 ? "w-[100%]" : "max-w-[600px]"}`}
+                className={`${slideIndex == 1 ? "w-[100%]" : isDesktop ? "max-w-[600px]" : "w-full"}`}
               >
                 <Flickity
                   initialInputId={initialInputId}
