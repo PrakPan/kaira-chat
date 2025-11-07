@@ -50,45 +50,47 @@ export default function SlideThree(props) {
 
   return (
     <div className="w-[100vw] w-[100vw] sm:w-[543px]">
-    <div className="flex flex-col gap-[30px] px-[16px] sm:px-[0px] ">
-      <div className="flex flex-col gap-[12px]">
-        <Body1M_16>Hotel Type</Body1M_16>
+      <div className="flex flex-col gap-[30px] px-[16px] sm:px-[0px] ">
+        <div className="flex flex-col gap-[12px]">
+          <div className="text-lg font-600 leading-xl-md text-center mb-md">Hotel Type </div>
 
-        <StyledFlexWrap className="justify-between">
-          {["3", "4", "5"].map((star) => (
-            <label
-              key={star}
-              className="flex items-center gap-2  rounded-md w-fit cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                value={star}
-                checked={hotelType.includes(star)}
-                onChange={() => dispatch(toggleHotelType(star))}
-                className="focus:outline-none cursor-pointer"
-              />
-              <div className="Body2R_14">{star}-Stars</div>
-            </label>
-          ))}
-        </StyledFlexWrap>
+          <div className="flex px-lg flex-col border-sm border-solid border-primary-yellow rounded-xl bg-text-white">
+                 {["3", "4", "5"].map((star,index) => (
+            <div className={`py-md ${ index < 2 ? 'border-b-sm border-solid border-text-disabled' : ''}`}>
 
-      </div>
-      <div>
-        <Body2R_14 className="mb-[8px]">Room Configuration</Body2R_14>
-        <Pax
-          numberOfAdults={numberOfAdults}
-          setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
-          numberOfChildren={numberOfChildren}
-          setNumberOfChildren={(val) => dispatch(setNumberOfChildren(val))}
-          numberOfInfants={numberOfInfants}
-          setNumberOfInfants={(val) => dispatch(setNumberOfInfants(val))}
-          roomConfiguration={roomConfiguration}
-          setRoomConfiguration={(val) => dispatch(setRoomConfiguration(val))}
-          groupType={groupType}
-        />
-      </div>
+              <span className="relative flex items-center ">
+                <label
+                  className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
+                  <input
+                    type="checkbox"
+                   checked={hotelType.includes(star)}
+                  onChange={() => dispatch(toggleHotelType(star))}
+                    className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
+                  />
+                  <span className="font-md font-400 text-black">{star}-Stars</span>
+                </label>
+              </span>
+            </div>
+            ))}
+          </div>
 
-      {/* <div>
+        </div>
+        <div>
+          <Body2R_14 className="mb-[8px]">Room Configuration</Body2R_14>
+          <Pax
+            numberOfAdults={numberOfAdults}
+            setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
+            numberOfChildren={numberOfChildren}
+            setNumberOfChildren={(val) => dispatch(setNumberOfChildren(val))}
+            numberOfInfants={numberOfInfants}
+            setNumberOfInfants={(val) => dispatch(setNumberOfInfants(val))}
+            roomConfiguration={roomConfiguration}
+            setRoomConfiguration={(val) => dispatch(setRoomConfiguration(val))}
+            groupType={groupType}
+          />
+        </div>
+
+        {/* <div>
         <Body1M_16 className="mb-[12px]">Meal Preferences</Body1M_16>
         <StyledFlexWrap >
           {MEAL_PREFERENCES.map((filter, i) => {
@@ -111,7 +113,7 @@ export default function SlideThree(props) {
           })}
         </StyledFlexWrap>
       </div> */}
-      {/* <div>
+        {/* <div>
           <Body2R_14 className="mb-[6px]">Special Requests</Body2R_14>
           <StyledTextarea
             placeholder="Write any special requests"
@@ -119,7 +121,7 @@ export default function SlideThree(props) {
             value={specialRequests}
           />
       </div> */}
-    </div>
+      </div>
     </div>
   );
 }
