@@ -1191,6 +1191,7 @@ const SimpleTabsV2 = (props) => {
                   token={props.token}
                   loadpricing={props?.loadpricing}
                   payment={props?.payment}
+                  getPaymentHandler={props.getPaymentHandler}
                   itineraryDate={props?.itineraryDate}
                   mercuryItinerary={props?.mercuryItinerary}
                   itinerary={props.itinerary}

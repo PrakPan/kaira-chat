@@ -711,17 +711,15 @@ const ItineraryInclusions = ({
   selectedInclusions,
   onToggleInclusion,
   arePricesHidden,
-  updatingInclusions ={}
+  updatingInclusions = {},
+  defaultExpanded = false 
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
-    Stays: true,
-    Transfers: true,
-    Flights: true,
-    Activities: true
+    Stays: defaultExpanded || true, 
+    Transfers: defaultExpanded || true,
+    Flights: defaultExpanded || true, 
+    Activities: defaultExpanded || true 
   });
-
-
-
 
 
   const categorizeBookings = () => {
@@ -857,11 +855,12 @@ const ItineraryInclusions = ({
     </div>
   ) : (
     <input
-      type="checkbox"
-      checked={selectedInclusions[booking.id]}
-      onChange={() => onToggleInclusion(booking.id)}
-      className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer"
-    />
+  type="checkbox"
+  checked={selectedInclusions[booking.id]}
+  onChange={() => onToggleInclusion(booking.id)}
+  disabled={booking.booking_cost === 0} 
+  className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+/>
   )}
 </div>
 
@@ -870,6 +869,11 @@ const ItineraryInclusions = ({
                       <div className="font-medium text-sm mb-1 line-clamp-2">
                         {booking.detail.name}
                       </div>
+                      {booking.booking_cost === 0 && (
+  <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+    PAID
+  </div>
+)}
 
                       <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                         <div className="flex items-center gap-1">
@@ -982,7 +986,9 @@ const Details = (props) => {
   const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
   const [selectedInclusions, setSelectedInclusions] = useState({});
-  const [inclusionsExpanded, setInclusionsExpanded] = useState(false);
+  const [inclusionsExpanded, setInclusionsExpanded] = useState(
+  Cart?.sales?.some(sale => sale.status === 'Completed') && Cart?.total_payable_amount !== 0
+);
     const [updatingInclusions, setUpdatingInclusions] = useState({});
 
   const { trackWhatsAppClicked } = useAnalytics();
@@ -1427,9 +1433,9 @@ const handleToggleInclusion = async (bookingId) => {
         }
 
         const razorpayData = {
-          amount: fullPaymentSale.remaining_amount,
-          sales: [fullPaymentSale]
-        };
+  amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
+  sales: [fullPaymentSale]
+};
 
         // Update the Razorpay handler to set session completion
         _startRazorpayHandler(razorpayData, 'full');
@@ -2446,7 +2452,7 @@ const handleToggleInclusion = async (bookingId) => {
                 </div>
               </div>
 
-              {hasFullPaymentCompleted && Cart?.total_payable_amount == 0 ? (
+              {Cart?.total_payable_amount == 0 ? (
                 <PaymentSuccess
                   amount={getIndianPrice(
                     Math.round(Cart?.discounted_cost)
@@ -2456,12 +2462,13 @@ const handleToggleInclusion = async (bookingId) => {
               ) : (
                 // Detailed payment view
                 <div>
-                  <ItineraryInclusions
+               <ItineraryInclusions
   Cart={Cart}
   selectedInclusions={selectedInclusions}
   onToggleInclusion={handleToggleInclusion}
   arePricesHidden={Cart?.are_prices_hidden}
   updatingInclusions={updatingInclusions}
+  defaultExpanded={Cart?.sales?.some(sale => sale.status === 'Completed') && Cart?.total_payable_amount !== 0} // ADD THIS PROP
 />
 
                   {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !== 0 && <CouponSection
@@ -2474,7 +2481,7 @@ const handleToggleInclusion = async (bookingId) => {
                     payment={couponUsageData} // Pass payment data
                   />}
 
-                  {!hasFullPaymentCompleted && <PriceDetails
+                  { <PriceDetails
                     itineraryCost={getIndianPrice(Math.round(calculateFilteredTotal() + (couponUsageData?.discount || 0)))}
                     lockInCost={0}
                     couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
@@ -2487,7 +2494,7 @@ const handleToggleInclusion = async (bookingId) => {
 
                   {hasFullPaymentCompleted && <div className="text-sm mt-2 mb-4"><span>
                     <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
-                    {`Your Itinerary fee of ${Math.round(Cart?.discounted_cost)} has been received. Please pay the remaining now or before 5 Sept 2025 to confirm your trip.`}
+                    {`Your Itinerary fee of ${Math.round(Cart?.amount_paid)} has been received. Please pay the remaining now or before 5 Sept 2025 to confirm your trip.`}
                   </span></div>}
 
                   {/* {!lockInCompleted && ( */}
