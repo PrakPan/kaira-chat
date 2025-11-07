@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import CityDay from "./CityDay";
 
 const CityDaybyDay = (props) => {

@@ -64,6 +64,23 @@ import { useHandleClose } from "../../../hooks/useHandleClose";
 import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
+import { getDateInfo } from "../../../utils/dateFormate";
+
+const svgIcons = {
+  'time': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M10.2 11.1333L11.1333 10.2L8.66668 7.73334V4.66668H7.33334V8.26668L10.2 11.1333ZM8.00001 14.6667C7.07779 14.6667 6.21112 14.4916 5.40001 14.1413C4.5889 13.7916 3.88334 13.3167 3.28334 12.7167C2.68334 12.1167 2.20845 11.4111 1.85868 10.6C1.50845 9.7889 1.33334 8.92223 1.33334 8.00001C1.33334 7.07779 1.50845 6.21112 1.85868 5.40001C2.20845 4.5889 2.68334 3.88334 3.28334 3.28334C3.88334 2.68334 4.5889 2.20823 5.40001 1.85801C6.21112 1.50823 7.07779 1.33334 8.00001 1.33334C8.92223 1.33334 9.7889 1.50823 10.6 1.85801C11.4111 2.20823 12.1167 2.68334 12.7167 3.28334C13.3167 3.88334 13.7916 4.5889 14.1413 5.40001C14.4916 6.21112 14.6667 7.07779 14.6667 8.00001C14.6667 8.92223 14.4916 9.7889 14.1413 10.6C13.7916 11.4111 13.3167 12.1167 12.7167 12.7167C12.1167 13.3167 11.4111 13.7916 10.6 14.1413C9.7889 14.4916 8.92223 14.6667 8.00001 14.6667ZM8.00001 13.3333C9.47779 13.3333 10.7362 12.814 11.7753 11.7753C12.814 10.7362 13.3333 9.47779 13.3333 8.00001C13.3333 6.52223 12.814 5.26379 11.7753 4.22468C10.7362 3.18601 9.47779 2.66668 8.00001 2.66668C6.52223 2.66668 5.26401 3.18601 4.22534 4.22468C3.18623 5.26379 2.66668 6.52223 2.66668 8.00001C2.66668 9.47779 3.18623 10.7362 4.22534 11.7753C5.26401 12.814 6.52223 13.3333 8.00001 13.3333Z" fill="#ACACAC" />
+  </svg>,
+  'location': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M8.00001 14.6667C6.82223 14.6667 5.86112 14.4806 5.11668 14.1083C4.37223 13.7361 4.00001 13.2556 4.00001 12.6667C4.00001 12.4 4.08057 12.1528 4.24168 11.925C4.40279 11.6972 4.62779 11.5 4.91668 11.3333L5.96668 12.3167C5.86668 12.3611 5.75834 12.4111 5.64168 12.4667C5.52501 12.5222 5.43334 12.5889 5.36668 12.6667C5.51112 12.8445 5.84446 13 6.36668 13.1333C6.8889 13.2667 7.43335 13.3333 8.00001 13.3333C8.56668 13.3333 9.1139 13.2667 9.64168 13.1333C10.1695 13 10.5056 12.8445 10.65 12.6667C10.5722 12.5778 10.4722 12.5056 10.35 12.45C10.2278 12.3945 10.1111 12.3445 10 12.3L11.0333 11.3C11.3445 11.4778 11.5833 11.6806 11.75 11.9083C11.9167 12.1361 12 12.3889 12 12.6667C12 13.2556 11.6278 13.7361 10.8833 14.1083C10.1389 14.4806 9.17779 14.6667 8.00001 14.6667ZM8.01668 11C9.11668 10.1889 9.94446 9.37501 10.5 8.55834C11.0556 7.74168 11.3333 6.92223 11.3333 6.10001C11.3333 4.96668 10.9722 4.11112 10.25 3.53334C9.52779 2.95557 8.77779 2.66668 8.00001 2.66668C7.22223 2.66668 6.47223 2.95557 5.75001 3.53334C5.02779 4.11112 4.66668 4.96668 4.66668 6.10001C4.66668 6.84445 4.9389 7.61945 5.48334 8.42501C6.02779 9.23057 6.87223 10.0889 8.01668 11ZM8.00001 12.6667C6.43334 11.5111 5.2639 10.3889 4.49168 9.30001C3.71945 8.21112 3.33334 7.14445 3.33334 6.10001C3.33334 5.31112 3.47501 4.61945 3.75834 4.02501C4.04168 3.43057 4.40557 2.93334 4.85001 2.53334C5.29446 2.13334 5.79446 1.83334 6.35001 1.63334C6.90557 1.43334 7.45557 1.33334 8.00001 1.33334C8.54446 1.33334 9.09446 1.43334 9.65001 1.63334C10.2056 1.83334 10.7056 2.13334 11.15 2.53334C11.5945 2.93334 11.9583 3.43057 12.2417 4.02501C12.525 4.61945 12.6667 5.31112 12.6667 6.10001C12.6667 7.14445 12.2806 8.21112 11.5083 9.30001C10.7361 10.3889 9.56668 11.5111 8.00001 12.6667ZM8.00001 7.33334C8.36668 7.33334 8.68057 7.20279 8.94168 6.94168C9.20279 6.68057 9.33335 6.36668 9.33335 6.00001C9.33335 5.63334 9.20279 5.31945 8.94168 5.05834C8.68057 4.79723 8.36668 4.66668 8.00001 4.66668C7.63335 4.66668 7.31946 4.79723 7.05834 5.05834C6.79723 5.31945 6.66668 5.63334 6.66668 6.00001C6.66668 6.36668 6.79723 6.68057 7.05834 6.94168C7.31946 7.20279 7.63335 7.33334 8.00001 7.33334Z" fill="#ACACAC" />
+  </svg>,
+  'right_arrow': <svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewBox="0 0 8 12" fill="none">
+    <path d="M1.41 0L0 1.41L4.58 6L0 10.59L1.41 12L7.41 6L1.41 0Z" fill="black" />
+  </svg>,
+  'check_white': <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M5.24909 9.45L2.79909 7L1.98242 7.81666L5.24909 11.0833L12.2491 4.08333L11.4324 3.26666L5.24909 9.45Z" fill="white" />
+  </svg>
+}
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 80px;
@@ -94,7 +111,7 @@ const GetInTouchContainer = styled.div`
 const TRANSFER_TYPES = {
   ONEWAYTRIP: {
     name: "one-way-trip",
-    label: "One-way options",
+    label: "One Way Transfer Options",
   },
   ROUNDTRIP: {
     name: "round-trip",
@@ -104,9 +121,9 @@ const TRANSFER_TYPES = {
     name: "MULTICITYROUNDTRIP",
     label: "Multi-City/Round Trip Taxi"
   },
-    name: "MULTICITYROUNDTRIP",
-    label: "Multi-City/Round Trip Taxi"
-  }
+  name: "MULTICITYROUNDTRIP",
+  label: "Multi-City/Round Trip Taxi"
+}
 
 const TransferEditDrawer = (props) => {
   const {
@@ -630,7 +647,7 @@ const TransferEditDrawer = (props) => {
       }}
     >
 
-      <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
+      <div className="relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
             <>
@@ -659,34 +676,24 @@ const TransferEditDrawer = (props) => {
             </>
           )}
         </div>
-        {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? <div className="text-lg md:text-xl lg:text-xl font-semibold">
-          {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
-          from {city || mercuryTransfer?.source?.city_name} to{" "}
-          {dcity || mercuryTransfer?.destination?.city_name}{" "}
-        </div> : <div className="text-lg md:text-xl lg:text-xl font-semibold">
-          Changing Transfer
-        </div>}
+        {currentStep === 0 && <>
+          <div>
+            {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? <div className="text-xl font-600 leading-2xl">
+              {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
+              from {city || mercuryTransfer?.source?.city_name} to{" "}
+              {dcity || mercuryTransfer?.destination?.city_name}{" "}
+            </div> : <div className="text-xl font-600 leading-2xl">
+              Changing Transfer
+            </div>}
 
-        {/* {showOtherTransfer &&
-        <OtherTransfer
-          showOtherTransfer={showOtherTransfer}
-          setShowOtherTrasfer={setShowOtherTrasfer}
-          selectedResult={selectedResult}
-          setSelectedResult={setSelectedResult}
-          number_of_travellers={
-            props?.plan?.number_of_adults +
-            props?.plan?.number_of_children
-          }
-          check_in={check_in}
-          mercuryTransfer={mercuryTransfer}
-          currentStep={currentStep}
-        />
-      } */}
+            <div className="text-text-spacegrey text-sm-xl leading-lg-md mt-xs"> Explore all available transfer options at a glance and pick what suits you best. </div>
+          </div>
+        </>}
 
         {(loadingTransfers &&
           transferType === TRANSFER_TYPES.ONEWAYTRIP.name) ||
-        (loadingMulticityTransfers &&
-          transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
+          (loadingMulticityTransfers &&
+            transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
             <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
               {/* <div className="flex items-center justify-center">
@@ -777,108 +784,128 @@ const TransferEditDrawer = (props) => {
             </div>
           </div>
         ) : (
-          <div className="w-full flex flex-col items-center gap-3">
-            <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
-              {booking_type != "multicity" && <RadioButton
-                name={TRANSFER_TYPES.ONEWAYTRIP.name}
-                label={TRANSFER_TYPES.ONEWAYTRIP.label}
-                transferType={transferType}
-                handleTransferType={handleTransferType}
-              />}
-              {(booking_type == "multicity" || roundTripSuggestions || multiCitySuggestions) && (
-                <RadioButton
-                  name="MULTICITYROUNDTRIP"
-                  label="Multi-City/Round Trip Taxi"
-                  transferType={transferType}
-                  handleTransferType={handleTransferType}
-                />
-              )}
-            </div>
-
-            {/* {selectLoading && (
-              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                <div className="mb-96">
-                  <div className="animate-spin loader ease-linear rounded-full border-4 border-t-4 border-t-yellow-500 h-14 w-14"></div>
+          <div className="w-100">
+            {currentStep === 0 && <>
+              <div className="w-full flex flex-col items-center ">
+                <div className="w-full flex flex-row gap-4 whitespace-nowrap overflow-x-auto hide-scrollbar">
+                  {booking_type != "multicity" && <RadioButton
+                    name={TRANSFER_TYPES.ONEWAYTRIP.name}
+                    label={TRANSFER_TYPES.ONEWAYTRIP.label}
+                    transferType={transferType}
+                    handleTransferType={handleTransferType}
+                  />}
+                  {(booking_type == "multicity" || roundTripSuggestions || multiCitySuggestions) && (
+                    <RadioButton
+                      name="MULTICITYROUNDTRIP"
+                      label="Multi-City/Round Trip Taxi"
+                      transferType={transferType}
+                      handleTransferType={handleTransferType}
+                    />
+                  )}
                 </div>
+                <hr className="my-lg w-100" />
               </div>
-            )} */}
+            </>}
 
             {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
               <>
-                {/* <div className="w-full flex justify-start">
-                  {transfers.length < 2
-                    ? `${transfers.length} way`
-                    : `${transfers.length} ways`}{" "}
-                  to travel from {city || mercuryTransfer?.source?.city_name} to{" "}
-                  {dcity || mercuryTransfer?.destination?.city_name}
-                </div> */}
-                <div className="w-full flex flex-col items-center gap-3">
+                <div className="w-full flex flex-col items-center">
                   {currentStep === 0 ? (
                     <>
                       {transfers && transfers.length > 0 && (
-                        <div className="mb-4 w-full">
-                          <div className="inline-block mb-3">
-                            <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
-                              RECOMMENDED
-                            </span>
-                          </div>
-
-                          <div
-                            key={0}
-                            className="flex justify-between items-center p-3 bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4"
-                            onClick={() => {
-                              setSelectedTransferIndex(0);
-                              setCurrentStep(1);
-                            }}
-                          >
-                            <div>
-                              <span className="font-medium p-2 text-md md:text-lg">
-                                {transfers[0]?.name} {isDesktop ? "|" : ""}
-                              </span>
-                              <span className="text-gray-600 ml-1 text-md md:text-lg">
-                                {isDesktop ? "" : <br />}
-                                {Math.ceil(
-                                  transfers[0].transfers.reduce(
-                                    (sum, t) => sum + (t.duration || 0),
-                                    0
-                                  ) / 60
-                                )}{" "}
-                                hours |{" "}
-                                {transfers[0].transfers.reduce(
-                                  (sum, t) => sum + (t.distance || 0),
-                                  0
-                                )}{" "}
-                                kms
-                              </span>
+                        <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative w-full"
+                          key={0}
+                          onClick={() => {
+                            setSelectedTransferIndex(0);
+                            setCurrentStep(1);
+                          }}
+                        >
+                          <div>
+                            <div className="bg-tag-grass text-white rounded-md-lg text-sm font-500 leading-lg px-md py-xs inline">
+                              <span> RECOMMENDED  </span>
                             </div>
-                            <AiOutlineRight
-                              size={20}
-                              className="text-gray-400"
-                            />
+
+                            <div >
+                              <div>
+                                <div className="text-md-lg font-600 leading-xl-sm mt-sm">
+                                  {transfers[0]?.name}
+                                </div>
+                                <div className="flex mt-xs">
+                                  <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
+                                    <span> {svgIcons.time} </span>
+                                    <span>
+                                      {Math.ceil(
+                                        transfers[0].transfers.reduce(
+                                          (sum, t) => sum + (t.duration || 0),
+                                          0
+                                        ) / 60
+                                      )}&nbsp;Hours
+                                    </span>
+                                  </div>
+                                  <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
+                                    <span> {svgIcons.location} </span>
+                                    <span>
+                                      {transfers[0].transfers.reduce(
+                                        (sum, t) => sum + (t.distance || 0),
+                                        0
+                                      )}&nbsp;kms
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="absolute right-lg top-lg">{svgIcons.right_arrow} </div>
+                            </div>
                           </div>
                         </div>
                       )}
 
                       {transfers && transfers.length > 1 && (
                         <div className="w-full">
-                          <div className="inline-block mb-3 w-full">
-                            <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium">
-                              OTHERS
-                            </span>
-                          </div>
 
                           {transfers.slice(1).map((transfer, idx) => {
                             const index = idx + 1;
                             return (
                               <div
                                 key={index}
-                                className="flex justify-between p-3 items-center bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4"
+                                className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md w-full"
                                 onClick={() => {
                                   setSelectedTransferIndex(index);
                                   setCurrentStep(1);
                                 }}
                               >
-                                <div>
+
+                                <div >
+                                  <div>
+                                    <div className="text-md-lg font-600 leading-xl-sm ">
+                                      {transfer?.name}
+                                    </div>
+                                    <div className="flex mt-xs">
+                                      <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
+                                        <span> {svgIcons.time} </span>
+                                        <span>
+                                          {Math.ceil(
+                                            transfer.transfers.reduce(
+                                              (sum, t) => sum + (t.duration || 0),
+                                              0
+                                            ) / 60
+                                          )}&nbsp;Hours
+                                        </span>
+                                      </div>
+                                      <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
+                                        <span> {svgIcons.location} </span>
+                                        <span>
+                                          {transfer.transfers.reduce(
+                                            (sum, t) => sum + (t.distance || 0),
+                                            0
+                                          )}&nbsp;kms
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="absolute right-lg top-lg">{svgIcons.right_arrow} </div>
+                                </div>
+
+                                {/* <div>
                                   <span className="font-medium p-1 md:p-2 text-left text-md md:text-lg">
                                     {transfer?.name} {isDesktop ? "|" : ""}
                                   </span>
@@ -897,11 +924,7 @@ const TransferEditDrawer = (props) => {
                                     )}{" "}
                                     kms
                                   </span>
-                                </div>
-                                <AiOutlineRight
-                                  size={20}
-                                  className="text-gray-400"
-                                />
+                                </div> */}
                               </div>
                             );
                           })}
@@ -913,6 +936,7 @@ const TransferEditDrawer = (props) => {
                     (isDesktop ? (
                       transfers[selectedTransferIndex]?.transfers?.length >
                         1 ? (
+
                         <NewMultiModeContainer
                           useHandleClose={actualClose}
                           key={selectedTransferIndex}
@@ -1241,6 +1265,7 @@ const TransferEditDrawer = (props) => {
                 {multiCitySuggestions && (
                   <div className="w-full">
                     {/* <h3 className="text-lg font-semibold mb-3"></h3> */}
+                    =
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
@@ -1255,6 +1280,7 @@ const TransferEditDrawer = (props) => {
             ) : null}
           </div>
         )}
+
 
         {transferType === "MULTICITYROUNDTRIP" &&
           (roundTripSuggestions || multiCitySuggestions) && (
@@ -1348,24 +1374,26 @@ const TransferEditDrawer = (props) => {
           dCityData?.city?.id
         }
       ></TaxiModal>
-      {!isDesktop && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => {
-              actualClose();
-              setCurrentStep(0);
-              setSkipFlightFetch(false);
-              setSkipTaxiFetch(false);
-              setIsRouteSelected(false);
-              setFlightResults([]);
-              setTaxiResults([]);
-            }}
-          />
-        </FloatingView>
-      )}
-    </Drawer>
+      {
+        !isDesktop && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => {
+                actualClose();
+                setCurrentStep(0);
+                setSkipFlightFetch(false);
+                setSkipTaxiFetch(false);
+                setIsRouteSelected(false);
+                setFlightResults([]);
+                setTaxiResults([]);
+              }}
+            />
+          </FloatingView>
+        )
+      }
+    </Drawer >
   );
 };
 
@@ -1441,6 +1469,7 @@ const RouteContainer = (props) => {
     hideDrawer,
     booking_id,
   } = props;
+  console.log(name,"from royte")
   const actualClose = useHandleClose()
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -1576,29 +1605,8 @@ const RouteContainer = (props) => {
             </div>
           )
         ) : (
+          //  need to add header
           <>
-            {console.log("current step is:", currentStep)}
-            {
-              !(currentStep === 1 && singleTransfer?.mode === "Flight") && <div
-                className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
-                onClick={() => setCurrentStep(1)}
-              >
-                <div className="text-sm md:text-base">
-                  <span className="font-medium">
-                    {/* {sequencedModes.join(", ")} */}
-                    {name}{" "}
-                  </span>
-                  <p className="font-normal">
-                    {Math.ceil(
-                      transfer.reduce((sum, t) => sum + (t.duration || 0), 0) /
-                      60
-                    )}{" "}
-                    hours | {totalDistance} kms
-                  </p>
-                </div>
-                <AiOutlineRight size={16} className="md:text-20" />
-              </div>
-            }
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
@@ -1673,7 +1681,7 @@ const RouteContainer = (props) => {
                   destinationCityId={
                     dCityData?.city?.id || dCityData?.gmaps_place_id
                   }
-                  
+
                   sourceRouteCityId={singleTransfer?.source?.city}
                   destinationRouteCityId={singleTransfer?.destination?.city}
                   sourceHubId={singleTransfer?.source?.id}
@@ -1688,6 +1696,7 @@ const RouteContainer = (props) => {
                   taxiResults={taxiResults}
                   setTaxiResults={setTaxiResults}
                   skipTaxiResults={false}
+                  heading={name}
                 />
               ) : (
                 <OtherTransfer
@@ -1702,6 +1711,7 @@ const RouteContainer = (props) => {
                   number_of_travellers={
                     number_of_adults + number_of_children + number_of_infants
                   }
+                  name={name}
                   mode={singleTransfer?.mode}
                   check_in={check_in}
                   currentStep={currentStep}
@@ -1775,15 +1785,15 @@ const MultiRoute = (props) => {
 export const getModeIcon = (mode, size = 20) => {
   switch (mode.toLowerCase()) {
     case "train":
-      return <BiTrain size={size} />;
+      return <BiTrain color="#fff" size={size} />;
     case "taxi":
-      return <MdLocalTaxi size={size} />;
+      return <MdLocalTaxi color="#fff" size={size} />;
     case "flight":
       return <FaPlaneDeparture size={size} />;
     case "bus":
-      return <MdDirectionsBus size={size} />;
+      return <MdDirectionsBus color="#fff" size={size} />;
     case "ferry":
-      return <MdDirectionsBoat size={size} />;
+      return <MdDirectionsBoat color="#fff" size={size} />;
     default:
       return <MdDirectionsTransit size={size} />;
   }
@@ -2345,7 +2355,7 @@ const NewMultiModeContainer = ({
 
     // Find the last selected step (highest index with a selection)
 
-    console.log("Selected Mode Ids",selectedModeIds);
+    console.log("Selected Mode Ids", selectedModeIds);
     let lastSelectedIndex = -1;
     Object.keys(selectedModeIds).forEach(index => {
       const numIndex = parseInt(index);
@@ -2529,7 +2539,7 @@ const NewMultiModeContainer = ({
       setUpdateLoading(false);
       setIsProcessingBooking(false);
 
-       if (data?.is_refresh_needed) {
+      if (data?.is_refresh_needed) {
         const url = new URL(window.location);
         const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
         drawerParams.forEach(param => {
@@ -2809,7 +2819,7 @@ const NewMultiModeContainer = ({
           </div>
         </div>
       ), document.body)}
-      {currentStep === 0 && (
+      {/* {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
           onClick={() => setCurrentStep(1)}
@@ -2825,58 +2835,37 @@ const NewMultiModeContainer = ({
           </div>
           <AiOutlineRight size={16} className="md:text-20" />
         </div>
-      )}
+      )} */}
 
       {/* Expanded content */}
       {currentStep >= 1 && (
         <>
-          <div className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md">
-            {!(transfer[currentStep - 1]?.mode == "Flight") && <div className="font-bold text-sm md:text-base">
-              {sequencedModes.join(", ")} | &nbsp;
-              <span className="font-normal">
-                {Math.ceil(
-                  transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
-                )}{" "}
-                hours | {totalDistance} kms
-              </span>
-            </div>}
-            {/* <AiOutlineUp size={16} className="md:text-20" /> */}
+          <div>
+            <div className="text-xl font-600 leading-2xl"> {name}</div>
           </div>
-          <div className="border">
-            <div className="w-full bg-yellow-50 border-b-[#ffd201] border-b-1 rounded-md p-2 md:p-4">
+          <div >
+            <div className="my-xl">
               <div className="flex justify-center items-center">
                 {transfer.map((item, index) => (
-                  <div key={index} className="flex items-center">
+                  <div key={index} className={`flex items-center relative ${index < transfer.length - 1 ? 'w-[40%]' : ''}`}>
                     <div
-                      className={`flex items-center gap-2 justify-center ${currentStep === index + 1
-                        ? "bg-[#FFF6C2]"
-                        : "bg-[#FAF8E7]"
-                        } p-2 rounded-lg h-[48px] w-[120px]`}
+                      className={`flex items-center flex-col gap-lg justify-center  `}
                     >
                       <div
-                        className={`w-8 h-8 flex items-center justify-center rounded-full ${currentStep === index + 1
-                          ? "bg-yellow-400"
-                          : "bg-gray-200"
-                          }`}
+                        className={`w-[25px] h-[25px] flex items-center justify-center rounded-full border-1  ${currentStep >= index + 1 ? 'border-pureBlack' : 'border-text-disabled'}  ${(currentStep >= index + 2) ? 'bg-pureBlack' : ''}`}
                       >
-                        <span className="text-sm font-bold">{index + 1}</span>
+                        <span className={`text-sm font-500 leading-md  ${currentStep >= index + 1 ? 'text-pureBlack' : 'text-text-disabled'}`}> {(currentStep >= index + 2) ? svgIcons.check_white : index + 1} </span>
                       </div>
-                      <span className="text-sm font-medium whitespace-nowrap">
-                        {item.mode}
+                      <span className={`text-sm-md font-500 leading-md whitespace-nowrap ${currentStep >= index + 1 ? 'text-pureBlack' : 'text-text-disabled'}`}>
+                        Add a {item.mode}
                       </span>
                     </div>
 
-                    {index < transfer.length - 1 && transfer.length < 3 && (
+                    {index < transfer.length - 1 && (
                       <div
-                        className={`h-[2px] ${currentStep === index + 2
-                          ? "bg-yellow-400"
-                          : "bg-gray-400"
-                          } mx-1`}
+                        className={`h-[1px] absolute left-[48px] top-[12px] ${currentStep >= index + 2 ? 'bg-pureBlack' : 'bg-text-disabled'}`}
                         style={{
-                          width: `${Math.max(
-                            16,
-                            100 - transfer.length * 12
-                          )}px`,
+                          width: `calc(100% - ${index < transfer.length - 2 ? '25px' : '20px'})`,
                         }}
                       ></div>
                     )}
@@ -2884,24 +2873,6 @@ const NewMultiModeContainer = ({
                 ))}
               </div>
             </div>
-
-            {/* <div className="flex md:flex-col flex-row justify-between items-center p-2 md:p-4 relative gap-2 sm:gap-0 text-center sm:text-left">
-              <span className="text-[#2AAAFF] font-medium text-sm z-10 sm:pr-3">
-                {transfer[currentStep - 1]?.source?.city_name}
-              </span>
-
-              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center pointer-events-none">
-                <div className="border-t border-dotted border-gray-400 w-[50%] mx-8"></div>
-              </div>
-
-              <span className="bg-gray-100 text-gray-700 text-sm px-4 py-1 rounded-full z-10 mx-2 sm:mx-4">
-                {transfer[currentStep - 1]?.distance} km
-              </span>
-
-              <span className="text-green-600 font-medium text-sm z-10 sm:pl-3">
-                {transfer[currentStep - 1]?.destination?.city_name}
-              </span>
-            </div> */}
 
             {currentStep >= 1 && currentStep <= totalSteps && (
               <div className="space-y-3 md:space-y-4">
@@ -2965,7 +2936,7 @@ const NewMultiModeContainer = ({
                           setFlightResults((prev) => ({ ...prev, [key]: data }))
                         }
                         selectedData={
-                           selectedModeIds[currentStep - 1] && selectedData && selectedData?.length
+                          selectedModeIds[currentStep - 1] && selectedData && selectedData?.length
                             ? selectedData?.[currentStep - 1]
                             : null
                         }
@@ -3065,7 +3036,7 @@ const NewMultiModeContainer = ({
 
                     return (
                       <div key={key}>
-                        <div className="p-4">
+                        <div>
                           <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between mb-4">
                             <div className="relative w-full sm:w-auto">
                               <label className="text-sm font-medium mb-2 block">
@@ -3193,34 +3164,75 @@ const NewMultiModeContainer = ({
                                   ? "₹"
                                   : priceOption.currency;
                               const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
-
+                              const currentDateTimeInfo = getDateInfo(currentTransferData.start_datetime, currentTransferData.duration);
                               return (
                                 <div
                                   key={`${currentTransferData.id}-price-${priceIndex}`}
-                                  className="flex flex-col md:flex-col justify-between bg-white p-3 md:p-4 border-b"
+                                  className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md"
                                 >
-                                  <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                                    <div className="text-gray-500 mt-1">
-                                      {getModeIcon(currentTransferData.mode)}
-                                    </div>
+                                  <div className="flex justify-between max-ph:flex-col">
+
                                     <div className="w-full">
-                                      <div className="font-semibold text-sm md:text-base">
+                                      <div className="text-md font-600 leading-xl ">
                                         {currentTransferData.text}{" "}
                                         {priceOption.name
                                           ? `- ${priceOption.name}`
                                           : ""}
                                       </div>
-                                      <div className="text-xs md:text-sm text-gray-600">
-                                        {Math.floor(
-                                          currentTransferData?.duration / 60
-                                        ) +
-                                          "-" +
-                                          Math.ceil(
-                                            currentTransferData?.duration / 60
-                                          )}{" "}
-                                        hours | {currentTransferData.distance}{" "}
-                                        kms
-                                      </div>
+
+
+
+                                      {priceOption.description && (
+                                        <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                          {priceOption.description}
+                                        </div>
+                                      )}
+
+                                      {currentDateTimeInfo && (
+                                        <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                                          <div className="flex flex-col gap-xs shrink-0">
+                                            <span className="text-sm font-400 leading-lg-md">
+                                              {currentDateTimeInfo.formattedStartDate}
+                                            </span>
+                                            <span className="text-md-lg font-600 leading-lg-md">
+                                              {currentDateTimeInfo.formattedStartTime}
+                                            </span>
+                                            <span className="text-sm font-400 leading-lg-md">
+                                              {currentTransferData.source.city_name}
+                                            </span>
+                                          </div>
+
+                                          <div className="flex items-center flex-1 mx-md relative">
+                                            <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                                            <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {currentDateTimeInfo.formattedDuration}
+                                              </span>
+                                              <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                                {getModeIcon(currentTransferData.mode, 13)}
+                                              </span>
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {currentTransferData.distance} Km
+                                              </span>
+                                            </div>
+                                          </div>
+
+
+                                          <div className="flex flex-col gap-xs shrink-0">
+                                            <span className="text-sm font-400 leading-lg-md">
+                                              {currentDateTimeInfo.formattedEndDate}
+                                            </span>
+                                            <span className="text-md-lg font-600 leading-lg-md">
+                                              {currentDateTimeInfo.formattedEndTime}
+                                            </span>
+                                            <span className="text-sm font-400 leading-lg-md">
+                                              {currentTransferData.destination.city_name}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+
+
                                       {priceOption?.class && (
                                         <div className="text-xs md:text-sm">
                                           <span className="font-semibold">
@@ -3229,57 +3241,55 @@ const NewMultiModeContainer = ({
                                           {priceOption?.class}
                                         </div>
                                       )}
-                                      {priceOption.description && (
-                                        <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                          {priceOption.description}
-                                        </div>
-                                      )}
-                                      <div className="flex gap-2 justify-between mt-3">
-                                        <div className="font-semibold text-sm md:text-base">
-                                          {currency} {price} {`/-`}{" "}
-                                          <span className="font-normal">
-                                            for{" "}
-                                            {pax?.adults +
-                                              pax?.children +
-                                              pax?.infants}{" "}
-                                            people{" "}
-                                          </span>
-                                        </div>
-                                        <div
-                                          className="cursor-pointer"
-                                          onClick={() => {
-                                            const selectedPriceData = {
-                                              ...currentTransferData,
-                                              selectedPrice: priceOption,
-                                            };
-                                            handleModeSelect(
-                                              currentStep - 1,
-                                              priceOptionId,
-                                              selectedPriceData,
-                                              currentTransferData.mode
-                                            );
-                                          }}
-                                        >
-                                          {selectedModeIds[currentStep - 1] ===
-                                            priceOptionId ? (
-                                            <div className="flex items-center gap-1">
-                                              <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                              <span className="text-sm">
-                                                {/* Selected */}
-                                              </span>
-                                            </div>
-                                          ) : (
-                                            <div className="flex items-center gap-1">
-                                              <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                                              <span className="text-sm">
-                                                {/* Select */}
-                                              </span>
-                                            </div>
-                                          )}
+
+                                    </div>
+                                    <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                                      <div>
+                                        <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">  {currency} {price} </div>
+                                        <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
+                                          for{" "}
+                                          {pax?.adults +
+                                            pax?.children +
+                                            pax?.infants}{" "}
+                                          people{" "}
                                         </div>
                                       </div>
+
+                                      <div
+                                        className="cursor-pointer"
+                                        onClick={() => {
+                                          const selectedPriceData = {
+                                            ...currentTransferData,
+                                            selectedPrice: priceOption,
+                                          };
+                                          handleModeSelect(
+                                            currentStep - 1,
+                                            priceOptionId,
+                                            selectedPriceData,
+                                            currentTransferData.mode
+                                          );
+                                        }}
+                                      >
+                                        {selectedModeIds[currentStep - 1] ===
+                                          priceOptionId ? (
+                                          <div className="flex items-center gap-1">
+                                            {/* <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> */}
+                                            <button className="ttw-btn-secondary-fill max-ph:w-full">Selected</button>
+
+                                          </div>
+                                        ) : (
+                                          <div className="flex items-center gap-1">
+                                            {/* <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" /> */}
+                                            <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                                          </div>
+                                        )}
+                                      </div>
+
                                     </div>
                                   </div>
+
+
+
                                 </div>
                               );
                             }
@@ -3350,8 +3360,8 @@ const NewMultiModeContainer = ({
                 })}
 
                 {/* Navigation buttons */}
-                <div className="sticky bottom-0 bg-white border-t z-10">
-                  <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center p-3 md:p-4">
+                <div className=" w-[100%] bottom-0 bg-white border-t z-10 ">
+                  <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-md max-ph:px-zero">
                     {currentStep > 1 ? (
                       <button
                         onClick={() => handleBackButton()}
@@ -3366,28 +3376,22 @@ const NewMultiModeContainer = ({
                     {currentStep < totalSteps ? (
                       <button
                         onClick={() => handleNextStep()}
-                        className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
+                        className={`
                         ${isCurrentModeSelected()
-                            ? "bg-black text-white"
-                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            ? "ttw-btn-secondary-fill"
+                            : "ttw-btn-secondary-fill-disabled"
                           }`}
                         disabled={!isCurrentModeSelected()}
                       >
                         Next
                       </button>
                     ) : (
-                      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
+                      <div className="flex flex-col md:flex-row items-end gap-2 md:gap-4 w-full md:w-auto">
                         <button
                           onClick={handleUpdateTransfer}
-                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black border border-black ${(Object.keys(selectedModeIds).length !==
+                          className={`ttw-btn-secondary-fill ${(Object.keys(selectedModeIds).length !==
                             totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
                             }`}
-                          // ${
-                          //   Object.keys(selectedModeIds).length === totalSteps
-                          //     ?
-                          //      "bg-[#f8e000] text-black"
-                          //     : "bg-yellow-100 text-black-500 cursor-not-allowed"
-                          // }`}
                           disabled={
                             Object.keys(selectedModeIds).length !==
                             totalSteps || updateLoading
@@ -3525,14 +3529,14 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
       <div
         onClick={handleTransferType}
         id={name}
-        className={`flex items-center justify-center w-5 h-5 border-2 ${transferType === name ? "border-black" : "border-[#636366]"
+        className={`flex items-center justify-center w-5 h-5 border-2 ${transferType === name ? "border-primary-yellow" : "border-text-spacegrey"
           } rounded-full cursor-pointer`}
       >
         {transferType === name && (
-          <div id={name} className="p-1 w-3 h-3 rounded-full bg-black"></div>
+          <div id={name} className={`p-1 w-3 h-3 rounded-full ${transferType === name ? "bg-primary-yellow" : "bg-text-spacegrey"}`}></div>
         )}
       </div>
-      <label htmlFor={name} className="text-sm font-normal">
+      <label htmlFor={name} className="text-sm-xl font-400 leading-xl">
         {label}
       </label>
     </div>
@@ -4016,7 +4020,6 @@ const TransferItem = ({ transfer, transferIndex }) => {
 };
 
 const Container = styled.div`
-  padding: 0.75rem 0.5rem;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -4102,7 +4105,8 @@ const OtherTransfer = ({
   dcity,
   mercury,
   booking_id,
-  mode
+  mode,
+  name
 }) => {
   const ref = useRef(null);
   const dateRef = useRef(null);
@@ -4747,18 +4751,18 @@ const OtherTransfer = ({
           })
         );
 
-         if (response.data?.is_refresh_needed) {
-        const url = new URL(window.location);
-        const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
-        drawerParams.forEach(param => {
-          url.searchParams.delete(param);
-        });
+        if (response.data?.is_refresh_needed) {
+          const url = new URL(window.location);
+          const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
+          drawerParams.forEach(param => {
+            url.searchParams.delete(param);
+          });
 
-        window.history.replaceState({}, '', url.toString());
-        setTimeout(() => {
-          window.location.reload();
-        }, 200);
-      }
+          window.history.replaceState({}, '', url.toString());
+          setTimeout(() => {
+            window.location.reload();
+          }, 200);
+        }
       } else {
         const message = newDate
           ? "Departure date updated successfully!"
@@ -4956,6 +4960,11 @@ const OtherTransfer = ({
         </div>
       ), document.body)}
       <div className="w-full">
+
+            <div>
+            <div className="text-xl font-600 leading-2xl mb-md"> {name}</div>
+          </div>
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
           {/* Date Dropdown */}
           <div className="w-full sm:w-auto">
@@ -5088,102 +5097,135 @@ const OtherTransfer = ({
           );
 
           const isOptionLoading = loadingOptionId === priceOptionId;
-
+          const currentDateTimeInfo = getDateInfo(otherTransfer.start_datetime, otherTransfer.duration);
           return (
             <div
               key={`${otherTransfer.id}-price-${priceIndex}`}
-              className={`flex w-full flex-col  justify-between bg-white p-3 md:p-4 border-b
+              className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md
                 ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
                 ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
             >
-              <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                <div className="text-gray-500 mt-1">
-                  {getModeIcon(otherTransfer.mode)}
-                </div>
+              <div className="flex justify-between max-ph:flex-col">
+
                 <div className="w-full">
-                  <div className="font-semibold text-sm md:text-base w-full">
+                  <div className="text-md font-600 leading-xl ">
                     {otherTransfer.text}{" "}
                     {priceOption.name ? `- ${priceOption.name}` : ""}
                   </div>
-                  <div className="text-xs md:text-sm text-gray-600">
-                    {Math.floor(otherTransfer?.duration / 60) +
-                      "-" +
-                      Math.ceil(otherTransfer?.duration / 60)}{" "}
-                    hours | {otherTransfer.distance} kms
-                  </div>
-                  {priceOption?.class && (
-                    <div className="text-xs md:text-sm">
-                      <span className="font-semibold">Facilities:</span>{" "}
-                      {priceOption?.class}
-                    </div>
-                  )}
+
                   {priceOption.description && (
                     <div className="text-xs md:text-sm text-gray-700 mt-1">
                       {priceOption.description}
                     </div>
                   )}
 
-                  <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between w-full">
-                    <div className="text-md font-bold flex flex-col">
-                      <span
-                        className="!font-[lexend]"
-                        style={{ fontFamily: "Lexend" }}
-                      >
-                        {currency} {price} {`/-`}{" "}
-                        <span className="font-normal">
-                          {" "}
-                          for {pax?.adults + pax?.children + pax?.infants}{" "}
-                          people
+                  {currentDateTimeInfo && (
+                    <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {currentDateTimeInfo.formattedStartDate}
                         </span>
-                      </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {currentDateTimeInfo.formattedStartTime}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md">
+                          {otherTransfer.source.city_name} {otherTransfer.source.code && <span className="text-sm font-400 leading-lg-md"> ( {otherTransfer.source.code} )</span>}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center flex-1 mx-md relative">
+                        <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                          <span className="text-sm font-400 leading-lg-md">
+                            {currentDateTimeInfo.formattedDuration}
+                          </span>
+                          <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                            {getModeIcon(otherTransfer.mode, 13)}
+                          </span>
+                          <span className="text-sm font-400 leading-lg-md">
+                            {otherTransfer.distance} Km
+                          </span>
+                        </div>
+                      </div>
+
+
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {currentDateTimeInfo.formattedEndDate}
+                        </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {currentDateTimeInfo.formattedEndTime}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md">
+                          {otherTransfer.destination.city_name}  {otherTransfer.destination.code && <span className="text-sm font-400 leading-lg-md"> ( {otherTransfer.destination.code} )</span>}
+                        </span>
+                      </div>
                     </div>
+                  )}
 
-                    <div
-                      className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
-                        } ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
-                      onClick={() => {
-                        if (updateLoading && !isOptionLoading) return;
-                        if (isBookingInProgress && !isOptionLoading) return;
+                  {priceOption?.class && (
+                    <div className="text-xs md:text-sm">
+                      <span className="font-semibold">Facilities:</span>{" "}
+                      {priceOption?.class}
+                    </div>
+                  )}
+                </div>
 
-                        const selectedPriceData = {
-                          ...otherTransfer,
-                          selectedPrice: {
-                            ...priceOption,
-                            result_index: priceIndex,
-                          },
-                        };
+                <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
 
-                        handleModeSelect(
-                          currentStep - 1,
-                          priceOptionId,
-                          selectedPriceData,
-                          otherTransfer.mode
-                        );
-                      }}
-                    >
-                      {isOptionLoading ||
-                        (updateLoading && isOptionSelected) ? (
-                        <div className="flex items-center gap-1">
-                          <PulseLoader
-                            size={15}
-                            speedMultiplier={0.6}
-                            color="#000000"
-                          />
-                        </div>
-                      ) : isOptionSelected && isResultSelected ? (
-                        <div className="flex items-center gap-1">
-                          <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                          <span className="text-sm"></span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                          <span className="text-sm"></span>
-                        </div>
-                      )}
+                  <div>
+                    <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">  {currency} {price} </div>
+                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
+                      for{" "}
+                      {pax?.adults + pax?.children + pax?.infants}{" "} people
                     </div>
                   </div>
+
+                  <div
+                    className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
+                      } ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                    onClick={() => {
+                      if (updateLoading && !isOptionLoading) return;
+                      if (isBookingInProgress && !isOptionLoading) return;
+
+                      const selectedPriceData = {
+                        ...otherTransfer,
+                        selectedPrice: {
+                          ...priceOption,
+                          result_index: priceIndex,
+                        },
+                      };
+
+                      handleModeSelect(
+                        currentStep - 1,
+                        priceOptionId,
+                        selectedPriceData,
+                        otherTransfer.mode
+                      );
+                    }}
+                  >
+                    {isOptionLoading ||
+                      (updateLoading && isOptionSelected) ? (
+                      <div className="flex items-center gap-1">
+                        <PulseLoader
+                          size={15}
+                          speedMultiplier={0.6}
+                          color="#000000"
+                        />
+                      </div>
+                    ) : isOptionSelected && isResultSelected ? (
+                      <div className="flex items-center gap-1">
+                        <button className="ttw-btn-secondary-fill max-ph:w-full">Selected</button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                      </div>
+                    )}
+                  </div>
+
                 </div>
+
               </div>
             </div>
           );

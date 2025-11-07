@@ -36,7 +36,9 @@ color: #6E757A;
 `;
 
 const Text = styled.p`
+font-family: Inter;
 font-size: 14px;
+font-style: normal;
 font-weight: 500;
 line-height: 22px;
   margin: 0;
