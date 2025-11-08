@@ -105,25 +105,26 @@ function AskQuery() {
     }
 
     const handleInput = (e) => {
-        setQuery(e.target.value);
-        setUserTyping(e.target.value);
-        changeTextareaSize();
-    };
+    const newValue = e.target.value;
+    setQuery(newValue);
+    setUserTyping(newValue);
+    changeTextareaSize(newValue);  
+};
 
-    const changeTextareaSize = () => {
-        const textarea = textareaRef.current;
-        const queryValue = query;
-        setSubmitDisabled(queryValue.trim() === "");
+    const changeTextareaSize = (currentValue) => {
+    const textarea = textareaRef.current;
+    const queryValue = currentValue !== undefined ? currentValue : query;
+    setSubmitDisabled(queryValue.trim() === "");
 
-        if (textarea) {
-            textarea.style.height = "auto";
-            const scrollHeight = textarea.scrollHeight;
-            const lineHeight = 24;
-            const maxHeight = lineHeight * 3;
-            textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
-            textarea.scrollTop = textarea.scrollHeight;
-        }
+    if (textarea) {
+        textarea.style.height = "auto";
+        const scrollHeight = textarea.scrollHeight;
+        const lineHeight = 24;
+        const maxHeight = lineHeight * 3;
+        textarea.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+        textarea.scrollTop = textarea.scrollHeight;
     }
+}
 
     const handleTranscriptChange = (transcript) => {
         const newQuery = `${trackUserTyping} ${transcript}`

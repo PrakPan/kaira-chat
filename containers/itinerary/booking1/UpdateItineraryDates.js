@@ -264,8 +264,11 @@ const UpdateItineraryDates = ({
   setShowEditDate,
   showEditDate,
   showAsModal = true, // Default to current behavior
-  autoOpenCalendar = false // Default to current behavior
+  autoOpenCalendar = false, // Default to current behavior
+  showPhoneView
 }) => {
+
+  console.log("Show Phone",showPhoneView)
 
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
@@ -306,7 +309,10 @@ useEffect(() => {
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
+      if(showPhoneView){
+        setIsMobile(true);
+      }
+      else setIsMobile(window.innerWidth < 768);
     };
 
     checkScreenSize();
@@ -506,28 +512,54 @@ useEffect(() => {
             isNotForm={true}
           />
         </ModalWithBackdrop>:
-
-        <BottomModal
-          show={showCalendar}
-          onHide={() => closeModal(false)}
-          width="100%"
-          height="max-content"
-          paddingX="20px"
-          paddingY="20px"
-        >
-          <AirbnbCalendarMobile
-            valueStart={new Date(itinerary?.start_date)}
-            valueEnd={new Date(itinerary?.end_date)}
-            onChangeDate={handleOnCalenderApplyDates}
-            setShowCalendar={() => closeModal(false)}
-            setDateType={setDateType}
-            dateType={dateType}
-            date={date}
-            isNotForm={true}
-          />
-        </BottomModal>}
+        
+        showPhoneView ? (
+          <ModalWithBackdrop
+            centered
+            closeIcon={true}
+            backdrop
+            show={showCalendar}
+            onHide={() => closeModal(false)}
+            borderRadius="20px"
+            paddingX="20px"
+            paddingY="20px"
+            showPhoneView={true}
+          >
+            <AirbnbCalendarMobile
+              valueStart={new Date(itinerary?.start_date)}
+              valueEnd={new Date(itinerary?.end_date)}
+              onChangeDate={handleOnCalenderApplyDates}
+              setShowCalendar={() => closeModal(false)}
+              setDateType={setDateType}
+              dateType={dateType}
+              date={date}
+              isNotForm={true}
+            />
+          </ModalWithBackdrop>
+        ) : (
+          <BottomModal
+            show={showCalendar}
+            onHide={() => closeModal(false)}
+            width="100%"
+            height="max-content"
+            paddingX="20px"
+            paddingY="20px"
+          >
+            <AirbnbCalendarMobile
+              valueStart={new Date(itinerary?.start_date)}
+              valueEnd={new Date(itinerary?.end_date)}
+              onChangeDate={handleOnCalenderApplyDates}
+              setShowCalendar={() => closeModal(false)}
+              setDateType={setDateType}
+              dateType={dateType}
+              date={date}
+              isNotForm={true}
+            />
+          </BottomModal>
+        )}
         </div>
       )}
+       
     </div>
   );
 };

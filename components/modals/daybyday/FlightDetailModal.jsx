@@ -191,6 +191,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
                           height: isPageWide ? "48px" : "40px",
                         }}
                       >
+                       
                         <LogoContainer
                           data={
                             data?.transfer_details?.items?.[0]

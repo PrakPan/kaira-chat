@@ -282,11 +282,11 @@ const TransferEditDrawer = (props) => {
           .post(
             "",
             {
-              origin:
+              origin: oItineraryCity ||
                 props?.origin ||
                 originCityId ||
                 mercuryTransfer?.source?.city,
-              destination:
+              destination: dItineraryCity ||
                 props?.destination ||
                 mercuryTransfer?.destination?.city ||
                 destinationCityId,

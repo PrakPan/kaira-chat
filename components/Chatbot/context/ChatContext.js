@@ -564,6 +564,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
           res.data.chats.shift();
         }
         setConversations(res.data.chats);
+        setQuickReplies(res.data?.quick_replies || []);
       }
     } catch (err) {
       console.error(
@@ -600,6 +601,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         sessionId,
         newSessionStart,
         isloadingChatHistory,
+        getAllChatHistory
       }}
     >
       {children}

@@ -10,7 +10,9 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
 import { ITINERARY_STATUSES } from "../../../services/constants";
-import axiossalecreateinstance, { myplansv2 } from "../../../services/sales/itinerary/SaleCreate";
+import axiossalecreateinstance, {
+  myplansv2,
+} from "../../../services/sales/itinerary/SaleCreate";
 import axios from "axios";
 import Accordion from "./Accordion";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
@@ -43,7 +45,13 @@ import {
   axiosUpdateItineraryDates,
 } from "../../../services/itinerary/daybyday/preview";
 import UpdateItineraryDates from "./UpdateItineraryDates";
-import { applyCoupon, fetchCoupons, paymentInitiate, removeCoupon, repriceBookings } from "../../../services/sales/itinerary/Purchase";
+import {
+  applyCoupon,
+  fetchCoupons,
+  paymentInitiate,
+  removeCoupon,
+  repriceBookings,
+} from "../../../services/sales/itinerary/Purchase";
 import { LuClock4 } from "react-icons/lu";
 import { openNotification } from "../../../store/actions/notification";
 import setCart from "../../../store/actions/Cart";
@@ -58,8 +66,16 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
-const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCoupon, token, payment }) => {
-  const [couponCode, setCouponCode] = useState('');
+const CouponModal = ({
+  show,
+  onHide,
+  onApplyCoupon,
+  appliedCoupon,
+  setAppliedCoupon,
+  token,
+  payment,
+}) => {
+  const [couponCode, setCouponCode] = useState("");
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [applyingCouponId, setApplyingCouponId] = useState(null);
@@ -78,25 +94,27 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   useEffect(() => {
     if (show) {
       // Store the current scroll position
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft =
+        window.pageXOffset || document.documentElement.scrollLeft;
 
       // Prevent scrolling on the body
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
       document.body.style.top = `-${scrollTop}px`;
       document.body.style.left = `-${scrollLeft}px`;
-      document.body.style.width = '100%';
+      document.body.style.width = "100%";
     } else {
       // Restore the scroll position
-      const scrollTop = Math.abs(parseInt(document.body.style.top || '0'));
-      const scrollLeft = Math.abs(parseInt(document.body.style.left || '0'));
+      const scrollTop = Math.abs(parseInt(document.body.style.top || "0"));
+      const scrollLeft = Math.abs(parseInt(document.body.style.left || "0"));
 
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.width = '';
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.width = "";
 
       // Restore scroll position
       window.scrollTo(scrollLeft, scrollTop);
@@ -105,14 +123,14 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
     // Cleanup function
     return () => {
       if (show) {
-        const scrollTop = Math.abs(parseInt(document.body.style.top || '0'));
-        const scrollLeft = Math.abs(parseInt(document.body.style.left || '0'));
+        const scrollTop = Math.abs(parseInt(document.body.style.top || "0"));
+        const scrollLeft = Math.abs(parseInt(document.body.style.left || "0"));
 
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.width = '';
+        document.body.style.overflow = "";
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.width = "";
 
         window.scrollTo(scrollLeft, scrollTop);
       }
@@ -121,7 +139,10 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
 
   // Auto-apply coupon from payment props if available
   useEffect(() => {
-    if (payment?.coupon_usage && payment.coupon_usage.status === 'COUPON_APPLIED') {
+    if (
+      payment?.coupon_usage &&
+      payment.coupon_usage.status === "COUPON_APPLIED"
+    ) {
       if (!appliedCoupon) {
         setAppliedCoupon(payment.coupon_usage.id);
       }
@@ -132,15 +153,15 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
     try {
       setLoading(true);
       const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const formattedCoupons = response.data.map(coupon => ({
+      const formattedCoupons = response.data.map((coupon) => ({
         id: coupon.id,
         code: coupon.code,
         title: `Save ₹${coupon.discount_value}`,
         description: coupon.description,
-        expiry: new Date(coupon.end_time).toLocaleDateString('en-IN'),
+        expiry: new Date(coupon.end_time).toLocaleDateString("en-IN"),
         type: coupon.discount_type.toLowerCase(),
         discount: coupon.discount_value,
         is_applicable: coupon.is_applicable,
@@ -151,7 +172,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
 
       setAvailableCoupons(formattedCoupons);
     } catch (error) {
-      console.error('Error fetching coupons:', error);
+      console.error("Error fetching coupons:", error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +185,7 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
       // Only hide modal after successful application
       onHide();
     } catch (error) {
-      console.error('Error applying coupon:', error);
+      console.error("Error applying coupon:", error);
     } finally {
       setApplyingCouponId(null);
     }
@@ -195,11 +216,21 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
   if (!show) return null;
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+    <div
+      className="fixed inset-0 z-[1600] flex items-center justify-center p-4"
+      style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0 }}
+    >
       {/* Enhanced Backdrop with proper positioning */}
       <div
         className="fixed inset-0 bg-black bg-opacity-50"
-        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+        }}
         onClick={onHide}
       ></div>
 
@@ -208,7 +239,10 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b bg-white flex-shrink-0">
           <h2 className="text-lg font-semibold">Apply Coupons</h2>
-          <button onClick={onHide} className="text-gray-400 hover:text-gray-600">
+          <button
+            onClick={onHide}
+            className="text-gray-400 hover:text-gray-600"
+          >
             <IoMdClose className="text-2xl" />
           </button>
         </div>
@@ -226,13 +260,20 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
                   <CouponSkeleton />
                   <CouponSkeleton />
                 </>
-              ) : (
-                availableCoupons?.length > 0 ? availableCoupons.map((coupon, index) => (
-                  <div key={index} className="border-b-2 border-gray-200 rounded-lg p-2 hover:border-blue-300 transition-colors">
+              ) : availableCoupons?.length > 0 ? (
+                availableCoupons.map((coupon, index) => (
+                  <div
+                    key={index}
+                    className="border-b-2 border-gray-200 rounded-lg p-2 hover:border-blue-300 transition-colors"
+                  >
                     <div className="flex justify-between items-start gap-3 mb-2">
                       <div className="flex-1">
-                        <div className="font-semibold text-base mb-1">{coupon.code}</div>
-                        <div className="text-green-600 font-medium text-sm mb-2">{coupon.title}</div>
+                        <div className="font-semibold text-base mb-1">
+                          {coupon.code}
+                        </div>
+                        <div className="text-green-600 font-medium text-sm mb-2">
+                          {coupon.title}
+                        </div>
                       </div>
                       <button
                         onClick={() => handleApplyCoupon(coupon)}
@@ -240,52 +281,69 @@ const CouponModal = ({ show, onHide, onApplyCoupon, appliedCoupon, setAppliedCou
                           appliedCoupon === coupon.code ||
                           appliedCoupon === coupon.id ||
                           applyingCouponId === coupon.id ||
-                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id) || payment?.is_applicable
+                          (payment?.coupon_usage &&
+                            payment.coupon_usage.id === coupon.id) ||
+                          payment?.is_applicable
                         }
-                        className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${appliedCoupon === coupon.code ||
+                        className={`px-3 py-1 rounded font-medium text-sm transition-colors whitespace-nowrap min-w-[60px] h-8 flex items-center justify-center ${
+                          appliedCoupon === coupon.code ||
                           appliedCoupon === coupon.id ||
-                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)
-                          ? 'bg-green-100 text-green-700 cursor-not-allowed'
-                          : applyingCouponId === coupon.id
-                            ? 'bg-blue-400  cursor-not-allowed'
-                            : 'bg-blue-500  hover:bg-blue-600'
-                          }`}
+                          (payment?.coupon_usage &&
+                            payment.coupon_usage.id === coupon.id)
+                            ? "bg-green-100 text-green-700 cursor-not-allowed"
+                            : applyingCouponId === coupon.id
+                            ? "bg-blue-400  cursor-not-allowed"
+                            : "bg-blue-500  hover:bg-blue-600"
+                        }`}
                       >
                         {applyingCouponId === coupon.id ? (
                           <PulseLoader />
-                        ) : (appliedCoupon === coupon.code ||
+                        ) : appliedCoupon === coupon.code ||
                           appliedCoupon === coupon.id ||
-                          (payment?.coupon_usage && payment.coupon_usage.id === coupon.id)) ? (
-                          'Applied'
+                          (payment?.coupon_usage &&
+                            payment.coupon_usage.id === coupon.id) ? (
+                          "Applied"
                         ) : (
-                          'Apply'
+                          "Apply"
                         )}
                       </button>
                     </div>
-                    {coupon?.is_applicable ? <div>
-                      <div className="text-gray-600 text-sm mb-2">{coupon.description}</div>
-                      <div className="text-gray-500 text-xs">Expires on: {coupon.expiry}</div>
-                    </div> : <div className="text-gray-600 text-sm mb-2">{coupon?.applicability_error}</div>}
+                    {coupon?.is_applicable ? (
+                      <div>
+                        <div className="text-gray-600 text-sm mb-2">
+                          {coupon.description}
+                        </div>
+                        <div className="text-gray-500 text-xs">
+                          Expires on: {coupon.expiry}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-gray-600 text-sm mb-2">
+                        {coupon?.applicability_error}
+                      </div>
+                    )}
                   </div>
                 ))
-                  : "No coupons available at the moment.")}
+              ) : (
+                "No coupons available at the moment."
+              )}
             </div>
           </div>
         </div>
       </div>
-    </div>
-    ,
+    </div>,
     document.body
   );
 };
 
-
 const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
-  const targetTime = priceValidUntil ? new Date(priceValidUntil.replace(" ", "T")).getTime() : null;
+  const targetTime = priceValidUntil
+    ? new Date(priceValidUntil.replace(" ", "T")).getTime()
+    : null;
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-  const Itinerary = useSelector(state => state.Itinerary);
+  const Itinerary = useSelector((state) => state.Itinerary);
 
   const isItineraryInFuture = () => {
     const startDate = new Date(Itinerary.start_date);
@@ -295,7 +353,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
     return startDate >= currentDate;
   };
 
-  const Cart = useSelector(state => state.Cart);
+  const Cart = useSelector((state) => state.Cart);
 
   const calculateTimeLeft = () => {
     if (!targetTime) return 0;
@@ -307,7 +365,6 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   const lastUpdateRef = useRef(Date.now());
 
   useEffect(() => {
-
     setIsInitialized(true);
 
     if (!targetTime) return;
@@ -342,15 +399,15 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
     };
   }, [targetTime]);
 
-
   if (!isInitialized) return null;
 
   if (!isItineraryInFuture()) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
-        Itinerary dates have expired. Please update the dates to view updated prices.
+        Itinerary dates have expired. Please update the dates to view updated
+        prices.
       </div>
-    );;
+    );
   }
 
   // if (!Cart?.lock_in_fee_paid && (!targetTime || timeLeft <= 0)) {
@@ -361,7 +418,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   //   );
   // }
 
-  if ((!targetTime || timeLeft <= 0)) {
+  if (!targetTime || timeLeft <= 0) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
         Prices Expired! Refresh Prices to check updated itinerary cost
@@ -394,13 +451,22 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
       <div className="mb-2">
         {/* Confetti background could be added with CSS animation */}
         <div className="w-16 h-16 bg-green-500 rounded-full mx-auto flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+          <svg
+            className="w-8 h-8 text-white"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clipRule="evenodd"
+            />
           </svg>
         </div>
         <h2 className="text-2xl font-semibold mb-2">Payment Successful!</h2>
         <p className="text-gray-600">
-          Your full payment of ₹{amount?.toLocaleString('en-IN')} has been received. No pending balance.
+          Your full payment of ₹{amount?.toLocaleString("en-IN")} has been
+          received. No pending balance.
         </p>
       </div>
 
@@ -433,11 +499,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
               leftalign
               url={"media/icons/login/customer-service-black.png"}
             />{" "}
-            {loading ? (
-              <PulseLoader />
-            ) : (
-              <span>Get in touch!</span>
-            )}
+            {loading ? <PulseLoader /> : <span>Get in touch!</span>}
           </div>
         </Button>
       </GetInTouchContainer>
@@ -456,45 +518,57 @@ const PaymentOptions = ({
   lockInCompleted,
   paymentCompleted,
   totalPayable,
-  hasPlanExpired
+  hasPlanExpired,
 }) => {
   return (
     <div className="mb-4">
       <h3 className="font-medium text-base mb-3">Payment Options</h3>
 
       {/* Pay Full Amount Option */}
-      {!hasPlanExpired && <div
-        className={`border-2 ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-4 mb-3 cursor-pointer`}
-        onClick={() => setSelectedOption('full')}
-      >
-        <div className="flex items-start gap-3">
-          <div className="mt-1">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-              {selectedOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center justify-between">
-              <div className="font-medium text-base mb-1">
-                {paymentCompleted ? "Pay remaining amount now" : "Pay full amount now to get discounts"}
-              </div>
-              <div className="text-xl font-semibold">
-                ₹{getIndianPrice(
-                  Math.round(
-                    Math.round(totalPayable)
-                  )
+      {!hasPlanExpired && (
+        <div
+          className={`border-2 ${
+            selectedOption === "full"
+              ? "border-yellow-400 bg-yellow-50"
+              : "border-gray-200"
+          } rounded-lg p-4 mb-3 cursor-pointer`}
+          onClick={() => setSelectedOption("full")}
+        >
+          <div className="flex items-start gap-3">
+            <div className="mt-1">
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedOption === "full"
+                    ? "border-yellow-400 bg-yellow-400"
+                    : "border-gray-300"
+                }`}
+              >
+                {selectedOption === "full" && (
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
                 )}
               </div>
             </div>
-            <div className="text-sm text-gray-600 mb-2">
-              Get instant booking confirmation
-            </div>
-            {/* <div className="text-xl font-semibold">
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <div className="font-medium text-base mb-1">
+                  {paymentCompleted
+                    ? "Pay remaining amount now"
+                    : "Pay full amount now to get discounts"}
+                </div>
+                <div className="text-xl font-semibold">
+                  ₹{getIndianPrice(Math.round(Math.round(totalPayable)))}
+                </div>
+              </div>
+              <div className="text-sm text-gray-600 mb-2">
+                Get instant booking confirmation
+              </div>
+              {/* <div className="text-xl font-semibold">
               ₹{totalAmount.toLocaleString('en-IN')}
             </div> */}
+            </div>
           </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 };
@@ -507,7 +581,7 @@ const CouponSection = ({
   onApplyCoupon,
   onViewCoupons,
   isRemoving = false,
-  payment
+  payment,
 }) => {
   // Pulse loader component
   const PulseLoader = () => (
@@ -525,7 +599,7 @@ const CouponSection = ({
         message: payment.message,
         usage_description: payment?.usage_description,
         applicability_error: payment?.applicability_error,
-        is_applicable: payment?.is_applicable
+        is_applicable: payment?.is_applicable,
       };
     }
     return {
@@ -545,7 +619,7 @@ const CouponSection = ({
         <div className="bg-green-50 border border-green-200 rounded-lg p-3">
           {/* Show message from payment if available */}
 
-          {(couponData.usage_description) && (
+          {couponData.usage_description && (
             <div className=" text-green-600 mb-2 font-medium">
               {couponData.usage_description}
             </div>
@@ -553,18 +627,21 @@ const CouponSection = ({
 
           <div className="flex justify-between items-center">
             <div>
-              <div className="text-sm font-medium text-green-600">{couponData?.message}</div>
+              <div className="text-sm font-medium text-green-600">
+                {couponData?.message}
+              </div>
               {/* <div className="text-sm text-green-600">saved ₹{couponData.savings}</div> */}
             </div>
             <button
-              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${isRemoving
-                ? 'text-red-400 cursor-not-allowed'
-                : 'text-red-500 hover:text-red-600'
-                }`}
+              className={`text-sm font-medium transition-colors min-w-[60px] h-8 flex items-center justify-center rounded px-2 ${
+                isRemoving
+                  ? "text-red-400 cursor-not-allowed"
+                  : "text-red-500 hover:text-red-600"
+              }`}
               onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
-              {isRemoving ? <PulseLoader /> : 'Remove'}
+              {isRemoving ? <PulseLoader /> : "Remove"}
             </button>
           </div>
         </div>
@@ -577,8 +654,18 @@ const CouponSection = ({
           >
             <div className="flex items-center w-full justify-between">
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                <svg
+                  className="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                  />
                 </svg>
                 <span>Apply coupon code</span>
               </div>
@@ -587,7 +674,8 @@ const CouponSection = ({
           </button>
 
           <p className="text-xs text-gray-500 mt-2">
-            Note: Coupons and discounts are not applicable on the itinerary lock-in fee.
+            Note: Coupons and discounts are not applicable on the itinerary
+            lock-in fee.
           </p>
         </div>
       )}
@@ -602,16 +690,18 @@ const PriceDetails = ({
   couponDiscount,
   totalPayable,
   surchargesTaxes,
-  selectedPaymentOption
+  selectedPaymentOption,
 }) => {
   const Cart = useSelector((state) => state.Cart);
 
-  const numericItineraryCost = typeof itineraryCost === 'string'
-    ? parseFloat(itineraryCost.replace(/,/g, ''))
-    : itineraryCost;
-  const numericTotalPayable = typeof totalPayable === 'string'
-    ? parseFloat(totalPayable.replace(/,/g, ''))
-    : totalPayable;
+  const numericItineraryCost =
+    typeof itineraryCost === "string"
+      ? parseFloat(itineraryCost.replace(/,/g, ""))
+      : itineraryCost;
+  const numericTotalPayable =
+    typeof totalPayable === "string"
+      ? parseFloat(totalPayable.replace(/,/g, ""))
+      : totalPayable;
 
   if (numericTotalPayable === 0) {
     return (
@@ -632,23 +722,31 @@ const PriceDetails = ({
       <div className="space-y-2">
         <div className="flex justify-between">
           <span>Total Itinerary Cost</span>
-          <span>₹{typeof itineraryCost === 'string' ? itineraryCost : itineraryCost.toLocaleString('en-IN')}</span>
+          <span>
+            ₹
+            {typeof itineraryCost === "string"
+              ? itineraryCost
+              : itineraryCost.toLocaleString("en-IN")}
+          </span>
         </div>
 
         {
-          // !Cart?.are_prices_hidden && 
+          // !Cart?.are_prices_hidden &&
           surchargesTaxes > 0 && (
             <div className="flex justify-between">
               <span>Surcharges and Taxes</span>
-              <span>₹{surchargesTaxes.toLocaleString('en-IN')}</span>
+              <span>₹{surchargesTaxes.toLocaleString("en-IN")}</span>
             </div>
-          )}
+          )
+        }
 
         {couponDiscount !== 0 && (
           <div className="flex justify-between text-green-600">
             <span>Coupon Discount</span>
             <span>
-              {couponDiscount ? "-₹" + Math.abs(couponDiscount).toLocaleString('en-IN') : '₹0'}
+              {couponDiscount
+                ? "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                : "₹0"}
             </span>
           </div>
         )}
@@ -656,7 +754,12 @@ const PriceDetails = ({
         <div className="border-t pt-2 mt-2">
           <div className="flex justify-between font-semibold text-lg">
             <span>Total Payable</span>
-            <span>₹{typeof totalPayable === 'string' ? totalPayable : totalPayable.toLocaleString('en-IN')}</span>
+            <span>
+              ₹
+              {typeof totalPayable === "string"
+                ? totalPayable
+                : totalPayable.toLocaleString("en-IN")}
+            </span>
           </div>
         </div>
       </div>
@@ -664,12 +767,12 @@ const PriceDetails = ({
   );
 };
 
-// 5. Main Payment Button 
+// 5. Main Payment Button
 const PaymentButton = ({
   amount,
   isLoading = false,
   onClick,
-  paymentType = "full"
+  paymentType = "full",
 }) => {
   return (
     <Button
@@ -689,18 +792,10 @@ const PaymentButton = ({
           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
           Processing...
         </div>
+      ) : paymentType === "lockin" ? (
+        `Pay ₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
       ) : (
-        paymentType === 'lockin'
-          ? `Pay ₹${getIndianPrice(
-            Math.round(
-              Math.round(amount)
-            )
-          )} Now`
-          : `Pay ₹${getIndianPrice(
-            Math.round(
-              Math.round(amount)
-            )
-          )} Now`
+        `Pay ₹${getIndianPrice(Math.round(Math.round(amount)))} Now`
       )}
     </Button>
   );
@@ -712,28 +807,27 @@ const ItineraryInclusions = ({
   onToggleInclusion,
   arePricesHidden,
   updatingInclusions = {},
-  defaultExpanded = false 
+  defaultExpanded = false,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
-    Stays: defaultExpanded || true, 
-    Transfers: defaultExpanded || true,
-    Flights: defaultExpanded || true, 
-    Activities: defaultExpanded || true 
+    Stays: true,
+    Transfers: true,
+    Flights: true,
+    Activities: true,
   });
-
 
   const categorizeBookings = () => {
     const categories = {
       Stays: [],
       Transfers: [],
       Flights: [],
-      Activities: []
+      Activities: [],
     };
 
     if (Cart?.summary) {
       Object.entries(Cart.summary).forEach(([category, data]) => {
         if (data.bookings && data.bookings.length > 0) {
-          categories[category] = data.bookings.map(booking => ({
+          categories[category] = data.bookings.map((booking) => ({
             id: booking.id,
             booking_cost: booking.booking_cost,
             detail: {
@@ -742,11 +836,17 @@ const ItineraryInclusions = ({
               check_out: booking.check_out,
               duration: booking.duration,
               pax: booking.pax,
-              transfer_type: booking.transfer_type
+              transfer_type: booking.transfer_type,
             },
-            booking_type: category === 'Stays' ? 'Accommodation' :
-              category === 'Flights' ? 'Flight' :
-                category === 'Transfers' ? 'Transfer' : 'Activity'
+            status: booking.status,
+            booking_type:
+              category === "Stays"
+                ? "Accommodation"
+                : category === "Flights"
+                ? "Flight"
+                : category === "Transfers"
+                ? "Transfer"
+                : "Activity",
           }));
         }
       });
@@ -758,43 +858,39 @@ const ItineraryInclusions = ({
   const categories = categorizeBookings();
 
   const toggleCategory = (category) => {
-    setExpandedCategories(prev => ({
+    setExpandedCategories((prev) => ({
       ...prev,
-      [category]: !prev[category]
+      [category]: !prev[category],
     }));
   };
 
-  const updateCartBooking = async () =>{
-     try {
+  const updateCartBooking = async () => {
+    try {
       setBookingLoading(true);
       const response = await updateCartPricing.get(`/${ItineraryId}/cart/`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-   
-
-     
     } catch (error) {
-      console.error('Error fetching coupons:', error);
+      console.error("Error fetching coupons:", error);
     } finally {
       setBookingLoading(false);
     }
-  }
+  };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return '';
+    if (!dateStr) return "";
     const date = new Date(dateStr);
-    return format(date, 'MMM dd');
+    return format(date, "MMM dd");
   };
 
   const getCategoryIcon = (category) => {
     const icons = {
-      'Stays': '🏨',
-      'Flights': '✈️',
-      'Transfers': '🚂',
-      'Activities': '🎯'
+      Stays: "🏨",
+      Flights: "✈️",
+      Transfers: "🚂",
+      Activities: "🎯",
     };
-    return icons[category] || '📍';
+    return icons[category] || "📍";
   };
 
   return (
@@ -804,13 +900,20 @@ const ItineraryInclusions = ({
       {Object.entries(categories).map(([category, bookings]) => {
         if (bookings.length === 0) return null;
 
-        const categoryTotal = bookings.reduce((sum, booking) =>
-          selectedInclusions[booking.id] ? sum + booking.booking_cost : sum, 0
+        const categoryTotal = bookings.reduce(
+          (sum, booking) =>
+            selectedInclusions[booking.id] ? sum + booking.booking_cost : sum,
+          0
         );
-        const selectedCount = bookings.filter(b => selectedInclusions[b.id]).length;
+        const selectedCount = bookings.filter(
+          (b) => selectedInclusions[b.id]
+        ).length;
 
         return (
-          <div key={category} className="mb-3 border border-gray-200 rounded-lg overflow-hidden">
+          <div
+            key={category}
+            className="mb-3 border border-gray-200 rounded-lg overflow-hidden"
+          >
             {/* Category Header */}
             <div
               className="flex items-center justify-between p-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
@@ -833,8 +936,9 @@ const ItineraryInclusions = ({
               )}
 
               <RiArrowDropDownLine
-                className={`text-2xl transition-transform ${expandedCategories[category] ? 'rotate-180' : ''
-                  }`}
+                className={`text-2xl transition-transform ${
+                  expandedCategories[category] ? "rotate-180" : ""
+                }`}
               />
             </div>
 
@@ -844,36 +948,38 @@ const ItineraryInclusions = ({
                 {bookings.map((booking) => (
                   <div
                     key={booking.id}
-                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${!selectedInclusions[booking.id] ? 'opacity-50' : ''
-                      }`}
+                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+                      !selectedInclusions[booking.id] ? "opacity-50" : ""
+                    }`}
                   >
+                    {console.log("Booking Status", booking)}
                     {/* Checkbox */}
                     <div className="pt-0.5">
-  {updatingInclusions[booking.id] ? (
-    <div className="w-4 h-4 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-    </div>
-  ) : (
-    <input
-  type="checkbox"
-  checked={selectedInclusions[booking.id]}
-  onChange={() => onToggleInclusion(booking.id)}
-  disabled={booking.booking_cost === 0} 
-  className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-/>
-  )}
-</div>
+                      {updatingInclusions[booking.id] ? (
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+                        </div>
+                      ) : (
+                        <input
+                          type="checkbox"
+                          checked={selectedInclusions[booking.id]}
+                          onChange={() => onToggleInclusion(booking.id)}
+                          disabled={booking.status === "Paid"}
+                          className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        />
+                      )}
+                    </div>
 
                     {/* Booking Details */}
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm mb-1 line-clamp-2">
                         {booking.detail.name}
                       </div>
-                      {booking.booking_cost === 0 && (
-  <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
-    PAID
-  </div>
-)}
+                      {booking.status === "Paid" && (
+                        <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+                          PAID
+                        </div>
+                      )}
 
                       <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                         <div className="flex items-center gap-1">
@@ -891,19 +997,27 @@ const ItineraryInclusions = ({
                           <div className="flex items-center gap-1">
                             <span>•</span>
                             <BsPeopleFill className="flex-shrink-0" />
-                            <span>{booking.detail.pax.number_of_adults} Adults</span>
+                            <span>
+                              {booking.detail.pax.number_of_adults} Adults
+                            </span>
                           </div>
                         )}
 
                         {/* Show individual booking cost */}
                         {
-                          // !arePricesHidden && 
+                          // !arePricesHidden &&
                           booking.booking_cost > 0 && (
                             <div className="flex items-center gap-1 text-green-600 font-medium">
                               <span>•</span>
-                              <span>₹{getIndianPrice(Math.round(booking.booking_cost))}</span>
+                              <span>
+                                ₹
+                                {getIndianPrice(
+                                  Math.round(booking.booking_cost)
+                                )}
+                              </span>
                             </div>
-                          )}
+                          )
+                        }
                       </div>
                     </div>
 
@@ -928,14 +1042,11 @@ const ItineraryInclusions = ({
   );
 };
 
-
-
-
-
 const Details = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
-  const [isDirectlyOpenPaymentDrawer, setIsDirectlyOpenPaymentDrawer] = useState(props?.openPaymentDrawer || false);
+  const [isDirectlyOpenPaymentDrawer, setIsDirectlyOpenPaymentDrawer] =
+    useState(props?.openPaymentDrawer || false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [Newitinerary, setNewitinerary] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
@@ -955,23 +1066,21 @@ const Details = (props) => {
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
-  const { itinerary_status, transfers_status, pricing_status, final_status } = useSelector(
-    (state) => state.ItineraryStatus
-  );
-  const Itinerary = useSelector(state => state.Itinerary);
+  const { itinerary_status, transfers_status, pricing_status, final_status } =
+    useSelector((state) => state.ItineraryStatus);
+  const Itinerary = useSelector((state) => state.Itinerary);
   const Cart = useSelector((state) => state.Cart);
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState('full');
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
-  const [selectedOption, setSelectedOption] = useState('full');
+  const [selectedOption, setSelectedOption] = useState("full");
   const [showExpandedPayment, setShowExpandedPayment] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [lockInCompleted, setLockInCompleted] = useState(false);
-  const [paymentStep, setPaymentStep] = useState('initial'); // 'initial', 'options', 'detailed'
+  const [paymentStep, setPaymentStep] = useState("initial"); // 'initial', 'options', 'detailed'
   const [showDetailedPayment, setShowDetailedPayment] = useState(false);
 
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
   const [repriceLoading, setRepriceLoading] = useState(false);
-
 
   // Add these new state variables after your existing useState declarations
   const [appliedCoupon, setAppliedCoupon] = useState(
@@ -982,39 +1091,40 @@ const Details = (props) => {
   );
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
-  const [couponUsageData, setCouponUsageData] = useState(Cart?.coupon_usage || null);
+  const [couponUsageData, setCouponUsageData] = useState(
+    Cart?.coupon_usage || null
+  );
   const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
   const [selectedInclusions, setSelectedInclusions] = useState({});
   const [inclusionsExpanded, setInclusionsExpanded] = useState(
-  Cart?.sales?.some(sale => sale.status === 'Completed') && Cart?.total_payable_amount !== 0
-);
-    const [updatingInclusions, setUpdatingInclusions] = useState({});
+    Cart?.sales?.some((sale) => sale.status === "Completed") &&
+      Cart?.total_payable_amount !== 0
+  );
+  const [updatingInclusions, setUpdatingInclusions] = useState({});
 
   const { trackWhatsAppClicked } = useAnalytics();
 
-
   useEffect(() => {
     if (props?.openPaymentDrawer && isDirectlyOpenPaymentDrawer) {
-      console.log("is it call two times ?")
-      handleProceedToPayment()
+     
+      handleProceedToPayment();
     }
-  }, [props?.openPaymentDrawer])
+  }, [props?.openPaymentDrawer]);
 
   useEffect(() => {
-  if (Cart?.summary) {
-    const initialSelections = {};
-    Object.values(Cart.summary).forEach(category => {
-      if (category.bookings) {
-        category.bookings.forEach(booking => {
-          initialSelections[booking.id] = booking.selected ?? true;
-        });
-      }
-    });
-    setSelectedInclusions(initialSelections);
-  }
-}, [Cart?.summary]);
-
+    if (Cart?.summary) {
+      const initialSelections = {};
+      Object.values(Cart.summary).forEach((category) => {
+        if (category.bookings) {
+          category.bookings.forEach((booking) => {
+            initialSelections[booking.id] = booking.selected ?? true;
+          });
+        }
+      });
+      setSelectedInclusions(initialSelections);
+    }
+  }, [Cart?.summary]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -1049,7 +1159,6 @@ const Details = (props) => {
     return "";
   };
 
-
   const [date, setDate] = useState(
     getCurrentDateIfOlder(props?.itinerary?.start_date)
   );
@@ -1065,100 +1174,107 @@ const Details = (props) => {
     setPax(option);
   };
 
-const handleToggleInclusion = async (bookingId) => {
-  setUpdatingInclusions(prev => ({ ...prev, [bookingId]: true }));
-  
-  try {
-    const newSelections = {
-      ...selectedInclusions,
-      [bookingId]: !selectedInclusions[bookingId]
-    };
-    setSelectedInclusions(newSelections);
+  const handleToggleInclusion = async (bookingId) => {
+    setUpdatingInclusions((prev) => ({ ...prev, [bookingId]: true }));
 
-  
-    let bookingType = '';
-    let clickedBooking = null;
-    
-    if (Cart?.summary) {
-      Object.entries(Cart.summary).forEach(([category, data]) => {
-        if (data.bookings && data.bookings.length > 0) {
-          const found = data.bookings.find(booking => booking.id === bookingId);
-          if (found) {
-            clickedBooking = found;
-            bookingType = category === 'Stays' ? 'accommodation' :
-              category === 'Flights' ? 'flight' :
-              category === 'Transfers' ? 'transfer' : 'activity';
+    try {
+      const newSelections = {
+        ...selectedInclusions,
+        [bookingId]: !selectedInclusions[bookingId],
+      };
+      setSelectedInclusions(newSelections);
+
+      let bookingType = "";
+      let clickedBooking = null;
+
+      if (Cart?.summary) {
+        Object.entries(Cart.summary).forEach(([category, data]) => {
+          if (data.bookings && data.bookings.length > 0) {
+            const found = data.bookings.find(
+              (booking) => booking.id === bookingId
+            );
+            if (found) {
+              clickedBooking = found;
+              bookingType =
+                category === "Stays"
+                  ? "accommodation"
+                  : category === "Flights"
+                  ? "flight"
+                  : category === "Transfers"
+                  ? "transfer"
+                  : "activity";
+            }
           }
-        }
-      });
-    }
-
-   
-    const payload = [{
-      booking_type: bookingType.toLowerCase(),
-      booking_id: bookingId,
-      selected: newSelections[bookingId] 
-    }];
-
-    const response = await updateCartPricing.patch(
-      `/${router.query.id}/cart/`,
-      payload, 
-      {
-        headers: { Authorization: `Bearer ${props.token}` }
+        });
       }
-    );
 
-    if (response.data) {
-      dispatch(setCart(response.data));
-      
+      const payload = [
+        {
+          booking_type: bookingType.toLowerCase(),
+          booking_id: bookingId,
+          selected: newSelections[bookingId],
+        },
+      ];
+
+      const response = await updateCartPricing.patch(
+        `/${router.query.id}/cart/`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
+
+      if (response.data) {
+        dispatch(setCart(response.data));
+
+        dispatch(
+          openNotification({
+            text: "Cart updated successfully",
+            heading: "Success",
+            type: "success",
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error updating cart:", error);
+
+      // Revert the selection on error
+      setSelectedInclusions((prev) => ({
+        ...prev,
+        [bookingId]: !prev[bookingId],
+      }));
+
       dispatch(
         openNotification({
-          text: "Cart updated successfully",
-          heading: "Success",
-          type: "success",
+          text: error?.response?.data?.message || "Failed to update cart",
+          heading: "Error!",
+          type: "error",
         })
       );
+    } finally {
+      setUpdatingInclusions((prev) => ({ ...prev, [bookingId]: false }));
     }
-  } catch (error) {
-    console.error('Error updating cart:', error);
-    
-    // Revert the selection on error
-    setSelectedInclusions(prev => ({
-      ...prev,
-      [bookingId]: !prev[bookingId]
-    }));
-    
-    dispatch(
-      openNotification({
-        text: error?.response?.data?.message || "Failed to update cart",
-        heading: "Error!",
-        type: "error",
-      })
-    );
-  } finally {
-    setUpdatingInclusions(prev => ({ ...prev, [bookingId]: false }));
-  }
-};
+  };
 
- const calculateFilteredTotal = () => {
-  if (!Cart) return 0;
+  const calculateFilteredTotal = () => {
+    if (!Cart) return 0;
 
-  let total = Cart?.total_payable_amount || 0;
+    let total = Cart?.total_payable_amount || 0;
 
-  // If total is 0, return 0 early
-  if (total === 0) return 0;
+    // If total is 0, return 0 early
+    if (total === 0) return 0;
 
-  // Apply coupon if applicable
-  if (couponUsageData?.discount) {
-    total = Math.max(0, total - couponUsageData.discount);
-  }
+    // Apply coupon if applicable
+    if (couponUsageData?.discount) {
+      total = Math.max(0, total - couponUsageData.discount);
+    }
 
-  return Math.round(total);
-};
+    return Math.round(total);
+  };
 
   const handleCloseDrawer = () => {
-    console.log("handle paymenmt close")
-    if(isDirectlyOpenPaymentDrawer){
+    console.log("handle paymenmt close");
+    if (isDirectlyOpenPaymentDrawer) {
       setIsDirectlyOpenPaymentDrawer(false);
       props.setShowFooterBannerMobile();
     }
@@ -1210,20 +1326,24 @@ const handleToggleInclusion = async (bookingId) => {
     props.fetchData(true);
   };
 
-
   const handleRepriceBookings = async () => {
     setRepriceLoading(true);
     try {
-      const response = await repriceBookings.get(`${router.query.id}/reprice/bookings`, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
+      const response = await repriceBookings.get(
+        `${router.query.id}/reprice/bookings`,
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
 
       if (response.data) {
         setItinerary(response.data);
         fetchItineraryStatus();
         dispatch(
           openNotification({
-            text: response.data.coupon_usage?.message || "Itinerary repriced successfully",
+            text:
+              response.data.coupon_usage?.message ||
+              "Itinerary repriced successfully",
             heading: "Success",
             type: "success",
           })
@@ -1232,10 +1352,13 @@ const handleToggleInclusion = async (bookingId) => {
         props.fetchData(true);
       }
     } catch (error) {
-      console.error('Error Repricing :', error);
+      console.error("Error Repricing :", error);
       dispatch(
         openNotification({
-          text: error?.response?.data?.message || error.message || "Failed to reprice itinerary",
+          text:
+            error?.response?.data?.message ||
+            error.message ||
+            "Failed to reprice itinerary",
           heading: "Error!",
           type: "error",
         })
@@ -1243,21 +1366,24 @@ const handleToggleInclusion = async (bookingId) => {
     } finally {
       setRepriceLoading(false);
     }
-  }
-
+  };
 
   const handleApplyCoupon = async (couponId, couponCode) => {
     try {
-      const response = await applyCoupon.post('/', {
-        payment_information_id: Cart?.id,
-        coupon_id: couponId
-      }, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
+      const response = await applyCoupon.post(
+        "/",
+        {
+          payment_information_id: Cart?.id,
+          coupon_id: couponId,
+        },
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
 
       if (response.data.coupon_usage) {
         setAppliedCoupon(couponCode);
-        setCouponUsageData(response.data.coupon_usage)
+        setCouponUsageData(response.data.coupon_usage);
         setCouponSavedAmount(response.data.coupon_usage.discount);
         dispatch(setCart(response.data));
         // Show success message
@@ -1273,7 +1399,7 @@ const handleToggleInclusion = async (bookingId) => {
         props.fetchData(true);
       }
     } catch (error) {
-      console.error('Error applying coupon:', error);
+      console.error("Error applying coupon:", error);
       dispatch(
         openNotification({
           text: "Something went wrong",
@@ -1282,32 +1408,35 @@ const handleToggleInclusion = async (bookingId) => {
         })
       );
       // alert('Failed to apply coupon. Please try again.');
-
     }
   };
 
   const handleRemoveCoupon = async (couponId) => {
     setIsRemovingCoupon(true);
     try {
-      const response = await removeCoupon.post('/', {
-        payment_information_id: Cart?.id,
-        coupon_id: couponId
-      }, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
+      const response = await removeCoupon.post(
+        "/",
+        {
+          payment_information_id: Cart?.id,
+          coupon_id: couponId,
+        },
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
 
       if (response.data) {
         setAppliedCoupon(null);
         setCouponUsageData(null);
         dispatch(setCart(response.data));
         setCouponSavedAmount(0);
-        setIsRemovingCoupon(false)
+        setIsRemovingCoupon(false);
         // Refresh payment data
         props.fetchData(true);
       }
     } catch (error) {
-      setIsRemovingCoupon(false)
-      console.error('Error removing coupon:', error);
+      setIsRemovingCoupon(false);
+      console.error("Error removing coupon:", error);
       // alert('Failed to remove coupon. Please try again.');
       dispatch(
         openNotification({
@@ -1322,8 +1451,6 @@ const handleToggleInclusion = async (bookingId) => {
   const handleViewCoupons = () => {
     setShowCouponModal(true);
   };
-
-
 
   let bookingslist = [];
   let bookinglistwithcost = [];
@@ -1353,12 +1480,13 @@ const handleToggleInclusion = async (bookingId) => {
       amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
-      image: "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
+      image:
+        "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data?.sales[0]?.orders[0]?.order_id,
       modal: {
         ondismiss: function () {
           setPaymentLoading(false);
-        }
+        },
       },
       handler: function (response) {
         setPaymentLoading(true);
@@ -1373,12 +1501,12 @@ const handleToggleInclusion = async (bookingId) => {
             setPaymentLoading(false);
 
             // Set session completion based on payment type
-            if (paymentType === 'full') {
+            if (paymentType === "full") {
               setSessionPaymentCompleted(true);
               setPaymentCompleted(true);
             } else {
               setLockInCompleted(true);
-              setSelectedPaymentOption('full');
+              setSelectedPaymentOption("full");
             }
 
             props.getPaymentHandler();
@@ -1400,48 +1528,55 @@ const handleToggleInclusion = async (bookingId) => {
     try {
       var rzp1 = new window.Razorpay(razorpayOptions);
       rzp1.open();
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const _fullPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
     try {
-      const response = await paymentInitiate.post('', {
-        payment_information_id: Cart?.id,
-        payment_type: 'full_payment'
-      }, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
+      const response = await paymentInitiate.post(
+        "",
+        {
+          payment_information_id: Cart?.id,
+          payment_type: "full_payment",
+        },
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
 
       if (response.data) {
         dispatch(setCart(response.data));
         props.fetchData(true);
 
-        const fullPaymentSale = response.data?.sales?.find(sale =>
-          sale.payment_type === "full_payment" && sale.status === "Created"
+        const fullPaymentSale = response.data?.sales?.find(
+          (sale) =>
+            sale.payment_type === "full_payment" && sale.status === "Created"
         );
 
         if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
           setPaymentLoading(false);
-          dispatch(openNotification({
-            text: "Payment order not found. Please refresh and try again.",
-            heading: "Error!",
-            type: "error",
-          }));
+          dispatch(
+            openNotification({
+              text: "Payment order not found. Please refresh and try again.",
+              heading: "Error!",
+              type: "error",
+            })
+          );
           return;
         }
 
         const razorpayData = {
-  amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
-  sales: [fullPaymentSale]
-};
+          amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
+          sales: [fullPaymentSale],
+        };
 
         // Update the Razorpay handler to set session completion
-        _startRazorpayHandler(razorpayData, 'full');
+        _startRazorpayHandler(razorpayData, "full");
       }
     } catch (error) {
-      console.error('Error initiating full payment:', error);
+      console.error("Error initiating full payment:", error);
       dispatch(
         openNotification({
           text: "Something went wrong",
@@ -1458,43 +1593,52 @@ const handleToggleInclusion = async (bookingId) => {
     setPaymentLoading(true);
 
     try {
-      const response = await paymentInitiate.post('', {
-        payment_information_id: Cart?.id,
-        payment_type: 'lock_payment'
-      }, {
-        headers: { Authorization: `Bearer ${props.token}` }
-      });
+      const response = await paymentInitiate.post(
+        "",
+        {
+          payment_information_id: Cart?.id,
+          payment_type: "lock_payment",
+        },
+        {
+          headers: { Authorization: `Bearer ${props.token}` },
+        }
+      );
 
       if (response.data) {
         dispatch(setCart(response.data));
         props.fetchData(true);
 
-        const lockPaymentSale = response.data?.sales?.find(sale =>
-          sale.payment_type === "lock_payment" && sale.status === "Created"
+        const lockPaymentSale = response.data?.sales?.find(
+          (sale) =>
+            sale.payment_type === "lock_payment" && sale.status === "Created"
         );
 
         if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
           setPaymentLoading(false);
-          dispatch(openNotification({
-            text: "Payment order not found. Please refresh and try again.",
-            heading: "Error!",
-            type: "error",
-          }));
+          dispatch(
+            openNotification({
+              text: "Payment order not found. Please refresh and try again.",
+              heading: "Error!",
+              type: "error",
+            })
+          );
           return;
         }
 
         const razorpayData = {
           amount: lockPaymentSale.remaining_amount,
-          sales: [lockPaymentSale]
+          sales: [lockPaymentSale],
         };
 
-        _startRazorpayHandler(razorpayData, 'lockin');
+        _startRazorpayHandler(razorpayData, "lockin");
       }
     } catch (error) {
-      console.error('Error initiating lock payment:', error);
+      console.error("Error initiating lock payment:", error);
       dispatch(
         openNotification({
-          text: error?.response?.data?.errors?.[0]?.detail?.[0] || "Something went wrong",
+          text:
+            error?.response?.data?.errors?.[0]?.detail?.[0] ||
+            "Something went wrong",
           heading: "Error!",
           type: "error",
         })
@@ -1591,7 +1735,10 @@ const handleToggleInclusion = async (bookingId) => {
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
-        event_label: selectedPaymentOption === 'full' ? "Pay Full Amount" : "Lock-in Price",
+        event_label:
+          selectedPaymentOption === "full"
+            ? "Pay Full Amount"
+            : "Lock-in Price",
         event_action: "Booking Slide",
       },
     });
@@ -1612,7 +1759,7 @@ const handleToggleInclusion = async (bookingId) => {
   };
 
   const handleWhatsappChat = () => {
-    trackWhatsAppClicked(router?.query?.id, Cart?.discounted_cost, 'Rupees');
+    trackWhatsAppClicked(router?.query?.id, Cart?.discounted_cost, "Rupees");
     logEvent({
       action: "Button_Click",
       params: {
@@ -1656,7 +1803,7 @@ const handleToggleInclusion = async (bookingId) => {
   };
 
   const handleProceedToPayment = () => {
-    console.log("openeing drawer")
+    console.log("openeing drawer");
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
     router.push(
@@ -1671,404 +1818,466 @@ const handleToggleInclusion = async (bookingId) => {
     );
   };
 
+  const areAllInclusionsPaid = () => {
+    if (!Cart?.summary) return false;
+
+    let allPaid = true;
+    Object.values(Cart.summary).forEach((category) => {
+      if (category.bookings && category.bookings.length > 0) {
+        category.bookings.forEach((booking) => {
+          if (booking.status !== "Paid") {
+            allPaid = false;
+          }
+        });
+      }
+    });
+
+    return allPaid;
+  };
+
+    const areAnyInclusionsPaid = () => {
+    if (!Cart?.summary) return false;
+
+    let anyPaid = false;
+    Object.values(Cart.summary).forEach((category) => {
+      if (category.bookings && category.bookings.length > 0) {
+        category.bookings.forEach((booking) => {
+          if (booking.status == "Paid") {
+            anyPaid = true;
+          }
+        });
+      }
+    });
+
+    return anyPaid;
+  };
+
+  const isItineraryInFuture = () => {
+    const startDate = new Date(Itinerary.start_date);
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    startDate.setHours(0, 0, 0, 0);
+    return startDate >= currentDate;
+  };
+
   const hasFullPaymentCompleted = Cart?.sales?.some(
-    (sale) => sale.payment_type === 'full_payment' && sale.status === 'Completed'
+    (sale) =>
+      sale.payment_type === "full_payment" && sale.status === "Completed"
   );
 
-  const hasPlanExpired = (!Cart?.price_valid_until ||
-    new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now());
-
-  
-
-
+  const hasPlanExpired =
+    !Cart?.price_valid_until ||
+    new Date(Cart.price_valid_until.replace(" ", "T")).getTime() <= Date.now();
 
   return (
-
     <>
-
-      {!isDirectlyOpenPaymentDrawer && <div>
-        {pricing_status === "PENDING" || props?.loadpricing ? (
-          <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
-            <PricingSkeleton />
-          </div>
-        ) : (
-          <div
-            className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+      {!isDirectlyOpenPaymentDrawer && (
+        <div>
+          {pricing_status === "PENDING" || props?.loadpricing ? (
+            <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
+              <PricingSkeleton />
+            </div>
+          ) : (
+            <div
+              className={`${
+                Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
               }  -mt-[1rem] -mx-[1rem] mb-0`}
-          >
-            {!(final_status == "Paid" || final_status == "Released") && <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />}
-            <div className=" mx-[1rem] mt-[1rem]">
-              <div className="flex flex-row justify-between">
-                {props.iscouponApplied &&
+            >
+              {!(final_status == "Paid" || final_status == "Released") && (
+                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+              )}
+              <div className=" mx-[1rem] mt-[1rem]">
+                <div className="flex flex-row justify-between">
+                  {props.iscouponApplied &&
                   Cart?.discounted_cost != Cart?.total_cost &&
                   Cart?.show_per_person_cost !=
-                  Cart?.per_person_discounted_cost ? (
-                  <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-                    <span>₹</span>
-                    <div>
-                      {Cart?.show_per_person_cost ||
-                        Cart?.pay_only_for_one
-                        ? getIndianPrice(
-                          Math.round(Cart?.per_person_total_cost)
-                        )
-                        : getIndianPrice(Math.round(Cart?.total_cost))}
-                      {"/-"}
-                    </div>
-                  </div>
-                ) : (
-                  <div></div>
-                )}
-
-                {props.iscouponApplied && Cart?.coupon_usage && (
-                  <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                    <div>{Cart?.coupon_usage?.usage_description}</div>
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <div className="flex flex-row gap-1">
-                  <div
-                    show_per_person_cost={Cart?.show_per_person_cost}
-                    className={
-                      props.blur
-                        ? "font-lexend blurry-text"
-                        : "font-lexend text-3xl flex flex-row items-center font-semibold"
-                    }
-                  >
-                    {Cart && <span>₹</span>}
-                    {Cart && (
+                    Cart?.per_person_discounted_cost ? (
+                    <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                      <span>₹</span>
                       <div>
-                        {Cart?.pay_only_for_one ||
-                          Cart?.show_per_person_cost
+                        {Cart?.show_per_person_cost || Cart?.pay_only_for_one
                           ? getIndianPrice(
-                            Math.round(
-                              Math.round(
-                                Cart?.per_person_discounted_cost
-                              )
+                              Math.round(Cart?.per_person_total_cost)
                             )
-                          )
-                          : getIndianPrice(
-                            Math.round(
-                              Math.round(Cart?.total_cost)
-                            )
-                          )}
+                          : getIndianPrice(Math.round(Cart?.total_cost))}
                         {"/-"}
                       </div>
-                    )}
-                  </div>
-
-                  {Cart?.paid_user ? (
-                    <div className="font-[400] pl-2 text-base self-end">PAID</div>
+                    </div>
                   ) : (
-                    <div className="font-medium text-base self-end">
-                      {Cart?.pay_only_for_one ||
-                        Cart?.show_per_person_cost
-                        ? "Per Person Cost"
-                        : Cart?.is_estimated_price
-                          ? `${Cart?.total_cost == 0
-                            ? ""
-                            : "Estimated Price"
-                          }`
-                          : Cart
-                            ? "Total Cost"
-                            : ""}
+                    <div></div>
+                  )}
+
+                  {props.iscouponApplied && Cart?.coupon_usage && (
+                    <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
+                      <div>{Cart?.coupon_usage?.usage_description}</div>
                     </div>
                   )}
                 </div>
-
-                {pricing_status === "FAILURE" ? (
-                  <p className="text-red-600 text-sm">
-                    Get in touch to finalize the pricing!
-                  </p>
-                ) : null}
-
-                {Cart && pricing_status === "SUCCESS" && (
-                  <div className="text-[#7A7A7A] text-sm">
-                    {Cart?.total_cost == 0
-                      ? "No bookings added yet"
-                      : "Inclusive of applicable taxes"}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {!oldaccommodation ? (
-              <div
-                className="px-2 pt-2"
-                style={{
-                  marginBottom: "0.1rem",
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gridColumnGap: "1rem",
-                }}
-              >
-                {Cart?.itinerary_status ===
-                  ITINERARY_STATUSES?.itinerary_finalized ||
-                  props?.plan?.featured ? null : (
-                  <div></div>
-                )}
-
-                {Cart?.itinerary_status ===
-                  ITINERARY_STATUSES.itinerary_finalized ||
-                  props?.plan?.featured ? null : (
-                  <div></div>
-                )}
-              </div>
-            ) : null}
-
-            {Cart && (
-              <div
-                className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
-                onClick={() => setAcordianOpen(!acoordianceOpen)}
-              >
-                <div>
-                  {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-                  {!Cart?.are_prices_hidden ? "breakup" : "inclusions"}
-                </div>
-
-                <RiArrowDropDownLine
-                  className={` text-2xl  mt-1 transition-all duration-100 ${acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
-                    }`}
-                ></RiArrowDropDownLine>
-              </div>
-            )}
-
-            <div
-              className={`mb-[0.8rem] mx-[1rem] Transition-Height-${acoordianceOpen ? "in" : "out"
-                } `}
-            >
-              {Cart && acoordianceOpen && (
-                <div className="">
-                  <Accordion
-                    stayBookings={Cart?.summary?.Stays?.bookings || []}
-                    flightBookings={Cart?.summary?.Flights?.bookings || []}
-                    activityBookings={Cart?.summary?.Activities?.bookings || []}
-                    transferBookings={Cart?.summary?.Transfers?.bookings || []}
-                    payment={Cart}
-                    mercuryItinerary={props?.mercuryItinerary}
-                  />
-
-                  {!oldaccommodation && !Cart?.are_prices_hidden ? (
-                    <div className="flex flex-row justify-between">
-                      <div
-                        className={
-                          props.blur
-                            ? "font-lexend text-enter blurry-text "
-                            : "font-lexend text-enter text-sm font-normal"
-                        }
-                      >
-                        {"Surcharges & Taxes"}
-                      </div>
-                      <div
-                        className={
-                          props.blur
-                            ? "font-lexend text-enter blurry-text font-bold"
-                            : "font-lexend text-enter "
-                        }
-                      >
-                        {"₹ " +
-                          getIndianPrice(
-                            Math.round(Cart?.surcharges_and_taxes)
-                          )}
-                      </div>
-                    </div>
-                  ) : null}
-
-                  {Cart ? (
-                    Cart?.coupon && props.iscouponApplied ? (
-                      Cart?.coupon.code ? (
-                        <div className="flex flex-row justify-between pt-2">
-                          <div
-                            className={
-                              props.blur
-                                ? "font-lexend text-enter blurry-text  "
-                                : "font-lexend text-enter text-sm font-bold  flex flex-col"
-                            }
-                          >
-                            {"Coupon Discount"}
-                            <div className="flex flex-row gap-1">
-                              <div className="text-[#02BF2B]">
-                                {Cart?.coupon.code}
-                              </div>
-                              <div className="font-normal ">
-                                {Cart?.coupon?.discount_type == "Flat"
-                                  ? "(Flat  OFF!)"
-                                  : Cart?.coupon?.discount_type ==
-                                    "1 Night Free Stay"
-                                    ? Cart?.coupon_usage?.discount
-                                      ? `(INR ${getIndianPrice(
-                                        Math.round(
-                                          Cart?.coupon_usage?.discount
-                                        )
-                                      )}  OFF!)`
-                                      : Cart?.coupon.discount_value
-                                        ? Cart?.coupon.discount_value +
-                                        "%  OFF!"
-                                        : null
-                                    : null}
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className={
-                              props.blur
-                                ? "font-lexend text-enter blurry-text "
-                                : "font-lexend text-enter font-bold"
-                            }
-                          >
-                            {Cart?.coupon_usage?.discount ? (
-                              <div>
-                                (-){" "}
-                                {"₹" +
-                                  getIndianPrice(
-                                    Math.round(
-                                      Cart?.coupon_usage?.discount
-                                    )
-                                  )}
-                              </div>
-                            ) : (
-                              <div></div>
-                            )}
-                          </div>
+                <div className="flex flex-col">
+                  <div className="flex flex-row gap-1">
+                    <div
+                      show_per_person_cost={Cart?.show_per_person_cost}
+                      className={
+                        props.blur
+                          ? "font-lexend blurry-text"
+                          : "font-lexend text-3xl flex flex-row items-center font-semibold"
+                      }
+                    >
+                      {Cart && <span>₹</span>}
+                      {Cart && (
+                        <div>
+                          {Cart?.pay_only_for_one || Cart?.show_per_person_cost
+                            ? getIndianPrice(
+                                Math.round(
+                                  Math.round(Cart?.per_person_discounted_cost)
+                                )
+                              )
+                            : getIndianPrice(
+                                Math.round(Math.round(Cart?.total_cost))
+                              )}
+                          {"/-"}
                         </div>
-                      ) : null
-                    ) : null
-                  ) : null}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-      }
+                      )}
+                    </div>
 
-
-
-
-      {!isDirectlyOpenPaymentDrawer && <div>
-        <div className="px-0 pb-4">
-          {props.couponJSX}
-          <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
-
-            <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-              <BsCalendar2 className="text-md text-[#7A7A7A]" />
-              <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-                {props.tripsPage ? (
-                  <div>{props?.itinerary?.duration + " Nights"}</div>
-                ) : (
-                  <div>
-                    {convertDFormat(
-                      props?.itinerary?.start_date
-                        ? props?.itinerary?.start_date
-                        : null
-                    )}{" "}
-                    -{" "}
-                    {convertDFormat(
-                      props?.itinerary?.end_date
-                        ? props?.itinerary?.end_date
-                        : null
+                    {Cart?.paid_user ? (
+                      <div className="font-[400] pl-2 text-base self-end">
+                        PAID
+                      </div>
+                    ) : (
+                      <div className="font-medium text-base self-end">
+                        {Cart?.pay_only_for_one || Cart?.show_per_person_cost
+                          ? "Per Person Cost"
+                          : Cart?.is_estimated_price
+                          ? `${Cart?.total_cost == 0 ? "" : "Estimated Price"}`
+                          : Cart
+                          ? "Total Cost"
+                          : ""}
+                      </div>
                     )}
                   </div>
-                )}
 
+                  {pricing_status === "FAILURE" ? (
+                    <p className="text-red-600 text-sm">
+                      Get in touch to finalize the pricing!
+                    </p>
+                  ) : null}
 
+                  {Cart && pricing_status === "SUCCESS" && (
+                    <div className="text-[#7A7A7A] text-sm">
+                      {Cart?.total_cost == 0
+                        ? "No bookings added yet"
+                        : "Inclusive of applicable taxes"}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
-            <BsPeopleFill className="text-md text-[#7A7A7A]" />
-            <div className=" flex flex-row items-center text-md font-medium text-black">
-              <div>
-                {pax} {pluralDetector("Adult", pax)}{" "}
-              </div>
-              {props.itinerary?.number_of_children ? (
-                <div>, {props.itinerary?.number_of_children} Children</div>
-              ) : null}
-              {props.itinerary?.number_of_infants ? (
-                <div>
-                  , {props.itinerary?.number_of_infants}{" "}
-                  {pluralDetector("Infant", props.itinerary?.number_of_infants)}
+              {!oldaccommodation ? (
+                <div
+                  className="px-2 pt-2"
+                  style={{
+                    marginBottom: "0.1rem",
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gridColumnGap: "1rem",
+                  }}
+                >
+                  {Cart?.itinerary_status ===
+                    ITINERARY_STATUSES?.itinerary_finalized ||
+                  props?.plan?.featured ? null : (
+                    <div></div>
+                  )}
+
+                  {Cart?.itinerary_status ===
+                    ITINERARY_STATUSES.itinerary_finalized ||
+                  props?.plan?.featured ? null : (
+                    <div></div>
+                  )}
                 </div>
               ) : null}
+
+              {Cart && (
+                <div
+                  className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
+                  onClick={() => setAcordianOpen(!acoordianceOpen)}
+                >
+                  <div>
+                    {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
+                    {!Cart?.are_prices_hidden ? "breakup" : "inclusions"}
+                  </div>
+
+                  <RiArrowDropDownLine
+                    className={` text-2xl  mt-1 transition-all duration-100 ${
+                      acoordianceOpen
+                        ? "-rotate-180 "
+                        : "rotate-180 animate-bounce"
+                    }`}
+                  ></RiArrowDropDownLine>
+                </div>
+              )}
+
+              <div
+                className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
+                  acoordianceOpen ? "in" : "out"
+                } `}
+              >
+                {Cart && acoordianceOpen && (
+                  <div className="">
+                    <Accordion
+                      stayBookings={Cart?.summary?.Stays?.bookings || []}
+                      flightBookings={Cart?.summary?.Flights?.bookings || []}
+                      activityBookings={
+                        Cart?.summary?.Activities?.bookings || []
+                      }
+                      transferBookings={
+                        Cart?.summary?.Transfers?.bookings || []
+                      }
+                      payment={Cart}
+                      mercuryItinerary={props?.mercuryItinerary}
+                    />
+
+                    {!oldaccommodation && !Cart?.are_prices_hidden ? (
+                      <div className="flex flex-row justify-between">
+                        <div
+                          className={
+                            props.blur
+                              ? "font-lexend text-enter blurry-text "
+                              : "font-lexend text-enter text-sm font-normal"
+                          }
+                        >
+                          {"Surcharges & Taxes"}
+                        </div>
+                        <div
+                          className={
+                            props.blur
+                              ? "font-lexend text-enter blurry-text font-bold"
+                              : "font-lexend text-enter "
+                          }
+                        >
+                          {"₹ " +
+                            getIndianPrice(
+                              Math.round(Cart?.surcharges_and_taxes)
+                            )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {Cart ? (
+                      Cart?.coupon && props.iscouponApplied ? (
+                        Cart?.coupon.code ? (
+                          <div className="flex flex-row justify-between pt-2">
+                            <div
+                              className={
+                                props.blur
+                                  ? "font-lexend text-enter blurry-text  "
+                                  : "font-lexend text-enter text-sm font-bold  flex flex-col"
+                              }
+                            >
+                              {"Coupon Discount"}
+                              <div className="flex flex-row gap-1">
+                                <div className="text-[#02BF2B]">
+                                  {Cart?.coupon.code}
+                                </div>
+                                <div className="font-normal ">
+                                  {Cart?.coupon?.discount_type == "Flat"
+                                    ? "(Flat  OFF!)"
+                                    : Cart?.coupon?.discount_type ==
+                                      "1 Night Free Stay"
+                                    ? Cart?.coupon_usage?.discount
+                                      ? `(INR ${getIndianPrice(
+                                          Math.round(
+                                            Cart?.coupon_usage?.discount
+                                          )
+                                        )}  OFF!)`
+                                      : Cart?.coupon.discount_value
+                                      ? Cart?.coupon.discount_value + "%  OFF!"
+                                      : null
+                                    : null}
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className={
+                                props.blur
+                                  ? "font-lexend text-enter blurry-text "
+                                  : "font-lexend text-enter font-bold"
+                              }
+                            >
+                              {Cart?.coupon_usage?.discount ? (
+                                <div>
+                                  (-){" "}
+                                  {"₹" +
+                                    getIndianPrice(
+                                      Math.round(Cart?.coupon_usage?.discount)
+                                    )}
+                                </div>
+                              ) : (
+                                <div></div>
+                              )}
+                            </div>
+                          </div>
+                        ) : null
+                      ) : null
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isDirectlyOpenPaymentDrawer && (
+        <div>
+          <div className="px-0 pb-4">
+            {props.couponJSX}
+            <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
+              <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+                <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                <div className="text-md font-medium text-black flex flex-row items-center gap-2">
+                  {props.tripsPage ? (
+                    <div>{props?.itinerary?.duration + " Nights"}</div>
+                  ) : (
+                    <div>
+                      {convertDFormat(
+                        props?.itinerary?.start_date
+                          ? props?.itinerary?.start_date
+                          : null
+                      )}{" "}
+                      -{" "}
+                      {convertDFormat(
+                        props?.itinerary?.end_date
+                          ? props?.itinerary?.end_date
+                          : null
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
+              <BsPeopleFill className="text-md text-[#7A7A7A]" />
+              <div className=" flex flex-row items-center text-md font-medium text-black">
+                <div>
+                  {pax} {pluralDetector("Adult", pax)}{" "}
+                </div>
+                {props.itinerary?.number_of_children ? (
+                  <div>, {props.itinerary?.number_of_children} Children</div>
+                ) : null}
+                {props.itinerary?.number_of_infants ? (
+                  <div>
+                    , {props.itinerary?.number_of_infants}{" "}
+                    {pluralDetector(
+                      "Infant",
+                      props.itinerary?.number_of_infants
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
-      </div>}
+      )}
 
-
-      {!isDirectlyOpenPaymentDrawer && <div>
-        <>
-          {props.tripsPage ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="1px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={handleCreateTripButton}
-            >
-              Craft a new trip!
-            </Button>
-          ) : (
-            <>
-              {props?.token ? (
-                <>
-                  {(pricing_status === "SUCCESS" && props.payment?.total_payable_amount === 0 && hasFullPaymentCompleted) && !showDetailedPayment ? (
-                    <PaymentSuccess
-                      amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
-                      onDownloadInvoice={handleGetInTouch}
-                      loading={props?.loading}
-                    />
-                  ) : (
-                    <>
-                      {/* Check for pricing failure first */}
-                      {pricing_status === "FAILURE" ? (
-                        <GetInTouchContainer>
-                          <Button
-                            color="#111"
-                            fontWeight="500"
-                            fontSize="1rem"
-                            borderWidth="1px"
-                            width="100%"
-                            borderRadius="8px"
-                            bgColor="#f8e000"
-                            padding="12px"
-                            onclick={handleGetInTouch}
-                          >
-                            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", alignItems: "center" }}>
-                              <ImageLoader
-                                dimensions={{ height: 50, width: 50 }}
-                                dimensionsMobile={{ height: 50, width: 50 }}
-                                height={"20px"}
-                                width={"20px"}
-                                widthmobile={"20px"}
-                                leftalign
-                                url={"media/icons/login/customer-service-black.png"}
-                              />
-                              {props?.loading ? <PulseLoader /> : <span>Get in touch!</span>}
-                            </div>
-                          </Button>
-                        </GetInTouchContainer>
-                      ) : (
-                        <>
-                          {(
-                            pricing_status === "SUCCESS" && (
+      {!isDirectlyOpenPaymentDrawer && (
+        <div>
+          <>
+            {props.tripsPage ? (
+              <Button
+                color="#111"
+                fontWeight="500"
+                fontSize="1rem"
+                borderWidth="1px"
+                width="100%"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                padding="12px"
+                onclick={handleCreateTripButton}
+              >
+                Craft a new trip!
+              </Button>
+            ) : (
+              <>
+                {props?.token ? (
+                  <>
+                    {pricing_status === "SUCCESS" &&
+                    !(props.payment?.total_payable_amount === 0) &&
+                    hasFullPaymentCompleted &&
+                    !showDetailedPayment &&
+                    areAllInclusionsPaid() ? (
+                      <PaymentSuccess
+                        amount={getIndianPrice(
+                          Math.round(Cart?.discounted_cost)
+                        )}
+                        onDownloadInvoice={handleGetInTouch}
+                        loading={props?.loading}
+                      />
+                    ) : (
+                      <>
+                        {/* Check for pricing failure first */}
+                        {pricing_status === "FAILURE" ? (
+                          <GetInTouchContainer>
+                            <Button
+                              color="#111"
+                              fontWeight="500"
+                              fontSize="1rem"
+                              borderWidth="1px"
+                              width="100%"
+                              borderRadius="8px"
+                              bgColor="#f8e000"
+                              padding="12px"
+                              onclick={handleGetInTouch}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  gap: "0.5rem",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <ImageLoader
+                                  dimensions={{ height: 50, width: 50 }}
+                                  dimensionsMobile={{ height: 50, width: 50 }}
+                                  height={"20px"}
+                                  width={"20px"}
+                                  widthmobile={"20px"}
+                                  leftalign
+                                  url={
+                                    "media/icons/login/customer-service-black.png"
+                                  }
+                                />
+                                {props?.loading ? (
+                                  <PulseLoader />
+                                ) : (
+                                  <span>Get in touch!</span>
+                                )}
+                              </div>
+                            </Button>
+                          </GetInTouchContainer>
+                        ) : (
+                          <>
+                            {pricing_status === "SUCCESS" && (
                               <div>
                                 {(() => {
                                   const isItineraryInPast = () => {
-                                    if (!props?.itinerary?.start_date) return false;
-                                    const startDate = new Date(props?.itinerary?.start_date);
+                                    if (!props?.itinerary?.start_date)
+                                      return false;
+                                    const startDate = new Date(
+                                      props?.itinerary?.start_date
+                                    );
                                     const currentDate = new Date();
                                     currentDate.setHours(0, 0, 0, 0);
                                     startDate.setHours(0, 0, 0, 0);
                                     return startDate < currentDate;
                                   };
 
-                                  if (isItineraryInPast() || Math.round(Cart?.total_cost) === 0) {
+                                  if (
+                                    isItineraryInPast() ||
+                                    Math.round(Cart?.total_cost) === 0
+                                  ) {
                                     return (
                                       <>
                                         <GetInTouchContainer>
@@ -2092,13 +2301,21 @@ const handleToggleInclusion = async (bookingId) => {
                                               }}
                                             >
                                               <ImageLoader
-                                                dimensions={{ height: 50, width: 50 }}
-                                                dimensionsMobile={{ height: 50, width: 50 }}
+                                                dimensions={{
+                                                  height: 50,
+                                                  width: 50,
+                                                }}
+                                                dimensionsMobile={{
+                                                  height: 50,
+                                                  width: 50,
+                                                }}
                                                 height={"20px"}
                                                 width={"20px"}
                                                 widthmobile={"20px"}
                                                 leftalign
-                                                url={"media/icons/login/customer-service-black.png"}
+                                                url={
+                                                  "media/icons/login/customer-service-black.png"
+                                                }
                                               />{" "}
                                               {props?.loading ? (
                                                 <PulseLoader />
@@ -2140,27 +2357,48 @@ const handleToggleInclusion = async (bookingId) => {
                                   return (
                                     <>
                                       <div className="mb-4">
-                                        {!hasPlanExpired && <h3 className="font-medium text-base mb-3">Payment Options</h3>}
+                                        {!hasPlanExpired && (
+                                          <h3 className="font-medium text-base mb-3">
+                                            Payment Options
+                                          </h3>
+                                        )}
 
                                         {/* Pay Full Amount Option */}
                                         {!hasPlanExpired && (
                                           <div
-                                            className={`border-2 ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-50' : 'border-gray-200'} rounded-lg p-3 mb-3 cursor-pointer`}
-                                            onClick={() => setSelectedPaymentOption('full')}
+                                            className={`border-2 ${
+                                              selectedPaymentOption === "full"
+                                                ? "border-yellow-400 bg-yellow-50"
+                                                : "border-gray-200"
+                                            } rounded-lg p-3 mb-3 cursor-pointer`}
+                                            onClick={() =>
+                                              setSelectedPaymentOption("full")
+                                            }
                                           >
                                             <div className="flex items-center gap-3">
-                                              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPaymentOption === 'full' ? 'border-yellow-400 bg-yellow-400' : 'border-gray-300'}`}>
-                                                {selectedPaymentOption === 'full' && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                              <div
+                                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                                  selectedPaymentOption ===
+                                                  "full"
+                                                    ? "border-yellow-400 bg-yellow-400"
+                                                    : "border-gray-300"
+                                                }`}
+                                              >
+                                                {selectedPaymentOption ===
+                                                  "full" && (
+                                                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                                                )}
                                               </div>
                                               <div className="flex-1">
                                                 <div className="font-medium text-base">
-                                                  {hasFullPaymentCompleted ? "Pay the remaining amount now to get discounts" : "Pay full amount now to get discounts"}
+                                                  {hasFullPaymentCompleted
+                                                    ? "Pay the remaining amount now to get discounts"
+                                                    : "Pay full amount now to get discounts"}
                                                 </div>
                                               </div>
                                             </div>
                                           </div>
                                         )}
-
                                       </div>
 
                                       {hasPlanExpired ? (
@@ -2182,14 +2420,18 @@ const handleToggleInclusion = async (bookingId) => {
                                               Repricing...
                                             </div>
                                           ) : (
-                                            'Refresh Prices'
+                                            "Refresh Prices"
                                           )}
                                         </Button>
                                       ) : (
                                         <PaymentButton
-                                          amount={selectedPaymentOption === 'full' ? Cart?.total_payable_amount : Cart?.lock_in_fee}
+                                          amount={
+                                            selectedPaymentOption === "full"
+                                              ? Cart?.total_payable_amount
+                                              : Cart?.lock_in_fee
+                                          }
                                           isLoading={paymentLoading}
-                                          paymentType={'full'}
+                                          paymentType={"full"}
                                           onClick={handleProceedToPayment}
                                         />
                                       )}
@@ -2210,386 +2452,585 @@ const handleToggleInclusion = async (bookingId) => {
                                         hasFullPaymentCompleted ? (
                                           <div className="text-sm mt-2">
                                             <span>
-                                              <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
-                                              {`Your Itinerary fee of ${Math.round(Cart?.discounted_cost)} has been received. Please pay the remaining now or before 5 Sept 2025 to confirm your trip.`}
+                                              <LuClock4
+                                                color="green"
+                                                className="inline align-middle mr-1 font-semibold"
+                                              />
+                                              {`Your Itinerary fee of ₹${Math.round(
+                                                Cart?.discounted_cost
+                                              )} has been received. Please pay the remaining now or before 5 Sept 2025 to confirm your trip.`}
                                             </span>
                                           </div>
-                                        ) : null}
+                                        ) : null
+                                      }
 
-                                      {selectedPaymentOption === 'full' && !hasFullPaymentCompleted && !hasPlanExpired && (
-                                        <div className="text-center text-sm text-gray-600 mt-3">
-                                          Apply your coupon code at checkout in next step.
-                                        </div>
-                                      )}
+                                      {selectedPaymentOption === "full" &&
+                                        !hasFullPaymentCompleted &&
+                                        !hasPlanExpired && (
+                                          <div className="text-center text-sm text-gray-600 mt-3">
+                                            Apply your coupon code at checkout
+                                            in next step.
+                                          </div>
+                                        )}
                                     </>
                                   );
                                 })()}
                               </div>
-                            )
-                          )}
-                        </>
-                      )}
+                            )}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    <Button
+                      color="#111"
+                      fontWeight="400"
+                      fontSize="0.45rem"
+                      borderWidth="1px"
+                      width="100%"
+                      borderRadius="10px"
+                      bgColor="#F7E700"
+                      onclick={handleLoginButton}
+                    >
+                      Log in to proceed & Pay
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        </div>
+      )}
 
-                    </>
-                  )}
-                </>
-              ) : (
-                <div>
-                  <Button
-                    color="#111"
-                    fontWeight="400"
-                    fontSize="0.45rem"
-                    borderWidth="1px"
-                    width="100%"
-                    borderRadius="10px"
-                    bgColor="#F7E700"
-                    onclick={handleLoginButton}
-                  >
-                    Log in to proceed & Pay
-                  </Button>
-                </div>
+      {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
+      {showPaymentDrawer && (
+        <Drawer
+          show={showPaymentDrawer}
+          anchor={"right"}
+          backdrop
+          width={"50%"}
+          mobileWidth={"100%"}
+          style={{ zIndex: 1600 }}
+          className={`font-lexend ${
+            showCouponModal ? "overflow-hidden" : "overflow-y-auto"
+          }`}
+          onHide={() => handleCloseDrawer()}
+        >
+          {/* Close button */}
+
+          {/* Full pricing section in drawer */}
+          {pricing_status === "PENDING" || props?.loadpricing ? (
+            <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
+              <PricingSkeleton />
+            </div>
+          ) : (
+            <div
+              className={`${
+                Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+              }  mb-0`}
+            >
+              {!(final_status == "Paid" || final_status == "Released") && (
+                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
               )}
-            </>
-          )}
-        </>
-
-      </div>}
-
-
-
-
-          {/* Payment Drawer - shows full pricing + detailed payment when proceeding */}
-          {showPaymentDrawer && 
-          <Drawer
-            show={showPaymentDrawer}
-            anchor={"right"}
-            backdrop
-            width={"50%"}
-            mobileWidth={"100%"}
-            style={{ zIndex: 1600 }}
-            className={`font-lexend ${showCouponModal ? "overflow-hidden" : "overflow-y-auto"}`}
-            onHide={() => handleCloseDrawer()}
-          >
-            {/* Close button */}
-
-
-            {/* Full pricing section in drawer */}
-            {pricing_status === "PENDING" || props?.loadpricing ? (
-              <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
-                <PricingSkeleton />
+              <div className="flex justify-end -mt-[1.8rem] mr-2">
+                <IoMdClose
+                  className="hover:cursor-pointer text-2xl hover:text-gray-600 transition-colors"
+                  onClick={() => handleCloseDrawer()}
+                />
               </div>
-            ) : (
-              <div
-                className={`${Cart?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
-                  }  mb-0`}
-              >
-                {!(final_status == "Paid" || final_status == "Released") && <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />}
-                <div className="flex justify-end -mt-[1.8rem] mr-2">
-                  <IoMdClose
-                    className="hover:cursor-pointer text-2xl hover:text-gray-600 transition-colors"
-                    onClick={() => handleCloseDrawer()}
-                  />
-                </div>
-                <div className="p-lg">
-                  <div className="flex flex-row justify-between">
-                    {props.iscouponApplied &&
-                      Cart?.discounted_cost != Cart?.total_cost &&
-                      Cart?.show_per_person_cost !=
-                      Cart?.per_person_discounted_cost ? (
-                      <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-                        <span>₹</span>
-                        <div>
-                          {Cart?.show_per_person_cost ||
-                            Cart?.pay_only_for_one
-                            ? getIndianPrice(
+              <div className="p-lg">
+                <div className="flex flex-row justify-between">
+                  {props.iscouponApplied &&
+                  Cart?.discounted_cost != Cart?.total_cost &&
+                  Cart?.show_per_person_cost !=
+                    Cart?.per_person_discounted_cost ? (
+                    <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                      <span>₹</span>
+                      <div>
+                        {Cart?.show_per_person_cost || Cart?.pay_only_for_one
+                          ? getIndianPrice(
                               Math.round(Cart?.per_person_total_cost)
                             )
-                            : getIndianPrice(Math.round(Cart?.total_cost))}
-                          {"/-"}
-                        </div>
+                          : getIndianPrice(Math.round(Cart?.total_cost))}
+                        {"/-"}
                       </div>
-                    ) : (
-                      <div></div>
-                    )}
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
 
-                    {props.iscouponApplied && Cart?.coupon_usage && (
-                      <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                        <div>{Cart?.coupon_usage?.usage_description}</div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex flex-row gap-1">
-                      <div
-                      
-                        className={
-                          props.blur
-                            ? "font-lexend blurry-text"
-                            : "font-lexend text-3xl flex flex-row items-center font-semibold"
-                        }
-                      >
-                        {Cart && <span>₹</span>}
-                        {Cart && (
-                          <div>
-                            {Cart?.pay_only_for_one ||
-                              Cart?.show_per_person_cost
-                              ? getIndianPrice(
-                                Math.round(
-                                  Math.round(
-                                    Cart?.total_cost
-                                  )
-                                )
+                  {props.iscouponApplied && Cart?.coupon_usage && (
+                    <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
+                      <div>{Cart?.coupon_usage?.usage_description}</div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <div className="flex flex-row gap-1">
+                    <div
+                      className={
+                        props.blur
+                          ? "font-lexend blurry-text"
+                          : "font-lexend text-3xl flex flex-row items-center font-semibold"
+                      }
+                    >
+                      {Cart && <span>₹</span>}
+                      {Cart && (
+                        <div>
+                          {Cart?.pay_only_for_one || Cart?.show_per_person_cost
+                            ? getIndianPrice(
+                                Math.round(Math.round(Cart?.total_cost))
                               )
-                              : getIndianPrice(
-                                Math.round(
-                                  Math.round(Cart?.total_cost)
-                                )
+                            : getIndianPrice(
+                                Math.round(Math.round(Cart?.total_cost))
                               )}
-                            {"/-"}
-                          </div>
-                        )}
-                      </div>
-
-                      {Cart?.paid_user ? (
-                        <div className="font-[400] pl-2 text-base self-end">PAID</div>
-                      ) : (
-                        <div className="font-medium text-base self-end">
-                          {Cart?.pay_only_for_one ||
-                            Cart?.show_per_person_cost
-                            ? "Per Person Cost"
-                            : Cart?.is_estimated_price
-                              ? `${Cart?.total_cost == 0
-                                ? ""
-                                : "Estimated Price"
-                              }`
-                              : Cart
-                                ? "Total Cost"
-                                : ""}
+                          {"/-"}
                         </div>
                       )}
                     </div>
 
-                    {pricing_status === "FAILURE" ? (
-                      <p className="text-red-600 text-sm">
-                        Get in touch to finalize the pricing!
-                      </p>
-                    ) : null}
-
-                    {Cart && pricing_status === "SUCCESS" && (
-                      <div className="text-[#7A7A7A] text-sm">
-                        {Cart?.total_cost == 0
-                          ? "No bookings added yet"
-                          : "Inclusive of applicable taxes"}
+                    {Cart?.paid_user ? (
+                      <div className="font-[400] pl-2 text-base self-end">
+                        PAID
                       </div>
-                    )}
-                  </div>
-                </div>
-
-
-                <div
-                  className={`mb-[0.8rem] mx-[1rem] Transition-Height-${acoordianceOpen ? "in" : "out"
-                    } `}
-                >
-                  {Cart && acoordianceOpen && (
-                    <div className="">
-                      <Accordion
-                        stayBookings={props.stayBookings}
-                        flightBookings={props.flightBookings}
-                        activityBookings={props.activityBookings}
-                        transferBookings={props.transferBookings}
-                        payment={Cart}
-                        mercuryItinerary={props?.mercuryItinerary}
-                      ></Accordion>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Date and passenger info */}
-            <div className="px-lg pb-lg">
-              {props.couponJSX}
-              <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
-                <div className=" group flex flex-row gap-3 items-center py-[1rem]">
-                  <BsCalendar2 className="text-md text-[#7A7A7A]" />
-                  <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-                    {props.tripsPage ? (
-                      <div>{props?.itinerary?.duration + " Nights"}</div>
                     ) : (
-                      <div>
-                        {convertDFormat(
-                          props?.itinerary?.start_date
-                            ? props?.itinerary?.start_date
-                            : null
-                        )}{" "}
-                        -{" "}
-                        {convertDFormat(
-                          props?.itinerary?.end_date
-                            ? props?.itinerary?.end_date
-                            : null
-                        )}
+                      <div className="font-medium text-base self-end">
+                        {Cart?.pay_only_for_one || Cart?.show_per_person_cost
+                          ? "Per Person Cost"
+                          : Cart?.is_estimated_price
+                          ? `${Cart?.total_cost == 0 ? "" : "Estimated Price"}`
+                          : Cart
+                          ? "Total Cost"
+                          : ""}
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
 
-              <div className="group text-md font-medium gap-3 flex flex-row items-center mb-4 ml-1">
-                <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                <div className=" flex flex-row items-center text-md font-medium text-black">
-                  <div>
-                    {pax} {pluralDetector("Adult", pax)}{" "}
-                  </div>
-                  {props.itinerary?.number_of_children ? (
-                    <div>, {props.itinerary?.number_of_children} Children</div>
+                  {pricing_status === "FAILURE" ? (
+                    <p className="text-red-600 text-sm">
+                      Get in touch to finalize the pricing!
+                    </p>
                   ) : null}
-                  {props.itinerary?.number_of_infants ? (
-                    <div>
-                      , {props.itinerary?.number_of_infants}{" "}
-                      {pluralDetector("Infant", props.itinerary?.number_of_infants)}
+
+                  {Cart && pricing_status === "SUCCESS" && (
+                    <div className="text-[#7A7A7A] text-sm">
+                      {Cart?.total_cost == 0
+                        ? "No bookings added yet"
+                        : "Inclusive of applicable taxes"}
                     </div>
-                  ) : null}
+                  )}
                 </div>
               </div>
 
-              {Cart?.total_payable_amount == 0 ? (
-                <PaymentSuccess
-                  amount={getIndianPrice(
-                    Math.round(Cart?.discounted_cost)
+              <div
+                className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
+                  acoordianceOpen ? "in" : "out"
+                } `}
+              >
+                {Cart && acoordianceOpen && (
+                  <div className="">
+                    <Accordion
+                      stayBookings={props.stayBookings}
+                      flightBookings={props.flightBookings}
+                      activityBookings={props.activityBookings}
+                      transferBookings={props.transferBookings}
+                      payment={Cart}
+                      mercuryItinerary={props?.mercuryItinerary}
+                    ></Accordion>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Date and passenger info */}
+          <div className="px-lg pb-lg">
+            {props.couponJSX}
+            <div className=" border-y border-[#F0F0F0] mb-3 mt-1">
+              <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+                <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                <div className="text-md font-medium text-black flex flex-row items-center gap-2">
+                  {props.tripsPage ? (
+                    <div>{props?.itinerary?.duration + " Nights"}</div>
+                  ) : (
+                    <div>
+                      {convertDFormat(
+                        props?.itinerary?.start_date
+                          ? props?.itinerary?.start_date
+                          : null
+                      )}{" "}
+                      -{" "}
+                      {convertDFormat(
+                        props?.itinerary?.end_date
+                          ? props?.itinerary?.end_date
+                          : null
+                      )}
+                    </div>
                   )}
-                  onDownloadInvoice={() => {/* Add download invoice logic */ }}
-                />
-              ) : (
-                // Detailed payment view
+                </div>
+              </div>
+            </div>
+
+            <div className="group text-md font-medium gap-3 flex flex-row items-center mb-4 ml-1">
+              <BsPeopleFill className="text-md text-[#7A7A7A]" />
+              <div className=" flex flex-row items-center text-md font-medium text-black">
                 <div>
-               <ItineraryInclusions
-  Cart={Cart}
-  selectedInclusions={selectedInclusions}
-  onToggleInclusion={handleToggleInclusion}
-  arePricesHidden={Cart?.are_prices_hidden}
-  updatingInclusions={updatingInclusions}
-  defaultExpanded={Cart?.sales?.some(sale => sale.status === 'Completed') && Cart?.total_payable_amount !== 0} // ADD THIS PROP
-/>
+                  {pax} {pluralDetector("Adult", pax)}{" "}
+                </div>
+                {props.itinerary?.number_of_children ? (
+                  <div>, {props.itinerary?.number_of_children} Children</div>
+                ) : null}
+                {props.itinerary?.number_of_infants ? (
+                  <div>
+                    , {props.itinerary?.number_of_infants}{" "}
+                    {pluralDetector(
+                      "Infant",
+                      props.itinerary?.number_of_infants
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            </div>
 
-                  {!(selectedPaymentOption === 'lockin') && !hasFullPaymentCompleted && !hasPlanExpired && calculateFilteredTotal() !== 0 && <CouponSection
-                    appliedCoupon={appliedCoupon}
-                    savedAmount={couponSavedAmount}
-                    onRemoveCoupon={handleRemoveCoupon}
-                    onApplyCoupon={handleApplyCoupon}
-                    onViewCoupons={() => setShowCouponModal(true)}
-                    isRemoving={isRemovingCoupon}
-                    payment={couponUsageData} // Pass payment data
-                  />}
+            {Cart?.total_payable_amount == 0 && areAllInclusionsPaid() ? (
+              <PaymentSuccess
+                amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
+                onDownloadInvoice={() => {}}
+              />
+            ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
+  // Show only update dates when itinerary is in past
+  <div>
+    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+      <p className="text-amber-700 text-sm font-medium mb-2">
+        Your itinerary dates are in the past. Please update the dates to view current pricing and continue with booking.
+      </p>
+    </div>
 
-                  { <PriceDetails
-                    itineraryCost={getIndianPrice(Math.round(calculateFilteredTotal() + (couponUsageData?.discount || 0)))}
+    <div className="mb-4">
+      <h3 className="font-medium text-base mb-3">Update Travel Dates</h3>
+      <UpdateItineraryDates
+        itinerary={props?.itinerary}
+        token={props?.token}
+        onUpdateSuccess={props.fetchData}
+        convertDFormat={convertDFormat}
+        showPhoneView={true}
+      />
+    </div>
+
+    <Button
+      width="100%"
+      margin="0.5rem 0 0 0"
+      borderRadius="8px"
+      hoverColor="white"
+      fontWeight="400"
+      padding="12px"
+      borderWidth="1px"
+      onclick={handleWhatsappChat}
+    >
+      <div className="flex flex-row justify-center items-center">
+        <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+        <div>Chat on WhatsApp</div>
+      </div>
+    </Button>
+
+    <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+      <Link
+        href="/terms-conditions"
+        target="_blank"
+        onClick={handleTermsConditions}
+      >
+        <div>Terms & Conditions</div>
+      </Link>
+    </div>
+  </div>
+) :!isItineraryInFuture() && areAnyInclusionsPaid() ? (<>
+                    <GetInTouchContainer>
+                      <Button
+                        color="#111"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="1px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        padding="12px"
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />
+                          {props?.loading ? (
+                            <PulseLoader />
+                          ) : (
+                            <span>Get in touch!</span>
+                          )}
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+
+                  
+                  </>) : hasPlanExpired && isItineraryInFuture() ? (
+              // Show only refresh prices button when expired
+              <div>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                  <p className="text-red-600 text-sm font-medium mb-2">
+                    Your itinerary prices have expired. Please refresh to get
+                    the latest prices.
+                  </p>
+                </div>
+
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="1px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={handleRepriceBookings}
+                  disabled={repriceLoading}
+                >
+                  {repriceLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+                      Repricing...
+                    </div>
+                  ) : (
+                    "Refresh Prices"
+                  )}
+                </Button>
+
+                <Button
+                  width="100%"
+                  margin="0.5rem 0 0 0"
+                  borderRadius="8px"
+                  hoverColor="white"
+                  fontWeight="400"
+                  padding="12px"
+                  borderWidth="1px"
+                  onclick={handleWhatsappChat}
+                >
+                  <div className="flex flex-row justify-center items-center">
+                    <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+                    <div>Chat on WhatsApp</div>
+                  </div>
+                </Button>
+
+                <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+                  <Link
+                    href="/terms-conditions"
+                    target="_blank"
+                    onClick={handleTermsConditions}
+                  >
+                    <div>Terms & Conditions</div>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              // Detailed payment view
+              <div>
+                <ItineraryInclusions
+                  Cart={Cart}
+                  selectedInclusions={selectedInclusions}
+                  onToggleInclusion={handleToggleInclusion}
+                  arePricesHidden={Cart?.are_prices_hidden}
+                  updatingInclusions={updatingInclusions}
+                  defaultExpanded={
+                    Cart?.sales?.some((sale) => sale.status === "Completed") &&
+                    Cart?.total_payable_amount !== 0
+                  }
+                />
+
+                {!(selectedPaymentOption === "lockin") &&
+                  !hasFullPaymentCompleted &&
+                  !hasPlanExpired &&
+                  calculateFilteredTotal() !== 0 && (
+                    <CouponSection
+                      appliedCoupon={appliedCoupon}
+                      savedAmount={couponSavedAmount}
+                      onRemoveCoupon={handleRemoveCoupon}
+                      onApplyCoupon={handleApplyCoupon}
+                      onViewCoupons={() => setShowCouponModal(true)}
+                      isRemoving={isRemovingCoupon}
+                      payment={couponUsageData} // Pass payment data
+                    />
+                  )}
+
+                {
+                  <PriceDetails
+                    itineraryCost={getIndianPrice(
+                      Math.round(
+                        Cart?.total_bookings_cost +
+                          (couponUsageData?.discount || 0)
+                      )
+                    )}
                     lockInCost={0}
                     couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
-                    surchargesTaxes={Math.round(Cart?.surcharges_and_taxes) || 0}
-                    totalPayable={getIndianPrice(Math.round(calculateFilteredTotal() + Cart?.surcharges_and_taxes))}
+                    surchargesTaxes={
+                      Math.round(Cart?.surcharges_and_taxes) || 0
+                    }
+                    totalPayable={getIndianPrice(
+                      Math.round(calculateFilteredTotal())
+                    )}
                     selectedPaymentOption={selectedPaymentOption}
                     selectedInclusions={selectedInclusions}
                     totalBookingsCost={Cart?.total_bookings_cost}
-                  />}
+                  />
+                }
 
-                  {hasFullPaymentCompleted && <div className="text-sm mt-2 mb-4"><span>
-                    <LuClock4 color="green" className="inline align-middle mr-1 font-semibold" />
-                    {`Your Itinerary fee of ${Math.round(Cart?.amount_paid)} has been received. Please pay the remaining now or before 5 Sept 2025 to confirm your trip.`}
-                  </span></div>}
-
-                  {/* {!lockInCompleted && ( */}
-                  {calculateFilteredTotal() === 0 ? (
-                    <>
-                      <GetInTouchContainer>
-                        <Button
-                          color="#111"
-                          fontWeight="500"
-                          fontSize="1rem"
-                          borderWidth="1px"
-                          width="100%"
-                          borderRadius="8px"
-                          bgColor="#f8e000"
-                          padding="12px"
-                          onclick={handleGetInTouch}
-                        >
-                          <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", alignItems: "center" }}>
-                            <ImageLoader
-                              dimensions={{ height: 50, width: 50 }}
-                              dimensionsMobile={{ height: 50, width: 50 }}
-                              height={"20px"}
-                              width={"20px"}
-                              widthmobile={"20px"}
-                              leftalign
-                              url={"media/icons/login/customer-service-black.png"}
-                            />
-                            {props?.loading ? <PulseLoader /> : <span>Get in touch!</span>}
-                          </div>
-                        </Button>
-                      </GetInTouchContainer>
-
-                      <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
-                        Please select at least one inclusion to proceed
-                      </div>
-                    </>
-                  ) : (
-                    <PaymentButton
-                      amount={calculateFilteredTotal() + Cart.surcharges_and_taxes}
-                      isLoading={paymentLoading}
-                      paymentType={'full'}
-                      onClick={() => handlePayNow('full')}
-                    />
-                  )}
-                  {/* )} */}
-
-                  <Button
-                    width="100%"
-                    margin="0.5rem 0 0 0"
-                    borderRadius="8px"
-                    hoverColor="white"
-                    fontWeight="400"
-                    padding="12px"
-                    borderWidth="1px"
-                    onclick={handleWhatsappChat}
-                  >
-                    <div className="flex flex-row justify-center items-center">
-                      <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-                      <div>Chat on WhatsApp</div>
-                    </div>
-                  </Button>
-
-                  <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-                    <Link
-                      href="/terms-conditions"
-                      target="_blank"
-                      onClick={handleTermsConditions}
-                    >
-                      <div>Terms & Conditions</div>
-                    </Link>
+                {hasFullPaymentCompleted && (
+                  <div className="text-sm mt-2 mb-4">
+                    <span>
+                      <LuClock4
+                        color="green"
+                        className="inline align-middle mr-1 font-semibold"
+                      />
+                      {`You have paid ₹${Math.round(
+                        Cart?.amount_paid
+                      )} for your itinerary. Please pay the remaining balance at least 7 days before your trip starts to confirm your booking.`}
+                    </span>
                   </div>
+                )}
+
+                {/* {!lockInCompleted && ( */}
+                {hasPlanExpired && isItineraryInFuture() ? (
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="1px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={handleRepriceBookings}
+                    disabled={repriceLoading}
+                  >
+                    {repriceLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+                        Repricing...
+                      </div>
+                    ) : (
+                      "Refresh Prices"
+                    )}
+                  </Button>
+                ) : calculateFilteredTotal() === 0 ? (
+                  <>
+                    <GetInTouchContainer>
+                      <Button
+                        color="#111"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="1px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        padding="12px"
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />
+                          {props?.loading ? (
+                            <PulseLoader />
+                          ) : (
+                            <span>Get in touch!</span>
+                          )}
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+
+                    <div className="text-center text-sm text-amber-600 mt-3 p-2 bg-amber-50 rounded">
+                      Please select at least one inclusion to proceed
+                    </div>
+                  </>
+                ) : (
+                  <PaymentButton
+                    amount={calculateFilteredTotal()}
+                    isLoading={paymentLoading}
+                    paymentType={"full"}
+                    onClick={() => handlePayNow("full")}
+                  />
+                )}
+                {/* )} */}
+
+                <Button
+                  width="100%"
+                  margin="0.5rem 0 0 0"
+                  borderRadius="8px"
+                  hoverColor="white"
+                  fontWeight="400"
+                  padding="12px"
+                  borderWidth="1px"
+                  onclick={handleWhatsappChat}
+                >
+                  <div className="flex flex-row justify-center items-center">
+                    <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+                    <div>Chat on WhatsApp</div>
+                  </div>
+                </Button>
+
+                <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+                  <Link
+                    href="/terms-conditions"
+                    target="_blank"
+                    onClick={handleTermsConditions}
+                  >
+                    <div>Terms & Conditions</div>
+                  </Link>
                 </div>
-              )}
-            </div>
+              </div>
+              // )
+            )}
+          </div>
 
-            <CouponModal
-              show={showCouponModal}
-              onHide={() => setShowCouponModal(false)}
-              onApplyCoupon={handleApplyCoupon}
-              appliedCoupon={appliedCoupon ? true : false}
-              setAppliedCoupon={setAppliedCoupon}
-              token={props?.token}
-              payment={Cart} // Pass payment data
-            />
-
-          </Drawer>
-}
-
+          <CouponModal
+            show={showCouponModal}
+            onHide={() => setShowCouponModal(false)}
+            onApplyCoupon={handleApplyCoupon}
+            appliedCoupon={appliedCoupon ? true : false}
+            setAppliedCoupon={setAppliedCoupon}
+            token={props?.token}
+            payment={Cart} // Pass payment data
+          />
+        </Drawer>
+      )}
 
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-4">
         {!isPageWide && (
-          <SocialShareMobile
-            social_title={props?.social_title}
-            more
-          />
+          <SocialShareMobile social_title={props?.social_title} more />
         )}
       </div>
 
@@ -2615,9 +3056,7 @@ const handleToggleInclusion = async (bookingId) => {
       ></VerificationModal>
 
       <RegisteredUsersModal
-        registered_users={
-          Cart ? Cart?.registered_users : null
-        }
+        registered_users={Cart ? Cart?.registered_users : null}
         show={showRegisteredUsers}
         hide={() => setShowRegisteredUsers(false)}
       ></RegisteredUsersModal>
@@ -2690,4 +3129,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Details);
-

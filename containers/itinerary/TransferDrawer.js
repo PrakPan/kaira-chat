@@ -219,6 +219,7 @@ const TransferDrawer = ({
               isEmbedded={true}
               setShowLoginModal={setShowLoginModal}
               handleEditRoute={handleEditRoute}
+              data={data}
             />
           );
         case "Taxi":
@@ -266,6 +267,12 @@ const TransferDrawer = ({
                         {" "}
                         {transferType}
                       </span>
+
+                      {transferData.status === "Paid" && (
+            <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+              Paid
+            </span>
+          )}
                     </h3>
                     {/* <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                       
@@ -310,6 +317,7 @@ const TransferDrawer = ({
                   </div>
                   <div className="text-xs text-gray-500">{checkIn.date}</div>
                 </div>
+
                 <div className="text-gray-400">
                   {isExpanded ? (
                     <AiOutlineUp className="w-5 h-5" />
@@ -337,14 +345,12 @@ const TransferDrawer = ({
             </div>
 
             {/* Mobile Price Row */}
-            <div className="md:hidden px-4 pb-2">
-              <div className="flex justify-between items-center text-xs text-gray-500">
-                {/* <span>
-                  {checkIn.date} - {checkOut.date}
-                </span> */}
-                {/* <span>₹{transferData.price?.toLocaleString()}</span> */}
-              </div>
-            </div>
+            {/* Mobile Price Row and Change Button */}
+<div className="md:hidden px-4 pb-2">
+  <div className="flex justify-between items-center">
+  
+  </div>
+</div>
 
             {/* Expanded Content */}
             {isExpanded && (
@@ -521,6 +527,44 @@ const TransferDrawer = ({
           onClick={() => toggleExpand(index)}
         >
           <h3 className="text-lg font-medium">{childTitle}</h3>
+          {transferData.status === "Paid" && (
+          <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+            Paid
+          </span>
+        )}
+
+        {data?.children?.some(child => child.status === "Paid") && 
+         transferData.status !== "Paid" && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEditRoute(transferData);
+            }}
+            className="px-3 py-1 text-sm bg-black text-white rounded hover:bg-gray-800"
+          >
+            Change
+          </button>
+        )}
+        
+       
+        {data?.children?.some(child => child.status === "Paid") && 
+         transferData.status !== "Paid" && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(transferData);
+            }}
+            className="p-2 text-red-500 hover:bg-red-50 rounded"
+            title="Delete"
+          >
+            <Image
+              src="/delete.svg"
+              width={18}
+              height={18}
+              alt="Delete"
+            />
+          </button>
+        )}
           {isExpanded ? (
             <AiOutlineDown className="text-gray-600" />
           ) : (
@@ -638,19 +682,20 @@ const TransferDrawer = ({
                 </div>
               </div>
               {(data?.transfer_type != "sightseeing" && drawer != "SightSeeing") && <div>
-                <Generalbuttonstyle
-                  borderRadius={"7px"}
-                  fontSize={"1rem"}
-                  padding={"7px 25px"}
-                  onClick={() => {
-                    // setHandleShow(false);
-                    // setShowDrawer(true);
-                    handleEditRoute(data)
-                  }}
-                >
-                  Change
-                </Generalbuttonstyle>
-              </div>}
+  {/* Only show parent change button if ALL children are unpaid */}
+  {data?.children?.every(child => child.status !== "Paid") && (
+    <Generalbuttonstyle
+      borderRadius={"7px"}
+      fontSize={"1rem"}
+      padding={"7px 25px"}
+      onClick={() => {
+        handleEditRoute(data)
+      }}
+    >
+      Change
+    </Generalbuttonstyle>
+  )}
+</div>}
             </div>
           </div>
 
