@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
   let isPageWide = media("(min-width: 768px)");

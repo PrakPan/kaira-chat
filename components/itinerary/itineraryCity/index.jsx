@@ -16,6 +16,7 @@ import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
 import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
+import useMediaQuery from "../../media";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -65,7 +66,15 @@ const ItineraryCity = (props) => {
     (state) => state.ItineraryStatus
   );
 
+
+  const transferBookings = useSelector(
+    (state) => state.TransferBookings
+  ).transferBookings;
+
+
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const router=useRouter()
+  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
  
   const [images, setImages] = useState(null);
   const dispatch = useDispatch();
@@ -283,6 +292,13 @@ const ItineraryCity = (props) => {
           />
         )
       )}
+      <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
+       <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
+            <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
+            {console.log("DDD",`${props?.city?.id}:${props?.nextCity?.id}`,transferBookings?.[`${props?.city?.id}:${props?.nextCity?.id || props?.nextCity?.gmaps_place_id}`]?.booking_type )}
+            <div className="Body2M_14">This is your check out day in {props?.city?.city?.name}, take a {transferBookings?.intercity?.[`${props?.city?.id}:${props?.nextCity?.id || props?.nextCity?.gmaps_place_id}`]?.booking_type || "transfer"} to {props?.nextCity?.city?.name || itineraryDaybyDay?.end_city?.name}.</div>
+          </div>
+          </div>
     </div>
   );
 };

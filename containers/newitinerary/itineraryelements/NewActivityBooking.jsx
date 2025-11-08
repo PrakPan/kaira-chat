@@ -11,7 +11,7 @@ import Button from "../../../components/ui/button/Index";
 import Image from "next/image";
 import useMediaQuery from "../../../components/media";
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function NewActivityBooking(props) {
   const [stars, setStars] = useState(null);

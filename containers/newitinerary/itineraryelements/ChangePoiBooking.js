@@ -15,7 +15,7 @@ import RecommendedBadge from "./Recommended";
 import Image from "next/image";
 import ChangePoiDetailsDrawer from "../../../components/drawers/poiDetails/ChangePoiDetailsDrawer";
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ChangePoiBooking(props) {
   const [stars, setStars] = useState(null);

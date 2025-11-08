@@ -124,7 +124,7 @@ const ScrollContainer = styled.div`
 //   font-size: 20px;
 //   margin-block: 1rem 1rem;
 // `;
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
   const isSmallScreen = useMediaQuery("(max-width:586px)");

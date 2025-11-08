@@ -71,7 +71,7 @@ const ActivitiesSummary = (props) => {
               ></ImageLoader>
             </div>
             <div className="flex flex-col gap-4 text-[#01202B] lg:w-[70%]">
-              <div className="text-2xl font-semibold ">{props?.item?.name}</div>
+              <div className="lg:text-2xl text-xl font-semibold ">{props?.item?.name}</div>
 
               {props?.item?.activity?.address&&<div className="flex flex-col gap-2 -mt-2">
                 <div className="text-sm font-normal">
