@@ -11,7 +11,7 @@ const ActivitiesBookings = (props) => {
       className="w-full  md:w-auto mb-[80px] md:mb-0"
     >
       {showActivities && (
-        <div className="mb-8 cursor-pointer  mb-2  mt-8 font-bold lg:text-2xl text-xl group text-[#262626] transition duration-300 max-w-fit">
+        <div className="mb-8 cursor-pointer  mb-2  mt-8 font-bold text-xl group text-[#262626] transition duration-300 max-w-fit">
           Activities
           <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
         </div>
