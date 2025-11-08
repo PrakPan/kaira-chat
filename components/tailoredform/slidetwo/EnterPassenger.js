@@ -24,6 +24,7 @@ export const StyledBox = styled.div`
   padding: 0 16px;
   color: #acacac;
   cursor: pointer;
+  background: #fff;
 `;
 
 export const PassengerRow = styled.div`

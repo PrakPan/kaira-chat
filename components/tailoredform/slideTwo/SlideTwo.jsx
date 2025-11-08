@@ -98,8 +98,8 @@ const RouteEditSection = (props) => {
                     )}
                 </>
                 }
-                <div className={`${isDesktop ? 'p-lg border-sm border-solid border-primary-yellow rounded-xl' : ''}`}>
-                    <div className={`${isDesktop ? 'z-[99] absolute w-[50%] top-[28px] left-[28px] rounded-[12px] overflow-hidden' : ''}`}>
+                <div className={`${isDesktop ? 'flex flex-row gap-md p-lg border-sm border-solid border-primary-yellow rounded-xl' : ''}`}>
+                    <div className={`${isDesktop ? 'w-[100%] overflow-hidden' : ''}`}>
                         <EditDestinations
                             destinations={destinations}
                             setDestinations={setDestinations}
@@ -112,7 +112,7 @@ const RouteEditSection = (props) => {
                             isAddMode={isAddMode}
                             setIsAddMode={setIsAddMode}
                             setIsRouteChanged={props.setIsRouteChanged}
-                            listClasses={`${isDesktop ? 'h-[272px] overflow-y-auto' : ''}`}
+                            listClasses={`${isDesktop ? 'h-[380px] overflow-y-auto' : ''}`}
                         />
                     </div>
                     {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}

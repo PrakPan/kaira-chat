@@ -88,13 +88,13 @@ const Pax = (props) => {
   return (
     <div
       ref={containerRef}
-      className={`${!props?.isOpenModal ? 'relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5]' : 'relative'}`}    >
+      className={`${!props?.isOpenModal ? 'relative flex p-[12px] items-center gap-[10px] self-stretch rounded-[6px] border border-[#E5E5E5] bg-text-white' : 'relative'}`}    >
 
       {!props?.isOpenModal && <div
         className="flex flex-col rounded-lg cursor-pointer w-full"
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
       >
-        <span className="mr-2 text-gray-700">
+        <span className="mr-2 text-gray-700 " >
           {travelers} Travellers | {rooms.length} Room
           {rooms.length > 1 ? "s" : ""}
         </span>

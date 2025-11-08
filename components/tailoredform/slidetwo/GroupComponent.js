@@ -1,45 +1,50 @@
 import Image from "next/image";
-import React from "react";
 import styled from "styled-components";
-import { Body2R_14 } from "../../new-ui/Body";
 
 export const StyledBox = styled.div`
-  width: 170px;
-  height: 74px;
-  min-width: 170px;
-  max-width: 170px;
-  transform: rotate(0deg);
-  opacity: 1;
+  width: 124px;
+  height: 124px;
+  min-width: 124px;
+  max-width: 124px;
   display: flex;
+  padding: 20px;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 10px;
-  border-radius: 8px;
-  padding: 10px;
-  background-color: ${({ is_selected }) => (is_selected ? "#F7E700" : "transparent")};
-    border: ${({ is_selected }) => (is_selected ? "none" : "1px solid #E5E5E5")};
-
+  border-radius: 12px;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background-color: ${({ is_selected }) => (is_selected ? "#FFFFE7" : "#FBFBFB")};
+  border: 1px solid #F7E700;
+  box-shadow: 0 4px 34px 1px rgba(195, 195, 195, 0.25);
+  flex-shrink: 0; 
 `;
-
 
 const groups = ["Solo", "Couple", "Friends", "Family"];
 
+const ScrollContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  overflow-x: auto; 
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+`;
+
 const GroupComponent = (props) => {
-    return (
-        <div className="flex flex-wrap gap-4">
-            {groups.map((item) => (
-                <StyledBox is_selected={props.groupType === item}
-                    onClick={() => props._handleShowPax(item)}>
-                        <div className="flex flex-col gap-[4px]">
-                    <Image src={`/${item.toLowerCase()}.svg`} width={20} height={20} />
-                    <Body2R_14>
-                        {item}
-                    </Body2R_14>
-                    </div>
-                </StyledBox>
-            ))}
-        </div>)
+  return (
+    <ScrollContainer>
+      {groups.map((item) => (
+        <StyledBox
+          key={item}
+          is_selected={props.groupType === item}
+          onClick={() => props._handleShowPax(item)}
+        >
+          <Image src={`/${item.toLowerCase()}.svg`} width={40} height={40} alt={item} />
+          <div className="text-md font-500 leading-xl">{item}</div>
+        </StyledBox>
+      ))}
+    </ScrollContainer>
+  );
 };
 
 export default GroupComponent;

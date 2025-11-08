@@ -4,7 +4,7 @@ function renderRoutesMapSection({ isDesktop, containerHeight, routes, destinatio
   return (
     <div
       key={key}
-      className={`w-full  flex flex-col gap-3 items-center h-[260px] md:h-[380px] ${
+      className={`w-full  flex flex-col gap-3 items-center h-[260px] md:h-[calc(100vh-420px)] ${
         isDesktop ? `sm:h-[${containerHeight}px]` : "mb-4"
       }`}
     >
