@@ -162,7 +162,7 @@ const starRating = (rating, length) => {
 
 
   const handleViewDetails = (value) => {
-    trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
+    // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -193,7 +193,7 @@ const starRating = (rating, length) => {
 
   const handleChangeHotel = (e, label, value, clickType) => {
     e.stopPropagation();
-    trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
+    // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
     if (token) {
       router.push(
         {
@@ -724,6 +724,7 @@ const starRating = (rating, length) => {
           </div>
         </>
       ) : (
+        (booking?.duration || cities[index]?.duration) ? 
         <div>
           <div className="flex lg:flex-row flex-col justify-between lg:items-center rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer">
             <div className="flex flex-col">
@@ -774,7 +775,7 @@ const starRating = (rating, length) => {
               </button>
             </div>
           </div>
-        </div>
+        </div> : null
       )}
 
       <ViewHotelDetails

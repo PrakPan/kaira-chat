@@ -30,6 +30,7 @@ module.exports = {
         "md-lg": "18px",
         "lg": "20px",
         "xl": "24px",
+        "xl-md" : "28px",
         "2xl": "32px",
         "2xl-md": "36px",
         "2xl-lg": "38px",

@@ -126,7 +126,10 @@ const ScrollContainer = styled.div`
 //   font-size: 20px;
 //   margin-block: 1rem 1rem;
 // `;
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+
+
+
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
   let isPageWide = useMediaQuery("(min-width: 768px)");
@@ -404,6 +407,35 @@ const ActivityDetails = (props) => {
                 </Text>
               </div>
             )}
+
+             {props.activityData?.inclusions && props.activityData?.inclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-green">Inclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.activityData.inclusions.map((inclusion, i) => (
+                    <li key={i} className="mb-1">- {inclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Exclusions Section */}
+          {props.activityData?.exclusions && props.activityData?.exclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-red">Exclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.activityData.exclusions.map((exclusion, i) => (
+                    <li key={i} className="mb-1">- {exclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
             {props.data?.address && (
               <div>
                 <span className="font-bold pr-1">Address:</span>{" "}
@@ -630,6 +662,21 @@ const ActivityDetails = (props) => {
                 </div>
               </div>
             )}
+
+          {props.activityData?.prices && props.activityData?.prices.length && (props.activityData?.prices[0]?.title || props.activityData?.prices[0]?.description) && <div className="flex flex-col">
+                <div className="text-[20px] font-semibold mb-2">
+                Package Details
+                </div>
+                <div className="font-medium text-gray-900">
+                  {props.activityData?.prices[0]?.title ? props.activityData?.prices[0]?.title : null}
+                </div>
+                <div className="font-normal text-gray-900">
+                  {props.activityData?.prices[0]?.description ? props.activityData?.prices[0]?.description : null}
+                </div>
+                <div className="text-sm text-gray-600">
+                  For {props.activityData?.prices[0]?.pax_details.adults + props.activityData?.prices[0]?.pax_details.children} people
+                </div>
+              </div>}
 
           {props?.data?.cancellation_policies && (
             <>

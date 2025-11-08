@@ -20,7 +20,7 @@ const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function NewPoiBooking(props) {
   const [stars, setStars] = useState(null);

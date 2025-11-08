@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSticky } from "../hooks/useSticky";
 import CustomMenu from "../containers/itinerary/CustomMenu";
@@ -110,6 +110,33 @@ const ScrollableMenuTabs = ({
   const debounceFun = useDebounce(handleScroll, 500);
   const sectionIds = items.map(item => item.id);
   const { markerPos, ...markerHandlers } = useNavigationMarker(scrollContainerRef, sectionIds, onActiveTabChange);
+
+
+  useEffect(() => {
+    const section = document.getElementById("Bookings");
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Only update on mobile
+        if (window.innerWidth <= 768 && entry.isIntersecting) {
+          if (activeItem !== "Bookings") {
+            setActiveItem("Bookings");
+            if (handleActiveTab) handleActiveTab("Bookings");
+          }
+        }
+      },
+      {
+        root: null,
+        threshold: 0.5, 
+      }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [activeItem, handleActiveTab]);
+
 
   return (
     <NavbarContainer

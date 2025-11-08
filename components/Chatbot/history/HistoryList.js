@@ -8,6 +8,7 @@ import LoadingLayoutsOne from "../../LoadingLayouts/LoadingLayoutsOne";
 import Image from "next/image";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
 padding:20px;
@@ -110,8 +111,9 @@ const groupChatsByDate = (chatHistoryList) => {
 };
 
 function HistoryList() {
-    const { chatBotContainerRef, handleOpenChatHistory, newSessionStart, isOpenChatHistoryDrawer, chatHistoryList, showChatHistoryById, sessionId, isloadingChatHistory } = useChat();
+    const { chatBotContainerRef, handleOpenChatHistory, newSessionStart, isOpenChatHistoryDrawer, chatHistoryList, showChatHistoryById, sessionId, isloadingChatHistory, getAllChatHistory } = useChat();
     const [groupedChats, setGroupedChats] = useState(groupChatsByDate(chatHistoryList));
+    const router = useRouter();
     const openNwChat=()=>{
         newSessionStart();
         handleOpenChatHistory();
@@ -147,6 +149,12 @@ function HistoryList() {
     useEffect(()=>{
         setGroupedChats(groupChatsByDate(chatHistoryList));
     },[chatHistoryList]);
+
+    useEffect(() => {
+  if (isOpenChatHistoryDrawer) {
+    getAllChatHistory(router.query.id);
+  }
+}, [isOpenChatHistoryDrawer]);
 
     return (
         <Modal

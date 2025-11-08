@@ -42,7 +42,7 @@ const CitySummary = (props) => {
     date,
     bookingId,
   } = router?.query;
-  const activityData = {
+  const  activityData = {
     id: poi_id,
     type: type,
     dayIndex: dayIndex,

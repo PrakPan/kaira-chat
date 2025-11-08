@@ -298,6 +298,7 @@ const DaybyDay = ({
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
                   key={city.id}
+                  nextCity={ itineraryDaybyDay?.cities?.[index + 1]}
                   city={city}
                   cityRefs={cityRefs}
                   setItinerary={setItinerary}

@@ -38,10 +38,10 @@ const ImageLoader = (props) => {
       },
     },
   });
-  
+
   let imageRequest;
   let imageRequestMobile;
-  
+
   if (isPageWide) {
     if (props.dimensions) {
       smallImageRequest = JSON.stringify({
@@ -274,12 +274,21 @@ const ImageLoader = (props) => {
         >
           <SmallImage
             src={
-              !is_url
-                ? isPageLoaded
-                  ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-                  : transparentImageUrl
-                : props.url
+              is_url
+                ? props.url
+                : error
+                ? transparentImageUrl
+                : isPageLoaded
+                ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                : transparentImageUrl
             }
+            // src={
+            //   !is_url
+            //     ? isPageLoaded
+            //       ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
+            //       : transparentImageUrl
+            //     : props.url
+            // }
             style={{
               height: isTransparent
                 ? "100%"
@@ -295,13 +304,11 @@ const ImageLoader = (props) => {
 
           <FullImage
             src={
-              !is_url
-                ? error
-                  ? transparentImageUrl
-                  : isPageLoaded
-                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : props.url
+              is_url
+                ? props.url
+                : isPageLoaded
+                ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
+                : transparentImageUrl
             }
             transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
@@ -437,8 +444,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? transparentImageUrl
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
-                    : transparentImageUrl
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
+                  : transparentImageUrl
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -506,8 +513,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? transparentImageUrl
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                    : transparentImageUrl
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                  : transparentImageUrl
                 : props.url
             }
             transparent={isTransparent}

@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -231,7 +231,7 @@ export default function ActivityDetails(props) {
               </div>
             )}
           </div>
-          {props.data?.hotel_pickup_included ? (
+          {props?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
                 src="/hotelPickupIncluded.svg"
@@ -451,6 +451,7 @@ export default function ActivityDetails(props) {
                     />
                   </div>
                 ))}
+
               </div>
             </div>
           ) : null}

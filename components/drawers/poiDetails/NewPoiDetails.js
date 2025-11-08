@@ -81,7 +81,7 @@ const ScrollContainer = styled.div`
   // const Heading = styled.div
 `;
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function PoiDetails(props) {
   const isSmallScreen = media("(max-width:586px)");
