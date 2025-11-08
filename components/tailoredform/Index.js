@@ -38,6 +38,7 @@ import styled, { keyframes } from "styled-components";
 import { fadeIn } from "react-animations";
 import { authCloseLogin } from "../../store/actions/auth";
 import Login from "../modals/Login";
+import StepsProgress from "./StepsProgress";
 
 const Enquiry = (props) => {
   const router = useRouter();
@@ -150,7 +151,7 @@ const Enquiry = (props) => {
 
   const _prevSlideHandler = () => {
     if (slideIndex) {
-      if(slideIndex == 1){
+      if (slideIndex == 1) {
         setIsRouteChanged(false);
       }
       router.push({
@@ -232,14 +233,14 @@ const Enquiry = (props) => {
     let dist = divideTravellers(slideThreeData);
     dispatch(setRoomConfiguration(dist));
 
-    if(totalSlides == 3){
+    if (totalSlides == 3) {
       _submitDataHandler();
       return;
     }
     router.push({
       pathname: "/new-trip",
       query: {
-        slideIndex: slideThreeData.addHotels ? slideIndex+1 : slideIndex + 2,
+        slideIndex: slideThreeData.addHotels ? slideIndex + 1 : slideIndex + 2,
       },
     });
   };
@@ -306,8 +307,8 @@ const Enquiry = (props) => {
       room_configuration: slideThreeData.roomConfiguration,
       add_flights: slideThreeData.addFlights,
       add_hotels: slideThreeData.addHotels,
-      // add_transfers_and_activities: slideThreeData.addInclusions,
-      hotel_types: slideFourData.hotelType.map((s)=>parseInt(s)),
+      add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
       meal_preferences: slideFourData.mealPreferences,
       special_request: slideFourData.specialRequests,
     };
@@ -347,59 +348,105 @@ const Enquiry = (props) => {
       });
   };
 
-  const totalSlides = localStorage.getItem("access_token") 
-  ? (slideThreeData.addHotels ? 4 : 3) 
-  : (slideThreeData.addHotels ? 5 : 4);
+  const totalSlides = localStorage.getItem("access_token")
+    ? (slideThreeData.addHotels ? 4 : 3)
+    : (slideThreeData.addHotels ? 5 : 4);
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
-  const radius = 28;
-  const circumference = 2 * Math.PI * radius;
-  const progress = ((slideIndex + 1) / totalSlides) * circumference;
-  return (
-    <div className="flex h-full w-full justify-center items-center">
-      {!props.tailoredFormModal ? (
-        <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
-      ) : null}
 
-      <Container
-        tailoredFormModal={props.tailoredFormModal}
-        slideIndex={slideIndex}
-      >
-        {showPopup.InputOne && (
-          <Popup
-            setShowPopup={setShowPopup}
-            top={props.tailoredFormModal ? "17rem" : "12.6rem"}
-            mobileTop="14rem"
-            left="10px"
-            text="Please select your destination!"
-          />
-        )}
+  return (<>
+    <div className="container">
 
-        {showPopup.dateStart && (
-          <Popup
-            setShowPopup={setShowPopup}
-            bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-            left="10px"
-            text="Please select starting date!"
-          />
-        )}
+      <div className="py-3xl">
+        <div className="text-md-lg font-600 leading-xl-sm mb-xl">Plan Your Trip</div>
+        <StepsProgress slideIndex={slideIndex + 1} totalSlides={totalSlides} ></StepsProgress>
+      </div>
+      {/*       
+              <div className=" ">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#F0F0F0"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#5CBA66"
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - progress}
+                    strokeLinecap="round"
+                    transform="rotate(-90 32 32)"
+                  />
+                  <text
+                    x="32"
+                    y="32"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="black"
+                  >
+                    <tspan fontSize="16" fontWeight="500">
+                      {slideIndex + 1}
+                    </tspan>
+                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
+                      /
+                    </tspan>
+                    <tspan fontSize="12" fontWeight="400" dy="2">
+                      {totalSlides}
+                    </tspan>
+                  </text>
+                </svg>
+              </div> */}
 
-        {showPopup.dateEnd && (
-          <Popup
-            setShowPopup={setShowPopup}
-            bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-            left="170px"
-            mobileleft={"135px"}
-            text="Please select ending date!"
-          />
-        )}
+      <div className="h-[calc(100vh-300px)] overflow-y-auto">
+        {!props.tailoredFormModal ? (
+          <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
+        ) : null}
 
-        <div className="flex flex-col items-center justify-center  h-full">
-          <div
-            style={{ padding: "0 1rem", width: "100%" }}
-            className="h-max  font-inter flex flex-col gap-[30px]"
-          >
-            <div className="flex flex-col gap-[24px]">
-            {slideIndex && !isDesktop ? (
+        <Container
+          tailoredFormModal={props.tailoredFormModal}
+          slideIndex={slideIndex}
+        >
+          {showPopup.InputOne && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
+              mobileTop="14rem"
+              left="10px"
+              text="Please select your destination!"
+            />
+          )}
+
+          {showPopup.dateStart && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="10px"
+              text="Please select starting date!"
+            />
+          )}
+
+          {showPopup.dateEnd && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="170px"
+              mobileleft={"135px"}
+              text="Please select ending date!"
+            />
+          )}
+
+          <div className="flex flex-col items-center justify-center  h-full">
+            <div
+              className="h-max  font-inter flex flex-col gap-[30px] w-100"
+            >
+              <div className="flex flex-col gap-[24px]">
+                {/* {slideIndex && !isDesktop ? (
               <div>
                 <BiArrowBack
                   onClick={_prevSlideHandler}
@@ -409,9 +456,9 @@ const Enquiry = (props) => {
               </div>
             ) : (
               <></>
-            )}
-            <div className={`w-full flex items-center justify-between ${isDesktop&&"mt-[20px]"}`}>
-              {isDesktop && (
+            )} */}
+                <div className={`w-full flex items-center justify-center`}>
+                  {/* {isDesktop && (
                 <div
                   style={{
                     padding: props.tailoredFormModal
@@ -433,22 +480,19 @@ const Enquiry = (props) => {
                     <></>
                   )}
                 </div>
-              )}
-              <div className="">
-                <h1
-                  className="
-                text-black font-inter 
-                  text-[24px] leading-[32px] font-semibold
-                  sm:text-[40px] sm:leading-[48px] sm:font-bold  sm:text-center  
-                  max-w-[800px]
-                "
-                >
-                  {headings[slideIndex]}
-                </h1>
-              </div>
+              )} */}
+                  <div>
+                    {headings[slideIndex] &&
+                      <h1
+                        className="text-xl-md font-600 leading-2xl-md max-pg:text-xl max-ph:text-center mb-zero"
+                      >
+                        {headings[slideIndex]}
+                      </h1>
+                    }
+                  </div>
+                  {/* 
               <div className=" ">
                 <svg width="64" height="64" viewBox="0 0 64 64">
-                  {/* Background Circle */}
                   <circle
                     cx="32"
                     cy="32"
@@ -457,7 +501,6 @@ const Enquiry = (props) => {
                     stroke="#F0F0F0"
                     strokeWidth="6"
                   />
-                  {/* Progress Circle */}
                   <circle
                     cx="32"
                     cy="32"
@@ -470,7 +513,6 @@ const Enquiry = (props) => {
                     strokeLinecap="round"
                     transform="rotate(-90 32 32)"
                   />
-                  {/* Text in Center */}
                   <text
                     x="32"
                     y="32"
@@ -489,304 +531,293 @@ const Enquiry = (props) => {
                     </tspan>
                   </text>
                 </svg>
+              </div> */}
+
+                </div>
               </div>
-            </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <div id="login" className="z-[1650]">
-                <Login
-                  show={showLogin}
-                  onhide={onHide}
-                  zIndex={"3300"}
-                  onSuccess={() => {
-                    completeItineraryCreate();
-                  }}
-                />
-              </div>
-              <div
-                className={`${slideIndex == 1 ? "w-[100%]" : "max-w-[600px]"}`}
-              >
-                <Flickity
-                  initialInputId={initialInputId}
-                  tailoredFormModal={props.tailoredFormModal}
-                  startingLocation={startingLocation}
-                  setStartingLocation={setStartingLocation}
-                  showSearchStarting={showSearchStarting}
-                  setShowSearchStarting={setShowSearchStarting}
-                  showCities={showCities}
-                  setShowCities={setShowCities}
-                  destination={destination}
-                  setDestination={setDestination}
-                  cities={props.cities}
-                  selectedCities={selectedCities}
-                  setSubmitSecondSlide={setSubmitSecondSlide}
-                  eventDates={props.eventDates}
-                  route={
-                    itineraryInititateData?.start_city
-                      ? [
+
+              <div className="flex flex-col items-center">
+                <div id="login" className="z-[1650]">
+                  <Login
+                    show={showLogin}
+                    onhide={onHide}
+                    zIndex={"3300"}
+                    onSuccess={() => {
+                      completeItineraryCreate();
+                    }}
+                  />
+                </div>
+                <div
+                  className={`${slideIndex == 1 ? "w-[100%]" : isDesktop ? "max-w-[600px]" : "w-full"}`}
+                >
+                  <Flickity
+                    initialInputId={initialInputId}
+                    tailoredFormModal={props.tailoredFormModal}
+                    startingLocation={startingLocation}
+                    setStartingLocation={setStartingLocation}
+                    showSearchStarting={showSearchStarting}
+                    setShowSearchStarting={setShowSearchStarting}
+                    showCities={showCities}
+                    setShowCities={setShowCities}
+                    destination={destination}
+                    setDestination={setDestination}
+                    cities={props.cities}
+                    selectedCities={selectedCities}
+                    setSubmitSecondSlide={setSubmitSecondSlide}
+                    eventDates={props.eventDates}
+                    route={
+                      itineraryInititateData?.start_city
+                        ? [
                           itineraryInititateData?.start_city,
                           ...locationsLatLong,
                           itineraryInititateData?.end_city,
                         ]
-                      : route
-                  }
-                  _submitDataHandler={_submitDataHandler}
-                  setLocationsLatLong={setLocationsLatLong}
-                  locationsLatLong={
-                    locationsLatLong?.length > 0 ? locationsLatLong : route
-                  }
-                  errors={errors}
-                  completeItineraryCreate={completeItineraryCreate}
-                  setIsRouteChanged={setIsRouteChanged}
-                  isloading={isLoading}
-                ></Flickity>
-                {isDesktop ? (
-                  <ModalWithBackdrop
-                    centered
-                    show={showRouteOverview == true}
-                    mobileWidth="100%"
-                    backdrop
-                    closeIcon={true}
-                    onHide={() => setShowRouteOverview(false)}
-                    borderRadius={"12px"}
-                    animation={false}
-                    backdropStyle={{
-                      backgroundColor: "rgba(0,0,0,0.4)",
-                      backdropFilter: "blur(1px)",
-                    }} // <- add this
-                    paddingX="20px"
-                    paddingY="20px"
-                  >
-                    <RouteOverviewModal
-                      setShowRouteOverview={setShowRouteOverview}
-                    />
-                  </ModalWithBackdrop>
-                ) : (
-                  <BottomModal
-                    show={showRouteOverview == true}
-                    onHide={() => setShowRouteOverview(false)}
-                    width="100%"
-                    height="max-content"
-                    paddingX="20px"
-                    paddingY="20px"
-                  >
-                    <RouteOverviewModal
-                      setShowRouteOverview={setShowRouteOverview}
-                    />
-                  </BottomModal>
-                )}
-
-                {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
-                <div className="mt-[30px] border-[1px]"></div>
-
-                {slideIndex === 0 && (
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide && isPageLoaded
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "54px",
-                          }
-                        : {}
+                        : route
                     }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="30px 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#07213A"
-                    onclick={_SlideOneSubmitHandler}
-                    loading={isLoading}
-                    disabled={isLoading}
-                    height="50px"
-                    color="white"
-                  >
-                    Continue
-                  </Button>
-                )}
+                    _submitDataHandler={_submitDataHandler}
+                    setLocationsLatLong={setLocationsLatLong}
+                    locationsLatLong={
+                      locationsLatLong?.length > 0 ? locationsLatLong : route
+                    }
+                    errors={errors}
+                    completeItineraryCreate={completeItineraryCreate}
+                    setIsRouteChanged={setIsRouteChanged}
+                    isloading={isLoading}
+                  ></Flickity>
+                  {isDesktop ? (
+                    <ModalWithBackdrop
+                      centered
+                      show={showRouteOverview == true}
+                      mobileWidth="100%"
+                      backdrop
+                      closeIcon={true}
+                      onHide={() => setShowRouteOverview(false)}
+                      borderRadius={"12px"}
+                      animation={false}
+                      backdropStyle={{
+                        backgroundColor: "rgba(0,0,0,0.4)",
+                        backdropFilter: "blur(1px)",
+                      }} // <- add this
+                      paddingX="20px"
+                      paddingY="20px"
+                    >
+                      <RouteOverviewModal
+                        setShowRouteOverview={setShowRouteOverview}
+                      />
+                    </ModalWithBackdrop>
+                  ) : (
+                    <BottomModal
+                      show={showRouteOverview == true}
+                      onHide={() => setShowRouteOverview(false)}
+                      width="100%"
+                      height="max-content"
+                      paddingX="20px"
+                      paddingY="20px"
+                    >
+                      <RouteOverviewModal
+                        setShowRouteOverview={setShowRouteOverview}
+                      />
+                    </BottomModal>
+                  )}
 
-                {slideIndex === 1 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      width: "100%",
-                    }}
-                    className={`p-4 bg-primary-cornsilk z-[10] ${!isDesktop && "fixed w-full gap-2 right-[4px] bottom-[54px] "}`}
-                  >
-                    <button
-                      className={`LargeIndigoOutlinedButton ${
-                        !isDesktop && "w-1/2"
-                      }`}
-                      onClick={_slideTwoSkip}
-                    >
-                      Skip
-                    </button>
-                    {isRouteChanged ?<Button
-                      fontSize="1rem"
-                      padding="0.5rem 2rem"
-                      fontWeight="500"
-                      margin="1rem 0"
-                      borderRadius="5px"
-                      borderWidth="1px"
-                      bgColor="#07213A"
-                      zIndex={9999}
-                      disabled={!isRouteChanged}
-                      onclick={() => {
-                        initiateItineraryCreate();
-                        // router.push({
-                        //   pathname: '/new-trip',
-                        //   query: {
-                        //     slideIndex: slideIndex + 1,
-                        //   },
-                        // })
-                      }}
-                      loading={isLoading}
-                      height="50px"
-                      color="white"
-                      style={{
-                        maxWidth: isDesktop ? "500px" : "50%",
-                        width: "100%",
-                      }}
-                    >
-                      Update and Continue
-                    </Button>:                    <button
-                      className={`LargeIndigoButton ${
-                        !isDesktop && "w-1/2"
-                      } cursor-not-allowed`}
-                      style={{
-                        maxWidth: isDesktop ? "500px" : "50%",
-                        width: "100%",
-                      }}
-                      onClick={() => {
-                        router.push({
-                          pathname: "/new-trip",
-                          query: {
-                            slideIndex: slideIndex + 1,
-                          },
-                        });
-                      }}
-                    >
-                     Continue
-                    </button>}
-                  </div>
-                )}
+                  {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-                {slideIndex === 2 && (
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Button
-                      fontSize="1rem"
-                      width={!isPageWide ? "auto" : "100%"}
-                      style={
-                        !isPageWide
-                          ? {
-                              position: "fixed",
-                              left: "1rem",
-                              right: "1rem",
-                              bottom: "0",
-                            }
-                          : {}
-                      }
-                      padding="0.5rem 2rem"
-                      fontWeight="500"
-                      margin="30px 0"
-                      borderRadius="5px"
-                      borderWidth="1px"
-                      bgColor="#07213A"
-                      onclick={_SlideThreeSubmitHandler}
-                      loading={isLoading}
-                      disabled={isLoading}
-                      height="50px"
-                      color="white"
-                    >
-                      {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
-                    </Button>
-                  </div>
-                )}
-
-                {slideIndex === 3 && (
-                  <div className="flex justify-end">
-                    <Button
-                      fontSize="1rem"
-                      width={!isPageWide ? "auto" : "100%"}
-                      style={
-                        !isPageWide
-                          ? {
-                              position: "fixed",
-                              left: "1rem",
-                              right: "1rem",
-                              bottom: "0",
-                            }
-                          : {}
-                      }
-                      padding="0.5rem 2rem"
-                      fontWeight="500"
-                      margin="40px 0"
-                      borderRadius="5px"
-                      borderWidth="1px"
-                      bgColor="#07213A"
-                      color="white"
-                      loading={isSubmitting}
-                      disabled={isSubmitting}
-                      onclick={() => {
-                        totalSlides == 4
-                          ? _submitDataHandler()
-                          : router.push({
-                              pathname: "/new-trip",
-                              query: {
-                                slideIndex: slideIndex + 1,
-                              },
-                            });
-                      }}
-                      height="50px"
-                    >
-                      {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
-                    </Button>
-                  </div>
-                )}
-                {slideIndex === 4 ? (
-                  <div className="flex justify-end">
-                    <Button
-                      fontSize="1rem"
-                      width={!isPageWide ? "auto" : "100%"}
-                      style={
-                        !isPageWide
-                          ? {
-                              position: "fixed",
-                              left: "1rem",
-                              right: "1rem",
-                              bottom: "0",
-                            }
-                          : {}
-                      }
-                      padding="0.5rem 2rem"
-                      fontWeight="500"
-                      margin="40px 0"
-                      borderRadius="5px"
-                      borderWidth="1px"
-                      bgColor="#07213A"
-                      color="white"
-                      loading={isSubmitting}
-                      disabled={isSubmitting}
-                      onClick={_submitDataHandler}
-                      height="50px"
-                    >
-                      {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
-                    </Button>
-                  </div>
-                ) : null}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+
+      </div>
+
     </div>
+    <div className="fixed bottom-[70px] w-100 bg-primary-cornsilk">
+      {/* <div className="border-b-sm"></div> */}
+      <div className="container p-md">
+        {slideIndex === 0 && (
+          <div className="flex justify-between">
+            <button
+              className={`LargeIndigoOutlinedButton `}
+              onClick={() => router.push("/")}
+            >
+              Cancel
+            </button>
+
+            <Button
+              width={`${isPageWide ? '300px' : ''}`}
+              fontSize="1rem"
+              padding="0.5rem 2rem"
+              fontWeight="500"
+              borderRadius="5px"
+              borderWidth="1px"
+              bgColor="#07213A"
+              onclick={_SlideOneSubmitHandler}
+              loading={isLoading}
+              disabled={isLoading}
+              height="50px"
+              color="white"
+              className="whitespace-nowrap"
+            >
+              Continue
+            </Button>
+          </div>
+        )}
+
+        {slideIndex === 1 && (
+          <div
+            className={` bg-primary-cornsilk z-[10] flex justify-between
+    ${!isDesktop && "flex items-center justify-between gap-2"}
+  `}
+          >
+            {/* LEFT SIDE */}
+            <button
+              className={`LargeIndigoOutlinedButton `}
+              onClick={_prevSlideHandler}
+            >
+              Back
+            </button>
+
+            {/* RIGHT SIDE → Skip + Continue */}
+            <div className="flex gap-2">
+              <button
+                className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
+                onClick={_slideTwoSkip}
+              >
+                Skip
+              </button>
+
+              {isRouteChanged ? (
+                <Button
+                  width={`${isPageWide ? '300px' : ''}`}
+                  fontSize="1rem"
+                  padding="0.5rem 1rem"
+                  fontWeight="500"
+                  bgColor="#07213A"
+                  color="white"
+                  height="50px"
+                  loading={isLoading}
+                  onClick={() => initiateItineraryCreate()}
+                  className={`${!isDesktop && "w-[120px]"}`}
+                >
+                  Continue
+                </Button>
+              ) : (
+                <button
+                  className={`LargeIndigoButton cursor-not-allowed ${isDesktop && "w-[300px]"}`}
+                  onClick={() =>
+                    router.push({
+                      pathname: "/new-trip",
+                      query: { slideIndex: slideIndex + 1 },
+                    })
+                  }
+                >
+                  Continue
+                </button>
+              )}
+            </div>
+          </div>
+
+        )}
+
+        {slideIndex === 2 && (
+          <div className="flex justify-between items-center">
+            <button
+              className={`LargeIndigoOutlinedButton`}
+              onClick={_prevSlideHandler}
+            >
+              Back
+            </button>
+      
+            <Button
+              width={`${isPageWide ? '300px' : ''}`}
+              fontSize="1rem"
+              padding="0.5rem 1rem"
+              fontWeight="500"
+              bgColor="#07213A"
+              color="white"
+              height="50px"
+              onclick={_SlideThreeSubmitHandler}
+              loading={isLoading}
+              borderRadius="8px"
+              className={`${!isDesktop && "w-[120px]"}`}
+            >
+              {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
+            </Button>
+          </div>
+        )}
+
+        {slideIndex === 3 && (
+          <div className="flex justify-between items-center">
+            <button
+              className={`LargeIndigoOutlinedButton`}
+              onClick={_prevSlideHandler}
+            >
+              Back
+            </button>
+            <Button
+              fontSize="1rem"
+              padding="0.5rem 1rem"
+              fontWeight="500"
+              margin="30px 0"
+              borderRadius="8px"
+              borderWidth="1px"
+              bgColor="#07213A"
+              height="50px"
+              color="white"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              width={`${isPageWide ? '300px' : ''}`}
+              
+              onclick={() => {
+                totalSlides == 4
+                  ? _submitDataHandler()
+                  : router.push({
+                    pathname: "/new-trip",
+                    query: {
+                      slideIndex: slideIndex + 1,
+                    },
+                  });
+              }}
+            >
+              {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+            </Button>
+          </div>
+        )}
+        {slideIndex === 4 ? (
+          <div className="flex justify-end">
+            <Button
+              fontSize="1rem"
+              style={
+                !isPageWide
+                  ? {
+                    position: "fixed",
+                    left: "1rem",
+                    right: "1rem",
+                    bottom: "0",
+                  }
+                  : {}
+              }
+              padding="0.5rem 2rem"
+              fontWeight="500"
+              margin="40px 0"
+              borderRadius="5px"
+              borderWidth="1px"
+              bgColor="#07213A"
+              color="white"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              onClick={_submitDataHandler}
+              height="50px"
+              width={`${isPageWide ? '300px' : ''}`}
+            >
+              {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
+            </Button>
+          </div>
+        ) : null}
+
+      </div>
+    </div>
+  </>
   );
 };
 

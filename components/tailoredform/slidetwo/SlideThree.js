@@ -6,7 +6,7 @@ import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
 import { Body1M_16 } from "../../new-ui/Body";
 import { useDispatch, useSelector } from "react-redux";
-import { setAddFlights, setAddHotels, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, togglePreference } from "../../../store/actions/slideOneActions";
+import { setAddFlights, setAddHotels, setGroupType, setNumberOfAdults, setNumberOfChildren, setNumberOfInfants, setRoomConfiguration, setAddInclusions , togglePreference } from "../../../store/actions/slideOneActions";
 
 const Container = styled.div`
   color: black;
@@ -17,8 +17,7 @@ const Container = styled.div`
 `;
 
 
-const Section = styled.div`
-`;
+
 
 const SlideThree = (props) => {
   const dispatch = useDispatch();
@@ -31,9 +30,10 @@ const SlideThree = (props) => {
     roomConfiguration,
     addHotels,
     addFlights,
+    addInclusions
   } = useSelector((state) => state.tailoredInfoReducer.slideThree);
 
-    useEffect(() => {
+  useEffect(() => {
     if (groupType) {
       props.setSubmitSecondSlide(true);
     }
@@ -62,14 +62,15 @@ const SlideThree = (props) => {
 
   return (
     <Container>
-      <Section>
-        <Body1M_16 className="mb-[4px]">Group type</Body1M_16>
+      <div>
+        {/* <Body1M_16 className="mb-[4px]">Group type</Body1M_16> */}
+        <div className="text-lg font-600 leading-xl-md mb-md"> Group Type </div>
 
         <GroupComponent
           _handleShowPax={_handleShowPax}
           groupType={groupType}
         ></GroupComponent>
-      </Section>
+      </div>
 
       {groupType !== "Solo" && groupType != "Couple" &&
         <EnterPassenger
@@ -85,39 +86,56 @@ const SlideThree = (props) => {
         />
       }
       <div>
-        <Body1M_16 className="mb-[12px]">Pick Your Inclusions</Body1M_16>
-        <Section className="grid grid-cols-3 justify-between items-center">
+        <div className="text-lg font-600 leading-xl-md mb-md"> Pick your inclusions </div>
 
-          <label
-            htmlFor="add-hotels"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
-          >
-            <input
-              id="add-hotels"
-              type="checkbox"
-              checked={addHotels}
-              onChange={(e) => dispatch(setAddHotels(e.target.checked))}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Stay</div>
-          </label>
+        <div className="flex px-lg flex-col border-sm border-solid border-primary-yellow rounded-xl bg-text-white">
+          <div className="border-b-sm border-solid border-text-disabled py-md">
 
-          <label
-            htmlFor="add-flights"
-            className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer justify-self-center"
-          >
-            <input
-              id="add-flights"
-              type="checkbox"
-              checked={addFlights}
-              onChange={(e) => dispatch(setAddFlights(e.target.checked))}
-              className="focus:outline-none cursor-pointer"
-            />
-            <div className="Body2R_14">Flights</div>
-          </label>
+            <span className="relative flex items-center ">
+              <label
+                className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
+                <input
+                  type="checkbox"
+                  checked={addHotels}
+                  onChange={(e) => dispatch(setAddHotels(e.target.checked))}
+                  className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
+                />
+                <span className="font-md font-400 text-black">Stay</span>
+              </label>
+            </span>
+          </div>
 
-          <div></div>
-        </Section>
+          <div className="border-b-sm border-solid border-text-disabled py-md">
+            <span className="relative flex items-center ">
+              <label
+                className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
+                <input
+                  type="checkbox"
+                  checked={addFlights}
+                  onChange={(e) => dispatch(setAddFlights(e.target.checked))}
+                  className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
+                />
+                <span className="font-md font-400 text-black">Flights</span>
+              </label>
+            </span>
+          </div>
+
+          <div className="py-md">
+            <span className="relative flex items-center ">
+              <label
+                className="gap-2 cursor-pointer ttw-custom-greenCheckbox-label" >
+                <input
+                  type="checkbox"
+                  checked={addInclusions}
+                  onChange={(e) => dispatch(setAddInclusions(e.target.checked))}
+                  className="w-4 h-4 accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
+                />
+                <span className="font-md font-400 text-black">Activities and Transfers</span>
+              </label>
+            </span>
+          </div>
+
+        </div>
       </div>
     </Container>
   );
