@@ -50,13 +50,14 @@ import { setTransfersBookings } from "../../store/actions/transferBookingsStore.
 import { TopicSharp } from "@mui/icons-material";
 import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
 import { useAnalytics } from "../../hooks/useAnalytics.js";
-import ChatBot from "../../components/Chatbot/Index.js"
+import ChatBot from "../../components/Chatbot/Index.js";
 import Drawer from "../../components/ui/Drawer.js";
 import Image from "next/image";
 
 const useStyles = {
   root: `
     flex-grow-1
+    pb-[30px]
     `,
 };
 
@@ -92,6 +93,16 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked } = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
 
+  const [isHovered, setIsHovered] = useState(false);
+ const popupStyle = {
+  display: isHovered ? "block": "none",
+  backgroundColor: "#2b2b2a",
+  border: "1px solid #e5e7eb",
+  borderRadius: "0.45rem",
+  padding: "5px 10px",
+  marginBottom: "5px", 
+};
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       scrollToElement("Itenary");
@@ -101,11 +112,17 @@ const SimpleTabsV2 = (props) => {
   }, []);
 
   useEffect(() => {
-    if (props?.payment?.summary && Object.keys(props?.payment?.summary).length) {
-      const totalCount = Object.values(props.payment.summary).reduce((sum, item) => sum + item.count, 0);
+    if (
+      props?.payment?.summary &&
+      Object.keys(props?.payment?.summary).length
+    ) {
+      const totalCount = Object.values(props.payment.summary).reduce(
+        (sum, item) => sum + item.count,
+        0
+      );
       setCountCartItems(totalCount);
     }
-  }, [props?.payment])
+  }, [props?.payment]);
 
   const scrollToElement = (elementId) => {
     scroller?.scrollTo(elementId, {
@@ -178,7 +195,11 @@ const SimpleTabsV2 = (props) => {
             text: res.data.message,
             heading: "Request received.",
           });
-          trackGetInTouchClicked(itneraryId, props?.payment?.discounted_cost, 'Rupees');
+          trackGetInTouchClicked(
+            itneraryId,
+            props?.payment?.discounted_cost,
+            "Rupees"
+          );
           setLoading(false);
         })
         .catch((err) => {
@@ -211,7 +232,6 @@ const SimpleTabsV2 = (props) => {
     props.itinerary.cities.some(
       (city) => Array.isArray(city?.activities) && city.activities.length > 0
     );
-
 
   const _handlePoiEditModalOpen = (poi) => {
     {
@@ -330,10 +350,112 @@ const SimpleTabsV2 = (props) => {
     });
   };
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    title: "",
+    description: "",
+  });
+
+  const trustFactors = [
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      ),
+      text: "Trusted by 10,000+ Travelers",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 11l18-5v12L3 14v-3z" />
+          <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+        </svg>
+      ),
+      text: "24/7 Support",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+      ),
+      text: "GST Invoice Provided",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+      ),
+      text: "Secure Payments",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Safe and secure payment gateway with transparent pricing. No hidden transaction fees.",
+    },
+  ];
+
+  const handleIconClick = (factor) => {
+    setPopupContent({
+      title: factor.popupTitle,
+      description: factor.popupDescription,
+    });
+    setShowPopup(true);
+  };
+
   return (
-    <div
-      className={classes.root}
-    >
+    <div className={classes.root}>
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
         <Breif
@@ -852,80 +974,82 @@ const SimpleTabsV2 = (props) => {
       )}
 
       {isPageWide ? (
-        <SplitScreen
-          isPageWide
-          leftWidth={5}
-          rightWidth={5}
-        >
+        <SplitScreen isPageWide leftWidth={5} rightWidth={5}>
           <div className="mb-4">
             <Navigation
               items={items}
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
             />
-            <div id={"Itenary"}
-              className={activeTab === "Itinerary" ? "block" : "hidden"}>
+            <div
+              id={"Itenary"}
+              className={activeTab === "Itinerary" ? "block" : "hidden"}
+            >
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
-                  <DaybyDay
-                    mercuryItinerary={props?.mercuryItinerary}
-                    activityBookings={props?.activityBookings}
-                    setActivityBookings={props?.setActivityBookings}
-                    transferBookings={props?.transferBookings}
-                    setTransferBookings={props?.setTransferBookings}
-                    setItinerary={props?.setItinerary}
-                    itinerary={props?.itinerary}
-                    loadbookings={props?.loadbookings}
-                    payment={props.payment}
-                    stayBookings={stays}
-                    setStayBookings={props.setStayBookings}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={
-                      props._updateStayBookingHandler
-                    }
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    _updateTaxiBookingHandler={
-                      props._updateTaxiBookingHandler
-                    }
-                    setShowBookingModal={(val) =>
-                      props.setShowStayBookingModal(val)
-                    }
-                    showBookingModal={props.showStayBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    setShowLoginModal={setShowLoginModal}
-                    _GetInTouch={_GetInTouch}
-                  />
-                )
+                    <DaybyDay
+                      mercuryItinerary={props?.mercuryItinerary}
+                      activityBookings={props?.activityBookings}
+                      setActivityBookings={props?.setActivityBookings}
+                      transferBookings={props?.transferBookings}
+                      setTransferBookings={props?.setTransferBookings}
+                      setItinerary={props?.setItinerary}
+                      itinerary={props?.itinerary}
+                      loadbookings={props?.loadbookings}
+                      payment={props.payment}
+                      stayBookings={stays}
+                      setStayBookings={props.setStayBookings}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      getPaymentHandler={props.getPaymentHandler}
+                      _updateFlightBookingHandler={
+                        props._updateFlightBookingHandler
+                      }
+                      _updateTaxiBookingHandler={
+                        props._updateTaxiBookingHandler
+                      }
+                      setShowBookingModal={(val) =>
+                        props.setShowStayBookingModal(val)
+                      }
+                      showBookingModal={props.showStayBookingModal}
+                      setHideBookingModal={props.setHideBookingModal}
+                      setShowLoginModal={setShowLoginModal}
+                      _GetInTouch={_GetInTouch}
+                    />
+                  )
                 : props?.itinerary && (
-                  <NewItenaryMain
-                    setShowLoginModal={setShowLoginModal}
-                    plan={props.plan}
-                    payment={props.payment}
-                    city_slabs={props?.breif?.city_slabs}
-                    itinerary={props?.itinerary}
-                    setItinerary={props.setItinerary}
-                    getPaymentHandler={props.getPaymentHandler}
-                    token={props.token}
-                    transferBookings={props.transferBookings}
-                    stayBookings={props.stayBookings}
-                    activityBookings={props.activityBookings}
-                    getAccommodationAndActivitiesHandler={
-                      props.getAccommodationAndActivitiesHandler
-                    }
-                    setShowBookingModal={() =>
-                      props.setShowBookingModal(true)
-                    }
-                    _GetInTouch={_GetInTouch}
-                  ></NewItenaryMain>
-                )}
+                    <NewItenaryMain
+                      setShowLoginModal={setShowLoginModal}
+                      plan={props.plan}
+                      payment={props.payment}
+                      city_slabs={props?.breif?.city_slabs}
+                      itinerary={props?.itinerary}
+                      setItinerary={props.setItinerary}
+                      getPaymentHandler={props.getPaymentHandler}
+                      token={props.token}
+                      transferBookings={props.transferBookings}
+                      stayBookings={props.stayBookings}
+                      activityBookings={props.activityBookings}
+                      getAccommodationAndActivitiesHandler={
+                        props.getAccommodationAndActivitiesHandler
+                      }
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      _GetInTouch={_GetInTouch}
+                    ></NewItenaryMain>
+                  )}
             </div>
 
-            <div id={"Booking"}
-              className={activeTab === "Bookings" ? "block mb-[100px]" : "hidden"}>
+            <div
+              id={"Booking"}
+              className={
+                activeTab === "Bookings" ? "block mb-[100px]" : "hidden"
+              }
+            >
               {isGroup ? (
                 <div id={"Stays"}>
                   <Register></Register>
@@ -1158,103 +1282,111 @@ const SimpleTabsV2 = (props) => {
         onHide={() => {}}
         borderRadius={"12px"}
       > */}
-      {showFooterBannerMobile && <>
-        {props.payment ? (
-          <>
-            {!props.payment.is_registration_needed ? (
-              !props?.mercuryItinerary ? (
-                <SummaryContainer
-                  setUserDetails={props.setUserDetails}
-                  id={props.id}
-                  stayBookings={stays || props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                  setShowFooterBannerMobile={() =>
-                    setShowFooterBannerMobile(true)
-                  }
-
-                  getPaymentHandler={props.getPaymentHandler}
-                  payment={props.payment}
-                  traveleritinerary={props.traveleritinerary}
-                  blur={props.blur}
-                  hide={_hidePaymentHandler}
-                  experienceId={props.experienceId}
-                  token={props.token}
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  _GetInTouch={() => _GetInTouch()}
-                ></SummaryContainer>
+      {showFooterBannerMobile && (
+        <>
+          {props.payment ? (
+            <>
+              {!props.payment.is_registration_needed ? (
+                !props?.mercuryItinerary ? (
+                  <SummaryContainer
+                    setUserDetails={props.setUserDetails}
+                    id={props.id}
+                    stayBookings={stays || props.stayBookings}
+                    flightBookings={props.flightBookings}
+                    activityBookings={props.activityBookings}
+                    transferBookings={props.transferBookings}
+                    setShowFooterBannerMobile={() =>
+                      setShowFooterBannerMobile(true)
+                    }
+                    getPaymentHandler={props.getPaymentHandler}
+                    payment={props.payment}
+                    traveleritinerary={props.traveleritinerary}
+                    blur={props.blur}
+                    hide={_hidePaymentHandler}
+                    experienceId={props.experienceId}
+                    token={props.token}
+                    setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
+                    _GetInTouch={() => _GetInTouch()}
+                  ></SummaryContainer>
+                ) : (
+                  <NewSummaryContainers
+                    id={props.itinerary_id}
+                    token={props.token}
+                    loadpricing={props?.loadpricing}
+                    payment={props?.payment}
+                    itineraryDate={props?.itineraryDate}
+                    getPaymentHandler={props.getPaymentHandler}
+                    mercuryItinerary={props?.mercuryItinerary}
+                    itinerary={props.itinerary}
+                    fetchData={props.fetchData}
+                    resetRef={props?.resetRef}
+                    _GetInTouch={() => _GetInTouch()}
+                    setShowLoginModal={setShowLoginModal}
+                    setShowFooterBannerMobile={() =>
+                      setShowFooterBannerMobile(false)
+                    }
+                    openPaymentDrawer={true}
+                    blur={props.blur}
+                    loading={loading}
+                    social_title={props?.social_title}
+                    social_description={props?.social_description}
+                    itineraryName={props.itinerary.name}
+                    itineraryImage={props?.itinerary?.images?.[0]}
+                  />
+                )
               ) : (
-                <NewSummaryContainers
-                  id={props.itinerary_id}
-                  token={props.token}
-                  loadpricing={props?.loadpricing}
-                  payment={props?.payment}
-                  getPaymentHandler={props.getPaymentHandler}
-                  itineraryDate={props?.itineraryDate}
-                  mercuryItinerary={props?.mercuryItinerary}
-                  itinerary={props.itinerary}
-                  fetchData={props.fetchData}
-                  resetRef={props?.resetRef}
-                  _GetInTouch={() => _GetInTouch()}
-                  setShowLoginModal={setShowLoginModal}
-                  setShowFooterBannerMobile={() =>
-                    setShowFooterBannerMobile(false)
-                  }
-                  openPaymentDrawer={true}
-                  blur={props.blur}
-                  loading={loading}
-                  social_title={props?.social_title}
-                  social_description={props?.social_description}
-                  itineraryName={props.itinerary.name}
-                  itineraryImage={props?.itinerary?.images?.[0]}
-                />
-              )
-            ) : (
-              <div>
-                <GITSummaryContainer
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
+                <div>
+                  <GITSummaryContainer
+                    hasUserPaid={
+                      props.payment
+                        ? props.payment.paid_user
+                          ? true
+                          : false
                         : false
-                      : false
-                  }
-                  payment_status={props.payment_status}
-                  plan={props.plan}
-                  itinerary={props.itinerary}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setUserDetails={props.setUserDetails}
-                  id={props.id}
-                  stayBookings={props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                  setShowFooterBannerMobile={() =>
-                    setShowFooterBannerMobile(true)
-                  }
-                  payment={props.payment}
-                  traveleritinerary={props.traveleritinerary}
-                  blur={props.blur}
-                  hide={_hidePaymentHandler}
-                  experienceId={props.experienceId}
-                  token={props.token}
-                  setShowLoginModal={setShowLoginModal}
-                ></GITSummaryContainer>
-              </div>
-            )}
-          </>
-        ) : null}
-      </>
-      }
+                    }
+                    payment_status={props.payment_status}
+                    plan={props.plan}
+                    itinerary={props.itinerary}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setUserDetails={props.setUserDetails}
+                    id={props.id}
+                    stayBookings={props.stayBookings}
+                    flightBookings={props.flightBookings}
+                    activityBookings={props.activityBookings}
+                    transferBookings={props.transferBookings}
+                    setShowFooterBannerMobile={() =>
+                      setShowFooterBannerMobile(true)
+                    }
+                    payment={props.payment}
+                    traveleritinerary={props.traveleritinerary}
+                    blur={props.blur}
+                    hide={_hidePaymentHandler}
+                    experienceId={props.experienceId}
+                    token={props.token}
+                    setShowLoginModal={setShowLoginModal}
+                  ></GITSummaryContainer>
+                </div>
+              )}
+            </>
+          ) : null}
+        </>
+      )}
       {/* </Modal> */}
 
-      <div className={isPageWide ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed" : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"}>
-        {props?.displayText ? <ItineraryStatusLoader
-          displayText={props?.displayText}
-          isVisible={props?.shouldShowLoader()}
-        /> :
+      <div
+        className={
+          isPageWide
+            ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed"
+            : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
+        }
+      >
+        {props?.displayText ? (
+          <ItineraryStatusLoader
+            displayText={props?.displayText}
+            isVisible={props?.shouldShowLoader()}
+          />
+        ) : (
           <div className="flex flex-row justify-between items-center">
             <div className="flex flex-col">
               <div className="flex justify-between">
@@ -1302,11 +1434,13 @@ const SimpleTabsV2 = (props) => {
               {props?.payment && (
                 <div className="text-[12px] text-[#6E757A]">
                   {props?.payment?.pay_only_for_one ||
-                    props?.payment?.show_per_person_cost
+                  props?.payment?.show_per_person_cost
                     ? "Per Person"
                     : props.payment?.is_estimated_price
-                      ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                      : "Total Cost"}
+                    ? `${
+                        props.payment.total_cost == 0 ? "" : "Estimated Price"
+                      }`
+                    : "Total Cost"}
                 </div>
               )}
               {props.payment ? (
@@ -1317,30 +1451,26 @@ const SimpleTabsV2 = (props) => {
                       ? props?.payment?.pay_only_for_one ||
                         props?.payment?.show_per_person_cost
                         ? getIndianPrice(
-                          Math.round(
                             Math.round(
-                              props.payment.per_person_discounted_cost
-                            ) / 100
-                          )
-                        )
-                        : getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment.discounted_cost) / 100
-                          )
-                        )
-                      : props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
-                        ? getIndianPrice(
-                          Math.round(
-                            Math.round(
-                              props.payment.per_person_discounted_cost
+                              Math.round(
+                                props.payment.per_person_discounted_cost
+                              ) / 100
                             )
                           )
-                        )
                         : getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment.discounted_cost)
+                            Math.round(
+                              Math.round(props.payment.discounted_cost) / 100
+                            )
                           )
+                      : props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                      ? getIndianPrice(
+                          Math.round(
+                            Math.round(props.payment.per_person_discounted_cost)
+                          )
+                        )
+                      : getIndianPrice(
+                          Math.round(Math.round(props.payment.discounted_cost))
                         )}
                     {"/-"}
                   </span>
@@ -1372,19 +1502,56 @@ const SimpleTabsV2 = (props) => {
                   (props.payment?.itinerary_status ===
                     ITINERARY_STATUSES?.itinerary_finalized ||
                     pricing_status === "SUCCESS") &&
-                    !props.payment?.paid_user &&
-                    // props.payment?.user_allowed_to_pay ? (
-                    (props.payment.total_cost > 0 ||
-                      props?.payment?.discounted_cost > 0) ? (
-                    <div className="">
+                  !props.payment?.paid_user &&
+                  // props.payment?.user_allowed_to_pay ? (
+                  (props.payment.total_cost > 0 ||
+                    props?.payment?.discounted_cost > 0) ? (
+                    <div className="flex flex-row gap-4 items-center">
+                      <svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="23"
+  height="30"
+  viewBox="0 0 23 30"
+  fill="none"
+  onMouseEnter={() => setIsHovered(true)}
+  onMouseLeave={() => setIsHovered(false)}
+>
+                        <path
+                          d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
+                          fill="#AD5BE7"
+                          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+                          // onMouseEnter={() => setIsHovered(true)}
+                          // onMouseLeave={() => setIsHovered(false)}
+                        />
+                      </svg>
                       <button
                         className="ttw-btn-secondary-fill"
                         onClick={() =>
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart  <span className="ttw-btn-count-white"> {countCartItems} </span>
+                        View Cart{" "}
+                        <span className="ttw-btn-count-white">
+                          {" "}
+                          {countCartItems}{" "}
+                        </span>
                       </button>
+
+                      <div
+  style={popupStyle}
+  className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
+>
+                        <div className="relative">
+                          <span className="absolute top-2 -left-5 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+                         {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
+
+                          <div className="text-nowrap font-normal text-black text-sm">
+                            No Hidden Charges,
+                            <br />
+                            included taxes
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   ) : !props.payment.paid_user ? (
                     <div className="">
@@ -1394,7 +1561,11 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart <span className="ttw-btn-count-white"> {countCartItems} </span>
+                        View Cart{" "}
+                        <span className="ttw-btn-count-white">
+                          {" "}
+                          {countCartItems}{" "}
+                        </span>
                       </button>
                     </div>
                   ) : (
@@ -1436,7 +1607,34 @@ const SimpleTabsV2 = (props) => {
               </>
             )}
           </div>
-        }
+        )}
+        <div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
+          {trustFactors.map((factor, index) => (
+            <div
+              key={index}
+              className="flex items-center text-[#ACACAC] text-xs flex-shrink-0"
+            >
+              <div className="flex items-center gap-1.5 text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="flex-shrink-0"
+                >
+                  <path
+                    d="M5.73333 9.73333L10.4333 5.03333L9.5 4.1L5.73333 7.86667L3.83333 5.96667L2.9 6.9L5.73333 9.73333ZM6.66667 13.3333C5.74444 13.3333 4.87778 13.1583 4.06667 12.8083C3.25556 12.4583 2.55 11.9833 1.95 11.3833C1.35 10.7833 0.875 10.0778 0.525 9.26667C0.175 8.45555 0 7.58889 0 6.66667C0 5.74444 0.175 4.87778 0.525 4.06667C0.875 3.25556 1.35 2.55 1.95 1.95C2.55 1.35 3.25556 0.875 4.06667 0.525C4.87778 0.175 5.74444 0 6.66667 0C7.58889 0 8.45555 0.175 9.26667 0.525C10.0778 0.875 10.7833 1.35 11.3833 1.95C11.9833 2.55 12.4583 3.25556 12.8083 4.06667C13.1583 4.87778 13.3333 5.74444 13.3333 6.66667C13.3333 7.58889 13.1583 8.45555 12.8083 9.26667C12.4583 10.0778 11.9833 10.7833 11.3833 11.3833C10.7833 11.9833 10.0778 12.4583 9.26667 12.8083C8.45555 13.1583 7.58889 13.3333 6.66667 13.3333ZM6.66667 12C8.15555 12 9.41667 11.4833 10.45 10.45C11.4833 9.41667 12 8.15555 12 6.66667C12 5.17778 11.4833 3.91667 10.45 2.88333C9.41667 1.85 8.15555 1.33333 6.66667 1.33333C5.17778 1.33333 3.91667 1.85 2.88333 2.88333C1.85 3.91667 1.33333 5.17778 1.33333 6.66667C1.33333 8.15555 1.85 9.41667 2.88333 10.45C3.91667 11.4833 5.17778 12 6.66667 12Z"
+                    fill="#ACACAC"
+                  />
+                </svg>
+                <span className="text-xs md:text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-none">
+                  {factor.text}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* {isPageWide && (
