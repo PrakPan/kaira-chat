@@ -282,11 +282,11 @@ const TransferEditDrawer = (props) => {
           .post(
             "",
             {
-              origin: oItineraryCity ||
+              origin: 
                 props?.origin ||
                 originCityId ||
                 mercuryTransfer?.source?.city,
-              destination: dItineraryCity ||
+              destination: 
                 props?.destination ||
                 mercuryTransfer?.destination?.city ||
                 destinationCityId,
@@ -5195,6 +5195,7 @@ const OtherTransfer = ({
                           result_index: priceOption.result_index,
                         },
                       };
+
 
                       handleModeSelect(
                         currentStep - 1,
