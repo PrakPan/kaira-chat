@@ -113,7 +113,7 @@ const ProductSlider = (props) => {
   const { sendMessage, lastProductSliderPosition } = useChat();
 
   const titleTypeWise = {
-    "activity_search": "Activities",
+    "activity_vector_search": "Activities",
     "hotel_search": "Hotels",
     "flights_search": "Flights",
     "poi_search": "Suggested Places"
@@ -129,7 +129,7 @@ const ProductSlider = (props) => {
       case 'flights_search':
         query = `${item.segments[0].airline.name} ${item.segments[0]?.airline.code} - ${item.segments[0]?.airline.flight_number}`
         break;
-      case 'activity_search':
+      case 'activity_vector_search':
         query = item?.name
         break;
       case 'poi_search':
@@ -173,7 +173,7 @@ const ProductSlider = (props) => {
                 <SingleContainer key={`${index}-${lastProductSliderPosition}`}>
                   {props.type === 'flights_search' && <Flight item={item} />}
                   {props.type === 'hotel_search' && <Hotel item={item} />}
-                  {props.type === 'activity_search' && <Activity item={item} />}
+                  {props.type === 'activity_vector_search' && <Activity item={item} />}
                   {props.type === 'poi_search' && <Poi item={item} />}
                   <ClickableLink data-position={props.position} data-last-position={lastProductSliderPosition} isDisabled={props.isDisabled} disabled={props.isDisabled} onClick={() => props.isDisabled ? null : handleSubmitQuery(item, props.type)}>View Details</ClickableLink>
                 </SingleContainer>
