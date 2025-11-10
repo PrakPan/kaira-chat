@@ -79,8 +79,6 @@ const TransferDrawer = ({
     const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-    console.log("DDD",drawer);
-
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
       setExpandedIndexes([0]);

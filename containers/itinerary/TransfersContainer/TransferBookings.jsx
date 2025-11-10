@@ -11,6 +11,45 @@ import media from "../../../components/media";
 import Pin from "../../newitinerary/breif/route/Pin";
 import ComboFlight from "../../../components/modals/flights/ComboFlight";
 
+
+
+const renderLoadingSkeleton = () => (
+  <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
+    {/* Booking name */}
+    <div className="flex flex-row w-full justify-between items-center">
+      <div className="w-[8rem] h-3 bg-gray-300 rounded-md animate-pulse" />
+    </div>
+
+    {/* Booking Details */}
+    <div
+      className={`mb-1 mt-2 w-[51vw] flex flex-col lg:flex-row lg:items-center space-y-1 items-start justify-between py-[15px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-1 p-1`}
+    >
+      <div className="flex flex-row items-center justify-between gap-1">
+        {/* Image Placeholder */}
+        <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+          <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse" />
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col lg:w-full">
+          {/* Title Placeholder */}
+          <div className="w-full h-4 bg-gray-300 rounded-md animate-pulse mb-2" />
+          <div className="w-3/4 h-4 bg-gray-300 rounded-md animate-pulse" />
+          {/* Duration Placeholder */}
+          <div className="w-5/6 h-3 bg-gray-300 rounded-md animate-pulse mt-2" />
+
+          {/* Facilities Placeholder */}
+          <div className="w-3/4 h-3 bg-gray-300 rounded-md animate-pulse mt-1" />
+        </div>
+      </div>
+
+      <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
+        <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse" />
+      </div>
+    </div>
+  </div>
+);
+
 const CITY_COLOR_CODES = [
   "#000000", // shade of blue
   "#F0C631", // shade of yellow
@@ -43,6 +82,7 @@ const TransferBookings = (props) => {
   const elementIndex = null;
   const transferId = null;
   const itineraries = useSelector((state) => state.Itinerary);
+  const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
   const parseDate = (dateString) => {
     if (!dateString) return null;
@@ -177,7 +217,15 @@ const TransferBookings = (props) => {
       />
     );
 
-    if (itineraries?.cities?.length > 0) {
+    if (transfers_status === "PENDING" && props?.mercuryItinerary) {
+    sections.push(
+      <React.Fragment key="loading-first">
+        {renderLoadingSkeleton()}
+      </React.Fragment>
+    );
+  }
+
+    else if (itineraries?.cities?.length > 0) {
       const sourceKey = itineraries?.start_city?.gmaps_place_id;
       const destKey = itineraries?.cities?.[0]?.id;
       const connectionKey = `${sourceKey}:${destKey}`;
@@ -384,6 +432,15 @@ const TransferBookings = (props) => {
           />
         );
 
+      if (transfers_status === "PENDING" && props?.mercuryItinerary) {
+        sections.push(
+          <React.Fragment key={`loading-${index}`}>
+            {renderLoadingSkeleton()}
+          </React.Fragment>
+        );
+      } 
+        
+      else {
         const sourceKey = item.id;
         const destKey = itineraries?.cities?.[index + 1].id;
         const connectionKey = `${sourceKey}:${destKey}`;
@@ -576,6 +633,7 @@ const TransferBookings = (props) => {
           });
         }
       }
+      }
     });
 
     if (itineraries?.cities?.length > 0) {
@@ -593,7 +651,17 @@ const TransferBookings = (props) => {
         />
       );
 
-      const sourceKey = lastCity.id;
+      if (transfers_status === "PENDING" && props?.mercuryItinerary) {
+      sections.push(
+        <React.Fragment key="loading-last">
+          {renderLoadingSkeleton()}
+        </React.Fragment>
+      );
+    }
+
+     else{
+
+     const sourceKey = lastCity.id;
       const destKey = itineraries?.end_city?.gmaps_place_id;
       const connectionKey = `${sourceKey}:${destKey}`;
 
@@ -730,6 +798,7 @@ const TransferBookings = (props) => {
           />
         );
       }
+    }
     }
 
     const lastCityAirportBookings =

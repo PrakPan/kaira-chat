@@ -504,120 +504,98 @@ useEffect(() => {
     setFiltersState(newFilters);
   };
 
-  const handleViewMore = async () => {
-    if (!nextUrl) return;
+ const handleViewMore = async () => {
+  if (!nextUrl) return;
+  
+  setMoreLoadingState(true);
+  
+  // Cancel any existing request
+  if (cancelTokenSourceRef.current) {       
+    cancelTokenSourceRef.current.cancel("Operation cancelled due to new request");
+  }
+  cancelTokenSourceRef.current = axios.CancelToken.source();
+  const currentCancelTokenSource = cancelTokenSourceRef.current;
+  
+  try {
+    // Extract offset from nextUrl
+    const urlParams = new URLSearchParams(nextUrl.split('?')[1]);
+    const newOffset = parseInt(urlParams.get('offset')) || 0;
+    const newLimit = parseInt(urlParams.get('limit')) || limit;
+    
+    // Prepare request data with current filters
+    const requestData = {
+      adult_count: pax.adults,
+      child_count: pax.children,
+      infant_count: pax.infants || 0,
+      direct_flight: filtersState.non_stop_flights ? "true" : "false",
+      journey_type: "1",
+      origin: sourceInput.code || props.source_code || props.selectedBooking.origin_iata,
+      destination: destinationInput.code || props.destination_code || props.selectedBooking.destination_iata,
+      preferred_departure_time: preferredDepartureTime,
+      flight_cabin_class: classType.value,
+      // departure_time_period: filtersState.departure_time_period || "",
+      // arrival_time_period: filtersState.arrival_time_period || "",
+      // sort_by: filtersState.sort_by || "price",
+      // order: filtersState.order || "asc",
+      trace_id: traceId,
+      ...(filtersState?.airlines && isTraceIdValid() && { trace_id: traceId })
+    };
 
-    setMoreLoadingState(true);
-
-    // Cancel any existing request
-    if (cancelTokenSourceRef.current) {
-      cancelTokenSourceRef.current.cancel(
-        "Operation cancelled due to new request"
-      );
+    // Build URL with pagination and airline filter
+    let url = `?limit=${newLimit}&offset=${newOffset}`;
+    if (filtersState?.airlines) {
+      url += `&airlines=${encodeURIComponent(filtersState.airlines)}`;
     }
-    cancelTokenSourceRef.current = axios.CancelToken.source();
-    const currentCancelTokenSource = cancelTokenSourceRef.current;
 
-    try {
-      // Extract offset from nextUrl
-      const urlParams = new URLSearchParams(nextUrl.split("?")[1]);
-      const newOffset = parseInt(urlParams.get("offset")) || 0;
-      const newLimit = parseInt(urlParams.get("limit")) || limit;
+    const response = await axiosFlightSearch.post(url, requestData, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+        "Content-Type": "application/json",
+      },
+      cancelToken: currentCancelTokenSource.token,
+    });
 
-      // Prepare request data with current filters
-      const requestData = {
-        adult_count: pax.adults,
-        child_count: pax.children,
-        infant_count: pax.infants || 0,
-        direct_flight: filtersState.non_stop_flights ? "true" : "false",
-        journey_type: "1",
-        origin:
-          sourceInput.code ||
-          props.source_code ||
-          props.selectedBooking.origin_iata,
-        destination:
-          destinationInput.code ||
-          props.destination_code ||
-          props.selectedBooking.destination_iata,
-        preferred_departure_time: preferredDepartureTime,
-        flight_cabin_class: classType.value,
-        // Add all filter parameters
-        ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
-        // ...(filtersState.stops &&
-        //   filtersState.stops.length > 0 && {
-        //     stops: filtersState.stops.join(","),
-        //   }),
-        // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
-        ...(filtersState.fare_type != null && {
-  fare_type: filtersState.fare_type,
-}),
-        ...(filtersState?.airlines &&
-          isTraceIdValid() && { trace_id: traceId }),
-      };
-
-      // Build URL with pagination and airline filter
-      let url = `?limit=${newLimit}&offset=${newOffset}`;
-      if (filtersState?.airlines) {
-        url += `&airlines=${encodeURIComponent(filtersState.airlines)}`;
-      }
-
-      const response = await axiosFlightSearch.post(url, requestData, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-          "Content-Type": "application/json",
-        },
-        cancelToken: currentCancelTokenSource.token,
-      });
-
-      if (currentCancelTokenSource.token.reason) {
-        return;
-      }
-
-      setFlights((prevFlights) => [
-        ...prevFlights,
-        ...(response.data.results || []),
-      ]);
-      setNextUrl(response.data.next || null);
-      setPreviousUrl(response.data.previous || null);
-      setFlightsCount(
-        (prevCount) => prevCount + (response.data.results?.length || 0)
-      );
-      setOffset(newOffset);
-
-      if (props?.setFlightResults) {
-        props.setFlightResults((prevFlights) => [
-          ...prevFlights,
-          ...(response.data.results || []),
-        ]);
-      }
-
-      if (response.data.trace_id) {
-        setTraceId(response.data.trace_id);
-        setTraceIdTimestamp(Date.now());
-        setRemainingTime(response.data.remaining_time || 900);
-        localStorage.setItem(
-          `${response.data.provider}_trace_id`,
-          response.data.trace_id
-        );
-      }
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        return;
-      }
-
-      console.error("Error loading more flights:", error);
-      setFetchingIsError({
-        error: true,
-        errorMsg: "Failed to load more flights. Please try again.",
-      });
-    } finally {
-      setMoreLoadingState(false);
-
-      if (cancelTokenSourceRef.current === currentCancelTokenSource) {
-        cancelTokenSourceRef.current = null;
-      }
+    if (currentCancelTokenSource.token.reason) {
+      return;
     }
-  };
+
+
+    setFlights(prevFlights => [...prevFlights, ...(response.data.results || [])]);
+    setNextUrl(response.data.next || null);
+    setPreviousUrl(response.data.previous || null);
+    setFlightsCount(prevCount => prevCount + (response.data.results?.length || 0));
+    setOffset(newOffset);
+
+    if (props?.setFlightResults) {
+      props.setFlightResults(prevFlights => [...prevFlights, ...(response.data.results || [])]);
+    }
+
+
+    if (response.data.trace_id) {
+      setTraceId(response.data.trace_id);
+      setTraceIdTimestamp(Date.now());
+      setRemainingTime(response.data.remaining_time || 900);
+      localStorage.setItem(`${response.data.provider}_trace_id`, response.data.trace_id);
+    }
+
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      return;
+    }
+    
+    console.error("Error loading more flights:", error);
+    setFetchingIsError({
+      error: true,
+      errorMsg: "Failed to load more flights. Please try again.",
+    });
+  } finally {
+    setMoreLoadingState(false);
+    
+    if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+      cancelTokenSourceRef.current = null;
+    }
+  }
+};
   const _FetchFlightsHandler = async () => {
     const requestId = generateRequestId();
 
