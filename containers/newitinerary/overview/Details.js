@@ -190,6 +190,7 @@ const Details = (props) => {
                   tripsPage={false}
                   setShowEditDate={setShowEditDate}
                   showEditDate={showEditDate}
+                  duration={props?.duration}
                 />
               </DateRow>
 

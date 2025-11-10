@@ -159,45 +159,47 @@ const TransferBooking = ({
 
   return (
     <>
-      {transfers_status === "PENDING" && mercuryItinerary ? (
-        <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
-          {/* Booking name */}
-          <div className="flex flex-row w-full justify-between items-center">
-            <div className="w-[8rem] h-3 bg-gray-300 rounded-md animate-pulse" />
-            <div className="flex flex-row gap-2 justify-center items-center">
-              {/* Placeholder for additional info */}
-            </div>
-          </div>
+      {
+      // transfers_status === "PENDING" && mercuryItinerary ? (
+      //   <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
+      //     {/* Booking name */}
+      //     <div className="flex flex-row w-full justify-between items-center">
+      //       <div className="w-[8rem] h-3 bg-gray-300 rounded-md animate-pulse" />
+      //       <div className="flex flex-row gap-2 justify-center items-center">
+      //         {/* Placeholder for additional info */}
+      //       </div>
+      //     </div>
 
-          {/* Booking Details */}
-          <div
-            className={`mb-1 mt-2 w-[51vw] flex flex-col lg:flex-row lg:items-center space-y-1 items-start justify-between py-[15px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-1 p-1`}
-          >
-            <div className="flex flex-row items-center justify-between gap-1">
-              {/* Image Placeholder */}
-              <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse" />
-              </div>
+      //     {/* Booking Details */}
+      //     <div
+      //       className={`mb-1 mt-2 w-[51vw] flex flex-col lg:flex-row lg:items-center space-y-1 items-start justify-between py-[15px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-1 p-1`}
+      //     >
+      //       <div className="flex flex-row items-center justify-between gap-1">
+      //         {/* Image Placeholder */}
+      //         <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+      //           <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse" />
+      //         </div>
 
-              {/* Details */}
-              <div className="flex flex-col lg:w-full">
-                {/* Title Placeholder */}
-                <div className="w-full h-4 bg-gray-300 rounded-md animate-pulse mb-2" />
-                <div className="w-3/4 h-4 bg-gray-300 rounded-md animate-pulse" />
-                {/* Duration Placeholder */}
-                <div className="w-5/6 h-3 bg-gray-300 rounded-md animate-pulse mt-2" />
+      //         {/* Details */}
+      //         <div className="flex flex-col lg:w-full">
+      //           {/* Title Placeholder */}
+      //           <div className="w-full h-4 bg-gray-300 rounded-md animate-pulse mb-2" />
+      //           <div className="w-3/4 h-4 bg-gray-300 rounded-md animate-pulse" />
+      //           {/* Duration Placeholder */}
+      //           <div className="w-5/6 h-3 bg-gray-300 rounded-md animate-pulse mt-2" />
 
-                {/* Facilities Placeholder */}
-                <div className="w-3/4 h-3 bg-gray-300 rounded-md animate-pulse mt-1" />
-              </div>
-            </div>
+      //           {/* Facilities Placeholder */}
+      //           <div className="w-3/4 h-3 bg-gray-300 rounded-md animate-pulse mt-1" />
+      //         </div>
+      //       </div>
 
-            <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
-              <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse" />
-            </div>
-          </div>
-        </div>
-      ) : booking?.transfer_type !== "combo" ? (
+      //       <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
+      //         <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse" />
+      //       </div>
+      //     </div>
+      //   </div>
+      // ) :
+       booking?.transfer_type !== "combo" ? (
         booking?.id ? (
           <Container>
             <div className="relative">
