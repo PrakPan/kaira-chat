@@ -265,10 +265,11 @@ const UpdateItineraryDates = ({
   showEditDate,
   showAsModal = true, // Default to current behavior
   autoOpenCalendar = false, // Default to current behavior
-  showPhoneView
+  showPhoneView,
+  duration
 }) => {
 
-  console.log("Show Phone",showPhoneView)
+  console.log("Duration",itinerary,duration)
 
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
@@ -286,7 +287,7 @@ const date={
   start_date:new Date(startDate)?.toISOString(),
   end_date:new Date(endDate)?.toISOString(),
   month:"",
-  duration:""
+  duration:itinerary?.duration || ""
 }
   const [momentStartDate, setMomentStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
@@ -510,6 +511,7 @@ useEffect(() => {
             setDateType={setDateType}
             date={date}
             isNotForm={true}
+            duration={duration}
           />
         </ModalWithBackdrop>:
         
@@ -532,6 +534,7 @@ useEffect(() => {
               setShowCalendar={() => closeModal(false)}
               setDateType={setDateType}
               dateType={dateType}
+              duration={duration}
               date={date}
               isNotForm={true}
             />
@@ -552,6 +555,7 @@ useEffect(() => {
               setShowCalendar={() => closeModal(false)}
               setDateType={setDateType}
               dateType={dateType}
+              duration={duration}
               date={date}
               isNotForm={true}
             />

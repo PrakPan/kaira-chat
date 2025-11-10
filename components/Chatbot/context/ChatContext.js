@@ -274,7 +274,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
       const dataMap = {
         hotel_search: payload?.data?.data,
         flights_search: payload?.data?.results,
-        activity_search: payload?.data?.data?.activities,
+        activity_vector_search: payload?.data?.data?.activities,
         poi_search: payload?.data?.data?.pois,
       };
 
@@ -330,6 +330,35 @@ export const ChatProvider = ({ itinearyId, children }) => {
             heading: "Success!",
           })
         );
+        break;
+      
+
+      case "deletePoiBooking":
+        console.log("Payload",payload);
+        if (payload?.data?.status == 200) {
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+        var itineraryCities = newItinerary;
+        itineraryCities = newItinerary.cities.map((city) => {
+          const cityTemp = city;
+          if (city.id === payload?.data?.itinerary_city_id) {
+            cityTemp.day_by_day[payload?.data?.day_by_day_index]?.slab_elements.splice(
+              payload?.data?.poi_index,
+              1
+            );
+          }
+          return cityTemp;
+        });
+        newItinerary.cities = itineraryCities;
+
+        dispatch(setItinerary(newItinerary));
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `Poi removed successfully`,
+            heading: "Success!",
+          })
+        );
+       }
         break;
 
       case "createFlightBooking":
