@@ -235,7 +235,9 @@ const ItineraryCity = (props) => {
                               : null}{" "}
                           </div>
                           {hotel?.rating && hotel?.rating !== 0
-                            ? getStars(hotel?.rating)
+                            ? <div className="flex items-center text-primary-stars">
+                                              <Image src="/star.svg" width={16} height={16} alt="star" />
+                              </div>
                             : null}{" "}
                         </div></>}
                       </div>
