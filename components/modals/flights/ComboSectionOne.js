@@ -323,7 +323,7 @@ const ComboSection = (props) => {
                 </div>
 
                 {showCalendar && (
-                  <div className="absolute z-[15] mt-2 bg-white border rounded-lg shadow-lg">
+  <div className="absolute left-0 z-[15] mt-2 bg-white border rounded-lg shadow-lg w-full min-w-[350px]">
                     <AirbnbCalendarSingleMonth
                       dateType="fixed"
                       valueStart={preferred_departure_time}
@@ -396,7 +396,7 @@ const ComboSection = (props) => {
                   </div>
 
                   {showCalendar && (
-                    <div className="absolute z-[15] mt-2 bg-white border rounded-lg shadow-lg left-0 right-0">
+                    <div className="absolute z-[15] mt-2 bg-white border rounded-lg shadow-lg left-0 right-0 w-[350px]">
                       <AirbnbCalendarSingleMonth
                         dateType="fixed"
                         valueStart={preferred_departure_time}
@@ -428,12 +428,15 @@ const ComboSection = (props) => {
             </div>
 
             {/* Mobile Filter Button - Fixed at bottom right */}
-            {/* <button 
-              onClick={() => props?.setShowFilters && props.setShowFilters(true)} 
-              className="fixed bottom-6 right-6 z-40 w-14 h-14 flex items-center justify-center bg-[#0A2540] text-white rounded-full shadow-lg hover:bg-[#0d2e52] transition-colors"
-            >
-              {svgIcons.filter}
-            </button> */}
+            <div className="flex justify-end mt-2">
+  <button 
+    onClick={() => setShowFilter(true)} 
+    className="flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0A2540] text-white rounded-lg hover:bg-[#0d2e52] transition-colors text-sm"
+  >
+    {svgIcons.filter}
+    <span>Filters</span>
+  </button>
+</div>
           </div>
         </div>
       </div>

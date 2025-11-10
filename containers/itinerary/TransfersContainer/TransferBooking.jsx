@@ -507,7 +507,7 @@ const TransferBooking = ({
                               <div className="pr-2 w-full">
                                 <button
                                   onClick={()=>handleRoute(booking)}
-                                   className="md:hidden ttw-btn-secondary"
+                                   className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   View Details
                                 </button>
