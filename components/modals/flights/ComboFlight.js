@@ -113,8 +113,8 @@ const OptionsContainer = styled.div`
 
 const ContentContainer = styled.div`
   @media screen and (min-width: 768px) {
-    width: 95%;
-    margin: auto;
+    width: 100%;
+    // margin: auto;
   }
 `;
 
@@ -123,19 +123,16 @@ const ComboFlight = (props) => {
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
   const [loading, setLoading] = useState(false);
-  const [filtersState, setFiltersState] = useState({
-    order: "asc",
-    non_stop_flights: true,
-    departure_time_period: "",
-    arrival_time_period: "",
-    airline_name: "",
-    sort_by: "price",
-  });
+ const [filtersState, setFiltersState] = useState({
+  order: "asc",
+  non_stop_flights: false, 
+  departure_time_period: "",
+  arrival_time_period: "",
+  airline_name: "",
+  sort_by: "price",
+});
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
-  // const [limit, setLimit] = useState(20);
-  // const [offset, setOffset] = useState(0);
-  // const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
   const [nextUrl, setNextUrl] = useState(null);
@@ -504,7 +501,7 @@ useEffect(() => {
     setFiltersState(newFilters);
   };
 
- const handleViewMore = async () => {
+const handleViewMore = async () => {
   if (!nextUrl) return;
   
   setMoreLoadingState(true);
@@ -522,7 +519,7 @@ useEffect(() => {
     const newOffset = parseInt(urlParams.get('offset')) || 0;
     const newLimit = parseInt(urlParams.get('limit')) || limit;
     
-    // Prepare request data with current filters
+    // Prepare request data with current filters - SAME AS _FetchFlightsHandler
     const requestData = {
       adult_count: pax.adults,
       child_count: pax.children,
@@ -533,11 +530,11 @@ useEffect(() => {
       destination: destinationInput.code || props.destination_code || props.selectedBooking.destination_iata,
       preferred_departure_time: preferredDepartureTime,
       flight_cabin_class: classType.value,
-      // departure_time_period: filtersState.departure_time_period || "",
-      // arrival_time_period: filtersState.arrival_time_period || "",
-      // sort_by: filtersState.sort_by || "price",
-      // order: filtersState.order || "asc",
-      trace_id: traceId,
+      // Add filter parameters
+      ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
+      ...(filtersState.fare_type != null && {
+        fare_type: filtersState.fare_type,
+      }),
       ...(filtersState?.airlines && isTraceIdValid() && { trace_id: traceId })
     };
 
@@ -559,7 +556,6 @@ useEffect(() => {
       return;
     }
 
-
     setFlights(prevFlights => [...prevFlights, ...(response.data.results || [])]);
     setNextUrl(response.data.next || null);
     setPreviousUrl(response.data.previous || null);
@@ -569,7 +565,6 @@ useEffect(() => {
     if (props?.setFlightResults) {
       props.setFlightResults(prevFlights => [...prevFlights, ...(response.data.results || [])]);
     }
-
 
     if (response.data.trace_id) {
       setTraceId(response.data.trace_id);
@@ -596,6 +591,7 @@ useEffect(() => {
     }
   }
 };
+
   const _FetchFlightsHandler = async () => {
     const requestId = generateRequestId();
 

@@ -20,7 +20,7 @@ export const Pax = ({ pax, setPax, combo,limit=null }) => {
   const handleMinus = (type) => {
     if (type === "adult" && adults > 1) setAdults((prev) => prev - 1);
     if (type === "children" && children > 0) setChildren((prev) => prev - 1);
-    if (type === "infants" && children > 0) setInfants((prev) => prev - 1);
+    if (type === "infants" && infants > 0) setInfants((prev) => prev - 1);
   };
 
   const handlePlus = (type) => {
@@ -105,8 +105,8 @@ export const Pax = ({ pax, setPax, combo,limit=null }) => {
         <div className="text-sm text-[#212529] font-400 max-ph:hidden">Travellers</div>
         <div className="text-sm text-[#212529] font-400">&nbsp;|&nbsp;</div>
         <div className="flex">
-          <div className="text-sm text-[#212529] font-400">
-           {`${adults} Adults`}
+          <div className=" text-sm max-ph:text-xs text-[#212529] font-400">
+           {`${adults + children + infants} Passenger`}
             {/* , ${children} C and ${infants} I` :`${adults} Adults and ${children} Children` } */}
           
           </div>
@@ -148,7 +148,7 @@ export const Pax = ({ pax, setPax, combo,limit=null }) => {
           <div className="flex justify-between gap-1">
             <div>
               <div className="text-[14px] font-medium">Children</div>
-              <div className="text-[10px]">0-12 Years</div>
+              <div className="text-[10px]">2-12 Years</div>
             </div>
             <div className="flex items-center gap-2 border-2 border-[#E4E4E4] rounded-full px-[10px] py-[5px]">
               <FaMinus

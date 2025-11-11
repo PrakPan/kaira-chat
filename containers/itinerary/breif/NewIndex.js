@@ -9,6 +9,7 @@ import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js
 import RoutesMap from "./RoutesMap.js";
 import { useParams, useSearchParams } from "next/navigation.js";
 import Image from "next/image.js";
+import useMediaQuery from "../../../components/media.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -52,6 +53,7 @@ const Details = (props) => {
   const [locationsLatLong, setLocationsLatLong] = useState([]);
   const [routeView, setRouteView] = useState(false)
   const { drawer } = router?.query
+  const isDesktop = useMediaQuery("(min-width:767px)");
 
   const CITY_COLOR_CODES = [
     "#359EBF", //  # shade of blue
@@ -240,12 +242,12 @@ const Details = (props) => {
           setLocationsLatLong={setLocationsLatLong}
           resetRef={props?.resetRef}
         >
-          <RoutesMap
+          {isDesktop ?<RoutesMap
             locations={locationsLatLong}
             setShowDrawer={setShowDrawer}
             setShowDrawerData={setShowDrawerData}
             setEditRoute={props.setEditRoute}
-          />
+          /> : null}
         </RouteEditSection>
       )}
 

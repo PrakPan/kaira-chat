@@ -269,7 +269,7 @@ const UpdateItineraryDates = ({
   duration
 }) => {
 
-  console.log("Duration",itinerary,duration)
+ 
 
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(

@@ -12,6 +12,7 @@ const Accommodation = (props) => {
     (sum, room) => sum + (room.childAges?.length || 0),
     0
   );
+
   return (
     <div>
       <NewHotelBooking
@@ -29,6 +30,7 @@ const Accommodation = (props) => {
         handleClick={props?.handleClick}
         key={props?.key}
         handleClose={props?.handleClose}
+        availability={props?.availability}
       />
 
       <ViewHotelDetails

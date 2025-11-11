@@ -954,7 +954,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           </div>
 
-          <div className="fixed z-[9] bottom-[70px] max-xs:bottom-[97px] right-[10px] ">
+          <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] ">
             <Button borderWidth="0px" onclick={() => handleChatBotOpen(true)}>
               <Image
                 src={"/assets/chatbot/chatbot-avaatar.svg"}

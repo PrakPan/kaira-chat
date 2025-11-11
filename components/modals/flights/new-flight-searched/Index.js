@@ -59,7 +59,7 @@ const Flight = (props) => {
   };
   return (
     <Container
-      className="relative border-b p-3 space-y-3 overflow-visible"
+      className="relative border-b p-2 space-y-3 overflow-visible"
       isSelected={props.isSelected}
     >
       {/* {props.data.other_results.length > 0 ?<div className="absolute -top-1 px-[0.7rem] py-2 -left-1 bg-[#FD6D6C] text-white rounded-lg text-[14px]">{props.data.other_results.length}</div> : null} */}

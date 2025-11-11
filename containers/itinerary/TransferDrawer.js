@@ -891,7 +891,7 @@ const TransferDrawer = ({
           )}
         </div>
       )}
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -899,7 +899,7 @@ const TransferDrawer = ({
             onClick={handleClose}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };
