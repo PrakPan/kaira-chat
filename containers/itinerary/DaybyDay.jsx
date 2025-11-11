@@ -99,7 +99,7 @@ const DaybyDay = ({
           booking_id: id,
           check_in: stayBookings[i]["check_in"],
           check_out: stayBookings[i]["check_out"],
-          duration: null,
+          hotel_duration: stayBookings[i]?.duration,
           city_id: cityId,
           city_name: stayBookings[i]["city_name"],
         },

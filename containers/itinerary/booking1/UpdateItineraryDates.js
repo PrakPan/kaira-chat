@@ -416,6 +416,7 @@ const handleUpdateDates = async (dateObj) => {
     });
     
     if (onUpdateSuccess) {
+      if(handleCloseDrawer)
       handleCloseDrawer();
       resetRef();
       onUpdateSuccess(true);
