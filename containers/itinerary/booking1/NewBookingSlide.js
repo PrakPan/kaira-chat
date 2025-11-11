@@ -2714,8 +2714,10 @@ const Details = (props) => {
         itinerary={props?.itinerary}
         token={props?.token}
         onUpdateSuccess={props.fetchData}
+        resetRef={props?.resetRef}
         convertDFormat={convertDFormat}
         showPhoneView={true}
+        handleCloseDrawer={handleCloseDrawer}
       />
     </div>
 
@@ -2745,7 +2747,7 @@ const Details = (props) => {
       </Link>
     </div>
   </div>
-) :!isItineraryInFuture() && areAnyInclusionsPaid() ? (<>
+) :!isItineraryInFuture() && areAnyInclusionsPaid()? (<>
                     <GetInTouchContainer>
                       <Button
                         color="#111"
@@ -2785,7 +2787,7 @@ const Details = (props) => {
                     </GetInTouchContainer>
 
                   
-                  </>) : hasPlanExpired && isItineraryInFuture() ? (
+                  </>) : hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS" ? (
               // Show only refresh prices button when expired
               <div>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
@@ -2910,7 +2912,7 @@ const Details = (props) => {
                 )}
 
                 {/* {!lockInCompleted && ( */}
-                {hasPlanExpired && isItineraryInFuture() ? (
+                {hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS" ? (
                   <Button
                     color="#111"
                     fontWeight="500"

@@ -266,7 +266,9 @@ const UpdateItineraryDates = ({
   showAsModal = true, // Default to current behavior
   autoOpenCalendar = false, // Default to current behavior
   showPhoneView,
-  duration
+  duration,
+  resetRef,
+  handleCloseDrawer,
 }) => {
 
  
@@ -378,59 +380,65 @@ useEffect(() => {
     setFocusedInput(null);
   };
 
-  const handleOnCalenderApplyDates = (values) => {
-    handleUpdateDates(values);
+const handleOnCalenderApplyDates = async (values) => {
+  await handleUpdateDates(values);
+}
+
+const handleUpdateDates = async (dateObj) => {
+  if (!dateObj.start || !dateObj.end) {
+    alert("Please select valid dates. End date must be after start date.");
+    return;
   }
+  
+  setIsLoading(true);
+  
+  const payload = {
+    start_date: moment(dateObj.start).format("YYYY-MM-DD"),
+    end_date: moment(dateObj.end).format("YYYY-MM-DD"),
+  };
 
-  const handleUpdateDates = async (dateObj) => {
-    if (
-      !dateObj.start ||
-      !dateObj.end
-    ) {
-      alert("Please select valid dates. End date must be after start date.");
-      return;
-    }
-    setIsLoading(true);
-    const payload = {
-      start_date: moment(dateObj.start).format("YYYY-MM-DD"),
-      end_date: moment(dateObj.end).format("YYYY-MM-DD"),
-    };
-
-    console.log(payload);
-
-    axiosUpdateItineraryDates
-      .post(`${router.query.id}/update-dates/`, payload, {
+  try {
+    const res = await axiosUpdateItineraryDates.post(
+      `${router.query.id}/update-dates/`, 
+      payload, 
+      {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-      })
-      .then((res) => {
-        setItinerary(res?.data?.data);
-        Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
+      }
+    );
+    
+    setItinerary(res?.data?.data);
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
         localStorage.removeItem(key);
-        }
-        });
-        setShowCalendar(false);
-        setIsEditing(false);
-        setFocusedInput(null);
-        if (onUpdateSuccess) {
+      }
+    });
+    
+    if (onUpdateSuccess) {
+      handleCloseDrawer();
+      resetRef();
+      onUpdateSuccess(true);
+    }
+    
+    // Only close after success
+    setShowCalendar(false);
+    setIsEditing(false);
+    setFocusedInput(null);
+  } catch (error) {
+    let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || 
+                   "There seems to be a problem, please try again!";
+    console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
+    dispatch(openNotification({
+      type: "error",
+      text: errorMsg,
+      heading: "Error!",
+    }));
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-          onUpdateSuccess();
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || "There seems to be a problem, please try again!";
-        console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
-        dispatch(openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
-        }));
-      });
-  };
 
   const closeModal = () => {
     setShowCalendar(false);
@@ -506,6 +514,7 @@ useEffect(() => {
             valueStart={new Date(itinerary?.start_date)}
             valueEnd={new Date(itinerary?.end_date)}
             onChangeDate={handleOnCalenderApplyDates}
+            isLoading={isLoading}
             setShowCalendar={() => closeModal(false)}
             dateType={dateType}
             setDateType={setDateType}
@@ -533,6 +542,7 @@ useEffect(() => {
               onChangeDate={handleOnCalenderApplyDates}
               setShowCalendar={() => closeModal(false)}
               setDateType={setDateType}
+              isLoading={isLoading}
               dateType={dateType}
               duration={duration}
               date={date}

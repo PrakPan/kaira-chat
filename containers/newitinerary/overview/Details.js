@@ -97,28 +97,28 @@ const Details = (props) => {
     }
   }
 
-    const fetchItineraryStatus = async (itineraryId = router.query.id) => {
-      console.log("I'm inside Details")
-        try {
-          const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
-          const status = res.data?.celery;
-          dispatch(
-            setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
-          );
-          fetchItinerary();
-        } catch (err) {
-          console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
-        }
-      };
+    // const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+    //   console.log("I'm inside Details")
+    //     try {
+    //       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
+    //       const status = res.data?.celery;
+    //       dispatch(
+    //         setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+    //       );
+    //       dispatch(
+    //         setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+    //       );
+    //       dispatch(
+    //         setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+    //       );
+    //       dispatch(
+    //         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+    //       );
+    //       fetchItinerary();
+    //     } catch (err) {
+    //       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+    //     }
+    //   };
     
       const fetchItinerary = async () => {
         props?.resetRef();
@@ -185,12 +185,13 @@ const Details = (props) => {
                 <UpdateItineraryDates
                   itinerary={props?.itinerary}
                   token={props.token}
-                  onUpdateSuccess={fetchItineraryStatus}
+                  onUpdateSuccess={fetchItinerary}
                   convertDFormat={convertDFormat}
                   tripsPage={false}
                   setShowEditDate={setShowEditDate}
                   showEditDate={showEditDate}
                   duration={props?.duration}
+                  resetRef={props?.resetRef}
                 />
               </DateRow>
 
