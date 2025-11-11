@@ -1711,6 +1711,7 @@ const RouteContainer = (props) => {
         ) : (
           //  need to add header
           <>
+            
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
@@ -1753,6 +1754,7 @@ const RouteContainer = (props) => {
                   flightResults={flightResults}
                   setFlightResults={setFlightResults}
                   skipFetch={false}
+                  heading={name}
                 />
               ) : singleTransfer?.mode === "Taxi" ? (
                 <ComboTaxi

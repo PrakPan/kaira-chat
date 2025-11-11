@@ -1351,6 +1351,7 @@ useEffect(() => {
     return (
       <div className="w-full">
         <ToastContainer />
+        <div className="text-xl font-600 leading-2xl mb-md"> {props.heading}</div>
 
         {showWarningModal &&
           ReactDOM.createPortal(

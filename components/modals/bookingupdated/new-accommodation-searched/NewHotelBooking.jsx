@@ -6,6 +6,7 @@ import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { logEvent } from "../../../../services/ga/Index";
 import ImageCarousel, { Carousel } from "../../Carousel/ImageCarousel";
 import { FaLocationDot } from "react-icons/fa6";
+import { useRouter } from "next/router";
 
 const svgIcons = {
   loaction: (
@@ -97,6 +98,10 @@ export default function NewHotelBooking({
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
+
+   const router = useRouter()
+    const { hotel_duration } =
+      router?.query;
 
   const handleViewHotel = () => {
     // handleClick(key, booking.id, booking, booking.city_id);
@@ -271,7 +276,7 @@ export default function NewHotelBooking({
                       <>₹{getIndianPrice(Math.ceil(booking.price))}</>
                     </div>
                     <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">
-                      <>for {currentBooking?.duration || duration} nights</>
+                      <>for {currentBooking?.duration || duration || hotel_duration} nights</>
                     </div>
                   </div>
                 </div>
