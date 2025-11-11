@@ -106,9 +106,17 @@ function SmallGallery(props) {
                     <SingleImage key={index} style={{ left: -(index * 20) }} className='rounded-full border-white border-[3px]'>
                         {/* <Image src={item} width={50} height={50} /> */}
                         <ImageLoader
-                            dimensions={{ width: 44, height: 44 }}
+                            // dimensions={{ width: 44, height: 44 }}
                             url={item.image || item}
-                            dimensionsMobile={{ width: 44, height: 44 }}
+                            style={{
+                                width: "44px",
+                                height: "44px",
+                                objectFit: "cover",
+                                cursor: "pointer",
+                                margin: "auto",
+                                // display: "block",
+                              }}
+                            // dimensionsMobile={{ width: 44, height: 44 }}
                             noLazy
                         ></ImageLoader>
                     </SingleImage>
