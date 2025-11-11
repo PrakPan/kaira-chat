@@ -461,8 +461,44 @@ export const FlightSegment = ({ segments }) => {
     </div>
   </div>
 
+
+
+  {/* Segments Timing */}
+   {/* Information Grid */}
+  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+    <div>
+      <div className="text-sm font-semibold text-gray-900 mb-1">
+        Departure Time
+      </div>
+      <div className="text-sm text-gray-600">
+        {segment?.origin?.departure_time
+            ? new Date(segment?.origin?.departure_time).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              })
+            : ""}
+      </div>
+    </div>
+    
+    <div>
+      <div className="text-sm font-semibold text-gray-900 mb-1">
+        Arrival Time
+      </div>
+      <div className="text-sm text-gray-600">
+        {segment?.destination?.arrival_time
+            ? new Date(segment?.destination?.arrival_time).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              })
+            : ""}
+      </div>
+    </div>
+  </div>
+  
   {/* Information Grid */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+  <div className=" flex flex-wrap md:grid  md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
     <div>
       <div className="text-sm font-semibold text-gray-900 mb-1">
         Cabin Class
