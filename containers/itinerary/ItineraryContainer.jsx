@@ -43,7 +43,6 @@ import axios from "axios";
 const Container = styled.div`
   width: 100%;
   padding: 17px 16px 0 16px;
-  overflow-x: hidden; 
   max-width: 100vw;
   @media screen and (min-width: 768px) {
     width: 85%;

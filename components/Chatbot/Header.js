@@ -130,7 +130,7 @@ function Header() {
             </IconButton>
             <div
               style={popupStyle(hoveredIcon === "new")}
-              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50"
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 "
             >
               New chat
             </div>
