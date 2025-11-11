@@ -188,7 +188,7 @@ const NewPoiDetailsDrawer = (props) => {
           </OptionsContainer>
         </div>
       )}
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -196,7 +196,7 @@ const NewPoiDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

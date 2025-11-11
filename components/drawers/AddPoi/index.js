@@ -321,7 +321,7 @@ const AddPoi = (props) => {
           />
         </div>
       )}
-       {!isDesktop && (
+       {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -329,7 +329,7 @@ const AddPoi = (props) => {
             onClick={(e) => props.setShowDrawer(false)}
           />
         </FloatingView>
-      )}
+      )} */}
     </>
   );
 };

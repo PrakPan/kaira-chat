@@ -966,7 +966,7 @@ const formattedDate =
         </div>
       )}
 
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -974,7 +974,7 @@ const formattedDate =
             onClick={handleCloseDrawer}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

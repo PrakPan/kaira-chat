@@ -1164,7 +1164,7 @@ const Booking = (props) => {
                 </ContentContainer>
               </GridContainer>
             </div>
-            {!isPageWide && (
+            {/* {!isPageWide && (
               <FloatingView>
                 <TbArrowBack
                   style={{ height: "28px", width: "28px" }}
@@ -1172,7 +1172,7 @@ const Booking = (props) => {
                   onClick={handleClose}
                 />
               </FloatingView>
-            )}
+            )} */}
           </>
         </Drawer>
       </div>

@@ -32,6 +32,8 @@ import { useRouter } from "next/router";
 import Login from "../components/modals/Login";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 
+
+
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
