@@ -1354,24 +1354,12 @@ export const Destination = (props) => {
             <div className="text-base lg:text-[16px] cursor-pointer font-medium">
               {cityData.city_name || cityData.name || cityData.text}
             </div>
-              {!(startingCity || endingCity) && (
-          <div className="w-[40%] md:w-full h-full flex flex-row items-center gap-2">
-            <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
-            <div className="text-sm text-gray-500">
-              {!(startingCity || endingCity) && cityData?.nights >=0 
-                ? `${cityData.nights} ${
-                    cityData.nights > 1
-                      ? isPageWide
-                        ? "Nights"
-                        : "N"
-                      : isPageWide
-                      ? "Night"
-                      : "N"
-                  }`
-                : null}
-            </div>
-          </div>
-        )}
+          {!(startingCity || endingCity) && cityData?.nights >=0  && (
+              <div className="text-sm text-gray-500">
+                <span className="text-[16px] text-gray-500">I</span> &nbsp;
+                {`${cityData.nights} ${cityData.nights > 1 ? "Nights" : "Night"}`}
+              </div>
+            )}
           </div>
         </div>
 

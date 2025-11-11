@@ -17,6 +17,7 @@ import {
   isDateRangeStart,
   isDateRangeEnd
 } from './utils';
+import { PulseLoader } from 'react-spinners';
 
 const AirbnbCalendar = (props) => {
   const today = new Date();
@@ -29,6 +30,7 @@ const AirbnbCalendar = (props) => {
     start: normalizeDate(props.valueStart),
     end: normalizeDate(props.valueEnd)
   });
+  const [loading,setLoading] = useState(false);
   
   const [currentMonth, setCurrentMonth] = useState(props.date.month || new Date(today.getFullYear(), today.getMonth(), 1));
   const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
@@ -74,11 +76,30 @@ const AirbnbCalendar = (props) => {
     }
   };
 
-  const handleApplyDates = () => {
-    props.setDateType(dateType)
-    props.onChangeDate({ start: selectedDates.start, end: selectedDates.end, month: currentMonth, duration: tripDuration ,dateType:dateType})
-    props.setShowCalendar(false)
+  const handleApplyDates = async () => {
+  props.setDateType(dateType)
+  
+  if(props?.isLoading !== undefined){
+    setLoading(true);
+    await props.onChangeDate({ 
+      start: selectedDates.start, 
+      end: selectedDates.end, 
+      month: currentMonth, 
+      duration: tripDuration,
+      dateType: dateType
+    });
+    setLoading(false);
+  } else {
+    props.onChangeDate({ 
+      start: selectedDates.start, 
+      end: selectedDates.end, 
+      month: currentMonth, 
+      duration: tripDuration,
+      dateType: dateType
+    });
+    props.setShowCalendar(false);
   }
+}
 
   const renderMonthGrid = (days) => (
     <div>
@@ -279,7 +300,19 @@ const AirbnbCalendar = (props) => {
                 onClick={handleApplyDates}
                 className="px-[26px] py-[8px] bg-gray-900 text-white font-medium rounded-[8px] hover:bg-gray-800 transition-colors"
               >
-                Apply
+                {loading ? (
+              <PulseLoader
+                style={{
+                  // position: "absolute",
+                  // top: "55%",
+                  // left: "50%",
+                   transform: "translate(-50% , -50%)",
+                }}
+                size={12}
+                speedMultiplier={0.6}
+                color="#ffffff"
+              />
+            ) : "Apply"}
               </MediumIndigoButton>
             </div>
           </div>

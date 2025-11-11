@@ -15,9 +15,11 @@ import {
   isDateRangeStart,
   isDateRangeEnd
 } from './utils';
+import { PulseLoader } from 'react-spinners';
 
 const AirbnbCalendarMobile = (props) => {
   const today = new Date();
+    const [loading,setLoading] = useState(false);
 
   const [dateType, setDateType] = useState(props.dateType || "fixed");
   const [currentView, setCurrentView] = useState(
@@ -75,17 +77,30 @@ const AirbnbCalendarMobile = (props) => {
     }
   };
 
-  const handleApplyDates = () => {
-    props.setDateType(dateType);
-    props.onChangeDate({
-      start: selectedDates.start,
-      end: selectedDates.end,
-      month: currentMonth,
+   const handleApplyDates = async () => {
+  props.setDateType(dateType)
+  
+  if(props?.isLoading !== undefined){
+    setLoading(true);
+    await props.onChangeDate({ 
+      start: selectedDates.start, 
+      end: selectedDates.end, 
+      month: currentMonth, 
+      duration: tripDuration,
+      dateType: dateType
+    });
+    setLoading(false);
+  } else {
+    props.onChangeDate({ 
+      start: selectedDates.start, 
+      end: selectedDates.end, 
+      month: currentMonth, 
       duration: tripDuration,
       dateType: dateType
     });
     props.setShowCalendar(false);
-  };
+  }
+}
 
   const renderMonthGrid = (days) => (
     <div>
@@ -244,7 +259,19 @@ const AirbnbCalendarMobile = (props) => {
             Clear
           </MediumIndigoOutlinedButton>
           <MediumIndigoButton className='text-white flex-1' onClick={handleApplyDates}>
-            Apply
+             {loading ? (
+              <PulseLoader
+                style={{
+                  // position: "absolute",
+                  // top: "55%",
+                  // left: "50%",
+                  // transform: "translate(-50% , -50%)",
+                }}
+                size={12}
+                speedMultiplier={0.6}
+                color="#ffffff"
+              />
+            ) : "Apply"}
           </MediumIndigoButton>
         </div>
       </div>

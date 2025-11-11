@@ -32,8 +32,8 @@ const ImageLoader = (props) => {
     key: props.url,
     edits: {
       resize: {
-        width: 10,
-        height: 10,
+        width: 99,
+        height: 99,
         fit: "cover",
       },
     },
