@@ -270,7 +270,7 @@ const ActivityDetailsDrawer = (props) => {
         </div>
       )}
 
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -278,7 +278,7 @@ const ActivityDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

@@ -357,7 +357,7 @@ const ViewHotelDetails = (props) => {
       ) : (
         <Skeleton onHide={props.onHide} />
       )}
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -365,7 +365,7 @@ const ViewHotelDetails = (props) => {
             onClick={props.onHide}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

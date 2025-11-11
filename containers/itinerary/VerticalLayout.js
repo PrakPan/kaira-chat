@@ -620,7 +620,7 @@ const AirportBookingItem = ({
             {showTooltip && !showDetails && !showClickTooltip && (
               <div
                 className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
-                style={{ zIndex: 10000 }}
+                style={{ zIndex: 100 }}
                 onMouseEnter={handleTooltipMouseEnter}
                 onMouseLeave={handleTooltipMouseLeave}
               >
@@ -637,7 +637,7 @@ const AirportBookingItem = ({
         <div className="relative mt-2">
           <div
             className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
-            style={{ zIndex: 10000 }}
+            style={{ zIndex: 100 }}
           >
             {renderTooltipContent()}
             <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
@@ -652,7 +652,7 @@ const AirportBookingItem = ({
           <div className="relative mt-2">
             <div
               className="absolute bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
-              style={{ zIndex: 10000 }}
+              style={{ zIndex: 100 }}
             >
               {renderDropdownContent()}
               <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
@@ -685,7 +685,7 @@ const AirportBookingItem = ({
               {showTooltip && !showDetails && !showClickTooltip && (
                 <div
                   className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
-                  style={{ zIndex: 10000 }}
+                  style={{ zIndex: 100 }}
                   onMouseEnter={handleTooltipMouseEnter}
                   onMouseLeave={handleTooltipMouseLeave}
                 >
@@ -702,7 +702,7 @@ const AirportBookingItem = ({
           <div className="relative mt-2">
             <div
               className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
-              style={{ zIndex: 10000 }}
+              style={{ zIndex: 100 }}
             >
               {renderTooltipContent()}
               <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>

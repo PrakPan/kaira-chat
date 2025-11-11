@@ -278,7 +278,6 @@ const Booking = (props) => {
     }));
   };
   const _addFilterHandler = (filter, heading) => {
-    console.log("add filter handler called");
     setFilters((prev) => ({
       ...prev,
       [heading]: filter,
@@ -444,8 +443,7 @@ const Booking = (props) => {
           for (var i = 0; i < res.data.data.length; i++) {
             if (
               res.data.data[i]?.images &&
-              res.data.data[i]?.images?.length &&
-              res.data.data[i]?.price
+              res.data.data[i]?.images?.length 
             ) {
               let img = false;
               for (let j = 0; j < res.data.data[i].images.length; j++) {
@@ -454,6 +452,7 @@ const Booking = (props) => {
                   break;
                 }
               }
+              
 
               if (img)
                 options.push(
@@ -668,9 +667,10 @@ const Booking = (props) => {
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
               if (
-                res.data.data[i]?.images &&
-                res.data.data[i]?.images?.length &&
-                res.data.data[i]?.price
+                res.data.data[i]?.images 
+                &&
+                res.data.data[i]?.images?.length 
+                // && res.data.data[i]?.price
               ) {
                 let img = false;
                 for (let j = 0; j < res.data.data[i].images.length; j++) {
@@ -686,6 +686,7 @@ const Booking = (props) => {
                       mercury
                       itinerary_city_id={props.itinerary_city_id}
                       source={res?.data?.data?.[i]?.source}
+                      availability={res?.data?.data?.[i]?.availability}
                       handleClick={props?.handleClick}
                       payment={props.payment}
                       plan={props.plan}
@@ -721,6 +722,7 @@ const Booking = (props) => {
                       city_id={currentBooking?.city_id}
                     ></AccommodationSearched>
                   );
+                
               }
             }
             if (
@@ -802,6 +804,8 @@ const Booking = (props) => {
       applyFilter: !prev.applyFilter,
     }));
   };
+
+ 
 
   if (props?.token)
     return (
@@ -1164,7 +1168,7 @@ const Booking = (props) => {
                 </ContentContainer>
               </GridContainer>
             </div>
-            {!isPageWide && (
+            {/* {!isPageWide && (
               <FloatingView>
                 <TbArrowBack
                   style={{ height: "28px", width: "28px" }}
@@ -1172,7 +1176,7 @@ const Booking = (props) => {
                   onClick={handleClose}
                 />
               </FloatingView>
-            )}
+            )} */}
           </>
         </Drawer>
       </div>

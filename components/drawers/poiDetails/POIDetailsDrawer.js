@@ -268,7 +268,7 @@ const POIDetailsDrawer = (props) => {
           )}
         </>
       )}
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -276,7 +276,7 @@ const POIDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

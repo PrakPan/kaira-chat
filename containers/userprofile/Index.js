@@ -17,6 +17,8 @@ import H2 from "../../components/heading/H2";
 const Container = styled.div`
   width: 100%;
   margin: 12vh auto;
+  overflow-x: hidden; 
+  max-width: 100vw;
   @media screen and (min-width: 768px) {
     width: 70%;
     padding-top: 10vh;

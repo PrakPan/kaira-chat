@@ -697,7 +697,13 @@ const TransferEditDrawer = (props) => {
         setSelectedCab(null);
       }}
     >
-      <div className="relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4 pb-[100px] md:pb-0 justify-start items-start mx-auto w-[100%] min-h-screen">
+      <div
+        className={`relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4  ${
+          transfers[selectedTransferIndex]?.transfers?.length > 1
+            ? "md:pb-0"
+            : "md:pb-[30px]"
+        } justify-start items-start mx-auto w-[100%] min-h-screen`}
+      >
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
             <>
@@ -1466,7 +1472,7 @@ const TransferEditDrawer = (props) => {
           dCityData?.city?.id
         }
       ></TaxiModal>
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -1482,7 +1488,7 @@ const TransferEditDrawer = (props) => {
             }}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };
@@ -3522,8 +3528,67 @@ const NewMultiModeContainer = ({
                   }
                 })}
 
+                {/* Navigation buttons - Fixed to bottom */}
+                <div className="sticky bottom-0 left-0 right-0 w-full bg-white border-t z-[100] shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+                  <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-3 px-4 md:px-0 max-w-full">
+                    {currentStep > 1 ? (
+                      <button
+                        onClick={() => handleBackButton()}
+                        className="bg-gray-200 text-black px-4 md:px-6 py-2 rounded-md font-medium text-sm md:text-base"
+                      >
+                        Back
+                      </button>
+                    ) : (
+                      <div></div>
+                    )}
+
+                    {currentStep < totalSteps ? (
+                      <button
+                        onClick={() => handleNextStep()}
+                        className={`
+        ${
+          isCurrentModeSelected()
+            ? "ttw-btn-secondary-fill"
+            : "ttw-btn-secondary-fill-disabled"
+        }`}
+                        disabled={!isCurrentModeSelected()}
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <div className="flex flex-col md:flex-row items-end gap-2 md:gap-4 w-full md:w-auto">
+                        <button
+                          onClick={handleUpdateTransfer}
+                          className={`ttw-btn-secondary-fill ${
+                            Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
+                          disabled={
+                            Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading
+                          }
+                        >
+                          <div className="flex items-center justify-center min-w-[140px]">
+                            {updateLoading ? (
+                              <PulseLoader
+                                size={15}
+                                speedMultiplier={0.6}
+                                color="#000000"
+                              />
+                            ) : (
+                              "Update Transfer"
+                            )}
+                          </div>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Navigation buttons */}
-                <div className=" w-[100%] bottom-0 bg-white border-t z-10 ">
+                {/* <div className=" w-[100%] bottom-0 bg-white border-t z-10 ">
                   <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-md max-ph:px-zero">
                     {currentStep > 1 ? (
                       <button
@@ -3579,7 +3644,7 @@ const NewMultiModeContainer = ({
                       </div>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

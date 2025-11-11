@@ -393,12 +393,6 @@ useEffect(() => {
 
 
 
-
-
-
-
-  console.log("Route Editt",destinations)
-
   useEffect(() => {
     if (destinations.length) {
       if (validateDates()) {
@@ -756,7 +750,7 @@ useEffect(() => {
         {itineraryLoading && <Spinner isEdit={true} />}
         {!isDesktop && (
           <>
-          <div className={`w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}>
+          <div className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}>
             {props.children}
 
             {destinationChanges && (
@@ -838,7 +832,7 @@ useEffect(() => {
           </div>
         )}
 
-        {!isDesktop && (
+        {/* {!isDesktop && (
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -850,7 +844,7 @@ useEffect(() => {
               }
             />
           </FloatingView>
-        )}
+        )} */}
       </div>
     </>
   );
@@ -1332,9 +1326,9 @@ export const Destination = (props) => {
       )}
 
       <div
-        onClick={handleEditDestination}
-        className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10"      >
-        <div className="w-[60%] flex flex-row items-center gap-3">
+  className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10"
+>
+  <div onClick={handleEditDestination} className="w-[70%] flex flex-row items-center gap-3">
           {!(startingCity || endingCity) && (
             <div className="text-gray-400 cursor-grab active:cursor-grabbing">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -1356,16 +1350,28 @@ export const Destination = (props) => {
           ) : (
             <CustomMapPin color={cityData?.color || pinColour} />
           )}
-          <div className="flex flex-row items-center justify-center gap-3">
+          <div className="flex flex-row items-center justify-center gap-2">
             <div className="text-base lg:text-[16px] cursor-pointer font-medium">
               {cityData.city_name || cityData.name || cityData.text}
             </div>
-            {!(startingCity || endingCity) && cityData?.nights && (
-              <div className="text-sm text-gray-500">
-                <span className="text-[16px] text-gray-500">I</span> &nbsp;
-                {`${cityData.nights} ${cityData.nights > 1 ? "Nights" : "Night"}`}
-              </div>
-            )}
+              {!(startingCity || endingCity) && (
+          <div className="w-[40%] md:w-full h-full flex flex-row items-center gap-2">
+            <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
+            <div className="text-sm text-gray-500">
+              {!(startingCity || endingCity) && cityData?.nights >=0 
+                ? `${cityData.nights} ${
+                    cityData.nights > 1
+                      ? isPageWide
+                        ? "Nights"
+                        : "N"
+                      : isPageWide
+                      ? "Night"
+                      : "N"
+                  }`
+                : null}
+            </div>
+          </div>
+        )}
           </div>
         </div>
 
