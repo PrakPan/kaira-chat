@@ -131,9 +131,11 @@ const Home = (props) => {
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
+        
         <HeroSection />
-        <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
+        <JourneySimplified />
+        
         <PlacesBragSection />
         <TravelerMadeItinerariesSection />
         <FullSlider />

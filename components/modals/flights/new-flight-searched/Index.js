@@ -53,6 +53,10 @@ const Flight = (props) => {
   const [selectedFareData, setSelectedFareData] = useState(null);
   const [selectedFareIndex, setSelectedFareIndex] = useState(null);
 
+
+  const totalPax =
+    (props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0);
+
   let isPageWide = media("(min-width: 768px)");
   const handleView = () => {
     setViewMore((prev) => !prev);
@@ -62,8 +66,6 @@ const Flight = (props) => {
       className="relative border-b p-2 space-y-3 overflow-visible"
       isSelected={props.isSelected}
     >
-      {/* {props.data.other_results.length > 0 ?<div className="absolute -top-1 px-[0.7rem] py-2 -left-1 bg-[#FD6D6C] text-white rounded-lg text-[14px]">{props.data.other_results.length}</div> : null} */}
-      {/* Header Section with Logo, Airline Name, and Price */}
       <div className="flex flex-row gap-2 justify-between md:items-start items-center">
         <div className="flex flex-row items-center gap-3">
           <div
@@ -151,7 +153,7 @@ const Flight = (props) => {
                 ? `₹${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
-            <div className="text-sm text-gray-600">per person</div>
+            <div className="text-sm text-gray-600">for {totalPax} person</div>
           </div>
           <div
             className="text-blue-600 text-sm font-medium cursor-pointer flex items-center gap-1"
@@ -287,7 +289,7 @@ const Flight = (props) => {
                         )}`
                       : null}
                   </div>
-                  <div className="text-xs text-gray-500">per person</div>
+                  <div className="text-xs text-gray-500">for {totalPax} person</div>
                 </div>
               )}
             </div>
