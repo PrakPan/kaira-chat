@@ -244,7 +244,7 @@ const Section = (props) => {
         dispatch(updateAirportTransferBooking(`${props?.cityId}`, response.data));
       }
 
-      props._updateTaxiBookingHandler([response.data]);
+      // props._updateTaxiBookingHandler([response.data]);
       props.getPaymentHandler();
       props.setHideBookingModal();
 
