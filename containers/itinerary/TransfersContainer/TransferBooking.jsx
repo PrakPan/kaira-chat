@@ -1039,6 +1039,7 @@ const FlightBooking = ({
       <div
         id={booking?.id}
         className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 w-full`}
+        onClick={()=>{if(window.innerWidth <= 1000) handleRoute(booking)}}
       >
         <div
           className={` w-full 

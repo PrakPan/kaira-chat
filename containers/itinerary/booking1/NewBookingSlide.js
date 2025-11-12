@@ -998,7 +998,11 @@ const ItineraryInclusions = ({
                             <span>•</span>
                             <BsPeopleFill className="flex-shrink-0" />
                             <span>
-                              {booking.detail.pax.number_of_adults} Adults
+                              {booking.detail.pax.number_of_adults +
+                                (booking.detail?.pax?.number_of_children || 0) +
+                                (booking.detail?.pax?.number_of_infants ||
+                                  0)}{" "}
+                              Travelers
                             </span>
                           </div>
                         )}
@@ -1107,7 +1111,6 @@ const Details = (props) => {
 
   useEffect(() => {
     if (props?.openPaymentDrawer && isDirectlyOpenPaymentDrawer) {
-     
       handleProceedToPayment();
     }
   }, [props?.openPaymentDrawer]);
@@ -1835,7 +1838,7 @@ const Details = (props) => {
     return allPaid;
   };
 
-    const areAnyInclusionsPaid = () => {
+  const areAnyInclusionsPaid = () => {
     if (!Cart?.summary) return false;
 
     let anyPaid = false;
@@ -2549,11 +2552,7 @@ const Details = (props) => {
                     <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                       <span>₹</span>
                       <div>
-                        {Cart?.show_per_person_cost || Cart?.pay_only_for_one
-                          ? getIndianPrice(
-                              Math.round(Cart?.per_person_total_cost)
-                            )
-                          : getIndianPrice(Math.round(Cart?.total_cost))}
+                        {getIndianPrice(Math.round(Cart?.total_cost))}
                         {"/-"}
                       </div>
                     </div>
@@ -2597,13 +2596,14 @@ const Details = (props) => {
                       </div>
                     ) : (
                       <div className="font-medium text-base self-end">
-                        {Cart?.pay_only_for_one || Cart?.show_per_person_cost
-                          ? "Per Person Cost"
-                          : Cart?.is_estimated_price
-                          ? `${Cart?.total_cost == 0 ? "" : "Estimated Price"}`
-                          : Cart
-                          ? "Total Cost"
-                          : ""}
+                        {
+                          // Cart?.pay_only_for_one || Cart?.show_per_person_cost
+                          //   ? "Per Person Cost"
+                          //   : Cart?.is_estimated_price
+                          //   ?
+                          // `${Cart?.total_cost == 0 ? "" : "Estimated Price"}`
+                          Cart ? "Total Cost" : ""
+                        }
                       </div>
                     )}
                   </div>
@@ -2694,100 +2694,107 @@ const Details = (props) => {
               </div>
             </div>
 
-            {Cart?.total_payable_amount == 0 && areAllInclusionsPaid() ? (
+            {Cart?.total_payable_amount == 0 &&
+            areAllInclusionsPaid() &&
+            Cart?.discounted_cost > 0 ? (
               <PaymentSuccess
                 amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
                 onDownloadInvoice={() => {}}
               />
             ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
-  // Show only update dates when itinerary is in past
-  <div>
-    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-      <p className="text-amber-700 text-sm font-medium mb-2">
-        Your itinerary dates are in the past. Please update the dates to view current pricing and continue with booking.
-      </p>
-    </div>
+              // Show only update dates when itinerary is in past
+              <div>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                  <p className="text-amber-700 text-sm font-medium mb-2">
+                    Your itinerary dates are in the past. Please update the
+                    dates to view current pricing and continue with booking.
+                  </p>
+                </div>
 
-    <div className="mb-4">
-      <h3 className="font-medium text-base mb-3">Update Travel Dates</h3>
-      <UpdateItineraryDates
-        itinerary={props?.itinerary}
-        token={props?.token}
-        onUpdateSuccess={props.fetchData}
-        resetRef={props?.resetRef}
-        convertDFormat={convertDFormat}
-        showPhoneView={true}
-        handleCloseDrawer={handleCloseDrawer}
-      />
-    </div>
+                <div className="mb-4">
+                  <h3 className="font-medium text-base mb-3">
+                    Update Travel Dates
+                  </h3>
+                  <UpdateItineraryDates
+                    itinerary={props?.itinerary}
+                    token={props?.token}
+                    onUpdateSuccess={props.fetchData}
+                    resetRef={props?.resetRef}
+                    convertDFormat={convertDFormat}
+                    showPhoneView={true}
+                    handleCloseDrawer={handleCloseDrawer}
+                  />
+                </div>
 
-    <Button
-      width="100%"
-      margin="0.5rem 0 0 0"
-      borderRadius="8px"
-      hoverColor="white"
-      fontWeight="400"
-      padding="12px"
-      borderWidth="1px"
-      onclick={handleWhatsappChat}
-    >
-      <div className="flex flex-row justify-center items-center">
-        <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-        <div>Chat on WhatsApp</div>
-      </div>
-    </Button>
+                <Button
+                  width="100%"
+                  margin="0.5rem 0 0 0"
+                  borderRadius="8px"
+                  hoverColor="white"
+                  fontWeight="400"
+                  padding="12px"
+                  borderWidth="1px"
+                  onclick={handleWhatsappChat}
+                >
+                  <div className="flex flex-row justify-center items-center">
+                    <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+                    <div>Chat on WhatsApp</div>
+                  </div>
+                </Button>
 
-    <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-      <Link
-        href="/terms-conditions"
-        target="_blank"
-        onClick={handleTermsConditions}
-      >
-        <div>Terms & Conditions</div>
-      </Link>
-    </div>
-  </div>
-) :!isItineraryInFuture() && areAnyInclusionsPaid()? (<>
-                    <GetInTouchContainer>
-                      <Button
-                        color="#111"
-                        fontWeight="500"
-                        fontSize="1rem"
-                        borderWidth="1px"
-                        width="100%"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        padding="12px"
-                        onclick={handleGetInTouch}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <ImageLoader
-                            dimensions={{ height: 50, width: 50 }}
-                            dimensionsMobile={{ height: 50, width: 50 }}
-                            height={"20px"}
-                            width={"20px"}
-                            widthmobile={"20px"}
-                            leftalign
-                            url={"media/icons/login/customer-service-black.png"}
-                          />
-                          {props?.loading ? (
-                            <PulseLoader />
-                          ) : (
-                            <span>Get in touch!</span>
-                          )}
-                        </div>
-                      </Button>
-                    </GetInTouchContainer>
-
-                  
-                  </>) : hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS" ? (
+                <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+                  <Link
+                    href="/terms-conditions"
+                    target="_blank"
+                    onClick={handleTermsConditions}
+                  >
+                    <div>Terms & Conditions</div>
+                  </Link>
+                </div>
+              </div>
+            ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
+              <>
+                <GetInTouchContainer>
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="1px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={handleGetInTouch}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        widthmobile={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />
+                      {props?.loading ? (
+                        <PulseLoader />
+                      ) : (
+                        <span>Get in touch!</span>
+                      )}
+                    </div>
+                  </Button>
+                </GetInTouchContainer>
+              </>
+            ) : hasPlanExpired &&
+              isItineraryInFuture() &&
+              pricing_status == "SUCCESS" ? (
               // Show only refresh prices button when expired
               <div>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
@@ -2912,7 +2919,9 @@ const Details = (props) => {
                 )}
 
                 {/* {!lockInCompleted && ( */}
-                {hasPlanExpired && isItineraryInFuture() && pricing_status == "SUCCESS" ? (
+                {hasPlanExpired &&
+                isItineraryInFuture() &&
+                pricing_status == "SUCCESS" ? (
                   <Button
                     color="#111"
                     fontWeight="500"

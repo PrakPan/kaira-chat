@@ -506,7 +506,7 @@ const handleViewMore = async () => {
   
   setMoreLoadingState(true);
   
-  // Cancel any existing request
+ 
   if (cancelTokenSourceRef.current) {       
     cancelTokenSourceRef.current.cancel("Operation cancelled due to new request");
   }
@@ -519,7 +519,7 @@ const handleViewMore = async () => {
     const newOffset = parseInt(urlParams.get('offset')) || 0;
     const newLimit = parseInt(urlParams.get('limit')) || limit;
     
-    // Prepare request data with current filters - SAME AS _FetchFlightsHandler
+    // Prepare request data with current filters
     const requestData = {
       adult_count: pax.adults,
       child_count: pax.children,
@@ -530,11 +530,11 @@ const handleViewMore = async () => {
       destination: destinationInput.code || props.destination_code || props.selectedBooking.destination_iata,
       preferred_departure_time: preferredDepartureTime,
       flight_cabin_class: classType.value,
-      // Add filter parameters
-      ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
-      ...(filtersState.fare_type != null && {
-        fare_type: filtersState.fare_type,
-      }),
+      // departure_time_period: filtersState.departure_time_period || "",
+      // arrival_time_period: filtersState.arrival_time_period || "",
+      // sort_by: filtersState.sort_by || "price",
+      // order: filtersState.order || "asc",
+      trace_id: traceId,
       ...(filtersState?.airlines && isTraceIdValid() && { trace_id: traceId })
     };
 
@@ -556,6 +556,7 @@ const handleViewMore = async () => {
       return;
     }
 
+
     setFlights(prevFlights => [...prevFlights, ...(response.data.results || [])]);
     setNextUrl(response.data.next || null);
     setPreviousUrl(response.data.previous || null);
@@ -565,6 +566,7 @@ const handleViewMore = async () => {
     if (props?.setFlightResults) {
       props.setFlightResults(prevFlights => [...prevFlights, ...(response.data.results || [])]);
     }
+
 
     if (response.data.trace_id) {
       setTraceId(response.data.trace_id);
@@ -1424,6 +1426,7 @@ useEffect(() => {
           setShowSourceSuggestions={setShowSourceSuggestions}
           setShowDestinationSuggestions={setShowDestinationSuggestions}
           _FetchFlightsHandler={_FetchFlightsHandler}
+          setIsManualSelection={setIsManualSelection}
         />
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
@@ -1572,12 +1575,19 @@ const SearchSection = ({
   _FetchFlightsHandler,
   setDestinationInput,
   setSourceInput,
+  setIsManualSelection
 }) => {
-  const handleLocationChange = () => {
-    setDestinationInput(sourceInput);
-    setSourceInput(destinationInput);
-    _FetchFlightsHandler();
-  };
+  
+const handleLocationChange = async () => {
+  
+  const tempSource = sourceInput;
+  const tempDestination = destinationInput;
+  
+  setDestinationInput(tempSource);
+  setSourceInput(tempDestination);
+  
+  setIsManualSelection(true);
+};
 
   return (
     <div className="w-full mb-2">

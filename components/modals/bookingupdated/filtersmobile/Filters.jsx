@@ -49,16 +49,16 @@ export default function Filters(props) {
       className=""
       onHide={() => props.setshowFilter(false)}
     >
-      <div className="w-[80vw] md:w-[27vw] px-lg h-[98vh] flex flex-col items-start mx-auto">
+      <div className="w-[80vw] md:w-[27vw] px-lg h-[100vh] flex flex-col items-start mx-auto ">
         <div className="my-[1rem]">
           <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => props.setshowFilter(false)} />
         </div>
-        <div className="flex w-100 flex-row my-0 justify-between items-center">
+        <div className="flex w-100 flex-row my-0 justify-between items-center ">
           <div className="text-xl font-600 leading-2xl">Filters</div>
           {props?.isFilterChangesApplied && <button className="font-md font-500 leading-lg-md underline text-text-error" onClick={removeAllFilter}>Clear</button>}
         </div>
 
-        <div className="flex flex-col gap-xl mt-lg overflow-y-auto h-[80%]  w-full">
+        <div className="flex flex-col gap-xl mt-lg overflow-y-auto h-[80%]  w-full scrollbar-hide">
 
           <PriceRange budget={budget} setBudget={setBudget} setFilters={props?.setFilters} />
 
@@ -115,14 +115,26 @@ export default function Filters(props) {
           <hr className="m-zero" />
         </div>
 
-        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md">
+        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md ">
+
           <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
             Cancel
           </button>
           <button className="ttw-btn-secondary-fill" onClick={handleApply}>
             Apply
           </button>
+         
         </div>
+         <style jsx>{`
+
+        .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+        }
+      `}</style>
       </div>
     </Drawer>
   );
