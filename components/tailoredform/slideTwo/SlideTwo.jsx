@@ -8,7 +8,7 @@ import {
     FaCirclePlus,
     FaCalendarDays,
     FaCircleMinus,
-    FaInfoCircle
+    // FaInfoCircle
 } from "react-icons/fa6";
 
 import "react-dates/initialize";
@@ -24,6 +24,7 @@ import { logEvent } from "../../../services/ga/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { buildDestinations, buildRoutes, buildRoutesFromDestinations, CustomMapPin, getItemStyle, handleDestinationSearch, handleDragEnd, handleEditDestination, handleRemoveDestination, handleSearchInput, handleSetDestination, handleSetNights, handleUpdateDestination, updateDestinationsDates, updateLatLong, validateDates } from "../utils/slideTwoActions";
 import renderRoutesMapSection from "../utils/renderRoutesMapSection";
+import { FaInfoCircle } from "react-icons/fa";
 
 const CITY_COLOR_CODES = [
     "#359EBF",

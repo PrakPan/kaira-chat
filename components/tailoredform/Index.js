@@ -663,6 +663,8 @@ const Enquiry = (props) => {
           </div>
         )}
 
+        {console.log("SlideIn",slideIndex)}
+
         {slideIndex === 1 && (
           <div
             className={` bg-primary-cornsilk z-[10] flex justify-between
@@ -685,22 +687,23 @@ const Enquiry = (props) => {
               >
                 Skip
               </button>
-
+              {console.log("RouteEE",isRouteChanged)}
               {isRouteChanged ? (
-                <Button
-                  width={`${isPageWide ? '300px' : ''}`}
-                  fontSize="1rem"
-                  padding="0.5rem 1rem"
-                  fontWeight="500"
-                  bgColor="#07213A"
-                  color="white"
-                  height="50px"
-                  loading={isLoading}
+                <button
+                  // width={`${isPageWide ? '300px' : ''}`}
+                  // fontSize="1rem"
+                  // padding="0.5rem 1rem"
+                  // fontWeight="500"
+                  // bgColor="#07213A"
+                  // color="white"
+                  // height="50px"
+                  // loading={isLoading}
                   onClick={() => initiateItineraryCreate()}
-                  className={`${!isDesktop && "w-[120px]"}`}
+                  // className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[120px]"}`}
+                  className={`LargeIndigoOutlinedButton bg-[#07213A] text-white`}
                 >
                   Continue
-                </Button>
+                </button>
               ) : (
                 <button
                   className={`LargeIndigoButton cursor-not-allowed ${isDesktop && "w-[300px]"}`}
