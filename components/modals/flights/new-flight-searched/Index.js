@@ -53,6 +53,10 @@ const Flight = (props) => {
   const [selectedFareData, setSelectedFareData] = useState(null);
   const [selectedFareIndex, setSelectedFareIndex] = useState(null);
 
+
+  const totalPax =
+    (props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0);
+
   let isPageWide = media("(min-width: 768px)");
   const handleView = () => {
     setViewMore((prev) => !prev);
@@ -287,7 +291,7 @@ const Flight = (props) => {
                         )}`
                       : null}
                   </div>
-                  <div className="text-xs text-gray-500">per person</div>
+                  <div className="text-xs text-gray-500">for {totalPax} person</div>
                 </div>
               )}
             </div>

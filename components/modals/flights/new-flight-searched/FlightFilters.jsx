@@ -200,7 +200,7 @@ const handleApply = () => {
       className=""
       onHide={() => props.setShowFilter(false)}
     >
-      <div className="w-[80vw] md:w-[27vw] px-lg h-[98vh] flex flex-col items-start mx-auto">
+      <div className="w-[80vw] md:w-[27vw] px-lg h-[100vh] flex flex-col items-start mx-auto">
         <div className="my-[1rem]">
           <Image 
             src="/backarrow.svg" 
@@ -223,7 +223,7 @@ const handleApply = () => {
           )}
         </div>
 
-        <div className="flex flex-col gap-xl mt-lg overflow-y-auto scrollbar-hide h-[80%] w-full">
+        <div className="flex flex-col gap-xl mt-lg overflow-y-auto h-[80%] w-full scrollbar-hide">
 
           <hr className="m-zero" />
 
@@ -406,6 +406,8 @@ const handleApply = () => {
           <hr className="m-zero" />
         </div>
 
+
+
         <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md">
           <button className="ttw-btn-secondary-flat" onClick={() => props.setShowFilter(false)}>
             Cancel
@@ -437,6 +439,14 @@ const handleApply = () => {
           border-radius: 50%;
           cursor: pointer;
           box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
         }
       `}</style>
     </Drawer>

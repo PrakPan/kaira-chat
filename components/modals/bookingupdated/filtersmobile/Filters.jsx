@@ -49,7 +49,7 @@ export default function Filters(props) {
       className=""
       onHide={() => props.setshowFilter(false)}
     >
-      <div className="w-[80vw] md:w-[27vw] px-lg h-[98vh] flex flex-col items-start mx-auto">
+      <div className="w-[80vw] md:w-[27vw] px-lg h-[100vh] flex flex-col items-start mx-auto">
         <div className="my-[1rem]">
           <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => props.setshowFilter(false)} />
         </div>
@@ -115,13 +115,23 @@ export default function Filters(props) {
           <hr className="m-zero" />
         </div>
 
-        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md">
+        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md scrollbar-hide">
           <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
             Cancel
           </button>
           <button className="ttw-btn-secondary-fill" onClick={handleApply}>
             Apply
           </button>
+          <style jsx>{`
+
+        .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+        }
+      `}</style>
         </div>
       </div>
     </Drawer>
