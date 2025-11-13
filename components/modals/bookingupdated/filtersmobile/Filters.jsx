@@ -39,7 +39,6 @@ export default function Filters(props) {
     props?.setIsFilterChangesApplied(false);
   }
 
-
   return (
     <Drawer
       show={props.showFilter}
@@ -49,92 +48,115 @@ export default function Filters(props) {
       className=""
       onHide={() => props.setshowFilter(false)}
     >
-      <div className="w-[80vw] md:w-[27vw] px-lg h-[100vh] flex flex-col items-start mx-auto ">
-        <div className="my-[1rem]">
-          <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={() => props.setshowFilter(false)} />
-        </div>
-        <div className="flex w-100 flex-row my-0 justify-between items-center ">
-          <div className="text-xl font-600 leading-2xl">Filters</div>
-          {props?.isFilterChangesApplied && <button className="font-md font-500 leading-lg-md underline text-text-error" onClick={removeAllFilter}>Clear</button>}
-        </div>
-
-        <div className="flex flex-col gap-xl mt-lg overflow-y-auto h-[80%]  w-full scrollbar-hide">
-
-          <PriceRange budget={budget} setBudget={setBudget} setFilters={props?.setFilters} />
-
-          <hr className="m-zero" />
-
-          <StarCategory
-            starCategory={props.FILTERS.star_category}
-            selectedStarCategory={selectedStarCategory}
-            setSelectedStarCategory={setSelectedStarCategory}
-          />
-
-          <hr className="m-zero" />
-          <UserRatings
-            userRatings={props.FILTERS?.user_ratings}
-            userRatingsLabel={props.FILTERS?.user_ratings_label}
-            selectedUserStar={selectedUserStar}
-            setSelectedUserStar={setSelectedUserStar}
-          />
-
-          {props.FILTERS?.type.length ? (
-            <>
-              <hr className="m-zero" />
-              <PropertyType
-                types={props.FILTERS?.type}
-                selectedTypes={selectedTypes}
-                setSelectedTypes={setSelectedTypes}
-              />
-            </>
-          ) : null}
-
-          {props.FILTERS?.facilities.length ? (
-            <>
-              <hr className="m-zero" />
-              <Facilities
-                facilities={props.FILTERS?.facilities}
-                selectedFacilities={selectedFacilities}
-                setSelectedFacilities={setSelectedFacilities}
-              />
-            </>
-          ) : null}
-
-          {props.FILTERS?.tags.length ? (
-            <>
-              <hr className="m-zero" />
-              <Tags
-                tags={props.FILTERS?.tags}
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-              />
-            </>
-          ) : null}
-
-
-          <hr className="m-zero" />
+      <div className="w-[80vw] md:w-[27vw] h-[100vh] flex flex-col">
+        {/* Header - Fixed at top */}
+        <div className="px-lg pt-md pb-sm border-b border-border-subtle">
+          <div className="mb-md">
+            <Image 
+              src="/backarrow.svg" 
+              className="cursor-pointer" 
+              width={22} 
+              height={22} 
+              onClick={() => props.setshowFilter(false)} 
+            />
+          </div>
+          
+          <div className="flex w-full flex-row justify-between items-center">
+            <div className="text-xl font-600 leading-2xl">Filters</div>
+            {props?.isFilterChangesApplied && (
+              <button 
+                className="font-md font-500 leading-lg-md underline text-text-error" 
+                onClick={removeAllFilter}
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md ">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-lg py-lg scrollbar-hide">
+          <div className="flex flex-col gap-xl">
+            <PriceRange budget={budget} setBudget={setBudget} setFilters={props?.setFilters} />
 
-          <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
-            Cancel
-          </button>
-          <button className="ttw-btn-secondary-fill" onClick={handleApply}>
-            Apply
-          </button>
-         
+            <hr className="m-zero" />
+
+            <StarCategory
+              starCategory={props.FILTERS.star_category}
+              selectedStarCategory={selectedStarCategory}
+              setSelectedStarCategory={setSelectedStarCategory}
+            />
+
+            <hr className="m-zero" />
+            
+            <UserRatings
+              userRatings={props.FILTERS?.user_ratings}
+              userRatingsLabel={props.FILTERS?.user_ratings_label}
+              selectedUserStar={selectedUserStar}
+              setSelectedUserStar={setSelectedUserStar}
+            />
+
+            {props.FILTERS?.type.length ? (
+              <>
+                <hr className="m-zero" />
+                <PropertyType
+                  types={props.FILTERS?.type}
+                  selectedTypes={selectedTypes}
+                  setSelectedTypes={setSelectedTypes}
+                />
+              </>
+            ) : null}
+
+            {props.FILTERS?.facilities.length ? (
+              <>
+                <hr className="m-zero" />
+                <Facilities
+                  facilities={props.FILTERS?.facilities}
+                  selectedFacilities={selectedFacilities}
+                  setSelectedFacilities={setSelectedFacilities}
+                />
+              </>
+            ) : null}
+
+            {props.FILTERS?.tags.length ? (
+              <>
+                <hr className="m-zero" />
+                <Tags
+                  tags={props.FILTERS?.tags}
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                />
+              </>
+            ) : null}
+
+            <hr className="m-zero" />
+            
+            {/* Add padding at bottom to prevent content from being hidden behind buttons */}
+            <div className="h-4"></div>
+          </div>
         </div>
-         <style jsx>{`
 
-        .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-        }
-      `}</style>
+        {/* Sticky footer buttons */}
+        <div className="border-t border-border-subtle bg-white px-lg py-md">
+          <div className="flex gap-3 justify-end">
+            <button className="ttw-btn-secondary-flat" onClick={() => props.setshowFilter(false)}>
+              Cancel
+            </button>
+            <button className="ttw-btn-secondary-fill" onClick={handleApply}>
+              Apply
+            </button>
+          </div>
+        </div>
+
+        <style jsx>{`
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
       </div>
     </Drawer>
   );

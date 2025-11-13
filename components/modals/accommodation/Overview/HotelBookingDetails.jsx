@@ -1288,7 +1288,7 @@ const HotelBookingDetails = (props) => {
 
                       {data?.hotel_details?.rates && (
                         <>
-                          <div className="text-md-lg font-600 leading-xl mb-lg">Available Rooms</div>
+                          <div className="text-md-lg font-600 leading-xl mb-lg">Selected Rooms</div>
                           <Rooms
                             data={data?.hotel_details?.rates}
                             checkInDate={data?.check_in?.split(" ")[0]}
