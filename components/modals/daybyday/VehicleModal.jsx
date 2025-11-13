@@ -174,7 +174,7 @@ const VehicleDetailModal = ({
             {loading ? (
               <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-              "My Ticket"
+             ""
             )}
           </h2>
         </div>
@@ -275,6 +275,21 @@ const VehicleDetailModal = ({
                       </p>
                       <p className="text-gray-500 text-sm">Passengers</p>
                     </>
+                  )}
+                </div>
+                <div>
+                  {loading ? (
+                    <>
+                      <div className="w-20 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
+                      <div className="w-16 h-3 bg-gray-300 opacity-50 rounded"></div>
+                    </>
+                  ) : (
+                    transfer_details?.prices?.[0]?.class ? <>
+                      <p className="font-semibold text-md">
+                        Class 
+                      </p>
+                      <p className="text-gray-500 text-sm">{transfer_details?.prices?.[0]?.class} </p>
+                    </> : null
                   )}
                 </div>
                 {/* <div className="text-right">

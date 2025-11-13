@@ -71,7 +71,7 @@ const Section = (props) => {
             />
           )}
 
-          {props.selectSearch.trim().length > 3 && props?.searchResults.length > 0 && (
+          {props.selectSearch.trim().length > 3 && (
             <div className="absolute top-full mt-2 z-50 w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto">
               {props.autocompleteLoading ? (
                 <div className="px-4 py-2 text-center">
@@ -107,8 +107,8 @@ const Section = (props) => {
                   ))}
                 </div>
               ) : (
-                <div className="px-2 py-2 text-center">
-                 
+                <div className="px-2 py-2 text-center bg-white">
+                <p className="text-sm text-gray-500">No results found</p>
                 </div>
               )}
             </div>

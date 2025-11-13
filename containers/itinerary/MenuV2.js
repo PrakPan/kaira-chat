@@ -59,24 +59,24 @@ const NotificationDot = styled.div`
   position: absolute;
   top: 14px;
   right: 15px;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background-color: #ff4444;
   border-radius: 50%;
   border: 2px solid white;
-  animation: pulse 2s infinite;
+  // animation: pulse 2s infinite;
   
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
-    }
-    70% {
-      box-shadow: 0 0 0 6px rgba(255, 68, 68, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
-    }
-  }
+  // @keyframes pulse {
+  //   0% {
+  //     box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+  //   }
+  //   70% {
+  //     box-shadow: 0 0 0 6px rgba(255, 68, 68, 0);
+  //   }
+  //   100% {
+  //     box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+  //   }
+  // }
 `;
 
 const useStyles = {
