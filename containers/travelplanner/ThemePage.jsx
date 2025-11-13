@@ -227,7 +227,7 @@ export default function ThemePage(props) {
         {props.experienceData.overview_heading &&
         props.experienceData.overview_text &&
         props?.slug !== "ladakh" &&
-        props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" ? (
+        props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" && props?.slug != 'europe-continent' ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
