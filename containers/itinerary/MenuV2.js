@@ -386,21 +386,6 @@ const SimpleTabsV2 = (props) => {
   const trustFactors = [
     {
       icon: 
-      // (
-      //   <svg
-      //     xmlns="http://www.w3.org/2000/svg"
-      //     width="16"
-      //     height="16"
-      //     viewBox="0 0 24 24"
-      //     fill="none"
-      //     stroke="currentColor"
-      //     strokeWidth="2"
-      //     strokeLinecap="round"
-      //     strokeLinejoin="round"
-      //   >
-      //     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      //   </svg>
-      // )
       "/assets/trustfactor/trust-factor-1.svg",
       text: "Trusted by 10,000+ Travelers",
       popupTitle: "No Hidden Charges",
@@ -409,22 +394,6 @@ const SimpleTabsV2 = (props) => {
     },
     {
       icon: 
-      // (
-      //   <svg
-      //     xmlns="http://www.w3.org/2000/svg"
-      //     width="16"
-      //     height="16"
-      //     viewBox="0 0 24 24"
-      //     fill="none"
-      //     stroke="currentColor"
-      //     strokeWidth="2"
-      //     strokeLinecap="round"
-      //     strokeLinejoin="round"
-      //   >
-      //     <path d="M3 11l18-5v12L3 14v-3z" />
-      //     <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
-      //   </svg>
-      // ),
       "/assets/trustfactor/trust-factor-2.svg",
       text: "24/7 Support",
       popupTitle: "No Hidden Charges",
@@ -433,22 +402,6 @@ const SimpleTabsV2 = (props) => {
     },
     {
       icon:
-      //  (
-      //   <svg
-      //     xmlns="http://www.w3.org/2000/svg"
-      //     width="16"
-      //     height="16"
-      //     viewBox="0 0 24 24"
-      //     fill="none"
-      //     stroke="currentColor"
-      //     strokeWidth="2"
-      //     strokeLinecap="round"
-      //     strokeLinejoin="round"
-      //   >
-      //     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      //     <polyline points="14 2 14 8 20 8" />
-      //   </svg>
-      // ),
       "/assets/trustfactor/trust-factor-3.svg",
       text: "GST Invoice Provided",
       popupTitle: "No Hidden Charges",
@@ -457,22 +410,6 @@ const SimpleTabsV2 = (props) => {
     },
     {
       icon:
-      //  (
-      //   <svg
-      //     xmlns="http://www.w3.org/2000/svg"
-      //     width="16"
-      //     height="16"
-      //     viewBox="0 0 24 24"
-      //     fill="none"
-      //     stroke="currentColor"
-      //     strokeWidth="2"
-      //     strokeLinecap="round"
-      //     strokeLinejoin="round"
-      //   >
-      //     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      //     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      //   </svg>
-      // ),
       "/assets/trustfactor/trust-factor-4.svg",
       text: "Secure Payments",
       popupTitle: "No Hidden Charges",

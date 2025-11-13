@@ -138,7 +138,7 @@ const Home = (props) => {
         
         <PlacesBragSection />
         <TravelerMadeItinerariesSection />
-        <FullSlider />
+        {/* <FullSlider /> */}
         <TravelVibeSection />
         <WhereNextSection />
         <WhatMakesUsSection />

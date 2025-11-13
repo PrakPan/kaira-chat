@@ -15,6 +15,10 @@ import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
+import Itinerary2Carousel from "../../theme/Itinerary2Carousel";
+import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
+import { useRouter } from "next/router";
+import Button from "../../Button";
 
 
 
@@ -23,6 +27,7 @@ const MyTripsSection = ({ apiItineraries, className }) => {
   const [trips, setTrips] = useState([]);
   const [plansCount, setPlansCount] = useState(null);
   const token = localStorage.getItem("access_token");
+  const router = useRouter();
   useEffect(() => {
     if (token) {
       fetchTrips(false);
@@ -49,6 +54,10 @@ const MyTripsSection = ({ apiItineraries, className }) => {
         }
       };
 
+    const handlePlan = () => {
+    router.push("/dashboard");
+  };
+
   return (
     <section className="px-0 sm:px-4 lg:px-8 bg-white">
       <div className={`w-full mx-auto py-4 sm:py-4 lg:py-4 pb-0 ${className}`}>
@@ -61,7 +70,22 @@ const MyTripsSection = ({ apiItineraries, className }) => {
             </p>
           </div>
 
-        <div className="relative  sm:px-0">
+          <Itinerary1Carousel itineraries={trips}/>
+
+           <Button
+            fontWeight="500"
+            boxShadow
+            borderRadius="8px"
+            bgColor="white"
+            margin="2.5rem auto"
+            padding="0.5rem 2rem"
+            borderWidth="1px"
+            onclick={handlePlan}
+          >
+            {"View all plans"}
+          </Button>
+
+        {/* <div className="relative  sm:px-0">
           <Swiper
             style={{ height: "677px" }}
             modules={[Navigation]}
@@ -124,7 +148,7 @@ const MyTripsSection = ({ apiItineraries, className }) => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

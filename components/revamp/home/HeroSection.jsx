@@ -97,7 +97,7 @@ const HeroSection = ({ title, subtitle }) => {
               <Image src="/google.svg" width={24} height={24} alt="5 Star Rating" />
               </div>
             </div>
-            <span className={styles.featureText}>5.0 rated</span>
+            <span className={styles.featureText}>4.8+ rated</span>
           </div>
           
           <div className={styles.featureItem}>
@@ -109,7 +109,7 @@ const HeroSection = ({ title, subtitle }) => {
                 <rect x="6" y="13" width="4" height="2" rx="0.5" fill="#001F3F"/>
               </svg> */}
               <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/taxes.svg" width={24} height={24} alt="All Taxes & Fees Included" />
+              <Image src="/assets/trustfactor/trust-factor-3.svg" width={24} height={24} alt="All Taxes & Fees Included" />
               </div>
             </div>
             <span className={styles.featureText}>All Taxes & Fees Included</span>
@@ -122,10 +122,11 @@ const HeroSection = ({ title, subtitle }) => {
                 <path d="M9 12L11 14L15 10" stroke="#34A853" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg> */}
               <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/payments.svg" width={24} height={24} alt="No Hidden Charges" />
+              <Image src="/assets/trustfactor/trust-factor-2.svg" width={24} height={24} alt="No Hidden Charges" />
               </div>
             </div>
-            <span className={styles.featureText}>No Hidden Charges</span>
+            {/* <span className={styles.featureText}>No Hidden Charges</span> */}
+            <span className={styles.featureText}>24/7 Support</span>
           </div>
           
           <div className={styles.featureItem}>
@@ -137,7 +138,7 @@ const HeroSection = ({ title, subtitle }) => {
                 <path d="M12 17.5V19" stroke="#001F3F" strokeWidth="1.5" strokeLinecap="round"/>
               </svg> */}
               <div className="w-6 h-6 relative  overflow-hidden">
-              <Image src="/secure.svg" width={24} height={24} alt="Secure Payments" />
+              <Image src="/assets/trustfactor/trust-factor-4.svg" width={24} height={24} alt="Secure Payments" />
               </div>
             </div>
             <span className={styles.featureText}>Secure Payments</span>
