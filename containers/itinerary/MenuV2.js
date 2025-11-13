@@ -53,6 +53,31 @@ import { useAnalytics } from "../../hooks/useAnalytics.js";
 import ChatBot from "../../components/Chatbot/Index.js";
 import Drawer from "../../components/ui/Drawer.js";
 import Image from "next/image";
+import { ChatProvider, useChatContext } from "../../components/Chatbot/context/ChatContext.js";
+
+const NotificationDot = styled.div`
+  position: absolute;
+  top: 14px;
+  right: 15px;
+  width: 12px;
+  height: 12px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  border: 2px solid white;
+  animation: pulse 2s infinite;
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 6px rgba(255, 68, 68, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+    }
+  }
+`;
 
 const useStyles = {
   root: `
@@ -83,6 +108,7 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
+  const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
@@ -462,8 +488,11 @@ const SimpleTabsV2 = (props) => {
     });
     setShowPopup(true);
   };
+  const itinearyId = router.query.id;
+
 
   return (
+    
     <div className={classes.root}>
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
@@ -955,7 +984,7 @@ const SimpleTabsV2 = (props) => {
           </div>
 
           <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] ">
-            <Button borderWidth="0px" onclick={() => handleChatBotOpen(true)}>
+            <Button borderWidth="0px" onclick={() => {handleChatBotOpen(true); setHasUnreadMessages(false);}}>
               <Image
                 src={"/assets/chatbot/chatbot-avaatar.svg"}
                 alt="ticket"
@@ -963,6 +992,7 @@ const SimpleTabsV2 = (props) => {
                 height={80}
               />
             </Button>
+            {hasUnreadMessages && <NotificationDot />}
           </div>
           {isChatBotEnable ? (
             <Drawer

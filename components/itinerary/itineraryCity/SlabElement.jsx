@@ -326,8 +326,8 @@ const Activity = (props) => {
 
   return (
     <>
-      <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
-        <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
+      <div className="flex gap-1 md:gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
+        <div className="w-full flex flex-row items-stretch  gap-sm-md  bg-white">
           <div
             onClick={() =>
               handleActivity(
@@ -364,7 +364,7 @@ const Activity = (props) => {
               {props.element.heading}
             </div>
 
-            <div className="flex flex-row items-center text-sm ">
+            <div className="flex  flex-wrap items-center text-sm ">
               <div className="pr-[8px] flex gap-[8px]">
                 <Image
                   src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}

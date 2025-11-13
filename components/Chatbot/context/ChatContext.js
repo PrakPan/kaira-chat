@@ -54,6 +54,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const { trackTransferBookingDelete } = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const token = useSelector((state) => state.auth.token);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
 
   useEffect(() => {
     if (!itinearyId || !token) return;
@@ -169,6 +170,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         setDisableQuerySection(false);
         setIsTyping(false);
         finalizeBotMessage(data.content);
+        setHasUnreadMessages(true); 
         break;
 
       case "render_action":
@@ -611,6 +613,21 @@ export const ChatProvider = ({ itinearyId, children }) => {
     connect(null);
   };
 
+  const resetSession = () => {
+  setConversations([]);
+  setQuickReplies([]);
+  setSessionId(null);
+  let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
+  oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
+  delete oldSessionIds[itinearyId];
+  localStorage.setItem(
+    localStorageKeyForSessionIds,
+    JSON.stringify(oldSessionIds)
+  );
+  connect(null);
+};
+
+
   return (
     <ChatContext.Provider
       value={{
@@ -630,7 +647,10 @@ export const ChatProvider = ({ itinearyId, children }) => {
         sessionId,
         newSessionStart,
         isloadingChatHistory,
-        getAllChatHistory
+        getAllChatHistory,
+        resetSession, 
+        hasUnreadMessages, 
+        setHasUnreadMessages, 
       }}
     >
       {children}

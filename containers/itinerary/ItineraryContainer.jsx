@@ -39,6 +39,7 @@ import { logEvent } from "../../services/ga/Index";
 import setCart from "../../store/actions/Cart";
 import NotesPopup from "./NotesPopup";
 import axios from "axios";
+import { ChatProvider } from "../../components/Chatbot/context/ChatContext";
 
 const Container = styled.div`
   width: 100%;
@@ -1406,6 +1407,7 @@ const ItineraryContainer = (props) => {
   }
 
   return (
+    <ChatProvider itinearyId={router.query.id}>
     <Container>
 
       <NotesPopup
@@ -1572,6 +1574,7 @@ const ItineraryContainer = (props) => {
       </div>
       <ToastContainer />
     </Container>
+    </ChatProvider>
   );
 };
 

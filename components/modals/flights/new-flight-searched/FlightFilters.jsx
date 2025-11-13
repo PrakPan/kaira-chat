@@ -192,26 +192,28 @@ const handleApply = () => {
   };
 
   return (
-    <Drawer
-      show={props.showFilter}
-      anchor={"right"}
-      backdrop
-      style={{ zIndex: 1508 }}
-      className=""
-      onHide={() => props.setShowFilter(false)}
-    >
-      <div className="w-[80vw] md:w-[27vw] px-lg h-[100vh] flex flex-col items-start mx-auto">
-        <div className="my-[1rem]">
+  <Drawer
+    show={props.showFilter}
+    anchor={"right"}
+    backdrop
+    style={{ zIndex: 1508 }}
+    className=""
+    onHide={() => props.setShowFilter(false)}
+  >
+    <div className="w-[80vw] md:w-[27vw] h-[100vh] flex flex-col">
+      {/* Header - Fixed at top */}
+      <div className="px-lg pt-md pb-sm border-b border-border-subtle">
+        <div className="mb-md">
           <Image 
             src="/backarrow.svg" 
             className="cursor-pointer" 
             width={22} 
-            height={2} 
+            height={22} 
             onClick={() => props.setShowFilter(false)} 
           />
         </div>
         
-        <div className="flex w-100 flex-row my-0 justify-between items-center">
+        <div className="flex w-full flex-row justify-between items-center">
           <div className="text-xl font-600 leading-2xl">Filters</div>
           {props?.isFilterChangesApplied && (
             <button 
@@ -222,9 +224,11 @@ const handleApply = () => {
             </button>
           )}
         </div>
+      </div>
 
-        <div className="flex flex-col gap-xl mt-lg overflow-y-auto h-[80%] w-full scrollbar-hide">
-
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto px-lg py-lg scrollbar-hide">
+        <div className="flex flex-col gap-xl">
           <hr className="m-zero" />
 
           {/* Trip Type */}
@@ -245,21 +249,6 @@ const handleApply = () => {
               </div>
               <span className="text-base font-400">One Way</span>
             </label>
-            {/* <label className="flex items-center cursor-pointer">
-              <div 
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                  tripType === 'round_trip' ? 'bg-[#07213A] border-[#07213A]' : 'border-border-default'
-                }`}
-                onClick={() => setTripType('round_trip')}
-              >
-                {tripType === 'round_trip' && (
-                  <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                    <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                )}
-              </div>
-              <span className="text-base font-400">Round Trip</span>
-            </label> */}
           </div>
 
           <hr className="m-zero" />
@@ -270,7 +259,6 @@ const handleApply = () => {
             {[
               { value: 'non_stop', label: 'Non-Stop' },
               { value: 'multiple_stops', label: '1+ Stops' },
-            //   { value: 'multiple_stops', label: '1+ Stops' }
             ].map((stop) => (
               <label key={stop.value} className="flex items-center mb-sm cursor-pointer">
                 <div 
@@ -299,7 +287,7 @@ const handleApply = () => {
               className="flex items-center gap-2 p-2 border border-border-default rounded-lg cursor-pointer bg-[#f9f9f9] hover:bg-gray-50"
               onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             >
-                  <button>
+              <button>
                 <svg
                   className="w-5 h-5 text-gray-600"
                   fill="none"
@@ -316,10 +304,8 @@ const handleApply = () => {
                 </svg>
               </button>
               <span className="text-sm font-500">
-               
                 {selectedTime || "Select Time"}
               </span>
-             
             </div>
 
             {showTimeDropdown && (
@@ -344,37 +330,39 @@ const handleApply = () => {
             )}
           </div>
 
-         {!props?.loading && allAirlines.length > 0 ? <hr className="m-zero" /> : null}
+          {!props?.loading && allAirlines.length > 0 ? <hr className="m-zero" /> : null}
 
           {/* Airlines */}
-          {!props?.loading && allAirlines.length > 0 ? <div>
-            <h3 className="text-base font-500 mb-sm">Airlines</h3>
-            {visibleAirlines.map((airline) => (
-              <label key={airline.code} className="flex items-center mb-sm cursor-pointer">
-                <div 
-                  className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
-                    airlines.includes(airline.code) ? 'bg-[#07213A] border-[#07213A]' : 'border-border-default'
-                  }`}
-                  onClick={() => handleAirlineChange(airline.code)}
+          {!props?.loading && allAirlines.length > 0 ? (
+            <div>
+              <h3 className="text-base font-500 mb-sm">Airlines</h3>
+              {visibleAirlines.map((airline) => (
+                <label key={airline.code} className="flex items-center mb-sm cursor-pointer">
+                  <div 
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center mr-sm ${
+                      airlines.includes(airline.code) ? 'bg-[#07213A] border-[#07213A]' : 'border-border-default'
+                    }`}
+                    onClick={() => handleAirlineChange(airline.code)}
+                  >
+                    {airlines.includes(airline.code) && (
+                      <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+                        <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span className="text-base font-400">{airline.name} ({airline.code})</span>
+                </label>
+              ))}
+              {!showAllAirlines && allAirlines.length > 7 && (
+                <button 
+                  onClick={() => setShowAllAirlines(true)}
+                  className="text-primary-default text-sm font-500 mt-xs"
                 >
-                  {airlines.includes(airline.code) && (
-                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
-                      <path d="M1 5L4.5 8.5L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  )}
-                </div>
-                <span className="text-base font-400">{airline.name} ({airline.code})</span>
-              </label>
-            ))}
-            {!showAllAirlines && allAirlines.length > 7 && (
-              <button 
-                onClick={() => setShowAllAirlines(true)}
-                className="text-primary-default text-sm font-500 mt-xs"
-              >
-                +{allAirlines.length - 7} more
-              </button>
-            )}
-          </div> : null}
+                  +{allAirlines.length - 7} more
+                </button>
+              )}
+            </div>
+          ) : null}
 
           <hr className="m-zero" />
 
@@ -404,11 +392,15 @@ const handleApply = () => {
           </div>
 
           <hr className="m-zero" />
+
+         
+          <div className="h-4"></div>
         </div>
+      </div>
 
-
-
-        <div className="w-full flex gap-3 flex-row mx-auto my-zero justify-end fixed bottom-zero bg-text-white left-zero p-md">
+      {/* Sticky footer buttons */}
+      <div className="border-t border-border-subtle bg-white px-lg py-md">
+        <div className="flex gap-3 justify-end">
           <button className="ttw-btn-secondary-flat" onClick={() => props.setShowFilter(false)}>
             Cancel
           </button>
@@ -417,38 +409,39 @@ const handleApply = () => {
           </button>
         </div>
       </div>
+    </div>
 
-      <style jsx>{`
-        .range-slider::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 20px;
-          height: 20px;
-          background: #07213A;
-          border: 3px solid white;
-          border-radius: 50%;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+    <style jsx>{`
+      .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #07213A;
+        border: 3px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
 
-        .range-slider::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
-          background: #07213A;
-          border: 3px solid white;
-          border-radius: 50%;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+      .range-slider::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #07213A;
+        border: 3px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
 
-        .scrollbar-hide {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
-            }
-            .scrollbar-hide::-webkit-scrollbar {
-              display: none;
-        }
-      `}</style>
-    </Drawer>
-  );
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+    `}</style>
+  </Drawer>
+);
 }
