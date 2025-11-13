@@ -23,7 +23,7 @@ import useMediaQuery from "../../media";
 import { logEvent } from "../../../services/ga/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { buildDestinations, buildRoutes, buildRoutesFromDestinations, CustomMapPin, getItemStyle, handleDestinationSearch, handleDragEnd, handleEditDestination, handleRemoveDestination, handleSearchInput, handleSetDestination, handleSetNights, handleUpdateDestination, updateDestinationsDates, updateLatLong, validateDates } from "../utils/slideTwoActions";
-import renderRoutesMapSection from "../utils/renderRoutesMapSection";
+import RenderRoutes from "../utils/RenderRoutes";
 import { FaInfoCircle } from "react-icons/fa";
 
 const CITY_COLOR_CODES = [
@@ -89,7 +89,7 @@ const RouteEditSection = (props) => {
         >
             <div className="w-full h-full  hide-scrollbar overflow-y-auto" style={{ pointerEvents: 'auto' }}>
                 {!isDesktop && <> {
-                    renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })
+                    <RenderRoutes isDesktop={isDesktop} containerHeight={containerHeight} routes={mapRoutes} destinationChanges={destinationChanges}  key={`map-${mapRoutes?.length}-${destinationChanges}`} />
                 }
                     {destinationChanges && (
                         <div className="flex flex-row items-center gap-2">
@@ -116,7 +116,10 @@ const RouteEditSection = (props) => {
                             listClasses={`${isDesktop ? 'h-[380px] overflow-y-auto' : ''}`}
                         />
                     </div>
-                    {isDesktop && renderRoutesMapSection({ isDesktop, containerHeight, routes: mapRoutes, destinationChanges, key: `map-${mapRoutes?.length}-${destinationChanges}` })}
+                    {isDesktop && <>
+                    <RenderRoutes isDesktop={isDesktop} containerHeight={containerHeight} routes={mapRoutes} destinationChanges={destinationChanges}  key={`map-${mapRoutes?.length}`} />
+                    </>
+                    }
                 </div>
 
                 {isDesktop && <>

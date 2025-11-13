@@ -353,12 +353,66 @@ const Enquiry = (props) => {
     : (slideThreeData.addHotels ? 5 : 4);
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
+  const [steps, setSteps] = useState(['Introduction', 'Customize Route', 'Who’s Going & Inclusions']);
+
+  useEffect(() => {
+    const isLoggedIn = !!localStorage.getItem("access_token");
+
+    setSteps((prevSteps) => {
+      let updatedSteps = [...prevSteps];
+
+      updatedSteps = updatedSteps.filter(
+        (step) => step !== "Stay Preferences" && step !== "Go To Trip"
+      );
+
+      if (slideThreeData?.addHotels) {
+        if (isLoggedIn) {
+          updatedSteps.push("Stay Preferences");
+        } else {
+          updatedSteps.push("Stay Preferences", "Go To Trip");
+        }
+      } else if (!isLoggedIn) {
+        updatedSteps.push("Go To Trip");
+      }
+
+      return updatedSteps;
+    });
+  }, [slideThreeData?.addHotels]);
+
+
+  useEffect(() => {
+    if (slideOneData) {
+      const hasDestination =
+        Array.isArray(slideOneData.selectedCities) &&
+        slideOneData.selectedCities.length > 0;
+
+      const hasDates =
+        slideOneData?.date?.start_date && slideOneData?.date?.end_date;
+
+      if (hasDestination && hasDates) {
+        const cityName = slideOneData.selectedCities[0]?.name;
+        const duration = slideOneData.date?.duration;
+
+        const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
+
+
+        setSteps(prev =>
+          prev.map((title, index) => (index === 0 ? stepTitle : title))
+        );
+      }
+    }
+  }, [slideOneData]);
+
   return (<>
     <div className="container">
 
-      <div className="py-3xl">
-        <div className="text-md-lg font-600 leading-xl-sm mb-xl">Plan Your Trip</div>
-        <StepsProgress slideIndex={slideIndex + 1} totalSlides={totalSlides} ></StepsProgress>
+      <div className="py-2xl">
+        <div className="text-md-lg font-600 leading-xl-sm mb-md">Plan Your Trip</div>
+        <StepsProgress
+          slideIndex={slideIndex + 1}
+          totalSlides={totalSlides}
+          steps={steps}
+        ></StepsProgress>
       </div>
       {/*       
               <div className=" ">
@@ -635,31 +689,33 @@ const Enquiry = (props) => {
       {/* <div className="border-b-sm"></div> */}
       <div className="container p-md">
         {slideIndex === 0 && (
-          <div className="flex justify-between">
-            <button
-              className={`LargeIndigoOutlinedButton `}
-              onClick={() => router.push("/")}
-            >
-              Cancel
-            </button>
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between">
+              <button
+                className={`LargeIndigoOutlinedButton `}
+                onClick={() => router.push("/")}
+              >
+                Cancel
+              </button>
 
             <Button
-              width={`${isPageWide ? '300px' : ''}`}
-              fontSize="1rem"
-              padding="0.5rem 2rem"
-              fontWeight="500"
-              borderRadius="5px"
-              borderWidth="1px"
-              bgColor="#07213A"
-              onclick={_SlideOneSubmitHandler}
-              loading={isLoading}
-              disabled={isLoading}
-              height="50px"
-              color="white"
-              className="whitespace-nowrap"
-            >
-              Continue
-            </Button>
+                width={`${isPageWide ? '300px' : ''}`}
+                fontSize="1rem"
+                padding="0.5rem 2rem"
+                fontWeight="500"
+                borderRadius="5px"
+                borderWidth="1px"
+                bgColor="#07213A"
+                onclick={_SlideOneSubmitHandler}
+                loading={isLoading}
+                disabled={isLoading}
+                height="50px"
+                color="white"
+                className="whitespace-nowrap"
+              >
+                Continue
+              </Button>
+            </div>
           </div>
         )}
 
@@ -723,67 +779,71 @@ const Enquiry = (props) => {
         )}
 
         {slideIndex === 2 && (
-          <div className="flex justify-between items-center">
-            <button
-              className={`LargeIndigoOutlinedButton`}
-              onClick={_prevSlideHandler}
-            >
-              Back
-            </button>
-      
-            <Button
-              width={`${isPageWide ? '300px' : ''}`}
-              fontSize="1rem"
-              padding="0.5rem 1rem"
-              fontWeight="500"
-              bgColor="#07213A"
-              color="white"
-              height="50px"
-              onclick={_SlideThreeSubmitHandler}
-              loading={isLoading}
-              borderRadius="8px"
-              className={`${!isDesktop && "w-[120px]"}`}
-            >
-              {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
-            </Button>
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between items-center">
+              <button
+                className={`LargeIndigoOutlinedButton`}
+                onClick={_prevSlideHandler}
+              >
+                Back
+              </button>
+
+              <Button
+                width={`${isPageWide ? '300px' : ''}`}
+                fontSize="1rem"
+                padding="0.5rem 1rem"
+                fontWeight="500"
+                bgColor="#07213A"
+                color="white"
+                height="50px"
+                onclick={_SlideThreeSubmitHandler}
+                loading={isLoading}
+                borderRadius="8px"
+                className={`${!isDesktop && "w-[120px]"}`}
+              >
+                {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
+              </Button>
+            </div>
           </div>
         )}
 
         {slideIndex === 3 && (
-          <div className="flex justify-between items-center">
-            <button
-              className={`LargeIndigoOutlinedButton`}
-              onClick={_prevSlideHandler}
-            >
-              Back
-            </button>
-            <Button
-              fontSize="1rem"
-              padding="0.5rem 1rem"
-              fontWeight="500"
-              margin="30px 0"
-              borderRadius="8px"
-              borderWidth="1px"
-              bgColor="#07213A"
-              height="50px"
-              color="white"
-              loading={isSubmitting}
-              disabled={isSubmitting}
-              width={`${isPageWide ? '300px' : ''}`}
-              
-              onclick={() => {
-                totalSlides == 4
-                  ? _submitDataHandler()
-                  : router.push({
-                    pathname: "/new-trip",
-                    query: {
-                      slideIndex: slideIndex + 1,
-                    },
-                  });
-              }}
-            >
-              {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
-            </Button>
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between items-center">
+              <button
+                className={`LargeIndigoOutlinedButton`}
+                onClick={_prevSlideHandler}
+              >
+                Back
+              </button>
+              <Button
+                fontSize="1rem"
+                padding="0.5rem 1rem"
+                fontWeight="500"
+                margin="30px 0"
+                borderRadius="8px"
+                borderWidth="1px"
+                bgColor="#07213A"
+                height="50px"
+                color="white"
+                loading={isSubmitting}
+                disabled={isSubmitting}
+                width={`${isPageWide ? '300px' : ''}`}
+
+                onclick={() => {
+                  totalSlides == 4
+                    ? _submitDataHandler()
+                    : router.push({
+                      pathname: "/new-trip",
+                      query: {
+                        slideIndex: slideIndex + 1,
+                      },
+                    });
+                }}
+              >
+                {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+              </Button>
+            </div>
           </div>
         )}
         {slideIndex === 4 ? (

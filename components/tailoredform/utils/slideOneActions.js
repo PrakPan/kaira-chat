@@ -109,6 +109,18 @@ export function buildItineraryPayload({
   const { cityids, stateIds, countryIds, continentIds, pageIds } =
     classifyLocations(selectedCities);
 
+  const formatDate = (d) => (d ? new Date(d).toISOString().split("T")[0] : null);
+
+  let datesPayload = { type: dateData.type, duration: dateData.duration };
+
+  if (dateData.type === "fixed") {
+    datesPayload.start_date = formatDate(dateData.start_date);
+    datesPayload.end_date = formatDate(dateData.end_date);
+  } else if (dateData.type === "flexible") {
+    datesPayload.month = dateData.month;
+    datesPayload.year = dateData.year;
+  } 
+
   return {
     source,
     experience_filters_selected: preferences,
@@ -121,14 +133,7 @@ export function buildItineraryPayload({
     continents: continentIds,
     pages: pageIds,
     end_location: {},
-    dates: {
-      type: dateData.type,
-      month: new Date(dateData.month).getMonth(),
-      year: dateData.year,
-      duration: dateData.duration,
-      start_date: new Date(dateData.start_date).toISOString().split("T")[0],
-      end_date: new Date(dateData.end_date).toISOString().split("T")[0],
-    },
+    dates: datesPayload,
   };
 }
 

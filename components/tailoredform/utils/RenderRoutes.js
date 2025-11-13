@@ -1,6 +1,6 @@
 import RoutesMap from '../../../containers/itinerary/breif/RoutesMap';
-const RenderRoutesMapSection = ({ isDesktop, containerHeight, routes, destinationChanges, key }) => {
-  console.log("routes is: ", routes)
+
+ const RenderRoutes = ({ isDesktop, containerHeight, routes, destinationChanges, key }) => {
   return (
     <div
       key={key}
@@ -17,4 +17,5 @@ const RenderRoutesMapSection = ({ isDesktop, containerHeight, routes, destinatio
 }
 
 
-export default RenderRoutesMapSection
+
+export default RenderRoutes ;

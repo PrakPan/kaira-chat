@@ -105,6 +105,7 @@ const Search = (props) => {
           top="2.75rem"
           results={results}
           setSearchFinalized={props.setSearchFinalized}
+          maxResult={5}
         ></SearchResults>
         </>
       ) : showHotLocations ? (
@@ -122,6 +123,7 @@ const Search = (props) => {
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
           tailoredFormModal={props.tailoredFormModal}
+          maxResult={hotlocationsData.length}
         ></SearchResults>
       ) : null}
     </Container>

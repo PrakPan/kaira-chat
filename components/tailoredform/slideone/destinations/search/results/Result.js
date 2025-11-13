@@ -1,9 +1,9 @@
 import { FaMapMarkerAlt } from "react-icons/fa";
 import styled from "styled-components";
 import moment from "moment";
-import ImageLoader from "../../../../../ImageLoader";
 import Image from "next/image";
 import { getParent } from "../../../../../../utils/tailoredform";
+import React from "react";
 
 const Container = styled.div`
   display: grid;
@@ -22,7 +22,10 @@ const MarkerContainer = styled.div`
   padding-top: 10px;
 `;
 
-const Result = (props) => {
+const Result = React.memo((props) => {
+  const imageUrl = React.useMemo(() => {
+    return "https://d31aoa0ehgvjdi.cloudfront.net/" + props.result?.image;
+  }, [props.result?.image]);
   const _handleClick = (e) => {
     e.stopPropagation();
     props.setSearchFinalized({ name: props.name, type: props.type });
@@ -41,23 +44,31 @@ const Result = (props) => {
     <Container
       className=" p-2"
       onClick={(e) => {
-        _handleClick(e),
-          props._updateDestinationHandler(
-            props.result.resource_id || props.result.id,
-            props.inbox_id,
-            props.result
-          );
+        _handleClick(e);
+        props._updateDestinationHandler(
+          props.result.resource_id || props.result.id,
+          props.inbox_id,
+          props.result
+        );
       }}
     >
       {/* <MarkerContainer> */}
-      <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props.result?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />
+      {/* <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props.result?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" /> */}
       {/* </MarkerContainer> */}
+      <Image
+        src={imageUrl}
+        width={32}
+        height={28}
+        className="rounded-[6px] h-[28px] w-[32px]"
+      />
       <div className="flex">
-        <div className="font-[500]">{props.name} </div>
-       {getParent(props.result.path)!=null&& <div className="font-normal">, {getParent(props.result.path)}</div>}
+        <div className="font-[500]">{props.name}</div>
+        {getParent(props.result.path) != null && (
+          <div className="font-normal">, {getParent(props.result.path)}</div>
+        )}
       </div>
     </Container>
   );
-};
+});
 
 export default Result;
