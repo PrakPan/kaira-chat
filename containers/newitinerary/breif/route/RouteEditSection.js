@@ -5,11 +5,7 @@ import { RxCrossCircled } from "react-icons/rx";
 import { MdDone, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
 import { FaInfoCircle } from "react-icons/fa";
-import {
-  FaCirclePlus,
-  FaCircleMinus,
-  FaCalendarDays,
-} from "react-icons/fa6";
+import { FaCirclePlus, FaCircleMinus, FaCalendarDays } from "react-icons/fa6";
 import {
   startOfMonth,
   endOfMonth,
@@ -49,8 +45,9 @@ import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
 import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
-import Button from "../../../../components/ui/button/Index"
+import Button from "../../../../components/ui/button/Index";
 import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
+import { useChatContext } from "../../../../components/Chatbot/context/ChatContext";
 
 const Container = styled.div`
   position: relative;
@@ -222,6 +219,8 @@ const RouteEditSection = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
 
+  const {resetSession} = useChatContext();
+
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
 
@@ -235,163 +234,171 @@ const RouteEditSection = (props) => {
 
   // console.log("Route Edittt",props.routes)
 
-useEffect(() => {
-  const cities = [];
+  useEffect(() => {
+    const cities = [];
 
-  if (props?.routes && itinerary?.start_date) {
-    const formatDate = (dateObj) => {
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
+    if (props?.routes && itinerary?.start_date) {
+      const formatDate = (dateObj) => {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
 
-    const addDays = (date, days) => {
-      const result = new Date(date);
-      result.setDate(result.getDate() + days);
-      return result;
-    };
+      const addDays = (date, days) => {
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+      };
 
+      let currentCheckinDate = new Date(itinerary.start_date);
 
+      for (let i = 0; i < props.routes.length; i += 1) {
+        const isFirst = i === 0;
+        const isLast = i === props.routes.length - 1;
 
-    let currentCheckinDate = new Date(itinerary.start_date);
+        // --- Duration Logic (same as your original) ---
+        const duration = (() => {
+          if (isFirst || isLast) {
+            return props?.routes[i]?.duration || 0;
+          }
 
-    for (let i = 0; i < props.routes.length; i += 1) {
-      const isFirst = i === 0;
-      const isLast = i === props.routes.length - 1;
+          return props?.routes[i]?.duration;
+        })();
 
-      // --- Duration Logic (same as your original) ---
-      const duration = (() => {
-        if (isFirst || isLast) {
-          return props?.routes[i]?.duration || 0;
-        }
+        // --- Checkin/Checkout based on calculated duration ---
+        const checkin_date =
+          i === 1
+            ? formatDate(new Date(itinerary.start_date))
+            : formatDate(currentCheckinDate);
+        const checkoutDateObj = addDays(currentCheckinDate, duration);
+        const checkout_date = formatDate(checkoutDateObj);
 
-        return props?.routes[i]?.duration;
-      })();
+        cities.push({
+          startingCity: isFirst,
+          endingCity: isLast,
+          cityData: {
+            ...props.routes[i],
+            city_name:
+              props.routes[i]?.city_name || props.routes[i]?.city?.name,
+            checkin_date,
+            checkout_date,
+            city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+            place_id:
+              props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+            duration,
+            id: props?.routes[i]?.hasOwnProperty("id")
+              ? props?.routes[i]?.id
+              : null,
+            color: CITY_COLOR_CODES[i % 7],
+            lat:
+              props?.routes[i]?.lat ||
+              props?.routes[i]?.latitude ||
+              props?.routes[i]?.city?.latitude,
+            long:
+              props?.routes[i]?.long ||
+              props?.routes[i]?.longitude ||
+              props?.routes[i]?.city?.longitude,
+            nights: duration,
+          },
+        });
 
-      // --- Checkin/Checkout based on calculated duration ---
-      const checkin_date = i === 1 ? formatDate(new Date(itinerary.start_date)) : formatDate(currentCheckinDate);
-      const checkoutDateObj = addDays(currentCheckinDate, duration);
-      const checkout_date = formatDate(checkoutDateObj);
+        currentCheckinDate = checkoutDateObj;
+      }
 
-      cities.push({
-        startingCity: isFirst,
-        endingCity: isLast,
-        cityData: {
-          ...props.routes[i],
-          city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
-          checkin_date,
-          checkout_date,
-          city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
-          place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-          duration,
-          id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
-          color: CITY_COLOR_CODES[i % 7],
-          lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
-          long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
-          nights: duration,
-        },
-      });
-
-      currentCheckinDate = checkoutDateObj;
+      setDestinations(cities);
     }
-
-    setDestinations(cities);
-  }
-}, [props.routes, itinerary?.start_date]);
+  }, [props.routes, itinerary?.start_date]);
 
   // console.log("Cities",destinations)
 
-//   useEffect(() => {
-//   const cities = [];
+  //   useEffect(() => {
+  //   const cities = [];
 
-//   if (props?.routes && itinerary?.start_date) {
-//     const formatDate = (dateObj) => {
-//       const year = dateObj.getFullYear();
-//       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-//       const day = String(dateObj.getDate()).padStart(2, '0');
-//       return `${year}-${month}-${day}`;
-//     };
+  //   if (props?.routes && itinerary?.start_date) {
+  //     const formatDate = (dateObj) => {
+  //       const year = dateObj.getFullYear();
+  //       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  //       const day = String(dateObj.getDate()).padStart(2, '0');
+  //       return `${year}-${month}-${day}`;
+  //     };
 
-//     const addDays = (date, days) => {
-//       const result = new Date(date);
-//       result.setDate(result.getDate() + days);
-//       return result;
-//     };
+  //     const addDays = (date, days) => {
+  //       const result = new Date(date);
+  //       result.setDate(result.getDate() + days);
+  //       return result;
+  //     };
 
-//     const getDaysDifference = (startDate, endDate) => {
-//       const start = new Date(startDate);
-//       const end = new Date(endDate);
-//       const diffTime = end.getTime() - start.getTime();
-//       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-//     };
+  //     const getDaysDifference = (startDate, endDate) => {
+  //       const start = new Date(startDate);
+  //       const end = new Date(endDate);
+  //       const diffTime = end.getTime() - start.getTime();
+  //       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //     };
 
-//     let currentCheckinDate = new Date(itinerary.start_date);
+  //     let currentCheckinDate = new Date(itinerary.start_date);
 
-//     for (let i = 0; i < props.routes.length; i += 1) {
-//       const isFirst = i === 0;
-//       const isLast = i === props.routes.length - 1;
+  //     for (let i = 0; i < props.routes.length; i += 1) {
+  //       const isFirst = i === 0;
+  //       const isLast = i === props.routes.length - 1;
 
-//       // --- Duration Logic (same as your original) ---
-//       const duration = (() => {
-//         if (isFirst || isLast) {
-//           return props?.routes[i]?.duration || 0;
-//         }
+  //       // --- Duration Logic (same as your original) ---
+  //       const duration = (() => {
+  //         if (isFirst || isLast) {
+  //           return props?.routes[i]?.duration || 0;
+  //         }
 
-//         if (i === 1) {
-//           const endDate = props?.routes[i]?.end_date;
-//           const startDate = itinerary?.start_date;
+  //         if (i === 1) {
+  //           const endDate = props?.routes[i]?.end_date;
+  //           const startDate = itinerary?.start_date;
 
-//           if (startDate && endDate) {
-//             return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
-//           }
+  //           if (startDate && endDate) {
+  //             return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+  //           }
 
-//           return props?.routes[i]?.duration || 1;
-//         }
+  //           return props?.routes[i]?.duration || 1;
+  //         }
 
-//         const endDate = props?.routes[i]?.end_date;
-//         const startDate = props?.routes[i - 1]?.end_date;
+  //         const endDate = props?.routes[i]?.end_date;
+  //         const startDate = props?.routes[i - 1]?.end_date;
 
-//         if (startDate && endDate) {
-//           return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
-//         }
+  //         if (startDate && endDate) {
+  //           return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+  //         }
 
-//         return props?.routes[i]?.duration || 1;
-//       })();
+  //         return props?.routes[i]?.duration || 1;
+  //       })();
 
-//       // --- Checkin/Checkout based on duration ---
-//       const checkin_date = formatDate(currentCheckinDate);
-//       const checkoutDateObj = addDays(currentCheckinDate, duration);
-//       const checkout_date = formatDate(checkoutDateObj);
+  //       // --- Checkin/Checkout based on duration ---
+  //       const checkin_date = formatDate(currentCheckinDate);
+  //       const checkoutDateObj = addDays(currentCheckinDate, duration);
+  //       const checkout_date = formatDate(checkoutDateObj);
 
-//       cities.push({
-//         startingCity: isFirst,
-//         endingCity: isLast,
-//         cityData: {
-//           ...props.routes[i],
-//           city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
-//           checkin_date,
-//           checkout_date,
-//           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
-//           place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-//           duration,
-//           id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
-//           color: CITY_COLOR_CODES[i % 7],
-//           lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
-//           long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
-//           nights: duration,
-//         },
-//       });
+  //       cities.push({
+  //         startingCity: isFirst,
+  //         endingCity: isLast,
+  //         cityData: {
+  //           ...props.routes[i],
+  //           city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
+  //           checkin_date,
+  //           checkout_date,
+  //           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+  //           place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+  //           duration,
+  //           id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
+  //           color: CITY_COLOR_CODES[i % 7],
+  //           lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
+  //           long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
+  //           nights: duration,
+  //         },
+  //       });
 
-//       currentCheckinDate = checkoutDateObj;
-//     }
+  //       currentCheckinDate = checkoutDateObj;
+  //     }
 
-
-//     setDestinations(cities);
-//   }
-// }, [props.routes, itinerary?.start_date]);
-
-
+  //     setDestinations(cities);
+  //   }
+  // }, [props.routes, itinerary?.start_date]);
 
   useEffect(() => {
     if (destinations.length) {
@@ -465,9 +472,23 @@ useEffect(() => {
   };
 
   const fetchItinerary = async () => {
-    props?.resetRef();
-    setWaitingForStatusUpdate(true);
-    props.fetchData(true);
+    try {
+      if (props?.resetRef) {
+        await props.resetRef();
+      }
+
+      setWaitingForStatusUpdate(true);
+
+      if (props.fetchData) {
+        await props.fetchData(true);
+      }
+
+      if (resetSession) {
+        await resetSession();
+      }
+    } catch (error) {
+      console.error("Error in fetchItinerary:", error);
+    }
   };
 
   const startStatusPolling = (itineraryId) => {
@@ -476,8 +497,6 @@ useEffect(() => {
 
     fetchItineraryStatus(itineraryId);
   };
-
-
 
   const validateDates = () => {
     const today = new Date();
@@ -488,9 +507,10 @@ useEffect(() => {
       (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
       setInvalidDateError(
-        `Invalid date selected for starting city ${destinations[0].cityData.city_name ||
-        destinations[0].cityData.name ||
-        destinations[0].cityData.text
+        `Invalid date selected for starting city ${
+          destinations[0].cityData.city_name ||
+          destinations[0].cityData.name ||
+          destinations[0].cityData.text
         }`
       );
       return false;
@@ -509,9 +529,10 @@ useEffect(() => {
           new Date(checkin_date) < prevDate)
       ) {
         setInvalidDateError(
-          `Invalid Arrival date selected for city ${destinations[i].cityData.city_name ||
-          destinations[i].cityData.name ||
-          destinations[i].cityData.text
+          `Invalid Arrival date selected for city ${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
           }`
         );
         return false;
@@ -524,9 +545,10 @@ useEffect(() => {
           new Date(checkout_date) < new Date(checkin_date))
       ) {
         setInvalidDateError(
-          `Invalid Departure date selected for city ${destinations[i].cityData.city_name ||
-          destinations[i].cityData.name ||
-          destinations[i].cityData.text
+          `Invalid Departure date selected for city ${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
           }`
         );
         return false;
@@ -541,9 +563,10 @@ useEffect(() => {
       (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
       setInvalidDateError(
-        `Invalid date selected for ending city ${destinations[destinations.length - 1].cityData.city_name ||
-        destinations[destinations.length - 1].cityData.name ||
-        destinations[destinations.length - 1].cityData.text
+        `Invalid date selected for ending city ${
+          destinations[destinations.length - 1].cityData.city_name ||
+          destinations[destinations.length - 1].cityData.name ||
+          destinations[destinations.length - 1].cityData.text
         }`
       );
       return false;
@@ -598,7 +621,7 @@ useEffect(() => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose()
+          handleClose();
         })
         .catch((err) => {
           setLoading(false);
@@ -629,18 +652,23 @@ useEffect(() => {
           headers,
         })
         .then((response) => {
-          
-            Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
-        localStorage.removeItem(key);
-        }
-        });
+          Object.keys(localStorage).forEach((key) => {
+            if (
+              key.startsWith(
+                `notes_dismissed_${
+                  props.ItineraryId || props?.itinerary?.ItineraryId
+                }`
+              )
+            ) {
+              localStorage.removeItem(key);
+            }
+          });
           dispatch(setItinerary(response.data));
           setLoading(false);
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose()
+          handleClose();
         })
         .catch((err) => {
           setLoading(false);
@@ -725,8 +753,8 @@ useEffect(() => {
             props?.plan
               ? props?.plan.duration_number + " " + props?.plan.duration_unit
               : props?.itinerary?.duration +
-              " " +
-              `${props?.itinerary?.duration > 1 ? "Nights" : "Night"}`
+                " " +
+                `${props?.itinerary?.duration > 1 ? "Nights" : "Night"}`
           }
           budget={props?.plan ? props?.plan?.budget : props?.itinerary?.budget}
           number_of_adults={
@@ -750,82 +778,86 @@ useEffect(() => {
         {itineraryLoading && <Spinner isEdit={true} />}
         {!isDesktop && (
           <>
-          <div className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}>
-            {props.children}
+            <div
+              className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}
+            >
+              {props.children}
 
-            {destinationChanges && (
-              <div className="flex flex-row items-center gap-2">
-                <FaInfoCircle className="text-2xl text-yellow-500" />
-                <div className="text-sm">Changes to be saved</div>
-              </div>
-            )}
-          </div>
-          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
-          {editDestination && !itineraryLoading ? (
-            <div className="w-full relative flex flex-row justify-center gap-5 px-3">
-              <EditDestinations
-                destinations={destinations}
-                setDestinations={setDestinations}
-                destinationRef={destinationRef}
-                startDate={startDate}
-                setEndDate={setEndDate}
-                setLocationsLatLong={props.setLocationsLatLong}
-                setDestinationChanges={setDestinationChanges}
-              />
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
-          </>
-        )}
-        {isDesktop && <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
-          {editDestination && !itineraryLoading ? (
-            <div className="w-full flex flex-row justify-center gap-5">
-              <EditDestinations
-                destinations={destinations}
-                setDestinations={setDestinations}
-                destinationRef={destinationRef}
-                startDate={startDate}
-                setEndDate={setEndDate}
-                setLocationsLatLong={props.setLocationsLatLong}
-                setDestinationChanges={setDestinationChanges}
-              />
-              {isDesktop && (
-                <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
-                  {props.children}
-
-                  {destinationChanges && (
-                    <div className="flex flex-row items-center gap-2">
-                      <FaInfoCircle className="text-2xl text-yellow-500" />
-                      <div className="text-sm">Changes to be saved</div>
-                    </div>
-                  )}
+              {destinationChanges && (
+                <div className="flex flex-row items-center gap-2">
+                  <FaInfoCircle className="text-2xl text-yellow-500" />
+                  <div className="text-sm">Changes to be saved</div>
                 </div>
               )}
             </div>
-          ) : (
-            // <EditDates
-            //   destinations={destinations}
-            //   setDestinations={setDestinations}
-            //   startDate={startDate}
-            //   setStartDate={setStartDate}
-            //   endDate={endDate}
-            //   setEndDate={setEndDate}
-            //   isValidDates={isValidDates}
-            //   invalidDateError={invalidDateError}
-            // />
-            ""
-          )}
-        </div>}
+            <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+              {editDestination && !itineraryLoading ? (
+                <div className="w-full relative flex flex-row justify-center gap-5 px-3">
+                  <EditDestinations
+                    destinations={destinations}
+                    setDestinations={setDestinations}
+                    destinationRef={destinationRef}
+                    startDate={startDate}
+                    setEndDate={setEndDate}
+                    setLocationsLatLong={props.setLocationsLatLong}
+                    setDestinationChanges={setDestinationChanges}
+                  />
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+          </>
+        )}
+        {isDesktop && (
+          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+            {editDestination && !itineraryLoading ? (
+              <div className="w-full flex flex-row justify-center gap-5">
+                <EditDestinations
+                  destinations={destinations}
+                  setDestinations={setDestinations}
+                  destinationRef={destinationRef}
+                  startDate={startDate}
+                  setEndDate={setEndDate}
+                  setLocationsLatLong={props.setLocationsLatLong}
+                  setDestinationChanges={setDestinationChanges}
+                />
+                {isDesktop && (
+                  <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                    {props.children}
+
+                    {destinationChanges && (
+                      <div className="flex flex-row items-center gap-2">
+                        <FaInfoCircle className="text-2xl text-yellow-500" />
+                        <div className="text-sm">Changes to be saved</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // <EditDates
+              //   destinations={destinations}
+              //   setDestinations={setDestinations}
+              //   startDate={startDate}
+              //   setStartDate={setStartDate}
+              //   endDate={endDate}
+              //   setEndDate={setEndDate}
+              //   isValidDates={isValidDates}
+              //   invalidDateError={invalidDateError}
+              // />
+              ""
+            )}
+          </div>
+        )}
 
         {!itineraryLoading && (
           <div className={`w-full md:w-[85%] ${isDesktop ? "" : "px-3"}`}>
-          <ActionPanel
-            setEdit={props.setEdit}
-            editDestination={editDestination}
-            setEditDestination={setEditDestination}
-            handleSaveButton={handleSaveButton}
+            <ActionPanel
+              setEdit={props.setEdit}
+              editDestination={editDestination}
+              setEditDestination={setEditDestination}
+              handleSaveButton={handleSaveButton}
               itineraryLoading={itineraryLoading}
               handleClose={handleClose}
             />
@@ -960,10 +992,11 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
       <div className="flex flex-row gap-4">
         <div
           onClick={() => handleEditPanel()}
-          className={`cursor-pointer ${editDestination
-            ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
-            : "text-gray-500 px-3 py-2"
-            } `}
+          className={`cursor-pointer ${
+            editDestination
+              ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
+              : "text-gray-500 px-3 py-2"
+          } `}
         >
           Edit/Remove Destination
         </div>
@@ -1043,11 +1076,12 @@ export const EditDestinations = (props) => {
     for (let i = 1; i < destinations.length - 1; i++) {
       const dest = destinations[i];
       const checkInDate = prevDate;
-      const checkOutDate = dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
-        ? getDateString(
-          addDays(new Date(getDate(prevDate)), dest.cityData.nights)
-        )
-        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+      const checkOutDate =
+        dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
+          ? getDateString(
+              addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+            )
+          : getDateString(addDays(new Date(getDate(prevDate)), 1));
 
       dest.cityData.checkin_date = checkInDate;
       dest.cityData.checkout_date = checkOutDate;
@@ -1309,7 +1343,6 @@ export const Destination = (props) => {
 
   return (
     <div className="relative w-full flex py-2">
-
       {popUp && (
         <DestinationPopUp
           index={index}
@@ -1325,13 +1358,19 @@ export const Destination = (props) => {
         />
       )}
 
-      <div
-  className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10"
->
-  <div onClick={handleEditDestination} className="w-[70%] flex flex-row items-center gap-3">
+      <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
+        <div
+          onClick={handleEditDestination}
+          className="w-[70%] flex flex-row items-center gap-3"
+        >
           {!(startingCity || endingCity) && (
             <div className="text-gray-400 cursor-grab active:cursor-grabbing">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <rect x="3" y="6" width="18" height="2" rx="1" />
                 <rect x="3" y="11" width="18" height="2" rx="1" />
                 <rect x="3" y="16" width="18" height="2" rx="1" />
@@ -1339,9 +1378,7 @@ export const Destination = (props) => {
             </div>
           )}
 
-          {(startingCity || endingCity) && (
-            <div className="w-[20px]" />
-          )}
+          {(startingCity || endingCity) && <div className="w-[20px]" />}
 
           {startingCity || endingCity ? (
             <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
@@ -1354,23 +1391,31 @@ export const Destination = (props) => {
             <div className="text-base lg:text-[16px] cursor-pointer font-medium">
               {cityData.city_name || cityData.name || cityData.text}
             </div>
-          {!(startingCity || endingCity) && cityData?.nights >=0  && (
+            {!(startingCity || endingCity) && cityData?.nights >= 0 && (
               <div className="text-sm text-gray-500">
                 <span className="text-[16px] text-gray-500">I</span> &nbsp;
-                {`${cityData.nights} ${cityData.nights > 1 ? "Nights" : "Night"}`}
+                {`${cityData.nights} ${
+                  cityData.nights > 1 ? "Nights" : "Night"
+                }`}
               </div>
             )}
           </div>
         </div>
 
-
-
         <div className="flex flex-row items-center gap-3 justify-self-end">
           {!startingCity && !endingCity && (
             <>
-              <MdOutlineEdit size={18} color={"#3B82F6"} onClick={handleEditDestination} />
+              <MdOutlineEdit
+                size={18}
+                color={"#3B82F6"}
+                onClick={handleEditDestination}
+              />
 
-              <MdOutlineDelete size={18} color="#EF4444" onClick={(e) => handleRemoveDestination(e)} />
+              <MdOutlineDelete
+                size={18}
+                color="#EF4444"
+                onClick={(e) => handleRemoveDestination(e)}
+              />
             </>
           )}
         </div>
@@ -1499,7 +1544,6 @@ export const DestinationPopUp = (props) => {
     });
   };
 
-
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
     console.log("New Desti", destination);
@@ -1509,12 +1553,13 @@ export const DestinationPopUp = (props) => {
       const curDestination = destinations[index];
 
       const match = destinations.find((d, i) => {
-        // if (i === index) return false; 
+        // if (i === index) return false;
         const cd = d.cityData;
         return (
           (cd?.resource_id === destination?.resource_id ||
             cd?.city_id === destination?.resource_id ||
-            cd?.id === destination?.resource_id) && i === index
+            cd?.id === destination?.resource_id) &&
+          i === index
         );
       });
 
@@ -1577,14 +1622,14 @@ export const DestinationPopUp = (props) => {
     });
   };
 
-
   return (
     <div
       ref={destinationRef}
-      className={`z-50 drop-shadow-xl w-[90%] lg:w-[70%] absolute ${index !== undefined
-        ? `top-0 left-[10%] lg:left-[30%]`
-        : "-bottom-[150px] left-[10%] lg:left-[15%]"
-        }  bg-gray-200 rounded-lg`}
+      className={`z-50 drop-shadow-xl w-[90%] lg:w-[70%] absolute ${
+        index !== undefined
+          ? `top-0 left-[10%] lg:left-[30%]`
+          : "-bottom-[150px] left-[10%] lg:left-[15%]"
+      }  bg-gray-200 rounded-lg`}
     >
       <div className="relative flex flex-col gap-3 p-3">
         <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
@@ -1598,8 +1643,8 @@ export const DestinationPopUp = (props) => {
           {startingCity
             ? "Where is your trip starting from?"
             : endingCity
-              ? "Where is your trip ending?"
-              : "What do you want to explore?"}
+            ? "Where is your trip ending?"
+            : "What do you want to explore?"}
         </div>
 
         <div className="relative flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
@@ -1748,8 +1793,8 @@ export const EditDates = ({
                 checkout_date:
                   getDate(checkoutDate) !== "" && !isNaN(offSet)
                     ? getDateString(
-                      addDays(new Date(getDate(checkoutDate)), offSet)
-                    )
+                        addDays(new Date(getDate(checkoutDate)), offSet)
+                      )
                     : checkoutDate,
               },
             };
@@ -1770,20 +1815,20 @@ export const EditDates = ({
               checkin_date:
                 getDate(dest.cityData.checkin_date) !== "" && !isNaN(offSet)
                   ? getDateString(
-                    addDays(
-                      new Date(getDate(dest.cityData.checkin_date)),
-                      offSet
+                      addDays(
+                        new Date(getDate(dest.cityData.checkin_date)),
+                        offSet
+                      )
                     )
-                  )
                   : dest.cityData.checkin_date,
               checkout_date:
                 getDate(dest.cityData.checkout_date) !== "" && !isNaN(offSet)
                   ? getDateString(
-                    addDays(
-                      new Date(getDate(dest.cityData.checkout_date)),
-                      offSet
+                      addDays(
+                        new Date(getDate(dest.cityData.checkout_date)),
+                        offSet
+                      )
                     )
-                  )
                   : dest.cityData.checkout_date,
             },
           };
@@ -1825,7 +1870,7 @@ export const EditDates = ({
                 index === 1
                   ? startDate
                   : index > 1 &&
-                  getDate(destinations[index - 1].cityData.checkout_date)
+                    getDate(destinations[index - 1].cityData.checkout_date)
               }
               isValidDates={isValidDates}
               handleDates={handleDates}
@@ -1972,8 +2017,9 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: false,
-            message: `Add your dates in ${cityData.city_name || cityData.name || cityData.text
-              }`,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
           };
         } else if (!isSameDay(start_date, today) && start_date < today) {
           return {
@@ -1993,8 +2039,9 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: false,
-            message: `Add your dates in ${cityData.city_name || cityData.name || cityData.text
-              }`,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
           };
         } else if (!isSameDay(end_date, prevDate) && end_date < prevDate) {
           return {
@@ -2014,8 +2061,9 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: false,
-            message: `Add your dates in ${cityData.city_name || cityData.name || cityData.text
-              }`,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
           };
         } else if (
           !isSameDay(checkout_date, checkin_date) &&
@@ -2037,8 +2085,9 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: false,
-            message: `Add your dates in ${cityData.city_name || cityData.name || cityData.text
-              }`,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
           };
         } else if (
           !isSameDay(checkin_date, prevDate) &&
@@ -2066,8 +2115,9 @@ export const DestinationDates = (props) => {
           className="w-6 h-6 rounded-full flex items-center justify-center"
         >
           <div
-            className={`w-2 h-2 ${pinColour ? "bg-white" : "bg-yellow"
-              } rounded-full`}
+            className={`w-2 h-2 ${
+              pinColour ? "bg-white" : "bg-yellow"
+            } rounded-full`}
           ></div>
         </div>
         <div className="text-[16px] font-semibold">
@@ -2113,18 +2163,19 @@ export const DestinationDates = (props) => {
                 {startingCity
                   ? "Start Date"
                   : endingCity
-                    ? "End Date"
-                    : "Arrival Date"}
+                  ? "End Date"
+                  : "Arrival Date"}
               </label>
               <div
-                className={`${!isValidDates
-                  ? isInvalidDate().error
-                    ? isInvalidDate().invalid
-                      ? "w-[80%] border-2 border-red-500 rounded-lg"
-                      : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
-                    : "w-[80%]"
-                  : "w-[80%] "
-                  } `}
+                className={`${
+                  !isValidDates
+                    ? isInvalidDate().error
+                      ? isInvalidDate().invalid
+                        ? "w-[80%] border-2 border-red-500 rounded-lg"
+                        : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+                      : "w-[80%]"
+                    : "w-[80%] "
+                } `}
               >
                 <DatePicker
                   defaultDate={getDate(previousDate)}
@@ -2132,16 +2183,16 @@ export const DestinationDates = (props) => {
                     startingCity
                       ? startDate
                       : endingCity
-                        ? endDate
-                        : getDate(cityData.checkin_date)
+                      ? endDate
+                      : getDate(cityData.checkin_date)
                   }
                   onDateChange={handleDateChange}
                   id={
                     startingCity
                       ? "Start Date"
                       : endingCity
-                        ? "End Date"
-                        : "Arrival Date"
+                      ? "End Date"
+                      : "Arrival Date"
                   }
                 />
               </div>
@@ -2152,14 +2203,15 @@ export const DestinationDates = (props) => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate">Departure Date</label>
                 <div
-                  className={`${!isValidDates
-                    ? isInvalidDate(true).error
-                      ? isInvalidDate(true).invalid
-                        ? "w-[80%] border-2 border-red-500 rounded-lg"
-                        : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
-                      : "w-[80%]"
-                    : "w-[80%] "
-                    } `}
+                  className={`${
+                    !isValidDates
+                      ? isInvalidDate(true).error
+                        ? isInvalidDate(true).invalid
+                          ? "w-[80%] border-2 border-red-500 rounded-lg"
+                          : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+                        : "w-[80%]"
+                      : "w-[80%] "
+                  } `}
                 >
                   <DatePicker
                     defaultDate={getDate(previousDate)}
@@ -2571,14 +2623,14 @@ body.react-dates__block-scroll {
           const isHighlighted = isDayHighlighted(day);
           return (
             <div
-              className={`w-full h-full flex items-center justify-center border-none ${isHighlighted ? "bg-yellow-50 " : ""
-                }`}
+              className={`w-full h-full flex items-center justify-center border-none ${
+                isHighlighted ? "bg-yellow-50 " : ""
+              }`}
             >
               {day.date()}
             </div>
           );
         }}
-
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
@@ -2598,14 +2650,25 @@ export const ActionPanel = (props) => {
     itineraryLoading,
     handleClose,
   } = props;
-const isDesktop = useMediaQuery("(min-width:768px)");
+  const isDesktop = useMediaQuery("(min-width:768px)");
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }} className={`${!isDesktop && "gap-2"}`}>
-      <button className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`} onClick={
-        editDestination
-          ? () => handleClose()
-          : () => setEditDestination(true)
-      }>{editDestination ? "Cancel" : "Back"}</button>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+      }}
+      className={`${!isDesktop && "gap-2"}`}
+    >
+      <button
+        className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
+        onClick={
+          editDestination ? () => handleClose() : () => setEditDestination(true)
+        }
+      >
+        {editDestination ? "Cancel" : "Back"}
+      </button>
       <Button
         fontSize="1rem"
         padding="0.5rem 2rem"
@@ -2621,7 +2684,8 @@ const isDesktop = useMediaQuery("(min-width:768px)");
         style={{
           maxWidth: isDesktop ? "500px" : "50%",
           width: "100%",
-        }}                    >
+        }}
+      >
         Continue
       </Button>
     </div>

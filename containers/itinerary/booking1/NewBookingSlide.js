@@ -59,6 +59,7 @@ import ReactDOM from "react-dom";
 import setItinerary from "../../../store/actions/itinerary";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { updateCartPricing } from "../../../services/sales/Bookings";
+import { useChatContext } from "../../../components/Chatbot/context/ChatContext";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -1106,6 +1107,7 @@ const Details = (props) => {
       Cart?.total_payable_amount !== 0
   );
   const [updatingInclusions, setUpdatingInclusions] = useState({});
+  const {resetSession} = useChatContext();
 
   const { trackWhatsAppClicked } = useAnalytics();
 
@@ -1352,7 +1354,12 @@ const Details = (props) => {
           })
         );
         // Refresh payment data
-        props.fetchData(true);
+        if(props?.fetchData)
+        await props.fetchData(true);
+
+        if (resetSession) {
+        await resetSession();
+      }
       }
     } catch (error) {
       console.error("Error Repricing :", error);

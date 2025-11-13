@@ -106,11 +106,12 @@ const NavigationMenu = (props) => {
           <li></li>
           {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/dashboard")}>
                   My Trips
-          </button>}</>:<>
-          {(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
+          </button>}</>: null}
+          
+          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
                   Create a trip
           </button>}
-          </>}
+          
           {localStorage.getItem("access_token") ? (
             <ProfileDropDown 
             name={props.name}

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import HistoryList from './history/HistoryList';
 import useChat from './hook/UseChat';
 
+
 const Container = styled.div`
   padding: ${(props) => (props.ispopup ? '0px 20px' : '20px')};
   box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
@@ -21,9 +22,9 @@ function ChatBot(props) {
   const itinearyId = router.query.id;
 
   return (
-    <ChatProvider itinearyId={itinearyId}>
+  
       <ChatBotContent ispopup={props.showAsPopup} />
-    </ChatProvider>
+      
   );
 }
 
