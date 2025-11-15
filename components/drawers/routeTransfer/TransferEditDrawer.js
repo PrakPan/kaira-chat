@@ -305,7 +305,7 @@ const TransferEditDrawer = (props) => {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
             .get(
-              `/${props?.ItineraryId}/`
+              `/${router.query.id}/`
               // multiCityRoundtripRequestData
             )
             .then((response) => {

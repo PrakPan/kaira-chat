@@ -31,6 +31,8 @@ import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
 import Login from "../components/modals/Login";
 import MyTripsSection from "../components/revamp/destination/mytrips";
+import TestimonialCarousel from "../components/theme/TestimonialCarousel";
+import PartnersSection from "../components/theme/PartnersSection";
 
 
 
@@ -140,9 +142,11 @@ const Home = (props) => {
         <TravelerMadeItinerariesSection />
         {/* <FullSlider /> */}
         <TravelVibeSection />
+        <PartnersSection />
         <WhereNextSection />
         <WhatMakesUsSection />
         <CurveImageGallery />
+        <TestimonialCarousel />
         <FaqSection />
         <CtaBoardingSection />
       </div>

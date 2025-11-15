@@ -53,6 +53,7 @@ import OverviewThailand from "../themes/OverviewThailand.jsx";
 import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
 import CarouselNavigation from "../../components/theme/Navigation.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
 
 
 const SetWidthContainer = styled.div`
@@ -756,12 +757,13 @@ export default function ThemePage(props) {
               </div>
             )}
 
-            <div className="space-y-3">
+            {/* <div className="space-y-3">
               <PrimaryHeading className="mx-auto text-center">
                 What they say?
               </PrimaryHeading>
-            </div>
-            <AsSeenIn />
+            </div> */}
+            {/* <AsSeenIn /> */}
+            <PartnersSection />
             <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
           </>
         )}

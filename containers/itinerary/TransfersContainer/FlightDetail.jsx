@@ -193,7 +193,7 @@ const Details = ({
                       destination_itinerary_city: destinationCityId
                         ? destinationCityId
                         : null,
-                      booking_id: booking_id,
+                      booking_id: booking_id || router.query.bookingId == "" ? null : router.query.bookingId,
                       edge: edge,
                     },
                     {

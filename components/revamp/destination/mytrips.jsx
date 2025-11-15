@@ -58,6 +58,7 @@ const MyTripsSection = ({ apiItineraries, className }) => {
     router.push("/dashboard");
   };
 
+  console.log("TRIPS",trips);
   return (
     <section className="px-0 sm:px-4 lg:px-8 bg-white">
       <div className={`w-full mx-auto py-4 sm:py-4 lg:py-4 pb-0 ${className}`}>

@@ -55,6 +55,16 @@ const TravelPlanner = (props) => {
               : props?.Data?.meta_keywords
           }`}
         ></meta>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
 
         <link
           rel="canonical"

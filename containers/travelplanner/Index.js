@@ -43,6 +43,7 @@ import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -463,11 +464,11 @@ const Homepage = (props) => {
                 >
                   Trips by our users
                 </H3>
-                <MostLovedItinerariesSection apiItineraries={userItineraries} />
-                {/* <Experiences
+                {/* <MostLovedItinerariesSection apiItineraries={userItineraries} /> */}
+                <Experiences
               experiences={userItineraries}
               page={"State Page"}
-            ></Experiences> */}
+            ></Experiences>
               </>
             ) : null}
 
@@ -764,15 +765,16 @@ const Homepage = (props) => {
           </SetWidthContainer>
 
           <SetWidthContainer>
-            <H3
+            {/* <H3
               style={{
                 textAlign: isPageWide ? "left" : "center",
                 margin: "4rem 0 2.5rem 0",
               }}
             >
               What they say?
-            </H3>
-            <AsSeenIn />
+            </H3> */}
+            {/* <AsSeenIn /> */}
+            <PartnersSection />
             <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
 
             <CtaBoardingSection />

@@ -62,7 +62,7 @@ const FaqSection = ({Faqs}) => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-[40px] font-bold text-gray-900 mb-4 leading-tight">
+          <h2 className="text-3xl max-sm:text-xl font-bold text-gray-900 mb-4 leading-tight">
             Frequently Asked Questions.
           </h2>
           <p className="text-gray-600 text-[16px] max-w-2xl mx-auto leading-relaxed">

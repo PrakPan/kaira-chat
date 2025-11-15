@@ -31,6 +31,7 @@ import MostLovedItinerariesSection from "../../components/revamp/destination/Mos
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -122,10 +123,10 @@ const Menu = (props) => {
           >
             Trips by our users to {props.data.name}
           </H3>
-          <MostLovedItinerariesSection
+          {/* <MostLovedItinerariesSection
             apiItineraries={props.data.itineraries}
-          />
-          {/* <TopRecommendations itineraries={props.data.itineraries} /> */}
+          /> */}
+          <TopRecommendations itineraries={props.data.itineraries} />
         </MenuItem>
       )}
 
@@ -575,7 +576,7 @@ const Menu = (props) => {
       </MenuItem>
 
       <MenuItem>
-        <H3
+        {/* <H3
           style={{
             lineHeight: "48px",
             marginBlock: isPageWide ? "3.5rem" : "1.5rem",
@@ -583,8 +584,9 @@ const Menu = (props) => {
           }}
         >
           What they say?
-        </H3>
-        <AsSeenIn />
+        </H3> */}
+        {/* <AsSeenIn /> */}
+        <PartnersSection />
         <ChatWithUs />
 
         <CtaBoardingSection />

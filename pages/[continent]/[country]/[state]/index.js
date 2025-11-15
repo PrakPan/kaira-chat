@@ -104,6 +104,17 @@ const TravelPlanner = (props) => {
             }`}
         ></meta>
 
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
+
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}

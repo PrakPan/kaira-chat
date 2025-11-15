@@ -47,6 +47,7 @@ import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -341,8 +342,8 @@ const Index = (props) => {
               >
                 Trips by our users
               </H3>
-              <MostLovedItinerariesSection apiItineraries={userItineraries} />
-              {/* <Experience experiences={userItineraries} page={"Country Page"} /> */}
+              {/* <MostLovedItinerariesSection apiItineraries={userItineraries} /> */}
+              <Experience experiences={userItineraries} page={"Country Page"} />
             </>
           ) : null}
 
@@ -908,15 +909,16 @@ const Index = (props) => {
 
           <CurveImageGallery />
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: "4rem 0 2.5rem 0",
             }}
           >
             What they say?
-          </H3>
-          <AsSeenIn />
+          </H3> */}
+          {/* <AsSeenIn /> */}
+          <PartnersSection />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>

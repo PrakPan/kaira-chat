@@ -59,6 +59,7 @@ import JourneySimplified from "../../components/revamp/home/JourneySimplified.js
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import styles from "../../styles/pages/revamp/home.module.scss";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
 
 
 const SetWidthContainer = styled.div`
@@ -766,10 +767,10 @@ const handleCloseDrawer = () => {
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
-                        {/* <Itinerary1Carousel itineraries={component.itineraries} /> */}
-                        <MostLovedItinerariesSection
+                        <Itinerary1Carousel itineraries={component.itineraries} />
+                        {/* <MostLovedItinerariesSection
                           apiItineraries={component.itineraries}
-                        />
+                        /> */}
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
@@ -1133,15 +1134,16 @@ const handleCloseDrawer = () => {
 
           <CurveImageGallery />
 
-          <H3
+          {/* <H3
             style={{
               margin: "4rem 0 2.5rem 0",
               textAlign: isPageWide ? "left" : "center",
             }}
           >
             What they say?
-          </H3>
-          <AsSeenIn />
+          </H3> */}
+          {/* <AsSeenIn /> */}
+          <PartnersSection />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
