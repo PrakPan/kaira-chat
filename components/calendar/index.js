@@ -329,7 +329,7 @@ const AirbnbCalendar = (props) => {
                   // position: "absolute",
                   // top: "55%",
                   // left: "50%",
-                   transform: "translate(-50% , -50%)",
+                   transform: "translate(0% , 0%)",
                 }}
                 size={12}
                 speedMultiplier={0.6}

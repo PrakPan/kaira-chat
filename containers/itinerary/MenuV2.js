@@ -1506,7 +1506,7 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart{" "}
+                        View Inclusions{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
@@ -1537,7 +1537,7 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Cart{" "}
+                        View Inclusions{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
