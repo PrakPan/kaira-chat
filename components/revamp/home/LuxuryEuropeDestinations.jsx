@@ -12,14 +12,14 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
-const PlacesBragSection = () => {
+const LuxuryEuropeDestinations = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
     {
       id: 1,
-      title: "Thailand",
+      title: "France",
       description:
-        "Immerse yourself in a land of vibrant cultures, stunning beaches, and ancient temples that awaken your sense of adventure and wonder.",
+        "Journey through a land of iconic landmarks, world-class cuisine, and timeless romance that will captivate all of your senses.",
       tags: [
         "Adventure and Outdoors",
         "Spiritual",
@@ -30,89 +30,79 @@ const PlacesBragSection = () => {
       ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/thailand",
-      image: `${imgUrlEndPoint}/media/countries/168442180095400023460388183594.jpg`,
+      link: "europe/france",
+      image: `${imgUrlEndPoint}/media/countries/173131953880670285224914550781.webp`,
     },
     {
       id: 2,
-      title: "Vietnam",
+      title: "Italy",
       description:
-        "Venture into a land of vibrant culture, stunning landscapes, and heartfelt history that awakens your sense of wonder.",
+        "Immerse yourself in a land where timeless art, rich history, and exquisite cuisine create an eternal allure of passion and beauty.",
       tags: [
-        "Nature and Retreat",
-        "Heritage",
-        "Art and Culture",
-        "Very Popular",
+        "Historical Landmark",
+        "Cultural Heartbeat",
+        "Culinary Hub",
+        "Artistic Soul",
       ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/vietnam",
-      image: `${imgUrlEndPoint}/media/countries/175871326394452381134033203125.png`,
+      link: "europe/italy",
+      image: `${imgUrlEndPoint}/media/countries/168441961093255019187927246094.jpg`,
     },
     {
       id: 3,
-      title: "Malaysia",
+      title: "Spain",
       description:
-        "Discover a diverse land where vibrant cultures, lush rainforests, and pristine beaches create an enchanting tapestry of experiences.",
+        "Immerse yourself in a vibrant tapestry of passionate dance, stunning architecture, and lively streets that embody Spain's fiery soul.",
       tags: [
-        "Adventure and Outdoors",
-        "Spiritual",
-        "Isolated",
-        "Romantic",
-        "Heritage",
-        "Art and Culture",
-        "Shopping",
-        "Nature and Retreat",
-        "Nightlife and Events",
+        "Cultural Heartbeat",
+        "Lively & Vibrant",
+        "Architectural Wonder",
+        "Artistic Soul",
       ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/malaysia",
-      image: `${imgUrlEndPoint}/media/countries/168442089471308898925781250000.jpg`,
+      link: "europe/spain",
+      image: `${imgUrlEndPoint}/media/countries/175344481739372777938842773438.jpg`,
     },
     {
       id: 4,
-      title: "Dubai",
+      title: "Finland",
       description:
-        "Experience a dazzling oasis where futuristic skyscrapers, luxurious shopping, and vibrant nightlife create an unforgettable spectacle.",
+        "Escape to a land of serene lakes, enchanting forests, and the magical glow of the Northern Lights.",
         tags: [
-          "Adventure and Outdoors",
-          "Spiritual",
-          "Isolated",
-          "Romantic",
-          "Heritage",
-          "Art and Culture",
-          "Shopping",
-          "Nature and Retreat",
-          "Nightlife and Events",
+          "Nature's Paradise",
+          "Peaceful & Serene",
+          "Winter Wonderland",
+          "Offbeat Wonder",
         ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/united_arab_emirates/dubai",
-      image: `${imgUrlEndPoint}/media/cities/175731712356781172752380371094.jpg`,
+      link: "europe/finland",
+      image: `${imgUrlEndPoint}/media/countries/168442263137298607826232910156.jpg`,
     },
-    {
-      id: 5,
-      title: "Singapore",
-      description:
-        "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
-      tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/singapore",
-      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
-    },
-    {
-      id: 6,
-      title: "Bali",
-      description:
-        "Discover a tropical paradise where lush rice terraces and vibrant culture blend into an unforgettable island escape.",
-      tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
-      gradientOverlay:
-        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "asia/indonesia/bali",
-      image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
-    },
+    // {
+    //   id: 5,
+    //   title: "Singapore",
+    //   description:
+    //     "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
+    //   tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
+    //   gradientOverlay:
+    //     "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+    //   link: "asia/singapore",
+    //   image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
+    // },
+    // {
+    //   id: 6,
+    //   title: "Bali",
+    //   description:
+    //     "Discover a tropical paradise where lush rice terraces and vibrant culture blend into an unforgettable island escape.",
+    //   tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
+    //   gradientOverlay:
+    //     "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+    //   link: "asia/indonesia/bali",
+    //   image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
+    // },
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -140,14 +130,14 @@ const PlacesBragSection = () => {
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6 leading-tight">
-            Places You'll Brag About Forever
+            Luxury Redefined Across Europe
           </h2>
           <p
             className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0"
             style={{ fontSize: "16px" }}
           >
-            From jaw-dropping landmarks to hidden gems, these are the kind of
-            spots that turn into stories, selfies, and serious travel envy.
+            Discover iconic cities, elite resorts, and unforgettable 
+            experiences crafted for discerning travelers.
           </p>
         </div>
 
@@ -232,4 +222,4 @@ const PlacesBragSection = () => {
   );
 };
 
-export default PlacesBragSection;
+export default LuxuryEuropeDestinations;

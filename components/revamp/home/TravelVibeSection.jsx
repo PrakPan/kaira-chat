@@ -66,7 +66,7 @@ const TravelVibeSection = () => {
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6 leading-tight">
-            Travel to Match Your Vibe.
+            Travel to Match Your Vibe
           </h2>
           <p
             className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0"

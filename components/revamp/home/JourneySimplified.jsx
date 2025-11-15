@@ -237,7 +237,7 @@ const JourneySimplified = () => {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6"
             style={{ maxFontSize: "40px" }}
           >
-            Your Journey, Simplified.
+            Your Journey, Simplified
           </h2>
           <p
             ref={stepsRef}

@@ -95,7 +95,7 @@ const testimonials = [
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <h1 className="text-3xl max-sm:text-xl  font-bold text-center mb-12 lg:mb-20 text-gray-900">
-          What Our Happy Travelers Say.
+          What Our Happy Travelers Say
         </h1>
 
         <div className="max-ph:hidden">
@@ -158,12 +158,14 @@ const testimonials = [
               </div>
 
               {/* Center - Active large image */}
-              <div className="flex-shrink-0 z-10">
+              <div className="flex-shrink-0 w-64 h-64 object-cover rounded-full border-8 shadow-2xl z-10 border-[#8DC046]">
+                <div>
                 <img
                   src={activeTestimonial.image}
                   alt={activeTestimonial.name}
-                  className="w-64 h-64 object-cover rounded-full border-8 border-green-400 shadow-2xl"
+                  className="flex-shrink-0 w-60 h-60 object-cover rounded-full border-8 shadow-2xl z-10 border-[#fff]"
                 />
+                </div>
               </div>
 
               {/* Right side images */}

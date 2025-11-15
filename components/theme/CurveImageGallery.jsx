@@ -83,7 +83,7 @@ const Carousel3D = () => {
       <div className="flex flex-col items-center px-1">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
-            Memories Made with Us.
+            Memories Made with Us
           </h2>
         </div>
         <div className="max-w-[800px] text-center">

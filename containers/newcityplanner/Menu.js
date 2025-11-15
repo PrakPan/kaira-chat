@@ -206,6 +206,7 @@ const Menu = (props) => {
                       }
                       image={destination.image}
                       rating={destination.rating}
+                      one_liner_description={destination?.one_liner_description}
                       reviewCount={destination.user_ratings_total}
                       showImageText={false}
                       tags={
@@ -290,8 +291,8 @@ const Menu = (props) => {
               spaceBetween={16}
               slidesPerView={1}
               navigation={{
-                nextEl: ".PlacesBragSection-next",
-                prevEl: ".PlacesBragSection-prev",
+                nextEl: ".PlacesBragSection-n",
+                prevEl: ".PlacesBragSection-p",
                 clickable: true,
               }}
               breakpoints={{
@@ -342,7 +343,7 @@ const Menu = (props) => {
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-prev" aria-hidden>
+            <div className="PlacesBragSection-p" aria-hidden>
               <div
                 className="absolute left-3 sm:left-1 z-10"
                 style={{
@@ -360,7 +361,7 @@ const Menu = (props) => {
             </div>
 
             {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-next" aria-hidden>
+            <div className="PlacesBragSection-n" aria-hidden>
               <div
                 className="absolute right-3 sm:right-1 z-10"
                 style={{
@@ -401,8 +402,8 @@ const Menu = (props) => {
             spaceBetween={16}
             slidesPerView={1}
             navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
+              nextEl: ".PlacesBragSection-ne",
+              prevEl: ".PlacesBragSection-pr",
               clickable: true,
             }}
             breakpoints={{
@@ -430,6 +431,7 @@ const Menu = (props) => {
                     title={destination.title || destination.name}
                     description={destination.description || destination.tagline}
                     image={destination.image}
+                    one_liner_description={destination?.one_liner_description}
                     tags={
                       destination.tags ||
                       (destination.continent ? [destination.continent] : [])
@@ -448,7 +450,7 @@ const Menu = (props) => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="PlacesBragSection-prev" aria-hidden>
+          <div className="PlacesBragSection-pr" aria-hidden>
             <div
               className="absolute left-3 sm:left-1 z-10"
               style={{
@@ -466,7 +468,7 @@ const Menu = (props) => {
           </div>
 
           {/* Custom Next Button - centered to image height (376px) */}
-          <div className="PlacesBragSection-next" aria-hidden>
+          <div className="PlacesBragSection-ne" aria-hidden>
             <div
               className="absolute right-3 sm:right-1 z-10"
               style={{

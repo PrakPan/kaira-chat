@@ -115,6 +115,8 @@ const Index = (props) => {
     setUserItineraries(props?.data?.itineraries);
   }, [props?.data?.itineraries, props?.data?.loccations]);
 
+  
+
   const InfoWindowContainer = (location) => (
     <MapInfo>
       <b>{location.name}</b>
@@ -241,6 +243,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.state?.one_liner_description || destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -373,8 +376,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-n",
+                    prevEl: ".PlacesBragSection-p",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -422,7 +425,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-p" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -440,7 +443,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-n" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -486,8 +489,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-ne",
+                    prevEl: ".PlacesBragSection-pr",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -533,7 +536,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-pr" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -551,7 +554,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-ne" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -597,8 +600,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-nex",
+                    prevEl: ".PlacesBragSection-pre",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -627,6 +630,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -648,7 +652,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-pre" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -666,7 +670,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-nex" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -743,8 +747,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-nextt",
+                    prevEl: ".PlacesBragSection-prevv",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -773,6 +777,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -794,7 +799,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-prevv" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -812,7 +817,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-nextt" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{

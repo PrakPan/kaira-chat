@@ -3645,7 +3645,7 @@ const TravelerMadeItinerariesSection = () => {
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-[40px] font-bold text-black mb-4 leading-[48px]">
-            Traveler-Made Itineraries.
+            Traveler-Made Itineraries
           </h2>
           <p className="text-[#7d8590] text-base max-w-2xl mx-auto leading-6">
             These aren't just plans — they're journeys thousands of travelers

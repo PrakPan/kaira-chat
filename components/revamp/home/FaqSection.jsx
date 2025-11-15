@@ -63,7 +63,7 @@ const FaqSection = ({Faqs}) => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl max-sm:text-xl font-bold text-gray-900 mb-4 leading-tight">
-            Frequently Asked Questions.
+            Frequently Asked Questions
           </h2>
           <p className="text-gray-600 text-[16px] max-w-2xl mx-auto leading-relaxed">
             Planning made simple with answers to your most common questions.

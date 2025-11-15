@@ -109,7 +109,7 @@ const PartnersSection = () => {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <h2 className="text-2xl  font-bold text-center mb-16 text-gray-900">
-          Powered by Partners.
+          Powered by Partners
         </h2>
 
         {/* Partners Grid */}
