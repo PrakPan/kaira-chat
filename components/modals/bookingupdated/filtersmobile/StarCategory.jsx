@@ -2,16 +2,17 @@ import { IoMdStar } from "react-icons/io";
 
 
 export default function StarCategory(props) {
-    const handleStarCategory = (star) => {
-        if (props.selectedStarCategory.includes(star)) {
-            props.setSelectedStarCategory(prev => prev.filter(item => item !== star));
+   const handleStarCategory = (star) => {
+       
+        if (props.selectedStarCategory === star) {
+            props.setSelectedStarCategory(null);
         } else {
-            props.setSelectedStarCategory(prev => [...prev, star])
+            props.setSelectedStarCategory(star);
         }
     }
 
     const isSelectedStarCategory = (star) => {
-        return props.selectedStarCategory.includes(star);
+        return props.selectedStarCategory === star;
     }
 
     return (

@@ -20,7 +20,7 @@ const Container = styled.div`
 `;
 
 const Section = (props) => {
-  const [selectedStarCategory, setSelectedStarCategory] = useState([]);
+ const [selectedStarCategory, setSelectedStarCategory] = useState(null);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
   const [refundable, setRefundable] = useState(false)
   const [freeBreakfast, setFreeBreakfast] = useState(false)

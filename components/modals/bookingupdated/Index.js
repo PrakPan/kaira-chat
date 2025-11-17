@@ -370,7 +370,7 @@ const Booking = (props) => {
         facilities: filters.facilities,
         tags: filters.tags,
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
-        star_category: filters.star_category,
+        star_category: filters.star_category ? filters.star_category?.toString() : filters.star_category,
         user_ratings: filters.user_ratings,
         page: 1,
       },
@@ -383,7 +383,6 @@ const Booking = (props) => {
       trace_id: null,
     };
 
-    console.log("Filters",filters.sort);
 
     const priceOrderValue = filters.sort === "price: high to low"
   ? "desc"
