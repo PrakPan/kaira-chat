@@ -32,6 +32,11 @@ import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import { useState } from "react";
+import DesktopBanner from "../../components/containers/Banner.js"
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import Link from "next/link.js";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -95,8 +100,10 @@ const P = styled.p`link
 const Menu = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
+  const [desktopBannerLoading,setDesktopBannerLoading] = useState(false);
   const handlePlanButtonClick = () => {
-    openTailoredModal(router, props.data.id, props.data.name, props.type);
+    // openTailoredModal(router, props.data.id, props.data.name, props.type);
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -111,6 +118,24 @@ const Menu = (props) => {
 
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
+       <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data?.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data?.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itineraries.length && (
@@ -262,6 +287,21 @@ const Menu = (props) => {
               </div>
             </div>
           </div>
+
+          <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
         </MenuItem>
       ) : null}
 
@@ -378,6 +418,21 @@ const Menu = (props) => {
               </div>
             </div>
           </div>
+
+          <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
         </MenuItem>
       )}
 
@@ -485,6 +540,21 @@ const Menu = (props) => {
             </div>
           </div>
         </div>
+
+        <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
       </MenuItem>
 
       {!!props.data.foods.length && (
@@ -574,6 +644,7 @@ const Menu = (props) => {
         </H3>
         <Reviews />  */}
         <Carousel3D/>
+        <TestimonialCarousel />
        
       </MenuItem>
 

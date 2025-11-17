@@ -158,7 +158,7 @@ const testimonials = [
               </div>
 
               {/* Center - Active large image */}
-              <div className="flex-shrink-0 w-64 h-64 object-cover rounded-full border-8 shadow-2xl z-10 border-[#8DC046]">
+              <div className="flex items-center justify-center flex-shrink-0 w-64 h-64 object-cover rounded-full  shadow-2xl z-10 border-[#8DC046] border-[4px]">
                 <div>
                 <img
                   src={activeTestimonial.image}
@@ -309,7 +309,7 @@ const testimonials = [
                 <img
                   src={activeTestimonial.image}
                   alt={activeTestimonial.name}
-                  className="w-44 h-44 sm:w-56 sm:h-56 object-cover rounded-full border-8 border-green-400 shadow-2xl"
+                  className="w-44 h-44 sm:w-56 sm:h-56 object-cover rounded-full border-4 border-green-400 shadow-2xl"
                 />
               </div>
 
@@ -365,7 +365,7 @@ const testimonials = [
                 >
                   <FiChevronLeft size={20} />
                 </button>
-              <p className="text-lg sm:text-md font-bold text-gray-900">
+              <p className="text-lg sm:text-md font-bold text-gray-900 items-center justify-center">
                 {activeTestimonial.name}
               </p>
                <button

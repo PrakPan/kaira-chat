@@ -12,6 +12,8 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
+import Button from "../common/components/button";
+import Link from "next/link";
 const PlacesBragSection = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
@@ -226,6 +228,21 @@ const PlacesBragSection = () => {
               </div>
             </div>
           </div>
+
+             <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <Button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </Button>
+                </Link>
+              </div>
         </div>
       </div>
     </section>

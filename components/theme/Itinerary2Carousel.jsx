@@ -43,20 +43,22 @@ const Card = (props) => {
   const [pageId, setPageId] = useState("");
 
   const handleClick = () => {
-    if (props.data.trip_planner) {
-      const { destination, id, value } = getParams(props.data.cta_path);
 
-      if (isPageWide) {
-        setTripDestination(destination);
-        setDestinationType(id?.replace("_id", ""));
-        setPageId(value);
-        setShowTailoredModal(true);
-      } else {
-        openTailoredModal(router, value, destination, id?.replace("_id", ""));
-      }
-    } else {
-      router.push(props.data.cta_path);
-    }
+    router.push("/new-trip");
+    // if (props.data.trip_planner) {
+    //   const { destination, id, value } = getParams(props.data.cta_path);
+
+    //   if (isPageWide) {
+    //     setTripDestination(destination);
+    //     setDestinationType(id?.replace("_id", ""));
+    //     setPageId(value);
+    //     setShowTailoredModal(true);
+    //   } else {
+    //     openTailoredModal(router, value, destination, id?.replace("_id", ""));
+    //   }
+    // } else {
+    //   router.push(props.data.cta_path);
+    // }
   };
 
   const getParams = (params) => {

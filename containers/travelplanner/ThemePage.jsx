@@ -93,11 +93,12 @@ export default function ThemePage(props) {
   }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, pageId, destination, type);
-    }
+    router.push("/new-trip");
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, pageId, destination, type);
+    // }
 
     logEvent({
       action: "Plan_Itinerary",
@@ -446,10 +447,10 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
-                        {/* <Itinerary1Carousel
+                        <Itinerary1Carousel
                           itineraries={component.itineraries}
-                        /> */}
-                         < MostLovedItinerariesSection apiItineraries={component.itineraries} />
+                        />
+                         {/* < MostLovedItinerariesSection apiItineraries={component.itineraries} /> */}
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
                             className={
@@ -790,11 +791,13 @@ export const PlanYourTripButton = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.page_id, props.destination);
+    // }
+
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -839,9 +842,9 @@ export const PlanYourTripLadakhButton = (props) => {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
 
-  console.log("props in plan your trip is: ", props);
   const handlePlanButton = () => {
-    openTailoredModal(router, props.page_id, props.destination, props.type);
+    // openTailoredModal(router, props.page_id, props.destination, props.type);
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",

@@ -693,7 +693,7 @@ const Enquiry = (props) => {
             <div className="flex justify-between">
               <button
                 className={`LargeIndigoOutlinedButton `}
-                onClick={() => router.push("/")}
+                onClick={() => router.back()}
               >
                 Cancel
               </button>

@@ -44,6 +44,8 @@ import JourneySimplified from "../../components/revamp/home/JourneySimplified.js
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import Link from "next/link.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -244,11 +246,12 @@ const Homepage = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(
-      router,
-      props.experienceData.id,
-      convertDbNameToCapitalFirst(props.experienceData.slug)
-    );
+    // openTailoredModal(
+    //   router,
+    //   props.experienceData.id,
+    //   convertDbNameToCapitalFirst(props.experienceData.slug)
+    // );
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -418,6 +421,21 @@ const Homepage = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </>
 
@@ -736,6 +754,21 @@ const Homepage = (props) => {
                     </div>
                   </div>
                 </div>
+
+                <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
               </>
             ) : null}
 
@@ -764,6 +797,7 @@ const Homepage = (props) => {
         </H3>
         <Reviews></Reviews> */}
             <Carousel3D />
+            <TestimonialCarousel />
           </SetWidthContainer>
 
           <SetWidthContainer>

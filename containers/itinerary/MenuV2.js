@@ -1524,7 +1524,7 @@ const SimpleTabsV2 = (props) => {
                           <div className="text-nowrap font-normal text-black text-sm">
                             No Hidden Charges,
                             <br />
-                            included taxes
+                            Includes taxes
                           </div>
                         </div>
                       </div>

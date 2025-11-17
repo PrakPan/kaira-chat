@@ -12,6 +12,8 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
+import Button from "../common/components/button";
+import Link from "next/link";
 
 const TravelerMadeItinerariesSection = () => {
   // Sample traveler-made itinerary data
@@ -3644,8 +3646,8 @@ const TravelerMadeItinerariesSection = () => {
       <div className="w-full max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
-          <h2 className="text-[40px] font-bold text-black mb-4 leading-[48px]">
-            Traveler-Made Itineraries
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-[48px]">
+            Our Most Loved Itineraries
           </h2>
           <p className="text-[#7d8590] text-base max-w-2xl mx-auto leading-6">
             These aren't just plans — they're journeys thousands of travelers
@@ -3727,6 +3729,21 @@ const TravelerMadeItinerariesSection = () => {
             </div>
           </div> */}
         </div>
+
+           <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <Button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </Button>
+                </Link>
+              </div>
       </div>
     </section>
   );
