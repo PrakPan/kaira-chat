@@ -362,17 +362,17 @@ const Enquiry = (props) => {
       let updatedSteps = [...prevSteps];
 
       updatedSteps = updatedSteps.filter(
-        (step) => step !== "Stay Preferences" && step !== "Go To Trip"
+        (step) => step !== "Stay Preferences" && step !== "Login"
       );
 
       if (slideThreeData?.addHotels) {
         if (isLoggedIn) {
           updatedSteps.push("Stay Preferences");
         } else {
-          updatedSteps.push("Stay Preferences", "Go To Trip");
+          updatedSteps.push("Stay Preferences", "Login");
         }
       } else if (!isLoggedIn) {
-        updatedSteps.push("Go To Trip");
+        updatedSteps.push("Login");
       }
 
       return updatedSteps;
@@ -387,7 +387,7 @@ const Enquiry = (props) => {
         slideOneData.selectedCities.length > 0;
 
       const hasDates =
-        slideOneData?.date?.start_date && slideOneData?.date?.end_date;
+        (slideOneData?.date?.start_date && slideOneData?.date?.end_date) || slideOneData.date.duration;
 
       if (hasDestination && hasDates) {
         const cityName = slideOneData.selectedCities[0]?.name;
@@ -409,7 +409,7 @@ const Enquiry = (props) => {
       <div className="py-2xl">
         <div className="text-md-lg font-600 leading-xl-sm mb-md">Plan Your Trip</div>
         <StepsProgress
-          slideIndex={slideIndex + 1}
+          slideIndex={slideIndex}
           totalSlides={totalSlides}
           steps={steps}
         ></StepsProgress>
@@ -743,7 +743,6 @@ const Enquiry = (props) => {
               >
                 Skip
               </button>
-              {console.log("RouteEE",isRouteChanged)}
               {isRouteChanged ? (
                 <button
                   // width={`${isPageWide ? '300px' : ''}`}
