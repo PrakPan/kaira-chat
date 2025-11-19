@@ -17,7 +17,7 @@ const testimonials = [
     name: "Tanya, Bangalore",
     title: "Perfect winter escape to Europe",
     review: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas — it truly felt like a fairytale with all the markets and lights.",
-    image: "/02R.jpg"
+    image: "/winterr.jpg"
   },
   {
     id: 2,
@@ -45,14 +45,14 @@ const testimonials = [
     name: "Oliver & Grace, Manchester",
     title: "Truly personalized experience",
     review: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style — ours was food + culture, and the itinerary delivered exactly that.",
-    image: "/06R.jpg"
+    image: "/truly.jpg"
   },
   {
     id: 6,
     name: "Priya Menon, Bangalore",
     title: "Kerala was a dream!",
     review: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable — it felt like exploring with a friend rather than a tour.",
-    image: "/07R.jpg"
+    image: "/kerala.jpg"
   },
   {
     id: 7,
@@ -91,7 +91,7 @@ const testimonials = [
   const rightImages = displayImages.slice(4, 8);
 
   return (
-    <div className="min-h-screen bg-white py-8 px-4 sm:px-2 lg:px-8">
+    <div className="min-h-[88vh] bg-white py-8 px-4 sm:px-2 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <h1 className="text-3xl max-sm:text-xl  font-bold text-center mb-12 lg:mb-20 text-gray-900">
@@ -249,7 +249,7 @@ const testimonials = [
                   <FiChevronRight size={24} />
                 </button>
               </div>
-              <p className="text-lg font-bold text-gray-900 mb-6">
+              <p className="text-base font-bold text-gray-900 mb-6">
                 - {activeTestimonial.name}
               </p>
 
@@ -365,7 +365,7 @@ const testimonials = [
                 >
                   <FiChevronLeft size={20} />
                 </button>
-              <p className="text-lg sm:text-md font-bold text-gray-900 items-center justify-center">
+              <p className="text-lg max-sm:text-md font-bold text-gray-900 items-center justify-center mb-0">
                 {activeTestimonial.name}
               </p>
                <button

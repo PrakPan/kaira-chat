@@ -46,7 +46,7 @@ const TravelVibeCard = ({
           {tags.map((tag, index) => (
             <span
               key={index}
-              className="px-2 sm:px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs sm:text-sm font-medium rounded-full border border-white/30"
+              className="px-2 sm:px-3 py-1 bg-[#F2F2F2E5] backdrop-blur-[50px] text-xs sm:text-sm font-medium rounded-full"
             >
               {tag}
             </span>

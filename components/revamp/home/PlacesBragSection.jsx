@@ -218,7 +218,7 @@ const PlacesBragSection = () => {
           {/* Custom Prev Button */}
           <div className="fullslider-prev absolute -left-1 sm:left-1 top-[188px] z-20 cursor-pointer">
             <div
-              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+              className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
             >
               <FontAwesomeIcon
@@ -231,7 +231,7 @@ const PlacesBragSection = () => {
           {/* Custom Next Button */}
           <div className="fullslider-next absolute -right-1 sm:right-1 top-[188px] z-20 cursor-pointer">
             <div
-              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+              className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
             >
               <FontAwesomeIcon

@@ -96,7 +96,7 @@ const NavigationMenu = (props) => {
     <>
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
         <div className="hover-pointer" onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority />
+          <Image src={TTW} alt="TTW Logo" priority  />
         </div>
         {isMidScreen &&pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}

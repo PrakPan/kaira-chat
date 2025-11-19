@@ -74,7 +74,7 @@ const HeroSection = ({ title, subtitle }) => {
               src={image}
               alt={`Hero Image ${index + 1}`}
               onLoad={handleImageLoad}
-              priority={index < 2} // Prioritize loading first 2 images
+              priority={index < 2} 
             />
           </div>
         ))}

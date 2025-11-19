@@ -141,7 +141,7 @@ const Carousel3D = () => {
                         {item.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="px-3 py-1 bg-black/50 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30"
+                            className="text-black px-2 sm:px-3 py-1 bg-[#F2F2F2E5] backdrop-blur-[50px] text-xs sm:text-sm font-medium rounded-full"
                           >
                             {tag}
                           </span>
