@@ -15,7 +15,8 @@ import {
   isDateInRange,
   isDateInHoverRange,
   isDateRangeStart,
-  isDateRangeEnd
+  isDateRangeEnd,
+  getNext12Months
 } from './utils';
 import { PulseLoader } from 'react-spinners';
 
@@ -32,8 +33,24 @@ const AirbnbCalendar = (props) => {
   });
   const [loading,setLoading] = useState(false);
   
-  const [currentMonth, setCurrentMonth] = useState(props.date.month || new Date(today.getFullYear(), today.getMonth(), 1));
-  const [tripDuration, setTripDuration] = useState(props.date.duration || 1);
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState((props.date.year && props.date.month) ? new Date(props.date.year, props.date.month, 1) : new Date(today.getFullYear(), today.getMonth(), 1));
+  const [tripDuration, setTripDuration] = useState(props.date.duration || 0);
+
+  useEffect(() => {
+
+    if (dateType === 'flexible' || dateType === 'anytime') {
+      if (!tripDuration) {
+        setTripDuration(7);
+      }
+    } else if (dateType === 'fixed') {
+      if (tripDuration > 0 && (!selectedDates.start || !selectedDates.end)) {
+        setTripDuration(0);
+      }
+    }
+
+  }, [dateType])
+
 
   useEffect(() => {
     if (selectedDates.start && isInitialLoad) {
@@ -187,19 +204,22 @@ const AirbnbCalendar = (props) => {
   const renderMonthView = () => (
     <div className="space-y-8">
       <div className="grid grid-cols-4 gap-4">
-        {months.map((month, index) => (
+        {getNext12Months().map((month, index) => (
           <button
-            key={month}
+            key={month.key}
             onClick={() => {
-              setCurrentMonth(new Date(today.getFullYear(), index, 1));
+              setCurrentMonth(new Date(month.year, month.monthIndex, 1));
             }}
-            className={`flex flex-col  justify-start p-[10px] text-start text-[14px] rounded-xl border transition-all ${currentMonth.getMonth() === index
-              ? 'bg-yellow border-yellow text-black font-medium'
-              : 'border-gray-300 hover:border-gray-400 text-gray-700'
+            className={`flex flex-col  justify-start p-[10px] text-start text-[14px] gap-xs rounded-xl border-sm transition-all ${currentMonth.getMonth() === month.monthIndex && currentMonth.getFullYear() === month.year
+              ? 'bg-yellow border-yellow '
+              : 'border-text-dsabled hover:border-gray-400 text-gray-700'
               }`}
           >
-            <Image src="/calendar.svg" width={'20'} height={"20"} className="text-gray-500" />
-            <div>{month}</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none">
+              <path d="M1.66667 16.6667C1.20833 16.6667 0.815833 16.5036 0.489167 16.1775C0.163055 15.8508 0 15.4583 0 15V3.33333C0 2.875 0.163055 2.48278 0.489167 2.15667C0.815833 1.83 1.20833 1.66667 1.66667 1.66667H2.5V0H4.16667V1.66667H10.8333V0H12.5V1.66667H13.3333C13.7917 1.66667 14.1842 1.83 14.5108 2.15667C14.8369 2.48278 15 2.875 15 3.33333V15C15 15.4583 14.8369 15.8508 14.5108 16.1775C14.1842 16.5036 13.7917 16.6667 13.3333 16.6667H1.66667ZM1.66667 15H13.3333V6.66667H1.66667V15ZM1.66667 5H13.3333V3.33333H1.66667V5ZM1.66667 5V3.33333V5Z" fill={currentMonth.getMonth() === month.monthIndex && currentMonth.getFullYear() === month.year ? '#000' : '#ACACAC'} />
+            </svg>
+            {/* <Image src="/calendar.svg" width={'20'} height={"20"} className="text-gray-500" /> */}
+            <div className='whitespace-nowrap'>{month.key}</div>
           </button>
         ))}
       </div>
@@ -257,8 +277,11 @@ const AirbnbCalendar = (props) => {
                 <h2 className="text-[20px] font-semibold text-gray-900 mb-4">When do you want to travel?</h2>
                 <div className="flex items-center justify-center space-x-4 text-[14px] font-normal leading-[22px] text-center w-full">
                   <span className="font-medium">{formatDateRange(selectedDates)}</span>
-                  <span >|</span>
-                  <span >{tripDuration} Days</span>
+                  {tripDuration > 0 && <>
+                    <span >|</span>
+                    <span >{tripDuration} Days</span>
+                  </>
+                  }
                 </div>
               </div>
             </div>
@@ -306,7 +329,7 @@ const AirbnbCalendar = (props) => {
                   // position: "absolute",
                   // top: "55%",
                   // left: "50%",
-                   transform: "translate(-50% , -50%)",
+                   transform: "translate(0% , 0%)",
                 }}
                 size={12}
                 speedMultiplier={0.6}

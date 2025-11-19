@@ -335,7 +335,7 @@ export const handleDragEnd = ({
 
   updateDestinationsDates(items);
   updateLatLong(items);
-  setDestinationChanges(true);
+  // setDestinationChanges(true);
   setDestinations(items);
   setIsRouteChanged(true);
   logEvent({
@@ -387,7 +387,7 @@ export const handleRemoveDestination = (
     setIsRouteChanged
 ) => {
     e.stopPropagation();
-    setDestinationChanges(true);
+    // setDestinationChanges(true);
 
     setDestinations((prev) => {
         const updatedDestinations = prev.filter((dest, i) => i !== index);
@@ -515,7 +515,7 @@ export const handleUpdateDestination = ({
   isAddMode = false, // new flag for add mode
   setIsRouteChanged
   }) => {
-  setDestinationChanges(true);
+  // setDestinationChanges(true);
   setIsRouteChanged(true);
   setDestinations((prev) => {
     const destinations = [...prev];

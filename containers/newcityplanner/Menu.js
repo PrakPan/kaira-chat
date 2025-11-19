@@ -31,6 +31,13 @@ import MostLovedItinerariesSection from "../../components/revamp/destination/Mos
 import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import { useState } from "react";
+import DesktopBanner from "../../components/containers/Banner.js"
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import Link from "next/link.js";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -94,8 +101,19 @@ const P = styled.p`link
 const Menu = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
+  const [desktopBannerLoading,setDesktopBannerLoading] = useState(false);
+
+    const [activeDrawer, setActiveDrawer] = useState(null);
+  
+    const handleOpenDrawer = (data, type) => {
+      setActiveDrawer({ data, type });
+    };
+     const handleCloseDrawer = () => {
+    setActiveDrawer(null);
+  };
   const handlePlanButtonClick = () => {
-    openTailoredModal(router, props.data.id, props.data.name, props.type);
+    // openTailoredModal(router, props.data.id, props.data.name, props.type);
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -110,6 +128,24 @@ const Menu = (props) => {
 
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
+       <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data?.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data?.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itineraries.length && (
@@ -122,10 +158,10 @@ const Menu = (props) => {
           >
             Trips by our users to {props.data.name}
           </H3>
-          <MostLovedItinerariesSection
+          {/* <MostLovedItinerariesSection
             apiItineraries={props.data.itineraries}
-          />
-          {/* <TopRecommendations itineraries={props.data.itineraries} /> */}
+          /> */}
+          <TopRecommendations itineraries={props.data.itineraries} />
         </MenuItem>
       )}
 
@@ -190,7 +226,7 @@ const Menu = (props) => {
                 },
                 // when window width is >= 1024px
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: 4,
                   spaceBetween: 24,
                 },
               }}
@@ -205,6 +241,7 @@ const Menu = (props) => {
                       }
                       image={destination.image}
                       rating={destination.rating}
+                      one_liner_description={destination?.one_liner_description}
                       reviewCount={destination.user_ratings_total}
                       showImageText={false}
                       tags={
@@ -212,14 +249,7 @@ const Menu = (props) => {
                         (destination.continent ? [destination.continent] : [])
                       }
                       gradientOverlay={destination.gradientOverlay}
-                       onClick={() => {
-                              console.log(
-                                `Clicked on ${
-                                  destination.name || destination.title
-                                }`
-                              );
-                              window.location.replace("/" + destination.path);
-                      }}
+                       onClick={() => handleOpenDrawer(destination, "activity")}
                     />
                   </div>
                 </SwiperSlide>
@@ -260,6 +290,21 @@ const Menu = (props) => {
               </div>
             </div>
           </div>
+
+          <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
         </MenuItem>
       ) : null}
 
@@ -289,8 +334,8 @@ const Menu = (props) => {
               spaceBetween={16}
               slidesPerView={1}
               navigation={{
-                nextEl: ".PlacesBragSection-next",
-                prevEl: ".PlacesBragSection-prev",
+                nextEl: ".PlacesBragSection-n",
+                prevEl: ".PlacesBragSection-p",
                 clickable: true,
               }}
               breakpoints={{
@@ -306,7 +351,7 @@ const Menu = (props) => {
                 },
                 // when window width is >= 1024px
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: 4,
                   spaceBetween: 24,
                 },
               }}
@@ -327,21 +372,14 @@ const Menu = (props) => {
                         destination.tags ||
                         (destination.continent ? [destination.continent] : [])
                       }
+                      onClick={() => handleOpenDrawer(destination, "poi")}
                       gradientOverlay={destination.gradientOverlay}
-                       onClick={() => {
-                              console.log(
-                                `Clicked on ${
-                                  destination.name || destination.title
-                                }`
-                              );
-                              window.location.replace("/" + destination.path);
-                            }}
                     />
                   </div>
                 </SwiperSlide>
               ))}
             </Swiper>
-            <div className="PlacesBragSection-prev" aria-hidden>
+            <div className="PlacesBragSection-p" aria-hidden>
               <div
                 className="absolute left-3 sm:left-1 z-10"
                 style={{
@@ -359,7 +397,7 @@ const Menu = (props) => {
             </div>
 
             {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-next" aria-hidden>
+             <div className="PlacesBragSection-n" aria-hidden>
               <div
                 className="absolute right-3 sm:right-1 z-10"
                 style={{
@@ -375,7 +413,22 @@ const Menu = (props) => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> 
+
+          <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
         </MenuItem>
       )}
 
@@ -400,8 +453,8 @@ const Menu = (props) => {
             spaceBetween={16}
             slidesPerView={1}
             navigation={{
-              nextEl: ".PlacesBragSection-next",
-              prevEl: ".PlacesBragSection-prev",
+              nextEl: ".PlacesBragSection-ne",
+              prevEl: ".PlacesBragSection-pr",
               clickable: true,
             }}
             breakpoints={{
@@ -429,6 +482,7 @@ const Menu = (props) => {
                     title={destination.title || destination.name}
                     description={destination.description || destination.tagline}
                     image={destination.image}
+                    one_liner_description={destination?.one_liner_description}
                     tags={
                       destination.tags ||
                       (destination.continent ? [destination.continent] : [])
@@ -447,7 +501,7 @@ const Menu = (props) => {
               </SwiperSlide>
             ))}
           </Swiper>
-          <div className="PlacesBragSection-prev" aria-hidden>
+          <div className="PlacesBragSection-pr" aria-hidden>
             <div
               className="absolute left-3 sm:left-1 z-10"
               style={{
@@ -465,7 +519,7 @@ const Menu = (props) => {
           </div>
 
           {/* Custom Next Button - centered to image height (376px) */}
-          <div className="PlacesBragSection-next" aria-hidden>
+          <div className="PlacesBragSection-ne" aria-hidden>
             <div
               className="absolute right-3 sm:right-1 z-10"
               style={{
@@ -482,6 +536,21 @@ const Menu = (props) => {
             </div>
           </div>
         </div>
+
+        <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
       </MenuItem>
 
       {!!props.data.foods.length && (
@@ -571,11 +640,12 @@ const Menu = (props) => {
         </H3>
         <Reviews />  */}
         <Carousel3D/>
+        <TestimonialCarousel />
        
       </MenuItem>
 
       <MenuItem>
-        <H3
+        {/* <H3
           style={{
             lineHeight: "48px",
             marginBlock: isPageWide ? "3.5rem" : "1.5rem",
@@ -583,11 +653,38 @@ const Menu = (props) => {
           }}
         >
           What they say?
-        </H3>
-        <AsSeenIn />
+        </H3> */}
+        {/* <AsSeenIn /> */}
+        <PartnersSection />
         <ChatWithUs />
 
         <CtaBoardingSection />
+
+         {activeDrawer?.type === "poi" && (
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+        />
+      )}
+
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+        ></POIDetailsDrawer>
+      )}
       </MenuItem>
     </MenuContainer>
   );

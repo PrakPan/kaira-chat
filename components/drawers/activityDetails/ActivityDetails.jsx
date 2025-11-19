@@ -102,7 +102,7 @@ export default function ActivityDetails(props) {
 
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
-      <div className="flex flex-col gap-4  mb-[100px]">
+      <div className="flex flex-col gap-4  mb-[100px] pb-[20px]">
         <div className="mt-xl">
           <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
         </div>

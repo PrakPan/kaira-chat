@@ -42,7 +42,17 @@ const TravelPlanner = (props) => {
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
-        />
+        ></link>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
       </Head>
       <Layout
         destination={props?.Data?.name}

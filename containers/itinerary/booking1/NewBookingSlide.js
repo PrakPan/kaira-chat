@@ -2893,7 +2893,7 @@ const Details = (props) => {
                   <PriceDetails
                     itineraryCost={getIndianPrice(
                       Math.round(
-                        Cart?.total_bookings_cost +
+                        Cart?.discounted_cost +
                           (couponUsageData?.discount || 0)
                       )
                     )}

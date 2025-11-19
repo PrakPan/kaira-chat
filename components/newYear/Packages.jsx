@@ -49,11 +49,12 @@ export default function Packages(props) {
   const [destination, setDestination] = useState(null);
 
   const handlePlanButton = (pageId, destination, type) => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, pageId, destination, type);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, pageId, destination, type);
+    // }
+    router.push("/new-trip");
   };
 
   return (

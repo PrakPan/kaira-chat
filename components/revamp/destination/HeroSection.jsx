@@ -63,6 +63,41 @@ useGSAP(
   { scope: containerRef, dependencies: [allImagesLoaded, animationStarted] }
 );
 
+ const trustFactors = [
+    {
+      icon: 
+      "/assets/trustfactor/trust-factor-1.svg",
+      text: "Trusted by 10,000+ Travelers",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
+    },
+    {
+      icon: 
+      "/assets/trustfactor/trust-factor-2.svg",
+      text: "24/7 Support",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
+    },
+    {
+      icon:
+      "/assets/trustfactor/trust-factor-3.svg",
+      text: "GST Invoice Provided",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
+    },
+    {
+      icon:
+      "/assets/trustfactor/trust-factor-4.svg",
+      text: "Secure Payments",
+      popupTitle: "No Hidden Charges",
+      popupDescription:
+        "Safe and secure payment gateway with transparent pricing. No hidden transaction fees.",
+    },
+  ];
+
 
   return (
     <section ref={sectionRef} className={styles.heroSection}>
@@ -88,6 +123,8 @@ useGSAP(
         ))}
       </div>
 
+
+
        {/* Features Section - Desktop Only */}
       <div className={styles.featuresSection}>
         <div className={styles.featuresContainer}>
@@ -103,7 +140,7 @@ useGSAP(
               <Image src="/google.svg" width={24} height={24} alt="5 Star Rating" />
               </div>
             </div>
-            <span className={styles.featureText}>5.0 rated</span>
+            <span className={styles.featureText}>4.8+ rated</span>
           </div>
           
           <div className={styles.featureItem}>
@@ -115,7 +152,7 @@ useGSAP(
                 <rect x="6" y="13" width="4" height="2" rx="0.5" fill="#001F3F"/>
               </svg> */}
               <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/taxes.svg" width={24} height={24} alt="All Taxes & Fees Included" />
+              <Image src="/assets/trustfactor/trust-factor-3.svg" width={24} height={24} alt="All Taxes & Fees Included" />
               </div>
             </div>
             <span className={styles.featureText}>All Taxes & Fees Included</span>
@@ -143,7 +180,7 @@ useGSAP(
                 <path d="M12 17.5V19" stroke="#001F3F" strokeWidth="1.5" strokeLinecap="round"/>
               </svg> */}
               <div className="w-6 h-6 relative  overflow-hidden">
-              <Image src="/secure.svg" width={24} height={24} alt="Secure Payments" />
+              <Image src="/assets/trustfactor/trust-factor-4.svg" width={24} height={24} alt="Secure Payments" />
               </div>
             </div>
             <span className={styles.featureText}>Secure Payments</span>

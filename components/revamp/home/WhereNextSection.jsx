@@ -23,17 +23,19 @@ const WhereNextSection = () => {
 
   return (
     <section
-      className="py-8 pb-0 px-2 sm:px-6 lg:px-8"
+      className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8"
       style={{ backgroundColor: "#FEFFC0" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content Side */}
-            <div className="order-2 lg:order-1">
+            <div className="order-2 lg:order-1"
+             style={{ padding: "1rem" }}
+            >
               <h2
-                className="font-bold text-gray-900 mb-4 lg:mb-6 leading-tight"
-                style={{ fontSize: "40px" }}
+                className="font-bold text-2xl sm:text-xl lg:text-4xl  leading-tight"
+                // style={{ fontSize: "40px" }}
               >
                 Where Will You Go Next?
                 <br />

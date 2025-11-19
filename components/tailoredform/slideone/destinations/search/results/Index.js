@@ -86,7 +86,7 @@ const SearchResults = (props) => {
       ) : null} */}
       {props?.results?.length ? (
         props?.results?.map((result, i) => {
-          if (i < 5)
+          if (i < props.maxResult)
             return (
               <div key={i}>
                 <Result

@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAnytimeDate, setCalendarDates, setDateType, setFixedDate, setFlexibleDate } from "../../../store/actions/slideOneActions";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { togglePreference } from "../../../store/actions/slideOneActions";
+import { months } from "../../calendar/utils";
 
 const Container = styled.div`
   color: black;
@@ -48,7 +49,7 @@ const SlideOne = (props) => {
       dispatch(setFixedDate(values.start, values.end));
     }
     else if (values.dateType == "flexible") {
-      dispatch(setFlexibleDate(values.month, '2025', values.duration));
+      dispatch(setFlexibleDate(values.month.getMonth()+1, values.month.getFullYear(), values.duration));
     }
     else {
       dispatch(setAnytimeDate(values.duration))
@@ -92,7 +93,7 @@ const SlideOne = (props) => {
               value={
                 date.type === "fixed" ? (valueStart && valueEnd
                   ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
-                  : "") : date.type === "flexible" ? (new Date(date.month).toLocaleString("default", { month: "long" }) + ", " + date.duration + " days") : date.duration + " days"
+                  : "") : date.type === "flexible" ? `${months[date.month]} ${date.year}, ${date.duration} days` : date.duration + " days"
               }
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10  Body2M_14`}

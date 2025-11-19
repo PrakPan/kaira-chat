@@ -47,6 +47,11 @@ import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import Link from "next/link.js";
+import DesktopBanner from "../../components/containers/Banner.js"
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -90,6 +95,7 @@ const Index = (props) => {
   const router = useRouter();
   const [userItineraries, setUserItineraries] = useState([]);
   const [hotLocations, setHotLocations] = useState([]);
+  const [desktopBannerLoading,setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
 
@@ -114,6 +120,8 @@ const Index = (props) => {
     setUserItineraries(props?.data?.itineraries);
   }, [props?.data?.itineraries, props?.data?.loccations]);
 
+  
+
   const InfoWindowContainer = (location) => (
     <MapInfo>
       <b>{location.name}</b>
@@ -126,7 +134,8 @@ const Index = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(router, props.data.id, props.data.name);
+    // openTailoredModal(router, props.data.id, props.data.name);
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -180,7 +189,26 @@ const Index = (props) => {
           title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}
         /> */}
+        
         <SetWidthContainer>
+           <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data?.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data?.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
           <PathNavigation path={props?.data?.path} />
 
           {hotLocations.length ? (
@@ -240,6 +268,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.state?.one_liner_description || destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -295,6 +324,20 @@ const Index = (props) => {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </>
           ) : null}
@@ -341,8 +384,8 @@ const Index = (props) => {
               >
                 Trips by our users
               </H3>
-              <MostLovedItinerariesSection apiItineraries={userItineraries} />
-              {/* <Experience experiences={userItineraries} page={"Country Page"} /> */}
+              {/* <MostLovedItinerariesSection apiItineraries={userItineraries} /> */}
+              <Experience experiences={userItineraries} page={"Country Page"} />
             </>
           ) : null}
 
@@ -372,8 +415,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-n",
+                    prevEl: ".PlacesBragSection-p",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -389,7 +432,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -402,6 +445,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           rating={destination.rating}
                           reviewCount={destination.user_ratings_total}
@@ -421,7 +465,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-p" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -439,7 +483,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-n" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -455,6 +499,21 @@ const Index = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </div>
           ) : null}
@@ -485,8 +544,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-ne",
+                    prevEl: ".PlacesBragSection-pr",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -502,7 +561,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -515,6 +574,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           rating={destination.rating}
                           reviewCount={destination.user_ratings_total}
@@ -532,7 +592,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-pr" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -550,7 +610,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-ne" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -566,6 +626,21 @@ const Index = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </MenuItem>
           ) : null}
@@ -596,8 +671,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-nex",
+                    prevEl: ".PlacesBragSection-pre",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -626,6 +701,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -647,7 +723,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-pre" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -665,7 +741,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-nex" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -742,8 +818,8 @@ const Index = (props) => {
                   spaceBetween={16}
                   slidesPerView={1}
                   navigation={{
-                    nextEl: ".PlacesBragSection-next",
-                    prevEl: ".PlacesBragSection-prev",
+                    nextEl: ".PlacesBragSection-nextt",
+                    prevEl: ".PlacesBragSection-prevv",
                     clickable: true,
                   }}
                   breakpoints={{
@@ -772,6 +848,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -793,7 +870,7 @@ const Index = (props) => {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                <div className="PlacesBragSection-prev" aria-hidden>
+                <div className="PlacesBragSection-prevv" aria-hidden>
                   <div
                     className="absolute left-3 sm:left-1 z-10"
                     style={{
@@ -811,7 +888,7 @@ const Index = (props) => {
                 </div>
 
                 {/* Custom Next Button - centered to image height (376px) */}
-                <div className="PlacesBragSection-next" aria-hidden>
+                <div className="PlacesBragSection-nextt" aria-hidden>
                   <div
                     className="absolute right-3 sm:right-1 z-10"
                     style={{
@@ -907,16 +984,18 @@ const Index = (props) => {
           <Reviews></Reviews> */}
 
           <CurveImageGallery />
+          <TestimonialCarousel />
 
-          <H3
+          {/* <H3
             style={{
               textAlign: isPageWide ? "left" : "center",
               margin: "4rem 0 2.5rem 0",
             }}
           >
             What they say?
-          </H3>
-          <AsSeenIn />
+          </H3> */}
+          {/* <AsSeenIn /> */}
+          <PartnersSection />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>

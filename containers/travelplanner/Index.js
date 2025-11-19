@@ -43,6 +43,9 @@ import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection.
 import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 import Carousel3D from "../../components/theme/CurveImageGallery.jsx";
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import Link from "next/link.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -243,11 +246,12 @@ const Homepage = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(
-      router,
-      props.experienceData.id,
-      convertDbNameToCapitalFirst(props.experienceData.slug)
-    );
+    // openTailoredModal(
+    //   router,
+    //   props.experienceData.id,
+    //   convertDbNameToCapitalFirst(props.experienceData.slug)
+    // );
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -361,6 +365,7 @@ const Homepage = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                           one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           tags={
                             destination.tags ||
@@ -416,6 +421,21 @@ const Homepage = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </>
 
@@ -463,11 +483,11 @@ const Homepage = (props) => {
                 >
                   Trips by our users
                 </H3>
-                <MostLovedItinerariesSection apiItineraries={userItineraries} />
-                {/* <Experiences
+                {/* <MostLovedItinerariesSection apiItineraries={userItineraries} /> */}
+                <Experiences
               experiences={userItineraries}
               page={"State Page"}
-            ></Experiences> */}
+            ></Experiences>
               </>
             ) : null}
 
@@ -647,8 +667,8 @@ const Homepage = (props) => {
                     spaceBetween={16}
                     slidesPerView={1}
                     navigation={{
-                      nextEl: ".PlacesBragSection-next",
-                      prevEl: ".PlacesBragSection-prev",
+                      nextEl: ".PlacesBragSection-n",
+                      prevEl: ".PlacesBragSection-p",
                       clickable: true,
                     }}
                     breakpoints={{
@@ -677,6 +697,7 @@ const Homepage = (props) => {
                             description={
                               destination.description || destination.tagline
                             }
+                            one_liner_description={destination?.one_liner_description}
                             image={destination.image}
                             tags={
                               destination.tags ||
@@ -698,7 +719,7 @@ const Homepage = (props) => {
                       </SwiperSlide>
                     ))}
                   </Swiper>
-                  <div className="PlacesBragSection-prev" aria-hidden>
+                  <div className="PlacesBragSection-p" aria-hidden>
                     <div
                       className="absolute left-3 sm:left-1 z-10"
                       style={{
@@ -716,7 +737,7 @@ const Homepage = (props) => {
                   </div>
 
                   {/* Custom Next Button - centered to image height (376px) */}
-                  <div className="PlacesBragSection-next" aria-hidden>
+                  <div className="PlacesBragSection-n" aria-hidden>
                     <div
                       className="absolute right-3 sm:right-1 z-10"
                       style={{
@@ -733,6 +754,21 @@ const Homepage = (props) => {
                     </div>
                   </div>
                 </div>
+
+                <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
               </>
             ) : null}
 
@@ -761,18 +797,20 @@ const Homepage = (props) => {
         </H3>
         <Reviews></Reviews> */}
             <Carousel3D />
+            <TestimonialCarousel />
           </SetWidthContainer>
 
           <SetWidthContainer>
-            <H3
+            {/* <H3
               style={{
                 textAlign: isPageWide ? "left" : "center",
                 margin: "4rem 0 2.5rem 0",
               }}
             >
               What they say?
-            </H3>
-            <AsSeenIn />
+            </H3> */}
+            {/* <AsSeenIn /> */}
+            <PartnersSection />
             <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
 
             <CtaBoardingSection />

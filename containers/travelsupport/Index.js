@@ -15,6 +15,7 @@ import DesktopBanner from "../../components/containers/Banner";
 import Banner from "../homepage/banner/Mobile";
 import { useRouter } from "next/router";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+import PartnersSection from "../../components/theme/PartnersSection";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -107,12 +108,12 @@ const AffiliatePage = () => {
 
         <KeyBenefits width={1200} height={900} />
 
-        <Heading margin="3.5rem auto" align="center" bold>
+        {/* <Heading margin="3.5rem auto" align="center" bold>
           What they say?
-        </Heading>
+        </Heading> */}
 
-        <AsSeenIn></AsSeenIn>
-
+        {/* <AsSeenIn></AsSeenIn> */}
+        <PartnersSection />
         <ChatWithUs link="/contact"></ChatWithUs>
       </SetWidthContainer>
 
