@@ -78,6 +78,9 @@ const Details = ({
   const [fareRUlesError, setFareRulesError] = useState(false);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [warningData, setWarningData] = useState(null);
+  const [pendingBookingData, setPendingBookingData] = useState(null);
 
   useEffect(() => {
     if (fareRules == null) {
@@ -121,6 +124,121 @@ const Details = ({
     }
   };
 
+  const handleBookingWithWarning = async (bookingData) => {
+    try {
+      setLoading(true);
+
+      // Call warning API first
+      const warningRes = await axios.post(
+        MERCURY_HOST +
+          `/api/v1/itinerary/${router?.query?.id}/transfers/flight/warning/`,
+        {
+          trace_id: localStorage.getItem(`${provider}_trace_id`),
+          result_indices: [bookingData.resultIndex],
+          source_itinerary_city: bookingData.originCityId || null,
+          destination_itinerary_city: bookingData.destinationCityId || null,
+          booking_id: bookingData.booking_id || null,
+          edge: bookingData.edge,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      setLoading(false);
+
+      // If warning exists, show modal
+      if (warningRes.data?.warning || warningRes.data?.message) {
+        setWarningData(warningRes.data);
+        setPendingBookingData(bookingData);
+        setShowWarningModal(true);
+      } else {
+        // No warning, proceed directly
+        await confirmBooking(bookingData);
+      }
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        openNotification({
+          type: "error",
+          text:
+            error.response?.data?.errors?.[0]?.message?.[0] ||
+            "Failed to check booking",
+          heading: "Error!",
+        })
+      );
+    }
+  };
+
+  // Add this function to handle the actual booking confirmation
+  const confirmBooking = async (bookingData) => {
+    try {
+      setLoading(true);
+
+      if (bookingData.individual) {
+        const res = await axios.post(
+          MERCURY_HOST +
+            `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
+          {
+            trace_id: localStorage.getItem(`${provider}_trace_id`),
+            result_indices: [bookingData.resultIndex],
+          }
+        );
+        window.location.href = `/flights/book/${res.data.id}`;
+        getPaymentHandler();
+      } else {
+        const res = await axios.post(
+          MERCURY_HOST +
+            `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
+          {
+            trace_id: localStorage.getItem(`${provider}_trace_id`),
+            result_indices: [bookingData.resultIndex],
+            source_itinerary_city: bookingData.originCityId || null,
+            destination_itinerary_city: bookingData.destinationCityId || null,
+            booking_id: bookingData.booking_id || null,
+            edge: bookingData.edge,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+
+        setLoading(false);
+        const updatedTransferBookings = {
+          ...transferBookings,
+          intercity: {
+            ...transferBookings.intercity,
+            [bookingData.originCityId + ":" + bookingData.destinationCityId]:
+              res?.data,
+          },
+        };
+        dispatch(setTransfersBookings(updatedTransferBookings));
+        getPaymentHandler();
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Updated booking Successfully",
+            heading: "Success!",
+          })
+        );
+      }
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        openNotification({
+          type: "error",
+          text:
+            error.response?.data?.errors?.[0]?.message?.[0] || "Booking failed",
+          heading: "Error!",
+        })
+      );
+    }
+  };
+
   return (
     <div className="relative flex flex-col gap-4">
       {drawer && (
@@ -132,9 +250,9 @@ const Details = ({
           </Heading>
         </div>
       )}
-      
+
       <div className="flex flex-col gap-3">
-        <FlightSegment segments={segments} />
+        <FlightSegment segments={segments} showWarningModal={showWarningModal} warningData={warningData} setWarningData={setWarningData} setShowWarningModal={setShowWarningModal} setPendingBookingData={setPendingBookingData}/>
       </div>
 
       {fareRulesLoading ? (
@@ -162,76 +280,25 @@ const Details = ({
           </div>
         )
       )}
-      
+
       {provider && !combo && (
         <div className="flex justify-end mt-4">
-          <button 
+          <button
             className="bg-[#F7E700] hover:bg-[#e6d600] text-black font-medium px-6 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
             onClick={async () => {
-              try {
-                if (individual == true) {
-                  const res = await axios.post(
-                    MERCURY_HOST +
-                      `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
-                    {
-                      trace_id: localStorage.getItem(`${provider}_trace_id`),
-                      result_indices: [resultIndex],
-                    }
-                  );
-                  window.location.href = `/flights/book/${res.data.id}`;
-                  getPaymentHandler();
-                } else {
-                  setLoading(true);
-                  const res = await axios.post(
-                    MERCURY_HOST +
-                      `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
-                    {
-                      trace_id: localStorage.getItem(`${provider}_trace_id`),
-                      result_indices: [resultIndex],
-                      source_itinerary_city: originCityId ? originCityId : null,
-                      destination_itinerary_city: destinationCityId
-                        ? destinationCityId
-                        : null,
-                      booking_id: booking_id,
-                      edge: edge,
-                    },
-                    {
-                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem(
-                          "access_token"
-                        )}`,
-                      },
-                    }
-                  );
-                  setLoading(false);
-                  const updatedTransferBookings = {
-                    ...transferBookings,
-                    intercity: {
-                      ...transferBookings.intercity,
-                      [originCityId + ":" + destinationCityId]: res?.data,
-                    },
-                  };
-                  dispatch(setTransfersBookings(updatedTransferBookings));
-                  getPaymentHandler();
-                  dispatch(
-                    openNotification({
-                      type: "success",
-                      text: "Updated booking Successfully",
-                      heading: "Success!",
-                    })
-                  );
-                }
-              } catch (error) {
-                setLoading(false);
-                dispatch(
-                  openNotification({
-                    type: "error",
-                    text: `${error.response?.data?.errors[0]?.message[0]}`,
-                    heading: "Error!",
-                  })
-                );
-              }
+              await handleBookingWithWarning({
+                individual: individual,
+                resultIndex: resultIndex,
+                originCityId: originCityId,
+                destinationCityId: destinationCityId,
+                booking_id:
+                  booking_id ||
+                  (router.query.bookingId === ""
+                    ? null
+                    : router.query.bookingId),
+                edge: edge,
+              });
             }}
           >
             <div className="flex justify-center items-center relative min-w-[120px] h-[24px]">
@@ -240,11 +307,7 @@ const Details = ({
               </span>
               {loading && (
                 <div className="absolute inset-0 flex justify-center items-center">
-                  <PulseLoader
-                    size={8}
-                    speedMultiplier={0.6}
-                    color="#000000"
-                  />
+                  <PulseLoader size={8} speedMultiplier={0.6} color="#000000" />
                 </div>
               )}
             </div>
@@ -256,7 +319,7 @@ const Details = ({
   );
 };
 
-export const FlightSegment = ({ segments }) => {
+export const FlightSegment = ({ segments, showWarningModal, warningData, setWarningData, setShowWarningModal, setPendingBookingData }) => {
   function getTime(totalMinutes) {
     if (totalMinutes) {
       const hours = Math.floor(totalMinutes / 60);
@@ -279,14 +342,16 @@ export const FlightSegment = ({ segments }) => {
                     Change of planes
                   </div>
                   <div className="text-xs text-gray-600">
-                    {`${getTime(segment?.ground_time)} Layover in ${segment?.origin?.airport_name}`}
+                    {`${getTime(segment?.ground_time)} Layover in ${
+                      segment?.origin?.airport_name
+                    }`}
                   </div>
                 </div>
                 <div className="hidden sm:block flex-shrink-0 w-8 h-px bg-[#FDCA05]"></div>
               </div>
             </div>
           )}
-          
+
           {/* <div className="flex flex-col gap-4">
          
             <div className="flex items-center gap-3">
@@ -404,131 +469,185 @@ export const FlightSegment = ({ segments }) => {
           </div> */}
 
           <div className="flex flex-col gap-2">
-  {/* Airline Info */}
-  <div className="flex items-center gap-3">
-    <div className="rounded-full overflow-hidden flex-shrink-0" style={{ width: '36px', height: '36px' }}>
-      <Logo src={segment?.airline?.code} ht={36} wd={36} />
-    </div>
-    <div className="flex items-center gap-2 flex-wrap">
-      <span className="font-semibold text-base text-gray-900">
-        {segment?.airline?.name}
-      </span>
-      <span className="text-sm text-gray-500">
-        {`${segment?.airline?.code}-${segment?.airline?.flight_number}`}
-      </span>
-    </div>
-  </div>
+            {/* Airline Info */}
+            <div className="flex items-center gap-3">
+              <div
+                className="rounded-full overflow-hidden flex-shrink-0"
+                style={{ width: "36px", height: "36px" }}
+              >
+                <Logo src={segment?.airline?.code} ht={36} wd={36} />
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-semibold text-base text-gray-900">
+                  {segment?.airline?.name}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {`${segment?.airline?.code}-${segment?.airline?.flight_number}`}
+                </span>
+              </div>
+            </div>
 
-  {/* Flight Route with Vertical Timeline */}
-  <div className="flex gap-3  mx-2">
-    {/* Timeline */}
-   <div className="flex flex-col items-center pt-1">
-      
-      <Pin></Pin>
-      <div className="w-0.7 flex-1 my-2 border-l-2 border-dashed border-gray-400"></div>
-      
-      <Pin></Pin>
-    </div>
+            {/* Flight Route with Vertical Timeline */}
+            <div className="flex gap-3  mx-2">
+              {/* Timeline */}
+              <div className="flex flex-col items-center pt-1">
+                <Pin></Pin>
+                <div className="w-0.7 flex-1 my-2 border-l-2 border-dashed border-gray-400"></div>
 
-    {/* Content */}
-    <div className="flex flex-col flex-1 gap-4">
-      {/* Origin */}
-      <div className="flex flex-col">
-        <div className="font-medium text-sm text-gray-900">
-          {segment?.origin?.airport_code === "DEL" ? "New Delhi" : segment?.origin?.airport_code}
-          <span className="font-normal text-gray-600">
-            , {segment?.origin?.airport_name}
-            {segment?.origin?.terminal && `, Terminal ${segment?.origin?.terminal.replace("Terminal ", "")}`}
-          </span>
-        </div>
-      </div>
+                <Pin></Pin>
+              </div>
 
-      {/* Duration */}
-      <div className="text-sm text-gray-600 -my-2">
-        {getTime(segment?.duration)}
-      </div>
+              {/* Content */}
+              <div className="flex flex-col flex-1 gap-4">
+                {/* Origin */}
+                <div className="flex flex-col">
+                  <div className="font-medium text-sm text-gray-900">
+                    {segment?.origin?.airport_code === "DEL"
+                      ? "New Delhi"
+                      : segment?.origin?.airport_code}
+                    <span className="font-normal text-gray-600">
+                      , {segment?.origin?.airport_name}
+                      {segment?.origin?.terminal &&
+                        `, Terminal ${segment?.origin?.terminal.replace(
+                          "Terminal ",
+                          ""
+                        )}`}
+                    </span>
+                  </div>
+                </div>
 
-      {/* Destination */}
-      <div className="flex flex-col">
-        <div className="font-medium text-sm text-gray-900">
-          {segment?.destination?.airport_code === "TXL" ? "Berlin" : segment?.destination?.airport_code}
-          <span className="font-normal text-gray-600">
-            , {segment?.destination?.airport_name}
-            {segment?.destination?.terminal && `, Terminal ${segment?.destination?.terminal.replace("Terminal ", "")}`}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
+                {/* Duration */}
+                <div className="text-sm text-gray-600 -my-2">
+                  {getTime(segment?.duration)}
+                </div>
 
+                {/* Destination */}
+                <div className="flex flex-col">
+                  <div className="font-medium text-sm text-gray-900">
+                    {segment?.destination?.airport_code === "TXL"
+                      ? "Berlin"
+                      : segment?.destination?.airport_code}
+                    <span className="font-normal text-gray-600">
+                      , {segment?.destination?.airport_name}
+                      {segment?.destination?.terminal &&
+                        `, Terminal ${segment?.destination?.terminal.replace(
+                          "Terminal ",
+                          ""
+                        )}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
+            {/* Segments Timing */}
+            {/* Information Grid */}
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+              <div>
+                <div className="text-sm font-semibold text-gray-900 mb-1">
+                  Departure Time
+                </div>
+                <div className="text-sm text-gray-600">
+                  {segment?.origin?.departure_time
+                    ? new Date(
+                        segment?.origin?.departure_time
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                    : ""}
+                </div>
+              </div>
 
-  {/* Segments Timing */}
-   {/* Information Grid */}
-  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-    <div>
-      <div className="text-sm font-semibold text-gray-900 mb-1">
-        Departure Time
-      </div>
-      <div className="text-sm text-gray-600">
-        {segment?.origin?.departure_time
-            ? new Date(segment?.origin?.departure_time).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              })
-            : ""}
-      </div>
-    </div>
-    
-    <div>
-      <div className="text-sm font-semibold text-gray-900 mb-1">
-        Arrival Time
-      </div>
-      <div className="text-sm text-gray-600">
-        {segment?.destination?.arrival_time
-            ? new Date(segment?.destination?.arrival_time).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              })
-            : ""}
-      </div>
-    </div>
-  </div>
-  
-  {/* Information Grid */}
-  <div className=" flex flex-wrap md:grid  md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-    <div>
-      <div className="text-sm font-semibold text-gray-900 mb-1">
-        Cabin Class
-      </div>
-      <div className="text-sm text-gray-600">
-        {segment?.airline?.cabin_class || segment?.cabin_class || "N/A"}
-      </div>
-    </div>
-    
-    <div>
-      <div className="text-sm font-semibold text-gray-900 mb-1">
-        Baggage Allowance
-      </div>
-      <div className="text-sm text-gray-600">
-        {segment?.baggage_allowance || "N/A"}
-      </div>
-    </div>
-    
-    <div>
-      <div className="text-sm font-semibold text-gray-900 mb-1">
-        Cabin Baggage Allowance
-      </div>
-      <div className="text-sm text-gray-600">
-        {segment?.cabin_baggage_allowance || "N/A"}
-      </div>
-    </div>
-  </div>
-</div>
+              <div>
+                <div className="text-sm font-semibold text-gray-900 mb-1">
+                  Arrival Time
+                </div>
+                <div className="text-sm text-gray-600">
+                  {segment?.destination?.arrival_time
+                    ? new Date(
+                        segment?.destination?.arrival_time
+                      ).toLocaleTimeString("en-US", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                    : ""}
+                </div>
+              </div>
+            </div>
+
+            {/* Information Grid */}
+            <div className=" flex flex-wrap md:grid  md:grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+              <div>
+                <div className="text-sm font-semibold text-gray-900 mb-1">
+                  Cabin Class
+                </div>
+                <div className="text-sm text-gray-600">
+                  {segment?.airline?.cabin_class ||
+                    segment?.cabin_class ||
+                    "N/A"}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-gray-900 mb-1">
+                  Baggage Allowance
+                </div>
+                <div className="text-sm text-gray-600">
+                  {segment?.baggage_allowance || "N/A"}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-gray-900 mb-1">
+                  Cabin Baggage Allowance
+                </div>
+                <div className="text-sm text-gray-600">
+                  {segment?.cabin_baggage_allowance || "N/A"}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
+
+      {showWarningModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Warning</h3>
+            <p className="text-gray-700 mb-6">
+              {warningData?.warning ||
+                warningData?.message ||
+                "Are you sure you want to proceed with this booking?"}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowWarningModal(false);
+                  setWarningData(null);
+                  setPendingBookingData(null);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setShowWarningModal(false);
+                  await confirmBooking(pendingBookingData);
+                  setWarningData(null);
+                  setPendingBookingData(null);
+                }}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

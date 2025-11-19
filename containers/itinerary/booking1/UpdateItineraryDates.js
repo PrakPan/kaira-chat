@@ -284,13 +284,20 @@ const UpdateItineraryDates = ({
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
   const [dateType, setDateType] = useState("fixed");
-const date={
-  type:"fixed",
-  start_date:new Date(startDate)?.toISOString(),
-  end_date:new Date(endDate)?.toISOString(),
-  month:"",
-  duration:itinerary?.duration || ""
-}
+ const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const date = {
+    type: "fixed",
+    start_date: start.toISOString(),
+    end_date: end.toISOString(),
+    month: "",
+    duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
+  };
+
   const [momentStartDate, setMomentStartDate] = useState(
     itinerary?.start_date ? moment(itinerary.start_date) : null
   );
@@ -304,11 +311,12 @@ const date={
 
   // REPLACE the existing useEffect that sets showCalendar
 useEffect(() => {
-  if (autoOpenCalendar) {
-    setShowCalendar(true);
-    setFocusedInput("startDate");
-  }
-}, [autoOpenCalendar]);
+    if (autoOpenCalendar) {
+      setShowCalendar(true);
+      setFocusedInput("startDate");
+    }
+  }, [autoOpenCalendar]);
+
 
   useEffect(() => {
     const checkScreenSize = () => {

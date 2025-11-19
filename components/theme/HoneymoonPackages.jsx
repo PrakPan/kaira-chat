@@ -50,11 +50,12 @@ export default function HoneymoonPackages(props) {
     .map((component) => component.heading);
 
   const handlePlanButton = (pageId, destination, type) => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, pageId, destination, type);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, pageId, destination, type);
+    // }
+    router.push("/new-trip");
   };
   
   const matchingComponent = props?.data?.find(

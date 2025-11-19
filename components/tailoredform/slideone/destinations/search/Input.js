@@ -67,7 +67,7 @@ const SearchInput = (props) => {
       onBlur={_handleBlur}
       onClick={props.searchFinalized ? _handleReset : _resetSelectedCities}
       readOnly={props.eventDates ? true : false}
-      placeholder="Search destination"
+      placeholder="Search any city, state, or country"
       value={value}
       className="Body2M_14 placeholder:font-weight-400"
       onChange={(e) => setValue(e.target.value)}

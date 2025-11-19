@@ -6,6 +6,39 @@ export const isBeforeToday = (date) => {
   return date < todayMidnight;
 };
 
+export const getNext12Months = (startDate = new Date()) => {
+  const monthsList = [];
+
+  let year = startDate.getFullYear();
+  let month = startDate.getMonth(); 
+  const day = startDate.getDate();
+
+  if (day > 15) {
+    month++;
+    if (month > 11) {
+      month = 0;
+      year++;
+    }
+  }
+
+  for (let i = 0; i < 12; i++) {
+    monthsList.push({
+      monthIndex: month,
+      monthName: months[month],
+      year: year,
+      key: `${months[month]}, ${year}`,
+    });
+
+    month++;
+    if (month > 11) {
+      month = 0;
+      year++;
+    }
+  }
+
+  return monthsList;
+};
+
 export const normalizeDate = (d) => {
   if (!d) return null;
   const date = new Date(d);

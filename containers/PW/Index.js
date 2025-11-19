@@ -13,6 +13,7 @@ import axiossearchinstance from "../../services/sales/search/Search";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import LoadingLottie from "../../components/ui/LoadingLottie";
 import CaseStudies from "../travelplanner/CaseStudies/Index";
+import PartnersSection from "../../components/theme/PartnersSection";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -290,7 +291,7 @@ const Homepage = (props) => {
       </SetWidthContainer>
 
       <SetWidthContainer>
-        <Heading
+        {/* <Heading
           align="center"
           aligndesktop="left"
           margin={!isPageWide ? "2.5rem 0.5rem" : "2.5rem 0rem"}
@@ -298,8 +299,9 @@ const Homepage = (props) => {
           noline
         >
           What They Say?
-        </Heading>
-        <AsSeenIn disablelinks></AsSeenIn>
+        </Heading> */}
+        {/* <AsSeenIn disablelinks></AsSeenIn> */}
+        <PartnersSection />
         <Heading
           align="center"
           aligndesktop="left"

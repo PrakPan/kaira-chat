@@ -103,7 +103,7 @@ const GITText = styled.p`
 
 const Cost = (props) => {
   return (
-    <div className="center-di">
+    <div className="center-di mb-2">
       {props.starting_cost ? (
         <div style={{ display: "flex" }}>
           <div style={{ width: "max-content" }}>

@@ -58,12 +58,12 @@ const FaqSection = ({Faqs}) => {
   };
 
   return (
-    <section className="w-full bg-white py-16 px-4">
+    <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-[40px] font-bold text-gray-900 mb-4 leading-tight">
-            Frequently Asked Questions.
+          <h2 className="text-3xl max-sm:text-xl font-bold text-gray-900 mb-4 leading-tight">
+            Frequently Asked Questions
           </h2>
           <p className="text-gray-600 text-[16px] max-w-2xl mx-auto leading-relaxed">
             Planning made simple with answers to your most common questions.
@@ -71,7 +71,8 @@ const FaqSection = ({Faqs}) => {
         </div>
 
         {/* FAQ Items */}
-        <div className="space-y-0">
+        <div className="space-y-0"
+        style={{ padding: "1rem" }}>
           {(Faqs || faqData).map((faq, index) => (
             <div
               key={index}

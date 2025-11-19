@@ -366,13 +366,16 @@ const Activity = (props) => {
 
             <div className="flex  flex-wrap items-center text-sm ">
               <div className="pr-[8px] flex gap-[8px]">
-                <Image
-                  src={props?.element?.poi ? '/assets/Itinerary/global.svg' : '/assets/Itinerary/activity.svg'}
+                {props?.element?.poi ?<Image
+                  src={props?.element?.poi ? '/assets/Itinerary/global.svg' : ''}
                   alt="ticket"
                   width={18}
                   height={18}
-                />
-                <div className="text-[#6E757A] Body3R_12">{props?.element?.poi ? "Self Exploration" : "Activity"}</div>
+                /> : null}
+                <div className="text-[#6E757A] Body3R_12">{props?.element?.poi ? "Self Exploration" : ""}</div>
+                {!props?.element?.poi ? <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] rounded-sm">
+                    Activity
+                </div> : ""}
               </div>
 
               {(props.element?.start_time || props.element?.end_time) && (

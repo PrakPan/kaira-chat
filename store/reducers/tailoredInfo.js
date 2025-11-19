@@ -24,12 +24,12 @@ const initialReducer = {
         numberOfInfants: 0,
         roomConfiguration: [{adults: 1, children: 0, infants: 0, childAges: []}],
         submitSecondSlide: false,
-        addHotels: false,
-        addFlights: false,
-        addInclusions: false,
+        addHotels: true,
+        addFlights: true,
+        addInclusions: true,
     },
     slideFour: {
-        hotelType: [],
+        hotelType: ['3','4','5'],
         mealPreferences: [],
         specialRequests: ""
     },

@@ -57,6 +57,7 @@ const FlightDetailModal = ({
   onChange,
   isEmbedded,
   handleClose,
+  getPaymentHandler,
   // setHandleShow,
   error,
   setShowLoginModal,
@@ -94,6 +95,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
 
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
+        getPaymentHandler();
         trackTransferBookingDelete(router.query.id, booking_id, id);
         setLoading(false);
         dispatch(

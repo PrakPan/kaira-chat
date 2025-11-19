@@ -59,6 +59,9 @@ import JourneySimplified from "../../components/revamp/home/JourneySimplified.js
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import styles from "../../styles/pages/revamp/home.module.scss";
+import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import DesktopBanner from "../../components/containers/Banner.js"
 
 
 const SetWidthContainer = styled.div`
@@ -101,16 +104,17 @@ const Index = (props) => {
   const [hotLocations, setHotLocations] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
+  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
 
-const handleOpenDrawer = (data, type) => {
-  setActiveDrawer({ data, type });
-};
+  const handleOpenDrawer = (data, type) => {
+    setActiveDrawer({ data, type });
+  };
 
-const handleCloseDrawer = () => {
-  setActiveDrawer(null);
-};
+  const handleCloseDrawer = () => {
+    setActiveDrawer(null);
+  };
 
   const handlePlanButton = (pageId, destination, type) => {
     handlePlanButtonClick;
@@ -132,12 +136,14 @@ const handleCloseDrawer = () => {
   }, [props?.data?.components?.[0]?.itineraries]);
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(
-      router,
-      props.data.id,
-      convertDbNameToCapitalFirst(props.data.slug),
-      props.type
-    );
+    // openTailoredModal(
+    
+    //   router,
+    //   props.data.id,
+    //   convertDbNameToCapitalFirst(props.data.slug),
+    //   props.type
+    // );
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -165,6 +171,27 @@ const handleCloseDrawer = () => {
         />
 
         <SetWidthContainer>
+
+             <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
+
+
           <PathNavigation path={props.data.path} />
 
           {props.locations && props.locations.length ? (
@@ -343,8 +370,8 @@ const handleCloseDrawer = () => {
                 component.carousel.toLowerCase().includes("poi");
               return (
                 <>
-                  <div className="space-y-12 mt-5">
-                    <div className="space-y-3">
+                  <div className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8">
+                    <div className="space-y-3 lg:py-8">
                       <PrimaryHeading
                         className={`mx-auto text-center ${
                           isActivityOrPoi ? "text-left" : ""
@@ -408,8 +435,8 @@ const handleCloseDrawer = () => {
                             spaceBetween={16}
                             slidesPerView={1}
                             navigation={{
-                              nextEl: ".PlacesBragSection-next",
-                              prevEl: ".PlacesBragSection-prev",
+                              nextEl: ".PlacesBragSection-n",
+                              prevEl: ".PlacesBragSection-p",
                               clickable: true,
                             }}
                             breakpoints={{
@@ -469,7 +496,7 @@ const handleCloseDrawer = () => {
                               </SwiperSlide>
                             ))}
                           </Swiper>
-                          <div className="PlacesBragSection-prev" aria-hidden>
+                          <div className="PlacesBragSection-p" aria-hidden>
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
@@ -487,7 +514,7 @@ const handleCloseDrawer = () => {
                           </div>
 
                           {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-next" aria-hidden>
+                          <div className="PlacesBragSection-n" aria-hidden>
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
@@ -524,8 +551,8 @@ const handleCloseDrawer = () => {
                               spaceBetween={16}
                               slidesPerView={1}
                               navigation={{
-                                nextEl: ".PlacesBragSection-next",
-                                prevEl: ".PlacesBragSection-prev",
+                                nextEl: ".PlacesBragSection-ne",
+                                prevEl: ".PlacesBragSection-pr",
                                 clickable: true,
                               }}
                               breakpoints={{
@@ -586,7 +613,7 @@ const handleCloseDrawer = () => {
                                 </SwiperSlide>
                               ))}
                             </Swiper>
-                            <div className="PlacesBragSection-prev" aria-hidden>
+                            <div className="PlacesBragSection-pr" aria-hidden>
                               <div
                                 className="absolute left-3 sm:left-1 z-10"
                                 style={{
@@ -604,7 +631,7 @@ const handleCloseDrawer = () => {
                             </div>
 
                             {/* Custom Next Button - centered to image height (376px) */}
-                            <div className="PlacesBragSection-next" aria-hidden>
+                            <div className="PlacesBragSection-ne" aria-hidden>
                               <div
                                 className="absolute right-3 sm:right-1 z-10"
                                 style={{
@@ -676,8 +703,8 @@ const handleCloseDrawer = () => {
                             spaceBetween={16}
                             slidesPerView={1}
                             navigation={{
-                              nextEl: ".PlacesBragSection-next",
-                              prevEl: ".PlacesBragSection-prev",
+                              nextEl: ".PlacesBragSection-nex",
+                              prevEl: ".PlacesBragSection-pre",
                               clickable: true,
                             }}
                             breakpoints={{
@@ -698,36 +725,38 @@ const handleCloseDrawer = () => {
                               },
                             }}
                           >
-                           {component?.activities.map((activity) => (
-          <SwiperSlide key={activity.id}>
-            <div className="w-full px-1">
-              <DestinationCard
-                title={activity.title || activity.name}
-                description={
-                  activity.one_liner_description ||
-                  activity.tagline
-                }
-                one_liner_description={
-                  activity.one_liner_description
-                }
-                image={activity.image}
-                rating={activity.rating}
-                reviewCount={activity.user_ratings_total}
-                showImageText={false}
-                tags={
-                  activity.tags ||
-                  (activity.continent
-                    ? [activity.continent]
-                    : [])
-                }
-                gradientOverlay={activity.gradientOverlay}
-                onClick={() => handleOpenDrawer(activity, 'activity')}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
+                            {component?.activities.map((activity) => (
+                              <SwiperSlide key={activity.id}>
+                                <div className="w-full px-1">
+                                  <DestinationCard
+                                    title={activity.title || activity.name}
+                                    description={
+                                      activity.one_liner_description ||
+                                      activity.tagline
+                                    }
+                                    one_liner_description={
+                                      activity.one_liner_description
+                                    }
+                                    image={activity.image}
+                                    rating={activity.rating}
+                                    reviewCount={activity.user_ratings_total}
+                                    showImageText={false}
+                                    tags={
+                                      activity.tags ||
+                                      (activity.continent
+                                        ? [activity.continent]
+                                        : [])
+                                    }
+                                    gradientOverlay={activity.gradientOverlay}
+                                    onClick={() =>
+                                      handleOpenDrawer(activity, "activity")
+                                    }
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
                           </Swiper>
-                          <div className="PlacesBragSection-prev" aria-hidden>
+                          <div className="PlacesBragSection-pre" aria-hidden>
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
@@ -745,7 +774,7 @@ const handleCloseDrawer = () => {
                           </div>
 
                           {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-next" aria-hidden>
+                          <div className="PlacesBragSection-nex" aria-hidden>
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
@@ -766,10 +795,12 @@ const handleCloseDrawer = () => {
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
-                        {/* <Itinerary1Carousel itineraries={component.itineraries} /> */}
-                        <MostLovedItinerariesSection
-                          apiItineraries={component.itineraries}
+                        <Itinerary1Carousel
+                          itineraries={component.itineraries}
                         />
+                        {/* <MostLovedItinerariesSection
+                          apiItineraries={component.itineraries}
+                        /> */}
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
@@ -818,8 +849,8 @@ const handleCloseDrawer = () => {
                             spaceBetween={16}
                             slidesPerView={1}
                             navigation={{
-                              nextEl: ".PlacesBragSection-next",
-                              prevEl: ".PlacesBragSection-prev",
+                              nextEl: ".PlacesBragSection-nextt",
+                              prevEl: ".PlacesBragSection-prevv",
                               clickable: true,
                             }}
                             breakpoints={{
@@ -835,42 +866,44 @@ const handleCloseDrawer = () => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
                           >
                             {component?.activities.map((activity) => (
-          <SwiperSlide key={activity.id}>
-            <div className="w-full px-1">
-              <DestinationCard
-                title={activity.title || activity.name}
-                description={
-                  activity.one_liner_description ||
-                  activity.tagline
-                }
-                one_liner_description={
-                  activity.one_liner_description
-                }
-                image={activity.image}
-                rating={activity.rating}
-                reviewCount={activity.user_ratings_total}
-                showImageText={false}
-                tags={
-                  activity.tags ||
-                  (activity.continent
-                    ? [activity.continent]
-                    : [])
-                }
-                gradientOverlay={activity.gradientOverlay}
-                onClick={() => handleOpenDrawer(activity, 'activity')}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
+                              <SwiperSlide key={activity.id}>
+                                <div className="w-full px-1">
+                                  <DestinationCard
+                                    title={activity.title || activity.name}
+                                    description={
+                                      activity.one_liner_description ||
+                                      activity.tagline
+                                    }
+                                    one_liner_description={
+                                      activity.one_liner_description
+                                    }
+                                    image={activity.image}
+                                    rating={activity.rating}
+                                    reviewCount={activity.user_ratings_total}
+                                    showImageText={false}
+                                    tags={
+                                      activity.tags ||
+                                      (activity.continent
+                                        ? [activity.continent]
+                                        : [])
+                                    }
+                                    gradientOverlay={activity.gradientOverlay}
+                                    onClick={() =>
+                                      handleOpenDrawer(activity, "activity")
+                                    }
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
                           </Swiper>
                           {/* Custom Prev Button */}
-                          <div className="PlacesBragSection-prev" aria-hidden>
+                          <div className="PlacesBragSection-prevv" aria-hidden>
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
@@ -888,7 +921,7 @@ const handleCloseDrawer = () => {
                           </div>
 
                           {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-next" aria-hidden>
+                          <div className="PlacesBragSection-nextt" aria-hidden>
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
@@ -954,8 +987,8 @@ const handleCloseDrawer = () => {
                             spaceBetween={16}
                             slidesPerView={1}
                             navigation={{
-                              nextEl: ".PlacesBragSection-next",
-                              prevEl: ".PlacesBragSection-prev",
+                              nextEl: ".PlacesBragSection-nn",
+                              prevEl: ".PlacesBragSection-pp",
                               clickable: true,
                             }}
                             breakpoints={{
@@ -971,42 +1004,39 @@ const handleCloseDrawer = () => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
                           >
-                             {component?.pois.map((poi) => (
-          <SwiperSlide key={poi.id}>
-            <div className="w-full px-1">
-              <DestinationCard
-                title={poi.title || poi.name}
-                description={
-                  poi.one_liner_description ||
-                  poi.tagline
-                }
-                one_liner_description={
-                  poi.one_liner_description
-                }
-                image={poi.image}
-                rating={poi.rating}
-                reviewCount={poi.user_ratings_total}
-                showImageText={false}
-                tags={
-                  poi.tags ||
-                  (poi.continent
-                    ? [poi.continent]
-                    : [])
-                }
-                gradientOverlay={poi.gradientOverlay}
-                onClick={() => handleOpenDrawer(poi, 'poi')}
-              />
-            </div>
-          </SwiperSlide>
-        ))}
+                            {component?.pois.map((poi) => (
+                              <SwiperSlide key={poi.id}>
+                                <div className="w-full px-1">
+                                  <DestinationCard
+                                    title={poi.title || poi.name}
+                                    description={
+                                      poi.one_liner_description || poi.tagline
+                                    }
+                                    one_liner_description={
+                                      poi.one_liner_description
+                                    }
+                                    image={poi.image}
+                                    rating={poi.rating}
+                                    reviewCount={poi.user_ratings_total}
+                                    showImageText={false}
+                                    tags={
+                                      poi.tags ||
+                                      (poi.continent ? [poi.continent] : [])
+                                    }
+                                    gradientOverlay={poi.gradientOverlay}
+                                    onClick={() => handleOpenDrawer(poi, "poi")}
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
                           </Swiper>
                           {/* Custom Prev Button */}
-                          <div className="PlacesBragSection-prev" aria-hidden>
+                          <div className="PlacesBragSection-pp" aria-hidden>
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
@@ -1024,7 +1054,7 @@ const handleCloseDrawer = () => {
                           </div>
 
                           {/* Custom Next Button - centered to image height (376px) */}
-                          <div className="PlacesBragSection-next" aria-hidden>
+                          <div className="PlacesBragSection-nn" aria-hidden>
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
@@ -1118,7 +1148,6 @@ const handleCloseDrawer = () => {
           </H3>
           <WhyPlanWithUs page_id={props.data.id} /> */}
 
-
           <WhatMakesUsSection />
 
           {/* <H3
@@ -1132,16 +1161,18 @@ const handleCloseDrawer = () => {
           <Reviews></Reviews> */}
 
           <CurveImageGallery />
+          <TestimonialCarousel />
 
-          <H3
+          {/* <H3
             style={{
               margin: "4rem 0 2.5rem 0",
               textAlign: isPageWide ? "left" : "center",
             }}
           >
             What they say?
-          </H3>
-          <AsSeenIn />
+          </H3> */}
+          {/* <AsSeenIn /> */}
+          <PartnersSection />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
@@ -1158,32 +1189,31 @@ const handleCloseDrawer = () => {
 
       <CtaBoardingSection />
 
-       {activeDrawer?.type === 'poi' && (
-  <POIDetailsDrawer
-    show={true}
-    iconId={activeDrawer.data.id}
-    handleCloseDrawer={handleCloseDrawer}
-    name={activeDrawer.data.name}
-    id={activeDrawer.data.id}
-    activityData={{
-    type:"poi",
-    id:activeDrawer.data.id
-  }}
-    removeDelete={true}
-    removeChange={true}
-  />
-)}
+      {activeDrawer?.type === "poi" && (
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+        />
+      )}
 
-{activeDrawer?.type === 'activity' && (
-  <POIDetailsDrawer
-    show={true}
-    ActivityiconId={activeDrawer.data.id}
-    handleCloseDrawer={handleCloseDrawer}
-    name={activeDrawer.data.name}
-    removeDelete={true}
-  >
-  </POIDetailsDrawer>
-)}
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+        ></POIDetailsDrawer>
+      )}
     </div>
   );
 };

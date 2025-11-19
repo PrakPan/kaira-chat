@@ -65,11 +65,12 @@ const Card = (props) => {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.pageId, props.destination);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.pageId, props.destination);
+    // }
+    router.push("/new-trip");
   };
 
   return (
