@@ -370,8 +370,8 @@ const Index = (props) => {
                 component.carousel.toLowerCase().includes("poi");
               return (
                 <>
-                  <div className="space-y-12 mt-5">
-                    <div className="space-y-3">
+                  <div className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8">
+                    <div className="space-y-3 lg:py-8">
                       <PrimaryHeading
                         className={`mx-auto text-center ${
                           isActivityOrPoi ? "text-left" : ""
@@ -866,7 +866,7 @@ const Index = (props) => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
@@ -1004,7 +1004,7 @@ const Index = (props) => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}

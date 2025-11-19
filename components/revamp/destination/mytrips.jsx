@@ -58,12 +58,12 @@ const MyTripsSection = ({ apiItineraries, className }) => {
     router.push("/dashboard");
   };
 
-  console.log("TRIPS",trips);
+
   return (
-    <section className="px-0 sm:px-4 lg:px-8 bg-white">
-      <div className={`w-full mx-auto py-4 sm:py-4 lg:py-4 pb-0 ${className}`}>
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-tight">
+    <section className="py-12 sm:py-16 lg:py-14  px-0 sm:px-4 lg:px-8 bg-white">
+      <div className={`w-full mx-auto ${className}`}>
+          <div className="text-center mb-8 lg:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
               My Trips {`(${plansCount})`}
             </h2>
             <p className="text-gray-600 text-base max-w-2xl mx-auto leading-6">

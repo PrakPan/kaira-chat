@@ -77,17 +77,17 @@ const PlacesBragSection = () => {
       title: "Dubai",
       description:
         "Experience a dazzling oasis where futuristic skyscrapers, luxurious shopping, and vibrant nightlife create an unforgettable spectacle.",
-        tags: [
-          "Adventure and Outdoors",
-          "Spiritual",
-          "Isolated",
-          "Romantic",
-          "Heritage",
-          "Art and Culture",
-          "Shopping",
-          "Nature and Retreat",
-          "Nightlife and Events",
-        ],
+      tags: [
+        "Adventure and Outdoors",
+        "Spiritual",
+        "Isolated",
+        "Romantic",
+        "Heritage",
+        "Art and Culture",
+        "Shopping",
+        "Nature and Retreat",
+        "Nightlife and Events",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
@@ -98,7 +98,7 @@ const PlacesBragSection = () => {
       title: "Singapore",
       description:
         "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
-      tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
+      tags: ["Adventure and Outdoors", "Art and Culture", "Shopping"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/singapore",
@@ -109,7 +109,16 @@ const PlacesBragSection = () => {
       title: "Bali",
       description:
         "Discover a tropical paradise where lush rice terraces and vibrant culture blend into an unforgettable island escape.",
-      tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
+      tags: [
+        "Adventure and Outdoors",
+        "spiritual",
+        "Nature and Retreat",
+        "Heritage",
+        "Art and Culture",
+        "Hidden Gem",
+        "Very Popular",
+        "Romantic",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/indonesia/bali",
@@ -137,15 +146,15 @@ const PlacesBragSection = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-17 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full sm:max-w-7xl sm:mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6 leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
             Places You'll Brag About Forever
           </h2>
           <p
-            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0"
+            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0 text-base"
             style={{ fontSize: "16px" }}
           >
             From jaw-dropping landmarks to hidden gems, these are the kind of
@@ -206,43 +215,46 @@ const PlacesBragSection = () => {
           </Swiper>
 
           {/* Custom Prev Button */}
-          <div className="fullslider-prev" aria-hidden>
-            <div className="absolute -left-3  top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronLeft}
-                  className="text-white  text-md transition-colors duration-300 transform "
-                />
-              </div>
+          {/* Custom Prev Button */}
+          <div className="fullslider-prev absolute -left-1 sm:left-1 top-[188px] z-20 cursor-pointer">
+            <div
+              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+                  items-center justify-center hover:scale-110 transition-all duration-300"
+            >
+              <FontAwesomeIcon
+                icon={faChevronLeft}
+                className="text-white text-md"
+              />
             </div>
           </div>
 
           {/* Custom Next Button */}
-          <div className="fullslider-next" aria-hidden>
-            <div className="absolute -right-3  top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                <FontAwesomeIcon
-                  icon={faChevronRight}
-                  className="text-white text-md transition-colors duration-300 transform "
-                />
-              </div>
+          <div className="fullslider-next absolute -right-1 sm:right-1 top-[188px] z-20 cursor-pointer">
+            <div
+              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+                  items-center justify-center hover:scale-110 transition-all duration-300"
+            >
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                className="text-white text-md"
+              />
             </div>
           </div>
 
-             <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
-                  <Button
-                    variant="filled"
-                    size="medium"
-                    onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                    }}
-                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
-                  >
-                    + Create a Trip Now!
-                  </Button>
-                </Link>
-              </div>
+          <div className=" flex items-center justify-center mt-8 lg:mt-10">
+            <Link href="/new-trip">
+              <Button
+                variant="filled"
+                size="medium"
+                onClick={() => {
+                  console.log("Create a Trip Now! clicked");
+                }}
+                className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+              >
+                + Create a Trip Now!
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

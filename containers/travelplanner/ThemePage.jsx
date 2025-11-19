@@ -54,7 +54,18 @@ import HeroSection from "../../components/revamp/destination/HeroSection.jsx";
 import MostLovedItinerariesSection from "../../components/revamp/destination/MostLovedItinerariesSection.jsx";
 import CarouselNavigation from "../../components/theme/Navigation.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
+import DestinationCard from "../../components/revamp/common/components/card/DestinationCard.jsx";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import {
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -74,6 +85,15 @@ export default function ThemePage(props) {
   const [navigationComponents, setNavigationComponents] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
+
+   const [activeDrawer, setActiveDrawer] = useState(null);
+  
+    const handleOpenDrawer = (data, type) => {
+      setActiveDrawer({ data, type });
+    };
+     const handleCloseDrawer = () => {
+    setActiveDrawer(null);
+  };
 
   useEffect(() => {
     if (props.experienceData?.components) {
@@ -499,10 +519,98 @@ export default function ThemePage(props) {
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        <Activity1Carousel
+                        {/* <Activity1Carousel
                           activities={component.activities}
                           slug={props?.slug}
-                        />{" "}
+                        />{" "} */}
+                        <div className="relative px-2 sm:px-0">
+            <Swiper
+              style={{ height: "auto" }}
+              modules={[Navigation]}
+              spaceBetween={16}
+              slidesPerView={1}
+              navigation={{
+                nextEl: ".PlacesBragSection-next",
+                prevEl: ".PlacesBragSection-prev",
+                clickable: true,
+              }}
+              breakpoints={{
+                // when window width is >= 640px
+                640: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 16,
+                },
+                // when window width is >= 768px
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                },
+                // when window width is >= 1024px
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 24,
+                },
+              }}
+            >
+              {component.activities.map((destination) => (
+                <SwiperSlide key={destination.id}>
+                  <div className="w-full px-1">
+                    <DestinationCard
+                      title={destination.title || destination.name}
+                      description={
+                        destination.description || destination.tagline
+                      }
+                      image={destination.image}
+                      rating={destination.rating}
+                      one_liner_description={destination?.one_liner_description}
+                      reviewCount={destination.user_ratings_total}
+                      showImageText={false}
+                      tags={
+                        destination.tags ||
+                        (destination.continent ? [destination.continent] : [])
+                      }
+                      gradientOverlay={destination.gradientOverlay}
+                       onClick={() => handleOpenDrawer(destination, "activity")}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="PlacesBragSection-prev" aria-hidden>
+              <div
+                className="absolute left-3 sm:left-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Custom Next Button - centered to image height (376px) */}
+            <div className="PlacesBragSection-next" aria-hidden>
+              <div
+                className="absolute right-3 sm:right-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
                         <PlanYourTripButton
                           text={"Create your free itinerary"}
                         />
@@ -607,13 +715,100 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "destination-5" ? (
                       <>
-                        <Poi
+                        {/* <Poi
                           elevation={component?.elevation}
                           data={component?.data}
                           thingsToDoPage={component?.thingsToDoPage}
                           pois={component?.pois}
                           city={component?.name}
-                        />
+                        /> */}
+                         <div className="relative px-2 sm:px-0">
+            <Swiper
+              style={{ height: "auto" }}
+              modules={[Navigation]}
+              spaceBetween={16}
+              slidesPerView={1}
+              navigation={{
+                nextEl: ".PlacesBragSection-n",
+                prevEl: ".PlacesBragSection-p",
+                clickable: true,
+              }}
+              breakpoints={{
+                // when window width is >= 640px
+                640: {
+                  slidesPerView: 1.5,
+                  spaceBetween: 16,
+                },
+                // when window width is >= 768px
+                768: {
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                },
+                // when window width is >= 1024px
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 24,
+                },
+              }}
+            >
+              {component?.pois.map((destination) => (
+                <SwiperSlide key={destination.id}>
+                  <div className="w-full px-1">
+                    <DestinationCard
+                      title={destination.title || destination.name}
+                      description={
+                        destination.description || destination.tagline
+                      }
+                      image={destination.image}
+                      rating={destination.rating}
+                      reviewCount={destination.user_ratings_total}
+                      showImageText={false}
+                      tags={
+                        destination.tags ||
+                        (destination.continent ? [destination.continent] : [])
+                      }
+                      onClick={() => handleOpenDrawer(destination, "poi")}
+                      gradientOverlay={destination.gradientOverlay}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <div className="PlacesBragSection-p" aria-hidden>
+              <div
+                className="absolute left-3 sm:left-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronLeft}
+                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Custom Next Button - centered to image height (376px) */}
+             <div className="PlacesBragSection-n" aria-hidden>
+              <div
+                className="absolute right-3 sm:right-1 z-10"
+                style={{
+                  top: "calc(376px / 2)",
+                  transform: "translateY(-50%)",
+                }}
+              >
+                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                  />
+                </div>
+              </div>
+            </div>
+          </div> 
                       </>
                     ) : component.carousel === "destination-6" ? (
                       <>
@@ -781,6 +976,33 @@ export default function ThemePage(props) {
         }}
         show={showTailoredModal}
       />
+
+
+        {activeDrawer?.type === "poi" && (
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+        />
+      )}
+
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+        ></POIDetailsDrawer>
+      )}
     </div>
   );
 }

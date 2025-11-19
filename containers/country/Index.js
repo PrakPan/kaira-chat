@@ -189,6 +189,7 @@ const Index = (props) => {
           title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}
         /> */}
+        
         <SetWidthContainer>
            <DesktopBanner
             loading={desktopBannerLoading}
@@ -431,7 +432,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -560,7 +561,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}

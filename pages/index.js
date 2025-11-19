@@ -136,8 +136,9 @@ const Home = (props) => {
         <NavigationMenu />
         
         <HeroSection />
-        {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         <JourneySimplified />
+        {props.token && <MyTripsSection className={'max-w-7xl'} />} 
+        
         
         <PlacesBragSection />
         <LuxuryEuropeDestinations />

@@ -227,7 +227,7 @@ const JourneySimplified = () => {
   return (
     <section
       ref={containerRef}
-      className="py-16 lg:py-24 px-4  sm:px-6 lg:px-8 bg-white pb-5"
+      className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}

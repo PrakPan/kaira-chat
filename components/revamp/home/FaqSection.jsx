@@ -58,7 +58,7 @@ const FaqSection = ({Faqs}) => {
   };
 
   return (
-    <section className="w-full bg-white py-16 px-4">
+    <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

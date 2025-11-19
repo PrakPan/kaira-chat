@@ -179,7 +179,7 @@ export default function WhatMakesUsSection() {
   // Attempt to locate a Japan related image. Fallback to a placeholder if not found.
   const japanImg = "/assets/icons/test.jpeg"; // TODO: replace with actual Japan image path when available
   return (
-    <section className="w-full bg-white py-16 px-4 md:px-10 lg:px-20 font-inter overflow-hidden">
+    <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white font-inter overflow-hidden">
       <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-14">
         What Makes Us Wander-ful
       </h2>

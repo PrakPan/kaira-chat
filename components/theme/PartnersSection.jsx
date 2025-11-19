@@ -105,10 +105,10 @@ const PartnersSection = () => {
   const visiblePartners = partners.slice(currentIndex, currentIndex + partnersPerPage);
 
   return (
-    <div className="w-full bg-white py-16 px-4 sm:px-6 lg:px-8 pb-[6rem] ">
+    <div className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-16 text-gray-900">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-4 lg:mb-[2.5rem] text-gray-900 ">
           Powered by Partners
         </h2>
 
