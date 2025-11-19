@@ -71,7 +71,8 @@ const FaqSection = ({Faqs}) => {
         </div>
 
         {/* FAQ Items */}
-        <div className="space-y-0">
+        <div className="space-y-0"
+        style={{ padding: "1rem" }}>
           {(Faqs || faqData).map((faq, index) => (
             <div
               key={index}
