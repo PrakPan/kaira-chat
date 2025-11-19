@@ -34,7 +34,7 @@ const LuxuryEuropeDestinations = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/france",
-      image: `${imgUrlEndPoint}/media/countries/173131953880670285224914550781.webp`,
+      image: `${imgUrlEndPoint}/media/website/france.jpg`,
     },
     {
       id: 2,

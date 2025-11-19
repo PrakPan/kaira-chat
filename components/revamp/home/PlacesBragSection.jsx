@@ -33,7 +33,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/thailand",
-      image: `${imgUrlEndPoint}/media/countries/168442180095400023460388183594.jpg`,
+      image: `${imgUrlEndPoint}/media/website/thailand.jpg`,
     },
     {
       id: 2,
@@ -70,7 +70,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/malaysia",
-      image: `${imgUrlEndPoint}/media/countries/168442089471308898925781250000.jpg`,
+      image: `${imgUrlEndPoint}/media/website/Malaysia.jpg`,
     },
     {
       id: 4,
