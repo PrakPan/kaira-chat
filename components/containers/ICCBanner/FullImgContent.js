@@ -156,7 +156,7 @@ const FullImgContent = (props) => {
         >
           {props.slug === "icc-champions-trophy-2025"
             ? "Book Now!"
-            : "Plan Your Trip Now!"}
+            : "+ Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 

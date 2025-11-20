@@ -151,19 +151,21 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
         <div className="grid grid-cols-3 justify-between items-center">
-          <label
-            htmlFor="add-hotels"
+
+           <label
+            htmlFor="add-activities-transfers"
             className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
           >
             <input
-              id="add-hotels"
+              id="add-activities-transfers"
               type="checkbox"
-              checked={addHotels}
-              onChange={(e) => setAddHotels(e.target.checked)}
+              checked={addActivityTransfers}
+              onChange={(e) => setAddActivityTransfers(e.target.checked)}
               className="focus:outline-none cursor-pointer"
             />
-            <div className="Body2R_14">Stay</div>
+            <div className="Body2R_14">Activities & Transfers</div>
           </label>
+
 
           <label
             htmlFor="add-flights"
@@ -179,19 +181,23 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
             <div className="Body2R_14">Flights</div>
           </label>
 
+
           <label
-            htmlFor="add-activities-transfers"
+            htmlFor="add-hotels"
             className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"
           >
             <input
-              id="add-activities-transfers"
+              id="add-hotels"
               type="checkbox"
-              checked={addActivityTransfers}
-              onChange={(e) => setAddActivityTransfers(e.target.checked)}
+              checked={addHotels}
+              onChange={(e) => setAddHotels(e.target.checked)}
               className="focus:outline-none cursor-pointer"
             />
-            <div className="Body2R_14">Activities & Transfers</div>
+            <div className="Body2R_14">Hotels</div>
           </label>
+
+          
+         
         </div>
       </div>
 
@@ -236,7 +242,7 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
         </div>
       </div>
 
-      <div className={`${isDesktop ? "flex justify-end" : "w-full"}`}>
+      <div className={`${isDesktop ? "flex justify-between" : "w-full"}`}>
         <Buttons 
           handleCancel={handleCancel} 
           handleUpdate={handleUpdate} 

@@ -87,7 +87,7 @@ const Layout = React.memo((props) => {
   }, [props.token]);
 
   return (
-    <div className="layout">
+    <div className="layout overflow-x-hidden">
       <NavigationMenu/>
 
       <div

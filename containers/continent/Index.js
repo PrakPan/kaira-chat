@@ -414,7 +414,7 @@ const Index = (props) => {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "destination-3" ? (
                       <>
@@ -791,7 +791,7 @@ const Index = (props) => {
                             </div>
                           </div>
                         </div>
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>

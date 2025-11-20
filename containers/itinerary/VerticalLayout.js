@@ -1004,7 +1004,6 @@ const handleEdit = async (combo, book) => {
           setVisible(true);
         }
 
-        handleClose();
 
         dispatch(
           openNotification({
@@ -1013,6 +1012,14 @@ const handleEdit = async (combo, book) => {
             heading: "Success!",
           })
         );
+
+        handleClose();
+
+        const bodyStyle = window.getComputedStyle(document.body).overflow;
+        if (bodyStyle === "hidden") {
+          document.body.style.overflow = "initial";
+        }
+
       }
     } catch (err) {
       const errorMsg =

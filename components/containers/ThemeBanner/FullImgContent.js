@@ -159,7 +159,7 @@ const FullImgContent = (props) => {
         >
           {props.slug === "honeymoon-2025"
             ? "Plan Your Honeymoon!"
-            : "Plan Your Trip Now!"}
+            : "+ Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 

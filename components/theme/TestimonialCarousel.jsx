@@ -309,7 +309,7 @@ const testimonials = [
                 <img
                   src={activeTestimonial.image}
                   alt={activeTestimonial.name}
-                  className="w-44 h-44 sm:w-56 sm:h-56 object-cover rounded-full border-4 border-green-400 shadow-2xl"
+                  className="w-32 h-32 sm:w-56 sm:h-56 object-cover rounded-full border-4 border-[#8DC046] shadow-2xl"
                 />
               </div>
 

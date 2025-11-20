@@ -85,44 +85,44 @@ const ActivitiesSummary = (props) => {
               <div className="Body2R_14 text-gray-400">
                 {props?.item?.activity?.one_liner_description}
               </div>
-              <div className="flex flex-col gap-2">
-                {props?.item.check_in && (
-                  <div className="flex flex-row gap-2 items-center">
-                    <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                    <div>
-                      <div className="text-sm font-[400] line-clamp-1">
-                        {props?.item.check_in && getDate(props?.item.check_in)}
+              <div className="flex flex-col lg:flex-row justify-between w-full gap-4">
+                {/* LEFT SECTION */}
+                <div className="flex flex-col gap-2 w-full">
+                  {/* Check-in */}
+                  {props?.item.check_in && (
+                    <div className="flex flex-row gap-2 items-center">
+                      <BsCalendar2 className="text-sm font-[400] text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
+                        {getDate(props?.item.check_in)}
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="text-sm font-[400] line-clamp-1"></div>
-                {props?.item.activity?.ideal_duration_hours_text && (
-                  <div className="flex flex-row gap-1 items-center ">
-                    <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
-                    <div>
-                      <div className="text-sm font-[400] ">
+                  {/* Ideal Duration */}
+                  {props?.item.activity?.ideal_duration_hours_text && (
+                    <div className="flex flex-row gap-1 items-center">
+                      <BiTimeFive className="text-md text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
                         {props?.item.activity.ideal_duration_hours_text}
                       </div>
                     </div>
-                  </div>
-                )}
-                <div className="flex flex-wrap items-center justify-between w-full gap-2">
-                  {/* Left Section: Tickets + Duration */}
-                  <div className="flex items-center gap-2 flex-wrap">
+                  )}
+
+                  {/* Tickets + Duration */}
+                  <div className="flex flex-row flex-wrap items-center gap-4">
                     {/* Tickets */}
                     <div className="flex items-center gap-1">
                       <IoTicket className="text-sm text-[#7A7A7A]" />
-                      <div className="text-sm line-clamp-1">
-                        {props?.item?.pax ||
-                          props?.item?.number_of_adults +
-                            props?.item?.number_of_children}{" "}
+                      <div className="text-sm">
                         {(props?.item?.pax ||
                           props?.item?.number_of_adults +
                             props?.item?.number_of_children) > 1
-                          ? "Tickets"
-                          : "Ticket"}
+                          ? `${
+                              props?.item?.pax ||
+                              props?.item?.number_of_adults +
+                                props?.item?.number_of_children
+                            } Tickets`
+                          : "1 Ticket"}
                       </div>
                     </div>
 
@@ -143,16 +143,13 @@ const ActivitiesSummary = (props) => {
                       <div className="text-sm">{props?.item?.duration}</div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Right Section: View Detail Button */}
-                  <div className="w-full flex justify-start lg:justify-end">
-                    <button
-                      className="ttw-btn-secondary w-full sm:w-auto"
-                      // onClick={() => handleView(props?.item?.id, 'activity')}
-                    >
-                      View Detail
-                    </button>
-                  </div>
+                {/* RIGHT SECTION */}
+                <div className="flex items-start lg:items-center justify-start lg:justify-end w-full lg:w-auto">
+                  <button className="ttw-btn-secondary w-full sm:w-auto">
+                    View Detail
+                  </button>
                 </div>
               </div>
 

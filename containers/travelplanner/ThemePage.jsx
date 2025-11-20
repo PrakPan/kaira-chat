@@ -275,7 +275,7 @@ export default function ThemePage(props) {
               className={
                 "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
               }
-              text={"Plan Your Trip Now!"}
+              text={"+ Plan Your Trip Now!"}
               page_id={props.country?.id}
               type={"country"}
               destination={convertDbNameToCapitalFirst(
@@ -308,7 +308,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                   </div>
                 ) : null;
               }
@@ -476,7 +476,7 @@ export default function ThemePage(props) {
                             className={
                               "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                             }
-                            text={"Plan Your Trip Now!"}
+                            text={"+ Plan Your Trip Now!"}
                             page_id={props.state?.id}
                             type={"state"}
                             destination={convertDbNameToCapitalFirst(
@@ -641,7 +641,7 @@ export default function ThemePage(props) {
                             className={
                               "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                             }
-                            text={"Plan Your Trip Now!"}
+                            text={"+ Plan Your Trip Now!"}
                           />
                         ) : (
                           <PlanYourTripButton />
@@ -698,7 +698,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -711,7 +711,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "destination-5" ? (
                       <>
@@ -884,7 +884,7 @@ export default function ThemePage(props) {
                           className={
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
-                          text={"Plan Your Trip Now!"}
+                          text={"+ Plan Your Trip Now!"}
                         />
                       </>
                     ) : component.carousel == "images-1" ? (
@@ -894,7 +894,7 @@ export default function ThemePage(props) {
                           className={
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
-                          text={"Plan Your Trip Now!"}
+                          text={"+ Plan Your Trip Now!"}
                           page_id={props.state?.id}
                           type={"state"}
                           destination={convertDbNameToCapitalFirst(
@@ -1040,7 +1040,7 @@ export const PlanYourTripButton = (props) => {
           ? props.text
           : props.slug === "honeymoon-2025"
           ? "Plan Your Honeymoon!"
-          : "Plan Your Trip Now!"}
+          : "+ Plan Your Trip Now!"}
       </SecondaryButton>
 
       <TailoredFormMobileModal

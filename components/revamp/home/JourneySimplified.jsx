@@ -233,14 +233,14 @@ const JourneySimplified = () => {
         {/* Header Section */}
         <div className="text-center mb-16 lg:mb-20">
           <h2
-            ref={headingRef}
+            // ref={headingRef}
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6"
             style={{ maxFontSize: "40px" }}
           >
             Your Journey, Simplified
           </h2>
           <p
-            ref={stepsRef}
+            // ref={stepsRef}
             className="text-base font-normal text-gray-600 max-w-2xl mx-auto"
             style={{ fontStyle: "normal" }}
           >

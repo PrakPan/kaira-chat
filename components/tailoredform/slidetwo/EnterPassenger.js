@@ -5,9 +5,9 @@ import BottomModal from "../../ui/LowerModal";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 
 export const StyledText = styled.div`
-  font-family: "Inter", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
+  // font-family: "Inter", sans-serif;
+  // font-weight: 400;
+  // font-size: 14px;
 `;
 
 export const Section = styled.div`
@@ -211,7 +211,7 @@ const EnterPassenger = (props) => {
 
   return (
     <div>
-      <StyledText className="mb-[4px]">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
+      <StyledText className="mb-[4px] Body1M_16">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
         {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers
       </StyledBox>

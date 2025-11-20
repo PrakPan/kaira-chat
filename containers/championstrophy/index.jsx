@@ -158,7 +158,7 @@ export default function ChampionsTrophy(props) {
                     </PrimaryHeading>
                     <Navigation components={navComponents} className="m-auto" />
 
-                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                   </div>
                 ) : null;
               }
@@ -333,7 +333,7 @@ export const PlanYourTripButton = (props) => {
           ? props.text
           : props.slug === "honeymoon-2025"
           ? "Plan Your Honeymoon!"
-          : "Plan Your Trip Now!"}
+          : "+ Plan Your Trip Now!"}
       </SecondaryButton>
 
       <TailoredFormMobileModal

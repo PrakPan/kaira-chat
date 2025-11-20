@@ -301,7 +301,12 @@ const Homepage = (props) => {
       /> */}
 
           <HeroSection
-            title={props.experienceData.banner_heading}
+            title={validateTextSize(
+            `Craft a personalized itinerary to ${props.experienceData.name} now!`,
+            9,
+            `Craft a trip to ${props.experienceData.name} now!`
+          )}
+            // title={props.experienceData.banner_heading}
             subtitle={props.experienceData.banner_text}
             image={`${imgUrlEndPoint}${props.experienceData.image}`}
           />
