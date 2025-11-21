@@ -88,7 +88,7 @@ const Layout = React.memo((props) => {
 
 
   return (
-    <div className="layout overflow-x-hidden">
+    <div className={`layout ${props?.isItinerary == true ?  '' : 'overflow-x-hidden'}`}>
       <NavigationMenu/>
 
       <div
