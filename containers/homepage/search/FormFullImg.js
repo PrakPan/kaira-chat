@@ -44,7 +44,7 @@ const PaddingContianer = styled.div`
 const FullImgContent = (props) => {
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   return (
-    <Container className="font-lexend center-di text-cente">
+    <Container className=" center-di text-cente">
       <PaddingContianer>
         <Heading>{props.tagline}</Heading>
 

@@ -85,7 +85,7 @@ const IndexWrapper = (props) => {
   } else
     return (
       <NotFoundContainer>
-        <MessageContainer className="border-thin font-lexend">
+        <MessageContainer className="border-thin ">
           Looks like our travel experts are working on providing you the best
           available accommodations.
         </MessageContainer>

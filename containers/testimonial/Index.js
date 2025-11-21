@@ -7,6 +7,7 @@ import TravellerCounter from "./TravellerCounter";
 import WhyTarzan from "./whyttw/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+import PartnersSection from "../../components/theme/PartnersSection";
 
 const HeadingContainer = styled.div`
   border-style: solid none none none;
@@ -54,11 +55,12 @@ const Testimonial = (props) => {
       <Reviews />
       <WhyTarzan />
       <SetWidthContainer>
-        <div style={{ margin: "3rem 0" }}>
-          <HeadingNew className="font-lexend">What they say?</HeadingNew>
+        {/* <div style={{ margin: "3rem 0" }}>
+          <HeadingNew className="">What they say?</HeadingNew>
           <HeadingContainer></HeadingContainer>
-        </div>
-        <AsSeenIn />
+        </div> */}
+        {/* <AsSeenIn /> */}
+        <PartnersSection />
         <ChatWithUs link="/contact" />
       </SetWidthContainer>
     </div>

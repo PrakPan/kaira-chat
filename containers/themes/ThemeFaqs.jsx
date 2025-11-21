@@ -2,20 +2,22 @@ import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import SecondaryHeading from "../../components/heading/Secondary";
 import PrimaryHeading from "../../components/heading/PrimaryHeading";
+import FaqSection from "../../components/revamp/home/FaqSection";
 
 export default function ThemeFaqs(props) {
   return (
-    <div className="flex flex-col items-center gap-5 px-3 md:mb-10  md:px-8  md:flex md:flex-col md:justify-center md:items-center md:m-auto">
-      <PrimaryHeading className="text-center">
-        Frequently Asked Questions
-      </PrimaryHeading>
+    // <div className="flex flex-col items-center gap-5 px-3 md:mb-10  md:px-8  md:flex md:flex-col md:justify-center md:items-center md:m-auto">
+    //   <PrimaryHeading className="text-center">
+    //     Frequently Asked Questions
+    //   </PrimaryHeading>
 
-      <div className="w-full flex flex-col gap-4">
-        {props.faqs.map((q, index) => (
-          <Question key={index} question={q.question} answer={q.answer} />
-        ))}
-      </div>
-    </div>
+    //   <div className="w-full flex flex-col gap-4">
+    //     {props.faqs.map((q, index) => (
+    //       <Question key={index} question={q.question} answer={q.answer} />
+    //     ))}
+    //   </div>
+    // </div>
+    <FaqSection Faqs={props.faqs} />
   );
 }
 

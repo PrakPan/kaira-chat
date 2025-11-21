@@ -5,7 +5,7 @@ import SearchResults from "./results/Index";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
 import { useRouter } from "next/router";
 import { connect } from "react-redux";
-
+import { useSelector } from "react-redux";
 const Container = styled.div`
   width: 100%;
 
@@ -17,12 +17,13 @@ const Search = (props) => {
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [hotLocationsData, setHotLocationsData] = useState([]);
+  const hotlocationsData = useSelector((state) => state.HotLocationSearch)?.locations || [];
   const [showHotLocations, setShowHotLocations] = useState(false);
   const { query } = useRouter();
 
   const _handleKey = (value) => {
-    if (value && !props.searchFinalized)
+    console.log("value", value);
+    if (value && !props.searchFinalized){
       if (value.length > 1) {
         setShowHotLocations(false);
         setShowResults(true);
@@ -51,6 +52,13 @@ const Search = (props) => {
             });
           });
       }
+      else{
+        setShowResults(false);
+      }
+    }
+    else{
+      setShowResults(false);
+    }
   };
 
   useEffect(() => {
@@ -58,18 +66,6 @@ const Search = (props) => {
     if (query.state) params = `?state=${query.state}`;
     else if (query.country) params = `?country=${query.country}`;
     else if (query.continent) params = `?continent=${query.continent}`;
-
-    setHotLocationsData(props.hotLocations);
-
-    // axioslocationsinstance
-    //   .get("hot_destinations" + params)
-    //   .then((response) => {
-    //     if (response.data.length) setHotLocationsData(response.data);
-    //     else setShowHotLocations(false);
-    //   })
-    //   .catch((e) => {
-    //     setShowHotLocations(false);
-    //   });
   }, []);
 
   return (
@@ -92,14 +88,13 @@ const Search = (props) => {
           _handleKey={_handleKey}
           setSearchFinalized={props.setSearchFinalized}
           setResults={setResults}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
           setShowResults={setShowResults}
           eventDates={props.eventDates}
         ></SearchInput>
       </div>
 
-      {showResults && (
+      {showResults ? (
+        <>
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
           setFocusSearch={props.setFocusSearch}
@@ -110,12 +105,10 @@ const Search = (props) => {
           top="2.75rem"
           results={results}
           setSearchFinalized={props.setSearchFinalized}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
+          maxResult={5}
         ></SearchResults>
-      )}
-
-      {showHotLocations && (
+        </>
+      ) : showHotLocations ? (
         <SearchResults
           hotLocations
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -125,15 +118,14 @@ const Search = (props) => {
           inbox_id={props.inbox_id}
           setDestination={props.setDestination}
           top="2.75rem"
-          results={hotLocationsData}
+          results={hotlocationsData}
           setSearchFinalized={props.setSearchFinalized}
-          setSelectedCities={props.setSelectedCities}
-          selectedCities={props.selectedCities}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
           tailoredFormModal={props.tailoredFormModal}
+          maxResult={hotlocationsData.length}
         ></SearchResults>
-      )}
+      ) : null}
     </Container>
   );
 };

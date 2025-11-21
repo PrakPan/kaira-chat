@@ -90,14 +90,14 @@ const Booking = (props) => {
         >
           {props.type ? (
             <EditButton
-              className="font-lexend"
+              className=""
               style={{ marginRight: "0.5rem" }}
             >
               {props.type}
             </EditButton>
           ) : null}
           {props.star_category ? (
-            <EditButton className="font-lexend">
+            <EditButton className="">
               {props.star_category + " star"}
             </EditButton>
           ) : null}

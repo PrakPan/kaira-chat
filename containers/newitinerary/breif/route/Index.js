@@ -339,7 +339,7 @@ const Route = (props) => {
           city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
           cityId={props?.CityData[i]?.city?.id}
           duration={
-            props?.CityData[i]?.duration >=0 ? props?.CityData[i]?.duration : null
+            props?.CityData[i]?.duration >= 0 ? props?.CityData[i]?.duration : null
           }
           pinColour={
             i === 0 || i === props?.CityData.length - 1
@@ -375,7 +375,7 @@ const Route = (props) => {
               : props?.CityData[i + 1]?.id)
           }`;
         }
-       
+        // console.log("Keys", key);
         locationsArr.push(
           <MidSectionV2
             transferId={key}
@@ -431,7 +431,7 @@ const Route = (props) => {
   return (
     <Container>
       <div className="flex flex-row justify-between items-end">
-        <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
+        <div className=" mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
         {transfers_status === "SUCCESS" ? (

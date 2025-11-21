@@ -48,7 +48,7 @@ const ActivityDetailsSkeleton = (props) => {
         </div>
       ) : (
         <></>
-        // <div className="flex flex-col gap-[16px] font-lexend">
+        // <div className="flex flex-col gap-[16px] ">
         //   <IoMdClose
         //     className="hover-pointer mt-4"
         //     onClick={(e) => {

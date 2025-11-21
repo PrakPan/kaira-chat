@@ -68,7 +68,7 @@ const Section = (props) => {
   }
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <FiltersMobile
         loading={props.loading}
         showFilter={props.showFilter}
@@ -101,7 +101,7 @@ const Section = (props) => {
         anchor={"right"}
         backdrop
         style={{ zIndex: 1508 }}
-        className="font-lexend"
+        className=""
         onHide={() => props.setshowFilter(false)}
       >
         <div className="w-[100vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">

@@ -59,7 +59,7 @@ export const TInfoContainer = styled.div`
 const ItineraryFoodElement = (props) => {
   return (
     <>
-      <Container className="font-lexend pt-3">
+      <Container className=" pt-3">
         <div className="flex flex-row ">
           <div className="w-[6.15rem] flex flex-col justify-center items-center">
             <div className="w-[6.15rem] grid place-items-center">

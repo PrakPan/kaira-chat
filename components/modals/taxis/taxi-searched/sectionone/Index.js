@@ -23,56 +23,8 @@ const TaxiCard = styled.div`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
-        <TaxiCard>
-          <ImageContainer
-          // style={{
-          //   padding: "0.75rem 0rem",
-          //   borderColor: "rgba(238, 238, 238, 1)",
-          //   borderWidth: "1px",
-          //   borderStyle: "none solid none none",
-          // }}
-          >
-            <PiTaxiLight size={18} />
-            {/* {props.data?.taxi_category?.image ? (
-            <ImageLoader
-              is_url
-              noLazy
-              url={props.data.taxi_category.image}
-              width="80%"
-              widthmobile="70%"
-              height="auto"
-            ></ImageLoader>
-          ) : ( */}
-            {/* <ImageLoader
-              url={"media/icons/bookings/car (2).png"}
-              width="80%"
-              widthmobile="70%"
-              height="auto"
-            ></ImageLoader>
-          )} */}
-            {/* <p
-            style={{
-              margin: "0.5rem 0rem 0rem 0rem",
-              fontSize: "15px",
-              fontWeight: "700",
-            }}
-            className="font-lexend text-center"
-          >
-            {props.data.taxi_category.type}
-          </p> */}
-            {/* <p
-            style={{
-              margin: "0 0rem 0.25rem 0rem",
-              fontSize: "13px",
-              fontWeight: "300",
-            }}
-            className="font-lexend text-center"
-          >
-            {props.data?.taxi_category?.seating_capacity + "-seater"}
-          </p> */}
-          </ImageContainer>
-
+      <div className="">
+        {/* <TaxiCard> */}
           <Route
             setHideBookingModal={props.setHideBookingModal}
             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -92,8 +44,8 @@ const Section = (props) => {
             bookingLoad={props?.bookingLoad}
              handleTaxiDeselect={props?.handleTaxiDeselect}
           ></Route>
-        </TaxiCard>
-      </Container>
+        {/* </TaxiCard> */}
+      </div>
     );
   else return null;
 };

@@ -103,7 +103,7 @@ const GITText = styled.p`
 
 const Cost = (props) => {
   return (
-    <div className="center-di">
+    <div className="center-di mb-2">
       {props.starting_cost ? (
         <div style={{ display: "flex" }}>
           <div style={{ width: "max-content" }}>
@@ -127,7 +127,7 @@ const Cost = (props) => {
                 <Text
                   show_per_person={props.show_per_person}
                   persons={props.persons}
-                  className="font-lexend"
+                  className=""
                 >
                   {"₹" +
                     getIndianPrice(Math.round(props.starting_cost)) +
@@ -137,7 +137,7 @@ const Cost = (props) => {
                 <GITText
                   show_per_person={props.show_per_person}
                   persons={props.persons}
-                  className="font-lexend"
+                  className=""
                 >
                   {"₹" +
                     getIndianPrice(Math.round(props.starting_cost)) +
@@ -165,9 +165,9 @@ const Cost = (props) => {
             {props.PW ? <StrikedCost> {"₹ 0"}</StrikedCost> : null}
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {!props.PW ? (
-                <Text className="font-lexend">{"₹ 0/-"}</Text>
+                <Text className="">{"₹ 0/-"}</Text>
               ) : (
-                <GITText className="font-lexend">{"₹ 0/-"}</GITText>
+                <GITText className="">{"₹ 0/-"}</GITText>
               )}
             </div>
           </div>

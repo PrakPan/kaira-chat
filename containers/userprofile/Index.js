@@ -17,6 +17,8 @@ import H2 from "../../components/heading/H2";
 const Container = styled.div`
   width: 100%;
   margin: 12vh auto;
+  overflow-x: hidden; 
+  max-width: 100vw;
   @media screen and (min-width: 768px) {
     width: 70%;
     padding-top: 10vh;
@@ -143,7 +145,7 @@ const UserDashboard = (props) => {
         </div>
 
         {isPageWide && !myPlansArr.length && !loading ? (
-          <NoPlans className="font-lexend">
+          <NoPlans className="">
             You don't have any plans yet.{" "}
             <a
               onClick={() => openTailoredModal(router)}
@@ -156,7 +158,7 @@ const UserDashboard = (props) => {
 
         {!isPageWide && !myPlansArr.length && !loading ? (
           <>
-            <NoPlans className="font-lexend">
+            <NoPlans className="">
               You don't have any plans yet.{" "}
             </NoPlans>
             <a

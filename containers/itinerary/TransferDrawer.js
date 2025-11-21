@@ -60,25 +60,24 @@ const TransferDrawer = ({
   isAirport,
   AirportTransferType,
   setIsTransferDrawerOpen,
+  isSightseeing,
   combo,
   booking_id,
   transferType,
- isSightseeing,
 }) => {
-  const handleClose=useHandleClose()
+  const handleDrawerClose = useHandleClose();
   const dispatch = useDispatch();
   const router = useRouter();
-  const [error,setError]=useState(false)
+  const [error, setError] = useState(false);
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
-    const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+  const [isDrawerOpen, setIsDrawerOpen] = useState(show);
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
-
-    console.log("DDD",drawer);
 
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
@@ -86,16 +85,25 @@ const TransferDrawer = ({
     }
   }, [show, isCombo, data?.children?.length]);
 
-  const handleEditRoute = (data=null) => {
+  const handleEditRoute = (data = null) => {
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
         query: {
-          drawer: data?.is_airport_drop || data?.is_airport_pickup ? "addPickupDrop" : "editTransfer",
-          drawerType: data?.is_airport_drop  ? "drop" : data?.is_airport_pickup ? "pickup" : data?.combo_type ==="multicity" ? "multicity" : null,
+          drawer:
+            data?.is_airport_drop || data?.is_airport_pickup
+              ? "addPickupDrop"
+              : "editTransfer",
+          drawerType: data?.is_airport_drop
+            ? "drop"
+            : data?.is_airport_pickup
+            ? "pickup"
+            : data?.combo_type === "multicity"
+            ? "multicity"
+            : null,
           bookingId: booking_id,
-          oItineraryCity:origin_itinerary_city_id,
-          dItineraryCity:destination_itinerary_city_id
+          oItineraryCity: origin_itinerary_city_id,
+          dItineraryCity: destination_itinerary_city_id,
         },
       },
       undefined,
@@ -145,8 +153,10 @@ const TransferDrawer = ({
   }, []);
 
   const renderDetailContent = (transferData, index) => {
-
-    const type = transferData?.transfer_type == "sightseeing" ? "Taxi" : transferData?.booking_type;
+    const type =
+      transferData?.transfer_type == "sightseeing"
+        ? "Taxi"
+        : transferData?.booking_type;
     const childTitle = `${index + 1}. ${
       transferData.name || `${transferData.booking_type} Transfer`
     }`;
@@ -172,7 +182,9 @@ const TransferDrawer = ({
     const checkIn = formatDateTime(transferData.check_in);
     const checkOut = formatDateTime(transferData.check_out);
 
-    const dateDiff = getDateDifferenceInDays(transferData.check_in,transferData.check_out) + 1;
+    const dateDiff =
+      getDateDifferenceInDays(transferData.check_in, transferData.check_out) +
+      1;
 
     // Get route information
     const origin = transferData.transfer_details?.trips?.[0]?.origin;
@@ -201,7 +213,6 @@ const TransferDrawer = ({
       if (loading) {
         return <VehicleDetailLoader />;
       }
-      
 
       switch (type) {
         case "Flight":
@@ -215,9 +226,12 @@ const TransferDrawer = ({
               getPaymentHandler={getPaymentHandler}
               setShowDetails={null}
               name={transferData?.name}
+              getPaymentHandler={getPaymentHandler}
               isEmbedded={true}
               setShowLoginModal={setShowLoginModal}
               handleEditRoute={handleEditRoute}
+              data={isCombo ? transferData :data}
+
             />
           );
         case "Taxi":
@@ -276,6 +290,11 @@ const TransferDrawer = ({
                         {" "}
                         {transferType}
                       </span>
+                      {transferData.status === "Paid" && (
+                        <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+                          Paid
+                        </span>
+                      )}
                     </h3>
                     {/* <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                       
@@ -284,24 +303,27 @@ const TransferDrawer = ({
                   <div className="text-xs md:text-sm text-gray-600">
                     {transferType === "sightseeing" ? (
                       <span>
-                           <div className="w-auto flex items-center gap-1">
-                              <svg
-                                width="13"
-                                height="13"
-                                viewBox="0 0 13 13"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
-                                  fill="black"
-                                />
-                              </svg>
-                              {dateDiff  && 
-                                <span className="text-gray-600">
-                                  {dateDiff <=1 ? 1 : dateDiff} {dateDiff <= 1 ? "day" : "days"} •
-                                </span>}
-                            {duration} • {distance} </div> 
+                        <div className="w-auto flex items-center gap-1">
+                          <svg
+                            width="13"
+                            height="13"
+                            viewBox="0 0 13 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                              fill="black"
+                            />
+                          </svg>
+                          {dateDiff && (
+                            <span className="text-gray-600">
+                              {dateDiff <= 1 ? 1 : dateDiff}{" "}
+                              {dateDiff <= 1 ? "day" : "days"} •
+                            </span>
+                          )}
+                          {duration} • {distance}{" "}
+                        </div>
                       </span>
                     ) : (
                       <span className="truncate">
@@ -320,6 +342,7 @@ const TransferDrawer = ({
                   </div>
                   <div className="text-xs text-gray-500">{checkIn.date}</div>
                 </div>
+
                 <div className="text-gray-400">
                   {isExpanded ? (
                     <AiOutlineUp className="w-5 h-5" />
@@ -347,13 +370,9 @@ const TransferDrawer = ({
             </div>
 
             {/* Mobile Price Row */}
+            {/* Mobile Price Row and Change Button */}
             <div className="md:hidden px-4 pb-2">
-              <div className="flex justify-between items-center text-xs text-gray-500">
-                {/* <span>
-                  {checkIn.date} - {checkOut.date}
-                </span> */}
-                {/* <span>₹{transferData.price?.toLocaleString()}</span> */}
-              </div>
+              <div className="flex justify-between items-center"></div>
             </div>
 
             {/* Expanded Content */}
@@ -385,8 +404,7 @@ const TransferDrawer = ({
                             <div className="flex-1 flex flex-col items-center">
                               <div className="w-full border-t-2 border-dotted border-gray-300 mb-1"></div>
                               <div className="text-xs text-gray-500 whitespace-nowrap">
-                                
-                             {distance} • {duration}
+                                {distance} • {duration}
                               </div>
                             </div>
 
@@ -479,7 +497,10 @@ const TransferDrawer = ({
                         </h4>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                           <div>
-                            <div className="text-gray-500 text-xs"> Start Date</div>
+                            <div className="text-gray-500 text-xs">
+                              {" "}
+                              Start Date
+                            </div>
                             <div className="font-medium text-gray-900">
                               {checkIn.date}
                             </div>
@@ -488,7 +509,9 @@ const TransferDrawer = ({
                             </div>
                           </div>
                           <div>
-                            <div className="text-gray-500 text-xs">End Date</div>
+                            <div className="text-gray-500 text-xs">
+                              End Date
+                            </div>
                             <div className="font-medium text-gray-900">
                               {checkOut.date}
                             </div>
@@ -531,6 +554,38 @@ const TransferDrawer = ({
           onClick={() => toggleExpand(index)}
         >
           <h3 className="text-lg font-medium">{childTitle}</h3>
+          {transferData.status === "Paid" && (
+            <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+              Paid
+            </span>
+          )}
+
+          {data?.children?.some((child) => child.status === "Paid") &&
+            transferData.status !== "Paid" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditRoute(transferData);
+                }}
+                className="px-3 py-1 text-sm bg-black text-white rounded hover:bg-gray-800"
+              >
+                Change
+              </button>
+            )}
+
+          {data?.children?.some((child) => child.status === "Paid") &&
+            transferData.status !== "Paid" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(transferData);
+                }}
+                className="p-2 text-red-500 hover:bg-red-50 rounded"
+                title="Delete"
+              >
+                <Image src="/delete.svg" width={18} height={18} alt="Delete" />
+              </button>
+            )}
           {isExpanded ? (
             <AiOutlineDown className="text-gray-600" />
           ) : (
@@ -542,13 +597,18 @@ const TransferDrawer = ({
     );
   };
 
+  const handleClose = () => {
+    setIsDrawerOpen(false);
+    handleDrawerClose();
+  };
+
   return (
     <Drawer
-      show={show}
+      show={isDrawerOpen}
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={handleClose}
       mobileWidth="100vw"
       width={"50vw"}
@@ -568,8 +628,10 @@ const TransferDrawer = ({
                 setShowLoginModal={setShowLoginModal}
                 onChange={true}
                 handleClose={handleClose}
+                getPaymentHandler={getPaymentHandler}
                 error={error}
                 handleEditRoute={handleEditRoute}
+                data={data}
               />
             )
           ) : loading ? (
@@ -641,20 +703,26 @@ const TransferDrawer = ({
                   {data.duration || `${data.children.length} transfers`}
                 </div>
               </div>
-              {(data?.transfer_type != "sightseeing" && drawer != "SightSeeing") && <div>
-                <Generalbuttonstyle
-                  borderRadius={"7px"}
-                  fontSize={"1rem"}
-                  padding={"7px 25px"}
-                  onClick={() => {
-                    // setHandleShow(false);
-                    // setShowDrawer(true);
-                    handleEditRoute(data)
-                  }}
-                >
-                  Change
-                </Generalbuttonstyle>
-              </div>}
+              {data?.transfer_type != "sightseeing" &&
+                drawer != "SightSeeing" && (
+                  <div>
+                    {/* Only show parent change button if ALL children are unpaid */}
+                    {data?.children?.every(
+                      (child) => child.status !== "Paid"
+                    ) && (
+                      <Generalbuttonstyle
+                        borderRadius={"7px"}
+                        fontSize={"1rem"}
+                        padding={"7px 25px"}
+                        onClick={() => {
+                          handleEditRoute(data);
+                        }}
+                      >
+                        Change
+                      </Generalbuttonstyle>
+                    )}
+                  </div>
+                )}
             </div>
           </div>
 
@@ -852,7 +920,7 @@ const TransferDrawer = ({
           )}
         </div>
       )}
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -860,7 +928,7 @@ const TransferDrawer = ({
             onClick={handleClose}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

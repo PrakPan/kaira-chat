@@ -8,6 +8,27 @@ import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { FaEdit } from "react-icons/fa";
 import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
+import styled from "styled-components";
+import Image from "next/image";
+import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
+import { getDate } from "../../../helper/ConvertDateFormat";
+
+const SectionHeading = styled.div`
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 22px;
+`
+
+const DivideSlabElement = styled.div`
+    border-left: 1px dashed #A09E9E;
+    margin-left: 1rem;
+    padding: 10px 5px;
+    font-family: Montserrat;
+    font-weight: 500;
+    font-size: 12px;
+    color: #A09E9E;
+    min-height: 45px
+`
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { openNotification } from "../../../store/actions/notification";
@@ -15,7 +36,8 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 
 const CityDay = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 767px)");
+  const [viewMore, setViewMore] = useState(false);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
@@ -26,19 +48,9 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
 
 
-  const router=useRouter()
-  const {
-    drawer,
-    poi_id,
-    type,
-    dayIndex,
-    index,
-    itinerary_city_id,
-    idx,
-    date,
-    bookingId,
-  } = router?.query;
- 
+  const router = useRouter()
+  const { drawer, idx, itinerary_city_id, date } =
+    router?.query;
   const handleAddActivity = () => {
     trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
@@ -47,8 +59,8 @@ const CityDay = (props) => {
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.itinerary_city_id,
-          idx:props?.index,
-          date:props?.day?.date
+          idx: props?.index,
+          date: props?.day?.date
         },
       },
       undefined,
@@ -68,10 +80,11 @@ const CityDay = (props) => {
     setElements(elements);
   }, [props.day?.slab_elements]);
 
-  function convertDateFormat(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  }
+  useEffect(() => {
+    if (props?.index === 0) {
+      setViewMore(true);
+    }
+  }, [])
 
 const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => {
   const checkIn = booking?.check_in?.split(" ")[0];
@@ -99,7 +112,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
       return {
         ...booking,
         id: booking.id,
-        currentDayLabel: `Day ${props.index + 1}, ${convertDateFormat(props?.day?.date)}`,
+        currentDayLabel: `Day ${props.index + 1}, ${getDate(props?.day?.date)}`,
           // date: formattedCheckIn === formattedCheckOut
           //   ? `Day ${index + 1}, ${formattedCheckIn}`
           //   : `${formattedCheckIn} to ${formattedCheckOut}`,
@@ -168,68 +181,77 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
     };
 
   return (
-    <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
-      <div
-        className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
-      >
-        {props?.day?.date &&
-          (isPageWide ? (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ) : (
-            <span>{convertDateFormat(props?.day?.date)}</span>
-          ))}
-        <span className="text-[#ABABAB] font-normal">
-          {" "}
-          (Day {props.index + 1})
-        </span>
-      </div>
-
-      <div className="flex flex-col p-3 md:w-[85%]">
-        {elements.map((element, index) => (
-          <div key={index}>
-            <SlabElement
-              itinerary_city_id={props?.itinerary_city_id}
-              element={element}
-              dayIndex={props?.index}
-              slabIndex={index}
-              setShowLoginModal={props?.setShowLoginModal}
-              date={props?.date}
-              cityID={props.city.id}
-              cityName={props.city.name}
-            />
-
-            {index !== elements.length - 1 ? <hr /> : null}
-          </div>
-        ))}
-
-        {finalized_status === "PENDING" ? (
-          <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
-        ) : (
+    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
+      <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 mr-[7px]' : ''}`}>
+        <div className="flex items-center justify-between bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px] mb-[8px]">
+          <div className={`Body2M_14`}> Day {props.index + 1} |  <span>  {getHumanDateWithYearv2(props?.day?.date)} {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}</span></div>
           <button
-            onClick={handleAddActivity}
-            className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+            onClick={() => setViewMore((prev) => !prev)}
+            className="flex items-center text-sm font-semibold"
           >
-            + Add activities on {convertDateFormat(props?.day?.date)}
+              <Image
+                src={'/assets/Itinerary/arrow-up.svg'}
+                alt="ticket"
+                width={12}
+                height={8}
+                className={`transition-200 ${viewMore ? '' : 'rotate-180'}`}
+              />
           </button>
-        )}
+        </div>
+
+        {viewMore ? <>
+          {elements.map((element, index) => (
+            <>
+              <SlabElement
+                itinerary_city_id={props?.itinerary_city_id}
+                key={index}
+                element={element}
+                dayIndex={props?.index}
+                slabIndex={index}
+                setShowLoginModal={props?.setShowLoginModal}
+                date={props?.date}
+                cityID={props.city.id}
+                cityName={props.city.name}
+                totalElements={elements.length} 
+              />
+
+              {index !== elements.length - 1  ? <DivideSlabElement>  {props?.city?.nextTime ? '2h' : '' } </DivideSlabElement> : null}
+            </>
+          ))}
+
+          {finalized_status === "PENDING" ? (
+            <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+          ) : (
+            <div className="flex justify-end">
+            <button
+              onClick={handleAddActivity}
+              className="mt-3  w-fit text-[14px] text-[#3A85FC;] underline font-medium font-montserrat"
+            >
+              + Add 
+            </button>
+            </div>
+          )}
+        </>
+
+          : null}
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 &&  (
             <>
               <hr />
-              <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-                <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
-                </div>
-                <div className="flex flex-col gap-2 w-full">
+              <div className="">
+                <SectionHeading className="p-2">
+                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
+                </SectionHeading>
+                <div className="flex flex-col gap-2 w-full font-montserrat">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
                       <div key={item?.id}>
                         <div
-                          
-                          className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
-                          // onClick={() => handleTaxi(item.id)}
+                          key={item.id}
+                          className="flex gap-3 items-center bg-white border-radius-10 p-2 border-1 w-100 mb-2"
+                        // onClick={() => handleTaxi(item.id)}
                         >
                           <div className="hidden hover:block cursor-pointer">
                             <FaEdit />
@@ -253,7 +275,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                             />
                           </div>
 
-                          <div>
+                          <div class="w-100">
                             <span className="font-semibold  text-[12px]">
                               {item.currentDayLabel}
                             </span>
@@ -286,11 +308,10 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                                     const pax =
                                       item?.pax ??
                                       item?.number_of_adults +
-                                        item?.number_of_children +
-                                        item?.number_of_infants;
-                                    return `${pax} Passenger${
-                                      pax > 1 ? "s" : ""
-                                    }`;
+                                      item?.number_of_children +
+                                      item?.number_of_infants;
+                                    return `${pax} Passenger${pax > 1 ? "s" : ""
+                                      }`;
                                   })()}
                                 </div>
                               </div>
@@ -369,10 +390,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           </button>
         </div> */}
       </div>
-     
-      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx==props?.index && (
+      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx == props?.index && (
         <ActivityAddDrawer
-          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx==props?.index}
+          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx == props?.index}
           mercuryItinerary={props?.mercuryItinerary}
           setShowDrawer={setShowAddDrawer}
           cityName={props.city.name}

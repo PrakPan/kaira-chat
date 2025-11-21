@@ -68,13 +68,13 @@ const CurrentlyReplacing = (props) => {
       <TextContainer>
         <div>
           <HelperText className="font-nunito">CURRENTLY REPLACING</HelperText>
-          <Name className="font-lexend">{props.replacing}</Name>
+          <Name className="">{props.replacing}</Name>
           {props.selectedBooking ? (
             <DetailsContainer>
-              <Detail className="font-lexend">
+              <Detail className="">
                 {"Check in: " + props.selectedBooking.check_in}
               </Detail>
-              <Detail className="font-lexend">
+              <Detail className="">
                 {"Check out: " + props.selectedBooking.check_out}
               </Detail>
             </DetailsContainer>

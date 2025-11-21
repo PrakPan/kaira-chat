@@ -98,14 +98,14 @@ const BlackContainer = (props) => {
             <IconListContainer>
               <DetailsContainer>
                 <ExperienceName
-                  className="font-lexend"
+                  className=""
                   style={{
                     fontSize: props.title.length > 25 ? "2rem" : "3rem",
                   }}
                 >
                   {props.title}
                 </ExperienceName>
-                <Duration className="font-lexend">{props.duration}</Duration>
+                <Duration className="">{props.duration}</Duration>
 
                 <div></div>
               </DetailsContainer>

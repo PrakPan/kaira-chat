@@ -1187,7 +1187,7 @@ const Booking = (props) => {
                       >
                         <div
                           style={{ lineHeight: "2" }}
-                          className="font-lexend"
+                          className=""
                         >
                           {props.payment.paid_user
                             ? props.is_registration_needed
@@ -1229,7 +1229,7 @@ const Booking = (props) => {
                       <BookingSuccessText style={{ color: "green" }}>
                         <div
                           style={{ lineHeight: "2" }}
-                          className="font-lexend"
+                          className=""
                         >
                           {props.is_registration_needed
                             ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
@@ -1267,7 +1267,7 @@ const Booking = (props) => {
                         ? "Stays" + " (" + props.stayBookings.length + ")"
                         : "Stays"
                     }
-                    className="bookingdetail-tab font-lexend"
+                    className="bookingdetail-tab "
                   ></Tab>
 
                   <Tab
@@ -1279,7 +1279,7 @@ const Booking = (props) => {
                           ")"
                         : "Transfers"
                     }
-                    className="bookingdetail-tab font-lexend"
+                    className="bookingdetail-tab "
                     id="bookingdetail-tab-transfers"
                   ></Tab>
 
@@ -1287,13 +1287,13 @@ const Booking = (props) => {
                     props.flightBookings.length ? (
                       <Tab
                         label={props.flightBookings ? "Flights" : "Flights"}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         id="bookingdetail-tab-flights"
                       ></Tab>
                     ) : (
                       <Tab
                         label={"Flights"}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         id="bookingdetail-tab-flights"
                         style={{ display: "none" }}
                       ></Tab>
@@ -1301,7 +1301,7 @@ const Booking = (props) => {
                   ) : (
                     <Tab
                       label={"Flights"}
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab "
                       id="bookingdetail-tab-flights"
                       style={{ display: "none" }}
                     ></Tab>
@@ -1318,19 +1318,19 @@ const Booking = (props) => {
                               ")"
                             : "Activities"
                         }
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                       ></Tab>
                     ) : (
                       <Tab
                         label={"Activities"}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         style={{ display: "none" }}
                       ></Tab>
                     )
                   ) : (
                     <Tab
                       label={"Activities"}
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab "
                       style={{ display: "none" }}
                     ></Tab>
                   )}
@@ -1358,7 +1358,7 @@ const Booking = (props) => {
                   {!props.stayBookings ? (
                     <div className="center-div">
                       <p
-                        className="font-lexend text-center"
+                        className=" text-center"
                         style={{ margin: "1rem 0" }}
                       >
                         Nothing to see here
@@ -1367,7 +1367,7 @@ const Booking = (props) => {
                   ) : !props.stayBookings.length ? (
                     <div className="center-dov">
                       <p
-                        className="font-lexend text-center"
+                        className=" text-center"
                         style={{ margin: "1rem 0" }}
                       >
                         Nothing to see here
@@ -1544,7 +1544,7 @@ const Booking = (props) => {
                         >
                           <div
                             style={{ lineHeight: "2" }}
-                            className="font-lexend"
+                            className=""
                           >
                             {props.payment.paid_user
                               ? props.payment.is_registration_needed
@@ -1588,7 +1588,7 @@ const Booking = (props) => {
                       <BookingSuccessText style={{ color: "green" }}>
                         <div
                           style={{ lineHeight: "2" }}
-                          className="font-lexend"
+                          className=""
                         >
                           {props.payment.is_registration_needed
                             ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
@@ -1626,7 +1626,7 @@ const Booking = (props) => {
                         ? "Stays" + " (" + props.stayBookings.length + ")"
                         : "Stays"
                     }
-                    className="bookingdetail-tab font-lexend"
+                    className="bookingdetail-tab "
                   ></Tab>
 
                   <Tab
@@ -1638,7 +1638,7 @@ const Booking = (props) => {
                           ")"
                         : "Transfers"
                     }
-                    className="bookingdetail-tab font-lexend"
+                    className="bookingdetail-tab "
                     id="bookingdetail-tab-transfers"
                   ></Tab>
 
@@ -1646,14 +1646,14 @@ const Booking = (props) => {
                     props.flightBookings.length ? (
                       <Tab
                         label={props.flightBookings ? "Flights" : "Flights"}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         id="bookingdetail-tab-flights"
                       ></Tab>
                     ) : (
                       <Tab
                         label={"Flights"}
                         style={{ display: "none" }}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         id="bookingdetail-tab-flights"
                       ></Tab>
                     )
@@ -1661,7 +1661,7 @@ const Booking = (props) => {
                     <Tab
                       label={"Flights"}
                       style={{ display: "none" }}
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab "
                       id="bookingdetail-tab-flights"
                     ></Tab>
                   )}
@@ -1677,19 +1677,19 @@ const Booking = (props) => {
                               ")"
                             : "Activities (0)"
                         }
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                       ></Tab>
                     ) : (
                       <Tab
                         label={"Activities"}
-                        className="bookingdetail-tab font-lexend"
+                        className="bookingdetail-tab "
                         style={{ display: "none" }}
                       ></Tab>
                     )
                   ) : (
                     <Tab
                       label={"Activities"}
-                      className="bookingdetail-tab font-lexend"
+                      className="bookingdetail-tab "
                       style={{ display: "none" }}
                     ></Tab>
                   )}
@@ -1718,7 +1718,7 @@ const Booking = (props) => {
                   {!props.stayBookings ? (
                     <div className="center-div">
                       <p
-                        className="font-lexend text-center"
+                        className=" text-center"
                         style={{ margin: "1rem 0" }}
                       >
                         Nothing to see here
@@ -1727,7 +1727,7 @@ const Booking = (props) => {
                   ) : !props.stayBookings.length ? (
                     <div className="center-dov">
                       <p
-                        className="font-lexend text-center"
+                        className=" text-center"
                         style={{ margin: "1rem 0" }}
                       >
                         Nothing to see here

@@ -41,11 +41,13 @@ const FullImgContentLadakh = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination,props.type);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.page_id, props.destination,props.type);
+    // }
+
+    router.push("new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -59,7 +61,7 @@ const FullImgContentLadakh = (props) => {
   };
 
   return (
-    <Container className="font-lexend h-full !flex justify-center items-center mt-4">
+    <Container className=" h-full !flex justify-center items-center mt-4">
       <PaddingContianer className="flex items-center justify-center mt-[120px]">
 
         {isPageWide ? (

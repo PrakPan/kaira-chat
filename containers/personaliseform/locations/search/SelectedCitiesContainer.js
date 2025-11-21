@@ -35,7 +35,7 @@ const SelectedCitiesContainer = (props) => {
   return (
     <Container className="border-thi">
       <div
-        className=" center-div font-lexend"
+        className=" center-div "
         style={{
           opacity: "1",
           marginRight: "0rem",

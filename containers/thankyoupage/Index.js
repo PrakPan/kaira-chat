@@ -20,6 +20,9 @@ import Continentcarousel from "../../components/continentcarousel/continentcarou
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
+import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
+import HeroSection from "../../components/revamp/destination/HeroSection";
+
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -100,34 +103,34 @@ const Index = (props) => {
 
   //JSX for How it works
   const HowitWorksHeadingsArr = [
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Handpick Your Selection
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Unleash AI's Itinerary Wizardry!
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       Easy Bookings with 24x7 Concierge
     </HowItWorksHeading>,
-    <HowItWorksHeading className="font-lexend">
+    <HowItWorksHeading className="">
       No Commissions - Pay for what you get
     </HowItWorksHeading>,
   ];
 
   const HowitWorksContentsArr = [
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       From solo travel to workcation, honeymoon to family travel, tell us about
       your mood, budget & timeline.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       Get a unique itinerary completely personalized for you, with all bookings
       in one place.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       From your stays to activities, book-it-all in one click, and enjoy 24x7
       assistance while you explore.
     </HowItWorksText>,
-    <HowItWorksText className="font-lexend">
+    <HowItWorksText className="">
       No hidden charges during & after bookings. Pay For What You Get.
     </HowItWorksText>,
   ];
@@ -141,7 +144,23 @@ const Index = (props) => {
 
   return (
     <div>
-      <HeroBanner
+      <HeroSection
+          image={
+          isPageWide
+            ? `${imgUrlEndPoint}media/website/thank-you-banner.jpg`
+            : `${imgUrlEndPoint}media/website/homepage-banner-mobile.png`
+        }
+        destinationType={"city-planner"}
+        title={
+          
+            `Thank you for putting your faith in us`
+       
+        }
+        subtitle={`It takes one step to begin the journey of a thousand miles. We will get in touch with you within 12 hours. :)`}
+        _startPlanningFunction={() => openTailoredModal(router)}
+        page={"Thank you Page"}
+        />
+      {/* <HeroBanner
         image={
           isPageWide
             ? "media/website/thank-you-banner.jpg"
@@ -164,7 +183,7 @@ const Index = (props) => {
         }
         _startPlanningFunction={() => openTailoredModal(router)}
         page={"Thank you Page"}
-      />
+      /> */}
 
       <div
         style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}

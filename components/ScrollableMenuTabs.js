@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSticky } from "../hooks/useSticky";
 import CustomMenu from "../containers/itinerary/CustomMenu";
@@ -61,23 +61,32 @@ const ScrollableMenuTabs = ({
   classStyle,
   scrollOffSet,
   tripsPage,
+  scrollContainerRef,
+  handleActiveTab
 }) => {
-  const [activeItem, setActiveItem] = useState(0);
+  const [activeItem, setActiveItem] = useState(items[0].id);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");
+  let manuallyClick = false
 
   const handleSelect = (index, itemId) => {
+    manuallyClick = true;
     setActiveItem(itemId);
-    logEvent({
-      action: "Navigation",
-      params: {
-        page: "Itinerary Page ",
-        event_category: "Button Click",
-        event_label: items[index]?.label,
-        event_action: "Navigation Bar",
-      },
-    });
+    if (handleActiveTab) {
+      handleActiveTab(itemId)
+    } else {
+      logEvent({
+        action: "Navigation",
+        params: {
+          page: "Itinerary Page ",
+          event_category: "Button Click",
+          event_label: items[index]?.label,
+          event_action: "Navigation Bar",
+        },
+      });
+    }
+    manuallyClick = false
   };
 
   function isActive(link) {
@@ -92,9 +101,42 @@ const ScrollableMenuTabs = ({
     }
   };
 
-  const debounceFun = useDebounce(handleScroll, 500);
+  const onActiveTabChange = (ind, tabid) => {
+    if (!manuallyClick) {
+      setActiveItem(tabid)
+    }
+  }
 
-  const { markerPos, ...markerHandlers } = useNavigationMarker();
+  const debounceFun = useDebounce(handleScroll, 500);
+  const sectionIds = items.map(item => item.id);
+  const { markerPos, ...markerHandlers } = useNavigationMarker(scrollContainerRef, sectionIds, onActiveTabChange);
+
+
+  useEffect(() => {
+    const section = document.getElementById("Bookings");
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Only update on mobile
+        if (window.innerWidth <= 768 && entry.isIntersecting) {
+          if (activeItem !== "Bookings") {
+            setActiveItem("Bookings");
+            if (handleActiveTab) handleActiveTab("Bookings");
+          }
+        }
+      },
+      {
+        root: null,
+        threshold: 0.5, 
+      }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [activeItem, handleActiveTab]);
+
 
   return (
     <NavbarContainer

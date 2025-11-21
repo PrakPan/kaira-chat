@@ -81,7 +81,7 @@ const ScrollContainer = styled.div`
   // const Heading = styled.div
 `;
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function PoiDetails(props) {
   const isSmallScreen = media("(max-width:586px)");
@@ -160,7 +160,7 @@ export default function PoiDetails(props) {
     }
     props.updatedActivityBooking().then((res) => {
       setLoading(false);
-      props?.trackPoiBookingAdded(router?.query?.id,props?.data?.id, "itinerary_poi_list");
+      props?.trackPoiBookingAdded(router?.query?.id, props?.data?.id, "itinerary_poi_list");
       if (res != 0) {
         props?.setShowDrawer(false);
         props?.handleCloseDrawer(e);
@@ -178,8 +178,9 @@ export default function PoiDetails(props) {
   return (
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
-        <div className=" z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+
+        <div className="mt-xl">
+          <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
         </div>
         <div className={`flex flex-col gap-4 `}>
           <>
@@ -190,7 +191,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[0]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 0"
                     fill
@@ -218,7 +219,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[1]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 1"
                     fill
@@ -246,7 +247,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[2]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 2"
                     fill
@@ -274,7 +275,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[3]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 3"
                     fill
@@ -305,7 +306,7 @@ export default function PoiDetails(props) {
                       src={
                         props?.data?.extra_images?.[0]
                           ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                       }
                       alt="Image 0"
                       fill
@@ -333,7 +334,7 @@ export default function PoiDetails(props) {
                       src={
                         props?.data?.extra_images?.[1]
                           ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                       }
                       alt="Image 0"
                       fill
@@ -361,7 +362,7 @@ export default function PoiDetails(props) {
                       src={
                         props?.data?.extra_images?.[2]
                           ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                          : "/media/icons/bookings/notfounds/noroom.png"
+                          : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                       }
                       alt="Image 0"
                       fill
@@ -392,7 +393,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[0]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 0"
                     fill
@@ -420,7 +421,7 @@ export default function PoiDetails(props) {
                     src={
                       props?.data?.extra_images?.[1]
                         ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
+                        : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                     }
                     alt="Image 0"
                     fill
@@ -449,7 +450,7 @@ export default function PoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[0]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 0"
                   fill
@@ -474,7 +475,7 @@ export default function PoiDetails(props) {
             )}
           </>
           <div className="flex flex-col gap-3">
-            <div className="text-[20px] font-[800]">{props?.data?.display_name || props.data.name}</div>
+            <div className="text-md-lg leading-xl-sm font-600 mb-0">{props.data.name}</div>
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -565,7 +566,7 @@ export default function PoiDetails(props) {
 
           <div>
             {props.data?.general_guidelines &&
-            props.data?.general_guidelines?.length ? (
+              props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>General guidelines</div>
@@ -606,7 +607,7 @@ export default function PoiDetails(props) {
             )}
 
             {props.data?.things_to_bring &&
-            props.data?.things_to_bring?.length ? (
+              props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Things to bring</div>
@@ -647,7 +648,7 @@ export default function PoiDetails(props) {
             )}
 
             {props.data?.not_suitable_for &&
-            props.data?.not_suitable_for?.length ? (
+              props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Not suitable for</div>
@@ -743,11 +744,10 @@ export default function PoiDetails(props) {
                       <div key={i} className="flex gap-[22px] mb-2">
                         <div className="text-[14px] font-semibold">{day}</div>
                         <div
-                          className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
-                            time == "Closed"
-                              ? " bg-[rgba(220,69,65,0.1)]  text-[#DC4541]"
-                              : ""
-                          }`}
+                          className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time == "Closed"
+                            ? " bg-[rgba(220,69,65,0.1)]  text-[#DC4541]"
+                            : ""
+                            }`}
                         >
                           {time}
                         </div>
@@ -893,18 +893,9 @@ export default function PoiDetails(props) {
 
         <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
           <div className="flex  flex-col gap-1">
-            <Button
-              onclick={handleUpdate}
-              bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              hoverColor="white"
-              height={"full"}
-              padding={"8px 16px"}
-              loading={loading}
-            >
-              <>{props.data?.city && "Add to Itinerary"}</>
-            </Button>
+            <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
+              Add to Itinerary
+            </button>
             <>on {dateFormat(props?.date)}</>
           </div>
         </div>

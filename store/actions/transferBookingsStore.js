@@ -1,3 +1,4 @@
+import { axiosGetTransfers } from "../../services/itinerary/bookings";
 import * as actionTypes from "./actionsTypes";
 
 export const setTransfersBookings = (data) => {
@@ -20,9 +21,9 @@ export const updateTransferBookings = (bookingIdToDelete) => {
     
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
-        
+
         if (category === 'intercity') {
-          
+
           Object.keys(updatedData[category]).forEach((key) => {
             if (updatedData[category][key]?.id === bookingIdToDelete) {
               updatedData[category][key] = {};
@@ -63,7 +64,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
       console.error("Transfer bookings not found in state");
       return;
     }
-  
+
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
 
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
@@ -113,4 +114,3 @@ export const updateAirportTransferBooking = (keyPath, data) => {
     });
   };
 };
-

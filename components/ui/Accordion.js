@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { BsCaretDownFill } from "react-icons/bs";
+import { IoIosArrowDown } from "react-icons/io";
 
 const Container = styled.div`
   width: ${(props) => props.width || "100%"};
@@ -65,7 +66,8 @@ export default function Accordion(props) {
       >
         {props.children[0]}
         <DropDownIcon rotate={open} style={props.iconStyle}>
-          <BsCaretDownFill />
+          <IoIosArrowDown className="text-blue"/>
+          {/* <BsCaretDownFill /> */}
         </DropDownIcon>
       </Summary>
       {<div ref={DetailsRef}>{props.children[1]}</div>}

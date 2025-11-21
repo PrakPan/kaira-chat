@@ -101,7 +101,7 @@ const CountryCodeDropdown = (props) => {
     <Container
       ref={ref}
       zIndex={props.zIndex}
-      className="font-lexend"
+      className=""
       width={props.width}
     >
       <SelectBox

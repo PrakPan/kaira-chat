@@ -15,8 +15,10 @@ import {
 import { useGenericAPIModal } from "../../../warning/Index";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
-import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
-import { useAnalytics } from "../../../../../hooks/useAnalytics";
+import Accordion, {
+  AccordionDetails,
+  AccordionSummary,
+} from "../../../../ui/Accordion";
 
 
 const Container = styled.div`
@@ -98,9 +100,8 @@ const Section = (props) => {
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const {trackTransferBookingChange,trackTransferBookingAdd} = useAnalytics();
-  const {intercity,airport} = useSelector(state=>state.TransferBookings)?.transferBookings;
- 
+  const [open, setOpen] = useState(false);
+
   const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -244,7 +245,7 @@ const Section = (props) => {
         trackTransferBookingAdd(itineraryId || props.selectedBooking.itinerary_id,`${props?.cityId}`,airport?.[`${props?.cityId}`],response.data,response.data?.transfer_details?.trips?.[0]?.origin?.address,response.data?.transfer_details?.trips?.[0]?.destination?.address)
       }
 
-      props._updateTaxiBookingHandler([response.data]);
+      // props._updateTaxiBookingHandler([response.data]);
       props.getPaymentHandler();
       props.setHideBookingModal();
 
@@ -300,11 +301,14 @@ const Section = (props) => {
     }
   };
 
+  let bagCapacity = 0;
+  if (props.data?.taxi_category?.bag_capacity)
+    bagCapacity += props.data.taxi_category.bag_capacity;
 
 
   if (props.data)
     return (
-      <Container>
+      <div className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md">
         {showWarningModal && ReactDOM.createPortal((
           <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
             <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
@@ -353,91 +357,110 @@ const Section = (props) => {
             </div>
           </div>
         ), document.body)}
-        <TaxiHeading>
-          {/* <Heading> */}
-          {props.data?.taxi_category?.model_name ? (
-            <>
-              {props.data.taxi_category.model_name}{" "}
-              <>
-                {props.data.taxi_category?.fuel_type ? (
-                  `(${props.data.taxi_category.fuel_type})`
-                ) : (
-                  <></>
-                )}
-              </>
-            </>
-          ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
-            "Round-trip Taxi"
-          ) : (
-            "One-way Taxi"
-          )}
-          {/* </Heading> */}
 
+        <div className="flex justify-between max-ph:flex-col">
           <div>
-            <Cost>
-              {"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}
-            </Cost>
+            <div className="flex justify-between w-100">
+              <span className="text-md font-600 leading-xl ">
+                {props.data?.taxi_category?.model_name ? (
+                  <>
+                    {props.data.taxi_category.model_name}{" "}
+                    <>
+                      {props.data.taxi_category?.fuel_type ? (
+                        `(${props.data.taxi_category.fuel_type})`
+                      ) : (
+                        <></>
+                      )}
+                    </>
+                  </>
+                ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
+                  "Round-trip Taxi"
+                ) : (
+                  "One-way Taxi"
+                )}
+              </span>
+            </div>
+
+            {<div className="text-sm font-400 leading-lg-md text-text-spacegrey">{props.data?.taxi_category?.type}</div>}
+
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-col ">
+                <div className="font-600 text-md-lg leading-xl-sm">
+                  {props.data?.taxi_category?.seating_capacity + "-seater"}
+                </div>
+                <div>
+                  <Accordion
+                    borderRadius="0.5rem"
+                    open={open}
+                    setOpen={setOpen}
+                    iconStyle={{ right: "unset", left: "75px" }}
+                  >
+                    <AccordionSummary className="text-blue whitespace-nowrap"
+                      style={
+                        isPageWide
+                          ? { padding: "0.5rem 0" }
+                          : { padding: "0.5rem 0" }
+                      }
+                    >
+                      Facilities
+                    </AccordionSummary>
+
+                    <AccordionDetails
+                      style={!isPageWide ? { marginBottom: "1rem" } : {}}
+                    >
+                      {props.data?.instructions &&
+                        props.data?.instructions?.length ? (
+                        <div>
+                          {props.data.instructions.map((e, index) => (
+                            <div className="text-sm font-400 leading-lg-md text-text-spacegrey"
+                              key={index}
+
+                            >
+                              - {e}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {bagCapacity > 0 && (
+                        <div>
+                          <div className="text-sm font-400 leading-lg-md text-text-spacegrey"
+                          >
+                            - {bagCapacity} Luggage bags
+                          </div>
+                        </div>
+                      )}
+                    </AccordionDetails>
+                  </Accordion>
+                </div>
+              </div>
+            </div>
           </div>
-        </TaxiHeading>
-
-        {<ModelText>{props.data?.taxi_category?.type}</ModelText>}
-
-        <div className="flex justify-between">
-          <SectionFour
-            setHideBookingModal={props.setHideBookingModal}
-            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-            getPaymentHandler={props.getPaymentHandler}
-            selectedBooking={props.selectedBooking}
-            _updateSearchedTaxi={props._updateSearchedTaxi}
-            data={props.data}
-            setShowTaxiModal={props.setShowTaxiModal}
-          ></SectionFour>
-
-          <div className="p-[0.4rem] flex items-center justify-center">
-            {!loading || !props?.bookingLoad ? (
-              <label
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.5rem",
-                  cursor: "pointer",
-                }}
-              >
-
-                <input
-                  type="checkbox"
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      handleUpdate();
-                    } else {
-                      handleCancel();
-                    }
-                  }}
-                  checked={props?.isSelected || isChecked || false}
-                  disabled={loading || props?.bookingLoad}
-                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                {/* <img
-                  src={
-                    props?.isSelected
-                      ? "/media/icons/bookings/tick-square-blue.svg"
-                      : "/media/icons/bookings/tick-square.svg"
-                  }
-                  alt="Select"
-                  style={{ width: "1.25rem", height: "1.25rem" }}
-                /> */}
-                {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
-        Select
-      </span> */}
-              </label>
-            ) : (
-              <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
-            )}
+          <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+            <div>
+              <span className="text-lg font-700 2xl-md">
+                {"₹" + getIndianPrice(Math.ceil(props.data.price.total))}
+              </span>
+            </div>
+            <div className="flex items-end justify-center">
+              {loading ? (
+                <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+              ) : props?.isSelected ? (
+                <div className="flex items-center gap-1">
+                  <button className="ttw-btn-secondary-fill max-ph:w-full">Selected</button>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={handleUpdate}
+                >
+                  <button className="ttw-btn-fill-yellow max-ph:w-full">Add to Itinerary</button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        <hr />
-      </Container>
+      </div>
     );
   else return null;
 };

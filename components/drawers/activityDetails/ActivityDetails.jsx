@@ -17,7 +17,7 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -83,14 +83,14 @@ export default function ActivityDetails(props) {
       return;
     }
     const bookingData = {
-    ...e,
-    result_index: selectedPackage?.result_index
-  };
-  
-  props.updatedActivityBooking(bookingData).then(() => {
-    setLoading(false);
-    props?.handleCloseDrawer(e);
-  });
+      ...e,
+      result_index: selectedPackage?.result_index
+    };
+
+    props.updatedActivityBooking(bookingData).then(() => {
+      setLoading(false);
+      props?.handleCloseDrawer(e);
+    });
   };
 
   const handleAmenityChange = async (index, included) => {
@@ -109,13 +109,10 @@ export default function ActivityDetails(props) {
 
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
-      <div className="flex flex-col gap-4  mb-[100px]">
-        <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+      <div className="flex flex-col gap-4  mb-[100px] pb-[20px]">
+        <div className="mt-xl">
+          <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
         </div>
-        {/* <div className="flex justify-between">
-          <div className="text-[24px] font-semibold">Activity Details</div>
-        </div> */}
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
             Updating
@@ -124,9 +121,8 @@ export default function ActivityDetails(props) {
         )}
 
         <div
-          className={`flex flex-col gap-4 ${
-            props.updateAmenities && "opacity-50"
-          }`}
+          className={`flex flex-col gap-4 ${props.updateAmenities && "opacity-50"
+            }`}
         >
           <div className="h-[180px] md:h-[300px] relative">
             <div style={{ display: imageLoaded ? "initial" : "none" }}>
@@ -163,8 +159,8 @@ export default function ActivityDetails(props) {
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
                       : props.data?.ideal_duration_unit
-                          ?.toLowerCase()
-                          ?.slice(0, -1)}
+                        ?.toLowerCase()
+                        ?.slice(0, -1)}
                   </div>
                 </div>
               ) : (
@@ -186,7 +182,7 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <div className="text-[20px] font-[800]">{props.data?.display_name || props.data.name}</div>
+              <div className="text-md-lg leading-xl-sm font-600 mb-0">{props.data?.display_name || props.data.name}</div>
             </div>
             <Pax pax={props?.filterState} setPax={props?.setFilterState} />
 
@@ -271,7 +267,7 @@ export default function ActivityDetails(props) {
             </div>
           )}
           </div>
-          {props.data?.hotel_pickup_included ? (
+          {props?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
                 src="/hotelPickupIncluded.svg"
@@ -598,27 +594,21 @@ export default function ActivityDetails(props) {
               </div>
             )} */}
             {selectedPackage?.total_price && (
-        <div className="font-bold">
-          <span className="text-[34px]">
-            ₹
-            {selectedPackage?.total_price && selectedPackage?.total_price > 0
-              ? getIndianPrice(Math.round(selectedPackage.total_price))
-              : selectedPackage.total_price}
-          </span>
-        </div>
-      )}
+              <div className="font-bold">
+                <span className="text-[34px]">
+                  ₹
+                  {selectedPackage?.total_price && selectedPackage?.total_price > 0
+                    ? getIndianPrice(Math.round(selectedPackage.total_price))
+                    : selectedPackage.total_price}
+                </span>
+              </div>
+            )}
           </>
-          <Button
-            onclick={handleUpdate}
-            bgColor={"#F7E700"}
-            borderRadius="8px"
-            hoverBgColor="black"
-            fontWeight="400"
-            height={"full"}
-            loading={loading}
-          >
-            <div>{props.data?.city && "Add to Itinerary"}</div>
-          </Button>
+
+  
+          <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
+            Add to Itinerary
+          </button>
         </div>
         <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">

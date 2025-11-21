@@ -15,7 +15,7 @@ import RecommendedBadge from "./Recommended";
 import Image from "next/image";
 import ChangePoiDetailsDrawer from "../../../components/drawers/poiDetails/ChangePoiDetailsDrawer";
 
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ChangePoiBooking(props) {
   const [stars, setStars] = useState(null);
@@ -54,7 +54,7 @@ export default function ChangePoiBooking(props) {
   return (
     <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
       <div
-        className={`relative flex gap-1  flex-col justify-start max-[583px]:hidden`}
+        className={`relative flex gap-1  flex-col justify-start max-sm:hidden`}
       >
         <div
           style={{
@@ -293,7 +293,7 @@ export default function ChangePoiBooking(props) {
         </div>
       </div>
 
-      <div className="min-[583px]:hidden" id="Activity">
+      <div className="sm:hidden" id="Activity">
         <div>
           <div
             style={{

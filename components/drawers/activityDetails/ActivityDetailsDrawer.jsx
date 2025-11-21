@@ -57,6 +57,7 @@ const ActivityDetailsDrawer = (props) => {
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const [hotelPickupIncluded,setHotelPickupIncluded] = useState(false);
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
@@ -110,6 +111,7 @@ const ActivityDetailsDrawer = (props) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {
           setData(res.data?.data?.activity);
+          setHotelPickupIncluded(res?.data?.data?.hotel_pickup_included);
         } else throw new Error(res.data?.message);
         setLoading(false);
         setUpdateAmenities(false);
@@ -247,6 +249,7 @@ const ActivityDetailsDrawer = (props) => {
               setFilterState={setFilterState}
               setShowLoginModal={props?.setShowLoginModal}
               itinerary_city_id={props?.itinerary_city_id}
+              hotel_pickup_included={hotelPickupIncluded}
             />
           ) : (
             <ActivityDetailsSkeleton
@@ -267,7 +270,7 @@ const ActivityDetailsDrawer = (props) => {
         </div>
       )}
 
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -275,7 +278,7 @@ const ActivityDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

@@ -67,11 +67,12 @@ const FullImgContent = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination,props.type);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.page_id, props.destination,props.type);
+    // }
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -85,7 +86,7 @@ const FullImgContent = (props) => {
   };
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <PaddingContianer className="">
         <div className="">
           <H1 style={{ color: "white" }}>{props.destination ?  props.destination + " Trip Planner" : props?.title}</H1>

@@ -1,11 +1,10 @@
-import { useSelector } from "react-redux";
 import CityDay from "./CityDay";
 
 const CityDaybyDay = (props) => {
 
 
   return (
-    <div id="citydaybyday" className="flex flex-col">
+    <div id="citydaybyday" className="flex flex-col gap-[8px] pt-[16px] pb-[16px] pl-[10px] pr-[10px] bg-[#FBFBFB]">
       {props.city?.day_by_day.map((day, index) => (
         <>
           <CityDay

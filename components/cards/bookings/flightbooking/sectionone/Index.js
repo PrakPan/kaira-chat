@@ -17,7 +17,7 @@ const Container = styled.div`
 const Section = (props) => {
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div style={{ display: "flex", gap: "0.5rem", marginRight: "0rem" }}>
           <div style={{ padding: "0.5rem 0.5rem 0.5rem 1rem" }}>
             <ImageLoader

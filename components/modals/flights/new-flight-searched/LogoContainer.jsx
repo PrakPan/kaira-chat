@@ -7,7 +7,7 @@ import media from "../../../media";
 export default function LogoContainer({ data, height, width }) {
   return (
     <div className="flex">
-      <Logo src={data?.segments[0]?.airline?.code} ht={height} wd={width} />
+      <Logo src={data?.segments?.[0]?.airline?.code || data?.[0]?.airline?.code} ht={height} wd={width} />
     </div>
   );
 }

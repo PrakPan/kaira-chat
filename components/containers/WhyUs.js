@@ -22,7 +22,7 @@ const WhyUs = (props) => {
       <GridContainer className="hidden-desktop">
         <div style={{ paddingLeft: "10%" }}>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -33,7 +33,7 @@ const WhyUs = (props) => {
           </p>
 
           <p
-            className="font-lexend"
+            className=""
             style={{ fontSize: "20px", fontWeight: "300" }}
           >
             {" "}
@@ -55,7 +55,7 @@ const WhyUs = (props) => {
         <div style={{ textAlign: "right", paddingRight: "10%" }}>
           <div style={{ position: "relative" }}></div>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -66,7 +66,7 @@ const WhyUs = (props) => {
           </p>
 
           <p
-            className="font-lexend"
+            className=""
             style={{ fontSize: "20px", fontWeight: "300", color: "#212529" }}
           >
             {" "}
@@ -87,7 +87,7 @@ const WhyUs = (props) => {
 
         <div style={{ paddingLeft: "10%" }}>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -98,7 +98,7 @@ const WhyUs = (props) => {
           </p>
 
           <p
-            className="font-lexend"
+            className=""
             style={{ fontSize: "20px", fontWeight: "300", color: "#212529" }}
           >
             We understand that traveling can not be perfect and thus, we offer
@@ -120,7 +120,7 @@ const WhyUs = (props) => {
       <GridContainer className="hidden-mobile">
         <div style={{ paddingLeft: "10%" }}>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -130,7 +130,7 @@ const WhyUs = (props) => {
             Fully Customizable
           </p>
           <p
-            className="font-lexend"
+            className=""
             style={{ fontSize: "20px", fontWeight: "200" }}
           >
             {" "}
@@ -161,7 +161,7 @@ const WhyUs = (props) => {
         <div style={{ paddingRight: "10%" }}>
           <div style={{ position: "relative" }}></div>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -171,7 +171,7 @@ const WhyUs = (props) => {
             100% Transparency
           </p>
           <p
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "200", fontSize: "20px", color: "#212529" }}
           >
             {" "}
@@ -183,7 +183,7 @@ const WhyUs = (props) => {
 
         <div style={{ paddingLeft: "10%" }}>
           <p
-            className="font-lexend "
+            className=" "
             style={{
               fontSize: "20px",
               marginBottom: "1rem",
@@ -193,7 +193,7 @@ const WhyUs = (props) => {
             24/7 Live Concierge
           </p>
           <p
-            className="font-lexend"
+            className=""
             style={{ fontWeight: "200", fontSize: "20px", color: "#212529" }}
           >
             We understand that traveling can not be perfect and thus, we offer

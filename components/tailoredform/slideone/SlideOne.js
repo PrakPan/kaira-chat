@@ -1,46 +1,78 @@
 import { useState } from "react";
 import styled from "styled-components";
-import { BsCheck } from "react-icons/bs";
-import { AiFillCaretDown } from "react-icons/ai";
-import NewDatePicker from "./NewDatePicker";
 import Destinations from "./destinations/Index";
-import Question from "../Question";
 import Preferences from "../slidetwo/preferences/Index";
+import AirbnbCalendar from "../../calendar";
+import { StyledFigmaBox } from "../utils/ui";
+import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
+import { Body1M_16, Body2M_14, Body2R_14 } from "../../new-ui/Body";
+import useMediaQuery from "../../media";
+import BottomModal from "../../ui/LowerModal";
+import AirbnbCalendarMobile from "../../calendar/MobileCalendar";
+import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { setAnytimeDate, setCalendarDates, setDateType, setFixedDate, setFlexibleDate } from "../../../store/actions/slideOneActions";
+import { getHumanDate } from "../../../services/getHumanDate";
+import { togglePreference } from "../../../store/actions/slideOneActions";
+import { months } from "../../calendar/utils";
 
 const Container = styled.div`
   color: black;
   width: 100%;
   @media screen and (min-width: 768px) {
   }
+    display: flex;
+  flex-direction: column;
+  gap: 30px;
 `;
 
 const Section = styled.div`
-  margin-bottom: 1rem;
 `;
 
+const formatShortDate = (date) => {
+  if (!date) return '';
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'short' }).toLowerCase(); // "sep"
+  return `${day} ${month}`;
+};
+
+
 const SlideOne = (props) => {
-  const [showPreferences, setShowPreferences] = useState(false);
-
-  const getHeading = () => {
-    if (props.tailoredFormModal && props.focusedDate) {
-      if (props.focusedDate == "startDate") return "Please select start date.";
-      if (props.focusedDate == "endDate") return "Please select end date.";
-    } else return "What do you want to explore?";
-  };
-
+  const isDesktop = useMediaQuery("(min-width:767px)");
+  const [showCalendar, setShowCalendar] = useState(false);
+  const date = useSelector((state) => state.tailoredInfoReducer.slideOne.date);
+  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
+  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
+  const dispatch = useDispatch();
+  const handleOnCalenderApplyDates = (values) => {
+    if (values.dateType == "fixed") {
+      dispatch(setFixedDate(values.start, values.end));
+    }
+    else if (values.dateType == "flexible") {
+      dispatch(setFlexibleDate(values.month.getMonth()+1, values.month.getFullYear(), values.duration));
+    }
+    else {
+      dispatch(setAnytimeDate(values.duration))
+    }
+  }
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)||[];
+  const setSelectedPrefrences=(value)=>{
+    console.log("value", value);
+    dispatch(togglePreference(value));
+  }
   const CITIES = null;
-
+  const SetDateType = (value) => {
+    dispatch(setDateType(value))
+  }
   return (
     <Container>
       <Section>
-        <Question>{getHeading()}</Question>
         <Destinations
           startingLocation={props.startingLocation}
           tailoredFormModal={props.tailoredFormModal}
           initialInputId={props.initialInputId}
           setStartingLocation={props.setStartingLocation}
           showSearchStarting={props.showSearchStarting}
-          children_cities={props.children_cities}
           setDestination={props.setDestination}
           setShowSearchStarting={props.setShowSearchStarting}
           showCities={props.showCities}
@@ -48,100 +80,112 @@ const SlideOne = (props) => {
           destination={props.destination}
           CITIES={props.cities ? props.cities : CITIES}
           selectedCities={props.selectedCities}
-          setSelectedCities={props.setSelectedCities}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
+          errors={props.errors}
         ></Destinations>
       </Section>
 
       <Section>
-        <Question
-          style={{ visibility: props.showCities ? "hidden" : "visible" }}
-          margin="0 0 1rem 0"
-        >
-          When are you planning to travel?
-        </Question>
-        <NewDatePicker
-          focusedDate={props.focusedDate}
-          setFocusedDate={props.setFocusedDate}
-          tailoredFormModal={props.tailoredFormModal}
-          valueStart={props.valueStart}
-          valueEnd={props.valueEnd}
-          setValueStart={props.setValueStart}
-          setValueEnd={props.setValueEnd}
-          eventDates={props.eventDates}
-        />
+        <div>
+          <Body2R_14 className="mb-[4px]">When</Body2R_14>
+          <div className="relative w-full">
+            <StyledFigmaBox
+              value={
+                date.type === "fixed" ? (valueStart && valueEnd
+                  ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
+                  : "") : date.type === "flexible" ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` : date.duration + " days"
+              }
+              placeholder="Select dates"
+              className={`cursor-pointer w-full pr-10  Body2M_14`}
+              onClick={() => setShowCalendar(true)}
+              readOnly
+            />
+            <Image
+              src="/calendar.svg"
+              width={20}
+              height={20}
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              alt="calendar"
+            />
+          </div>
+          {props.errors.when !== null && <p className="mt-1 text-sm text-red-600 font-medium">
+            {props.errors.when}
+          </p>}
+        </div>
         <div
           className="hover-pointer"
           style={{
             display: "flex",
             gap: "0.5rem",
             alignItems: "center",
-            marginTop: "1rem",
             marginLeft: "2px",
           }}
         >
           {props.eventDates && props.destination ? (
-            <div className="font-lexend" style={{ fontSize: "0.8rem" }}>
+            <div className="" style={{ fontSize: "0.8rem" }}>
               The dates for this event are fixed and cannot be changed!
             </div>
           ) : (
             <>
-              {/* <div onClick={() => props.setFlexible(!props.flexible)}>
-                <div
-                  className="center-div"
-                  style={{
-                    border: "2px solid #01202B",
-                    color: "black",
-                    lineHeight: "1",
-                    fontSize: "0.75rem",
-                    borderRadius: "3px",
-                    opacity: "1",
-                    height: "20px",
-                    width: "20px",
-                    backgroundColor: props.flexible
-                      ? "rgba(247,231,0,1)"
-                      : "transparent",
-                  }}
-                >
-                  {props.flexible ? <BsCheck></BsCheck> : null}
-                </div>
-              </div> */}
-              {/* <div
-                onClick={() => props.setFlexible(!props.flexible)}
-                className="font-lexend"
-                style={{ fontSize: "0.8rem" }}
-              >
-                Not sure? Let us decide best time for your trip.
-              </div> */}
+
             </>
           )}
         </div>
       </Section>
 
       <Section>
-        <div
-          onClick={() => setShowPreferences(!showPreferences)}
-          className="w-fit flex"
-        >
-          <Question hover_pointer>Activity Preferences?</Question>
-          <div style={{ flexGrow: "1", textAlign: "right" ,marginTop:"4px"}}>
-            <AiFillCaretDown
-              style={{ verticalAlign: "initial" }}
-              className="hover-pointer"
-            />
-          </div>
-        </div>
-
-        {showPreferences ? (
+        <Body1M_16>Choose your experience</Body1M_16>
+        <div className="mt-[12px]">
           <Preferences
             tailoredFormModal={props.tailoredFormModal}
-            selectedPreferences={props.selectedPreferences}
-            setSelectedPreferences={props.setSelectedPreferences}
+            selectedPreferences={selectedPreferences}
+            setSelectedPreferences={setSelectedPrefrences}
           ></Preferences>
-        ) : null}
+        </div>
       </Section>
+      {isDesktop ? <ModalWithBackdrop
+        centered
+        show={showCalendar}
+        mobileWidth="100%"
+        backdrop
+        closeIcon={true}
+        onHide={() => setShowCalendar(false)}
+        borderRadius={"12px"}
+        paddingX="20px"
+        paddingY="20px"
+        parentClasses={'border-md border-solid border-primary-yellow'}
+        animation={false}
+        backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
+      >
+        <AirbnbCalendar
+          valueStart={valueStart}
+          valueEnd={valueEnd}
+          onChangeDate={handleOnCalenderApplyDates}
+          setShowCalendar={setShowCalendar}
+          setDateType={SetDateType}
+          dateType={date.type}
+          date={date}
+        />
+      </ModalWithBackdrop> : <>
+        <BottomModal
+          show={showCalendar}
+          onHide={() => setShowCalendar(false)}
+          width="100%"
+          height="max-content"
+          paddingX="20px"
+          paddingY="20px"
+        >
+          <AirbnbCalendarMobile
+            valueStart={valueStart}
+            valueEnd={valueEnd}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={setShowCalendar}
+            setDateType={SetDateType}
+            dateType={date.type}
+            date={date}
+          />
+        </BottomModal>
+      </>}
     </Container>
   );
 };

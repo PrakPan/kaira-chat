@@ -35,7 +35,7 @@ const GettingAround = (props) => {
     <div>
       {props.getting_around ? (
         <Container>
-          <Heading className="font-lexend">Getting Around</Heading>
+          <Heading className="">Getting Around</Heading>
           <Description className="font-nunito">
             {showMore
               ? props.getting_around.substring(0, 250)

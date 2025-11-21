@@ -2,61 +2,49 @@ import React, { useRef, useEffect, useState } from "react";
 import Modal from "../ui/Modal";
 import Login from "../userauth/LogInModal";
 import styled from "styled-components";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
+import Image from "next/image";
 
 const ImgContainer = styled.div`
   height: 100%;
   position: relative;
-  img {
-    filter: brightness(0.5);
-  }
 `;
 
 const ImgTagsContainer = styled.div`
   position: absolute;
-  top: 50%;
+  bottom: -30px;
   transform: translateY(-43%);
   left: 10%;
-  img {
-    filter: brightness(1);
-  }
 `;
 
-const TagItem = styled.div`
-  display: grid;
-  grid-template-columns: 40px 2fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  p {
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    margin-block: auto;
-  }
-`;
-
-const TagsContent = [
+const tags = [
   {
-    icon: "media/icons/login/free-travel.png",
-    text: "Unlimited travel plans for free!",
+    src: "/facebook.svg",
+    url: "https://www.facebook.com/thetarzanway/"
   },
   {
-    icon: "media/icons/login/discount.png",
-    text: "Exclusive deals: Upto 70% off!",
+    src: "/instagram.svg",
+    url: "https://www.instagram.com/thetarzanway/"
   },
-  { icon: "media/icons/login/officer.png", text: "Expert support, 24x7!" },
   {
-    icon: "media/icons/login/night-stay.png",
-    text: "Free night stay on selected properties!",
+    src: "/x.svg",
+    url: "https://x.com/TheTarzanWay"
   },
-];
+  {
+    src: "/linkedin.svg",
+    url: "https://www.linkedin.com/company/thetarzanway"
+  },
+  {
+    src: "/pintrest.svg",
+    url: "https://in.pinterest.com/thetarzanway/"
+  },
+]
 
 const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
+  const [modalWidth, setModalWidth] = useState(isPageWide ? "848px" : "100%");
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
 
@@ -73,12 +61,12 @@ const Enquiry = (props) => {
   useEffect(() => {
     function findModalWidth() {
       if (window.innerWidth >= 1600) setModalWidth(50);
-      else if (window.innerWidth >= 1400) setModalWidth(60);
-      else if (window.innerWidth >= 1100) setModalWidth(70);
-      else if (window.innerWidth >= 768) setModalWidth(90);
-      else if (window.innerWidth >= 600) setModalWidth(60);
-      else if (window.innerWidth >= 400) setModalWidth(80);
-      else setModalWidth(90);
+      else if (window.innerWidth >= 1400) setModalWidth("848px");
+      else if (window.innerWidth >= 1100) setModalWidth("848px");
+      else if (window.innerWidth >= 768) setModalWidth("100%");
+      else if (window.innerWidth >= 600) setModalWidth("100%");
+      else if (window.innerWidth >= 400) setModalWidth("100%");
+      else setModalWidth("100%");
     }
     window.addEventListener("resize", findModalWidth);
     findModalWidth();
@@ -92,12 +80,12 @@ const Enquiry = (props) => {
         closeIcon
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={props.hideloginclose ? null : props.onhide}
+        onHide={props.onhide}
         borderRadius="20px"
-        width={modalWidth + "%"}
+        width={modalWidth}
         zIndex={props?.zIndex}
       >
-        <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+        <div id="login-modal" style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
           <div
             style={{
               backgroundColor: "#2C2C2C",
@@ -111,36 +99,40 @@ const Enquiry = (props) => {
           <ImgContainer style={{ display: showImage ? "block" : "none" }}>
             <ImageLoader
               noLazy
-              url={"media/website/login-background.png"}
-              height="100%"
+              url={"media/themes/auth.png"}
+              height="560px"
               width="100%"
               onload={() => setShowImage(true)}
-              borderRadius="20px 0 0 20px"
-              alt="login"
+              borderRadius="20px"
             ></ImageLoader>
 
             <ImgTagsContainer>
-              {TagsContent.map((e, i) => (
-                <TagItem key={i}>
-                  <ImageLoader
-                    noLazy
-                    borderRadius={"0.4rem 0 0 0.4rem"}
-                    url={e.icon}
-                    dimensions={{ width: 200, height: 200 }}
-                    noPlaceholder={true}
-                    alt="Login"
-                  />
-                  <p className="font-lexend">{e.text}</p>
-                </TagItem>
-              ))}
+              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide ? "max-w-[334px]" : "max-w-[100%]"}`}>
+                Your Personalized Travel Journey Starts with a Tap
+              </div>
+              <div className="flex gap-4">
+                {tags?.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 flex items-center justify-center rounded-[60px] border border-white/40 bg-[rgba(255,255,255,0.36)] backdrop-blur-[4px] cursor-pointer"
+                  >
+                    <Image src={item?.src} width={20} height={20} alt="social" />
+                  </a>
+                ))}
+              </div>
             </ImgTagsContainer>
+
           </ImgContainer>
 
-          <div style={{ padding: "20px" }}>
+          <div style={{ paddingTop: "20px" }}>
             <Login
               ref={myref}
               onhide={props.onhide}
               itinary_id={props.itinary_id}
+              onSuccess={props?.onSuccess}
             ></Login>
           </div>
         </div>
@@ -152,15 +144,52 @@ const Enquiry = (props) => {
         centered
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        onHide={props.hideloginclose ? null : props.onhide}
-        width={modalWidth + "%"}
+        height={!isPageWide ? "100%" : "auto"}
+        onHide={props.onhide}
+        width={modalWidth}
         borderRadius={"12px"}
         token={props.token}
         itinary_id={props.itinary_id}
         zIndex={props?.zIndex}
+        className="overflow-y-hidden"
+        overflow="hidden"
       >
-        <div style={{ padding: "20px" }}>
-          <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
+          <ImgContainer style={{
+            display: showImage ? "block" : "none",
+            height: "calc(100vh - 570px)",
+            overflow: "hidden"
+          }}>
+            <ImageLoader
+              noLazy
+              url={"media/themes/auth.png"}
+              height="560px"
+              width="100%"
+              
+              onload={() => setShowImage(true)}
+            ></ImageLoader>
+
+            <ImgTagsContainer>
+              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide? "max-w-[334px]" : "max-w-[100%]"}`}>
+                Your Personalized Travel Journey Starts with a Tap
+              </div>
+              <div className="flex gap-4">
+                {tags?.map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 flex items-center justify-center rounded-[60px] border border-white/40 bg-[rgba(255,255,255,0.36)] backdrop-blur-[4px] cursor-pointer"
+                  >
+                    <Image src={item?.src} width={20} height={20} alt="social" />
+                  </a>
+                ))}
+              </div>
+            </ImgTagsContainer>
+
+          </ImgContainer>
+        <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
+          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess}></Login>
         </div>
       </Modal>
     );

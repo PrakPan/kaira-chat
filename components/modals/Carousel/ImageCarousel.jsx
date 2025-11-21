@@ -157,7 +157,7 @@ const ImageCarousel = ({ images, noCaption }) => {
             >
               <Image src={src.image} alt={`Slide ${index + 1}`} fill />
               {!noCaption && src?.caption &&(
-                <div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
+                <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                   {src?.caption}
                 </div>
               )}
@@ -208,18 +208,18 @@ const ImageCarousel = ({ images, noCaption }) => {
         <>
           <button
             onClick={(e) => prevSlide(e)}
-            className="absolute -left-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10"
+            className="absolute -left-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10 d-flex justify-center items-center"
           >
             <MdNavigateBefore className="text-2xl" />
           </button>
           <button
             onClick={(e) => nextSlide(e)}
-            className="absolute -right-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10"
+            className="absolute -right-1 top-1/2 transform -translate-y-1/2 bg-[#01202b] text-white p-2 rounded-full w-10 h-10 d-flex justify-center items-center"
           >
             <MdNavigateNext className="text-2xl" />
           </button>
         </>
-      )}
+       )} 
     </div>
   );
 };

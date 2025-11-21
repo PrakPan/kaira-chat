@@ -49,7 +49,7 @@ const ExperienceIndexLoading = (props) => {
   return (
     <Container className="center-div">
       <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
-      <DidYouKnow className="font-lexend">Did you know?</DidYouKnow>
+      <DidYouKnow className="">Did you know?</DidYouKnow>
       <Quote style={{ color: "black" }} className="font-nunito">
         <em>{quotes[Math.floor(Math.random() * 16)]}</em>
       </Quote>

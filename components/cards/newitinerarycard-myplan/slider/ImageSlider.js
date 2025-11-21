@@ -118,14 +118,14 @@ const ImageSlider = (props) => {
       {!props.PW ? null : (
         <PWContainer style={{ display: "none" }}></PWContainer>
       )}
-      <CustomizableContainer className="font-lexend">
+      <CustomizableContainer className="">
         100% CUSTOMISABLE
       </CustomizableContainer>
       <HeadingContainer>
-        <Heading className="font-lexend" locations={props.locations}>
+        <Heading className="" locations={props.locations}>
           {props.experience}
         </Heading>
-        <Subheading className="font-lexend">{LOCATIONS_TO_SHOW}</Subheading>
+        <Subheading className="">{LOCATIONS_TO_SHOW}</Subheading>
       </HeadingContainer>
     </Container>
   );

@@ -58,7 +58,7 @@ const Dates = (props) => {
           />
         </LocalizationProvider>
       </Grid>
-      {/* <Grid item xs={1} className="font-lexend">
+      {/* <Grid item xs={1} className="">
                                     to
                             </Grid> */}
       <Grid item xs={6}>

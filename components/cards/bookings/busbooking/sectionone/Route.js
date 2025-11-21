@@ -39,8 +39,8 @@ const Section = (props) => {
     return (
       <Container>
         <Heading>{props.data.bus_type}</Heading>
-        <RouteContainer className="font-lexend">
-          <Location className="font-lexend">{props.data.city}</Location>
+        <RouteContainer className="">
+          <Location className="">{props.data.city}</Location>
           <div style={{ margin: "0 2px" }}>
             <ImageLoader
               url="media/icons/bookings/next.png"
@@ -50,7 +50,7 @@ const Section = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div>
-          <Location className="font-lexend">
+          <Location className="">
             {props.data.destination_city}
           </Location>
         </RouteContainer>

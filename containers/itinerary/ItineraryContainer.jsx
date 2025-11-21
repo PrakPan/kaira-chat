@@ -10,8 +10,7 @@ import axiosdaybydayinstance, {
 } from "../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../services/itinerary/brief/preview";
 import * as authaction from "../../store/actions/auth";
-import { ITINERARY_STATUSES } from "../../services/constants";
-import { TRAVELER_ITINERARIES } from "../../services/constants";
+import { ITINERARY_STATUSES, MERCURY_HOST, TRAVELER_ITINERARIES } from "../../services/constants";
 import axiosPoiRoutes from "../../services/itinerary/brief/route";
 import axiosbookingupdateinstance from "../../services/bookings/UpdateBookings";
 import Overview from "../newitinerary/overview/Index";
@@ -39,14 +38,18 @@ import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 import { logEvent } from "../../services/ga/Index";
 import setCart from "../../store/actions/Cart";
 import NotesPopup from "./NotesPopup";
+import axios from "axios";
+import { ChatProvider } from "../../components/Chatbot/context/ChatContext";
 import setItineraryId from "../../store/actions/itineraryId";
 
 const Container = styled.div`
-  width: 90%;
-  margin: 5vh auto 0 auto;
+  width: 100%;
+  padding: 17px 16px 0 16px;
+  max-width: 100vw;
   @media screen and (min-width: 768px) {
     width: 85%;
     margin: -5vh auto 0 auto;
+    padding: 0;
   }
 `;
 
@@ -54,8 +57,6 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
   if (!isVisible || !displayText) {
     return null;
   }
-
-  
 
   return (
     <div className="">
@@ -207,13 +208,13 @@ const ItineraryContainer = (props) => {
   // Throttle function for performance optimization
   const throttle = (func, limit) => {
     let inThrottle;
-    return function() {
+    return function () {
       const args = arguments;
       const context = this;
       if (!inThrottle) {
         func.apply(context, args);
         inThrottle = true;
-        setTimeout(() => inThrottle = false, limit);
+        setTimeout(() => (inThrottle = false), limit);
       }
     };
   };
@@ -262,14 +263,30 @@ const ItineraryContainer = (props) => {
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
   const [oldOne, setOldOne] = useState(false);
-
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
-
   const [notes, setNotes] = useState(null);
   const [showNotesPopup, setShowNotesPopup] = useState(false);
+  const [gallery, setGallery] = useState([]);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const response = await axios.get(`${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`);
+        setGallery(response.data);
+      } catch (err) {
+        console.error("Error fetching gallery:", err);
+      } finally {
+      }
+    };
+
+    if (props.id) {
+      fetchGallery();
+    }
+  }, [props.id]);
+
 
    const resetRef = () => {
     itinerarySuccessRef.current = false;
@@ -289,28 +306,6 @@ const ItineraryContainer = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  // const newDate = addDaysToDate(dateString, 2);
-  // console.log(newDate);
-
-  //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  //   console.log("Transfer Booking",transferBooking);
-
-  // useEffect(() => {
-  //   if (hasRendered.current) {
-  //     if (props.token) getPaymentHandler();
-  //   } else hasRendered.current = true;
-  // }, [props.token]);
-
-  // useEffect(() => {
-  //   if (props.itinerary.name !== "Loading Itinerary") {
-  //     let activities =[];
-  //     if(props?.mercuryItinerary)
-  //      activities = getItineraryActivities();
-  //     else
-  //     activities = getItineraryActivitiesOld();
-  //     props.setItineraryActivities(activities);
-  //   }
-  // }, [props.itinerary]);
 
   const getItineraryActivities = () => {
     let itenaryActivities = [];
@@ -421,7 +416,7 @@ const ItineraryContainer = (props) => {
         let hotels = data?.cities[i]?.hotels;
         let city_name = data?.cities[i]?.city?.name;
         let city_id = data?.cities[i]?.city?.id;
-        let itinerary_city_id=data?.cities[i]?.id
+        let itinerary_city_id = data?.cities[i]?.id;
         let city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
 
         if (hotels.length === 0) {
@@ -430,12 +425,12 @@ const ItineraryContainer = (props) => {
             city_name,
             city_id,
             city_gmaps_place_id,
-            
+
             trace_city_id: data?.cities[i]?.id,
             duration: data?.cities[i]?.duration,
             check_in: data?.cities[i]?.start_date,
             check_out:
-              data?.cities[i]?.start_date && data?.cities[i]?.duration
+              data?.cities[i]?.start_date && data?.cities[i]?.duration 
                 ? addDaysToDate(
                     data?.cities[i]?.start_date,
                     data?.cities[i]?.duration
@@ -447,20 +442,20 @@ const ItineraryContainer = (props) => {
           });
         } else {
           for (let hotel of hotels) {
-            hotel.itinerary_city_id=itinerary_city_id,
-            hotel.coordinates = hotel?.coordinates,
-            hotel.city_name = city_name;
+            ((hotel.itinerary_city_id = itinerary_city_id),
+              (hotel.coordinates = hotel?.coordinates),
+              (hotel.city_name = city_name));
             hotel.key = i;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;
-            hotel.lat=hotel?.latitude,
-            hotel.long=hotel?.longitude,
-            hotel.city_gmaps_place_id = data?.cities[i]?.city?.gmaps_place_id;
+            ((hotel.lat = hotel?.latitude),
+              (hotel.long = hotel?.longitude),
+              (hotel.city_gmaps_place_id =
+                data?.cities[i]?.city?.gmaps_place_id));
             stays.push(hotel);
           }
         }
       }
-
 
       setStayBookings(stays);
       dispatch(setStays(stays));
@@ -470,7 +465,6 @@ const ItineraryContainer = (props) => {
         ...props.bookings,
         stayBookings: data?.cities ? data?.cities : null,
       });
-
     } catch (error) {
       console.log("ERROR[HotelBookingInfo][Itinerary]", error);
     }
@@ -809,7 +803,6 @@ const ItineraryContainer = (props) => {
         const newCount = prev + 1;
 
         if (newCount >= 2) {
-
           setPolling(false);
           router.push("/thank-you");
         }
@@ -1365,17 +1358,19 @@ const ItineraryContainer = (props) => {
   // Scroll event handler
   const handleScroll = () => {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const documentHeight =
+      document.documentElement.scrollHeight -
+      document.documentElement.clientHeight;
     const scrollPercentage = Math.round((scrollTop / documentHeight) * 100);
 
     // Track scroll depth milestones
     const depthMilestones = [25, 50, 75, 100];
-    
-    depthMilestones.forEach(milestone => {
+
+    depthMilestones.forEach((milestone) => {
       if (scrollPercentage >= milestone && !scrollDepthTracked[milestone]) {
-        setScrollDepthTracked(prev => ({
+        setScrollDepthTracked((prev) => ({
           ...prev,
-          [milestone]: true
+          [milestone]: true,
         }));
         handleScrollDepth(milestone);
       }
@@ -1418,6 +1413,7 @@ const ItineraryContainer = (props) => {
   }
 
   return (
+    <ChatProvider itinearyId={router.query.id}>
     <Container>
 
       <NotesPopup
@@ -1426,70 +1422,70 @@ const ItineraryContainer = (props) => {
   isLoggedIn={!!props.token} 
   onClose={() => setShowNotesPopup(false)}
 />
+
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
         itinerary={props?.itinerary}
         group_type={group_type || props.itinerary?.group_type}
         duration_time={duration_time || props.itinerary?.duration_time}
-        images={props.itinerary.images}
+        images={gallery}
         travellerType={travellerType}
         start_date={
           props?.plan
             ? props.plan.start_date
             : props.itinerary.start_date
-            ? props.itinerary.start_date
-            : null
+              ? props.itinerary.start_date
+              : null
         }
         end_date={
           props?.plan
             ? props.plan.end_date
             : props.itinerary.end_date
-            ? props.itinerary.end_date
-            : null
+              ? props.itinerary.end_date
+              : null
         }
         duration={
           props?.plan
             ? props.plan.duration_number + " " + props?.plan?.duration_unit ||
               "nights"
             : props.itinerary?.duration
-            ? props.itinerary?.duration + " " + "nights"
-            : null
+              ? props.itinerary?.duration + " " + "nights"
+              : null
         }
         budget={
           props?.plan
             ? props.plan?.budget
             : props.itinerary?.budget
-            ? props.itinerary?.budget
-            : null
+              ? props.itinerary?.budget
+              : null
         }
         number_of_adults={
           props?.plan
             ? props.plan?.number_of_adults
             : props.itinerary.number_of_adults
-            ? props.itinerary.number_of_adults
-            : null
+              ? props.itinerary.number_of_adults
+              : null
         }
         number_of_children={
           props?.plan
             ? props.plan?.number_of_children
             : props.itinerary.number_of_children
-            ? props.itinerary.number_of_children
-            : null
+              ? props.itinerary.number_of_children
+              : null
         }
         number_of_infants={
           props?.plan
             ? props.plan?.number_of_infants
             : props.itinerary.number_of_infants
-            ? props.itinerary.number_of_infants
-            : null
+              ? props.itinerary.number_of_infants
+              : null
         }
         setEditRoute={setEditRoute}
         cities={props?.cities}
         resetRef={resetRef}
         fetchData={fetchData}
         handleEditRouteClick={handleEditRouteClick}
-        
       ></Overview>
 
       <div id="itinerary-anchor">
@@ -1510,8 +1506,8 @@ const ItineraryContainer = (props) => {
             props?.plan
               ? props.plan?.budget
               : props.itinerary?.budget
-              ? props.itinerary?.budget
-              : null
+                ? props.itinerary?.budget
+                : null
           }
           _deselectActivityBookingHandler={_deselectActivityBookingHandler}
           activityFlickityIndex={activityFlickityIndex}
@@ -1584,6 +1580,7 @@ const ItineraryContainer = (props) => {
       </div>
       <ToastContainer />
     </Container>
+    </ChatProvider>
   );
 };
 

@@ -16,16 +16,19 @@ export default function Overview(props) {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      if(props?.type){
-        openTailoredModal(router, props.page_id, props.destination,props.type);
-      }
-      else{
-        openTailoredModal(router, props.page_id, props.destination,props.type);
-      }
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   if(props?.type){
+    //     openTailoredModal(router, props.page_id, props.destination,props.type);
+    //   }
+    //   else{
+    //     openTailoredModal(router, props.page_id, props.destination,props.type);
+    //   }
+
+    // }
+
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -75,7 +78,7 @@ export default function Overview(props) {
               <Button
                 padding={isPageWide ? "0.75rem 1rem" : "0.5rem 0.75rem"}
                 fontSize={isPageWide ? "18px" : "15px"}
-                fontWeight={isPageWide ? "500" : "400"}
+                fontWeight={isPageWide ? "300" : "300"}
                 bgColor="#f7e700"
                 borderRadius="7px"
                 color="black"
@@ -85,7 +88,7 @@ export default function Overview(props) {
               >
                 {props.slug === "honeymoon-2025"
                   ? "Plan Your Honeymoon!" 
-                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "Plan Your Trip Now!"}
+                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "+ Plan Your Trip Now!"}
               </Button>
             </div>
 

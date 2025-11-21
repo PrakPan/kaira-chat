@@ -14,13 +14,13 @@ import { useAnalytics } from "../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
   const router = useRouter();
-  const { trackPageView } = useAnalytics();
+  // const { trackPageView } = useAnalytics();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-    trackPageView(props.Type, `${props.destination} Page`);
+    // trackPageView(props.Type, `${props.destination} Page`);
   }, []);
 
   return (
@@ -55,6 +55,16 @@ const TravelPlanner = (props) => {
               : props?.Data?.meta_keywords
           }`}
         ></meta>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
 
         <link
           rel="canonical"

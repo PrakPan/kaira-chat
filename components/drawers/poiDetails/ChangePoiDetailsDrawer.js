@@ -130,7 +130,7 @@ const ChangePoiDetailDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: 1506 }}
-      className="font-lexend"
+      className=""
       onHide={(e) => {
         props.setShowDetails({ show: false, data: {} });
 
@@ -158,7 +158,7 @@ const ChangePoiDetailDrawer = (props) => {
           handleCloseDrawer={props.handleCloseDrawer}
         />
       )}
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -166,7 +166,7 @@ const ChangePoiDetailDrawer = (props) => {
             onClick={(e) => props.setShowDetails({ show: false, data: {} })}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

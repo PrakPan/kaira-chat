@@ -52,13 +52,13 @@ const Recommendations = (props) => {
         <Container>
           <GridContainer>
             <div style={{ width: "100%", overflow: "scroll" }}>
-              <Heading className="font-lexend">Do's and Dont's</Heading>
+              <Heading className="">Do's and Dont's</Heading>
               <UL className="font-nunito" style={{ margin: "1rem 0" }}>
                 {tips}
               </UL>
             </div>
             <div>
-              <Heading className="font-lexend">Recommendations</Heading>
+              <Heading className="">Recommendations</Heading>
               <ul className="font-nunito">{recommendations}</ul>
             </div>
           </GridContainer>

@@ -469,7 +469,7 @@ const ItineraryPoiElementM = (props) => {
   return (
     <div
       id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
-      className="font-lexend p-2"
+      className=" p-2"
     >
       <GridContainer
         image={
@@ -587,7 +587,7 @@ const ItineraryPoiElementM = (props) => {
         anchor={"right"}
         backdrop
         style={{ zIndex: 1501 }}
-        className="font-lexend"
+        className=""
         onHide={() => setShowDrawer(false)}
       >
         <div className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
@@ -742,7 +742,7 @@ const ItineraryPoiElementM = (props) => {
         anchor={"right"}
         backdrop
         style={{ zIndex: 1503 }}
-        className="font-lexend"
+        className=""
         onHide={() => setshowFilter(false)}
       >
         <div className="w-[100vw] px-2 h-[95vh] flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
@@ -810,7 +810,7 @@ const ItineraryPoiElementM = (props) => {
         />
       </Drawer>
 
-      {!isDesktop && showDrawer && (
+      {/* {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
             <TbArrowBack
@@ -820,7 +820,7 @@ const ItineraryPoiElementM = (props) => {
             />
           </FloatingView>
         </div>
-      )}
+      )} */}
 
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">

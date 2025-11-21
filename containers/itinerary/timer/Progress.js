@@ -20,7 +20,7 @@ const Progress = (props) => {
         className="font-nunito"
         style={{ textAlign: "center", fontWeight: "300", letterSpacing: "1px" }}
       >
-        {load ? <em className="font-lexend">{messages[progress]}</em> : null}
+        {load ? <em className="">{messages[progress]}</em> : null}
       </p>
     </ProgressContainer>
   );

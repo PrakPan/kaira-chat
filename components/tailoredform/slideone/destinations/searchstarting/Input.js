@@ -14,17 +14,21 @@ const ResultsContainer = styled.div`
   width: 100%;
   background-color: white;
   left: 0;
-  top: 2.75rem;
+  top: 53px;
+  padding: 20px;
   z-index: 4;
 `;
 
 const InputContainer = styled.input`
-  width: 9rem;
+  width: 12rem;
   &:focus {
     border: none;
     outline: none;
   }
   border: none;
+  &::placeholder {
+    font-weight: 400;
+  }
 
   @media screen and (min-width: 768px) {
   }
@@ -95,6 +99,7 @@ const SearchInput = (props) => {
                     selectResult={_selectResult}
                     text={res.data[i].text}
                     place_id={res.data[i].place_id}
+                    image	={res.data[i].image}
                   ></SearchResult>
                 );
               }
@@ -128,9 +133,9 @@ const SearchInput = (props) => {
         <div style={{ display: "flex" }}>
           <InputContainer
             onFocus={props.onfocus}
+            className="Body2M_14 placeholder:font-weight-400"
             onBlur={_handleBlur}
-            placeholder="Departing from"
-            className="font-lexend"
+            placeholder="Enter the start Location"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           ></InputContainer>
@@ -138,7 +143,7 @@ const SearchInput = (props) => {
         </div>
       ) : null}
       {!props.showSearchStarting && props.startingLocation ? (
-        <div className="font-lexend" onClick={_handleClearResults}>
+        <div className="" onClick={_handleClearResults}>
           {props.startingLocation.name}
         </div>
       ) : null}
@@ -146,7 +151,7 @@ const SearchInput = (props) => {
         <ResultsContainer className="border">
           {loading
             ? [skeleton, skeleton, skeleton, skeleton, skeleton]
-            : resultsJSX}
+            : <div className="flex flex-col gap-[8px]">{resultsJSX}</div>}
         </ResultsContainer>
       ) : null}
     </div>

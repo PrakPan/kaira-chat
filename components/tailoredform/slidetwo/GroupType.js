@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import ImageLoader from "../../ImageLoader";
+import GroupComponent, { StyledBox } from "./GroupComponent";
 
 const Container = styled.div`
   width: 100%;
@@ -51,9 +52,10 @@ const GroupType = (props) => {
   return (
     <Container className="font-opesans">
       <GridContainer>
-        <div className="text-center">
+        <GroupComponent />
+        {/* <div className="text-center">
           <OptionContainer
-            className=" center-div font-lexend hover-pointer"
+            className=" center-div  hover-pointer"
             is_selected={props.groupType === "Solo"}
             onClick={() => props._handleShowPax("Solo")}
           >
@@ -66,11 +68,11 @@ const GroupType = (props) => {
             ></ImageLoader>
           </OptionContainer>
           Solo
-        </div>
-
+        </div> */}
+{/* 
         <div className="text-center">
           <OptionContainer
-            className="center-div   font-lexend hover-pointer"
+            className="center-div    hover-pointer"
             is_selected={props.groupType === "Couple"}
             onClick={() => props._handleShowPax("Couple")}
           >
@@ -87,7 +89,7 @@ const GroupType = (props) => {
 
         <div className="text-center">
           <OptionContainer
-            className=" center-div  font-lexend hover-pointer"
+            className=" center-div   hover-pointer"
             is_selected={props.groupType === "Friends"}
             onClick={() => props._handleShowPax("Friends")}
           >
@@ -104,7 +106,7 @@ const GroupType = (props) => {
 
         <div className="text-center">
           <OptionContainer
-            className="  center-div  font-lexend hover-pointer"
+            className="  center-div   hover-pointer"
             is_selected={props.groupType === "Family"}
             onClick={() => props._handleShowPax("Family")}
           >
@@ -117,7 +119,7 @@ const GroupType = (props) => {
             ></ImageLoader>
           </OptionContainer>
           Family
-        </div>
+        </div> */}
       </GridContainer>
     </Container>
   );

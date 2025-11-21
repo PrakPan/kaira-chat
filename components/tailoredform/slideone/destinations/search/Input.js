@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import useDebounce from "../../../../../hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { resetSelectedCity } from "../../../../../store/actions/slideOneActions";
 
 const Container = styled.input`
   width: 92%;
@@ -8,7 +10,7 @@ const Container = styled.input`
   top: 0;
   left: 0;
   bottom: 0;
-  padding-left: 2.6rem;
+  padding-left: 3.5rem;
   background-color: transparent;
   cursor: pointer;
   height: 100%;
@@ -17,6 +19,9 @@ const Container = styled.input`
     outline: none;
   }
   border: none;
+  &::placeholder {
+    font-weight: 400;
+  }
 
   @media screen and (min-width: 768px) {
   }
@@ -25,7 +30,8 @@ const Container = styled.input`
 const SearchInput = (props) => {
   const [value, setValue] = useState("");
   const debouncedSearch = useDebounce(value);
-
+  const selectedCities = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedCities);
+  const dispatch=useDispatch();
   useEffect(() => {
     props._handleKey(debouncedSearch);
   }, [debouncedSearch]);
@@ -35,13 +41,8 @@ const SearchInput = (props) => {
   }, [props.searchFinalized]);
 
   const _resetSelectedCities = () => {
-    if (props.inbox_id != props.selectedCities[0].input_id) {
-      const selected = props.selectedCities.map((e) => {
-        if (e.input_id == props.inbox_id) return { input_id: props.inbox_id };
-        return e;
-      });
-      props.setSelectedCities(selected);
-    }
+      console.log("resetting", props.inbox_id);
+      dispatch(resetSelectedCity(props.inbox_id));
   };
 
   const _handleReset = () => {
@@ -66,9 +67,9 @@ const SearchInput = (props) => {
       onBlur={_handleBlur}
       onClick={props.searchFinalized ? _handleReset : _resetSelectedCities}
       readOnly={props.eventDates ? true : false}
-      placeholder="Search destination"
-      className="font-lexend"
+      placeholder="Search any city, state, or country"
       value={value}
+      className="Body2M_14 placeholder:font-weight-400"
       onChange={(e) => setValue(e.target.value)}
     ></Container>
   );

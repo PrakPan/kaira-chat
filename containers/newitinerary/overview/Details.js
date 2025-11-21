@@ -10,13 +10,13 @@ import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/pr
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
+import { useChatContext } from "../../../components/Chatbot/context/ChatContext";
 
 const Container = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
   max-width: 100vw;
   overflow-x: auto;
-  grid-gap: 1rem;
   white-space: nowrap;
   align-items: start;
   ::-webkit-scrollbar {
@@ -25,20 +25,23 @@ const Container = styled.div`
   -ms-overflow-style: none;
   @media screen and (min-width: 768px) {
     grid-template-columns: max-content max-content max-content max-content max-content max-content;
-    grid-column-gap: 2.5rem;
   }
 `;
 
 const Heading = styled.p`
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 400;
-  color: #7a7a7a;
-  margin: 0;
+  line-height: 16px;
+  margin-bottom: 4px;
+  color: #6e757a;
 `;
 
 const Text = styled.p`
-  font-size: 15px;
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
   font-weight: 500;
+  line-height: 22px;
   margin: 0;
 `;
 
@@ -56,22 +59,27 @@ const DateRow = styled.div`
   align-items: center;
   gap: 1rem;
   flex-wrap: nowrap;
+  font-size: 14px;
+  font-weight: 600;
 `;
 
- const convertDFormat = (dt) => {
+const convertDFormat = (dt) => {
   if (dt) {
     const date = parseISO(dt);
-    const formattedDate = format(date, "MMM dd, yyyy"); 
+    const formattedDate = format(date, "MMM dd, yyyy");
     return formattedDate;
   }
   return "";
 };
 
 const Details = (props) => {
+  // console.log("profil",props?.itinerary)
+  // console.log("profil",props?.itinerary)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
   const dispatch = useDispatch();
-  const [showEditDate,setShowEditDate] = useState(false)
+  const [showEditDate, setShowEditDate] = useState(false);
+  const { resetSession } = useChatContext();
 
   function handleEditDates() {
     props.setEditRoute("editDates");
@@ -86,47 +94,57 @@ const Details = (props) => {
       },
     });
 
-    // Enhanced tracking using passed function
     if (props.handleEditRouteClick) {
       props.handleEditRouteClick();
     }
   }
 
-    const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+  // const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+  //   console.log("I'm inside Details")
+  //     try {
+  //       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
+  //       const status = res.data?.celery;
+  //       dispatch(
+  //         setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+  //       );
+  //       dispatch(
+  //         setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+  //       );
+  //       dispatch(
+  //         setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+  //       );
+  //       dispatch(
+  //         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+  //       );
+  //       fetchItinerary();
+  //     } catch (err) {
+  //       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+  //     }
+  //   };
 
-        try {
-          const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
-          const status = res.data?.celery;
-          dispatch(
-            setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
-          );
-          dispatch(
-            setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
-          );
-          fetchItinerary();
-        } catch (err) {
-          console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
-        }
-      };
-    
-      const fetchItinerary = async () => {
-        props?.resetRef();
-        // setWaitingForStatusUpdate(true);
-        props.fetchData(true);
-      };
-  
+  const fetchItinerary = async () => {
+    try {
+      if (props?.resetRef) {
+        await props.resetRef();
+      }
+
+      if (props.fetchData) {
+        await props.fetchData(true);
+      }
+
+      if (resetSession) {
+        await resetSession();
+      }
+    } catch (error) {
+      console.error("Error in fetchItinerary:", error);
+    }
+  };
 
   return (
-    <Container className="font-lexend">
+    <Container>
       {props?.group_type !== null ? (
-        <div style={{ width: "max-content" }}>
-          <Heading>Group Type</Heading>
+        <div className="pr-[24px]" style={{ width: "max-content" }}>
+          <Heading>Traveller Type</Heading>
           <Text className="flex flex-row gap-2">
             {props.group_type}
             {props.number_of_adults ||
@@ -155,44 +173,48 @@ const Details = (props) => {
       ) : null}
 
       {props?.budget ? (
-        <div style={{ width: "max-content" }}>
+        <div
+          className="pr-[24px] pl-[24px] border-l  min-h-full"
+          style={{ width: "max-content" }}
+        >
           <Heading>Budget</Heading>
           <Text>{props.budget}</Text>
         </div>
       ) : null}
 
       {props.travellerType != null ? (
-        <DateContainer>
-          {props.tripsPage ? (
-            <div>
-              <Heading className="flex flex-row gap-2 items-center md:overflow-visible">
-                Dates
-              </Heading>
-              <Text>{props.duration}</Text>
-            </div>
-          ) : (
-            <div>
-              <Heading className="flex flex-row gap-2 items-center">
-                Dates ({props.duration})
-              </Heading>
-              {isDesktop && !props?.v1 ? <DateRow>
-                <UpdateItineraryDates
-                  itinerary={props?.itinerary}
-                  token={props.token}
-                  onUpdateSuccess={fetchItineraryStatus}
-                  convertDFormat={convertDFormat}
-                  tripsPage={false}
-                  setShowEditDate={setShowEditDate}
-                  showEditDate={showEditDate}
-                />
-              </DateRow> : convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date)}
-               {/* {convertDFormat(props?.itinerary?.start_date || props?.start_date) + "-" + convertDFormat(props?.itinerary?.end_date || props?.end_date) } */}
-              
-            </div>
-          )}
-        </DateContainer>
+        <div className="border-l min-h-full pl-[24px] pr-[24px]">
+          <DateContainer>
+            {props.tripsPage ? (
+              <div>
+                <Heading className="flex flex-row gap-2 items-center md:overflow-visible">
+                  Dates
+                </Heading>
+                <Text>{props.duration}</Text>
+              </div>
+            ) : (
+              <div>
+                <Heading className="flex flex-row gap-2 items-center">
+                  Date of Travelling
+                </Heading>
+                <DateRow>
+                  <UpdateItineraryDates
+                    itinerary={props?.itinerary}
+                    token={props.token}
+                    onUpdateSuccess={fetchItinerary}
+                    convertDFormat={convertDFormat}
+                    tripsPage={false}
+                    setShowEditDate={setShowEditDate}
+                    showEditDate={showEditDate}
+                    duration={props?.duration}
+                    resetRef={props?.resetRef}
+                  />
+                </DateRow>
+              </div>
+            )}
+          </DateContainer>
+        </div>
       ) : null}
-       
     </Container>
   );
 };

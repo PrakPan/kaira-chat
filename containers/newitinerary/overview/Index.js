@@ -6,6 +6,8 @@ import Ratings from "../../../components/itinerary/Ratings/Rating";
 import { connect } from "react-redux";
 import setItineraryStatus from "../../../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../../../services/itinerary/daybyday/preview";
+import SmallGallery from "./SmallGallery";
+import TravelPartnerContact from "../../../components/TravelPartnerContact";
 
 const GridContainer = styled.div`
   display: grid;
@@ -19,9 +21,10 @@ const GridContainer = styled.div`
 `;
 
 const Heading = styled.h1`
-  font-size: 34px;
-  font-weight: 600;
-  line-height: 34px;
+font-size: 40px;
+font-style: normal;
+font-weight: 700;
+line-height: 48px;
 `;
 
 const toTitleCase = (str) => {
@@ -35,15 +38,17 @@ const Overview = (props) => {
 
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <GridContainer className="gap-2">
-        <Heading className="font-lexend">
-          {/* {toTitleCase(props.title)} */}
+        <div className="flex justify-between">
+        <div className={`${isDesktop?"Heading":"Heading2SB font-semibold"}`}>
           {props.title}
-          </Heading>
+        </div>
+        <TravelPartnerContact itinerary={props?.itinerary} resetRef={props?.resetRef} fetchData={props?.fetchData}/>
+        </div>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row">
         <Details
           mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
@@ -63,11 +68,14 @@ const Overview = (props) => {
           v1={props?.v1}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
+        {(isDesktop && props?.images?.length > 0 ) && <SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
       </div>
+      {(!isDesktop && props?.images?.length > 0 )&&<SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}
 
-      {isDesktop && <div className="pt-3 pb-1">
+      {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-      </div>}
+      </div>
+      } */}
     </div>
   );
 };

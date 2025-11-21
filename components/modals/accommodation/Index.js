@@ -257,7 +257,7 @@ const POI = (props) => {
           )}
         </div>
 
-        {!isPageWide && (
+        {/* {!isPageWide && (
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -265,7 +265,7 @@ const POI = (props) => {
               onClick={props.onHide}
             />
           </FloatingView>
-        )}
+        )} */}
       </Container>
       <ToastContainer />
     </>

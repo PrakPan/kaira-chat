@@ -66,7 +66,7 @@ const CityDetailsDrawer = (props) => {
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className=""
       onHide={() => {
         router.push(
           {
@@ -113,7 +113,7 @@ const CityDetailsDrawer = (props) => {
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
-        {!isPageWide && (
+        {/* {!isPageWide && (
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -129,7 +129,7 @@ const CityDetailsDrawer = (props) => {
               }}
             />
           </FloatingView>
-        )}
+        )} */}
       </div>
     </Drawer>
   );

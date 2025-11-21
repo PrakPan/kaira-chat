@@ -84,7 +84,7 @@ const CardContainer = (props) => {
           </div>
 
           <FlexBox>
-            <CardListItem className="font-lexend">{props.text}</CardListItem>
+            <CardListItem className="">{props.text}</CardListItem>
             <div
               style={{
                 display: "grid",
@@ -101,7 +101,7 @@ const CardContainer = (props) => {
               />
 
               <FlexBox>
-                <CardHeading className="font-lexend">
+                <CardHeading className="">
                   {props.heading}
                 </CardHeading>
 
@@ -140,7 +140,7 @@ const CardContainer = (props) => {
                     ></AiFillStar>
                   </div>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <CardSubHeading className="font-lexend">
+                    <CardSubHeading className="">
                       {props.duration + " • " + props.destination}
                     </CardSubHeading>
                   </div>
@@ -172,7 +172,7 @@ const CardContainer = (props) => {
             dimensions={{ width: 900, height: 900 }}
           ></ImageLoader>
 
-          <CardHeading className="font-lexend">{props.heading}</CardHeading>
+          <CardHeading className="">{props.heading}</CardHeading>
 
           <RatingContainer>
             <div>
@@ -214,7 +214,7 @@ const CardContainer = (props) => {
             </div>
 
             <div style={{ display: "flex", alignItems: "center" }}>
-              <CardSubHeading className="font-lexend">
+              <CardSubHeading className="">
                 {props.duration + " • " + props.destination}
               </CardSubHeading>
             </div>
@@ -222,7 +222,7 @@ const CardContainer = (props) => {
         </div>
 
         <div>
-          <CardListItem className="font-lexend">{props.text}</CardListItem>
+          <CardListItem className="">{props.text}</CardListItem>
         </div>
       </GridContainer>
     </Card>

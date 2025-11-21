@@ -24,6 +24,17 @@ import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+
+
+const svgIcons = {
+    "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
+    <path d="M12.75 3.48827C10.8075 3.29577 8.85333 3.1966 6.905 3.1966C5.75 3.1966 4.595 3.25494 3.44 3.3716L2.25 3.48827" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M5.45801 2.89897L5.58634 2.13481C5.67967 1.58064 5.74967 1.16647 6.73551 1.16647H8.26384C9.24968 1.16647 9.32551 1.60397 9.41301 2.14064L9.54134 2.89897" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M11.4956 5.33183L11.1164 11.206C11.0522 12.1218 10.9997 12.8335 9.37224 12.8335H5.62724C3.99974 12.8335 3.94724 12.1218 3.88307 11.206L3.50391 5.33183" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M6.52539 9.625H8.46789" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M6.04199 7.29147H8.95866" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+}
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -56,10 +67,7 @@ const Container = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 32px;
   font-family: Lexend;
-  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
-  
 `;
 
 const BackContainer = styled.div`
@@ -118,7 +126,10 @@ const ScrollContainer = styled.div`
 //   font-size: 20px;
 //   margin-block: 1rem 1rem;
 // `;
-const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+
+
+
+const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
   let isPageWide = useMediaQuery("(min-width: 768px)");
@@ -135,7 +146,7 @@ const ActivityDetails = (props) => {
 
   const dispatch = useDispatch();
 
-  const {trackActivityBookingDelete} = useAnalytics();
+  const { trackActivityBookingDelete } = useAnalytics();
 
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
@@ -193,7 +204,7 @@ const ActivityDetails = (props) => {
 
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        trackActivityBookingDelete(router.query.id,props?.data?.id,"ActivityDetailsDrawer");
+        trackActivityBookingDelete(router.query.id, props?.data?.id, "ActivityDetailsDrawer");
 
         const itineraryCities = newItinerary.cities.map((city) => {
           if (city.id === props?.itinerary_city_id) {
@@ -284,22 +295,11 @@ const ActivityDetails = (props) => {
   return (
     <>
       {props?.data ? (
-        <Container itineraryDrawer={props.itineraryDrawer}>
-          {!props.itineraryDrawer ? (
-            <div>
-              <TbArrowBack
-                style={{ height: "32px", width: "32px" }}
-                cursor={"pointer"}
-                onClick={(e) => {
-                  props.handleCloseDrawer(e);
-                }}
-              />
-            </div>
-          ) : (
-            <BackContainer className=" font-lexend">
-              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
-            </BackContainer>
-          )}
+        <Container className="px-lg max-ph:px-sm gap-xl" itineraryDrawer={props.itineraryDrawer}>
+
+          <div className="mt-[1rem]">
+            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
+          </div>
 
           <>
             {props?.data?.image && (
@@ -679,6 +679,21 @@ const ActivityDetails = (props) => {
               </div>}
 
 
+          {props.activityData?.prices && props.activityData?.prices.length && (props.activityData?.prices[0]?.title || props.activityData?.prices[0]?.description) && <div className="flex flex-col">
+                <div className="text-[20px] font-semibold mb-2">
+                Package Details
+                </div>
+                <div className="font-medium text-gray-900">
+                  {props.activityData?.prices[0]?.title ? props.activityData?.prices[0]?.title : null}
+                </div>
+                <div className="font-normal text-gray-900">
+                  {props.activityData?.prices[0]?.description ? props.activityData?.prices[0]?.description : null}
+                </div>
+                <div className="text-sm text-gray-600">
+                  For {props.activityData?.prices[0]?.pax_details.adults + props.activityData?.prices[0]?.pax_details.children} people
+                </div>
+              </div>}
+
           {props?.data?.cancellation_policies && (
             <>
               <div className="text-[20px] font-semibold">
@@ -817,15 +832,15 @@ const ActivityDetails = (props) => {
                   {" "}
                   {props?.removeDelete == false && (
                     <button
-                      className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                      className="ttw-btn-fill-error"
                       onClick={handleDelete}
                     >
                       <div style={{ position: "relative" }}>
                         <div
-                          className="flex gap-1 items-center p-1"
+                          className="flex gap-1 items-center"
                           style={loading ? { visibility: "hidden" } : {}}
                         >
-                          <Image src="/delete.svg" width={"20"} height={"20"} alt="delete"/>{" "}
+                          {svgIcons.delete}
                           Remove from Itinerary
                         </div>
                         {loading && (

@@ -7,11 +7,11 @@ import axiosuserinstance from "../../services/user/info";
 import * as ga from "../../services/ga/Index";
 import { logEvent } from "../../services/ga/Index";
 import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
-import restartBot from "../../helper/RestartBot";
 
 
 //Open login modal
 export const authShowLogin = () => {
+  console.log("login clicked autha")
   return {
     type: actionTypes.AUTH_SHOWLOGIN,
   };
@@ -197,7 +197,6 @@ export const checkAuthState = () => {
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
 
-        restartBot();
         dispatch(authLogout());
         //refresh token
       }
@@ -337,17 +336,16 @@ export const auth = (
           dispatch(authSuccess(responseData.data.user?.oauth?.access_token)); //Store toke  n
           dispatch(setUserDetails(userdata)); //Store user name and email
           dispatch(checkAuthTimeout(responseData.data.user?.oauth?.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
-          dispatch(authCloseLogin()); //close login modal
-          if (onSuccess) {
-            onSuccess();
-          }
           //store token details in local storage
           localStorage.setItem(
             "access_token",
             responseData.data.user?.oauth?.access_token
           );
+          if (onSuccess) {
+            onSuccess();
+          }
+          dispatch(authCloseLogin()); 
           localStorage.setItem("expirationDate", expirationDate);
-          restartBot();
         }
       })
       .catch((err) => {
@@ -360,6 +358,10 @@ export const auth = (
           });
 
           dispatch(authEmailFail(err.response.data?.errors[0].email[0]));
+          dispatch(openNotification({
+            type: "error",
+            heading: err.response.data?.errors[0].email,
+          }))
         } else {
           logEvent({
             action: "number-login-otp_fail",

@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import { updateFlightBooking, updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
+import {
+  updateFlightBooking,
+  updateFlightBookingWarning,
+} from "../../../services/bookings/UpdateBookings";
 import { connect, useDispatch, useSelector } from "react-redux";
 import axiosflightsearch, {
   axiosFlightHubSearch,
@@ -32,7 +35,8 @@ import { FiCheckCircle, FiMapPin, FiNavigation } from "react-icons/fi";
 import { FaX } from "react-icons/fa6";
 import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
-import { useAnalytics } from "../../../hooks/useAnalytics";
+import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
+import FlightFilters from "./new-flight-searched/FlightFilters";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -68,18 +72,19 @@ const FloatingView = styled.div`
 `;
 
 const BottomSheet = styled.div`
-@keyframes slide-up {
-  from {
-    transform: translateY(100%);
+  @keyframes slide-up {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
-  to {
-    transform: translateY(0);
-  }
-}
 
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}`;
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+`;
 
 const Floating = styled.div`
   position: sticky;
@@ -108,34 +113,30 @@ const OptionsContainer = styled.div`
 
 const ContentContainer = styled.div`
   @media screen and (min-width: 768px) {
-    width: 95%;
-    margin: auto;
+    width: 100%;
+    // margin: auto;
   }
 `;
 
 const ComboFlight = (props) => {
-
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
   const [loading, setLoading] = useState(false);
-  const [filtersState, setFiltersState] = useState({
-    order: "asc",
-    non_stop_flights: true,
-    departure_time_period: "",
-    arrival_time_period: "",
-    airline_name: "",
-    sort_by: "price",
-  });
+ const [filtersState, setFiltersState] = useState({
+  order: "asc",
+  non_stop_flights: false, 
+  departure_time_period: "",
+  arrival_time_period: "",
+  airline_name: "",
+  sort_by: "price",
+});
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
-  // const [limit, setLimit] = useState(20);
-  // const [offset, setOffset] = useState(0);
-  // const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [limit, setLimit] = useState(10);
-const [offset, setOffset] = useState(0);
-const [nextUrl, setNextUrl] = useState(null);
-const [previousUrl, setPreviousUrl] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const [nextUrl, setNextUrl] = useState(null);
+  const [previousUrl, setPreviousUrl] = useState(null);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [isFetchingError, setFetchingIsError] = useState({
@@ -150,6 +151,7 @@ const [previousUrl, setPreviousUrl] = useState(null);
     props?.flightResults ? props?.flightResults?.length : 0
   );
   const [previousAirlineFilter, setPreviousAirlineFilter] = useState(null);
+  
 
   const [pax, setPax] = useState({
     adults:
@@ -220,35 +222,37 @@ const [previousUrl, setPreviousUrl] = useState(null);
   const [isSourceFocused, setIsSourceFocused] = useState(false);
   const [isDestinationFocused, setIsDestinationFocused] = useState(false);
 
-const [traceId, setTraceId] = useState(null);
-const [traceIdTimestamp, setTraceIdTimestamp] = useState(null);
-const [remainingTime, setRemainingTime] = useState(900);
+  const [traceId, setTraceId] = useState(null);
+  const [traceIdTimestamp, setTraceIdTimestamp] = useState(null);
+  const [remainingTime, setRemainingTime] = useState(900);
 
-const [showWarningModal, setShowWarningModal] = useState(false);
-const [warningMessage, setWarningMessage] = useState("");
-const [pendingBookingData, setPendingBookingData] = useState(null);
-const [isProcessingWarning, setIsProcessingWarning] = useState(false);
-const [isProcessingBooking, setIsProcessingBooking] = useState(false);
-const [isTimeOnlyChange, setIsTimeOnlyChange] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [warningMessage, setWarningMessage] = useState("");
+  const [pendingBookingData, setPendingBookingData] = useState(null);
+  const [isProcessingWarning, setIsProcessingWarning] = useState(false);
+  const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const [isTimeOnlyChange, setIsTimeOnlyChange] = useState(false);
+  const [isManualSelection, setIsManualSelection] = useState(false);
+  const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
+  const [selectedFlight, setSelectedFlight] = useState(null); 
+  const [selectedFareInFlight, setSelectedFareInFlight] = useState(null);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  const isTraceIdValid = () => {
+    if (!traceId || !traceIdTimestamp) return false;
 
+    const currentTime = Date.now();
+    const elapsedSeconds = (currentTime - traceIdTimestamp) / 1000;
 
-const isTraceIdValid = () => {
-  if (!traceId || !traceIdTimestamp) return false;
-  
-  const currentTime = Date.now();
-  const elapsedSeconds = (currentTime - traceIdTimestamp) / 1000;
-  
-  return elapsedSeconds < remainingTime;
-};
-
+    return elapsedSeconds < remainingTime;
+  };
 
   const generateRequestId = () => {
     const newId = currentRequestId + 1;
     setCurrentRequestId(newId);
     return newId;
   };
-
 
   const cancelCurrentRequest = () => {
     if (cancelTokenSourceRef.current) {
@@ -277,7 +281,6 @@ const isTraceIdValid = () => {
   ]);
 
   useEffect(() => {
-
     function roundToNext30Min(input) {
       try {
         const dateTime = dayjs(input);
@@ -375,46 +378,64 @@ const isTraceIdValid = () => {
   }
 
   const handleCancel = () => {
+    setSelectedFlightIndex(null);
 
-  setSelectedFlightIndex(null);
-  
-  setUpdateBookingState(false);
-  setUpdateLoadingState(false);
-  
-  
-  if (setPendingBookingData) {
-    setPendingBookingData(null);
+    setUpdateBookingState(false);
+    setUpdateLoadingState(false);
+
+    if (setPendingBookingData) {
+      setPendingBookingData(null);
+    }
+  };
+
+
+useEffect(() => {
+  if (!preferredDepartureTime) return;
+
+  const shouldFetchFlights =
+    (props.showComboFlightModal && props.token && preferredDepartureTime) ||
+    !props?.skipFetch;
+
+  // Only fetch on initial load
+  if (shouldFetchFlights && !isFilterDrawerOpen && isInitialLoad) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+      setTimeUpdated(false);
+      setIsInitialLoad(false);
+    }, 50);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }
-};
+}, [
+  props.showComboFlightModal,
+  props.token,
+  preferredDepartureTime,
+  isPageWide,
+  props?.skipFetch,
+  isFilterDrawerOpen,
+  isInitialLoad,
+]);
+
+// Add this new useEffect after the initial load useEffect
+useEffect(() => {
+  // Skip if initial load hasn't completed yet
+  if (isInitialLoad || !preferredDepartureTime) return;
+
+  // Only fetch if drawer is closed (to avoid fetch while drawer is opening/closing)
+  if (preferredDepartureTime) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [preferredDepartureTime, pax, filtersState, isInitialLoad]);
+
+  // Replace your existing useEffect that handles selectedFlightIndex with this enhanced version:
 
   useEffect(() => {
-    if (!preferredDepartureTime) return;
-
-    const shouldFetchFlights =
-      (props.showComboFlightModal && props.token && preferredDepartureTime) ||
-      !props?.skipFetch;
-
-    if (shouldFetchFlights) {
-      const timeoutId = setTimeout(() => {
-        _FetchFlightsHandler();
-        setTimeUpdated(false);
-      }, 50);
-
-      return () => {
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [
-    props.showComboFlightModal,
-    props.token,
-    preferredDepartureTime,
-    isPageWide,
-    props?.skipFetch,
-    pax,
-    filtersState,
-  ]);
-
- useEffect(() => {
   if (
     Array.isArray(props?.flightResults) &&
     props?.flightResults?.length &&
@@ -430,13 +451,46 @@ const isTraceIdValid = () => {
       setSelectedFlightIndex(selectedIndex);
     }
   } else {
-    if (props?.combo && (!props.selectedData || !props.isSelected) && selectedFlightIndex !== null) {
-      console.log("Resetting flight selection - parent deselected or no selected data");
-      setSelectedFlightIndex(null);
-    }
+    // Always reset when no selectedData
+    setSelectedFlightIndex(null);
   }
-}, [props.flightResults, props.selectedData, props.isSelected, selectedFlightIndex]);
+}, [
+  props.flightResults,
+  props.selectedData,
+]);
 
+  // useEffect(() => {
+  //   if (
+  //     props?.flightResults?.length &&
+  //     props?.selectedData?.resultIndex !== undefined
+  //   ) {
+  //     const selectedIndex = props.flightResults.findIndex(
+  //       (flight) =>
+  //         flight?.result_index ===
+  //         (props.selectedData?.resultIndex || props.selectedData?.result_index)
+  //     );
+
+  //     if (selectedIndex !== -1) {
+  //       setSelectedFlightIndex(selectedIndex);
+  //     }
+  //   } else {
+  //     if (
+  //       props?.combo &&
+  //       (!props.selectedData || !props.isSelected) &&
+  //       selectedFlightIndex !== null
+  //     ) {
+  //       console.log(
+  //         "Resetting flight selection - parent deselected or no selected data"
+  //       );
+  //       setSelectedFlightIndex(null);
+  //     }
+  //   }
+  // }, [
+  //   props.flightResults,
+  //   props.selectedData,
+  //   props.isSelected,
+  //   selectedFlightIndex,
+  // ]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
    
@@ -456,7 +510,7 @@ const handleViewMore = async () => {
   
   setMoreLoadingState(true);
   
-  // Cancel any existing request
+ 
   if (cancelTokenSourceRef.current) {       
     cancelTokenSourceRef.current.cancel("Operation cancelled due to new request");
   }
@@ -543,6 +597,7 @@ const handleViewMore = async () => {
     }
   }
 };
+
   const _FetchFlightsHandler = async () => {
     const requestId = generateRequestId();
 
@@ -562,8 +617,8 @@ const handleViewMore = async () => {
     setIsFetching(true);
     setFlightsCount(0);
     setNextUrl(null);
-   setPreviousUrl(null);
-   setOffset(0);
+    setPreviousUrl(null);
+    setOffset(0);
     setFlights([]);
     if (props?.setFlightResults) {
       props?.setFlightResults([]);
@@ -577,8 +632,14 @@ const handleViewMore = async () => {
     });
 
     if (props.token) {
-      const hasAirlineFilterChanged = filtersState?.airlines !== previousAirlineFilter;
-        const shouldSendTraceId = filtersState?.airlines && hasAirlineFilterChanged && isTraceIdValid() || (isTimeOnlyChange && isTraceIdValid());
+      const hasAirlineFilterChanged =
+        filtersState?.airlines !== previousAirlineFilter;
+      const shouldSendTraceId =
+        (filtersState?.airlines &&
+          hasAirlineFilterChanged &&
+          isTraceIdValid()) ||
+        (isTimeOnlyChange && isTraceIdValid());
+
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -595,15 +656,26 @@ const handleViewMore = async () => {
           props.selectedBooking.destination_iata,
         preferred_departure_time: preferredDepartureTime,
         flight_cabin_class: classType.value,
-        ...(shouldSendTraceId && { trace_id: traceId })
+        // Add these filter parameters
+        ...(filtersState.trip_type && { trip_type: filtersState.trip_type }),
+        // ...(filtersState.stops &&
+        //   filtersState.stops.length > 0 && {
+        //     stops: filtersState.stops.join(","),
+        //   }),
+        // ...(filtersState.departure_time && { departure_time: filtersState.departure_time }),
+       ...(filtersState.fare_type != null && {
+  fare_type: filtersState.fare_type,
+}),
+        ...(shouldSendTraceId && { trace_id: traceId }),
       };
-
 
       const selectedAirlines = filtersState?.airlines;
 
       const url = selectedAirlines
-  ? `?airlines=${encodeURIComponent(selectedAirlines)}&limit=${limit}&offset=0`
-  : `?limit=${limit}&offset=0`;
+        ? `?airlines=${encodeURIComponent(
+            selectedAirlines
+          )}&limit=${limit}&offset=0`
+        : `?limit=${limit}&offset=0`;
 
       axiosFlightSearch
         .post(url, requestData, {
@@ -632,17 +704,16 @@ const handleViewMore = async () => {
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data.trace_id) {
-      setTraceId(res.data.trace_id);
-      setTraceIdTimestamp(Date.now());
-      setRemainingTime(res.data.remaining_time || 900);
-    }
+            setTraceId(res.data.trace_id);
+            setTraceIdTimestamp(Date.now());
+            setRemainingTime(res.data.remaining_time || 900);
+          }
 
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
             setNextUrl(res.data.next || null);
             setPreviousUrl(res.data.previous || null);
             if (!hasFetchedOnce) {
-
               setAirlineCodes(res.data.airlines);
               setHasFetchedOnce(true);
             }
@@ -653,8 +724,8 @@ const handleViewMore = async () => {
             setFlightsCount(res.data.results.length);
           } else {
             setFlights([]);
-             setNextUrl(null);
-             setPreviousUrl(null);
+            setNextUrl(null);
+            setPreviousUrl(null);
             if (props?.setFlightResults) props?.setFlightResults([]);
             setFlightsCount(0);
             setNoResults(true);
@@ -724,7 +795,7 @@ const handleViewMore = async () => {
     return regex.test(uuid);
   };
 
-const _newUpdateBookingHandler = async ({
+ const _newUpdateBookingHandler = async ({
   booking_id,
   itinerary_id,
   result_index,
@@ -748,12 +819,11 @@ const _newUpdateBookingHandler = async ({
   };
 
   setIsProcessingWarning(true);
-  
+
   try {
-    // Call warning API
     const warningResponse = await updateFlightBookingWarning.post(
-      `${itinerary_id}/transfers/flight/warning/`, 
-      requestData, 
+      `${itinerary_id}/transfers/flight/warning/`,
+      requestData,
       {
         headers: {
           Authorization: `Bearer ${props.token}`,
@@ -762,33 +832,45 @@ const _newUpdateBookingHandler = async ({
     );
 
     if (warningResponse?.data?.show_warning === true) {
-      // Show warning modal
-      setWarningMessage(warningResponse.data.warning || "Please confirm this action.");
-      setPendingBookingData({ booking_id, itinerary_id, result_index, flightProvider, edge, requestData });
+      setWarningMessage(
+        warningResponse.data.warning || "Please confirm this action."
+      );
+      setPendingBookingData({
+        booking_id,
+        itinerary_id,
+        result_index,
+        flightProvider,
+        edge,
+        requestData,
+      });
       setShowWarningModal(true);
       setIsProcessingWarning(false);
     } else {
-      // Proceed directly with booking
       setIsProcessingWarning(false);
       await handleBookingConfirm(requestData, itinerary_id);
     }
   } catch (error) {
     setIsProcessingWarning(false);
-    console.error("Warning API failed:", error);
     
+    // CLEAR SELECTION ON ERROR
+    setSelectedFlight(null);
+    setSelectedFareInFlight(null);
+    
+    console.error("Warning API failed:", error);
+
     let errorMsg = "Warning check failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
         errorMsg = error.response.data.errors[0].message[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
-      } else if (typeof error.response.data === 'string') {
+      } else if (typeof error.response.data === "string") {
         errorMsg = error.response.data;
       }
     } else if (error.message) {
       errorMsg = error.message;
     }
-    
+
     props.openNotification({
       type: "error",
       text: errorMsg,
@@ -797,22 +879,23 @@ const _newUpdateBookingHandler = async ({
   }
 };
 
+
 const handleBookingConfirm = async (requestData, itinerary_id) => {
   setIsProcessingBooking(true);
   setUpdateBookingState(true);
-  
+
   try {
     const response = await updateFlightBooking.post(
-      `${itinerary_id}/bookings/flight/`, 
-      requestData, 
+      `${itinerary_id}/bookings/flight/`,
+      requestData,
       {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
       }
     );
-    
-    // Success handling (your existing success logic)
+
+    // Success handling
     props._updateFlightBookingHandler([response.data]);
    
     props.getPaymentHandler();
@@ -826,7 +909,6 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     const bookingIdToUpdate = requestData?.booking_id;
 
     if (props?.combo) {
-      // Your existing combo logic...
       Object.keys(updatedTransferBookings).forEach((category) => {
         if (updatedTransferBookings[category]) {
           Object.keys(updatedTransferBookings[category]).forEach((key) => {
@@ -838,8 +920,11 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
                 ...booking,
                 ...response.data,
               };
-               trackTransferBookingAdd(itinerary_id,key,updatedTransferBookings[category][key],response.data,sourceInput?.city_name,destinationInput?.city_name)
-            } else if (booking?.children && Array.isArray(booking.children) && booking.children.length > 0) {
+            } else if (
+              booking?.children &&
+              Array.isArray(booking.children) &&
+              booking.children.length > 0
+            ) {
               let foundMatch = false;
               const updatedChildren = booking.children.map((childBooking) => {
                 if (childBooking && childBooking.id === bookingIdToUpdate) {
@@ -862,22 +947,26 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
 
       dispatch(setTransfersBookings(updatedTransferBookings));
       props?.getPaymentHandler();
-      // if(response?.data?.is_refresh_needed){
-      //   window.location.reload(); 
-      // }
-      if(response?.data?.is_refresh_needed){
-     const url = new URL(window.location);
-  const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
-  drawerParams.forEach(param => {
-    url.searchParams.delete(param);
-  });
-  
-  window.history.replaceState({}, '', url.toString());
-  
-  setTimeout(() => {
-    window.location.reload();
-  }, 200);
-}
+
+      if (response?.data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = [
+          "drawer",
+          "booking_id",
+          "flight_modal",
+          "modal",
+          "edit",
+        ];
+        drawerParams.forEach((param) => {
+          url.searchParams.delete(param);
+        });
+
+        window.history.replaceState({}, "", url.toString());
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
+      }
     } else {
       dispatch(
         updateSingleTransferBooking(
@@ -887,21 +976,25 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
       );
       trackTransferBookingAdd(itinerary_id,`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,intercity?.[`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`],response.data,sourceInput?.city_name,destinationInput?.city_name)
       props?.getPaymentHandler();
-      // if(response?.data?.is_refresh_needed){
-      //   window.location.reload(); 
-      // }
-      if(response?.data?.is_refresh_needed){
-  const url = new URL(window.location);
-  const drawerParams = ['drawer', 'booking_id', 'flight_modal', 'modal', 'edit'];
-  drawerParams.forEach(param => {
-    url.searchParams.delete(param);
-  });
-  
-  window.history.replaceState({}, '', url.toString());
-  setTimeout(() => {
-    window.location.reload();
-  }, 200);
-}
+      
+      if (response?.data?.is_refresh_needed) {
+        const url = new URL(window.location);
+        const drawerParams = [
+          "drawer",
+          "booking_id",
+          "flight_modal",
+          "modal",
+          "edit",
+        ];
+        drawerParams.forEach((param) => {
+          url.searchParams.delete(param);
+        });
+
+        window.history.replaceState({}, "", url.toString());
+        setTimeout(() => {
+          window.location.reload();
+        }, 200);
+      }
     }
 
     props.openNotification({
@@ -910,25 +1003,29 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
       heading: "Success!",
     });
     props.setHideFlightModal();
-    
   } catch (error) {
     setIsProcessingBooking(false);
     setUpdateBookingState(false);
-    console.error("Booking API failed:", error);
     
+    // CLEAR SELECTION ON ERROR
+    setSelectedFlight(null);
+    setSelectedFareInFlight(null);
+    
+    console.error("Booking API failed:", error);
+
     let errorMsg = "Booking failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
         errorMsg = error.response.data.errors[0].message[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
-      } else if (typeof error.response.data === 'string') {
+      } else if (typeof error.response.data === "string") {
         errorMsg = error.response.data;
       }
     } else if (error.message) {
       errorMsg = error.message;
     }
-    
+
     props.openNotification({
       type: "error",
       text: errorMsg,
@@ -936,7 +1033,12 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     });
   }
 };
-  
+
+// ============================================
+// PART 4: Update handleWarningCancel function
+// ============================================
+
+
 
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
@@ -1038,6 +1140,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     setShowSourceSuggestions(false);
     setSourceSuggestions([]);
     setSourceError("");
+    setIsManualSelection(true); // Add this
   }, []);
 
   const handleDestinationSelect = useCallback((suggestion) => {
@@ -1049,6 +1152,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     setShowDestinationSuggestions(false);
     setDestinationSuggestions([]);
     setDestinationError("");
+    setIsManualSelection(true); // Add this
   }, []);
 
   // Add validation function
@@ -1069,10 +1173,22 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
   };
 
 
+useEffect(() => {
+  const bothAirportsSelected = sourceInput.code && destinationInput.code;
+
+  // Only fetch if user manually changed airports after initial load
+  if (bothAirportsSelected && !loading && !isInitialLoad && isManualSelection) {
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+      setIsManualSelection(false);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }
+}, [sourceInput.code, destinationInput.code, isInitialLoad, isManualSelection, loading]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both input containers
       const sourceContainer = sourceInputRef.current?.closest(".relative");
       const destinationContainer =
         destinationInputRef.current?.closest(".relative");
@@ -1093,14 +1209,17 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
   }, []);
 
   const handleWarningConfirm = async () => {
-  if (pendingBookingData && !isProcessingBooking) {
-    setShowWarningModal(false);
-    await handleBookingConfirm(pendingBookingData.requestData, pendingBookingData.itinerary_id);
-    setPendingBookingData(null);
-  }
-};
+    if (pendingBookingData && !isProcessingBooking) {
+      setShowWarningModal(false);
+      await handleBookingConfirm(
+        pendingBookingData.requestData,
+        pendingBookingData.itinerary_id
+      );
+      setPendingBookingData(null);
+    }
+  };
 
-const handleWarningCancel = () => {
+ const handleWarningCancel = () => {
   setShowWarningModal(false);
   setWarningMessage("");
   setPendingBookingData(null);
@@ -1108,6 +1227,10 @@ const handleWarningCancel = () => {
   setUpdateBookingState(false);
   setIsProcessingWarning(false);
   setIsProcessingBooking(false);
+  
+  // CLEAR FARE SELECTION
+  setSelectedFlight(null);
+  setSelectedFareInFlight(null);
 };
 
   const renderFlightContent = () => {
@@ -1119,7 +1242,7 @@ const handleWarningCancel = () => {
             margin: "auto",
             height: isPageWide ? "80vh" : "40vh",
           }}
-          className="center-div font-lexend"
+          className="center-div "
         >
           <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
           Please wait while we update your flight
@@ -1129,7 +1252,7 @@ const handleWarningCancel = () => {
 
     if (isFetchingError.error) {
       return (
-        <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+        <div className="flex flex-row items-center justify-center h-[80vh] text-center ">
           {isFetchingError.errorMsg}
         </div>
       );
@@ -1137,7 +1260,7 @@ const handleWarningCancel = () => {
 
     if (noResults) {
       return (
-        <p className="font-lexend text-center h-[80vh] flex items-center justify-center">
+        <p className=" text-center h-[80vh] flex items-center justify-center">
           Oops, we couldn't find what you were searching!
         </p>
       );
@@ -1162,31 +1285,41 @@ const handleWarningCancel = () => {
       return <Skeleton />;
     }
 
+
     return (
       <OptionsContainer id="options">
         <div style={{ clear: "right" }}>
           {flights.map((flight, index) => (
             <Flight
-              key={index}
-              itinerary_id={props.itinerary_id}
-              data={flight}
-              pax={pax}
-              selectedBooking={props.selectedBooking}
-              _updateBookingHandler={_newUpdateBookingHandler}
-              individual={props?.individual}
-              originCityId={props?.source_itinerary_city_id}
-              provider={flightProvider}
-              destinationCityId={props?.destination_itinerary_city_id}
-              edge={props?.edge || props?.selectedBooking?.edge}
-              setTransferBookingsIntercity={props.setTransferBookingsIntercity}
-              onSelect={props.onSelect}
-              isSelected={selectedFlightIndex === index}
-              onFlightSelect={() => setSelectedFlightIndex(index)}
-              getPaymentHandler={props.getPaymentHandler}
-              combo={props?.combo}
-              booking_id={props?.booking_id}
-              
-            />
+          key={index}
+          itinerary_id={props.itinerary_id}
+          data={flight}
+          pax={pax}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={_newUpdateBookingHandler}
+          individual={props?.individual}
+          originCityId={props?.source_itinerary_city_id}
+          provider={flightProvider}
+          destinationCityId={props?.destination_itinerary_city_id}
+          edge={props?.edge || props?.selectedBooking?.edge}
+          setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+          onSelect={props.onSelect}
+          isSelected={selectedFlightIndex === index}
+          onFlightSelect={() => setSelectedFlightIndex(index)}
+          getPaymentHandler={props.getPaymentHandler}
+          combo={props?.combo}
+          booking_id={props?.booking_id}
+          trace_id={
+            traceId || localStorage.getItem(`${flightProvider}_trace_id`)
+          }
+          loading={loading}
+          // NEW PROPS FOR FARE SELECTION
+          selectedFlight={selectedFlight}
+          setSelectedFlight={setSelectedFlight}
+          selectedFareInFlight={selectedFareInFlight}
+          setSelectedFareInFlight={setSelectedFareInFlight}
+          flightIndex={index}
+        />
           ))}
 
           {moreLoadingState && <Skeleton />}
@@ -1204,20 +1337,20 @@ const handleWarningCancel = () => {
               View More
             </Button>
           )} */}
- {!updateBookingState && flights.length > 0 && nextUrl && (
-  <Button
-    boxShadow
-    onclickparam={null}
-    onclick={handleViewMore}
-    margin="0.25rem auto"
-    borderWidth="1px"
-    borderRadius="2rem"
-    padding="0.25rem 1rem"
-    disabled={moreLoadingState}
-  >
-    View More
-  </Button>
-)}
+          {!updateBookingState && flights.length > 0 && nextUrl && (
+            <Button
+              boxShadow
+              onclickparam={null}
+              onclick={handleViewMore}
+              margin="0.25rem auto"
+              borderWidth="1px"
+              borderRadius="2rem"
+              padding="0.25rem 1rem"
+              disabled={moreLoadingState}
+            >
+              View More
+            </Button>
+          )}
         </div>
       </OptionsContainer>
     );
@@ -1227,99 +1360,57 @@ const handleWarningCancel = () => {
     return (
       <div className="w-full">
         <ToastContainer />
+        <div className="text-xl font-600 leading-2xl mb-md"> {props.heading}</div>
 
-        {showWarningModal && ReactDOM.createPortal((
-  <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-    <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-      
-      <div className="md:hidden flex justify-center py-2">
-        <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-      </div>
+        {showWarningModal &&
+          ReactDOM.createPortal(
+            <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
+              <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
+                <div className="md:hidden flex justify-center py-2">
+                  <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+                </div>
 
-      {!isProcessingBooking && (
-        <button
-          onClick={handleWarningCancel}
-          className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
-        >
-          <FaX size={16} />
-        </button>
-      )}
+                {!isProcessingBooking && (
+                  <button
+                    onClick={handleWarningCancel}
+                    className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
+                  >
+                    <FaX size={16} />
+                  </button>
+                )}
 
-      <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-1 pr-8">
-          Dates Change Warning!
-        </h2>
+                <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto">
+                  <h2 className="text-xl font-semibold mb-1 pr-8">
+                    Dates Change Warning!
+                  </h2>
 
-        <div className="text-gray-700 mb-6">
-          <div className="rounded-lg p-2">
-            {warningMessage}
-          </div>
-        </div>
+                  <div className="text-gray-700 mb-6">
+                    <div className="rounded-lg p-2">{warningMessage}</div>
+                  </div>
 
-        <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
-          <button
-            onClick={handleWarningCancel}
-            disabled={isProcessingBooking}
-            className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
-          >
-            Cancel
-          </button>
-          <button
-            disabled={isProcessingBooking} 
-            onClick={handleWarningConfirm}
-            className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
-          >
-            {isProcessingBooking ? "Processing..." : "Confirm"}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-), document.body)}
+                  <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4">
+                    <button
+                      onClick={handleWarningCancel}
+                      disabled={isProcessingBooking}
+                      className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      disabled={isProcessingBooking}
+                      onClick={handleWarningConfirm}
+                      className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center disabled:opacity-50"
+                    >
+                      {isProcessingBooking ? "Processing..." : "Confirm"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )}
 
- {/* {showWarningModal && ReactDOM.createPortal((
-  <div className="fixed z-[1666] inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center">
-    <div className="bg-white w-full max-w-lg md:mx-4 mb-0 md:mb-auto md:rounded-lg rounded-t-2xl md:rounded-b-lg relative transform transition-transform duration-300 ease-out animate-slide-up md:animate-none max-h-[90vh] md:max-h-none overflow-hidden">
-      {/* Mobile handle bar */}
-      {/* <div className="md:hidden flex justify-center py-2">
-        <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
-      </div> */}
-
-      {/* Close button - positioned differently on mobile */}
-      {/* <button
-        onClick={handleWarningCancel}
-        className="absolute top-4 right-4 md:top-4 md:right-4 p-2 text-gray-400 hover:text-gray-600 cursor-pointer z-10"
-      >
-        <FaX size={16} />
-      </button> */}
-
-      {/* Content container with scrollable content */}
-      {/* <div className="px-6 pb-6 pt-2 md:pt-6 max-h-[calc(90vh-8rem)] md:max-h-none overflow-y-auto"> */}
-        {/* Header */}
-        {/* <h2 className="text-xl font-semibold mb-4 md:mb-6 pr-8">Dates Change Warning!</h2> */}
-
-        {/* Content */}
-        {/* <p className="text-gray-700 mb-6">{warningMessage}</p> */}
-
-        {/* Buttons - stack vertically on mobile */}
-        {/* <div className="flex flex-col-reverse md:flex-row gap-3 md:gap-4 justify-end border-t-2 pt-4"> */}
-          {/* <button
-            onClick={handleWarningCancel}
-            className="w-full md:w-auto px-6 py-2 md:py-2 text-gray-600 border rounded hover:bg-gray-50 transition-colors cursor-pointer text-center"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleWarningConfirm}
-            className="w-full md:w-auto px-6 py-2 md:py-2 bg-[#07213A] text-white rounded hover:bg-[#0a2942] transition-colors cursor-pointer text-center"
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-), document.body)}  */}
+    
         <SearchSection
           sourceInput={sourceInput}
           destinationInput={destinationInput}
@@ -1342,12 +1433,16 @@ const handleWarningCancel = () => {
           setShowSourceSuggestions={setShowSourceSuggestions}
           setShowDestinationSuggestions={setShowDestinationSuggestions}
           _FetchFlightsHandler={_FetchFlightsHandler}
+          setIsManualSelection={setIsManualSelection}
         />
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
           showFilter={showFilter}
-          setShowFilter={setShowFilter}
+          setShowFilter={(value) => {
+  setShowFilter(value);
+  setIsFilterDrawerOpen(value);
+}}
           filtersState={filtersState}
           flights={flights}
           airlineCodes={airlineCodes}
@@ -1370,6 +1465,11 @@ const handleWarningCancel = () => {
           handleFiltersChange={handleFiltersChange}
           setIsTimeOnlyChange={setIsTimeOnlyChange}
         />
+        {flightCount ? (
+          <div className="text-[14px] text-gray-400 px-2 py-3">
+            Showing {flightCount} flights
+          </div>
+        ) : null}
 
         <GridContainer style={{ clear: "right" }}>
           <ContentContainer style={{ position: "relative" }}>
@@ -1404,6 +1504,30 @@ const handleWarningCancel = () => {
           mercury={true}
           booking_id={props?.booking_id}
         />
+
+        {showFilter && (
+          <FlightFilters
+            showFilter={showFilter}
+            loading={loading}
+            setShowFilter={(value) => {
+  setShowFilter(value);
+  setIsFilterDrawerOpen(value);
+}}
+            filters={{
+    ...filtersState,
+    preferred_departure_time: preferredDepartureTime,  
+  }}
+            setFiltersState={setFiltersState}
+            handleFiltersChange={handleFiltersChange}
+            airlineCodes={airlineCodes}
+            selectedAirlines={selectedAirlines}
+            setSelectedAirlines={setSelectedAirlines}
+            isFilterChangesApplied={isFilterChangesApplied}
+            setIsFilterChangesApplied={setIsFilterChangesApplied}
+            setPreferredDepartureTime={setPreferredDepartureTime}
+            setIsTimeOnlyChange={setIsTimeOnlyChange}
+          />
+        )}
       </div>
     );
 
@@ -1435,6 +1559,7 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(ComboFlight);
 
+
 const SearchSection = ({
   sourceInput,
   destinationInput,
@@ -1457,155 +1582,221 @@ const SearchSection = ({
   _FetchFlightsHandler,
   setDestinationInput,
   setSourceInput,
+  setIsManualSelection
 }) => {
-  const handleLocationChange = () => {
-    setDestinationInput(sourceInput);
-    setSourceInput(destinationInput);
-    _FetchFlightsHandler();
-  };
+  
+const handleLocationChange = async () => {
+  
+  const tempSource = sourceInput;
+  const tempDestination = destinationInput;
+  
+  setDestinationInput(tempSource);
+  setSourceInput(tempDestination);
+  
+  setIsManualSelection(true);
+};
 
   return (
-    // Your existing SearchSection JSX here
-  <div className="mb-4">
-  <div className="flex items-center justify-between">
-    {/* Source Input */}
-    <div className="flex items-center gap-2 w-full">
-      {/* From Input */}
-      <div className="relative flex-1 min-w-0">
-        <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-          From <FiNavigation color="red" />
-        </label>
-        <div className="relative overflow-hidden">
-          <input
-            ref={sourceInputRef}
-            type="text"
-            value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
-            onChange={(e) => {
-              handleSourceInputChange(e.target.value);
-              setShowSourceSuggestions(true);
-            }}
-            placeholder="Select source airport"
-            className={`w-full px-3 py-2 pl-8 ${sourceInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
-              sourceError ? "border-red-500" : "border-gray-300"
-            }`}
-            style={{ textOverflow: 'ellipsis' }}
-          />
-          {sourceInput.code && (
-            <FiCheckCircle
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-              size={16}
+    <div className="w-full mb-2">
+      {/* Desktop Layout */}
+      <div className="max-ph:hidden md:flex items-center gap-4 mb-0 ">
+        {/* Source Input */}
+        <div className="relative flex-1">
+          <div className="relative">
+            <PiAirplaneTakeoff
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
             />
+            <input
+              ref={sourceInputRef}
+              type="text"
+              value={`${sourceInput.city_name || ""}${
+                sourceInput.code ? ` (${sourceInput.code})` : ""
+              }`}
+              onChange={(e) => {
+                handleSourceInputChange(e.target.value);
+                setShowSourceSuggestions(true);
+              }}
+              placeholder="Select source airport"
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
+                sourceError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {sourceError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+              {sourceError}
+            </div>
+          )}
+          {showSourceSuggestions && sourceSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {sourceSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleSourceSelect(suggestion)}
+                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {/* Error positioned absolutely to not affect layout */}
-        {sourceError && (
-          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
-            {sourceError}
-          </div>
-        )}
-        {showSourceSuggestions && sourceSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-            {sourceSuggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                onClick={() => handleSourceSelect(suggestion)}
-                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-              >
-                <div className="text-xs text-gray-900">{suggestion.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* Swap Icon - Centered and aligned */}
-      <div className="flex items-center justify-center px-2 sm:px-3 mt-6 flex-shrink-0">
-        <FaExchangeAlt
-          onClick={handleLocationChange}
-          className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
-          size={14}
-        />
-      </div>
+        {/* Swap Icon */}
+        <div className="flex-shrink-0">
+          <button
+            onClick={handleLocationChange}
+            className="w-9 h-9 flex items-center justify-center bg-[#F7E700] rounded-lg hover:bg-[#e6d600] transition-colors"
+          >
+            <FaExchangeAlt className="text-gray-700" size={15} />
+          </button>
+        </div>
 
-      {/* To Input */}
-      <div className="relative flex-1 min-w-0">
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-          To <FiMapPin color="green" />
-        </label>
-        <div className="relative overflow-hidden">
-          <input
-            ref={destinationInputRef}
-            type="text"
-            value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
-            onChange={(e) => {
-              handleDestinationInputChange(e.target.value);
-              setShowDestinationSuggestions(true);
-            }}
-            placeholder="Select destination airport"
-            className={`w-full px-3 py-2 pl-8 ${destinationInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
-              destinationError ? "border-red-500" : "border-gray-300"
-            }`}
-            style={{ textOverflow: 'ellipsis' }}
-          />
-          {destinationInput.code && (
-            <FiCheckCircle
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-              size={16}
+        {/* Destination Input */}
+        <div className="relative flex-1">
+          <div className="relative">
+            <PiAirplaneLanding
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
             />
+            <input
+              ref={destinationInputRef}
+              type="text"
+              value={`${destinationInput.city_name || ""}${
+                destinationInput.code ? ` (${destinationInput.code})` : ""
+              }`}
+              onChange={(e) => {
+                handleDestinationInputChange(e.target.value);
+                setShowDestinationSuggestions(true);
+              }}
+              placeholder="Select destination airport"
+              className={`w-full pl-10 pr-4 py-[0.6rem] bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal ${
+                destinationError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {destinationError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30">
+              {destinationError}
+            </div>
+          )}
+          {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {destinationSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleDestinationSelect(suggestion)}
+                  className="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-sm text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        {/* Error positioned absolutely to not affect layout */}
-        {destinationError && (
-          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
-            {destinationError}
-          </div>
-        )}
-        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-            {destinationSuggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                onClick={() => handleDestinationSelect(suggestion)}
-                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-              >
-                <div className="text-xs text-gray-900">{suggestion.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Search Button - Fixed height and alignment */}
-      <div className="flex items-center ml-2 sm:ml-4 mt-6 flex-shrink-0">
-        <Generalbutton
-          fontSize="0.8rem"
-          width="auto"
-          padding="0.4rem 1rem"
-          fontWeight="500"
-          margin="0"
-          borderRadius="6px"
-          borderWidth="1px"
-          bgColor="#f7e700"
-          loading={loading}
-          onclick={() => {
-            if (validateInputs()) {
-              setShowSourceSuggestions(false);
-              setShowDestinationSuggestions(false);
-              _FetchFlightsHandler();
-            }
-          }}
-          disabled={loading}
-          className="relative flex items-center justify-center min-w-[80px] sm:min-w-[120px] h-[38px] whitespace-nowrap text-xs sm:text-sm"
-        >
-          {loading ? (
-            <PulseLoader size={6} speedMultiplier={0.6} color="#000" />
-          ) : (
-            <span>Search</span>
+      {/* Mobile Layout */}
+      <div className="flex md:hidden  items-center gap-2 mb-0">
+        {/* Source Input */}
+        <div className="relative flex-1 min-w-0">
+          <div className="relative">
+            <PiAirplaneTakeoff
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              ref={sourceInputRef}
+              type="text"
+              value={`${sourceInput.city_name || ""}${
+                sourceInput.code
+                  ? ` (${sourceInput.code.substring(0, 2)}...`
+                  : ""
+              }`}
+              onChange={(e) => {
+                handleSourceInputChange(e.target.value);
+                setShowSourceSuggestions(true);
+              }}
+              placeholder="Source"
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
+                sourceError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {sourceError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+              {sourceError}
+            </div>
           )}
-        </Generalbutton>
+          {showSourceSuggestions && sourceSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {sourceSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleSourceSelect(suggestion)}
+                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Swap Icon */}
+        <div className="flex-shrink-0">
+          <button
+            onClick={handleLocationChange}
+            className="w-7 h-8 py-2 flex items-center justify-center bg-[#F7E700] rounded-md hover:bg-[#e6d600] transition-colors"
+          >
+            <FaExchangeAlt className="text-gray-700" size={14} />
+          </button>
+        </div>
+
+        {/* Destination Input */}
+        <div className="relative flex-1 min-w-0">
+          <div className="relative">
+            <PiAirplaneLanding
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              ref={destinationInputRef}
+              type="text"
+              value={`${destinationInput.city_name || ""}${
+                destinationInput.code ? ` (${destinationInput.code})` : ""
+              }`}
+              onChange={(e) => {
+                handleDestinationInputChange(e.target.value);
+                setShowDestinationSuggestions(true);
+              }}
+              placeholder="Destination"
+              className={`w-full pl-9 pr-3 py-2.5 bg-[#F9F9F9] rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-[#212529] font-normal truncate ${
+                destinationError ? "ring-2 ring-red-500" : ""
+              }`}
+            />
+          </div>
+          {destinationError && (
+            <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[150px] truncate">
+              {destinationError}
+            </div>
+          )}
+          {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {destinationSuggestions.map((suggestion) => (
+                <div
+                  key={suggestion.id}
+                  onClick={() => handleDestinationSelect(suggestion)}
+                  className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="text-xs text-gray-900">{suggestion.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-</div>
   );
 };

@@ -16,6 +16,7 @@ import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
 import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
+import useMediaQuery from "../../media";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -56,7 +57,7 @@ const BackContainer = styled.div`
 `;
 
 const ItineraryCity = (props) => {
-  const [viewMore, setViewMore] = useState(false);
+  const [viewMore, setViewMore] = useState(true);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
   const [loading,setLoading] = useState(false);
@@ -65,7 +66,15 @@ const ItineraryCity = (props) => {
     (state) => state.ItineraryStatus
   );
 
+
+  const transferBookings = useSelector(
+    (state) => state.TransferBookings
+  ).transferBookings;
+
+
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const router=useRouter()
+  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
  
   const [images, setImages] = useState(null);
   const dispatch = useDispatch();
@@ -169,15 +178,15 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-2 border-gray-200 rounded-t-lg flex flex-col w-full"
+      className="border-1 rounded-t-lg flex flex-col w-full border-color-light-grey"
     >
-      <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
-        <div className="space-y-1">
+      <div className="flex items-start justify-between p-3 rounded-t-lg border-b border-color-light-grey">
+        <div className="space-y-1 font-montserrat">
           <div className={`md:text-[18px] font-semibold`}>
             {props?.city?.city?.name}
             {" - "}
-            {props?.city?.duration}{" "}
-            {props?.city?.duration > 1 || props?.city?.duration === 0 ? "Nights" : "Night"} {props?.city?.duration === 0 ? "(Transit City)" : ""}
+            {multiHotelDuration}{" "}
+            {multiHotelDuration > 1 ? "Nights" : "Night"}  {props?.city?.duration === 0 ? "(Transit City)" : ""}
           </div>
 
           {hotels_status === "PENDING" ? (
@@ -201,8 +210,8 @@ const ItineraryCity = (props) => {
                   <div key={hotel.id} className="flex flex-col gap-1">
                     
                      
-                      <div className="flex flex-col">
-                        { hotel?.name &&<><div className="flex gap-2">
+                      <div className="flex flex-row">
+                        { hotel?.name &&<><div className="flex gap-2 pr-[8px] ">
                          <Image
                         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
                         height={22}
@@ -218,20 +227,17 @@ const ItineraryCity = (props) => {
                           {/* ({hotel?.duration} {hotel?.duration === 1 ? "Night" : "Nights"}) */}
                         </div>
                         </div>
-                        <div className="flex flex-row items-center">
-                          {hotel?.rating && hotel?.rating !== 0
-                            ? getStars(hotel?.rating)
-                            : null}{" "}
-                          <div className="text-[#7A7A7A] text-[12px] ml-1">
+                        <div className="flex flex-row items-center border-l pl-[8px] ">
+                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
                           </div>
-                          {hotel?.user_ratings_total ? (
-                            <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
-                              {hotel?.user_ratings_total} Google reviews
-                            </div>
-                          ) : null}
+                          {hotel?.rating && hotel?.rating !== 0
+                            ? <div className="flex items-center text-primary-stars">
+                                              <Image src="/star.svg" width={16} height={16} alt="star" />
+                              </div>
+                            : null}{" "}
                         </div></>}
                       </div>
                   </div>
@@ -239,14 +245,14 @@ const ItineraryCity = (props) => {
               })}
             </div>
           ) : (
-            props?.city?.duration !== 0 && <div
+            <button
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
                 handleStay(e, "Add", props.city.city.name, "Add",null)
               }
             >
               + Add Stay in {props?.city?.city?.name}
-            </div>
+            </button>
           )}
         </div>
 
@@ -254,11 +260,6 @@ const ItineraryCity = (props) => {
           onClick={() => setViewMore((prev) => !prev)}
           className="flex items-center text-sm font-semibold"
         >
-          {viewMore ? (
-            <RiArrowDropUpLine className="text-3xl" />
-          ) : (
-            <RiArrowDropDownLine className="text-3xl" />
-          )}
         </button>
       </div>
 
@@ -293,6 +294,12 @@ const ItineraryCity = (props) => {
           />
         )
       )}
+      <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
+       <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
+            <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
+            <div className="Body2M_14">This is your check out day in {props?.city?.city?.name}, take a {transferBookings?.intercity?.[`${props?.city?.id}:${props?.nextCity?.id || props?.nextCity?.gmaps_place_id}`]?.booking_type || "transfer"} to {props?.nextCity?.city?.name || itineraryDaybyDay?.end_city?.name}.</div>
+          </div>
+          </div>
     </div>
   );
 };

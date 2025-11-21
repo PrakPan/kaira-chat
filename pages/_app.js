@@ -13,9 +13,10 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
-import restartBot from "../helper/RestartBot";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
+import Loading from "./loading";
+import { usePathname } from "next/navigation";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import JupyterAnalytics from "../components/JupyterAnalytics";
 
@@ -23,6 +24,11 @@ function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [currentPath, setCurrentPath] = useState('');
+  const newPath=usePathname()
+
+
   const [jupiterInitialized, setJupiterInitialized] = useState(false);
   const initializationAttempts = useRef(0);
   const maxAttempts = 10;
@@ -39,6 +45,38 @@ function MyApp({ Component, pageProps, store }) {
     cleanExpiredLocalStorage(); 
   }, []);
 
+  // useEffect(() => {
+  //   if(currentPath=="") {
+  //     setCurrentPath(newPath)
+  //     return
+  //   }
+  //   const handleStart = (url) => {
+  //     const isSameItineraryPage = currentPath===newPath
+      
+  //     if (isSameItineraryPage) {
+  //       return;
+  //     }
+  //     setCurrentPath(newPath)
+      
+  //     setLoading(true);
+  //   };
+    
+  //   const handleComplete = (url) => {
+  //     setCurrentPath(newPath);
+  //     setLoading(false);
+  //   };
+
+  //   router.events.on("routeChangeStart", handleStart);
+  //   router.events.on("routeChangeComplete", handleComplete);
+  //   router.events.on("routeChangeError", handleComplete);
+
+  //   return () => {
+  //     router.events.off("routeChangeStart", handleStart);
+  //     router.events.off("routeChangeComplete", handleComplete);
+  //     router.events.off("routeChangeError", handleComplete);
+  //   };
+  // }, [router, currentPath]);
+
   function setupTokenExpiryWatcher() {
     if (typeof window === 'undefined') return;
     
@@ -50,7 +88,7 @@ function MyApp({ Component, pageProps, store }) {
     if (timeLeft <= 0) {
       dispatch(authLogout());
       localStorage.clear();
-      restartBot();
+      // restartBot();
     } else {
       setTimeout(() => {
         dispatch(authLogout());
@@ -62,7 +100,6 @@ function MyApp({ Component, pageProps, store }) {
         localStorage.removeItem("expirationDate");
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
-        restartBot();
       }, timeLeft);
     }
   }
@@ -131,10 +168,10 @@ function MyApp({ Component, pageProps, store }) {
                 anonymousId: "abc",
               });
               setJupiterInitialized(true);
-              console.log(`✅ Jupiter initialized via ${method}`);
+              
               return;
             } catch (error) {
-              console.error(`Error with ${method}:`, error);
+              
             }
           }
         }
@@ -144,7 +181,7 @@ function MyApp({ Component, pageProps, store }) {
       if (initializationAttempts.current < maxAttempts) {
         setTimeout(tryInitialize, 1000);
       } else {
-        console.warn('⚠️ Jupiter Analytics initialization failed');
+        
         setJupiterInitialized(true);
       }
     };
@@ -157,6 +194,10 @@ function MyApp({ Component, pageProps, store }) {
     <>
       <Head>
         <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
+        />
+        <meta
           name="google-site-verification"
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
         />
@@ -166,16 +207,22 @@ function MyApp({ Component, pageProps, store }) {
         />
         {/* <title>Plan your trip with The Tarzan Way</title> */}
       </Head>
-      <body>
-        <Script
-          src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-          strategy="afterInteractive"
-          onLoad={() => {
-            
-            restartBot(); // Start bot once script is ready
-          }}
-        />
-      </body>
+
+      <div id="modal-root"></div>
+      {loading && <Loading />}
+
+      {/* CRMOne bot - load after page is interactive */}
+      <Script
+        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log("CRMOne bot script loaded");
+          if (typeof restartBot === 'function') {
+            // restartBot();
+          }
+        }}
+      />
+
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
@@ -186,7 +233,7 @@ function MyApp({ Component, pageProps, store }) {
               flushInterval={3000}
               siteId="tarzanway-web"
               anonymousId="abc"
-            />
+            /> 
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>

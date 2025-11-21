@@ -161,7 +161,7 @@ const TaxiDetailModal = ({
                         setIsTransferDrawerOpen(true);
                         return
                       }
-                      handleClose()
+                      // handleClose()
                       handleEditRoute(data)
                       //setShowTaxi(true);console.log("")
                     }}
@@ -255,23 +255,24 @@ const TaxiDetailModal = ({
                 )}
               </p>
 
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex flex-col gap-4 items-center">
+              <div className="flex flex-col md:flex-row gap-4 max-sm:gap-[2rem]">
+                <div className="flex flex-col gap-4 max-sm:gap-[2rem] items-center">
                 <div
                   className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
-                  style={{ height: "140px" }}
+                  // style={{ height: "140px" }}
                 >
                   {loading ? (
                     <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
                   ) : (
                     
-                    <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
+                    <div className="w-full md:w-[180px] h-[140px]  relative flex justify-center items-center">
                       {data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image ? (
                         <ImageLoader
                           url={
                             data?.transfer_details?.quote?.taxi_category?.image || data?.transfer_details?.quote?.vehicle?.image
                           }
-                          className="w-full h-full object-contain"
+                          className="w-full h-full max-sm:w-[40px] max-sm:h-[40px] object-contain"
+                          dimensionsMobile={{width:20, height:20}}
                         />
                       ) : (
                         <FaTaxi className="w-16 h-16 text-gray-400" />

@@ -59,7 +59,7 @@ const POIDetailsSkeleton = (props) => {
 
   return (
     <Container>
-      <BackContainer className=" font-lexend">
+      <BackContainer className=" ">
         <BackArrow handleClick={props.onHide}/>
       </BackContainer>
 
@@ -82,13 +82,13 @@ const POIDetailsSkeleton = (props) => {
       </div>
 
       <SkeletonCard width={isPageWide ? "100%" : "100%"} height={"150px"} />
-      <FloatingView>
+      {/* <FloatingView>
         <TbArrowBack
           style={{ height: "28px", width: "28px" }}
           cursor={"pointer"}
           onClick={props.onHide}
         />
-      </FloatingView>
+      </FloatingView> */}
     </Container>
   );
 };

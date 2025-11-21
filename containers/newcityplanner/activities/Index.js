@@ -98,7 +98,8 @@ const Activity = (props) => {
             8,
             "Craft a trip now!"
           )}
-        </Button>} */}
+        </Button>
+        } */}
       </div>
     </div>
   );

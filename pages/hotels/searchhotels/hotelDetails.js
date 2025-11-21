@@ -95,13 +95,13 @@ const HotelDetails=(hotelDetails,setShowDetails,showDetails)=>{
         show={showDetails}
         anchor={"right"}
         backdrop
-        className="font-lexend"
+        className=""
         onHide={() => setShowDetails(false)}
         mobileWidth={"100%"}
         width="50%"
       >
         <Container>
-          <BackContainer className=" font-lexend">
+          <BackContainer className=" ">
             <IoMdClose
               className="hover-pointer"
               onClick={() => setShowDetails(false)}

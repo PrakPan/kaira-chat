@@ -1,159 +1,88 @@
-import React, { useState, useEffect, useMemo } from "react";
-import styled, { keyframes } from "styled-components";
+import { useState, useEffect, useMemo } from "react";
 import Button from "../ui/button/Index";
-import { format } from "date-fns";
 import media from "../media";
-import axiostailoredinstance, {
+import {
   itineraryInitiate,
   itineraryComplete,
 } from "../../services/leads/tailored";
-import LoadingLottie from "../ui/LoadingLottie";
 import { useRouter } from "next/router";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { BiArrowBack } from "react-icons/bi";
 import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
-import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
-import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
+import {
+  setItineraryCreated,
+  setItineraryInitiateData,
+  setItineraryNotCreated,
+  setRoomConfiguration,
+} from "../../store/actions/slideOneActions";
+import {
+  BlackContainer,
+  buildItineraryPayload,
+  Container,
+  divideTravellers,
+  headings,
+  useSourceParams,
+} from "./utils/slideOneActions";
+import useMediaQuery from "../media";
+import Modal from "../ui/Modal";
+import ModalWithBackdrop from "../ui/ModalWithBackdrop";
+import RouteOverviewModal from "./slideOne/RouteOverviewModal";
+import BottomModal from "../ui/LowerModal";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useAnalytics } from "../../hooks/useAnalytics";
-
-const fadeInAnimation = keyframes`${fadeIn}`;
-
-const Container = styled.div`
-  height: max-content;
-  padding: 2px;
-  color: black;
-  z-index: ${(props) => (props.showBlack ? "1006" : "2")};
-  position: relative;
-  background-color: ${(props) =>
-    props.slideIndex || props.tailoredFormModal
-      ? "white"
-      : "rgba(255,255,255,0.9)"};
-  width: 100%;
-  border: none !important;
-  border-radius: ${(props) =>
-    props.tailoredFormModal ? "12px !important" : "8px !important"};
-  @media screen and (min-width: 768px) {
-    ${(props) => props.tailoredFormModal && "height : 100%"};
-    margin: auto 0;
-    min-height: 500px;
-  }
-`;
-
-const CloseIcon = styled.div`
-  display: flex;
-  justify-content: space-between;
-  text-align: right;
-  border-bottom: 1px solid #0000004a;
-  padding-block: 1rem;
-`;
-
-const Heading = styled.p`
-  font-size: 1.35rem;
-  margin: 0.5rem 0 0.5rem 0;
-  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
-  text-align: left;
-  font-weight: 600;
-  color: black;
-  line-height: normal;
-
-  @media screen and (min-width: 815px) {
-    font-size: 1.4rem;
-    margin: 0.25rem 0 0.25rem 0;
-    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
-  }
-`;
-
-const BlackContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.4);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1005;
-  width: 100vw;
-  display: none;
-  height: 100vh;
-  animation: 0.5s ${fadeInAnimation};
-  @media screen and (min-width: 768px) {
-    display: initial;
-  }
-`;
-
-const LoadingText = styled.div`
-  font-size: 1.2rem;
-  position: absolute;
-  bottom: 30%;
-  opacity: 0.8;
-`;
-
-const useSourceParams = () => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const params = useParams(); 
-
-  const source = useMemo(() => {
-    const queryObj = {};
-    for (const [key, value] of searchParams.entries()) {
-      if (value === "true") queryObj[key] = true;
-      else if (value === "false") queryObj[key] = false;
-      else if (!isNaN(value)) queryObj[key] = Number(value);
-      else queryObj[key] = value;
-    }
-
-    let resolvedPath = pathname;
-    for (const [key, val] of Object.entries(params)) {
-      resolvedPath = resolvedPath.replace(`[${key}]`, val);
-    }
-
-    return {
-      path: resolvedPath,
-      ...queryObj,
-    };
-  }, [pathname, searchParams, params]);
-
-  return source;
-};
+import styled, { keyframes } from "styled-components";
+import { fadeIn } from "react-animations";
+import { authCloseLogin } from "../../store/actions/auth";
+import Login from "../modals/Login";
+import StepsProgress from "./StepsProgress";
 
 const Enquiry = (props) => {
   const router = useRouter();
+  if (!router.isReady) return;
+
+  const dispatch = useDispatch();
+  const showLogin = useSelector((state) => state.auth.showLogin);
+  const onHide = () => dispatch(authCloseLogin());
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const [route, setRoute] = useState([]);
+  const [locationsLatLong, setLocationsLatLong] = useState(
+    useSelector(
+      (state) => state.tailoredInfoReducer.itineraryInititateData?.basic_route
+    ) || []
+  );
+  const [showRouteOverview, setShowRouteOverview] = useState(false);
+
   const routerquery = router.query;
   const initialInputId = Date.now();
-  const {token} = useSelector(state=>state.auth)
-  const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [flexible, setFlexible] = useState(false);
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [valueStart, setValueStart] = useState(null);
-  const [valueEnd, setValueEnd] = useState(null);
-  const [numberOfAdults, setNumberOfAdults] = useState(1);
-  const [numberOfChildren, setNumberOfChildren] = useState(0);
-  const [numberOfInfants, setNumberOfInfants] = useState(0);
-  const [budget, setBudget] = useState("Affordable");
   const [isLoading, setIsLoading] = useState(false);
-  const [roomConfiguration, setRoomConfiguration] = useState([
-    {
-      adults: 1,
-      children: 0,
-      childAges: [],
-    },
-  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [priceRange, setPriceRange] = useState({
-    min_price: 0,
-    max_price: 3000,
-  });
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const slideOneData = useSelector(
+    (state) => state.tailoredInfoReducer.slideOne
+  );
+  const itineraryInititateData = useSelector(
+    (state) => state.tailoredInfoReducer.itineraryInititateData
+  );
+  const slideThreeData = useSelector(
+    (state) => state.tailoredInfoReducer.slideThree
+  );
+  const slideFourData = useSelector(
+    (state) => state.tailoredInfoReducer.slideFour
+  );
+  const isItineraryCreated = useSelector(
+    (state) => state.tailoredInfoReducer.itineraryCreated
+  );
+
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
-  const [focusedDate, setFocusedDate] = useState(null);
-  const [groupType, setGroupType] = useState("Solo");
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
+  const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
@@ -164,69 +93,20 @@ const Enquiry = (props) => {
     InputOne: false,
   };
   const [showPopup, setShowPopup] = useState(popupObj);
-  const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
   const [error, setError] = useState(null);
-  const [addHotels, setAddHotels] = useState(false);
-  const [addFlights, setAddFlights] = useState(false);
-  const [loginComplete, setLoginComplete] = useState(false);
-  const [defaultPriceRange, setDefaultPriceRange] = useState({
-    min_price: 0,
-    max_price: 3000,
+  const [errors, setErrors] = useState({
+    startLocation: null,
+    destination1: null,
+    when: null,
   });
-  const {trackItineraryInitiated, trackItineraryCompleted} = useAnalytics();
-  
+
+  const slideIndex = Number(router.query.slideIndex) || 0;
+  const { trackItineraryInitiated, trackItineraryCompleted } = useAnalytics();
+
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
-
-  const divideTravellers = () => {
-    let distribution = [];
-
-    let tempadults = numberOfAdults;
-    let tempChildren = numberOfChildren;
-    let tempInfants = numberOfInfants;
-    while (tempadults != 0) {
-      if (tempadults >= 2) {
-        distribution.push({ adults: 2,children:0 });
-        tempadults -= 2;
-      } else {
-        distribution.push({ adults: tempadults,children:0  });
-        tempadults = 0;
-      }
-    }
-
-    let childIdx = 0;
-
-    while (tempChildren != 0) {
-      if (!distribution[childIdx % distribution.length].children) {
-        distribution[childIdx % distribution.length].children = 0;
-      }
-      distribution[childIdx % distribution.length].children += 1;
-      tempChildren -= 1;
-      if (!distribution[childIdx % distribution.length].childAges) {
-        distribution[childIdx % distribution.length].childAges = [];
-      }
-      distribution[childIdx % distribution.length].childAges.push(10);
-      childIdx += 1;
-    }
-
-    while (tempInfants != 0) {
-      if (!distribution[childIdx % distribution.length].children) {
-        distribution[childIdx % distribution.length].children = 0;
-      }
-      distribution[childIdx % distribution.length].children += 1;
-      tempInfants -= 1;
-      if (!distribution[childIdx % distribution.length].childAges) {
-        distribution[childIdx % distribution.length].childAges = [];
-      }
-      distribution[childIdx % distribution.length].childAges.push(1);
-      childIdx += 1;
-    }
-
-    return distribution;
-
-  };
 
   useEffect(() => {
     if (props.tailoredFormModal) {
@@ -239,11 +119,14 @@ const Enquiry = (props) => {
   }, [props.tailoredFormModal]);
 
   useEffect(() => {
-    if (loginComplete && props.token && props.phone !== "null") {
-      _submitDataHandler();
+    if ((slideIndex && slideIndex != 0) || isItineraryCreated) {
+      dispatch(setItineraryCreated(false));
+      if (!itineraryInititateData)
+        router.push({
+          pathname: "/new-trip",
+        });
     }
-    setShowPopup(popupObj);
-  }, [slideIndex, props.token, props.phone]);
+  }, [router.isReady, slideIndex]);
 
   useEffect(() => {
     if (props.userLocation) {
@@ -256,266 +139,84 @@ const Enquiry = (props) => {
     }
   }, [props.userLocation]);
 
-  var selectedObj;
-
-  // if (routerquery.state && !routerquery.city) {
-  //   selectedObj = [
-  //     {
-  //       destination_id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //     },
-  //   ];
-  // } else if (routerquery.country && !routerquery.city) {
-  //   selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: "Country",
-  //     },
-  //   ];
-  // }else if(routerquery.city){
-  //     selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: "City",
-  //     },
-  //   ];
-  // }
-  //  else {
-  //   selectedObj = [
-  //     {
-  //       id: routerquery.page_id || props.page_id,
-  //       name: routerquery.destination || props.destination,
-  //       input_id: initialInputId,
-  //       type: routerquery?.type ? routerquery.type : props?.destinationType,
-  //     },
-  //   ];
-  // }
-
-const queryType = router?.query?.type?.toLowerCase();
-const propType = props?.type?.toLowerCase();
-
-
-if (queryType === "page" || propType === "page") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Page",
-    },
-  ];
-} else if ((routerquery.state && !routerquery.city) || propType === "state") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "State",
-    },
-  ];
-} else if ((routerquery.city) || propType === "city" || queryType === "city") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "City",
-    },
-  ];
-} else if (routerquery.country || propType === "country") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Country",
-    },
-  ];
-} else if (routerquery.continent || queryType === "continent" || propType === "continent") {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: "Continent",
-    },
-  ];
-} else {
-  selectedObj = [
-    {
-      id: routerquery.page_id || props.page_id,
-      name: routerquery.destination || props.destination,
-      input_id: initialInputId,
-      type: routerquery?.type || props?.destinationType,
-    },
-  ];
-}
-
-
- 
-
   const _handleHideBlack = () => {
     setShowCities(false);
     setShowSearchStarting(false);
   };
 
   const _submitDataHandler = () => {
-    const value_start = new Date(valueStart);
-    const value_end = new Date(valueEnd);
-
-    if (isSubmitting) {
-    return;
-  }
-
-    setLoading(true);
     setIsSubmitting(true);
-
-    let cityids = [];
-    let locations = [];
-    let stateIds = [];
-    let countryIds = [];
-    let continentIds = [];
-    let preferences = [];
-    let pageIds = [];
-
-    for (var i = 0; i < selectedPreferences.length; i++) {
-      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
-        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
-          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
-            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
-          }
-          break;
-        }
-      }
-    }
-
-    try {
-      for (var i = 0; i < selectedCities.length; i++) {
-        if (
-          cityids.indexOf(selectedCities[i].id) == -1 &&
-          selectedCities[i].id
-        ) {
-          if (selectedCities[i].type?.toLowerCase() == "state")
-            stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "country")
-            countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent")
-            continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location"){
-            cityids.push(selectedCities[i].id);
-          }
-          else {
-            continentIds.push(selectedCities[i].id);
-          }
-          locations.push(selectedCities[i].name);
-        }
-      }
-    } catch {}
-
-  
-let dist=divideTravellers()
-    const start_date = format(value_start, "yyyy-MM-dd");
-    const end_date = format(value_end, "yyyy-MM-dd");
-
-    let number_of_adults = 2,
-      number_of_children = 0,
-      number_of_infants = 0;
-
-    if (groupType === "Solo") {
-      number_of_adults = 1;
-    } else if (groupType === "Couple") {
-      number_of_adults = 2;
-    } else {
-      number_of_adults = numberOfAdults;
-      number_of_children = numberOfChildren;
-      number_of_infants = numberOfInfants;
-    }
-
-//     const source = {
-//   path: router.pathname, 
-//   ...router.query,       
-// };
-
-    let data = null;
-    data = {
-      source,
-      experience_filters_selected: preferences,
-      budget: budget,
-      start_date: start_date,
-      end_date: end_date,
-      group_type: groupType || "Solo",
-      number_of_adults: number_of_adults,
-      number_of_children: number_of_children,
-      number_of_infants: number_of_infants,
-      flexible_dates: flexible,
-      user_location: {
-        place_id: startingLocation
-          ? startingLocation.place_id
-          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-      },
-      room_configuration: dist,
-      price_range: priceRange,
-    };
-
-    if (selectedCities[0].destination_id) {
-      data.destination_id = [selectedCities[0].destination_id];
-    }
-    if (continentIds.length) data.destination_id = continentIds;
-    if (stateIds.length) data.state_id = stateIds;
-    if (countryIds.length) data.country_id = countryIds;
-    if (pageIds.length) data.page_id = pageIds;
-    if (cityids.length) data.city_id = cityids;
-    if (locations.length) data.locations = locations;
-    if (start_date === "1970-01-01") data.start_date = "";
-    if (end_date === "1970-01-01") data.end_date = "";
-    if (startingLocation) data;
-
     completeItineraryCreate();
   };
 
   const _prevSlideHandler = () => {
-    if (slideIndex) setSlideIndex(slideIndex - 1);
+    if (slideIndex) {
+      if (slideIndex == 1) {
+        setIsRouteChanged(false);
+      }
+      router.push({
+        pathname: "/new-trip",
+        query: {
+          slideIndex: slideIndex - 1,
+        },
+      });
+    }
   };
 
-  const getHeading = () => {
-    if (props.tailoredFormModal && focusedDate) {
-      if (focusedDate == "startDate") return "Please select start date.";
-      if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get your free travel plan now";
-  };
-
-  const [selectedCities, setSelectedCities] = useState(selectedObj);
-
- 
+  const selectedCities = slideOneData.selectedCities;
 
   useEffect(() => {
     setShowPopup(popupObj);
   }, [
-    valueStart,
-    valueEnd,
+    slideOneData.date.start_date,
+    slideOneData.date.end_date,
     startingLocation,
     destination,
     showSearchStarting,
     showCities,
-    groupType,
     selectedCities.length,
     slideIndex,
   ]);
 
   const _SlideOneSubmitHandler = () => {
-    if (!selectedCities[0].destination_id && !selectedCities[0].id) {
-      return setShowPopup({ ...showPopup, InputOne: true });
+    if (!slideOneData.selectedCities[0].id) {
+      setErrors({
+        startLocation: null,
+        destination1: "destination can't be null",
+        when: null,
+      });
+      return;
     }
-    if (!valueStart && !flexible) {
-      return setShowPopup({ ...showPopup, dateStart: true });
+    if (
+      slideOneData.date.type === "fixed" &&
+      !(slideOneData.date.start_date && slideOneData.date.end_date)
+    ) {
+      setErrors({
+        startLocation: null,
+        destination1: null,
+        when: "start or end date can't be null",
+      });
+      return;
     }
-    if (!valueEnd && !flexible) {
-      return setShowPopup({ ...showPopup, dateEnd: true });
+
+    if (
+      slideOneData.date.type === "flexible" &&
+      !(slideOneData.date.month && slideOneData.date.duration)
+    ) {
+      setErrors({
+        startLocation: null,
+        destination1: null,
+        when: "month or duration can't be null",
+      });
+      return;
+    }
+
+    if (slideOneData.date.type === "anytime" && !slideOneData.date.duration) {
+      setErrors({
+        startLocation: null,
+        when: "duration can't be null",
+      });
+      return;
     }
 
     setShowPopup(popupObj);
@@ -523,179 +224,114 @@ let dist=divideTravellers()
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    initiateItineraryCreate();
-  };
-
-  const _SlideTwoSubmitHandler = () => {
-    if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
-    setShowPopup(popupObj);
-    setSlideIndex(slideIndex + 1);
-    let dist = divideTravellers();
-    setRoomConfiguration(dist);
+    initiateItineraryCreate(slideOneData);
   };
 
   const _SlideThreeSubmitHandler = () => {
-    setSlideIndex(slideIndex + 1);
+    if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
+    setShowPopup(popupObj);
+    let dist = divideTravellers(slideThreeData);
+    dispatch(setRoomConfiguration(dist));
+
+    if (totalSlides == 3) {
+      _submitDataHandler();
+      return;
+    }
+    router.push({
+      pathname: "/new-trip",
+      query: {
+        slideIndex: slideThreeData.addHotels ? slideIndex + 1 : slideIndex + 2,
+      },
+    });
   };
 
-  const initiateItineraryCreate = () => {
-    const start_date = valueStart
-      ? format(new Date(valueStart), "yyyy-MM-dd")
-      : null;
-    const end_date = valueEnd ? format(new Date(valueEnd), "yyyy-MM-dd") : null;
+  const _slideTwoSkip = () => {
+    try {
+      router.push({
+        pathname: "/new-trip",
+        query: {
+          slideIndex: slideIndex + 1,
+        },
+      });
+    } catch (error) {
+      console.log("new slide index is: ", error);
+    }
+  };
 
-    let cityids = [];
-    let locations = [];
-    let stateIds = [];
-    let countryIds = [];
-    let continentIds = [];
-    let preferences = [];
-    let pageIds = [];
-
-    for (var i = 0; i < selectedPreferences.length; i++) {
-      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
-        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
-          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
-            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
-          }
-          break;
-        }
-      }
+  const initiateItineraryCreate = async (slideOneData) => {
+    const data = buildItineraryPayload({
+      source,
+      selectedPreferences: slideOneData.selectedPreferences,
+      EXPERIENCE_FILTERS_BOX,
+      selectedCities,
+      startingLocation,
+      dateData: slideOneData.date,
+    });
+    if (locationsLatLong.length > 0 && slideIndex == 1) {
+      data["basic_route"] = locationsLatLong;
     }
 
     try {
-      for (var i = 0; i < selectedCities.length; i++) {
-        if (
-          cityids.indexOf(selectedCities[i].id) == -1 &&
-          selectedCities[i].id
-        ) {
-          if (selectedCities[i].type?.toLowerCase() == "page") {
-            pageIds.push(selectedCities[i].id);
-          } else if (selectedCities[i].type?.toLowerCase() == "state")
-            stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "country")
-            countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent"){
-            continentIds.push(selectedCities[i].id);
-            pageIds.push(selectedCities[i].id);
-          }
-          else {
-            cityids.push(selectedCities[i].id);
-          }
-          locations.push(selectedCities[i].name);
-        }
-      }
-    } catch {}
+      setIsLoading(true);
+      const res = await itineraryInitiate.post("", data);
+      const resData = res.data;
+      trackItineraryInitiated("itinerary_initiated");
 
-    
-
-    const data = {
-      source,
-      experience_filters_selected: preferences,
-      start_location: {
-        gmaps_place_id: startingLocation
-          ? startingLocation.place_id
-          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-      }, // Start location build itinerary from - Can be empty
-      cities: cityids, // City ids to build itinerary
-      pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
-      states: stateIds, // State ids to build itinerary
-      countries: countryIds, // Country ids to build itinerary
-      pages: pageIds,
-      end_location: {}, // If empty, it is same as start_location
-      start_date: start_date, // YYYY-MM-DD
-      end_date: end_date, // YYYY-MM-DD
-      flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
-    };
-
-    setIsLoading(true);
-    itineraryInitiate
-      .post("", data)
-      .then((res) => {
-        const data = res.data;
-        trackItineraryInitiated('itinerary_initiated');
-        setError(null);
-        setItineraryId(data.itinerary_id);
-        setIsLoading(false);
-        setSlideIndex(slideIndex + 1);
-
-        const hotelsBudget = data?.hotels_budget;
-        if (hotelsBudget) {
-          const minPrice = parseInt(0.5 * hotelsBudget);
-          const maxPrice = parseInt(1.5 * hotelsBudget);
-          setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
-        }
-      })
-      .catch((err) => {
-        console.log("ERROR: ", err.message);
-        setError(err.message);
-        setIsLoading(false);
+      setError(null);
+      setItineraryId(resData.itinerary_id);
+      setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+      dispatch(setItineraryInitiateData(resData));
+      router.push({
+        pathname: "/new-trip",
+        query: {
+          slideIndex: slideIndex + 1,
+        },
       });
+      // setShowRouteOverview(true);
+    } catch (err) {
+      console.log("ERROR: ", err.message);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {
-    const handleRouteChangeComplete = () => {
-      setLoading(false);
-    };
-
-    router.events.on("routeChangeComplete", handleRouteChangeComplete);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChangeComplete);
-    };
-  }, [router]);
-
-  useEffect(() => {});
-
   const completeItineraryCreate = () => {
-    let number_of_adults = 2;
-    let number_of_children = 0;
-    let number_of_infants = 0;
-
-    if (groupType === "Solo") {
-      number_of_adults = 1;
-    } else if (groupType === "Couple") {
-      number_of_adults = 2;
-    } else {
-      number_of_adults = numberOfAdults;
-      number_of_children = numberOfChildren;
-      number_of_infants = numberOfInfants;
-    }
-    let dist = divideTravellers();
-
-
     const data = {
       source,
-      // : {
-      //   path: router.asPath,
-      // },
       itinerary_id: itineraryId,
-      group_type: groupType || "Solo",
-      price_range: priceRange,
-      number_of_adults: number_of_adults,
-      number_of_children: number_of_children,
-      number_of_infants: number_of_infants,
-      room_configuration: slideIndex==1?dist:roomConfiguration,
-      add_hotels: addHotels,
-      add_flights: addFlights,
+      group_type: slideThreeData.groupType || "Solo",
+      number_of_adults: slideThreeData.numberOfAdults,
+      number_of_children: slideThreeData.numberOfChildren,
+      number_of_infants: slideThreeData.numberOfInfants,
+      room_configuration: slideThreeData.roomConfiguration,
+      add_flights: slideThreeData.addFlights,
+      add_hotels: slideThreeData.addHotels,
+      add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
+      meal_preferences: slideFourData.mealPreferences,
+      special_request: slideFourData.specialRequests,
     };
 
-    setLoading(true);
     setIsSubmitting(true);
+    setIsLoading(true);
     localStorage.removeItem("MyPlans");
-
     itineraryComplete
       .post("", data, {
         headers: {
-          Authorization: `Bearer ${token || localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then((response) => {
         setError(null);
-        trackItineraryCompleted(itineraryId, 'itinerary_completed');
         setSubmitted(true);
-        window.location.href = `/itinerary/${itineraryId}`;
-        window.scrollTo(0, 0);
+        trackItineraryCompleted(itineraryId, "itinerary_completed");
+        dispatch(setItineraryCreated(true));
+
+        setTimeout(() => {
+          window.location.href = `/itinerary/${itineraryId}`;
+          window.scrollTo(0, 0);
+        }, 100);
 
         logEvent({
           action: "conversion",
@@ -706,372 +342,544 @@ let dist=divideTravellers()
       })
       .catch((err) => {
         console.log("ERROR >>>", err);
-        setLoading(false);
         setIsSubmitting(false);
+        setIsLoading(false);
         setError(err.message);
-        router.push("/thank-you");
       });
   };
 
-  return (
-    <>
-      {showBlack && !props.tailoredFormModal ? (
-        <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
-      ) : null}
+  const totalSlides = localStorage.getItem("access_token")
+    ? (slideThreeData.addHotels ? 4 : 3)
+    : (slideThreeData.addHotels ? 5 : 4);
+  // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
-      <Container
-        showBlack={showBlack}
-        tailoredFormModal={props.tailoredFormModal}
-        slideIndex={slideIndex}
-        className={isPageWide ? "border" : "center-div"}
-        onClick={() => {
-          // setShowBlack(true);
-        }}
-      >
-        {showPopup.InputOne && (
-          <Popup
-            setShowPopup={setShowPopup}
-            top={props.tailoredFormModal ? "17rem" : "12.6rem"}
-            mobileTop="14rem"
-            left="10px"
-            text="Please select your destination!"
-          />
-        )}
+  const [steps, setSteps] = useState(['Introduction', 'Customize Route', 'Who’s Going & Inclusions']);
 
-        {showPopup.dateStart && !flexible && (
-          <Popup
-            setShowPopup={setShowPopup}
-            bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-            left="10px"
-            text="Please select starting date!"
-          />
-        )}
+  useEffect(() => {
+    const isLoggedIn = !!localStorage.getItem("access_token");
 
-        {showPopup.dateEnd && !flexible && (
-          <Popup
-            setShowPopup={setShowPopup}
-            bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-            left="170px"
-            mobileleft={"135px"}
-            text="Please select ending date!"
-          />
-        )}
+    setSteps((prevSteps) => {
+      let updatedSteps = [...prevSteps];
 
-        {showPopup.group && (
-          <Popup
-            setShowPopup={setShowPopup}
-            top={props.tailoredFormModal ? "16rem" : "190px"}
-            left="20%"
-            tipLeft="45%"
-            text="Please select your group type!"
-          />
-        )}
+      updatedSteps = updatedSteps.filter(
+        (step) => step !== "Stay Preferences" && step !== "Login"
+      );
 
-        <div
-          style={{
-            padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
-            marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-          }}
-          className="w-full flex flex-row items-center"
+      if (slideThreeData?.addHotels) {
+        if (isLoggedIn) {
+          updatedSteps.push("Stay Preferences");
+        } else {
+          updatedSteps.push("Stay Preferences", "Login");
+        }
+      } else if (!isLoggedIn) {
+        updatedSteps.push("Login");
+      }
+
+      return updatedSteps;
+    });
+  }, [slideThreeData?.addHotels]);
+
+
+  useEffect(() => {
+    if (slideOneData) {
+      const hasDestination =
+        Array.isArray(slideOneData.selectedCities) &&
+        slideOneData.selectedCities.length > 0;
+
+      const hasDates =
+        (slideOneData?.date?.start_date && slideOneData?.date?.end_date) || slideOneData.date.duration;
+
+      if (hasDestination && hasDates) {
+        const cityName = slideOneData.selectedCities[0]?.name;
+        const duration = slideOneData.date?.duration;
+
+        const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
+
+
+        setSteps(prev =>
+          prev.map((title, index) => (index === 0 ? stepTitle : title))
+        );
+      }
+    }
+  }, [slideOneData]);
+
+  return (<>
+    <div className="container">
+
+      <div className="py-2xl">
+        <div className="text-md-lg font-600 leading-xl-sm mb-md">Plan Your Trip</div>
+        <StepsProgress
+          slideIndex={slideIndex}
+          totalSlides={totalSlides}
+          steps={steps}
+        ></StepsProgress>
+      </div>
+      {/*       
+              <div className=" ">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#F0F0F0"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#5CBA66"
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - progress}
+                    strokeLinecap="round"
+                    transform="rotate(-90 32 32)"
+                  />
+                  <text
+                    x="32"
+                    y="32"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="black"
+                  >
+                    <tspan fontSize="16" fontWeight="500">
+                      {slideIndex + 1}
+                    </tspan>
+                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
+                      /
+                    </tspan>
+                    <tspan fontSize="12" fontWeight="400" dy="2">
+                      {totalSlides}
+                    </tspan>
+                  </text>
+                </svg>
+              </div> */}
+
+      <div className="h-[calc(100vh-300px)] overflow-y-auto">
+        {!props.tailoredFormModal ? (
+          <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
+        ) : null}
+
+        <Container
+          tailoredFormModal={props.tailoredFormModal}
+          slideIndex={slideIndex}
         >
-          {slideIndex && !props.tailoredFormModal ? (
-            <div className="center-div">
-              <BiArrowBack
-                onClick={_prevSlideHandler}
-                className="hover-pointer"
-                style={{ marginTop: "2px", fontSize: "1.5rem" }}
-              ></BiArrowBack>
-            </div>
-          ) : (
-            <></>
+          {showPopup.InputOne && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
+              mobileTop="14rem"
+              left="10px"
+              text="Please select your destination!"
+            />
           )}
 
-          <div className="w-full">
-            {props.tailoredFormModal && (
-              <CloseIcon>
-                {slideIndex ? (
-                  <BiArrowBack
-                    onClick={_prevSlideHandler}
-                    className="hover-pointer"
-                    style={{ marginTop: "2px", fontSize: "1.5rem" }}
-                  ></BiArrowBack>
-                ) : (
-                  <div></div>
-                )}
-                <RxCross2
-                  style={{
-                    fontSize: "1.75rem",
-                    textAlign: "right",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    if (!focusedDate) {
-                      props.onHide();
-                    }
-                  }}
-                />
-              </CloseIcon>
-            )}
+          {showPopup.dateStart && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="10px"
+              text="Please select starting date!"
+            />
+          )}
 
-            <Heading
-              tailoredFormModal={props.tailoredFormModal}
-              style={{ textAlign: !slideIndex ? "left" : "center" }}
+          {showPopup.dateEnd && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="170px"
+              mobileleft={"135px"}
+              text="Please select ending date!"
+            />
+          )}
+
+          <div className="flex flex-col items-center justify-center  h-full">
+            <div
+              className="h-max  font-inter flex flex-col gap-[30px] w-100"
             >
-              {getHeading()}
-            </Heading>
+              <div className="flex flex-col gap-[24px]">
+                {/* {slideIndex && !isDesktop ? (
+              <div>
+                <BiArrowBack
+                  onClick={_prevSlideHandler}
+                  className="hover-pointer"
+                  style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                ></BiArrowBack>
+              </div>
+            ) : (
+              <></>
+            )} */}
+                <div className={`w-full flex items-center justify-center`}>
+                  {/* {isDesktop && (
+                <div
+                  style={{
+                    padding: props.tailoredFormModal
+                      ? "0rem 1rem"
+                      : "0.5rem 1rem",
+                    marginBottom: slideIndex === 2 ? "0rem" : "0rem",
+                  }}
+                  className="w-max flex flex-row items-center"
+                >
+                  {slideIndex ? (
+                    <div className="center-div">
+                      <BiArrowBack
+                        onClick={_prevSlideHandler}
+                        className="hover-pointer"
+                        style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                      ></BiArrowBack>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              )} */}
+                  <div>
+                    {headings[slideIndex] &&
+                      <h1
+                        className="text-xl-md font-600 leading-2xl-md max-pg:text-xl max-ph:text-center mb-zero"
+                      >
+                        {headings[slideIndex]}
+                      </h1>
+                    }
+                  </div>
+                  {/* 
+              <div className=" ">
+                <svg width="64" height="64" viewBox="0 0 64 64">
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#F0F0F0"
+                    strokeWidth="6"
+                  />
+                  <circle
+                    cx="32"
+                    cy="32"
+                    r={radius}
+                    fill="none"
+                    stroke="#5CBA66"
+                    strokeWidth="6"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={circumference - progress}
+                    strokeLinecap="round"
+                    transform="rotate(-90 32 32)"
+                  />
+                  <text
+                    x="32"
+                    y="32"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="black"
+                  >
+                    <tspan fontSize="16" fontWeight="500">
+                      {slideIndex + 1}
+                    </tspan>
+                    <tspan fontSize="16" fontWeight="500" dy={"1"}>
+                      /
+                    </tspan>
+                    <tspan fontSize="12" fontWeight="400" dy="2">
+                      {totalSlides}
+                    </tspan>
+                  </text>
+                </svg>
+              </div> */}
+
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <div id="login" className="z-[1650]">
+                  <Login
+                    show={showLogin}
+                    onhide={onHide}
+                    zIndex={"3300"}
+                    onSuccess={() => {
+                      completeItineraryCreate();
+                    }}
+                  />
+                </div>
+                <div
+                  className={`${slideIndex == 1 ? "w-[100%]" : isDesktop ? "max-w-[600px]" : "w-full"}`}
+                >
+                  <Flickity
+                    initialInputId={initialInputId}
+                    tailoredFormModal={props.tailoredFormModal}
+                    startingLocation={startingLocation}
+                    setStartingLocation={setStartingLocation}
+                    showSearchStarting={showSearchStarting}
+                    setShowSearchStarting={setShowSearchStarting}
+                    showCities={showCities}
+                    setShowCities={setShowCities}
+                    destination={destination}
+                    setDestination={setDestination}
+                    cities={props.cities}
+                    selectedCities={selectedCities}
+                    setSubmitSecondSlide={setSubmitSecondSlide}
+                    eventDates={props.eventDates}
+                    route={
+                      itineraryInititateData?.start_city
+                        ? [
+                          itineraryInititateData?.start_city,
+                          ...locationsLatLong,
+                          itineraryInititateData?.end_city,
+                        ]
+                        : route
+                    }
+                    _submitDataHandler={_submitDataHandler}
+                    setLocationsLatLong={setLocationsLatLong}
+                    locationsLatLong={
+                      locationsLatLong?.length > 0 ? locationsLatLong : route
+                    }
+                    errors={errors}
+                    completeItineraryCreate={completeItineraryCreate}
+                    setIsRouteChanged={setIsRouteChanged}
+                    isloading={isLoading}
+                  ></Flickity>
+                  {isDesktop ? (
+                    <ModalWithBackdrop
+                      centered
+                      show={showRouteOverview == true}
+                      mobileWidth="100%"
+                      backdrop
+                      closeIcon={true}
+                      onHide={() => setShowRouteOverview(false)}
+                      borderRadius={"12px"}
+                      animation={false}
+                      backdropStyle={{
+                        backgroundColor: "rgba(0,0,0,0.4)",
+                        backdropFilter: "blur(1px)",
+                      }} // <- add this
+                      paddingX="20px"
+                      paddingY="20px"
+                    >
+                      <RouteOverviewModal
+                        setShowRouteOverview={setShowRouteOverview}
+                      />
+                    </ModalWithBackdrop>
+                  ) : (
+                    <BottomModal
+                      show={showRouteOverview == true}
+                      onHide={() => setShowRouteOverview(false)}
+                      width="100%"
+                      height="max-content"
+                      paddingX="20px"
+                      paddingY="20px"
+                    >
+                      <RouteOverviewModal
+                        setShowRouteOverview={setShowRouteOverview}
+                      />
+                    </BottomModal>
+                  )}
+
+                  {error ? <p className="text-sm text-red-600">{error}</p> : null}
+
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </Container>
 
-        <div style={{ padding: "0 1rem", width: "100%" }} className="h-full">
+      </div>
+
+    </div>
+    <div className="fixed bottom-[70px] w-100 bg-primary-cornsilk">
+      {/* <div className="border-b-sm"></div> */}
+      <div className="container p-md">
+        {slideIndex === 0 && (
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between">
+              <button
+                className={`LargeIndigoOutlinedButton `}
+                onClick={() => router.back()}
+              >
+                Cancel
+              </button>
+
+            <Button
+                width={`${isPageWide ? '300px' : ''}`}
+                fontSize="1rem"
+                padding="0.5rem 2rem"
+                fontWeight="500"
+                borderRadius="5px"
+                borderWidth="1px"
+                bgColor="#07213A"
+                onclick={_SlideOneSubmitHandler}
+                loading={isLoading}
+                disabled={isLoading}
+                height="50px"
+                color="white"
+                className="whitespace-nowrap"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {console.log("SlideIn",slideIndex)}
+
+        {slideIndex === 1 && (
           <div
-            style={{
-              borderStyle: "solid none none none",
-              borderWidth: "1px",
-              color: "#D3D3D3",
-              height: "1px",
-              width: "100%",
-              marginBottom: "1.5rem",
-            }}
-          ></div>
+            className={` bg-primary-cornsilk z-[10] flex justify-between
+    ${!isDesktop && "flex items-center justify-between gap-2"}
+  `}
+          >
+            {/* LEFT SIDE */}
+            <button
+              className={`LargeIndigoOutlinedButton `}
+              onClick={_prevSlideHandler}
+            >
+              Back
+            </button>
 
-          <Flickity
-            initialInputId={initialInputId}
-            focusedDate={focusedDate}
-            setFocusedDate={setFocusedDate}
-            tailoredFormModal={props.tailoredFormModal}
-            flexible={flexible}
-            setFlexible={setFlexible}
-            startingLocation={startingLocation}
-            setStartingLocation={setStartingLocation}
-            children_cities={props.children_cities}
-            showSearchStarting={showSearchStarting}
-            setShowSearchStarting={setShowSearchStarting}
-            showCities={showCities}
-            setShowCities={setShowCities}
-            destination={destination}
-            setDestination={setDestination}
-            token={props.token}
-            phone={props.phone}
-            slideIndex={slideIndex}
-            cities={props.cities}
-            selectedCities={selectedCities}
-            setSelectedCities={setSelectedCities}
-            valueStart={valueStart}
-            valueEnd={valueEnd}
-            setValueStart={setValueStart}
-            setValueEnd={setValueEnd}
-            groupType={groupType}
-            setGroupType={setGroupType}
-            numberOfAdults={numberOfAdults}
-            setNumberOfAdults={setNumberOfAdults}
-            numberOfChildren={numberOfChildren}
-            setNumberOfChildren={setNumberOfChildren}
-            numberOfInfants={numberOfInfants}
-            setNumberOfInfants={setNumberOfInfants}
-            setBudget={setBudget}
-            selectedPreferences={selectedPreferences}
-            setSelectedPreferences={setSelectedPreferences}
-            setSubmitSecondSlide={setSubmitSecondSlide}
-            eventDates={props.eventDates}
-            roomConfiguration={roomConfiguration}
-            setRoomConfiguration={setRoomConfiguration}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            addHotels={addHotels}
-            setAddHotels={setAddHotels}
-            addFlights={addFlights}
-            setAddFlights={setAddFlights}
-            setSlideIndex={setSlideIndex}
-            setLoginComplete={setLoginComplete}
-            defaultPriceRange={defaultPriceRange}
-          ></Flickity>
+            {/* RIGHT SIDE → Skip + Continue */}
+            <div className="flex gap-2">
+              <button
+                className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
+                onClick={_slideTwoSkip}
+              >
+                Skip
+              </button>
+              {isRouteChanged ? (
+                <button
+                  // width={`${isPageWide ? '300px' : ''}`}
+                  // fontSize="1rem"
+                  // padding="0.5rem 1rem"
+                  // fontWeight="500"
+                  // bgColor="#07213A"
+                  // color="white"
+                  // height="50px"
+                  // loading={isLoading}
+                  onClick={() => initiateItineraryCreate(slideOneData)}
+                  // className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[120px]"}`}
+                  className={`LargeIndigoOutlinedButton bg-[#07213A] text-white`}
+                >
+                  Continue
+                </button>
+              ) : (
+                <button
+                  className={`LargeIndigoButton cursor-not-allowed ${isDesktop && "w-[300px]"}`}
+                  onClick={() =>
+                    router.push({
+                      pathname: "/new-trip",
+                      query: { slideIndex: slideIndex + 1 },
+                    })
+                  }
+                >
+                  Continue
+                </button>
+              )}
+            </div>
+          </div>
 
-          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+        )}
 
-          {slideIndex === 0 ? (
+        {slideIndex === 2 && (
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between items-center">
+              <button
+                className={`LargeIndigoOutlinedButton`}
+                onClick={_prevSlideHandler}
+              >
+                Back
+              </button>
+
+              <Button
+                width={`${isPageWide ? '300px' : ''}`}
+                fontSize="1rem"
+                padding="0.5rem 1rem"
+                fontWeight="500"
+                bgColor="#07213A"
+                color="white"
+                height="50px"
+                onclick={_SlideThreeSubmitHandler}
+                loading={isLoading}
+                borderRadius="8px"
+                className={`${!isDesktop && "w-[120px]"}`}
+              >
+                {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {slideIndex === 3 && (
+          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+            <div className="flex justify-between items-center">
+              <button
+                className={`LargeIndigoOutlinedButton`}
+                onClick={_prevSlideHandler}
+              >
+                Back
+              </button>
+              <Button
+                fontSize="1rem"
+                padding="0.5rem 1rem"
+                fontWeight="500"
+                margin="30px 0"
+                borderRadius="8px"
+                borderWidth="1px"
+                bgColor="#07213A"
+                height="50px"
+                color="white"
+                loading={isSubmitting}
+                disabled={isSubmitting}
+                width={`${isPageWide ? '300px' : ''}`}
+
+                onclick={() => {
+                  totalSlides == 4
+                    ? _submitDataHandler()
+                    : router.push({
+                      pathname: "/new-trip",
+                      query: {
+                        slideIndex: slideIndex + 1,
+                      },
+                    });
+                }}
+              >
+                {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+              </Button>
+            </div>
+          </div>
+        )}
+        {slideIndex === 4 ? (
+          <div className="flex justify-end">
             <Button
               fontSize="1rem"
-              width={!isPageWide ? "auto" : "100%"}
               style={
-                !isPageWide && isPageLoaded
+                !isPageWide
                   ? {
-                      position: "fixed",
-                      left: "1rem",
-                      right: "1rem",
-                      bottom: "0",
-                    }
+                    position: "fixed",
+                    left: "1rem",
+                    right: "1rem",
+                    bottom: "0",
+                  }
                   : {}
               }
               padding="0.5rem 2rem"
               fontWeight="500"
-              margin="1rem 0"
+              margin="40px 0"
               borderRadius="5px"
               borderWidth="1px"
-              bgColor="#f7e700"
-              onclick={() => {
-                logEvent({
-                  action: "Form_Continue",
-                  params: {
-                    page: props.page || "Unknown",
-                    event_category: "Button Click",
-                    event_label: "Continue",
-                    event_action: "Tailored Form - Step 1",
-                    form_step: "destinations",
-                  },
-                });
-                _SlideOneSubmitHandler();
-              }}
-              loading={isLoading}
-              disabled={isLoading}
+              bgColor="#07213A"
+              color="white"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              onClick={_submitDataHandler}
+              height="50px"
+              width={`${isPageWide ? '300px' : ''}`}
             >
-              Continue
+              {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
             </Button>
-          ) : null}
+          </div>
+        ) : null}
 
-          {slideIndex === 1 ? (
-            !props.token || props.phone === "null" || addHotels ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={() => {
-                    logEvent({
-                      action: "Form_Continue",
-                      params: {
-                        page: props.page || "Unknown",
-                        event_category: "Button Click",
-                        event_label: "Continue",
-                        event_action: "Tailored Form - Step 2",
-                        form_step: "preferences",
-                      },
-                    });
-                    _SlideTwoSubmitHandler();
-                  }}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={() => {
-                    logEvent({
-                      action: "Get_Itinerary",
-                      params: {
-                        page: props.page || "Unknown",
-                        event_category: "Button Click",
-                        event_label: "Get Itinerary!",
-                        event_action: "Tailored Form - Final Step",
-                        form_step: "complete",
-                      },
-                    });
-                    _submitDataHandler();
-                  }}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
-
-          {slideIndex === 2 && addHotels ? (
-            !props.token || props.phone === "null" ? (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={_SlideThreeSubmitHandler}
-                  loading={isLoading && submitted}
-                >
-                  Continue
-                </Button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  onclick={_submitDataHandler}
-                >
-                  Get Itinerary!
-                </Button>
-              </div>
-            )
-          ) : null}
-        </div>
-      </Container>
-    </>
+      </div>
+    </div>
+  </>
   );
 };
 

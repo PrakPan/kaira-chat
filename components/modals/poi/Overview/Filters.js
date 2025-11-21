@@ -29,7 +29,7 @@ const Filters = (props) => {
   let filters = [];
   for (var i = 0; i < props.experience_filters.length; i++) {
     filters.push(
-      <Filter className="font-lexend border-thin">
+      <Filter className=" border-thin">
         {props.experience_filters[i]}
       </Filter>
     );

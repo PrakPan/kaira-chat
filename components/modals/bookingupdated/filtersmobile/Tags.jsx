@@ -15,7 +15,7 @@ export default function Tags(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-medium">Tags</div>
+      <div className="mb-md text-md font-500 leading-xl">Tags</div>
 
       <div className="flex flex-row items-center gap-2 flex-wrap">
         {props.tags.map((tag, index) => (

@@ -106,7 +106,7 @@ const Person = (props) => {
       >
         <p
           content={"span"}
-          className="font-lexend"
+          className=""
           style={{
             fontWeight: "600",
             margin: "0.5rem 0",

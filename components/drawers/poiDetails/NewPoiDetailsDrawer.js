@@ -150,7 +150,7 @@ const NewPoiDetailsDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className="font-lexend overflow-y-hidden"
+      className=" overflow-y-hidden"
       onHide={props.handleCloseDrawer}
     >
       <ToastContainer />
@@ -188,7 +188,7 @@ const NewPoiDetailsDrawer = (props) => {
           </OptionsContainer>
         </div>
       )}
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -196,7 +196,7 @@ const NewPoiDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

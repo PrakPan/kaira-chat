@@ -71,11 +71,12 @@ const FullImgContent = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.page_id, props.destination);
+    // }
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -89,7 +90,7 @@ const FullImgContent = (props) => {
   };
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <PaddingContianer className="flex flex-col items-start z-10">
         <div className="flex flex-col items-start">
           <H1
@@ -155,7 +156,7 @@ const FullImgContent = (props) => {
         >
           {props.slug === "icc-champions-trophy-2025"
             ? "Book Now!"
-            : "Plan Your Trip Now!"}
+            : "+ Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 

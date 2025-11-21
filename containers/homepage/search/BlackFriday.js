@@ -56,7 +56,7 @@ const SearchFullImg = (props) => {
   return (
     <Container className="center-dv">
       <BlackContainer>
-        <Tagline className="font-lexend">{props.tagline}</Tagline>
+        <Tagline className="">{props.tagline}</Tagline>
         <SubText className="font-nunito">{props.text}</SubText>
       </BlackContainer>
       <div className="hidden-mobile" style={{ width: "100%" }}>

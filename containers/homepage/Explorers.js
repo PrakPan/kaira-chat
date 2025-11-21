@@ -79,7 +79,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Nisagra's</Heading>
           <Subheading>Uttarakhand Trip</Subheading>
         </BlackContainer>
@@ -97,7 +97,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Ahilaji's</Heading>
           <Subheading>Spiti Trip</Subheading>
         </BlackContainer>
@@ -115,7 +115,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Matt's</Heading>
           <Subheading>India Trip</Subheading>
         </BlackContainer>
@@ -133,7 +133,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Meena's</Heading>
           <Subheading>Kashmir Trip</Subheading>
         </BlackContainer>
@@ -151,7 +151,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Eric's</Heading>
           <Subheading>North East Trip</Subheading>
         </BlackContainer>
@@ -169,7 +169,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>SAMA's</Heading>
           <Subheading>Kashmir Trip</Subheading>
         </BlackContainer>
@@ -187,7 +187,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Prasenjit's</Heading>
           <Subheading>Kashmir Trip</Subheading>
         </BlackContainer>
@@ -204,7 +204,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Hema's</Heading>
           <Subheading>North East Trip</Subheading>
         </BlackContainer>
@@ -221,7 +221,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Chintan's</Heading>
           <Subheading>Ladkakh Trip</Subheading>
         </BlackContainer>
@@ -238,7 +238,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Gurkeerat's</Heading>
           <Subheading>Spiti Trip</Subheading>
         </BlackContainer>
@@ -256,7 +256,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Payal's</Heading>
           <Subheading>Goa Trip</Subheading>
         </BlackContainer>
@@ -274,7 +274,7 @@ const Explorers = (props) => {
             height="auto"
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
+        <BlackContainer className="">
           <Heading>Puneet's</Heading>
           <Subheading>Kerala Trip</Subheading>
         </BlackContainer>

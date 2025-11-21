@@ -60,7 +60,7 @@ const Menu = (props) => {
     setMenuJSX(menu);
   }, [props.currentMenu]);
 
-  return <Container className="font-lexend">{menuJSX}</Container>;
+  return <Container className="">{menuJSX}</Container>;
 };
 
 export default Menu;

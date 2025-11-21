@@ -1,0 +1,161 @@
+.heroSection {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: calc(776px - 72px);
+  
+  @media (max-width: 768px) {
+    height: 530px;
+  }
+
+  .backgroundWrapper {
+    position: absolute;
+    // top: -80px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0rem 0rem 24px 24px;
+    z-index: 2;
+  }
+
+  .imageContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    img {
+      object-fit: cover;
+      filter: drop-shadow(0px 12px 24px rgba(0, 0, 0, 0.25));
+    }
+  }
+}
+
+.featuresContainer {
+  width:100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+   background: #0A2540;
+  padding: 1rem;
+
+  @media (max-width: 840px) {
+    flex-wrap: nowrap;  
+    gap: 2rem;  
+    justify-content: flex-start;  
+    overflow-x: auto; 
+    overflow-y: hidden;
+    padding: 0.5rem 0.5rem;
+    -webkit-overflow-scrolling: touch; 
+    
+   
+    scrollbar-width: none;  
+    &::-webkit-scrollbar {
+      display: none;  
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 1.5rem; 
+    padding: 0.5rem;
+  }
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+
+  @media (max-width: 840px) {
+    flex: 0 0 auto;  
+    min-width: fit-content;  
+  }
+
+  @media (max-width: 480px) {
+    flex: 0 0 auto;  
+    gap: 0.4rem;
+  }
+}
+
+.featureText {
+  font-size: 0.9375rem;
+  font-weight: 300;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+
+  @media (max-width: 840px) {
+    font-size: 0.8125rem;  
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;  
+    white-space: nowrap;  
+    // line-height: 1.2;
+  }
+}
+
+
+// Background Decorative Curved Lines
+.featuresBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  opacity: 0.08;
+  pointer-events: none;
+  overflow: hidden;
+
+  svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.bgCurve {
+  position: absolute;
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 2;
+  fill: none;
+  
+  &:nth-child(1) {
+    top: -20%;
+    left: 0;
+    animation: waveDrift 12s ease-in-out infinite;
+  }
+  
+  &:nth-child(2) {
+    top: 30%;
+    left: 10%;
+    animation: waveDrift 15s ease-in-out infinite reverse;
+    animation-delay: 2s;
+  }
+  
+  &:nth-child(3) {
+    top: 60%;
+    right: 0;
+    animation: waveDrift 10s ease-in-out infinite;
+    animation-delay: 4s;
+  }
+}
+
+@keyframes waveDrift {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(-20px) translateY(5px);
+    opacity: 0.6;
+  }
+}

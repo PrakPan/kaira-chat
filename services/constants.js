@@ -29,6 +29,8 @@ export const SENTRY_ENV = process.env.NEXT_PUBLIC_SENTRY_ENV;
 
 export const SENTRY_RELEASE = process.env.NEXT_PUBLIC_SENTRY_RELEASE;
 
+export const CHATBOT_SOCKET_HOST=process.env.NEXT_PUBLIC_CHATBOT_SOCKET_HOST
+
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",
   itinerary_not_created: "ITINERARY_NOT_CREATED",
@@ -88,27 +90,35 @@ export const EXPERIENCE_FILTERS = [
 
 export const EXPERIENCE_FILTERS_BOX = [
   {
-    display: "Nature and Spiritual",
-    actual: ["Nature and Retreat", "Isolated", "Spiritual"],
-  },
-  {
     display: "Adventure",
     actual: ["Adventure and Outdoors"],
   },
   {
-    display: "Heritage & Art",
+    display: "Historical Landmarks",  // Changed from "Heritage & Art"
     actual: ["Heritage", "Art and Culture"],
   },
   {
-    display: "Nightlife & Shopping",
+    display: "Village Life",  // Changed from "Nightlife & Shopping"
     actual: ["Nightlife and Events", "Shopping"],
   },
   {
-    display: "Hidden gems",
+    display: "Culture",
     actual: ["Hidden Gem"],
   },
   {
-    display: "Romantic",
+    display: "NightLife & Clubs",  // Added
+    actual: ["Romantic"],
+  },
+  {
+    display: "Hidden Gems",  // Added
+    actual: ["Romantic"],
+  },
+  {
+    display: "Stargazing",  // Added
+    actual: ["Romantic"],
+  },
+  {
+    display: "Food & Craft",  // Added
     actual: ["Romantic"],
   },
 ];

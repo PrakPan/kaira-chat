@@ -155,6 +155,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         hideloginclose: true,
+        otpSent:false
       };
     default:
       return state;

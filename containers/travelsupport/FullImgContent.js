@@ -61,9 +61,9 @@ const FullImgContent = (props) => {
 
   return (
     <Container className="center-di">
-      <Heading className="font-lexend">{props.heading}</Heading>
-      <SubText className="font-lexend">{props.subheading}</SubText>
-      <Button onClick={() => openTailoredModal(router)} className="font-lexend">
+      <Heading className="">{props.heading}</Heading>
+      <SubText className="">{props.subheading}</SubText>
+      <Button onClick={() => openTailoredModal(router)} className="">
         Start Planning
       </Button>
     </Container>

@@ -15,33 +15,28 @@ const variants: Variants = {
   },
 };
 
-const Container = styled(motion.div)<{ isselected?: boolean }>`
+const Container = styled(motion.div) <{ isselected?: boolean }>`
   padding: 10px;
   cursor: pointer;
   width: max-content;
   padding: 10px 24px 10px 24px;
   margin-left: 4px;
-  background-color: ${({ isselected }) => (isselected ? "#262626" : "none")};
-  color: ${({ isselected }) => (isselected ? "#F7E700" : "#7A7A7A")};
-  border-radius: ${({ isselected }) =>
-    isselected ? "10% 10% 0 0" : "10% 10% 0 0"};
   transition: border-color 0.3s ease;
-  font-weight: 600;
+  opacity : ${({ isselected }) => (isselected ? "" : "0.4")};
+
   :hover {
-    background-color: ${({ isselected }) => (isselected ? "#262626" : "none")};
-    color: "#F7E700";
-    border-bottom: "2px solid #F7E700";
-  }
+    color: #01202B;
+    opacity:1;
+    border-bottom: "1px solid #F7E700";
+  };
 `;
 
 const Label = styled.div<{ isselected?: boolean }>`
   transition: all ease 0.3s;
-  color: ${({ isselected }) => (isselected ? "#F7E700" : "#3d3c3b")};
+  color: #01202B;
   white-space: nowrap;
-
-  :hover {
-    color: ${({ isselected }) => (isselected ? "#F7E700" : "#010700")};
-  }
+  font-weight: 500;
+  font-size:16px;
 `;
 
 interface Props extends NavigationMarkerHandlers {
@@ -69,6 +64,7 @@ export const NavigationLink = ({
       onMouseEnter,
       onMouseLeave,
     });
+    console.log(children, isSelected)
 
   return (
     <Link
@@ -86,7 +82,7 @@ export const NavigationLink = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Container isselected={isSelected} ref={ref}>
+      <Container className="font-montserrat" isselected={isSelected} ref={ref}>
         <Label isselected={isSelected}>{children}</Label>
       </Container>
     </Link>

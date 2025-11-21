@@ -46,7 +46,7 @@ const Menu = (props) => {
           }}
         >
           <div
-            className="font-lexend hidden-mobile hover-pointer center-div"
+            className=" hidden-mobile hover-pointer center-div"
             style={{ marginRight: "0.5rem", lineHeight: "1" }}
             onClick={props.openWhatsapp}
           >

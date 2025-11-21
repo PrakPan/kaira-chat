@@ -2,6 +2,7 @@ import styled, { keyframes } from "styled-components";
 import { useState } from "react";
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
+import Image from "next/image";
 
 const leftSlideIn = keyframes`
 from {
@@ -173,6 +174,7 @@ export default function Drawer(props) {
                 className={`drawerContainer ${props.className || ""}`}
 
               >
+               {props?.isCloseButtonEnable && <div className="flex w-full justify-end py-[16px] px-[10px]"> <button onClick={onCLose} className="ttw-btn-close" > Close <Image src={'/assets/icons/close.svg'} width={9} height={9} /> </button> </div>  }
                 <div className="h-full">{props.children}</div>
               </DrawerContainer>
             </div>

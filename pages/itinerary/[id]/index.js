@@ -13,7 +13,7 @@ import CityDetailsDrawer from "../../../components/drawers/cityDetails/CityDetai
 import ScrollRestoration from "../../../components/ScrollRestoration";
 
 const Itinerary = (props) => {
-  const router = useRouter();
+ const router = useRouter();
   const { drawer, city_id: cityId } = router.query;
   const itineraryId = useSelector((state) => state.ItineraryId);
 
@@ -59,7 +59,7 @@ useEffect(() => {
   };
 
   return (
-    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
+    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary>
       <ScrollRestoration />
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>

@@ -36,7 +36,7 @@ const Section = (props) => {
   };
   if (props.data)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <div
           style={{
             display: "grid",
@@ -67,14 +67,14 @@ const Section = (props) => {
                 <div>
                   <Heading
                     className={
-                      props.data.user_selected ? "font-lexend" : "font-lexend  "
+                      props.data.user_selected ? "" : "  "
                     }
                   >
                     Trip Start
                   </Heading>
                   <Text
                     className={
-                      props.data.user_selected ? "font-lexend" : "font-lexend  "
+                      props.data.user_selected ? "" : "  "
                     }
                   >
                     {getDate(props.data.check_in)}
@@ -92,14 +92,14 @@ const Section = (props) => {
             <div>
               <Heading
                 className={
-                  props.data.user_selected ? "font-lexend" : "font-lexend  "
+                  props.data.user_selected ? "" : "  "
                 }
               >
                 Trip End
               </Heading>
               <Text
                 className={
-                  props.data.user_selected ? "font-lexend" : "font-lexend  "
+                  props.data.user_selected ? "" : "  "
                 }
               >
                 {getDate(props.data.check_out)}
@@ -127,7 +127,7 @@ const Section = (props) => {
               <div>
                 <Heading
                   className={
-                    props.data.user_selected ? "font-lexend" : "font-lexend  "
+                    props.data.user_selected ? "" : "  "
                   }
                 >
                   {props.data.costings_breakdown
@@ -138,7 +138,7 @@ const Section = (props) => {
                 </Heading>
                 <Text
                   className={
-                    props.data.user_selected ? "font-lexend" : "font-lexend  "
+                    props.data.user_selected ? "" : "  "
                   }
                 >
                   Included
@@ -177,7 +177,7 @@ const Section = (props) => {
                 <div className="centerdiv">
                   <Heading
                     className={
-                      props.data.user_selected ? "font-lexend" : "font-lexend  "
+                      props.data.user_selected ? "" : "  "
                     }
                   >
                     {props.data.costings_breakdown
@@ -188,7 +188,7 @@ const Section = (props) => {
                   </Heading>
                   <Text
                     className={
-                      props.data.user_selected ? "font-lexend" : "font-lexend  "
+                      props.data.user_selected ? "" : "  "
                     }
                   >
                     Included
@@ -217,7 +217,7 @@ const Section = (props) => {
               <div>
                 <Heading
                   className={
-                    props.data.user_selected ? "font-lexend" : "font-lexend  "
+                    props.data.user_selected ? "" : "  "
                   }
                 >
                   {props.data.costings_breakdown
@@ -228,7 +228,7 @@ const Section = (props) => {
                 </Heading>
                 <Text
                   className={
-                    props.data.user_selected ? "font-lexend" : "font-lexend  "
+                    props.data.user_selected ? "" : "  "
                   }
                 >
                   {"Occupancy"}

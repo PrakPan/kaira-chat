@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
@@ -15,8 +15,9 @@ import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import dayjs from "dayjs";
-import { add, format } from "date-fns"; // Make sure to import these functions if used
+import { add, format } from "date-fns";
 import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
+import AirbnbCalendarSingleMonth from "../../calendar/SingleCalendar";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -31,13 +32,13 @@ const GridContainer = styled.div`
 const OptionsContainer = styled.div`
   min-height: 40vh;
   overflow-x: hidden;
-  width: 97%;
+  width: 100%;
   position: relative;
   margin: auto;
 
   @media screen and (min-width: 768px) {
     min-height: 80vh;
-    width: 90%;
+    width: 100%;
   }
 `;
 
@@ -49,6 +50,7 @@ const ContentContainer = styled.div`
 `;
 
 const ComboTaxi = (props) => {
+  console.log(props,"txi props")
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -66,6 +68,8 @@ const ComboTaxi = (props) => {
   );
   const dispatch = useDispatch();
 
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
+  const calendarRef = useRef(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [selectedDate, setSelectedDate] = useState(
     props?.comboStartDate || null
@@ -77,6 +81,24 @@ const ComboTaxi = (props) => {
   );
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowDateDropdown(false);
+      }
+    };
+
+    if (showDateDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDateDropdown]);
 
   useEffect(() => {
     if (props?.comboStartTime) {
@@ -479,19 +501,83 @@ const ComboTaxi = (props) => {
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
-              <div className="p-4">
+
+              <div className="text-xl font-600 leading-2xl mb-md"> {props.heading}</div>
+
+              <div className="">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+
                   {(selectedDate || props?.comboStartDate) && (
+                    <div className="date-dropdown-container relative w-full sm:w-auto">
+                      <div className="text-sm font-medium text-gray-700 mb-2">
+                        Departure Date
+                      </div>
+
+                      {/* Clickable date display box */}
+                      <div
+                        className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                        onClick={() => setShowDateDropdown(!showDateDropdown)}
+                      >
+                        <span className="text-sm font-medium">
+                          {dayjs(selectedDate || props?.comboStartDate)?.format("DD MMM YYYY")}
+                        </span>
+                        <button>
+                          <svg
+                            className={`w-5 h-5 text-gray-600 transition-transform`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M8 7V3m8 4V3m-9 8h10m2 10H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v12a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Calendar Dropdown */}
+                      {showDateDropdown && (
+                        <div
+                          ref={calendarRef}
+                          className="absolute z-[15] w-auto sm:w-72 mt-1 bg-white border rounded-md shadow-lg p-2"
+                        >
+                          <AirbnbCalendarSingleMonth
+                            valueStart={selectedDate || props?.comboStartDate}
+                            date={{}}
+                            onChangeDate={(e) => {
+                              console.log(e);
+                              const newDate = dayjs(e.start).format("YYYY-MM-DD");
+                              setSelectedDate(newDate);
+                              if (props.onDateChange) {
+                                props.onDateChange(newDate);
+                              } else {
+                                fetchDataWithNewDate(newDate);
+                              }
+
+                            }}
+                            setShowCalendar={() => setShowDateDropdown(false)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* {(selectedDate || props?.comboStartDate) && (
                     <div className="mb-2 sm:mb-0">
                       <span className="text-sm text-gray-600">
                         Departure Date:{" "}
                       </span>
-                      <DatePicker
-                        date={selectedDate || props?.comboStartDate}
-                        defaultDate={selectedDate || props?.comboStartDate}
-                        id="departureDate"
-                        onDateChange={(e) => {
-                          const newDate = dayjs(e.target.value).format(
+                      {
+                      <div className="absolute z-[15] w-auto mt-1 bg-white border rounded-md shadow-lg"> 
+                      <AirbnbCalendarSingleMonth
+                        valueStart={selectedDate || props?.comboStartDate}
+                        date={{}}
+                          handleDateClick={(e) => {
+                          const newDate = dayjs(e.start).format(
                             "YYYY-MM-DD"
                           );
                           setSelectedDate(newDate);
@@ -501,9 +587,13 @@ const ComboTaxi = (props) => {
                             fetchDataWithNewDate(newDate);
                           }
                         }}
+                        // setShowCalendar={}
                       />
+                      </div>
+}
+                 
                     </div>
-                  )}
+                  )} */}
 
                   {(selectedTime || props?.comboStartTime) && (
                     <div className="time-dropdown-container relative w-full sm:w-auto">
@@ -541,7 +631,7 @@ const ComboTaxi = (props) => {
                       </div>
 
                       {showTimeDropdown && (
-                        <div className="absolute z-[15] w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-[15]  mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                           <div className="sticky -top-1 bg-gray-100 p-2 border-b">
                             <span className="font-medium text-sm">
                               Select Time
@@ -552,8 +642,8 @@ const ComboTaxi = (props) => {
                               <div
                                 key={index}
                                 className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${selectedTime === slot.display
-                                    ? "bg-blue-100"
-                                    : ""
+                                  ? "bg-blue-100"
+                                  : ""
                                   }`}
                                 onClick={() => handleTimeSelection(slot)}
                               >
@@ -574,7 +664,7 @@ const ComboTaxi = (props) => {
                     margin: "auto",
                     height: isPageWide ? "80vh" : "40vh",
                   }}
-                  className="center-div text-center font-lexend"
+                  className="center-div text-center "
                 >
                   <LoadingLottie height="5rem" width="5rem" margin="none" />
                   Please wait while we update your bookings
@@ -583,7 +673,7 @@ const ComboTaxi = (props) => {
 
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
-                  <div style={{ clear: "right" }}>
+                  <div >
                     {quotes.map((quote, index) => (
                       <TaxiSearched
                         key={index}
@@ -630,7 +720,7 @@ const ComboTaxi = (props) => {
               ) : null}
 
               {noResults ? (
-                <OptionsContainer className="font-lexend center-div text-center">
+                <OptionsContainer className=" center-div text-center">
                   Oops, we couldn't find what you were searching but we are
                   already adding new and approved accommodations to our database
                   everyday!
@@ -638,7 +728,7 @@ const ComboTaxi = (props) => {
               ) : null}
 
               {error ? (
-                <OptionsContainer className="font-lexend center-div text-center">
+                <OptionsContainer className=" center-div text-center">
                   Oops, There seems to be a problem, please try again later!
                 </OptionsContainer>
               ) : null}

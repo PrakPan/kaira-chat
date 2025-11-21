@@ -146,7 +146,7 @@ const SearchFlights = () => {
     <Layout page="Flights">        
     {router.isReady&&<FlightSearchSmall input={filters} setInput={setFilters}/>}
 
-      <Container className="font-lexend">
+      <Container className="">
         <div className="grid grid-cols-[auto,1fr] gap-2">
           {/* left sorted filters */}
           <div>

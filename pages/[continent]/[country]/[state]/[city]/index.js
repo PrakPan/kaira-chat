@@ -65,6 +65,17 @@ const Experience = (props) => {
             : props?.cityData?.meta_keywords}`}
         ></meta>
 
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
+
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
@@ -124,8 +135,22 @@ export async function getStaticPaths() {
     );
   }
 
-  return {
-    paths: paths,
+  return{
+    paths:paths,
+    fallback:false
+  }
+
+ return {
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+          state: "madeira",
+          city: "funchal_madeira",
+        },
+      },
+    ],
     fallback: false,
   };
 }

@@ -43,7 +43,7 @@ const Image = () => {
       style={{ position: "relative" }}
     >
       <TextContainer>
-        <LetsTalk className="font-lexend">
+        <LetsTalk className="">
           <b>Let's Talk</b>
         </LetsTalk>
 

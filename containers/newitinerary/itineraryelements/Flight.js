@@ -43,7 +43,7 @@ const ItineraryFlightElement = (props) => {
   useEffect(() => {}, []);
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <div style={{ display: "flex", alignItems: "center" }}>
         <SectionOneText>{props.time}</SectionOneText>
 

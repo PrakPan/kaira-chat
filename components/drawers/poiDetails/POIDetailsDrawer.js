@@ -200,7 +200,7 @@ const POIDetailsDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className="font-lexend pb-[20px]"
+      className=" pb-[20px]"
       onHide={props.handleCloseDrawer}
     >
       {!loading ? (
@@ -269,7 +269,7 @@ const POIDetailsDrawer = (props) => {
           )}
         </>
       )}
-      {!isDesktop && (
+      {/* {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -277,7 +277,7 @@ const POIDetailsDrawer = (props) => {
             onClick={(e) => props.handleCloseDrawer(e)}
           />
         </FloatingView>
-      )}
+      )} */}
     </Drawer>
   );
 };

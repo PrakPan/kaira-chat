@@ -29,9 +29,6 @@ const LocationContainer = styled(Link)`
   text-decoration: none;
   padding: 0.5rem;
   margin-block: auto;
-  &:hover {
-    cursor: pointer;
-  }
   max-width: 100%;
   border-radius: 10px;
   display: grid;
@@ -39,6 +36,7 @@ const LocationContainer = styled(Link)`
   grid-gap: 0.5rem;
   &:hover {
     cursor: pointer;
+    background: #FEFFC0;
   }
 `;
 
@@ -84,7 +82,7 @@ const Locations = (props) => {
   };
 
   if (props.hotlocations) {
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < props.hotlocations.length; i++) {
       const data = props.hotlocations[i];
       if(props.hotlocations[i]?.name){
       locations.push(
@@ -131,7 +129,7 @@ const Locations = (props) => {
 
   return (
     <div>
-      <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
+      <Heading className="">POPULAR DESTINATIONS</Heading>
       <Container>{locations}</Container>
     </div>
   );

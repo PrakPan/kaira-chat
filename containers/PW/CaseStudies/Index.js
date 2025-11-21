@@ -32,7 +32,7 @@ const FullImgContent = (props) => {
 
   if (!isPageWide)
     return (
-      <Container className="font-lexend">
+      <Container className="">
         <SwiperCarousel
           slidesPerView={1.3}
           initialSlide={1}

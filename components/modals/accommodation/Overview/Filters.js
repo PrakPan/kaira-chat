@@ -29,12 +29,12 @@ const Filters = (props) => {
     <Container>
       <FlexContainer>
         {props.data.accommodation_type ? (
-          <Filter className="font-lexend border-thin">
+          <Filter className=" border-thin">
             {props.data.accommodation_type}
           </Filter>
         ) : null}
         {props.data.star_category ? (
-          <Filter className="font-lexend border-thin">
+          <Filter className=" border-thin">
             {props.data.star_category + " Star"}
           </Filter>
         ) : null}

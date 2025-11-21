@@ -40,7 +40,7 @@ const Section = (props) => {
     bagCapacity += props.data.taxi_category.bag_capacity;
 
   return (
-    <Container className="font-lexend">
+    <Container className="">
       <div className="flex flex-row gap-2 w-full">
         <div className="flex items-center gap-2 font-normal text-sm md:text-lg p-[0.4rem] w-fit">
           <GiCarSeat fontWeight={500}/>

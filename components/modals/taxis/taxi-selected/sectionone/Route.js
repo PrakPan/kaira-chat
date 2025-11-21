@@ -62,8 +62,8 @@ const Section = (props) => {
             ? "Round-trip Taxi"
             : "One-way Taxi"}
         </Heading>
-        <RouteContainer className="font-lexend">
-          <Location className="font-lexend">
+        <RouteContainer className="">
+          <Location className="">
             {props.selectedBooking.city}
           </Location>
           <div style={{ margin: "0 2px" }}>
@@ -75,7 +75,7 @@ const Section = (props) => {
               widthmobile="1.25rem"
             ></ImageLoader>
           </div>
-          <Location className="font-lexend">
+          <Location className="">
             {props.selectedBooking.destination_city}
           </Location>
         </RouteContainer>
@@ -107,7 +107,7 @@ const Section = (props) => {
 
             {props.selectedBooking.check_in ? (
               <div>
-                <IconHeading className="font-lexend">Trip Start</IconHeading>
+                <IconHeading className="">Trip Start</IconHeading>
                 <Text className="font-nunito">
                   {getDate(props.selectedBooking.check_in)}
                 </Text>
@@ -119,7 +119,7 @@ const Section = (props) => {
           {props.selectedBooking.check_out &&
           props.selectedBooking.transfer_type !== "Intercity one-way" ? (
             <div>
-              <IconHeading className="font-lexend">Trip End</IconHeading>
+              <IconHeading className="">Trip End</IconHeading>
               <Text className="font-nunito">
                 {getDate(props.selectedBooking.check_out)}
               </Text>
@@ -144,7 +144,7 @@ const Section = (props) => {
                 leftalign
               ></ImageLoader>
               <div>
-                <IconHeading className="font-lexend">
+                <IconHeading className="">
                   {props.selectedBooking.costings_breakdown
                     ? props.selectedBooking.costings_breakdown.duration
                       ? props.selectedBooking.costings_breakdown.duration.text
@@ -170,7 +170,7 @@ const Section = (props) => {
           ></ImageLoader>
           <div style={{ display: "flex", gap: "1rem" }}>
             <div className="centerdiv">
-              <IconHeading className="font-lexend">
+              <IconHeading className="">
                 {props.selectedBooking.costings_breakdown
                   ? props.selectedBooking.costings_breakdown.distance
                     ? props.selectedBooking.costings_breakdown.distance.text

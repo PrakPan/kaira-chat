@@ -261,7 +261,7 @@ const NewSummaryContainer = (props) => {
   //  console.log("Iti1",props?.itinerary)
   return (
     <SummaryContainer
-      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA] "
+      className=" ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA] "
       style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
       couponSlide={couponSlide}
     >
@@ -289,6 +289,7 @@ const NewSummaryContainer = (props) => {
           couponJSX={couponJSX}
           paymentInfo={props?.payment}
           mercuryItinerary={props?.mercuryItinerary}
+          setShowFooterBannerMobile={props?.setShowFooterBannerMobile}
           itineraryDate={props?.itineraryDate}
           _GetInTouch={props?._GetInTouch}
           loading={props?.loading}
@@ -299,6 +300,7 @@ const NewSummaryContainer = (props) => {
           social_description={props?.social_description}
           itineraryName={props.itinerary.name}
           itineraryImage={props?.itinerary?.images?.[0]}
+          openPaymentDrawer={props.openPaymentDrawer}
         />
       )}
     </SummaryContainer>

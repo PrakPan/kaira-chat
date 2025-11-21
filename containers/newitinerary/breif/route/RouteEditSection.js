@@ -1,17 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone } from "react-icons/md";
+import { MdDone, MdOutlineDelete, MdOutlineEdit } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
-import { BiSolidPencil } from "react-icons/bi";
-import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
-import {
-  FaLocationCrosshairs,
-  FaCirclePlus,
-  FaCircleMinus,
-  FaCalendarDays,
-} from "react-icons/fa6";
+import { FaInfoCircle } from "react-icons/fa";
+import { FaCirclePlus, FaCircleMinus, FaCalendarDays } from "react-icons/fa6";
 import {
   startOfMonth,
   endOfMonth,
@@ -51,6 +45,9 @@ import { PulseLoader } from "react-spinners";
 import useDebounce from "../../../../hooks/useDebounce";
 import { useHandleClose } from "../../../../hooks/useHandleClose";
 import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
+import Button from "../../../../components/ui/button/Index";
+import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
+import { useChatContext } from "../../../../components/Chatbot/context/ChatContext";
 
 const Container = styled.div`
   position: relative;
@@ -183,6 +180,17 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+const DottedLine = styled.div`
+  width: 2px;
+  height: 55px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    gray 0,
+    gray 2px,
+    transparent 1px,
+    transparent 6px
+  );
+`;
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -211,6 +219,8 @@ const RouteEditSection = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
 
+  const {resetSession} = useChatContext();
+
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
 
@@ -224,169 +234,171 @@ const RouteEditSection = (props) => {
 
   // console.log("Route Edittt",props.routes)
 
-useEffect(() => {
-  const cities = [];
+  useEffect(() => {
+    const cities = [];
 
-  if (props?.routes && itinerary?.start_date) {
-    const formatDate = (dateObj) => {
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
+    if (props?.routes && itinerary?.start_date) {
+      const formatDate = (dateObj) => {
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
 
-    const addDays = (date, days) => {
-      const result = new Date(date);
-      result.setDate(result.getDate() + days);
-      return result;
-    };
+      const addDays = (date, days) => {
+        const result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+      };
 
+      let currentCheckinDate = new Date(itinerary.start_date);
 
+      for (let i = 0; i < props.routes.length; i += 1) {
+        const isFirst = i === 0;
+        const isLast = i === props.routes.length - 1;
 
-    let currentCheckinDate = new Date(itinerary.start_date);
+        // --- Duration Logic (same as your original) ---
+        const duration = (() => {
+          if (isFirst || isLast) {
+            return props?.routes[i]?.duration || 0;
+          }
 
-    for (let i = 0; i < props.routes.length; i += 1) {
-      const isFirst = i === 0;
-      const isLast = i === props.routes.length - 1;
+          return props?.routes[i]?.duration;
+        })();
 
-      // --- Duration Logic (same as your original) ---
-      const duration = (() => {
-        if (isFirst || isLast) {
-          return props?.routes[i]?.duration || 0;
-        }
+        // --- Checkin/Checkout based on calculated duration ---
+        const checkin_date =
+          i === 1
+            ? formatDate(new Date(itinerary.start_date))
+            : formatDate(currentCheckinDate);
+        const checkoutDateObj = addDays(currentCheckinDate, duration);
+        const checkout_date = formatDate(checkoutDateObj);
 
-        return props?.routes[i]?.duration;
-      })();
+        cities.push({
+          startingCity: isFirst,
+          endingCity: isLast,
+          cityData: {
+            ...props.routes[i],
+            city_name:
+              props.routes[i]?.city_name || props.routes[i]?.city?.name,
+            checkin_date,
+            checkout_date,
+            city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+            place_id:
+              props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+            duration,
+            id: props?.routes[i]?.hasOwnProperty("id")
+              ? props?.routes[i]?.id
+              : null,
+            color: CITY_COLOR_CODES[i % 7],
+            lat:
+              props?.routes[i]?.lat ||
+              props?.routes[i]?.latitude ||
+              props?.routes[i]?.city?.latitude,
+            long:
+              props?.routes[i]?.long ||
+              props?.routes[i]?.longitude ||
+              props?.routes[i]?.city?.longitude,
+            nights: duration,
+          },
+        });
 
-      // --- Checkin/Checkout based on calculated duration ---
-      const checkin_date = i === 1 ? formatDate(new Date(itinerary.start_date)) : formatDate(currentCheckinDate);
-      const checkoutDateObj = addDays(currentCheckinDate, duration);
-      const checkout_date = formatDate(checkoutDateObj);
+        currentCheckinDate = checkoutDateObj;
+      }
 
-      cities.push({
-        startingCity: isFirst,
-        endingCity: isLast,
-        cityData: {
-          ...props.routes[i],
-          city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
-          checkin_date,
-          checkout_date,
-          city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
-          place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-          duration,
-          id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
-          color: CITY_COLOR_CODES[i % 7],
-          lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
-          long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
-          nights: duration,
-        },
-      });
-
-      currentCheckinDate = checkoutDateObj;
+      setDestinations(cities);
     }
-
-    setDestinations(cities);
-  }
-}, [props.routes, itinerary?.start_date]);
+  }, [props.routes, itinerary?.start_date]);
 
   // console.log("Cities",destinations)
 
-//   useEffect(() => {
-//   const cities = [];
+  //   useEffect(() => {
+  //   const cities = [];
 
-//   if (props?.routes && itinerary?.start_date) {
-//     const formatDate = (dateObj) => {
-//       const year = dateObj.getFullYear();
-//       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-//       const day = String(dateObj.getDate()).padStart(2, '0');
-//       return `${year}-${month}-${day}`;
-//     };
+  //   if (props?.routes && itinerary?.start_date) {
+  //     const formatDate = (dateObj) => {
+  //       const year = dateObj.getFullYear();
+  //       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  //       const day = String(dateObj.getDate()).padStart(2, '0');
+  //       return `${year}-${month}-${day}`;
+  //     };
 
-//     const addDays = (date, days) => {
-//       const result = new Date(date);
-//       result.setDate(result.getDate() + days);
-//       return result;
-//     };
+  //     const addDays = (date, days) => {
+  //       const result = new Date(date);
+  //       result.setDate(result.getDate() + days);
+  //       return result;
+  //     };
 
-//     const getDaysDifference = (startDate, endDate) => {
-//       const start = new Date(startDate);
-//       const end = new Date(endDate);
-//       const diffTime = end.getTime() - start.getTime();
-//       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-//     };
+  //     const getDaysDifference = (startDate, endDate) => {
+  //       const start = new Date(startDate);
+  //       const end = new Date(endDate);
+  //       const diffTime = end.getTime() - start.getTime();
+  //       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //     };
 
-//     let currentCheckinDate = new Date(itinerary.start_date);
+  //     let currentCheckinDate = new Date(itinerary.start_date);
 
-//     for (let i = 0; i < props.routes.length; i += 1) {
-//       const isFirst = i === 0;
-//       const isLast = i === props.routes.length - 1;
+  //     for (let i = 0; i < props.routes.length; i += 1) {
+  //       const isFirst = i === 0;
+  //       const isLast = i === props.routes.length - 1;
 
-//       // --- Duration Logic (same as your original) ---
-//       const duration = (() => {
-//         if (isFirst || isLast) {
-//           return props?.routes[i]?.duration || 0;
-//         }
+  //       // --- Duration Logic (same as your original) ---
+  //       const duration = (() => {
+  //         if (isFirst || isLast) {
+  //           return props?.routes[i]?.duration || 0;
+  //         }
 
-//         if (i === 1) {
-//           const endDate = props?.routes[i]?.end_date;
-//           const startDate = itinerary?.start_date;
+  //         if (i === 1) {
+  //           const endDate = props?.routes[i]?.end_date;
+  //           const startDate = itinerary?.start_date;
 
-//           if (startDate && endDate) {
-//             return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
-//           }
+  //           if (startDate && endDate) {
+  //             return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+  //           }
 
-//           return props?.routes[i]?.duration || 1;
-//         }
+  //           return props?.routes[i]?.duration || 1;
+  //         }
 
-//         const endDate = props?.routes[i]?.end_date;
-//         const startDate = props?.routes[i - 1]?.end_date;
+  //         const endDate = props?.routes[i]?.end_date;
+  //         const startDate = props?.routes[i - 1]?.end_date;
 
-//         if (startDate && endDate) {
-//           return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
-//         }
+  //         if (startDate && endDate) {
+  //           return getDaysDifference(startDate, endDate) || props?.routes[i]?.duration || 1;
+  //         }
 
-//         return props?.routes[i]?.duration || 1;
-//       })();
+  //         return props?.routes[i]?.duration || 1;
+  //       })();
 
-//       // --- Checkin/Checkout based on duration ---
-//       const checkin_date = formatDate(currentCheckinDate);
-//       const checkoutDateObj = addDays(currentCheckinDate, duration);
-//       const checkout_date = formatDate(checkoutDateObj);
+  //       // --- Checkin/Checkout based on duration ---
+  //       const checkin_date = formatDate(currentCheckinDate);
+  //       const checkoutDateObj = addDays(currentCheckinDate, duration);
+  //       const checkout_date = formatDate(checkoutDateObj);
 
-//       cities.push({
-//         startingCity: isFirst,
-//         endingCity: isLast,
-//         cityData: {
-//           ...props.routes[i],
-//           city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
-//           checkin_date,
-//           checkout_date,
-//           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
-//           place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
-//           duration,
-//           id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
-//           color: CITY_COLOR_CODES[i % 7],
-//           lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
-//           long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
-//           nights: duration,
-//         },
-//       });
+  //       cities.push({
+  //         startingCity: isFirst,
+  //         endingCity: isLast,
+  //         cityData: {
+  //           ...props.routes[i],
+  //           city_name: props.routes[i]?.city_name || props.routes[i]?.city?.name,
+  //           checkin_date,
+  //           checkout_date,
+  //           city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
+  //           place_id: props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
+  //           duration,
+  //           id: props?.routes[i]?.hasOwnProperty("id") ? props?.routes[i]?.id : null,
+  //           color: CITY_COLOR_CODES[i % 7],
+  //           lat: props?.routes[i]?.lat || props?.routes[i]?.latitude || props?.routes[i]?.city?.latitude,
+  //           long: props?.routes[i]?.long || props?.routes[i]?.longitude || props?.routes[i]?.city?.longitude,
+  //           nights: duration,
+  //         },
+  //       });
 
-//       currentCheckinDate = checkoutDateObj;
-//     }
+  //       currentCheckinDate = checkoutDateObj;
+  //     }
 
-
-//     setDestinations(cities);
-//   }
-// }, [props.routes, itinerary?.start_date]);
-
-
-
-
-
-
-
-  // console.log("Route Editt",destinations)
+  //     setDestinations(cities);
+  //   }
+  // }, [props.routes, itinerary?.start_date]);
 
   useEffect(() => {
     if (destinations.length) {
@@ -460,9 +472,23 @@ useEffect(() => {
   };
 
   const fetchItinerary = async () => {
-    props?.resetRef();
-    setWaitingForStatusUpdate(true);
-    props.fetchData(true);
+    try {
+      if (props?.resetRef) {
+        await props.resetRef();
+      }
+
+      setWaitingForStatusUpdate(true);
+
+      if (props.fetchData) {
+        await props.fetchData(true);
+      }
+
+      if (resetSession) {
+        await resetSession();
+      }
+    } catch (error) {
+      console.error("Error in fetchItinerary:", error);
+    }
   };
 
   const startStatusPolling = (itineraryId) => {
@@ -471,8 +497,6 @@ useEffect(() => {
 
     fetchItineraryStatus(itineraryId);
   };
-
-
 
   const validateDates = () => {
     const today = new Date();
@@ -582,7 +606,7 @@ useEffect(() => {
       },
     };
 
-    // console.log("New Request Data", data);
+    console.log("New Request Data", data, destinations);
 
     const headers = {
       "Content-Type": "application/json",
@@ -597,7 +621,7 @@ useEffect(() => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose()
+          handleClose();
         })
         .catch((err) => {
           setLoading(false);
@@ -628,18 +652,23 @@ useEffect(() => {
           headers,
         })
         .then((response) => {
-          
-            Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(`notes_dismissed_${props.ItineraryId || props?.itinerary?.ItineraryId}`)) {
-        localStorage.removeItem(key);
-        }
-        });
+          Object.keys(localStorage).forEach((key) => {
+            if (
+              key.startsWith(
+                `notes_dismissed_${
+                  props.ItineraryId || props?.itinerary?.ItineraryId
+                }`
+              )
+            ) {
+              localStorage.removeItem(key);
+            }
+          });
           dispatch(setItinerary(response.data));
           setLoading(false);
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose()
+          handleClose();
         })
         .catch((err) => {
           setLoading(false);
@@ -747,59 +776,95 @@ useEffect(() => {
         />
 
         {itineraryLoading && <Spinner isEdit={true} />}
+        {!isDesktop && (
+          <>
+            <div
+              className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}
+            >
+              {props.children}
 
-        <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
-          {editDestination && !itineraryLoading ? (
-            <div className="w-full flex flex-row justify-center gap-5">
-              <EditDestinations
-                destinations={destinations}
-                setDestinations={setDestinations}
-                destinationRef={destinationRef}
-                startDate={startDate}
-                setEndDate={setEndDate}
-                setLocationsLatLong={props.setLocationsLatLong}
-                setDestinationChanges={setDestinationChanges}
-              />
-              {isDesktop && (
-                <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
-                  {props.children}
-
-                  {destinationChanges && (
-                    <div className="flex flex-row items-center gap-2">
-                      <FaInfoCircle className="text-2xl text-yellow-500" />
-                      <div className="text-sm">Changes to be saved</div>
-                    </div>
-                  )}
+              {destinationChanges && (
+                <div className="flex flex-row items-center gap-2">
+                  <FaInfoCircle className="text-2xl text-yellow-500" />
+                  <div className="text-sm">Changes to be saved</div>
                 </div>
               )}
             </div>
-          ) : (
-            // <EditDates
-            //   destinations={destinations}
-            //   setDestinations={setDestinations}
-            //   startDate={startDate}
-            //   setStartDate={setStartDate}
-            //   endDate={endDate}
-            //   setEndDate={setEndDate}
-            //   isValidDates={isValidDates}
-            //   invalidDateError={invalidDateError}
-            // />
-            ""
-          )}
-        </div>
+            <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+              {editDestination && !itineraryLoading ? (
+                <div className="w-full relative flex flex-row justify-center gap-5 px-3">
+                  <EditDestinations
+                    destinations={destinations}
+                    setDestinations={setDestinations}
+                    destinationRef={destinationRef}
+                    startDate={startDate}
+                    setEndDate={setEndDate}
+                    setLocationsLatLong={props.setLocationsLatLong}
+                    setDestinationChanges={setDestinationChanges}
+                  />
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+          </>
+        )}
+        {isDesktop && (
+          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+            {editDestination && !itineraryLoading ? (
+              <div className="w-full flex flex-row justify-center gap-5">
+                <EditDestinations
+                  destinations={destinations}
+                  setDestinations={setDestinations}
+                  destinationRef={destinationRef}
+                  startDate={startDate}
+                  setEndDate={setEndDate}
+                  setLocationsLatLong={props.setLocationsLatLong}
+                  setDestinationChanges={setDestinationChanges}
+                />
+                {isDesktop && (
+                  <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                    {props.children}
 
-        {!itineraryLoading && (
-          <ActionPanel
-            setEdit={props.setEdit}
-            editDestination={editDestination}
-            setEditDestination={setEditDestination}
-            handleSaveButton={handleSaveButton}
-            itineraryLoading={itineraryLoading}
-            handleClose={handleClose}
-          />
+                    {destinationChanges && (
+                      <div className="flex flex-row items-center gap-2">
+                        <FaInfoCircle className="text-2xl text-yellow-500" />
+                        <div className="text-sm">Changes to be saved</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              // <EditDates
+              //   destinations={destinations}
+              //   setDestinations={setDestinations}
+              //   startDate={startDate}
+              //   setStartDate={setStartDate}
+              //   endDate={endDate}
+              //   setEndDate={setEndDate}
+              //   isValidDates={isValidDates}
+              //   invalidDateError={invalidDateError}
+              // />
+              ""
+            )}
+          </div>
         )}
 
-        {!isDesktop && (
+        {!itineraryLoading && (
+          <div className={`w-full md:w-[85%] ${isDesktop ? "" : "px-3"}`}>
+            <ActionPanel
+              setEdit={props.setEdit}
+              editDestination={editDestination}
+              setEditDestination={setEditDestination}
+              handleSaveButton={handleSaveButton}
+              itineraryLoading={itineraryLoading}
+              handleClose={handleClose}
+            />
+          </div>
+        )}
+
+        {/* {!isDesktop && (
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -811,7 +876,7 @@ useEffect(() => {
               }
             />
           </FloatingView>
-        )}
+        )} */}
       </div>
     </>
   );
@@ -1011,11 +1076,12 @@ export const EditDestinations = (props) => {
     for (let i = 1; i < destinations.length - 1; i++) {
       const dest = destinations[i];
       const checkInDate = prevDate;
-      const checkOutDate = dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
-        ? getDateString(
-            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
-          )
-        : getDateString(addDays(new Date(getDate(prevDate)),0));
+      const checkOutDate =
+        dest?.cityData?.nights >= 0 && dest?.cityData?.nights !== null
+          ? getDateString(
+              addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+            )
+          : getDateString(addDays(new Date(getDate(prevDate)), 1));
 
       dest.cityData.checkin_date = checkInDate;
       dest.cityData.checkout_date = checkOutDate;
@@ -1027,15 +1093,15 @@ export const EditDestinations = (props) => {
 
   return (
     <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="text-[24px] font-semibold leading-6">Route</div>
+      <div className="w-full flex flex-row justify-between">
+        <div className="text-[20px] pb-3 text-black">Route</div>
 
         <div>
           <button
             onClick={handleAddDestination}
-            className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+            className="text-blue cursor-pointer underline text-sm"
           >
-            Add Destination
+            + Add Destination
           </button>
         </div>
       </div>
@@ -1137,6 +1203,7 @@ export const DragDrop = (props) => {
           updateDestinationsDates={updateDestinationsDates}
           setDestinationChanges={setDestinationChanges}
           destinationRef={destinationRef}
+          totalDestinations={props.destinations.length}
         />
       </div>
 
@@ -1174,6 +1241,7 @@ export const DragDrop = (props) => {
                             updateDestinationsDates={updateDestinationsDates}
                             setDestinationChanges={setDestinationChanges}
                             destinationRef={destinationRef}
+                            totalDestinations={destinations.length}
                           />
                         </div>
                       )}
@@ -1274,9 +1342,7 @@ export const Destination = (props) => {
   };
 
   return (
-    <div
-      className={`relative w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-2 md:px-3 lg:px-3 py-2`}
-    >
+    <div className="relative w-full flex py-2">
       {popUp && (
         <DestinationPopUp
           index={index}
@@ -1292,101 +1358,77 @@ export const Destination = (props) => {
         />
       )}
 
-      <div
-        onClick={handleEditDestination}
-        className="w-full flex flex-row items-center justify-between gap-3"
-      >
-        <div className="w-[60%] flex flex-row items-center gap-3">
-          <IoMenu
-            className={`text-3xl ${
-              !(startingCity || endingCity)
-                ? "cursor-grab active:cursor-grabbing"
-                : "text-gray-300"
-            } `}
-          />
-
-          {startingCity || endingCity ? (
-            // <FaLocationCrosshairs className="text-xl" />
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                opacity="0.5"
-                cx="12.0551"
-                cy="12.0558"
-                r="6.57534"
-                fill="#F7E700"
-              />
-              <path
-                d="M10.9041 24V21.8082C8.621 21.5525 6.6621 20.6073 5.0274 18.9726C3.39269 17.3379 2.44749 15.379 2.19178 13.0959H0V10.9041H2.19178C2.44749 8.621 3.39269 6.6621 5.0274 5.0274C6.6621 3.39269 8.621 2.44749 10.9041 2.19178V0H13.0959V2.19178C15.379 2.44749 17.3379 3.39269 18.9726 5.0274C20.6073 6.6621 21.5525 8.621 21.8082 10.9041H24V13.0959H21.8082C21.5525 15.379 20.6073 17.3379 18.9726 18.9726C17.3379 20.6073 15.379 21.5525 13.0959 21.8082V24H10.9041ZM12 19.6712C14.1187 19.6712 15.9269 18.9224 17.4247 17.4247C18.9224 15.9269 19.6712 14.1187 19.6712 12C19.6712 9.88128 18.9224 8.07306 17.4247 6.57534C15.9269 5.07763 14.1187 4.32877 12 4.32877C9.88128 4.32877 8.07306 5.07763 6.57534 6.57534C5.07763 8.07306 4.32877 9.88128 4.32877 12C4.32877 14.1187 5.07763 15.9269 6.57534 17.4247C8.07306 18.9224 9.88128 19.6712 12 19.6712ZM12 16.3836C10.7945 16.3836 9.76256 15.9543 8.90411 15.0959C8.04566 14.2374 7.61644 13.2055 7.61644 12C7.61644 10.7945 8.04566 9.76256 8.90411 8.90411C9.76256 8.04566 10.7945 7.61644 12 7.61644C13.2055 7.61644 14.2374 8.04566 15.0959 8.90411C15.9543 9.76256 16.3836 10.7945 16.3836 12C16.3836 13.2055 15.9543 14.2374 15.0959 15.0959C14.2374 15.9543 13.2055 16.3836 12 16.3836ZM12 14.1918C12.6027 14.1918 13.1187 13.9772 13.5479 13.5479C13.9772 13.1187 14.1918 12.6027 14.1918 12C14.1918 11.3973 13.9772 10.8813 13.5479 10.4521C13.1187 10.0228 12.6027 9.80822 12 9.80822C11.3973 9.80822 10.8813 10.0228 10.4521 10.4521C10.0228 10.8813 9.80822 11.3973 9.80822 12C9.80822 12.6027 10.0228 13.1187 10.4521 13.5479C10.8813 13.9772 11.3973 14.1918 12 14.1918Z"
-                fill="#1F1F1F"
-              />
-              <circle
-                xmlns="http://www.w3.org/2000/svg"
-                opacity="0.5"
-                cx="12.0551"
-                cy="12.0558"
-                r="6.57534"
-                fill="#F7E700"
-              />
-              <path
-                xmlns="http://www.w3.org/2000/svg"
-                d="M10.9041 24V21.8082C8.621 21.5525 6.6621 20.6073 5.0274 18.9726C3.39269 17.3379 2.44749 15.379 2.19178 13.0959H0V10.9041H2.19178C2.44749 8.621 3.39269 6.6621 5.0274 5.0274C6.6621 3.39269 8.621 2.44749 10.9041 2.19178V0H13.0959V2.19178C15.379 2.44749 17.3379 3.39269 18.9726 5.0274C20.6073 6.6621 21.5525 8.621 21.8082 10.9041H24V13.0959H21.8082C21.5525 15.379 20.6073 17.3379 18.9726 18.9726C17.3379 20.6073 15.379 21.5525 13.0959 21.8082V24H10.9041ZM12 19.6712C14.1187 19.6712 15.9269 18.9224 17.4247 17.4247C18.9224 15.9269 19.6712 14.1187 19.6712 12C19.6712 9.88128 18.9224 8.07306 17.4247 6.57534C15.9269 5.07763 14.1187 4.32877 12 4.32877C9.88128 4.32877 8.07306 5.07763 6.57534 6.57534C5.07763 8.07306 4.32877 9.88128 4.32877 12C4.32877 14.1187 5.07763 15.9269 6.57534 17.4247C8.07306 18.9224 9.88128 19.6712 12 19.6712ZM12 16.3836C10.7945 16.3836 9.76256 15.9543 8.90411 15.0959C8.04566 14.2374 7.61644 13.2055 7.61644 12C7.61644 10.7945 8.04566 9.76256 8.90411 8.90411C9.76256 8.04566 10.7945 7.61644 12 7.61644C13.2055 7.61644 14.2374 8.04566 15.0959 8.90411C15.9543 9.76256 16.3836 10.7945 16.3836 12C16.3836 13.2055 15.9543 14.2374 15.0959 15.0959C14.2374 15.9543 13.2055 16.3836 12 16.3836ZM12 14.1918C12.6027 14.1918 13.1187 13.9772 13.5479 13.5479C13.9772 13.1187 14.1918 12.6027 14.1918 12C14.1918 11.3973 13.9772 10.8813 13.5479 10.4521C13.1187 10.0228 12.6027 9.80822 12 9.80822C11.3973 9.80822 10.8813 10.0228 10.4521 10.4521C10.0228 10.8813 9.80822 11.3973 9.80822 12C9.80822 12.6027 10.0228 13.1187 10.4521 13.5479C10.8813 13.9772 11.3973 14.1918 12 14.1918Z"
-                fill="#1F1F1F"
-              />
-            </svg>
-          ) : (
-            <IoLocationSharp
-              className={`text-xl`}
-              style={{ color: pinColour }}
-            />
+      <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
+        <div
+          onClick={handleEditDestination}
+          className="w-[70%] flex flex-row items-center gap-3"
+        >
+          {!(startingCity || endingCity) && (
+            <div className="text-gray-400 cursor-grab active:cursor-grabbing">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <rect x="3" y="6" width="18" height="2" rx="1" />
+                <rect x="3" y="11" width="18" height="2" rx="1" />
+                <rect x="3" y="16" width="18" height="2" rx="1" />
+              </svg>
+            </div>
           )}
 
-          <div
-            onClick={handleEditDestination}
-            className="text-sm lg:text-lg font-medium cursor-pointer flex flex-row gap-5"
-          >
-            {cityData.city_name || cityData.name || cityData.text}{" "}
+          {(startingCity || endingCity) && <div className="w-[20px]" />}
+
+          {startingCity || endingCity ? (
+            <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
+              <div className="w-2 h-2 bg-white rounded-full "></div>
+            </div>
+          ) : (
+            <CustomMapPin color={cityData?.color || pinColour} />
+          )}
+          <div className="flex flex-row items-center justify-center gap-2">
+            <div className="text-base lg:text-[16px] cursor-pointer font-medium">
+              {cityData.city_name || cityData.name || cityData.text}
+            </div>
+            {!(startingCity || endingCity) && cityData?.nights >= 0 && (
+              <div className="text-sm text-gray-500">
+                <span className="text-[16px] text-gray-500">I</span> &nbsp;
+                {`${cityData.nights} ${
+                  cityData.nights > 1 ? "Nights" : "Night"
+                }`}
+              </div>
+            )}
           </div>
         </div>
 
-        {!(startingCity || endingCity) && (
-          <div className="w-[30%] h-full flex flex-row items-center gap-2">
-            <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
-            <div className="text-sm text-gray-500">
-              {!(startingCity || endingCity) && cityData?.nights >=0 
-                ? `${cityData.nights} ${
-                    cityData.nights > 1
-                      ? isPageWide
-                        ? "Nights"
-                        : "N"
-                      : isPageWide
-                      ? "Night"
-                      : "N"
-                  }`
-                : null}
-            </div>
-          </div>
-        )}
-
         <div className="flex flex-row items-center gap-3 justify-self-end">
-          <BiSolidPencil
-            onClick={handleEditDestination}
-            className="text-xl cursor-pointer"
-          />
-
           {!startingCity && !endingCity && (
-            <FaTrashAlt
-              onClick={(e) => handleRemoveDestination(e)}
-              className="text-xl cursor-pointer"
-            />
+            <>
+              <MdOutlineEdit
+                size={18}
+                color={"#3B82F6"}
+                onClick={handleEditDestination}
+              />
+
+              <MdOutlineDelete
+                size={18}
+                color="#EF4444"
+                onClick={(e) => handleRemoveDestination(e)}
+              />
+            </>
           )}
         </div>
       </div>
+      {index < props?.totalDestinations - 1 && (
+        <div
+          className={`absolute z-0
+                         left-[51px] top-[45px]
+                    `}
+        >
+          <DottedLine />
+        </div>
+      )}
     </div>
   );
 };
@@ -1489,100 +1531,99 @@ export const DestinationPopUp = (props) => {
   };
 
   const handleSetNights = (minus = false) => {
-  setNights((prev) => {
-    const newValue = minus ? Math.max(0, prev - 1) : prev + 1;
-    return newValue;
-  });
-
-  logEvent({
-    action: "Route Edit",
-    params: {
-      page: "Itinerary Page",
-      event_category: "Update Destination",
-      event_label: minus ? "Decrease Nights" : "Increase Nights",
-      event_action: "Update Nights",
-    },
-  });
-};
-
-
- const handleUpdateDestination = () => {
-  setDestinationChanges(true);
-  // console.log("New Desti", destination);
-
-  setDestinations((prev) => {
-    let destinations = [...prev];
-    const curDestination = destinations[index];
-
-    const match = destinations.find((d, i) => {
-      // if (i === index) return false; 
-      const cd = d.cityData;
-      return (
-        (cd?.resource_id === destination?.resource_id ||
-        cd?.city_id === destination?.resource_id ||
-        cd?.id === destination?.resource_id) && i === index
-      );
+    setNights((prev) => {
+      const newValue = minus ? Math.max(1, prev - 1) : prev + 1;
+      return newValue;
     });
 
-    const matchedCityId = match?.cityData?.id;
-    if (matchedCityId) {
-      destination.id = matchedCityId;
-    }
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Update Destination",
+        event_label: minus ? "Decrease Nights" : "Increase Nights",
+        event_action: "Update Nights",
+      },
+    });
+  };
 
-    if (curDestination) {
-      if (curDestination.startingCity || curDestination.endingCity) {
-        destinations[index] = {
-          startingCity: curDestination.startingCity,
-          endingCity: curDestination.endingCity,
-          cityData: {
-            ...destination,
-            duration: nights,
-            place_id: destination?.place_id,
-          },
-        };
+  const handleUpdateDestination = () => {
+    setDestinationChanges(true);
+    console.log("New Desti", destination);
+
+    setDestinations((prev) => {
+      let destinations = [...prev];
+      const curDestination = destinations[index];
+
+      const match = destinations.find((d, i) => {
+        // if (i === index) return false;
+        const cd = d.cityData;
+        return (
+          (cd?.resource_id === destination?.resource_id ||
+            cd?.city_id === destination?.resource_id ||
+            cd?.id === destination?.resource_id) &&
+          i === index
+        );
+      });
+
+      const matchedCityId = match?.cityData?.id;
+      if (matchedCityId) {
+        destination.id = matchedCityId;
+      }
+
+      if (curDestination) {
+        if (curDestination.startingCity || curDestination.endingCity) {
+          destinations[index] = {
+            startingCity: curDestination.startingCity,
+            endingCity: curDestination.endingCity,
+            cityData: {
+              ...destination,
+              duration: nights,
+              place_id: destination?.place_id,
+            },
+          };
+        } else {
+          destinations[index] = {
+            startingCity: curDestination.startingCity,
+            endingCity: curDestination.endingCity,
+            cityData: {
+              ...destination,
+              nights: nights,
+              color: curDestination.cityData.color,
+              duration: nights,
+            },
+          };
+        }
       } else {
-        destinations[index] = {
-          startingCity: curDestination.startingCity,
-          endingCity: curDestination.endingCity,
+        destinations.splice(destinations.length - 1, 0, {
+          startingCity: false,
+          endingCity: false,
           cityData: {
             ...destination,
             nights: nights,
-            color: curDestination.cityData.color,
             duration: nights,
+            color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
-        };
+        });
       }
-    } else {
-      destinations.splice(destinations.length - 1, 0, {
-        startingCity: false,
-        endingCity: false,
-        cityData: {
-          ...destination,
-          nights: nights,
-          duration: nights,
-          color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
-        },
-      });
-    }
 
-    updateDestinationsDates(destinations);
-    updateLatLong(destinations);
-    return destinations;
-  });
+      updateDestinationsDates(destinations);
+      updateLatLong(destinations);
+      return destinations;
+    });
 
-  setPopUp(false);
+    setPopUp(false);
 
-  logEvent({
-    action: "Route Edit",
-    params: {
-      page: "Itinerary Page",
-      event_category: "Update Destination",
-      event_label: "Update",
-      event_action: "Update destination",
-    },
-  });
-};
-
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Update Destination",
+        event_label: "Update",
+        event_action: "Update destination",
+      },
+    });
+  };
 
   return (
     <div
@@ -2569,18 +2610,17 @@ body.react-dates__block-scroll {
           );
         }}
         renderDayContents={(day) => {
-  const isHighlighted = isDayHighlighted(day);
-  return (
-    <div
-      className={`w-full h-full flex items-center justify-center border-none ${
-        isHighlighted ? "bg-yellow-50 " : ""
-      }`}
-    >
-      {day.date()}
-    </div>
-  );
-}}
-
+          const isHighlighted = isDayHighlighted(day);
+          return (
+            <div
+              className={`w-full h-full flex items-center justify-center border-none ${
+                isHighlighted ? "bg-yellow-50 " : ""
+              }`}
+            >
+              {day.date()}
+            </div>
+          );
+        }}
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
@@ -2600,35 +2640,44 @@ export const ActionPanel = (props) => {
     itineraryLoading,
     handleClose,
   } = props;
-
+  const isDesktop = useMediaQuery("(min-width:768px)");
   return (
-    <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
-      <div className="flex flex-row gap-4">
-        {!itineraryLoading && (
-          <button
-            onClick={
-              editDestination
-                ? () => handleClose()
-                : () => setEditDestination(true)
-            }
-            className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
-          >
-            {editDestination ? "Cancel" : "Back"}
-          </button>
-        )}
-        {
-          <button
-            onClick={handleSaveButton}
-            className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
-          >
-            {itineraryLoading ? (
-              <PulseLoader size={14} speedMultiplier={0.6} color="black" />
-            ) : (
-              "Save"
-            )}
-          </button>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+      }}
+      className={`${!isDesktop && "gap-2"}`}
+    >
+      <button
+        className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
+        onClick={
+          editDestination ? () => handleClose() : () => setEditDestination(true)
         }
-      </div>
+      >
+        {editDestination ? "Cancel" : "Back"}
+      </button>
+      <Button
+        fontSize="1rem"
+        padding="0.5rem 2rem"
+        fontWeight="500"
+        margin="1rem 0"
+        borderRadius="5px"
+        borderWidth="1px"
+        bgColor="#07213A"
+        zIndex={9999}
+        onclick={handleSaveButton}
+        height="50px"
+        color="white"
+        style={{
+          maxWidth: isDesktop ? "500px" : "50%",
+          width: "100%",
+        }}
+      >
+        Continue
+      </Button>
     </div>
   );
 };

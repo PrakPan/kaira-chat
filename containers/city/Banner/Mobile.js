@@ -27,7 +27,7 @@ const BannerMobile = (props) => {
         margin="0"
         width="100%"
       >
-        <p className="font-lexend" style={{ margin: "0", fontWeight: "600" }}>
+        <p className="" style={{ margin: "0", fontWeight: "600" }}>
           {props.cityName
             ? validateTextSize(
                 `Craft a trip to ${props.cityName} now!`,

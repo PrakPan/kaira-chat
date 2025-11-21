@@ -58,6 +58,16 @@ const TravelPlanner = (props) => {
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
         ></link>
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+        <link
+          rel="stylesheet"
+          crossorigin
+          href="/vendor/panorama-slider.css"
+        ></link>
       </Head>
 
       {props.pageData && props.Data?.page_data?.slug != "india" ? (
@@ -98,7 +108,18 @@ export async function getStaticPaths() {
   }
 
   return {
-    paths: paths,
+    paths:paths,
+    fallback:false
+  }
+  return {
+    paths: [
+      {
+        params: {
+          continent: "europe",
+          country: "portugal",
+        },
+      },
+    ],
     fallback: false,
   };
 }

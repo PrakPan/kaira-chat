@@ -57,7 +57,7 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem }) => {
 
         <NavigationMarker
           x={markerPos.x}
-          height={markerPos.height}
+          height={2}
           width={markerPos.width}
         />
       </InnerContainer>
