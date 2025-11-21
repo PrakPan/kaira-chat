@@ -59,7 +59,7 @@ useEffect(() => {
   };
 
   return (
-    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary>
+    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary={true}>
       <ScrollRestoration />
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
