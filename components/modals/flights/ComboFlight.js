@@ -37,6 +37,7 @@ import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
 import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
 import FlightFilters from "./new-flight-searched/FlightFilters";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;

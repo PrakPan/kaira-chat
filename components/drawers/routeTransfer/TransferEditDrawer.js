@@ -65,6 +65,7 @@ import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 import { getDateInfo } from "../../../utils/dateFormate";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const svgIcons = {
   time: (
@@ -2637,7 +2638,7 @@ const NewMultiModeContainer = ({
         )
       );
 
-      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
+      // trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
 
       getPaymentHandler();
       actualClose();
@@ -4409,6 +4410,7 @@ const OtherTransfer = ({
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
   const [lastRequestData, setLastRequestData] = useState(null);
+   const {trackTransferBookingAdd} = useAnalytics();
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -5015,7 +5017,7 @@ const OtherTransfer = ({
         )
       );
 
-      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
+      // trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
 
       getPaymentHandler();
 

@@ -89,8 +89,6 @@ const CitySummary = (props) => {
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
-  
-
   const handleActivity = (poiData, index, dayIndex) => {
     setDayByDayIndex(index);
     router.push(
@@ -243,7 +241,6 @@ const CitySummary = (props) => {
     // }
   };
 
-  const shouldShowSightseeingDrawer = router.query.drawer === "SightSeeing" && router.query.bookingId;
   const handleDelete = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
@@ -310,10 +307,10 @@ const CitySummary = (props) => {
               return (
                 size <= 3 &&
                 !poi?.activity && (
-                  <div key={index}>
+                  <>
                     <span
                       onClick={() => handleActivity(poi, index, poi.dayIndex)}
-                      
+                      key={index}
                       id={index}
                       className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
                     >
@@ -349,7 +346,7 @@ const CitySummary = (props) => {
                           )}
                       </>
                     ) : null}
-                  </div>
+                  </>
                 )
               );
             })}
@@ -369,9 +366,9 @@ const CitySummary = (props) => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-wrap gap-2">
             {activities?.map((item) => (
-              <div key={item.id}>
+              <>
                 <div
-                 
+                  key={item.id}
                   className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                   onClick={() => handleView(item.id, "activity", poi.dayIndex)}
                 >
@@ -487,7 +484,7 @@ const CitySummary = (props) => {
                       )}
                   </>
                 ) : null}
-              </div>
+              </>
             ))}
           </div>
           {finalized_status === "PENDING" ? (
@@ -504,7 +501,7 @@ const CitySummary = (props) => {
       </div>
 
       {props?.intracityBookings &&
-        formattedTaxiDetails &&  formattedTaxiDetails?.[0]?.id &&
+        formattedTaxiDetails &&
         props?.intracityBookings?.length > 0 && (
           <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
             <div className="text-[14px] font-medium leading-[22px] w-[80px]">
@@ -513,9 +510,9 @@ const CitySummary = (props) => {
             <div className="flex flex-col gap-2 w-full">
               <div className="flex flex-wrap gap-2">
                 {formattedTaxiDetails?.map((item) => (
-                  <div key={item.id}>
+                  <>
                     <div
-                      
+                      key={item.id}
                       className="group relative flex gap-2 w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                       onClick={() => handleTaxi(item.id)}
                     >
@@ -585,11 +582,7 @@ const CitySummary = (props) => {
                       </div>
                     </div>
 
-                
-                    
                     {drawer == "SightSeeing" && item?.id == bookingId && (
-                      <>
-                      {console.log("DDDD",drawer,item?.id)}
                       <TransferDrawer
                         show={drawer == "SightSeeing" && item?.id == bookingId}
                         setHandleShow={setHandleShowTaxi}
@@ -625,9 +618,8 @@ const CitySummary = (props) => {
                         isIntracity={true}
                         isSightseeing={true}
                       />
-                      </>
                     )}
-                  </div>
+                  </>
                 ))}
               </div>
             </div>

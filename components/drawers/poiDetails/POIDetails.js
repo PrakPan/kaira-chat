@@ -192,6 +192,10 @@ const POIDetails = (props) => {
         itineraryCities = newItinerary.cities.map((city) => {
           const cityTemp = city;
           if (city.id === props?.itinerary_city_id) {
+            console.log(
+              "here:",
+              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
+            );
             cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
               props?.slabIndex,
               1
@@ -687,16 +691,16 @@ const POIDetails = (props) => {
               </div>
               {isSmallScreen ? (
                 <>
-                  {props?.data?.reviews?.map((item,i) => (
-                    <div className="w-full" key={i}>
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
                 </>
               ) : (
                 <ScrollContainer>
-                  {props?.data?.reviews?.map((item,i) => (
-                    <div className="w-[289px]" key={i}>
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-[289px]">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -707,8 +711,8 @@ const POIDetails = (props) => {
           {props.data?.tips && props.data?.tips.length > 0 ? (
             <div>
               <Heading>Tips</Heading>
-              {props?.data?.tips.map((item,i) => (
-                <Text key={i}>{item}</Text>
+              {props?.data?.tips.map((item) => (
+                <Text>{item}</Text>
               ))}
             </div>
           ) : (

@@ -171,6 +171,9 @@ const ActivitiesSummary = (props) => {
           images={images}
         ></FullScreenGallery>
       ) : null}
+
+
+      
     </>
   );
 };
