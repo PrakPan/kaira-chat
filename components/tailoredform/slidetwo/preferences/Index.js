@@ -66,14 +66,17 @@ const Container = styled.div`
 const GroupType = (props) => {
   const dispatch = useDispatch();
   
-  const selectedPreferences = props?.selectedPreferences || [];
+  // Read directly from Redux state instead of props
+  const selectedPreferences = useSelector(
+    (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+  ) || [];
   
   const _isPreferenceAdded = (preference) => {
     return selectedPreferences.includes(preference);
   };
   
   const _handleClick = (preference) => {
-    props.setSelectedPreferences(preference);
+    dispatch(togglePreference(preference));
   };
 
   return (

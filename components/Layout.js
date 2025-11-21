@@ -91,7 +91,7 @@ const Layout = React.memo((props) => {
       <NavigationMenu/>
 
       <div
-        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
+        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : props?.isItinerary && !isPageWide ? "0px" : "72px" }}
       >
         {props.children}
       </div>

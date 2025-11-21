@@ -93,7 +93,7 @@ const SlideOne = (props) => {
               value={
                 date.type === "fixed" ? (valueStart && valueEnd
                   ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
-                  : "") : date.type === "flexible" ? `${months[date.month]} ${date.year}, ${date.duration} days` : date.duration + " days"
+                  : "") : date.type === "flexible" ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` : date.duration + " days"
               }
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10  Body2M_14`}

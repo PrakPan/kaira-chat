@@ -11,7 +11,7 @@
 
   .backgroundWrapper {
     position: absolute;
-    top: -80px;
+    // top: -80px;
     left: 0;
     width: 100%;
     height: 100%;
@@ -33,33 +33,8 @@
   }
 }
 
-// Features Section Styles
-.featuresSection {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 88.5%;
-  background: #0A2540;
-  padding: 1rem 3rem;
-  z-index: 1;
-  overflow: hidden;
-  display: block;
-  height: 60px;
-
-  @media (max-width: 840px) {
-    height: auto;
-    padding: 1rem 1.5rem;
-  }
-
-  @media (max-width: 768px) {
-    top: 84.5%;
-    padding: 0.75rem 1rem;
-  }
-}
-
 .featuresContainer {
-  max-width: 1200px;
+  width:100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -68,18 +43,28 @@
   position: relative;
   z-index: 2;
   height: 100%;
+   background: #0A2540;
+  padding: 1rem;
 
   @media (max-width: 840px) {
-    flex-wrap: wrap;
-    gap: 0.75rem 1rem;
-    justify-content: space-evenly;
-    padding: 0.5rem 0;
+    flex-wrap: nowrap;  
+    gap: 2rem;  
+    justify-content: flex-start;  
+    overflow-x: auto; 
+    overflow-y: hidden;
+    padding: 0.5rem 0.5rem;
+    -webkit-overflow-scrolling: touch; 
+    
+   
+    scrollbar-width: none;  
+    &::-webkit-scrollbar {
+      display: none;  
+    }
   }
 
   @media (max-width: 480px) {
-    gap: 0.5rem 1rem;
-    padding: 0rem;
-    font-size: 12px;
+    gap: 1.5rem; 
+    padding: 0.5rem;
   }
 }
 
@@ -90,33 +75,13 @@
   color: white;
 
   @media (max-width: 840px) {
-    flex: 0 0 calc(50% - 1rem);
-    min-width: 0;
+    flex: 0 0 auto;  
+    min-width: fit-content;  
   }
 
   @media (max-width: 480px) {
-    flex: 0 0 calc(50% - 0.5rem);
+    flex: 0 0 auto;  
     gap: 0.4rem;
-  }
-}
-
-.featureIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  
-  svg {
-    width: 24px;
-    height: 24px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  }
-
-  @media (max-width: 480px) {
-    svg {
-      width: 20px;
-      height: 20px;
-    }
   }
 }
 
@@ -127,15 +92,16 @@
   letter-spacing: 0.01em;
 
   @media (max-width: 840px) {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;  
   }
 
   @media (max-width: 480px) {
-    font-size: 0.8125rem;
-    white-space: normal;
-    line-height: 1.2;
+    font-size: 0.75rem;  
+    white-space: nowrap;  
+    // line-height: 1.2;
   }
 }
+
 
 // Background Decorative Curved Lines
 .featuresBg {

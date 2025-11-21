@@ -84,13 +84,19 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
     }
   }
 
-  const handleApplyDates = (dates) => {
-    setDate({
-      ...date,
-      start_date: dates.start,
-      end_date: dates.end
-    });
-  }
+const handleApplyDates = (dates) => {
+  setDate({
+    type: dates.dateType || dates.type, 
+    start_date: dates.start ? new Date(dates.start) : null, 
+    end_date: dates.end ? new Date(dates.end) : null,
+    month: dates.month || "",
+    duration: dates.duration || ""
+  });
+};
+
+
+
+
 
   const handleCancel = () => {
     setShowSettings(false);

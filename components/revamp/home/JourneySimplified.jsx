@@ -234,7 +234,7 @@ const JourneySimplified = () => {
         <div className="text-center mb-16 lg:mb-20">
           <h2
             // ref={headingRef}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6"
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 px-5"
             style={{ maxFontSize: "40px" }}
           >
             Your Journey, Simplified

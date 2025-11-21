@@ -34,6 +34,7 @@ import MyTripsSection from "../components/revamp/destination/mytrips";
 import TestimonialCarousel from "../components/theme/TestimonialCarousel";
 import PartnersSection from "../components/theme/PartnersSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+import TrustFactors from "../components/revamp/home/TrustFactors";
 
 
 
@@ -136,6 +137,7 @@ const Home = (props) => {
         <NavigationMenu />
         
         <HeroSection />
+        <TrustFactors/>
         <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         
