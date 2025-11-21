@@ -859,6 +859,17 @@ useEffect(() => {
   }
 }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
 
+useEffect(() => {
+  const isDrawerClosed = !drawer;
+  
+  if (isDrawerClosed) {
+    document.body.style.overflow = 'initial';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.touchAction = '';
+  }
+}, [drawer]);
+
 
   // const handleEdit = async (combo, book) => {
   //   setTransferType(book?.booking_type || booking_type);

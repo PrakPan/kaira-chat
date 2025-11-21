@@ -731,7 +731,7 @@ const PriceDetails = ({
           </span>
         </div>
 
-        {/* {
+        {
           // !Cart?.are_prices_hidden &&
           surchargesTaxes > 0 && (
             <div className="flex justify-between">
@@ -739,7 +739,7 @@ const PriceDetails = ({
               <span>₹{surchargesTaxes.toLocaleString("en-IN")}</span>
             </div>
           )
-        } */}
+        }
 
         {couponDiscount !== 0 && (
           <div className="flex justify-between text-green-600">
@@ -1484,12 +1484,10 @@ const Details = (props) => {
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     getURL();
 
-  const _startRazorpayHandler = (data) => {
-    // Razorpay payload
-
+  const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
-      amount: data.amount,
-      // "currency": "INR",
+      key: "rzp_test_FEKg5ZWGWl9i7c",
+      amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
       image:
@@ -1505,7 +1503,7 @@ const Details = (props) => {
 
         axios
           .post(
-            "https://dev.suppliers.tarzanway.com/sales/verify/",
+            "https://dev.mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -1527,7 +1525,6 @@ const Details = (props) => {
             setPaymentLoading(false);
           });
       },
-      // User details will be present as user is logged in
       prefill: {
         name: props.name,
         email: props.email,
@@ -1735,6 +1732,10 @@ const Details = (props) => {
   const handlePayNow = (label) => {
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
+    } else if (label === "lockin") {
+      _lockInPaymentHandler(Cart?.id); //  payment.id as payment_information_id
+    } else if (label === "full") {
+      _fullPaymentHandler(Cart?.id);
     } else {
       setShowVerification(true);
     }
@@ -1778,15 +1779,11 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-    
-
-    // console.log("WhatsappCta",urls.WHATSAPP + "?text=" + encodeURIComponent(message));
 
     window.open(
       urls.WHATSAPP + "?text=" + encodeURIComponent(message),
       "_blank"
     );
-     trackWhatsAppClicked(router?.query?.id,Cart?.discounted_cost,'Rupees');
   };
 
   const handleTermsConditions = () => {
@@ -3059,7 +3056,7 @@ const Details = (props) => {
         number_of_adults={
           props?.itinerary ? props?.itinerary?.number_of_adults : 5
         }
-        payment={props.payment}
+        payment={Cart}
         plan={props.plan}
         date={date}
         id={props.id}
@@ -3089,7 +3086,7 @@ const Details = (props) => {
 
       {props.token && Newitinerary && (
         <MakeYourPersonalised
-          date={props?.payment?.meta_info?.start_date}
+          date={Cart?.meta_info?.start_date}
           onHide={() => setNewitinerary(false)}
           show={Newitinerary}
         />

@@ -159,6 +159,7 @@ const TransferBooking = ({
           drawer:
             book?.transfer_type == "sightseeing" ? "SightSeeing" : "Intracity",
           bookingId: book?.id || booking_id,
+          itinerary_city_id: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id,
           transferType: book?.booking_type || booking_type,
           oItineraryCity:
             oItineraryCityId || oCityData?.id || oCityData?.gmaps_place_id,

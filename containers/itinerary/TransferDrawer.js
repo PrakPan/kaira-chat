@@ -113,7 +113,7 @@ const TransferDrawer = ({
     );
   };
 
-
+  console.log("BBK", booking_type, transferType, data);
 
   const toggleExpand = (index) => {
     if (expandedIndexes.includes(index)) {
@@ -223,7 +223,6 @@ const TransferDrawer = ({
                 transferData?.transfer_details?.items?.[0]?.fare_rule?.[0]
               }
               booking_id={transferData?.id}
-              getPaymentHandler={getPaymentHandler}
               setShowDetails={null}
               name={transferData?.name}
               getPaymentHandler={getPaymentHandler}
@@ -235,17 +234,6 @@ const TransferDrawer = ({
             />
           );
         case "Taxi":
-          return (
-            <TaxiDetailModal
-              data={transferData}
-              handleDelete={null}
-              loading={loading}
-              isEmbedded={true}
-              noHeading={true}
-              handleEditRoute={handleEditRoute}
-            />
-          );
-        case "Rental":
           return (
             <TaxiDetailModal
               data={transferData}
@@ -624,7 +612,6 @@ const TransferDrawer = ({
                 fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
                 booking_id={data?.id}
                 name={city}
-                getPaymentHandler={getPaymentHandler}
                 setShowLoginModal={setShowLoginModal}
                 onChange={true}
                 handleClose={handleClose}
@@ -635,8 +622,8 @@ const TransferDrawer = ({
               />
             )
           ) : loading ? (
-            <VehicleDetailLoader  />
-          ) : booking_type === "Taxi" || booking_type === "Rental" ? (
+            <VehicleDetailLoader />
+          ) : booking_type === "Taxi" ? (
             <TaxiDetailModal
               data={data}
               handleDelete={handleDelete}

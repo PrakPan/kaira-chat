@@ -312,7 +312,7 @@ const TransferEditDrawer = (props) => {
             .then((response) => {
               setMultiCitySuggestions(response?.data?.suggestions?.[0]);
               setMulticityRoundtripTraceId(response?.data?.trace_id);
-              setRoundTripSuggestions(response?.data?.suggestions?.[1]?.data);
+              setRoundTripSuggestions(response?.data?.suggestions?.[1]);
               setLoadingMulticityTransfers(false);
               setLoadingTransfers(false);
             })
@@ -1361,7 +1361,7 @@ const TransferEditDrawer = (props) => {
                 {multiCitySuggestions && (
                   <div className="w-full">
                     {/* <h3 className="text-lg font-semibold mb-3"></h3> */}
-                    =
+                
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
@@ -1379,7 +1379,7 @@ const TransferEditDrawer = (props) => {
 
         {transferType === "MULTICITYROUNDTRIP" &&
           (roundTripSuggestions || multiCitySuggestions) && (
-            <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+            <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
               <div className="flex justify-end items-end px-1 py-3 md:p-0">
                 <button
                   onClick={() => {
@@ -3800,18 +3800,21 @@ const RoundTripSuggestion = ({
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
-  useEffect(() => {
-    const routes = [];
-    const pricing = [];
-    roundTripSuggestions?.data?.trips?.forEach((route) => {
-      routes.push(route);
-    });
-    setRoutes(routes);
-    roundTripSuggestions?.data?.quotes.forEach((quote) => {
-      pricing.push(quote);
-    });
-    setPricing(pricing);
-  }, [roundTripSuggestions]);
+ useEffect(() => {
+  const routes = [];
+  const pricing = [];
+  
+  roundTripSuggestions?.data?.trips?.forEach((route) => {
+    routes.push(route);
+  });
+  setRoutes(routes);
+  
+  roundTripSuggestions?.data?.quotes?.forEach((quote) => {
+    pricing.push(quote);
+  });
+  setPricing(pricing);
+}, [roundTripSuggestions]);
+
 
   const handleSelectCab = (e) => {
     setSelectError(false);
@@ -3878,8 +3881,8 @@ const RoundTripSuggestion = ({
               {roundTripSuggestions?.name}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
-              Distance: {roundTripSuggestions?.data?.distance?.value} Kms
-            </div>
+  Distance: {roundTripSuggestions?.distance?.value} Kms
+</div>
           </div>
         </div>
 
@@ -3908,7 +3911,8 @@ const RoundTripSuggestion = ({
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {pricing.map((price, i) => (
+            {pricing?.length > 0 ? 
+            pricing.map((price, i) => (
               <div
                 key={`price-${i}`}
                 className="w-full flex flex-row items-start gap-2"
@@ -3965,7 +3969,7 @@ const RoundTripSuggestion = ({
                   )}
                 </div>
               </div>
-            ))}
+            )): "No Cabs Available"} 
           </div>
         </div>
 

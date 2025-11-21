@@ -184,7 +184,6 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
         </div>
       )}
 
-      {console.log("Transfer Detai",segments)}
 
       <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2 p-2">
                     <div className="flex flex-row items-center gap-3">

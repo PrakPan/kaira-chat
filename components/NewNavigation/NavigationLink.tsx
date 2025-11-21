@@ -64,7 +64,6 @@ export const NavigationLink = ({
       onMouseEnter,
       onMouseLeave,
     });
-    console.log(children, isSelected)
 
   return (
     <Link
