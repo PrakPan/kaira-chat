@@ -6,11 +6,11 @@ const Buttons = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
   return (
-    <div className={`flex gap-[20px] ${props?.isEdit ? 'w-full justify-between' : ''} `}>
+    <div className={`flex gap-[20px] ${props?.isEdit ? 'w-full justify-between gap-2' : 'w-full'} `}>
         <button onClick={props.handleCancel} className={`${isDesktop ? 'MediumIndigoOutlinedButton text-[14px] ' : 'MediumIndigoOutlinedButton w-1/2 text-[14px]'}`}>Cancel</button>
         <Button
                     fontSizeDesktop="14px"
-                    width={!isDesktop ? "50%" : props?.isEdit ? 'w-fit':"131px"}
+                    width={!isDesktop ? "50%" : props?.isEdit ? '300px':"300px"}
                      height="40px"
                     fontWeight="500"
                     borderRadius="8px"

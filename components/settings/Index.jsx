@@ -38,9 +38,13 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
   const [numberOfInfants, setNumberOfInfants] = useState(
     itinerary?.number_of_infants || 0
   );
+
+  const selectedPreferencesItinerary = useSelector(
+      (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+    ) || [];
   
   const [selectedPreferences, setSelectedPreferences] = useState(
-    itinerary?.experience_filters || []
+    itinerary?.experience_filters || selectedPreferencesItinerary || []
   );
 
   // Initialize dates
@@ -120,6 +124,7 @@ const handleApplyDates = (dates) => {
       room_configuration: roomConfiguration,
       experience_filters: selectedPreferences,
     }
+
     
     handleApply(req)
       .then((res) => {
@@ -248,7 +253,7 @@ const handleApplyDates = (dates) => {
         </div>
       </div>
 
-      <div className={`${isDesktop ? "flex justify-between" : "w-full"}`}>
+      <div className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}>
         <Buttons 
           handleCancel={handleCancel} 
           handleUpdate={handleUpdate} 

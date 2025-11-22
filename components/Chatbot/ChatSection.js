@@ -22,6 +22,14 @@ const Container = styled.div`
    scroll-behavior: smooth;
    font-family: Montserrat;
    box-sizing: border-box;
+    @media screen and (max-width: 767px) {
+    padding-bottom: 72px;
+  }
+   -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const MessageWrapper = styled.div`
@@ -40,7 +48,11 @@ const Message = styled.div`
     font-size: 14px;
     word-break: break-word;
     max-width: 80%;
-    margin-bottom:15px
+    margin-bottom:15px;
+    @media screen and (max-width: 768px) {
+    margin-bottom:0px;
+  }
+
 `;
 
 const LoginButton = styled.button`

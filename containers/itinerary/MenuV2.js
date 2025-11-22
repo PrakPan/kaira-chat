@@ -53,7 +53,10 @@ import { useAnalytics } from "../../hooks/useAnalytics.js";
 import ChatBot from "../../components/Chatbot/Index.js";
 import Drawer from "../../components/ui/Drawer.js";
 import Image from "next/image";
-import { ChatProvider, useChatContext } from "../../components/Chatbot/context/ChatContext.js";
+import {
+  ChatProvider,
+  useChatContext,
+} from "../../components/Chatbot/context/ChatContext.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -61,11 +64,11 @@ const NotificationDot = styled.div`
   right: 19px;
   width: 16px;
   height: 16px;
-  background-color: #FD6D6C;
+  background-color: #fd6d6c;
   border-radius: 50%;
   border: 2px solid white;
   // animation: pulse 2s infinite;
-  
+
   // @keyframes pulse {
   //   0% {
   //     box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
@@ -120,14 +123,14 @@ const SimpleTabsV2 = (props) => {
   const [activeTab, setActiveTab] = useState("Itinerary");
 
   const [isHovered, setIsHovered] = useState(false);
- const popupStyle = {
-  display: isHovered ? "block": "none",
-  backgroundColor: "#2b2b2a",
-  border: "1px solid #e5e7eb",
-  borderRadius: "0.45rem",
-  padding: "5px 10px",
-  marginBottom: "5px", 
-};
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginBottom: "5px",
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -382,35 +385,30 @@ const SimpleTabsV2 = (props) => {
     description: "",
   });
 
-
   const trustFactors = [
     {
-      icon: 
-      "/assets/trustfactor/trust-factor-1.svg",
+      icon: "/assets/trustfactor/trust-factor-1.svg",
       text: "Trusted by 10,000+ Travelers",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
     },
     {
-      icon: 
-      "/assets/trustfactor/trust-factor-2.svg",
+      icon: "/assets/trustfactor/trust-factor-2.svg",
       text: "24/7 Support",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
     },
     {
-      icon:
-      "/assets/trustfactor/trust-factor-3.svg",
+      icon: "/assets/trustfactor/trust-factor-3.svg",
       text: "GST Invoice Provided",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
     },
     {
-      icon:
-      "/assets/trustfactor/trust-factor-4.svg",
+      icon: "/assets/trustfactor/trust-factor-4.svg",
       text: "Secure Payments",
       popupTitle: "No Hidden Charges",
       popupDescription:
@@ -427,9 +425,7 @@ const SimpleTabsV2 = (props) => {
   };
   const itinearyId = router.query.id;
 
-
   return (
-    
     <div className={classes.root}>
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
@@ -921,7 +917,23 @@ const SimpleTabsV2 = (props) => {
           </div>
 
           <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] ">
-            <Button borderWidth="0px" onclick={() => {handleChatBotOpen(true); setHasUnreadMessages(false);}}>
+            <Button
+              borderWidth="0px"
+              onclick={() => {
+                handleChatBotOpen(true);
+                router.push(
+                  {
+                    pathname: `/itinerary/${router.query.id}/`,
+                    query: {
+                      drawer: "chat",
+                    },
+                  },
+                  undefined,
+                  { scroll: false }
+                );
+                setHasUnreadMessages(false);
+              }}
+            >
               <Image
                 src={"/assets/chatbot/chatbot-avaatar.svg"}
                 alt="ticket"
@@ -937,11 +949,12 @@ const SimpleTabsV2 = (props) => {
               anchor={"right"}
               backdrop
               width={"50%"}
+              height={"100vh"}
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-              className=" pb-[20px]"
               isCloseButtonEnable={true}
               onHide={() => handleChatBotOpen(false)}
+              className="overflow-y-hidden"
             >
               <ChatBot showAsPopup={true} />
             </Drawer>
@@ -1484,14 +1497,14 @@ const SimpleTabsV2 = (props) => {
                     props?.payment?.discounted_cost > 0) ? (
                     <div className="flex flex-row gap-4 items-center">
                       <svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="23"
-  height="30"
-  viewBox="0 0 23 30"
-  fill="none"
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
->
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="23"
+                        height="30"
+                        viewBox="0 0 23 30"
+                        fill="none"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                      >
                         <path
                           d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
                           fill="#AD5BE7"
@@ -1506,7 +1519,7 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Inclusions{" "}
+                        View Cart{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
@@ -1514,12 +1527,12 @@ const SimpleTabsV2 = (props) => {
                       </button>
 
                       <div
-  style={popupStyle}
-  className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
->
+                        style={popupStyle}
+                        className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
+                      >
                         <div className="relative">
                           <span className="absolute top-2 -left-5 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
-                         {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
+                          {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
 
                           <div className="text-nowrap font-normal text-black text-sm">
                             No Hidden Charges,
@@ -1537,7 +1550,7 @@ const SimpleTabsV2 = (props) => {
                           handleFooterBannerMobile("View Inclusions")
                         }
                       >
-                        View Inclusions{" "}
+                        View Cart{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
@@ -1613,7 +1626,11 @@ const SimpleTabsV2 = (props) => {
                     fill="#ACACAC"
                   />
                 </svg> */}
-                <img src={factor.icon} alt={factor.title} className="w-[20px] h-[20px]" />
+                <img
+                  src={factor.icon}
+                  alt={factor.title}
+                  className="w-[20px] h-[20px]"
+                />
                 <span className="text-xs md:text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-none">
                   {factor.text}
                 </span>

@@ -342,6 +342,7 @@ const HotelBookingDetails = (props) => {
               heading: "Error!",
             })
           );
+          console.error(err,"Error")
         });
       setLoadingDetails(false);
     };
@@ -439,7 +440,7 @@ const HotelBookingDetails = (props) => {
 
   useEffect(() => {
     if (data?.hotel_details?.rating || data?.hotel_details?.rating_ext  > 0) {
-      items.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
+      items?.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
       setItems(items);
     }
   }, [data])
@@ -461,7 +462,7 @@ const HotelBookingDetails = (props) => {
 
 
   const calculateVisibleFacilites = (items, flag) => {
-    let result = flag ? [...items] : [...items].splice(0, 6);
+    let result = flag ? items?.length > 0 ? [...items] : [...items]?.splice(0, 6) : [];
     setViewMoreFacilites(flag);
     setActiveFacilites(result);
   }
@@ -1275,8 +1276,8 @@ const HotelBookingDetails = (props) => {
                               </>
                             ))}
                           </ul>
-                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities, true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
-                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities, false)}> Show Less</div>}
+                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
+                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], false)}> Show Less</div>}
                         </div>
                       </>}
 

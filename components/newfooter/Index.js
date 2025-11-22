@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import linksArr from "./Links";
 import openTailoredModal from "../../services/openTailoredModal";
 import { useRouter } from "next/router";
+import urls from "../../services/urls";
+import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 
 const Container = styled.div`
   min-height: 10vw;
@@ -298,11 +300,15 @@ const NewFooter = (props) => {
             <CompanyName style={{ margin: "1rem 0" }}>Contact Us</CompanyName>
 
             <CompanyText style={{ display: "flex", margin: "0" }}>
-              <div style={{ display: "flex" }}>
-                <FiPhoneCall
+              <div style={{ display: "flex", gap:"1" }} onClick={() =>
+              (window.location.href = urls.WHATSAPP)} className="cursor-pointer">
+                {/* <FiPhoneCall
                   style={{ fontSize: "1.15rem", marginRight: "0.5rem" }}
-                ></FiPhoneCall>
-                +91 95821 25476
+                ></FiPhoneCall> */}
+                
+            
+              <RiWhatsappFill className="text-[#fff] text-xl" />
+                +91 8448687703
               </div>
             </CompanyText>
 

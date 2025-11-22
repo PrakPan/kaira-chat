@@ -27,7 +27,12 @@ const ScrollContainer = styled.div`
   align-items: flex-start;
   overflow-x: auto; 
   padding-bottom: 8px;
-  scrollbar-width: thin;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 `;
 
 const GroupComponent = (props) => {

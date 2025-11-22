@@ -1813,7 +1813,6 @@ const Details = (props) => {
   };
 
   const handleProceedToPayment = () => {
-    console.log("openeing drawer");
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
     router.push(

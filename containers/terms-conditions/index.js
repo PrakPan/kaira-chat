@@ -26,7 +26,7 @@ const Heading = styled.p`
   text-align: center;
   @media screen and (min-width: 768px) {
     font-size: 5rem;
-    padding: 4rem 0rem 4rem 4rem;
+    padding: 1rem 0rem 4rem 4rem;
   }
 `;
 

@@ -7,6 +7,16 @@ const Container = styled.div`
   background: #f7f5f5;
   border-radius: 12px;
   padding: 12px;
+  
+  @media screen and (max-width: 767px) {
+    margin-bottom:0px;
+    position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:22;
+  }
+
 `;
 
 const QueryContainer = styled.div`
