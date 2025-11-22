@@ -9,6 +9,7 @@ import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
 import setItinerary  from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
+import { togglePreference } from "../../store/actions/slideOneActions";
 
 const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
   const dispatch = useDispatch();
@@ -39,13 +40,21 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
     itinerary?.number_of_infants || 0
   );
 
-  const selectedPreferencesItinerary = useSelector(
-      (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
-    ) || [];
-  
-  const [selectedPreferences, setSelectedPreferences] = useState(
-    itinerary?.experience_filters || selectedPreferencesItinerary || []
-  );
+  const selectedPreferences = useSelector(
+  (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+) || [];
+
+
+useEffect(() => {
+  if (itinerary?.experience_filters && itinerary.experience_filters.length > 0) {
+    const currentPrefs = selectedPreferences;
+    itinerary.experience_filters.forEach(pref => {
+      if (!currentPrefs.includes(pref)) {
+        dispatch(togglePreference(pref));
+      }
+    });
+  }
+}, []);
 
   // Initialize dates
   const [date, setDate] = useState({
@@ -66,7 +75,7 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
       setNumberOfAdults(itinerary?.number_of_adults || 1);
       setNumberOfChildren(itinerary?.number_of_children || 0);
       setNumberOfInfants(itinerary?.number_of_infants || 0);
-      setSelectedPreferences(itinerary?.experience_filters || []);
+      // setSelectedPreferences(itinerary?.experience_filters || []);
       
       if (itinerary?.start_date && itinerary?.end_date) {
         setDate({
@@ -81,12 +90,8 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
   }, [itinerary, isHotelsPresent]);
 
   const handleSetSelectedPreferences = (preference) => {
-    if (selectedPreferences.includes(preference)) {
-      setSelectedPreferences(selectedPreferences.filter((p) => p !== preference));
-    } else {
-      setSelectedPreferences([...selectedPreferences, preference]);
-    }
-  }
+  dispatch(togglePreference(preference));
+}
 
 const handleApplyDates = (dates) => {
   setDate({

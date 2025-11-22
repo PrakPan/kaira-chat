@@ -77,12 +77,9 @@ const GroupType = (props) => {
   };
   
   const _handleClick = (preference) => {
-    
-    if(props?.setSelectedPreferences){
-      props?.setSelectedPreferences(preference)
-      dispatch(togglePreference(preference));
-    } else dispatch(togglePreference(preference));
-  };
+  dispatch(togglePreference(preference));
+  
+};
 
   return (
     <Container>
