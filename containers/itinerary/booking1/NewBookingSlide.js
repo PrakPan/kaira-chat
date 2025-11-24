@@ -740,7 +740,8 @@ const PriceDetails = ({
           )
         } */}
 
-        {couponDiscount !== 0 && (
+        {
+        couponDiscount >=0 ? (
           <div className="flex justify-between text-green-600">
             <span>Coupon Discount</span>
             <span>
@@ -749,7 +750,7 @@ const PriceDetails = ({
                 : "₹0"}
             </span>
           </div>
-        )}
+        ) : null}
 
         <div className="border-t pt-2 mt-2">
           <div className="flex justify-between font-semibold text-lg">
@@ -1485,7 +1486,8 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
-      key: "rzp_test_FEKg5ZWGWl9i7c",
+      // key: "rzp_test_FEKg5ZWGWl9i7c",
+      key: "rzp_live_t1AzJZflHj0jWg",
       amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
