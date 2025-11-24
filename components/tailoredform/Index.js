@@ -14,6 +14,7 @@ import Popup from "../ErrorPopup";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import {
+  setFixedDate,
   setItineraryCreated,
   setItineraryInitiateData,
   setItineraryNotCreated,
@@ -267,7 +268,7 @@ const Enquiry = (props) => {
     }
   };
 
-  const initiateItineraryCreate = async (slideOneData) => {
+const initiateItineraryCreate = async (slideOneData) => {
     const data = buildItineraryPayload({
       source,
       selectedPreferences: slideOneData.selectedPreferences,
@@ -276,8 +277,43 @@ const Enquiry = (props) => {
       startingLocation,
       dateData: slideOneData.date,
     });
+    
+    let newEndDate = null;
+    let totalDuration = null;
+    let shouldUpdateDates = false; 
+    
     if (locationsLatLong.length > 0 && slideIndex == 1) {
-      data["basic_route"] = locationsLatLong;
+      
+      const startDate = new Date(slideOneData.date.start_date);
+      let currentDate = new Date(startDate);
+      
+      const updatedRoute = locationsLatLong.map((location) => {
+        const nights = location.duration || location.nights || 1;
+        const start = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + nights);
+        const end = new Date(currentDate);
+        
+        return {
+          ...location,
+          duration: nights,
+          nights: nights,
+          start_date: start.toISOString().split('T')[0],
+          end_date: end.toISOString().split('T')[0],
+        };
+      });
+      
+      // Calculate new trip end date based on total duration
+      newEndDate = new Date(currentDate);
+      totalDuration = Math.ceil((newEndDate - startDate) / (1000 * 60 * 60 * 24));
+      shouldUpdateDates = true; // Set flag to true
+      
+      // Update the dates in the payload
+      data["basic_route"] = updatedRoute;
+      data["dates"] = {
+        ...data["dates"],
+        end_date: newEndDate.toISOString().split('T')[0],
+        duration: totalDuration
+      };
     }
 
     try {
@@ -289,7 +325,24 @@ const Enquiry = (props) => {
       setError(null);
       setItineraryId(resData.itinerary_id);
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+      
+      // Update the locationsLatLong with the response data
+      setLocationsLatLong(resData.basic_route || []);
+      
       dispatch(setItineraryInitiateData(resData));
+      
+      // Update slideOne dates in Redux if routes were changed
+      if (shouldUpdateDates && newEndDate) {
+        dispatch(setFixedDate(
+          slideOneData.date.start_date,
+          newEndDate.toISOString().split('T')[0]
+        ));
+      }
+      
+      // Reset the route changed flag
+      setIsRouteChanged(false);
+      
+      // Navigate to next slide
       router.push({
         pathname: "/new-trip",
         query: {
@@ -389,21 +442,31 @@ const Enquiry = (props) => {
   }, [slideThreeData?.addHotels]);
 
 
-  useEffect(() => {
+ useEffect(() => {
     if (slideOneData) {
       const hasDestination =
         Array.isArray(slideOneData.selectedCities) &&
         slideOneData.selectedCities.length > 0;
 
-      const hasDates =
-        (slideOneData?.date?.start_date && slideOneData?.date?.end_date) || slideOneData.date.duration;
+     
+      let duration = null;
+      
+      if (slideOneData?.date?.type === "fixed" && 
+          slideOneData?.date?.start_date && 
+          slideOneData?.date?.end_date) {
+       
+        const start = new Date(slideOneData.date.start_date);
+        const end = new Date(slideOneData.date.end_date);
+        duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      } else if (slideOneData?.date?.type === "flexible" || 
+                 slideOneData?.date?.type === "anytime") {
+       
+        duration = slideOneData.date.duration;
+      }
 
-      if (hasDestination && hasDates) {
+      if (hasDestination && duration) {
         const cityName = slideOneData.selectedCities[0]?.name;
-        const duration = slideOneData.date?.duration;
-
         const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
-
 
         setSteps(prev =>
           prev.map((title, index) => (index === 0 ? stepTitle : title))

@@ -55,6 +55,8 @@ const ScrollContainer = styled.div`
   }
 `;
 
+
+
 const RouteEditSection = (props) => {
     const itinerary = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData);
     const isDesktop = useMediaQuery("(min-width:768px)");
