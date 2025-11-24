@@ -127,7 +127,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
     <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
       <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 mr-[7px]' : ''}`}>
         <div className="flex items-center justify-between bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px] mb-[8px]">
-          <div className={`Body2M_14`}> Day {props.index + 1} |  <span>  {getHumanDateWithYearv2(props?.day?.date)} {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}</span></div>
+          <div className={`Body2M_14`}> 
+            {isPageWide ? `Day ${props.index + 1} |` : ''} 
+             <span>  {getHumanDateWithYearv2(props?.day?.date)} {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}</span></div>
           <button
             onClick={() => setViewMore((prev) => !prev)}
             className="flex items-center text-sm font-semibold"

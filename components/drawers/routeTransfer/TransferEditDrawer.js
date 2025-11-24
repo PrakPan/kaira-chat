@@ -368,7 +368,7 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err?.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
               );
             })
         : booking_type != "multicity" &&
@@ -388,7 +388,7 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
               );
             });
     }
@@ -575,7 +575,7 @@ const TransferEditDrawer = (props) => {
             });
           } else {
             openNotification({
-              text: "There seems to be a problem, please try again!",
+              text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
@@ -649,7 +649,7 @@ const TransferEditDrawer = (props) => {
           });
         } else {
           openNotification({
-            text: "There seems to be a problem, please try again!",
+            text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -1989,6 +1989,7 @@ const NewMultiModeContainer = ({
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const {trackTransferBookingAdd} = useAnalytics();
+  const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
 
   const {
     number_of_adults,
@@ -2638,7 +2639,7 @@ const NewMultiModeContainer = ({
         )
       );
 
-      // trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
 
       getPaymentHandler();
       actualClose();
@@ -4415,6 +4416,7 @@ const OtherTransfer = ({
 
   const [lastRequestData, setLastRequestData] = useState(null);
    const {trackTransferBookingAdd} = useAnalytics();
+   const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -5021,7 +5023,7 @@ const OtherTransfer = ({
         )
       );
 
-      // trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
 
       getPaymentHandler();
 

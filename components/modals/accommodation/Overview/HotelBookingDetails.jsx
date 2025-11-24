@@ -338,7 +338,7 @@ const HotelBookingDetails = (props) => {
           dispatch(
             openNotification({
               type: "error",
-              text: "unable to get detail",
+              text: err?.response?.data?.errors[0]?.message[0] || "unable to get detail",
               heading: "Error!",
             })
           );

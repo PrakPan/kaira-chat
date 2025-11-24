@@ -72,6 +72,23 @@ export const ChatProvider = ({ itinearyId, children }) => {
     }
   }, [finalized_status, token]);
 
+  useEffect(() => {
+    if (!itinearyId || !token) return;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && sessionId && !isConnected) {
+        console.log("App returned to foreground, reconnecting...");
+        connect(sessionId);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [itinearyId, token, sessionId, isConnected]);
+
   const connect = (id = null) => {
     if (reconnecting) return;
     reconnecting = true;
@@ -128,28 +145,41 @@ export const ChatProvider = ({ itinearyId, children }) => {
       handleStreamData(data, id);
     };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket Error", error);
-      setIsConnected(false);
-      setDisableQuerySection(false);
-      setConversations((prev) => [
-        ...prev,
-        {
-          message:
-            "Oops! Looks like we lost connection. Try again in a bit, or hit ‘New Chat’ to keep the conversation continue.",
-          is_bot: true,
-        },
-      ]);
-    };
+    // socket.onerror = (error) => {
+    //   console.error("WebSocket Error", error);
+    //   setIsConnected(false);
+    //   setDisableQuerySection(false);
+    //   setConversations((prev) => [
+    //     ...prev,
+    //     {
+    //       message:
+    //         "Oops! Looks like we lost connection. Try again in a bit, or hit ‘New Chat’ to keep the conversation continue.",
+    //       is_bot: true,
+    //     },
+    //   ]);
+    // };
 
+    socket.onerror = (error) => {
+  console.error("WebSocket Error", error);
+  setIsConnected(false);
+  setDisableQuerySection(false);
+  
+};
+
+    // socket.onclose = () => {
+    //   console.log("WebSocket disconnected. Attempting reconnect...");
+    //   setIsConnected(false);
+    //   setTimeout(() => {
+    //     reconnecting = false;
+    //     connect(id);
+    //   }, 2000);
+    // };
     socket.onclose = () => {
-      console.log("WebSocket disconnected. Attempting reconnect...");
-      setIsConnected(false);
-      setTimeout(() => {
-        reconnecting = false;
-        connect(id);
-      }, 2000);
-    };
+  console.log("WebSocket disconnected. Will reconnect when needed.");
+  setIsConnected(false);
+  setDisableQuerySection(false);
+  reconnecting = false;
+};
   };
 
   const handleStreamData = (data, id) => {
