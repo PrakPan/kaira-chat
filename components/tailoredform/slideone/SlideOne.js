@@ -45,16 +45,26 @@ const SlideOne = (props) => {
   const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
   const dispatch = useDispatch();
   const handleOnCalenderApplyDates = (values) => {
-    if (values.dateType == "fixed") {
-      dispatch(setFixedDate(values.start, values.end));
-    }
-    else if (values.dateType == "flexible") {
-      dispatch(setFlexibleDate(values.month.getMonth()+1, values.month.getFullYear(), values.duration));
-    }
-    else {
-      dispatch(setAnytimeDate(values.duration))
-    }
+  if (values.dateType == "fixed") {
+    const formatDateForAPI = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    
+    dispatch(setFixedDate(
+      formatDateForAPI(values.start), 
+      formatDateForAPI(values.end)
+    ));
   }
+  else if (values.dateType == "flexible") {
+    dispatch(setFlexibleDate(values.month.getMonth()+1, values.month.getFullYear(), values.duration));
+  }
+  else {
+    dispatch(setAnytimeDate(values.duration))
+  }
+};
   const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)||[];
   const setSelectedPrefrences=(value)=>{
     dispatch(togglePreference(value));
@@ -90,10 +100,21 @@ const SlideOne = (props) => {
           <div className="relative w-full">
             <StyledFigmaBox
               value={
-                date.type === "fixed" ? (valueStart && valueEnd
-                  ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
-                  : "") : date.type === "flexible" ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` : date.duration + " days"
-              }
+  date.type === "fixed" ? (valueStart && valueEnd
+    ? `${getHumanDate(
+        typeof valueStart === 'string' 
+          ? valueStart.split("-").reverse().join("/")
+          : valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/")
+      )} - ${getHumanDate(
+        typeof valueEnd === 'string'
+          ? valueEnd.split("-").reverse().join("/")
+          : valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/")
+      )}`
+    : "") 
+    : date.type === "flexible" 
+      ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` 
+      : date.duration + " days"
+}
               placeholder="Select dates"
               className={`cursor-pointer w-full pr-10  Body2M_14`}
               onClick={() => setShowCalendar(true)}

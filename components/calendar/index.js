@@ -28,9 +28,9 @@ const AirbnbCalendar = (props) => {
   const [hoveredDate, setHoveredDate] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [selectedDates, setSelectedDates] = useState({
-    start: normalizeDate(props.valueStart),
-    end: normalizeDate(props.valueEnd)
-  });
+  start: normalizeDate(props.valueStart),
+  end: normalizeDate(props.valueEnd)
+});
   const [loading,setLoading] = useState(false);
   
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -69,29 +69,66 @@ const AirbnbCalendar = (props) => {
     });
   };
 
-  const handleDateClick = (date) => {
-    if (!selectedDates.start) {
-      setSelectedDates({ start: date, end: null });
-    } else if (!selectedDates.end) {
-      if (date > selectedDates.start) {
-        setSelectedDates(prev => ({
-          ...prev,
-          end: date
-        }));
-        setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
-      } else {
-        setSelectedDates({ start: date, end: null });
-      }
+  const calculateDaysBetween = (startDate, endDate) => {
+  // Normalize both dates to midnight to avoid timezone issues
+  const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  
+  const diffTime = end - start;
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+  
+  return diffDays;
+};
+
+
+
+const handleDateClick = (date) => {
+  if (!selectedDates.start) {
+    setSelectedDates({ start: date, end: null });
+  } else if (!selectedDates.end) {
+    if (date > selectedDates.start) {
+      setSelectedDates(prev => ({
+        ...prev,
+        end: date
+      }));
+      setTripDuration(calculateDaysBetween(selectedDates.start, date));
     } else {
-      if (date < selectedDates.start) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.start && date < selectedDates.end) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.end) {
-        setSelectedDates({ start: date, end: null });
-      }
+      setSelectedDates({ start: date, end: null });
     }
-  };
+  } else {
+    if (date < selectedDates.start) {
+      setSelectedDates({ start: date, end: selectedDates.end });
+    } else if (date > selectedDates.start && date < selectedDates.end) {
+      setSelectedDates({ start: date, end: selectedDates.end });
+    } else if (date > selectedDates.end) {
+      setSelectedDates({ start: date, end: null });
+    }
+  }
+};
+
+  // const handleDateClick = (date) => {
+  //   if (!selectedDates.start) {
+  //     setSelectedDates({ start: date, end: null });
+  //   } else if (!selectedDates.end) {
+  //     if (date > selectedDates.start) {
+  //       setSelectedDates(prev => ({
+  //         ...prev,
+  //         end: date
+  //       }));
+  //       setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
+  //     } else {
+  //       setSelectedDates({ start: date, end: null });
+  //     }
+  //   } else {
+  //     if (date < selectedDates.start) {
+  //       setSelectedDates({ start: date, end: selectedDates.end });
+  //     } else if (date > selectedDates.start && date < selectedDates.end) {
+  //       setSelectedDates({ start: date, end: selectedDates.end });
+  //     } else if (date > selectedDates.end) {
+  //       setSelectedDates({ start: date, end: null });
+  //     }
+  //   }
+  // };
 
   const handleApplyDates = async () => {
   props.setDateType(dateType)

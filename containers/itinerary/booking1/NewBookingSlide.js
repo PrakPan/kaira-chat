@@ -731,15 +731,14 @@ const PriceDetails = ({
           </span>
         </div>
 
-        {
-          // !Cart?.are_prices_hidden &&
+        {/* {
           surchargesTaxes > 0 && (
             <div className="flex justify-between">
               <span>Surcharges and Taxes</span>
               <span>₹{surchargesTaxes.toLocaleString("en-IN")}</span>
             </div>
           )
-        }
+        } */}
 
         {couponDiscount !== 0 && (
           <div className="flex justify-between text-green-600">

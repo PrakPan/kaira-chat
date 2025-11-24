@@ -307,11 +307,11 @@ export const useAnalytics = () => {
     }, []),
 
     trackItineraryPageView: useCallback(async (itineraryId, isFirstVisit = false) => {
-      return await callWorkerFunction('trackItineraryPageView', itineraryId, isFirstVisit);
+      return await callWorkerFunction('track', itineraryId, isFirstVisit);
     }, []),
     
     trackSwitchItinerary: useCallback(async (fromItineraryId, toItineraryId) => {
-      return await callWorkerFunction('trackSwitchItinerary', fromItineraryId, toItineraryId);
+      return await callWorkerFunction('track', fromItineraryId, toItineraryId);
     }, []),
     
     trackSectionViewed: useCallback(async (itineraryId, sectionId) => {
@@ -348,7 +348,14 @@ export const useAnalytics = () => {
     }, []),
     
     trackPaymentAttempted: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
-      return await callWorkerFunction('trackPaymentAttempted', itineraryId, amount, currency, methodMasked, success);
+      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
+    }, []),
+
+    trackPaymentSelected: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
+      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
+    }, []),
+    trackPaymentDeselected: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
+      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
     }, []),
     
     trackBookingConfirmed: useCallback(async (itineraryId, bookingIds, amount, currency) => {
