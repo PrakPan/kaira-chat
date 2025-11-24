@@ -48,6 +48,10 @@ import JourneySimplified from "../../components/revamp/home/JourneySimplified.js
 import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.jsx";
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import Link from "next/link.js";
+import DesktopBanner from "../../components/containers/Banner.js"
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -91,6 +95,7 @@ const Index = (props) => {
   const router = useRouter();
   const [userItineraries, setUserItineraries] = useState([]);
   const [hotLocations, setHotLocations] = useState([]);
+  const [desktopBannerLoading,setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
 
@@ -129,7 +134,8 @@ const Index = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(router, props.data.id, props.data.name);
+    // openTailoredModal(router, props.data.id, props.data.name);
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -183,7 +189,26 @@ const Index = (props) => {
           title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}
         /> */}
+        
         <SetWidthContainer>
+           <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data?.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data?.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
           <PathNavigation path={props?.data?.path} />
 
           {hotLocations.length ? (
@@ -300,6 +325,20 @@ const Index = (props) => {
                   </div>
                 </div>
               </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
+              </div>
             </>
           ) : null}
 
@@ -393,7 +432,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -406,6 +445,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           rating={destination.rating}
                           reviewCount={destination.user_ratings_total}
@@ -459,6 +499,21 @@ const Index = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </div>
           ) : null}
@@ -506,7 +561,7 @@ const Index = (props) => {
                     },
                     // when window width is >= 1024px
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -519,6 +574,7 @@ const Index = (props) => {
                           description={
                             destination.description || destination.tagline
                           }
+                          one_liner_description={destination?.one_liner_description}
                           image={destination.image}
                           rating={destination.rating}
                           reviewCount={destination.user_ratings_total}
@@ -570,6 +626,21 @@ const Index = (props) => {
                     </div>
                   </div>
                 </div>
+
+              </div>
+              <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </button>
+                </Link>
               </div>
             </MenuItem>
           ) : null}
@@ -913,6 +984,7 @@ const Index = (props) => {
           <Reviews></Reviews> */}
 
           <CurveImageGallery />
+          <TestimonialCarousel />
 
           {/* <H3
             style={{

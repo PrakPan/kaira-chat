@@ -48,7 +48,6 @@ export const EXPERIENCE_FILTERS_BOX = [
     actual: ["Romantic"],
     icon:"Food.svg"
   },
-  
 ];
 
 const fadeInAnimation = keyframes`${fadeIn}`;
@@ -64,32 +63,46 @@ const Container = styled.div`
   }
 `;
 
-
 const GroupType = (props) => {
   const dispatch = useDispatch();
-  const _isPreferenceAdded = (preference) => props?.selectedPreferences.includes(preference);
+  
+  // Read directly from Redux state instead of props
+  const selectedPreferences = useSelector(
+    (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+  ) || [];
+  
+  const _isPreferenceAdded = (preference) => {
+    return selectedPreferences.includes(preference);
+  };
+  
   const _handleClick = (preference) => {
-    props.setSelectedPreferences(preference);
+    dispatch(togglePreference(preference));
   };
 
   return (
     <Container>
       <StyledFlexWrap tailoredFormModal={props.tailoredFormModal}>
         {EXPERIENCE_FILTERS_BOX.map((filter, i) => {
-          let clicked = false
+          const isSelected = _isPreferenceAdded(filter.display);
+          
           return (
             <div
               key={i}
-              is_selected={_isPreferenceAdded(filter.display)}
+              is_selected={isSelected.toString()}
               className="hover-pointer"
               onClick={() => _handleClick(filter.display)}
             >
               <StyledButton
                 style={{ lineHeight: "1.2", alignItems: "flex-start" }}
                 className="flex gap-2 flex-row center-div bg-text-white"
-                clicked={_isPreferenceAdded(filter.display)}
+                clicked={isSelected}
               >
-                <Image src={`/${filter.icon}`} alt={filter.display} width={15} height={15} />
+                <Image 
+                  src={`/${filter.icon}`} 
+                  alt={filter.display} 
+                  width={15} 
+                  height={15} 
+                />
                 {filter.display}
               </StyledButton>
             </div>

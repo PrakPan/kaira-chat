@@ -66,11 +66,12 @@ export default function ChampionsTrophy(props) {
   }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, pageId, destination, type);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, pageId, destination, type);
+    // }
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -157,7 +158,7 @@ export default function ChampionsTrophy(props) {
                     </PrimaryHeading>
                     <Navigation components={navComponents} className="m-auto" />
 
-                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                   </div>
                 ) : null;
               }
@@ -307,11 +308,12 @@ export const PlanYourTripButton = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination);
-    }
+    // if (isPageWide) {
+    //   setShowTailoredModal(true);
+    // } else {
+    //   openTailoredModal(router, props.page_id, props.destination);
+    // }
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -331,7 +333,7 @@ export const PlanYourTripButton = (props) => {
           ? props.text
           : props.slug === "honeymoon-2025"
           ? "Plan Your Honeymoon!"
-          : "Plan Your Trip Now!"}
+          : "+ Plan Your Trip Now!"}
       </SecondaryButton>
 
       <TailoredFormMobileModal

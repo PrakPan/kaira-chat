@@ -462,10 +462,10 @@ const ProfileDropDown = (props) => {
       }
       width="2rem"
       height="2rem"
-      widthmobile="2rem"
-      heightmobile="2rem"
+      widthmobile="1.2rem"
+      heightmobile="1.2rem"
       dimensions={{ width: 300, height: 300 }}
-      dimensionsMobile={{ width: 300, height: 300 }}
+      dimensionsMobile={{ width: 200, height: 200 }}
       noPlaceholder={true}
     />
   </CircularImageWrapper>

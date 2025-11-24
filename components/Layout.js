@@ -87,11 +87,11 @@ const Layout = React.memo((props) => {
   }, [props.token]);
 
   return (
-    <div className="layout">
+    <div className="layout overflow-x-hidden">
       <NavigationMenu/>
 
       <div
-        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
+        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : props?.isItinerary && !isPageWide ? "0px" : "72px" }}
       >
         {props.children}
       </div>

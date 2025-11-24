@@ -307,7 +307,7 @@ const ImageLoader = (props) => {
               is_url
                 ? props.url
                 : isPageLoaded
-                ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
+                ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                 : transparentImageUrl
             }
             transparent={isTransparent}

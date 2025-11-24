@@ -57,11 +57,11 @@ import { ChatProvider, useChatContext } from "../../components/Chatbot/context/C
 
 const NotificationDot = styled.div`
   position: absolute;
-  top: 14px;
-  right: 15px;
-  width: 14px;
-  height: 14px;
-  background-color: #ff4444;
+  top: 8px;
+  right: 19px;
+  width: 16px;
+  height: 16px;
+  background-color: #FD6D6C;
   border-radius: 50%;
   border: 2px solid white;
   // animation: pulse 2s infinite;
@@ -1524,7 +1524,7 @@ const SimpleTabsV2 = (props) => {
                           <div className="text-nowrap font-normal text-black text-sm">
                             No Hidden Charges,
                             <br />
-                            included taxes
+                            Includes taxes
                           </div>
                         </div>
                       </div>

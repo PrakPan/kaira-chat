@@ -12,6 +12,9 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
+import Button from "../common/components/button";
+import Link from "next/link";
+
 const LuxuryEuropeDestinations = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
@@ -31,7 +34,7 @@ const LuxuryEuropeDestinations = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/france",
-      image: `${imgUrlEndPoint}/media/countries/173131953880670285224914550781.webp`,
+      image: `${imgUrlEndPoint}/media/website/france.jpg`,
     },
     {
       id: 2,
@@ -81,28 +84,29 @@ const LuxuryEuropeDestinations = () => {
       link: "europe/finland",
       image: `${imgUrlEndPoint}/media/countries/168442263137298607826232910156.jpg`,
     },
-    // {
-    //   id: 5,
-    //   title: "Singapore",
-    //   description:
-    //     "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
-    //   tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
-    //   gradientOverlay:
-    //     "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-    //   link: "asia/singapore",
-    //   image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
-    // },
-    // {
-    //   id: 6,
-    //   title: "Bali",
-    //   description:
-    //     "Discover a tropical paradise where lush rice terraces and vibrant culture blend into an unforgettable island escape.",
-    //   tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
-    //   gradientOverlay:
-    //     "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-    //   link: "asia/indonesia/bali",
-    //   image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
-    // },
+
+    {
+      id: 5,
+      title: "Singapore",
+      description:
+        "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
+      tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
+      gradientOverlay:
+        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link: "asia/singapore",
+      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
+    },
+    {
+      id: 6,
+      title: "Prague",
+      description:
+        "Welcome to Prague, the city that has captured the heart of many travellers for centuries!",
+      tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
+      gradientOverlay:
+        "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
+      link: "asia/indonesia/bali",
+      image: `${imgUrlEndPoint}/media/cities/168553058279981160163879394531.jpeg`,
+    },
   ];
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -125,15 +129,15 @@ const LuxuryEuropeDestinations = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 lg:py-24 px-0 sm:px-4 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full sm:max-w-7xl sm:mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 lg:mb-6 leading-tight">
-            Luxury Redefined Across Europe
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
+            Elevating Luxury Across Europe
           </h2>
           <p
-            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0"
+            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0 text-base"
             style={{ fontSize: "16px" }}
           >
             Discover iconic cities, elite resorts, and unforgettable 
@@ -151,8 +155,8 @@ const LuxuryEuropeDestinations = () => {
             onSwiper={handleSwiper}
             onSlideChange={handleSlideChange}
             navigation={{
-              nextEl: ".fullslider-next",
-              prevEl: ".fullslider-prev",
+              nextEl: ".fullslider-n",
+              prevEl: ".fullslider-p",
               clickable: true,
             }}
             breakpoints={{
@@ -194,30 +198,46 @@ const LuxuryEuropeDestinations = () => {
           </Swiper>
 
           {/* Custom Prev Button */}
-          <div className="fullslider-prev" aria-hidden>
-            <div className="absolute -left-3  top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+          <div className="fullslider-p" aria-hidden>
+            <div className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1">
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className="text-white  text-md transition-colors duration-300 transform "
+                  className="text-white  text-md transition-colors duration-300 transform w-full "
                 />
               </div>
             </div>
           </div>
 
           {/* Custom Next Button */}
-          <div className="fullslider-next" aria-hidden>
-            <div className="absolute -right-3  top-1/2 -translate-y-1/2 z-10">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+          <div className="fullslider-n" aria-hidden>
+            <div className="absolute -right-3  sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1">
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}
-                  className="text-white text-md transition-colors duration-300 transform "
+                  className="text-white transition-colors duration-300 transform"
                 />
               </div>
             </div>
           </div>
         </div>
+
+       <div className=" flex items-center justify-center mt-8 lg:mt-10">
+                <Link href="/new-trip">
+                  <Button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </Button>
+                </Link>
+              </div>
       </div>
+
     </section>
   );
 };

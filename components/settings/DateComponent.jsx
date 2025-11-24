@@ -24,7 +24,7 @@ const DateComponent = (props) => {
     <div>
         <div>
         <div>
-          <div className="Body2R_14 mb-[4px]">{props.settings ? 'Dates' : "When"}</div>
+          <div className="Body1M_16  mb-[4px]">{props.settings ? 'Dates' : "When"}</div>
           <div className="relative w-full">
             <StyledFigmaBox
               value={

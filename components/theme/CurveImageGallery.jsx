@@ -79,7 +79,7 @@ const Carousel3D = () => {
   ];
 
   return (
-    <section className="bg-white font-inter py-16">
+    <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white font-inter">
       <div className="flex flex-col items-center px-1">
         <div className="max-w-[600px] text-center">
           <h2 className="text-center text-3xl md:text-4xl font-bold text-primary-indigo mb-4">
@@ -141,7 +141,7 @@ const Carousel3D = () => {
                         {item.tags.map((tag, tagIndex) => (
                           <span
                             key={tagIndex}
-                            className="px-3 py-1 bg-black/50 backdrop-blur-sm text-white text-sm font-medium rounded-full border border-white/30"
+                            className="text-black px-2 sm:px-3 py-1 bg-[#F2F2F2E5] backdrop-blur-[50px] text-xs sm:text-sm font-medium rounded-full"
                           >
                             {tag}
                           </span>

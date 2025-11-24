@@ -227,20 +227,20 @@ const JourneySimplified = () => {
   return (
     <section
       ref={containerRef}
-      className="py-16 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white"
+      className="py-12 sm:py-16 lg:py-24 max-sm:px-2 sm:px-4 lg:px-8 bg-white"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-16 lg:mb-20">
           <h2
-            ref={headingRef}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6"
+            // ref={headingRef}
+            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 px-5"
             style={{ maxFontSize: "40px" }}
           >
             Your Journey, Simplified
           </h2>
           <p
-            ref={stepsRef}
+            // ref={stepsRef}
             className="text-base font-normal text-gray-600 max-w-2xl mx-auto"
             style={{ fontStyle: "normal" }}
           >
@@ -278,19 +278,19 @@ const JourneySimplified = () => {
 
         {/* CTA Button */}
         <div className="text-center">
-        <Link href="/new-trip">
-          <Button
-            variant="filled"
-            size="medium"
-            onClick={() => {
-              console.log("Get Free Travel Consultation clicked");
-            }}
-            className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
-          >
-            + Create a free trip now!
-          </Button>
-          </Link>
-        </div>
+                <Link href="/new-trip">
+                  <Button
+                    variant="filled"
+                    size="medium"
+                    onClick={() => {
+                      console.log("Create a Trip Now! clicked");
+                    }}
+                    className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
+                  >
+                    + Create a Trip Now!
+                  </Button>
+                </Link>
+              </div>
       </div>
     </section>
   );

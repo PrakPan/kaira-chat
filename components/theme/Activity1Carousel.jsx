@@ -107,7 +107,7 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         </div>
       </div>
 
-      <NewPOIDetailsDrawer
+      <POIDetailsDrawer
         themePage
         show={show}
         ActivityiconId={id}

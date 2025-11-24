@@ -60,6 +60,9 @@ import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.
 import CurveImageGallery from "../../components/theme/CurveImageGallery.jsx";
 import styles from "../../styles/pages/revamp/home.module.scss";
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import DesktopBanner from "../../components/containers/Banner.js"
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -101,6 +104,7 @@ const Index = (props) => {
   const [hotLocations, setHotLocations] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
+  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
 
@@ -132,12 +136,14 @@ const Index = (props) => {
   }, [props?.data?.components?.[0]?.itineraries]);
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(
-      router,
-      props.data.id,
-      convertDbNameToCapitalFirst(props.data.slug),
-      props.type
-    );
+    // openTailoredModal(
+    
+    //   router,
+    //   props.data.id,
+    //   convertDbNameToCapitalFirst(props.data.slug),
+    //   props.type
+    // );
+    router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -165,6 +171,27 @@ const Index = (props) => {
         />
 
         <SetWidthContainer>
+
+             <DesktopBanner
+            loading={desktopBannerLoading}
+            onclick={() =>
+              {router.push("/new-trip");}
+              // openTailoredModal(
+              //   router,
+              //   props.data.id,
+              //   convertDbNameToCapitalFirst(props.data.slug)
+              // )
+            }
+            text={`Craft a personalized itinerary${
+              props.data.slug
+                ? " to " +
+                  convertDbNameToCapitalFirst(props.data.slug) +
+                  " now"
+                : ""
+            }!`}
+          ></DesktopBanner>
+
+
           <PathNavigation path={props.data.path} />
 
           {props.locations && props.locations.length ? (
@@ -343,8 +370,8 @@ const Index = (props) => {
                 component.carousel.toLowerCase().includes("poi");
               return (
                 <>
-                  <div className="space-y-12 mt-5">
-                    <div className="space-y-3">
+                  <div className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8">
+                    <div className="space-y-3 lg:py-8">
                       <PrimaryHeading
                         className={`mx-auto text-center ${
                           isActivityOrPoi ? "text-left" : ""
@@ -387,7 +414,7 @@ const Index = (props) => {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "destination-3" ? (
                       <>
@@ -764,7 +791,7 @@ const Index = (props) => {
                             </div>
                           </div>
                         </div>
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
@@ -839,7 +866,7 @@ const Index = (props) => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
@@ -977,7 +1004,7 @@ const Index = (props) => {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
@@ -1134,6 +1161,7 @@ const Index = (props) => {
           <Reviews></Reviews> */}
 
           <CurveImageGallery />
+          <TestimonialCarousel />
 
           {/* <H3
             style={{

@@ -224,7 +224,7 @@ const Enquiry = (props) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    initiateItineraryCreate();
+    initiateItineraryCreate(slideOneData);
   };
 
   const _SlideThreeSubmitHandler = () => {
@@ -258,7 +258,7 @@ const Enquiry = (props) => {
     }
   };
 
-  const initiateItineraryCreate = async () => {
+  const initiateItineraryCreate = async (slideOneData) => {
     const data = buildItineraryPayload({
       source,
       selectedPreferences: slideOneData.selectedPreferences,
@@ -693,7 +693,7 @@ const Enquiry = (props) => {
             <div className="flex justify-between">
               <button
                 className={`LargeIndigoOutlinedButton `}
-                onClick={() => router.push("/")}
+                onClick={() => router.back()}
               >
                 Cancel
               </button>
@@ -753,7 +753,7 @@ const Enquiry = (props) => {
                   // color="white"
                   // height="50px"
                   // loading={isLoading}
-                  onClick={() => initiateItineraryCreate()}
+                  onClick={() => initiateItineraryCreate(slideOneData)}
                   // className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[120px]"}`}
                   className={`LargeIndigoOutlinedButton bg-[#07213A] text-white`}
                 >
