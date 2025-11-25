@@ -341,25 +341,25 @@ export const useAnalytics = () => {
     }, []),
     
     // Payment Events
-    trackPaymentPageViewed: useCallback(async (itineraryId) => {
+    trackPaymentPageViewed: useCallback(async (itineraryId = null) => {
       return await callWorkerFunction('track', 'payment_page_viewed', {
         itinerary_id: itineraryId
       });
     }, []),
     
-    trackPaymentAttempted: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
-      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
+    trackPaymentAttempted: useCallback(async (itineraryId = null,cart_info=null) => {
+      return await callWorkerFunction('track','payment_attempted', {itineraryId, cart_info});
     }, []),
 
-    trackPaymentSelected: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
-      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
+    trackPaymentSelected: useCallback(async (itineraryId=null, bookingType=null, bookingId=null) => {
+      return await callWorkerFunction('track','payment_selected', {itineraryId, bookingType, bookingId});
     }, []),
-    trackPaymentDeselected: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
-      return await callWorkerFunction('track', itineraryId, amount, currency, methodMasked, success);
+    trackPaymentDeselected: useCallback(async (itineraryId=null, bookingType=null, bookingId=null) => {
+      return await callWorkerFunction('track', 'payment_deselected', {itineraryId, bookingType, bookingId});
     }, []),
     
-    trackBookingConfirmed: useCallback(async (itineraryId, bookingIds, amount, currency) => {
-      return await callWorkerFunction('trackBookingConfirmed', itineraryId, bookingIds, amount, currency);
+    trackPaymentBookingConfirmed: useCallback(async (itineraryId = null, cart_info=null) => {
+      return await callWorkerFunction('track', 'payment_confirmed',{itineraryId, cart_info});
     }, []),
     
     // Communication Events
@@ -558,24 +558,24 @@ export const useAnalytics = () => {
     }, []),
     
     // Chat Events
-    trackChatOpened: useCallback(async (itineraryId) => {
+    trackChatOpened: useCallback(async (itineraryId,sessionId=null) => {
       return await callWorkerFunction('track', 'chat_opened', {
-        itinerary_id: itineraryId
+        itinerary_id: itineraryId,
+        session_id:sessionId
       });
     }, []),
     
-    trackChatMessageSent: useCallback(async (itineraryId, messageLength, messageMasked) => {
+    trackChatMessageSent: useCallback(async (itineraryId, message=null) => {
       return await callWorkerFunction('track', 'chat_message_sent', {
         itinerary_id: itineraryId,
-        message_length: messageLength,
-        message_masked: messageMasked
+        message: message
       });
     }, []),
     
-    trackChatMessageReceived: useCallback(async (itineraryId, source) => {
+    trackChatMessageReceived: useCallback(async (itineraryId, message=null) => {
       return await callWorkerFunction('track', 'chat_message_received', {
         itinerary_id: itineraryId,
-        source
+        message
       });
     }, []),
   };

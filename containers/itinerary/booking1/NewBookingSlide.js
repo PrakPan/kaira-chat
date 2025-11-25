@@ -953,7 +953,7 @@ const ItineraryInclusions = ({
                       !selectedInclusions[booking.id] ? "opacity-50" : ""
                     }`}
                   >
-                    {console.log("Booking Status", booking)}
+                    
                     {/* Checkbox */}
                     <div className="pt-0.5">
                       {updatingInclusions[booking.id] ? (
@@ -1109,7 +1109,7 @@ const Details = (props) => {
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   const {resetSession} = useChatContext();
 
-  const { trackWhatsAppClicked } = useAnalytics();
+  const { trackWhatsAppClicked,trackPaymentSelected,trackPaymentDeselected,trackPaymentAttempted, trackPaymentBookingConfirmed} = useAnalytics();
 
   useEffect(() => {
     if (props?.openPaymentDrawer && isDirectlyOpenPaymentDrawer) {
@@ -1231,6 +1231,7 @@ const Details = (props) => {
 
       if (response.data) {
         dispatch(setCart(response.data));
+
 
         dispatch(
           openNotification({
@@ -1515,6 +1516,7 @@ const Details = (props) => {
             if (paymentType === "full") {
               setSessionPaymentCompleted(true);
               setPaymentCompleted(true);
+              trackPaymentBookingConfirmed(router?.query?.id,Cart);
             } else {
               setLockInCompleted(true);
               setSelectedPaymentOption("full");
@@ -1565,6 +1567,8 @@ const Details = (props) => {
           (sale) =>
             sale.payment_type === "full_payment" && sale.status === "Created"
         );
+
+        trackPaymentAttempted(router.query.id,Cart);
 
         if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
           setPaymentLoading(false);
