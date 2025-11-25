@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SearchInputStarting from "../searchstarting/Input";
 import SearchInput from "../search/Index";
@@ -19,6 +19,7 @@ const SelectedDestination = (props) => {
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
   const [showDestination, setShowDestination] = useState(true);
+  const [defaultLocation, setDefaultLocation] = useState(null);
 
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
@@ -33,6 +34,77 @@ const SelectedDestination = (props) => {
   const _handleFocusSearch = () => {
     setFocusSearch(true);
   };
+
+  // Helper function to get cookie value
+  const getCookie = (name) => {
+    if (typeof document === 'undefined') return null;
+    
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      return parts.pop().split(';').shift();
+    }
+    return null;
+  };
+
+  // Helper function to validate location object
+  const isValidLocation = (location) => {
+    return (
+      location &&
+      location.text &&
+      location.place_id &&
+      location.lat &&
+      location.long &&
+      location.country
+    );
+  };
+
+  useEffect(() => {
+    const userLocationCookie = getCookie('userLocation');
+    
+    if (userLocationCookie) {
+      try {
+        const parsedLocation = JSON.parse(decodeURIComponent(userLocationCookie));
+        
+        if (isValidLocation(parsedLocation)) {
+          setDefaultLocation({
+            name: parsedLocation.text,
+            place_id: parsedLocation.place_id,
+            lat: parsedLocation.lat,
+            long: parsedLocation.long,
+            country: parsedLocation.country,
+            currency: parsedLocation.currency,
+            continent: parsedLocation.continent,
+          });
+          
+          if (!props.startingLocation) {
+            props.setStartingLocation({
+              name: parsedLocation.text,
+              place_id: parsedLocation.place_id,
+              lat: parsedLocation.lat,
+              long: parsedLocation.long,
+              country: parsedLocation.country,
+            });
+          }
+        } else {
+          setDefaultLocation({ name: "Delhi, IN" });
+        }
+      } catch (error) {
+        console.error("Error parsing userLocation cookie:", error);
+        setDefaultLocation({ name: "Delhi, IN" });
+      }
+    } else {
+      setDefaultLocation({ name: "Delhi, IN" });
+    }
+  }, []);
+
+  const getDisplayLocation = () => {
+    if (props.startingLocation) {
+      return props.startingLocation.name;
+    }
+    return defaultLocation?.name || "Delhi, IN";
+  };
+
 
   return (
     <StyledContainer
@@ -73,7 +145,7 @@ const SelectedDestination = (props) => {
           !props.showSearchStarting ? (
             !props.startingLocation ? (
               <div className="flex flex-row gap-2 justify-between">
-                <div className="truncate Body2M_14">Delhi, IN</div>
+                <div className="truncate Body2M_14">{getDisplayLocation()}</div>
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
