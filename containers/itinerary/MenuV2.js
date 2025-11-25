@@ -119,7 +119,7 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const { trackGetInTouchClicked } = useAnalytics();
+  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
 
   const [isHovered, setIsHovered] = useState(false);
@@ -334,6 +334,7 @@ const SimpleTabsV2 = (props) => {
 
   const handleFooterBannerMobile = (label) => {
     setShowFooterBannerMobile(!showFooterBannerMobile);
+    trackPaymentPageViewed(router?.query?.id)
 
     logEvent({
       action: "Button_Click",
@@ -953,7 +954,7 @@ const SimpleTabsV2 = (props) => {
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
               isCloseButtonEnable={true}
-              onHide={() => handleChatBotOpen(false)}
+              onHide={() => {handleChatBotOpen(false)}}
               className="overflow-y-hidden"
             >
               <ChatBot showAsPopup={true} />

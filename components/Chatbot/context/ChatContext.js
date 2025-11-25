@@ -21,6 +21,7 @@ import { setStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { openNotification } from "../../../store/actions/notification";
+import { useRouter } from "next/router";
 const localStorageKeyForSessionIds = "chatbotSessionIds";
 
 export const ChatProvider = ({ itinearyId, children }) => {
@@ -32,12 +33,10 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [disableQuerySection, setDisableQuerySection] = useState(false);
   const socketRef = useRef(null);
-  // const token = localStorage.getItem("access_token");
   const itinerary = useSelector((state) => state.Itinerary);
   const stays = useSelector((state) => state.Stays);
   const dispatch = useDispatch();
   const origin = " https://thetarzanway.com";
-  // const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
   const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
   const chatBotContainerRef = useRef(null);
   const [chatHistoryList, setChatHistoryList] = useState([]);
@@ -51,19 +50,20 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const { id } = useSelector((state) => state.auth);
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { trackTransferBookingDelete } = useAnalytics();
+  const { trackTransferBookingDelete,trackChatOpened,trackChatMessageReceived } = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const token = useSelector((state) => state.auth.token);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!itinearyId || !token) return;
     console.log("initial run bot");
-    // console.log("initial run bot")
     getAllChatHistory(itinearyId);
     if (sessionId) {
       showChatHistoryById(sessionId, true);
     }
+    trackChatOpened(router?.quer?.id,sessionId)
   }, [itinearyId, token]);
   useEffect(() => {
     if (!itinearyId || !token) return;
@@ -201,6 +201,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         setIsTyping(false);
         finalizeBotMessage(data.content);
         setHasUnreadMessages(true); 
+        trackChatMessageReceived(router?.query?.id,data.content)
         break;
 
       case "render_action":

@@ -730,3 +730,4 @@ export const Loader = (props) => {
         </div>
     );
 };
+

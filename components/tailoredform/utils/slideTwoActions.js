@@ -52,6 +52,12 @@ export function addDaysToDate(dateString, daysToAdd) {
 
 
 const addDaysLocal = (dateString, days) => {
+  // Safety check for undefined or invalid dateString
+  if (!dateString || typeof dateString !== 'string') {
+    console.warn('Invalid dateString provided to addDaysLocal:', dateString);
+    dateString = formatDateToAPI(new Date());
+  }
+  
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   date.setDate(date.getDate() + days);
@@ -235,10 +241,17 @@ export function updateLatLong(items, prevLocations, setLocationsLatLong) {
     let locations = [...prevLocations];
     const newLocations = [];
 
-    // Start from the first location's start date or current date
-    let currentDateStr = prevLocations?.[0]?.start_date
+    // Start from the first location's start date or items' first date or current date
+    let currentDateStr = items?.[0]?.cityData?.start_date
+      ? formatDateToAPI(items[0].cityData.start_date)
+      : prevLocations?.[0]?.start_date
       ? formatDateToAPI(prevLocations[0].start_date)
       : formatDateToAPI(new Date());
+    
+    // Ensure we have a valid date string
+    if (!currentDateStr) {
+      currentDateStr = formatDateToAPI(new Date());
+    }
 
     for (let i = 1; i < items.length - 1; i++) {
       const lat = items[i]?.cityData?.lat || items[i]?.cityData?.latitude;

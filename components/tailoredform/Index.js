@@ -972,3 +972,4 @@ const mapStateToPros = (state) => {
 };
 
 export default connect(mapStateToPros)(Enquiry);
+
