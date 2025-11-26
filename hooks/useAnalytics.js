@@ -302,8 +302,8 @@ export const useAnalytics = () => {
       return await callWorkerFunction('track', actionSource);
     }, []),
 
-    trackItineraryCompleted: useCallback(async (itineraryId, actionSource) => {
-      return await callWorkerFunction('track', actionSource, {itinerary_id: itineraryId});
+    trackItineraryCompleted: useCallback(async (itineraryId, actionSource, platform = null) => {
+      return await callWorkerFunction('track', actionSource, {itinerary_id: itineraryId,platform});
     }, []),
 
     trackItineraryPageView: useCallback(async (itineraryId, isFirstVisit = false) => {

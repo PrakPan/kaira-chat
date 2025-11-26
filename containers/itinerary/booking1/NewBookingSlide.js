@@ -811,7 +811,7 @@ const ItineraryInclusions = ({
   defaultExpanded = false,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
-    Stays: true,
+    Hotels: true,
     Transfers: true,
     Flights: true,
     Activities: true,
@@ -819,7 +819,7 @@ const ItineraryInclusions = ({
 
   const categorizeBookings = () => {
     const categories = {
-      Stays: [],
+      Hotels: [],
       Transfers: [],
       Flights: [],
       Activities: [],
@@ -841,7 +841,7 @@ const ItineraryInclusions = ({
             },
             status: booking.status,
             booking_type:
-              category === "Stays"
+              category === "Hotels"
                 ? "Accommodation"
                 : category === "Flights"
                 ? "Flight"
@@ -886,13 +886,14 @@ const ItineraryInclusions = ({
 
   const getCategoryIcon = (category) => {
     const icons = {
-      Stays: "🏨",
+      Hotels: "🏨",
       Flights: "✈️",
       Transfers: "🚂",
       Activities: "🎯",
     };
     return icons[category] || "📍";
   };
+
 
   return (
     <div className="mb-4">
@@ -987,7 +988,11 @@ const ItineraryInclusions = ({
                           <BsCalendar2 className="flex-shrink-0" />
                           <span>{formatDate(booking.detail.check_in)}</span>
                         </div>
-
+                        {booking.detail.duration && (
+                          <span className="ml-1">
+                            ({booking.detail.duration}N)
+                          </span>
+                        )}
                         {booking.detail.duration && (
                           <span className="ml-1">
                             ({booking.detail.duration}N)
@@ -999,11 +1004,17 @@ const ItineraryInclusions = ({
                             <span>•</span>
                             <BsPeopleFill className="flex-shrink-0" />
                             <span>
-                              {booking.detail.pax.number_of_adults +
+                              {(booking.detail.pax.number_of_adults +
                                 (booking.detail?.pax?.number_of_children || 0) +
                                 (booking.detail?.pax?.number_of_infants ||
-                                  0)}{" "}
-                              Travelers
+                                  0)) > 1 ? (booking.detail.pax.number_of_adults +
+                                (booking.detail?.pax?.number_of_children || 0) +
+                                (booking.detail?.pax?.number_of_infants ||
+                                  0)) + " Travelers" : (booking.detail.pax.number_of_adults +
+                                (booking.detail?.pax?.number_of_children || 0) +
+                                (booking.detail?.pax?.number_of_infants ||
+                                  0)) + " Traveler" }{" "}
+                              
                             </span>
                           </div>
                         )}
@@ -1201,7 +1212,7 @@ const Details = (props) => {
             if (found) {
               clickedBooking = found;
               bookingType =
-                category === "Stays"
+                category === "Hotels"
                   ? "accommodation"
                   : category === "Flights"
                   ? "flight"
@@ -1721,7 +1732,7 @@ const Details = (props) => {
   };
 
   const handleViewBooking = (label) => {
-    scrollToElement("Stays");
+    scrollToElement("Hotels");
 
     logEvent({
       action: "Button_Click",
