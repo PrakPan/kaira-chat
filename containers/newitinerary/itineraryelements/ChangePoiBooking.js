@@ -152,7 +152,7 @@ export default function ChangePoiBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-[20px] font-semibold">
-                    {props?.data?.display_name || props.data?.name ? props?.data?.display_name || props.data.name : null}
+                    { props.data?.name || props?.data?.display_name  ?  props.data.name || props?.data?.display_name: null}
                   </div>
                 </div>
                 {stars && (
@@ -365,7 +365,7 @@ export default function ChangePoiBooking(props) {
         </div>
 
         <div className="text-[20px] font-semibold">
-          {props?.data?.display_name || props.data?.name ? props?.data?.display_name || props.data.name : null}
+          { props.data?.name || props?.data?.display_name ?  props.data.name || props?.data?.display_name : null}
         </div>
 
         {stars && (

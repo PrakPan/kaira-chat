@@ -3581,7 +3581,7 @@ const NewMultiModeContainer = ({
                               <PulseLoader
                                 size={15}
                                 speedMultiplier={0.6}
-                                color="#000000"
+                                color="#ffffff"
                               />
                             ) : (
                               "Update Transfer"

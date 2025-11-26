@@ -27,11 +27,11 @@ export default function ActivityDetails(props) {
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const [boolDetails, setBoolDetail] = useState({
-    generalGuidelines: false,
-    thingsToBring: false,
-    notSuitableFor: false,
-    tipsTricks: false,
-    Amenities: false,
+    generalGuidelines: true,
+    thingsToBring: true,
+    notSuitableFor: true,
+    tipsTricks: true,
+    Amenities: true,
   });
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -133,7 +133,7 @@ export default function ActivityDetails(props) {
                 width="100%"
                 height="100%"
                 url={
-                  props.data.image && !imageFail
+                  props.data?.image && !imageFail
                     ? props.data.image
                     : "media/icons/bookings/notfounds/noroom.png"
                 }

@@ -59,7 +59,6 @@ export default function NewPoiBooking(props) {
   };
 
   const handleClick = async (id) => {
-    console.log(id)
     trackPoiCardClicked(router.query.id, id, "itinerary_poi_list");
     setActivityData({
       type: "poi",
@@ -172,7 +171,7 @@ export default function NewPoiBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
-                    {props.data?.display_name || props.data?.name ? props.data?.display_name || props.data.name : null}
+                    {props.data?.name || props.data?.display_name ? props.data.name || props.data?.display_name : null}
                   </div>
                 </div>
                 {stars && (

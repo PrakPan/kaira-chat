@@ -40,6 +40,7 @@ import { fadeIn } from "react-animations";
 import { authCloseLogin } from "../../store/actions/auth";
 import Login from "../modals/Login";
 import StepsProgress from "./StepsProgress";
+import getPlatform from "../../utils/getPlatform";
 
 
 const ScrollContainer = styled.div`
@@ -359,6 +360,7 @@ const initiateItineraryCreate = async (slideOneData) => {
   };
 
   const completeItineraryCreate = () => {
+    const platform = getPlatform();
     const data = {
       source,
       itinerary_id: itineraryId,
@@ -387,7 +389,7 @@ const initiateItineraryCreate = async (slideOneData) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed");
+        trackItineraryCompleted(itineraryId, "itinerary_completed",platform);
         dispatch(setItineraryCreated(true));
 
         setTimeout(() => {
