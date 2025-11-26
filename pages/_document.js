@@ -103,7 +103,7 @@ export default class MyDocument extends Document {
                   }}
                 />
 
-                {/* <script
+                <script
                   async
                   src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALTICS_ID}`}
                 />
@@ -119,7 +119,7 @@ export default class MyDocument extends Document {
                 });
                 `,
                   }}
-                /> */}
+                />
               </>
             )}
           {/*  End Google Tag Manager */}
