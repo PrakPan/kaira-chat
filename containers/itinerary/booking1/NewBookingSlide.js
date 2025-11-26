@@ -993,11 +993,6 @@ const ItineraryInclusions = ({
                             ({booking.detail.duration}N)
                           </span>
                         )}
-                        {booking.detail.duration && (
-                          <span className="ml-1">
-                            ({booking.detail.duration}N)
-                          </span>
-                        )}
 
                         {booking.detail.pax && (
                           <div className="flex items-center gap-1">
