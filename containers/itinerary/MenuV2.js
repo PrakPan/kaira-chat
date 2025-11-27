@@ -1302,6 +1302,7 @@ const SimpleTabsV2 = (props) => {
                     setShowFooterBannerMobile={() =>
                       setShowFooterBannerMobile(false)
                     }
+                    trip_name={props?.itinerary?.name}
                     openPaymentDrawer={true}
                     blur={props.blur}
                     loading={loading}
