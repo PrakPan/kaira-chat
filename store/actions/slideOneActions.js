@@ -46,10 +46,10 @@ export const setDateType = (dateType) => ({
   payload: dateType,
 });
 
-export const setFixedDate = (start_date, end_date) => ({
-  type: actionTypes.SET_FIXED_DATE,
-  payload: { start_date, end_date },
-});
+// export const setFixedDate = (start_date, end_date) => ({
+//   type: actionTypes.SET_FIXED_DATE,
+//   payload: { start_date, end_date },
+// });
 
 export const setFlexibleDate = (month, year, duration) => ({
   type: actionTypes.SET_FLEXIBLE_DATE,
@@ -139,3 +139,22 @@ export const setItineraryCreated=(value)=>({
   type:actionTypes.SET_ITINERARY_CREATED,
   payload:value
 })
+
+export const setFixedDate = (startDate, endDate) => {
+  const formatDateForAPI = (date) => {
+    if (typeof date === 'string') return date;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  return {
+    type: 'SET_FIXED_DATE',
+    payload: {
+      start_date: formatDateForAPI(startDate),
+      end_date: formatDateForAPI(endDate),
+      type: 'fixed'
+    }
+  };
+};

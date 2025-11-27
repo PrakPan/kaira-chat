@@ -17,6 +17,11 @@ const Card = styled.div`
   @media screen and (max-width: 768px) {
     margin-bottom:100px;
   }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const FlickityComp = (props) => {
   const router=useRouter()

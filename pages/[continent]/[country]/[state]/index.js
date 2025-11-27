@@ -20,7 +20,6 @@ const TravelPlanner = (props) => {
   const router = useRouter();
   // const { trackPageView } = useAnalytics();
   useEffect(() => {
-    // console.log("props states are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
     // trackPageView(props.Type, `${props.Data?.name} Page`)
   }, []);
@@ -74,26 +73,26 @@ const TravelPlanner = (props) => {
 
   return (
     <Layout
-      page_id={props.Data.id}
-      destination={props.Data.destination}
+      page_id={props.Data?.id}
+      destination={props.Data?.destination}
       page={"State Page"}
     >
       <Head>
         <title>
-          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data.slug)} | Trip Planner & Itinerary
+          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | Trip Planner & Itinerary
           | The Tarzan Way
         </title>
         <meta
           name="description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         ></meta>
         <meta
           property="og:title"
-          content={`${props.Data.social_share_title}`}
+          content={`${props.Data?.social_share_title}`}
         />
         <meta
           property="og:description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
@@ -151,7 +150,7 @@ export async function getStaticPaths() {
       paths.push({
         params: {
           continent: continentSlug,
-          country: countrySlug.replace(/ /g, "_"),
+          country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
           state: stateSlug,
         },
       });
@@ -184,7 +183,6 @@ export async function getStaticProps(context) {
   const { continent, country, state } = context.params;
 
   const path = `${continent}/${country}/${state}`;
-
   let data = null;
   let locations = [];
   let hotLocationSearch = [];
@@ -196,12 +194,12 @@ export async function getStaticProps(context) {
   await axios
     .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then((res) => {
-      const stateData = res.data.data.state;
-      data = stateData;
-      if (stateData.page_data!=null && Object.keys(stateData.page_data).length > 0) {
-        isThemePage = true;
-      }
-    })
+     const stateData = res.data.data.state;
+     data = stateData;
+    if (stateData?.page_data && Object.keys(stateData?.page_data).length > 0) {
+      isThemePage = true;
+    }
+  })
     .catch((err) => {
       console.log(
         `[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `,

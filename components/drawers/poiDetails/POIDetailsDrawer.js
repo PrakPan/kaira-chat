@@ -77,6 +77,7 @@ const POIDetailsDrawer = (props) => {
           setData((prev) => ({
             ...prev,
             id: res?.data?.id,
+            hotel_pickup_included: res?.data?.hotel_pickup_included,
             cancellation_policies: res?.data?.cancellation_policies,
           }));
           setActivityData(res?.data?.activity_data);

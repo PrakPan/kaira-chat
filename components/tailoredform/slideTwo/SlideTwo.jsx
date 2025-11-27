@@ -47,6 +47,16 @@ const DottedLine = styled.div`
   );
 `;
 
+const ScrollContainer = styled.div`
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+
+
 const RouteEditSection = (props) => {
     const itinerary = useSelector((state) => state.tailoredInfoReducer.itineraryInititateData);
     const isDesktop = useMediaQuery("(min-width:768px)");
@@ -87,8 +97,9 @@ const RouteEditSection = (props) => {
         <div
             className={`w-full h-full relative  flex flex-col bg-white items-center overflow-y-auto hide-scrollbar ${!isDesktop ? 'p-lg border-sm border-solid border-primary-yellow rounded-xl mb-xl' : ''}`}
         >
+            <ScrollContainer className="w-full h-full">
             <div className="w-full h-full  hide-scrollbar overflow-y-auto" style={{ pointerEvents: 'auto' }}>
-                {!isDesktop && <> {
+                {/* {!isDesktop && <> {
                     <RenderRoutes isDesktop={isDesktop} containerHeight={containerHeight} routes={mapRoutes} destinationChanges={destinationChanges}  key={`map-${mapRoutes?.length}-${destinationChanges}`} />
                 }
                     {destinationChanges && (
@@ -98,7 +109,7 @@ const RouteEditSection = (props) => {
                         </div>
                     )}
                 </>
-                }
+                } */}
                 <div className={`${isDesktop ? 'flex flex-row gap-md p-lg border-sm border-solid border-primary-yellow rounded-xl' : ''}`}>
                     <div className={`${isDesktop ? 'w-[100%] overflow-hidden' : ''}`}>
                         <EditDestinations
@@ -131,6 +142,7 @@ const RouteEditSection = (props) => {
                     )}
                 </>}
             </div>
+            </ScrollContainer>
         </div>
     );
 };
@@ -175,7 +187,7 @@ export const EditPanel = ({ editDestination, setEditDestination, setIsRouteChang
 
     return (
         <div className="w-full md:w-[85%] pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-1 sm:gap-4">
                 <div
                     onClick={() => handleEditPanel()}
                     className={`cursor-pointer ${editDestination
@@ -197,6 +209,7 @@ export const EditDestinations = (props) => {
 
     return (
         <div className="w-full bg-text-white lg:p-4 font-inter font-normal flex flex-col items-start justify-start gap-3">
+        
             <div className="w-full flex flex-row items-start justify-between">
                 <div className="relative text-[20px] pb-3">Route Preview</div>
                 <div
@@ -393,6 +406,7 @@ export const Destination = (props) => {
     } = props;
 
     const [popUp, setPopUp] = useState(false);
+    const isDesktop = useMediaQuery("(min-width:768px)");
 
     return (
         <div className="relative w-full flex py-2">
@@ -413,7 +427,7 @@ export const Destination = (props) => {
                 />
             )}
 
-            <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
+            <div className="w-full flex flex-row font-inter items-center justify-between gap-1 sm:gap-4 mt-3 relative z-10">
                 <div className="flex flex-row items-center gap-3">
                     {!(startingCity || endingCity) && (
                         <div className="text-gray-400 cursor-grab active:cursor-grabbing">
@@ -430,7 +444,7 @@ export const Destination = (props) => {
                     )}
 
                     {/* Pin */}
-                    <div className="relative flex flex-row items-center gap-4">
+                    <div className="relative flex flex-row items-center gap-1 sm:gap-4">
                         {startingCity || endingCity ? (
                             <div className="w-6 h-6 ml-[0.25rem] rounded-full bg-black flex items-center justify-center relative z-10">
                                 <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -446,7 +460,7 @@ export const Destination = (props) => {
                             {!(startingCity || endingCity) && cityData?.nights && (
                                 <div className="Body1R_16 text-gray-500">
                                     <span className="text-[16px] text-gray-500">I</span> &nbsp;
-                                    {`${cityData.nights} ${cityData.nights > 1 ? "Nights" : "Night"}`}
+                                    {`${cityData.nights > 1 && isDesktop ? `${cityData.nights} Nights` : isDesktop ? `${cityData.nights} Night` : `${cityData.nights}N`}`}
                                 </div>
                             )}
                         </div>
@@ -716,3 +730,4 @@ export const Loader = (props) => {
         </div>
     );
 };
+

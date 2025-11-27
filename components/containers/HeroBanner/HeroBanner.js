@@ -73,6 +73,7 @@ const HeroBanner = (props) => {
           cities={props.cities}
           children_cities={props.children_cities}
           title={props.title}
+          slug={props?.slug}
           _startPlanningFunction={props._startPlanningFunction}
           page={props.page}
           eventDates={props.eventDates}

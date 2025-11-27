@@ -11,6 +11,8 @@ export function TransportIconFetcher({ TransportMode, Instyle, classname ,color=
       return <MdOutlineFlightTakeoff style={Instyle} className={classname} color={color}/>;
     case "Taxi":
       return <MdLocalTaxi style={Instyle} className={classname} color={color}/>;
+    case "Rental":
+      return <MdLocalTaxi style={Instyle} className={classname} color={color}/>;
     case "Car":
       return <IoCar style={Instyle} className={classname} color={color}/>;
     case "Train":

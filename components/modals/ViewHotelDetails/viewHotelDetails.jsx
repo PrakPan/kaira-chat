@@ -194,7 +194,7 @@ const ViewHotelDetails = (props) => {
           setError(true);
           props.openNotification({
             type: "error",
-            text: "There seems to be a problem, please try again!",
+            text: error?.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
           });
         });
@@ -258,6 +258,8 @@ const ViewHotelDetails = (props) => {
             city_id: props.currentBooking.city_id,
             city_name: props.currentBooking.city_name,
             ...response?.data,
+            lat:response?.data?.latitude,
+            long:response?.data?.longitude,
             source: response?.data?.images?.[0]?.source,
             itinerary_city_id: props?.itinerary_city_id,
           };

@@ -121,6 +121,7 @@ const Booking = (props) => {
 
   const router = useRouter();
   const cancelTokenRef = useRef(null);
+  const autocompleteCancelTokenRef = useRef(null);  
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -142,7 +143,7 @@ const Booking = (props) => {
       price_upper_range: null,
     },
     star_category: null,
-    sort: "price: low to high",
+    sort: null,
     type: null,
     user_ratings: null,
     facilities: null,
@@ -171,10 +172,9 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const dispatch = useDispatch();
-  const debouncedSearch = useDebounce(selectSearch);
-
   const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
   const [selectedHotelId, setSelectedHotelId] = useState(null); 
+  const debouncedSearch = useDebounce(selectSearch);
  
 
   const currentBooking = {
@@ -331,6 +331,17 @@ const Booking = (props) => {
     };
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
+
+    const handleSuggestionSelect = (suggestion) => {
+    setSelectedSearch(suggestion.name);
+    setSearchResults([]);
+    setSelectedHotelId([suggestion.id.toString()]);
+    setFilters((prev) => ({
+      ...prev,
+      applyFilter: !prev.applyFilter,
+    }));
+  };
+
   const handleClose = () => {
     resetPaginationStatus();
 
@@ -344,7 +355,7 @@ const Booking = (props) => {
         price_upper_range: null,
       },
       star_category: null,
-      sort: "price: low to high",
+      sort: null,
       type: null,
       user_ratings: null,
       facilities: null,
@@ -370,6 +381,8 @@ const Booking = (props) => {
       tags: filters?.tags ? filters.tags : [],
     });
   };
+
+  
 
   const fetchHotelsFilter = () => {
     if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
@@ -404,7 +417,7 @@ const Booking = (props) => {
         facilities: filters.facilities,
         tags: filters.tags,
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
-        star_category: filters.star_category,
+        star_category: filters.star_category ? filters.star_category?.toString() : filters.star_category,
         user_ratings: filters.user_ratings,
         page: 1,
       },
@@ -414,11 +427,21 @@ const Booking = (props) => {
           child_ages: room.childAges,
         };
       }),
-      sort_by: {
-        price_order: filters.sort === "price: high to low" ? "desc" : "asc",
-      },
       trace_id: null,
     };
+
+
+    const priceOrderValue = filters.sort === "price: high to low"
+  ? "desc"
+  : filters.sort === "price: low to high"
+  ? "asc"
+  : null;
+
+if (priceOrderValue && filters.sort) {
+  requestData.sort_by = {
+    price_order: priceOrderValue,
+  };
+}
 
     hotelSearch
       .post("", requestData, {
@@ -639,11 +662,23 @@ const Booking = (props) => {
             child_ages: room.childAges,
           };
         }),
-        sort_by: {
-          price_order: filters.sort === "price: high to low" ? "desc" : "asc",
-        },
+        // sort_by: {
+        //   price_order: filters.sort === "price: high to low" ? "desc" : "asc",
+        // },
         trace_id: paginationStatus?.traceId,
       };
+
+      const priceOrderValue = filters.sort === "price: high to low"
+  ? "desc"
+  : filters.sort === "price: low to high"
+  ? "asc"
+  : null;
+
+if (priceOrderValue) {
+  requestData.sort_by = {
+    price_order: priceOrderValue,
+  };
+}
 
       hotelSearch
         .post("", requestData, {
@@ -795,15 +830,6 @@ const Booking = (props) => {
     _addFilterHandler("price: low to high", "sort");
   }
 
-   const handleSuggestionSelect = (suggestion) => {
-    setSelectedSearch(suggestion.name);
-    setSearchResults([]);
-    setSelectedHotelId([suggestion.id.toString()]);
-    setFilters((prev) => ({
-      ...prev,
-      applyFilter: !prev.applyFilter,
-    }));
-  };
 
  
 
@@ -856,6 +882,8 @@ const Booking = (props) => {
                 searchResults={searchResults}
                 resetPaginationStatus={resetPaginationStatus}
                 setMoreOptionsJSX={setMoreOptionsJSX}
+                setSelectedHotelId={setSelectedHotelId}
+                selectedHotelId={selectedHotelId}
                 clickType={props?.clickType}
                 setFilters={setFilters}
                 setShowFilters={setShowFilters}
@@ -868,8 +896,6 @@ const Booking = (props) => {
                 handleSuggestionSelect={handleSuggestionSelect}
                 autocompleteLoading={autocompleteLoading}
                 handleClearSearch={handleClearSearch}
-                selectedHotelId={selectedHotelId}
-                setSelectedHotelId={setSelectedHotelId}
               ></SectionOne>
 
               <div className="mt-xs">

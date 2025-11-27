@@ -29,6 +29,7 @@ useEffect(() => {
   props.checkAuthState();
 }, []); 
 
+
   const getHotLocationsSearch = async () => {
     try {
       const response = await axioslocationsinstance.get("hot_destinations/");
@@ -58,7 +59,7 @@ useEffect(() => {
   };
 
   return (
-    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary>
+    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary={true}>
       <ScrollRestoration />
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>

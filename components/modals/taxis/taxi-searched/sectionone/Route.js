@@ -13,13 +13,13 @@ import {
   updateSingleTransferBooking,
 } from "../../../../../store/actions/transferBookingsStore";
 import { useGenericAPIModal } from "../../../warning/Index";
-import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 import ReactDOM from "react-dom";
 import { FaX } from "react-icons/fa6";
 import Accordion, {
   AccordionDetails,
   AccordionSummary,
 } from "../../../../ui/Accordion";
+import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 
 
 const Container = styled.div`
@@ -240,8 +240,10 @@ const Section = (props) => {
             response.data
           )
         );
+        trackTransferBookingAdd(itineraryId || props.selectedBooking.itinerary_id,`${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,intercity?.[`${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`],response.data,response.data?.transfer_details?.trips?.[0]?.origin?.address,response.data?.transfer_details?.trips?.[0]?.destination?.address)
       } else {
         dispatch(updateAirportTransferBooking(`${props?.cityId}`, response.data));
+        trackTransferBookingAdd(itineraryId || props.selectedBooking.itinerary_id,`${props?.cityId}`,airport?.[`${props?.cityId}`],response.data,response.data?.transfer_details?.trips?.[0]?.origin?.address,response.data?.transfer_details?.trips?.[0]?.destination?.address)
       }
 
       // props._updateTaxiBookingHandler([response.data]);

@@ -122,7 +122,7 @@ const AirportBookingItem = ({
         tooltipTimeoutRef.current = setTimeout(() => {
           setShowTooltip(false);
           tooltipTimeoutRef.current = null;
-        }, 2000);
+        }, 1100);
       }
     }
   };
@@ -139,7 +139,7 @@ const AirportBookingItem = ({
     tooltipTimeoutRef.current = setTimeout(() => {
       setShowTooltip(false);
       tooltipTimeoutRef.current = null;
-    }, 2000);
+    }, 1100);
   };
 
   const handleTooltipBookingClick = (e, bookingItem, type) => {
@@ -226,7 +226,7 @@ const AirportBookingItem = ({
     ) {
       return (
         <div className="flex items-center gap-1">
-          <span>+ Add Pickup and Drop</span>
+          <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
         </div>
       );
     }
@@ -289,7 +289,10 @@ const AirportBookingItem = ({
         setShowDetails(false);
         setShowClickTooltip(false);
       }
-    };
+      if(tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+        tooltipTimeoutRef.current = null;
+    }
 
     if (showDetails || showClickTooltip) {
       document.addEventListener("mousedown", handleClickOutside);
@@ -298,7 +301,7 @@ const AirportBookingItem = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDetails, showClickTooltip]);
+  }}, [showDetails, showClickTooltip]);
 
   const handleClick = () => {
     // If no bookings and supports transfers, show tooltip below text
@@ -429,7 +432,8 @@ const AirportBookingItem = ({
             </span>
           </div>}
           {/* Then Pickup */}
-          {!lastCity && <div className="flex items-center gap-2">
+          
+         {!lastCity && <div className="flex items-center gap-2">
             <span
               className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
               onClick={() => handlePickupDropDrawer("pickup")}
@@ -753,7 +757,7 @@ const CityItem = ({
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
@@ -854,6 +858,17 @@ const CityItem = ({
       setTransferType(null);
     }
   }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
+
+useEffect(() => {
+  const isDrawerClosed = !drawer;
+  
+  if (isDrawerClosed) {
+    document.body.style.overflow = 'initial';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    document.body.style.touchAction = '';
+  }
+}, [drawer]);
 
 
   // const handleEdit = async (combo, book) => {
@@ -1325,7 +1340,7 @@ const CityItem = ({
             )
           )}
           {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
-          <div
+          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && <div
             className={`flex flex-col gap-1 mb-3 ${!(upPresent && downPresent) ||
               (!booking_id &&
                 !(currentAirportBookings && currentAirportBookings.length > 0))
@@ -1357,7 +1372,7 @@ const CityItem = ({
               firstCity={firstCity}
               lastCity={lastCity}
             />
-          </div>
+          </div>}
           {/* )} */}
         </div>
       </div>

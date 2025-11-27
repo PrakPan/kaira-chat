@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Destinations from "./destinations/Index";
 import Preferences from "../slidetwo/preferences/Index";
@@ -21,7 +21,7 @@ const Container = styled.div`
   width: 100%;
   @media screen and (min-width: 768px) {
   }
-    display: flex;
+  display: flex;
   flex-direction: column;
   gap: 30px;
 `;
@@ -32,38 +32,64 @@ const Section = styled.div`
 const formatShortDate = (date) => {
   if (!date) return '';
   const day = date.getDate();
-  const month = date.toLocaleString('default', { month: 'short' }).toLowerCase(); // "sep"
+  const month = date.toLocaleString('default', { month: 'short' }).toLowerCase();
   return `${day} ${month}`;
 };
-
 
 const SlideOne = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [showCalendar, setShowCalendar] = useState(false);
   const date = useSelector((state) => state.tailoredInfoReducer.slideOne.date);
-  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date)
-  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date)
+  const valueStart = useSelector((state) => state.tailoredInfoReducer.slideOne.date.start_date);
+  const valueEnd = useSelector((state) => state.tailoredInfoReducer.slideOne.date.end_date);
+  const userLocation = useSelector((state) => state.userLocation?.location);
   const dispatch = useDispatch();
+
+  // Populate starting location from userLocation if not already set
+  useEffect(() => {
+    if (userLocation && !props.startingLocation) {
+      const locationData = {
+        city: userLocation.city,
+        country: userLocation.country,
+        currency: userLocation.currency,
+        country_code: userLocation.country_code
+      };
+      props.setStartingLocation(locationData);
+    }
+  }, [userLocation, props.startingLocation]);
+
   const handleOnCalenderApplyDates = (values) => {
     if (values.dateType == "fixed") {
-      dispatch(setFixedDate(values.start, values.end));
+      const formatDateForAPI = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      
+      dispatch(setFixedDate(
+        formatDateForAPI(values.start), 
+        formatDateForAPI(values.end)
+      ));
     }
     else if (values.dateType == "flexible") {
       dispatch(setFlexibleDate(values.month.getMonth()+1, values.month.getFullYear(), values.duration));
     }
     else {
-      dispatch(setAnytimeDate(values.duration))
+      dispatch(setAnytimeDate(values.duration));
     }
-  }
+  };
+
   const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedPreferences)||[];
-  const setSelectedPrefrences=(value)=>{
-    console.log("value", value);
+  const setSelectedPrefrences = (value) => {
     dispatch(togglePreference(value));
-  }
+  };
+
   const CITIES = null;
   const SetDateType = (value) => {
-    dispatch(setDateType(value))
-  }
+    dispatch(setDateType(value));
+  };
+
   return (
     <Container>
       <Section>
@@ -82,7 +108,8 @@ const SlideOne = (props) => {
           selectedCities={props.selectedCities}
           eventDates={props.eventDates}
           errors={props.errors}
-        ></Destinations>
+          userLocation={userLocation}
+        />
       </Section>
 
       <Section>
@@ -92,11 +119,22 @@ const SlideOne = (props) => {
             <StyledFigmaBox
               value={
                 date.type === "fixed" ? (valueStart && valueEnd
-                  ? `${getHumanDate(valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/"))} - ${getHumanDate(valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/"))}`
-                  : "") : date.type === "flexible" ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` : date.duration + " days"
+                  ? `${getHumanDate(
+                      typeof valueStart === 'string' 
+                        ? valueStart.split("-").reverse().join("/")
+                        : valueStart.toLocaleDateString("en-CA").split("-").reverse().join("/")
+                    )} - ${getHumanDate(
+                      typeof valueEnd === 'string'
+                        ? valueEnd.split("-").reverse().join("/")
+                        : valueEnd.toLocaleDateString("en-CA").split("-").reverse().join("/")
+                    )}`
+                  : "") 
+                  : date.type === "flexible" 
+                    ? `${months[date.month - 1]} ${date.year}, ${date.duration} days` 
+                    : date.duration + " days"
               }
               placeholder="Select dates"
-              className={`cursor-pointer w-full pr-10  Body2M_14`}
+              className={`cursor-pointer w-full pr-10 Body2M_14`}
               onClick={() => setShowCalendar(true)}
               readOnly
             />
@@ -126,9 +164,7 @@ const SlideOne = (props) => {
               The dates for this event are fixed and cannot be changed!
             </div>
           ) : (
-            <>
-
-            </>
+            <></>
           )}
         </div>
       </Section>
@@ -140,33 +176,36 @@ const SlideOne = (props) => {
             tailoredFormModal={props.tailoredFormModal}
             selectedPreferences={selectedPreferences}
             setSelectedPreferences={setSelectedPrefrences}
-          ></Preferences>
+          />
         </div>
       </Section>
-      {isDesktop ? <ModalWithBackdrop
-        centered
-        show={showCalendar}
-        mobileWidth="100%"
-        backdrop
-        closeIcon={true}
-        onHide={() => setShowCalendar(false)}
-        borderRadius={"12px"}
-        paddingX="20px"
-        paddingY="20px"
-        parentClasses={'border-md border-solid border-primary-yellow'}
-        animation={false}
-        backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }} // <- add this
-      >
-        <AirbnbCalendar
-          valueStart={valueStart}
-          valueEnd={valueEnd}
-          onChangeDate={handleOnCalenderApplyDates}
-          setShowCalendar={setShowCalendar}
-          setDateType={SetDateType}
-          dateType={date.type}
-          date={date}
-        />
-      </ModalWithBackdrop> : <>
+
+      {isDesktop ? (
+        <ModalWithBackdrop
+          centered
+          show={showCalendar}
+          mobileWidth="100%"
+          backdrop
+          closeIcon={true}
+          onHide={() => setShowCalendar(false)}
+          borderRadius={"12px"}
+          paddingX="20px"
+          paddingY="20px"
+          parentClasses={'border-md border-solid border-primary-yellow'}
+          animation={false}
+          backdropStyle={{ backgroundColor: "rgba(0,0,0,0.4)", backdropFilter: "blur(1px)" }}
+        >
+          <AirbnbCalendar
+            valueStart={valueStart}
+            valueEnd={valueEnd}
+            onChangeDate={handleOnCalenderApplyDates}
+            setShowCalendar={setShowCalendar}
+            setDateType={SetDateType}
+            dateType={date.type}
+            date={date}
+          />
+        </ModalWithBackdrop>
+      ) : (
         <BottomModal
           show={showCalendar}
           onHide={() => setShowCalendar(false)}
@@ -185,7 +224,7 @@ const SlideOne = (props) => {
             date={date}
           />
         </BottomModal>
-      </>}
+      )}
     </Container>
   );
 };

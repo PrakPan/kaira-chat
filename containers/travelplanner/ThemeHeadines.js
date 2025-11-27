@@ -20,7 +20,7 @@ const ThemeHeadline = (props) => {
         const handleScroll = () => {
             const bannerRect = bannerRef.current.getBoundingClientRect();
             const containerWidth = bannerRect.width;
-            const textWidth = text.length * 16;
+            const textWidth = text.length * 32;
 
             setPosition((position) => position - 3);
 
@@ -45,7 +45,8 @@ const ThemeHeadline = (props) => {
                         willChange: 'transform',
                     }}
                 >
-                    {text}
+                    {text} 
+                   <div className='inline-block ml-[50%]'>{text}</div>
 
                     {/* <span className='ml-5 text-blue'>Explore Now!</span> */}
                 </div>

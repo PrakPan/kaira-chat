@@ -696,17 +696,17 @@ const PriceDetails = ({
           </span>
         </div>
 
-        {
-          // !Cart?.are_prices_hidden &&
+        {/* {
           surchargesTaxes > 0 && (
             <div className="flex justify-between text-sm font-400 leading-md mb-sm">
               <span>Surcharges and Taxes</span>
               <span>₹{surchargesTaxes.toLocaleString("en-IN")}</span>
             </div>
           )
-        }
+        } */}
 
-        {couponDiscount !== 0 && (
+        {
+        couponDiscount >=0 ? (
           <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
             <span>Coupon Discount</span>
             <span>
@@ -715,7 +715,7 @@ const PriceDetails = ({
                 : "₹0"}
             </span>
           </div>
-        )}
+        ) : null}
 
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
@@ -772,7 +772,7 @@ const ItineraryInclusions = ({
   defaultExpanded = false,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
-    Stays: true,
+    Hotels: true,
     Transfers: true,
     Flights: true,
     Activities: true,
@@ -780,7 +780,7 @@ const ItineraryInclusions = ({
 
   const categorizeBookings = () => {
     const categories = {
-      Stays: [],
+      Hotels: [],
       Transfers: [],
       Flights: [],
       Activities: [],
@@ -802,7 +802,7 @@ const ItineraryInclusions = ({
             },
             status: booking.status,
             booking_type:
-              category === "Stays"
+              category === "Hotels"
                 ? "Accommodation"
                 : category === "Flights"
                   ? "Flight"
@@ -849,13 +849,14 @@ const ItineraryInclusions = ({
 
   const getCategoryIcon = (category) => {
     const icons = {
-      Stays: "🏨",
+      Hotels: "🏨",
       Flights: "✈️",
       Transfers: "🚂",
       Activities: "🎯",
     };
     return icons[category] || "📍";
   };
+
 
   return (
     <div className="mb-4">
@@ -934,7 +935,11 @@ const ItineraryInclusions = ({
                           {/* <BsCalendar2 className="flex-shrink-0" /> */}
                           <span className="text-sm font-400 leading-md text-text-spacegrey">{formatDate(booking.detail.check_in)}</span>
                         </div>
-
+                        {booking.detail.duration && (
+                          <span className="ml-1">
+                            ({booking.detail.duration}N)
+                          </span>
+                        )}
                         {booking.detail.duration && (<>
                           <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
                           <span className="text-sm font-400 leading-md text-text-spacegrey">
@@ -949,11 +954,17 @@ const ItineraryInclusions = ({
                             {/* <span>•</span> */}
                             {/* <BsPeopleFill className="flex-shrink-0" /> */}
                             <span className="text-sm font-400 leading-md text-text-spacegrey">
-                              {booking.detail.pax.number_of_adults +
+                              {(booking.detail.pax.number_of_adults +
                                 (booking.detail?.pax?.number_of_children || 0) +
                                 (booking.detail?.pax?.number_of_infants ||
-                                  0)}{" "}
-                              Travelers
+                                  0)) > 1 ? (booking.detail.pax.number_of_adults +
+                                (booking.detail?.pax?.number_of_children || 0) +
+                                (booking.detail?.pax?.number_of_infants ||
+                                  0)) + " Travelers" : (booking.detail.pax.number_of_adults +
+                                (booking.detail?.pax?.number_of_children || 0) +
+                                (booking.detail?.pax?.number_of_infants ||
+                                  0)) + " Traveler" }{" "}
+                              
                             </span>
                           </div>
                         </>
@@ -1089,7 +1100,7 @@ const Details = (props) => {
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   const { resetSession } = useChatContext();
 
-  const { trackWhatsAppClicked } = useAnalytics();
+  const { trackWhatsAppClicked,trackPaymentSelected,trackPaymentDeselected,trackPaymentAttempted, trackPaymentBookingConfirmed} = useAnalytics();
 
   useEffect(() => {
     if (props?.openPaymentDrawer && isDirectlyOpenPaymentDrawer) {
@@ -1181,7 +1192,7 @@ const Details = (props) => {
             if (found) {
               clickedBooking = found;
               bookingType =
-                category === "Stays"
+                category === "Hotels"
                   ? "accommodation"
                   : category === "Flights"
                     ? "flight"
@@ -1211,6 +1222,7 @@ const Details = (props) => {
 
       if (response.data) {
         dispatch(setCart(response.data));
+
 
         dispatch(
           openNotification({
@@ -1250,9 +1262,9 @@ const Details = (props) => {
     if (total === 0) return 0;
 
     // Apply coupon if applicable
-    if (couponUsageData?.discount) {
-      total = Math.max(0, total - couponUsageData.discount);
-    }
+    // if (couponUsageData?.discount) {
+    //   total = Math.max(0, total - couponUsageData.discount);
+    // }
 
     return Math.round(total);
   };
@@ -1466,7 +1478,8 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
-      key: "rzp_test_FEKg5ZWGWl9i7c",
+      // key: "rzp_test_FEKg5ZWGWl9i7c",
+      key: "rzp_live_t1AzJZflHj0jWg",
       amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
       description: " data.data.description",
@@ -1494,6 +1507,7 @@ const Details = (props) => {
             if (paymentType === "full") {
               setSessionPaymentCompleted(true);
               setPaymentCompleted(true);
+              trackPaymentBookingConfirmed(router?.query?.id,Cart);
             } else {
               setLockInCompleted(true);
               setSelectedPaymentOption("full");
@@ -1544,6 +1558,8 @@ const Details = (props) => {
           (sale) =>
             sale.payment_type === "full_payment" && sale.status === "Created"
         );
+
+        trackPaymentAttempted(router.query.id,Cart);
 
         if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
           setPaymentLoading(false);
@@ -1698,7 +1714,7 @@ const Details = (props) => {
   };
 
   const handleViewBooking = (label) => {
-    scrollToElement("Stays");
+    scrollToElement("Hotels");
 
     logEvent({
       action: "Button_Click",
@@ -1795,7 +1811,6 @@ const Details = (props) => {
   };
 
   const handleProceedToPayment = () => {
-    console.log("openeing drawer");
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
     router.push(

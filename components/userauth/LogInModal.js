@@ -137,6 +137,13 @@ const LogIn = React.memo((props) => {
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
 
+  useEffect(() => { 
+     props.onResetLogin();
+    mobileRef.current.focus();
+  }, []);
+
+  
+
   useEffect(() => {
     if (otp.length > 3) {
       submitOtpHandler();
@@ -340,12 +347,18 @@ const LogIn = React.memo((props) => {
   };
 
   const verifyRecaptchaHandler = () => {
+
+    if (!props.otpSent) {
+    props.onStartLoading();
+  } else {
+    props.onStartLoading();
+  }
     const recaptchaValue = recaptchaRef.current.getValue();
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
     } else {
-      recaptchaRef.current.execute(); // Trigger the invisible ReCAPTCHA
+      recaptchaRef.current.execute(); 
     }
   };
 
@@ -430,6 +443,7 @@ const LogIn = React.memo((props) => {
         <LoginLoadingIcon width={"7rem"} />
       </div>
     );
+
 
   return (
     <div className={`${isPageWide ? "pt-[36px] px-[32px]" : "pt-[19px] pb-[13px] px-[16px] h-full"} h-max`}>
@@ -833,6 +847,7 @@ const mapDispatchToProps = (dispatch) => {
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),
+    onStartLoading: () => dispatch(authaction.authStartLoading()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
     onUpdate: (response, trackUserAccountUpdate) =>

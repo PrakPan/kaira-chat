@@ -26,11 +26,11 @@ export default class MyDocument extends Document {
 
   render() {
     const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
-    const isDevelopment = process.env.NODE_ENV === "development";
-    
+    const isDevelopment = true;
     return (
       <Html id="html" lang="en">
         <Head>
+        <title>Trip Planner & Itinerary | The Tarzan Way</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
@@ -38,7 +38,7 @@ export default class MyDocument extends Document {
           
           {/* Partytown Configuration */}
           <Partytown 
-            debug={isDevelopment}
+            debug={isProduction}
             forward={[
               'gtag', 
               // 'dataLayer.push', 
@@ -46,23 +46,23 @@ export default class MyDocument extends Document {
               // 'JupiterAnalytics', 
               // 'JUPITER_CONFIG'
             ]}
-            resolveUrl={(url) => {
-              // Proxy problematic URLs through your own server to avoid CORS
-              const proxyUrls = [
-                'snap.licdn.com',
-                'freshchat.com',
-                'fw-cdn.com',
-                'clarity.ms'
-              ];
+            // resolveUrl={(url) => {
+            //   // Proxy problematic URLs through your own server to avoid CORS
+            //   const proxyUrls = [
+            //     'snap.licdn.com',
+            //     'freshchat.com',
+            //     'fw-cdn.com',
+            //     'clarity.ms'
+            //   ];
               
-              if (proxyUrls.some(domain => url.href.includes(domain))) {
-                const proxiedUrl = new URL('/api/proxy', url.origin);
-                proxiedUrl.searchParams.append('url', url.href);
-                return proxiedUrl;
-              }
+            //   if (proxyUrls.some(domain => url.href.includes(domain))) {
+            //     const proxiedUrl = new URL('/api/proxy', url.origin);
+            //     proxiedUrl.searchParams.append('url', url.href);
+            //     return proxiedUrl;
+            //   }
               
-              return url;
-            }}
+            //   return url;
+            // }}
           />
 
           {/* Jupiter Analytics - Load with Partytown */}
@@ -103,7 +103,7 @@ export default class MyDocument extends Document {
                   }}
                 />
 
-                <script
+                {/* <script
                   async
                   src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALTICS_ID}`}
                 />
@@ -119,7 +119,7 @@ export default class MyDocument extends Document {
                 });
                 `,
                   }}
-                />
+                /> */}
               </>
             )}
           {/*  End Google Tag Manager */}

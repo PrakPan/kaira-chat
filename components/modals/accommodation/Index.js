@@ -116,7 +116,7 @@ const POI = (props) => {
           setError(true);
           props.openNotification({
             type: "error",
-            text: "There seems to be a problem, please try again!",
+            text: error?.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
           });
         });

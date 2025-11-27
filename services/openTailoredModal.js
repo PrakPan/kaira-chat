@@ -42,6 +42,10 @@ export function closeTailoredModal(router) {
   delete router.query["tailored-travel"];
   delete router.query["page_id"];
   delete router.query["destination"];
-  router?.query["type"] && delete router.query["type"]
-  router.push(router, undefined, { scroll: false, shallow: true });
+  // Don't delete the type parameter as it's needed for dynamic route interpolation
+  // router?.query["type"] && delete router.query["type"]
+  
+  // Use the asPath to preserve the actual URL structure
+  const cleanPath = router.asPath.split('?')[0]; // Remove query parameters
+  router.push(cleanPath, undefined, { scroll: false, shallow: true });
 }

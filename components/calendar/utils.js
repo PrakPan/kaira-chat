@@ -39,11 +39,21 @@ export const getNext12Months = (startDate = new Date()) => {
   return monthsList;
 };
 
-export const normalizeDate = (d) => {
-  if (!d) return null;
-  const date = new Date(d);
-  date.setHours(0, 0, 0, 0);
-  return date;
+export const normalizeDate = (date) => {
+  if (!date) return null;
+  
+  
+  if (date instanceof Date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+  
+ 
+  if (typeof date === 'string') {
+    const [year, month, day] = date.split('-').map(Number);
+    return new Date(year, month - 1, day); 
+  }
+  
+  return null;
 };
 
 export const months = [

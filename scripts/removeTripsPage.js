@@ -12,9 +12,9 @@ function renameFile(src, dest) {
   try {
     if (fs.existsSync(src)) {
       fs.renameSync(src, dest);
-      console.log(`Renamed ${src} to ${dest}`);
+     
     } else {
-      console.log(`${src} does not exist.`);
+
     }
   } catch (err) {
     process.exit(1);

@@ -89,7 +89,7 @@ const Home = (props) => {
               "image": "https://thetarzanway.com/logoblack.svg",
               "@id": "",
               "url": "https://thetarzanway.com/",
-              "telephone": "+91 95821 25476",
+              "telephone": "+91 8448687703",
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "",

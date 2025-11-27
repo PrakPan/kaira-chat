@@ -3,10 +3,22 @@ import styled from "styled-components";
 import useChat from "./hook/UseChat";
 import Dictate from "./Dictate";
 import Image from "next/image";
+import { useAnalytics } from "../../hooks/useAnalytics";
+import { useRouter } from "next/router";
 const Container = styled.div`
   background: #f7f5f5;
   border-radius: 12px;
   padding: 12px;
+  
+  @media screen and (max-width: 767px) {
+    margin-bottom:0px;
+    position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:22;
+  }
+
 `;
 
 const QueryContainer = styled.div`
@@ -88,10 +100,13 @@ function AskQuery() {
   const [trackUserTyping, setUserTyping] = useState("");
   const [isSubmitDisabled, setSubmitDisabled] = useState(true);
   const dictateRef = useRef();
+  const {trackChatMessageSent} = useAnalytics();
+  const router = useRouter();
 
   const handleSubmitQuery = (input) => {
     const userMsg = { is_bot: false, message: input || query.trim() };
     sendMessage(userMsg);
+    trackChatMessageSent(router.query.id,userMsg);
     setQuery("");
     setSubmitDisabled(true);
     dictateRef.current.stop();

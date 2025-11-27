@@ -33,9 +33,14 @@ const AirbnbCalendarMobile = (props) => {
     end: normalizeDate(props.valueEnd)
   });
 
-  const [currentMonth, setCurrentMonth] = useState(
-    props.date?.month || new Date(today.getFullYear(), today.getMonth(), 1)
-  );
+  const ensureDate = (value) => {
+  return value instanceof Date ? value : new Date(value);
+};
+
+const [currentMonth, setCurrentMonth] = useState(() =>
+  props.date?.month ? new Date(today.getFullYear(), today.getMonth(), 1) : new Date(today.getFullYear(), today.getMonth(), 1)
+);
+
   const [tripDuration, setTripDuration] = useState(props.date?.duration || 1);
 
   useEffect(() => {
@@ -162,7 +167,7 @@ const AirbnbCalendarMobile = (props) => {
             <Image src={"/circle_right.svg"} width={20} height={20} className="transform -scale-x-100" />
           </button>
           <div className="flex justify-center w-full">
-            <Body2M_14>{months[currentMonth.getMonth()]} {currentMonth.getFullYear()}</Body2M_14>
+            <Body2M_14>{months[currentMonth?.getMonth()]} {currentMonth?.getFullYear()}</Body2M_14>
           </div>
           <button onClick={() => navigateMonth(1)} className="p-2 hover:bg-gray-100 rounded-full">
             <Image src={"/circle_right.svg"} width={20} height={20} />
@@ -181,7 +186,7 @@ const AirbnbCalendarMobile = (props) => {
             key={month}
             onClick={() => setCurrentMonth(new Date(today.getFullYear(), index, 1))}
             className={`flex flex-col justify-start p-3 text-start text-[14px] rounded-xl border transition-all
-              ${currentMonth.getMonth() === index ? 'bg-yellow text-black font-medium'
+              ${currentMonth?.getMonth() === index ? 'bg-yellow text-black font-medium'
                 : 'border-gray-300 hover:border-gray-400 text-gray-700'}`}>
             <Image src="/calendar.svg" width={20} height={20} />
             <div>{month}</div>
@@ -230,6 +235,7 @@ const AirbnbCalendarMobile = (props) => {
               key={type}
               onClick={() => {
                 setDateType(type);
+                
                 setCurrentView(
                   type === "fixed" ? "calendar" :
                   type === "flexible" ? "months" : "any"

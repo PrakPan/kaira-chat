@@ -20,7 +20,6 @@ const restartBot = () => {
       ...(contactDetail ? { contactDetail } : { internalLoad: true }),
     };
   
-    console.log("Calling createBot with:", config);
     try {
       window.createBot(config);
     } catch (err) {

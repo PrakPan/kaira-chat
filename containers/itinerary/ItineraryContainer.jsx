@@ -40,6 +40,7 @@ import setCart from "../../store/actions/Cart";
 import NotesPopup from "./NotesPopup";
 import axios from "axios";
 import { ChatProvider } from "../../components/Chatbot/context/ChatContext";
+import setItineraryId from "../../store/actions/itineraryId";
 
 const Container = styled.div`
   width: 100%;
@@ -198,6 +199,11 @@ const ItineraryContainer = (props) => {
     useSelector((state) => state.ItineraryStatus);
 
   const phone = useSelector((state) => state.Auth)?.phone;
+
+   useEffect(() => {
+  const id = router.query.id;
+    dispatch(setItineraryId(id));
+}, [router.query.id]);
 
   // Throttle function for performance optimization
   const throttle = (func, limit) => {

@@ -65,6 +65,7 @@ import { useRouter } from "next/router";
 import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 import { getDateInfo } from "../../../utils/dateFormate";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const svgIcons = {
   time: (
@@ -171,7 +172,6 @@ const TRANSFER_TYPES = {
 
 const TransferEditDrawer = (props) => {
   const {
-    ItineraryId,
     showDrawer,
     origin,
     destination,
@@ -242,6 +242,7 @@ const TransferEditDrawer = (props) => {
   const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
+    const ItineraryId = useSelector((state) => state.ItineraryId);
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
@@ -311,7 +312,7 @@ const TransferEditDrawer = (props) => {
             .then((response) => {
               setMultiCitySuggestions(response?.data?.suggestions?.[0]);
               setMulticityRoundtripTraceId(response?.data?.trace_id);
-              setRoundTripSuggestions(response?.data?.suggestions?.[1]?.data);
+              setRoundTripSuggestions(response?.data?.suggestions?.[1]);
               setLoadingMulticityTransfers(false);
               setLoadingTransfers(false);
             })
@@ -367,7 +368,7 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err?.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
               );
             })
         : booking_type != "multicity" &&
@@ -387,7 +388,7 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
               );
             });
     }
@@ -574,7 +575,7 @@ const TransferEditDrawer = (props) => {
             });
           } else {
             openNotification({
-              text: "There seems to be a problem, please try again!",
+              text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
@@ -648,7 +649,7 @@ const TransferEditDrawer = (props) => {
           });
         } else {
           openNotification({
-            text: "There seems to be a problem, please try again!",
+            text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -1360,7 +1361,7 @@ const TransferEditDrawer = (props) => {
                 {multiCitySuggestions && (
                   <div className="w-full">
                     {/* <h3 className="text-lg font-semibold mb-3"></h3> */}
-                    =
+                
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
@@ -1378,7 +1379,7 @@ const TransferEditDrawer = (props) => {
 
         {transferType === "MULTICITYROUNDTRIP" &&
           (roundTripSuggestions || multiCitySuggestions) && (
-            <div className="w-full fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
+            <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
               <div className="flex justify-end items-end px-1 py-3 md:p-0">
                 <button
                   onClick={() => {
@@ -1987,6 +1988,8 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const {trackTransferBookingAdd} = useAnalytics();
+  const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
 
   const {
     number_of_adults,
@@ -2459,7 +2462,6 @@ const NewMultiModeContainer = ({
   // Add this handleCancel function inside your NewMultiModeContainer component
 
   const handleCancel = () => {
-    console.log("Cancel handler called - deselecting final result");
 
     // Find the last selected step (highest index with a selection)
 
@@ -2636,6 +2638,8 @@ const NewMultiModeContainer = ({
           data
         )
       );
+
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
 
       getPaymentHandler();
       actualClose();
@@ -3577,7 +3581,7 @@ const NewMultiModeContainer = ({
                               <PulseLoader
                                 size={15}
                                 speedMultiplier={0.6}
-                                color="#000000"
+                                color="#ffffff"
                               />
                             ) : (
                               "Update Transfer"
@@ -3797,18 +3801,21 @@ const RoundTripSuggestion = ({
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
-  useEffect(() => {
-    const routes = [];
-    const pricing = [];
-    roundTripSuggestions?.data?.trips?.forEach((route) => {
-      routes.push(route);
-    });
-    setRoutes(routes);
-    roundTripSuggestions?.data?.quotes.forEach((quote) => {
-      pricing.push(quote);
-    });
-    setPricing(pricing);
-  }, [roundTripSuggestions]);
+ useEffect(() => {
+  const routes = [];
+  const pricing = [];
+  
+  roundTripSuggestions?.data?.trips?.forEach((route) => {
+    routes.push(route);
+  });
+  setRoutes(routes);
+  
+  roundTripSuggestions?.data?.quotes?.forEach((quote) => {
+    pricing.push(quote);
+  });
+  setPricing(pricing);
+}, [roundTripSuggestions]);
+
 
   const handleSelectCab = (e) => {
     setSelectError(false);
@@ -3875,8 +3882,8 @@ const RoundTripSuggestion = ({
               {roundTripSuggestions?.name}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
-              Distance: {roundTripSuggestions?.data?.distance?.value} Kms
-            </div>
+  Distance: {roundTripSuggestions?.distance?.value} Kms
+</div>
           </div>
         </div>
 
@@ -3905,7 +3912,8 @@ const RoundTripSuggestion = ({
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {pricing.map((price, i) => (
+            {pricing?.length > 0 ? 
+            pricing.map((price, i) => (
               <div
                 key={`price-${i}`}
                 className="w-full flex flex-row items-start gap-2"
@@ -3962,7 +3970,7 @@ const RoundTripSuggestion = ({
                   )}
                 </div>
               </div>
-            ))}
+            )): "No Cabs Available"} 
           </div>
         </div>
 
@@ -4407,6 +4415,8 @@ const OtherTransfer = ({
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
   const [lastRequestData, setLastRequestData] = useState(null);
+   const {trackTransferBookingAdd} = useAnalytics();
+   const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -4880,7 +4890,7 @@ const OtherTransfer = ({
   ) => {
     // Prevent multiple simultaneous booking calls
     if (isBookingInProgress) {
-      console.log("Booking already in progress, ignoring duplicate call");
+      
       return;
     }
 
@@ -5012,6 +5022,8 @@ const OtherTransfer = ({
           response.data
         )
       );
+
+      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
 
       getPaymentHandler();
 

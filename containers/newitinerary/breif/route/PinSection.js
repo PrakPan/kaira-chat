@@ -58,6 +58,8 @@ const PinSection = (props) => {
 
   // console.log("Rendering: PinSection", {city_name: props?.city, duration: props.duration});
 
+  // console.log("Rendering: PinSection", {city_name: props?.city, duration: props.duration});
+
   return (
     <Container
       className="cursor-pointer w-fit"

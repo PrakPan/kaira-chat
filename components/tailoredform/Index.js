@@ -14,6 +14,7 @@ import Popup from "../ErrorPopup";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
 import {
+  setFixedDate,
   setItineraryCreated,
   setItineraryInitiateData,
   setItineraryNotCreated,
@@ -39,6 +40,16 @@ import { fadeIn } from "react-animations";
 import { authCloseLogin } from "../../store/actions/auth";
 import Login from "../modals/Login";
 import StepsProgress from "./StepsProgress";
+import getPlatform from "../../utils/getPlatform";
+
+
+const ScrollContainer = styled.div`
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 const Enquiry = (props) => {
   const router = useRouter();
@@ -258,7 +269,7 @@ const Enquiry = (props) => {
     }
   };
 
-  const initiateItineraryCreate = async (slideOneData) => {
+const initiateItineraryCreate = async (slideOneData) => {
     const data = buildItineraryPayload({
       source,
       selectedPreferences: slideOneData.selectedPreferences,
@@ -267,8 +278,43 @@ const Enquiry = (props) => {
       startingLocation,
       dateData: slideOneData.date,
     });
+    
+    let newEndDate = null;
+    let totalDuration = null;
+    let shouldUpdateDates = false; 
+    
     if (locationsLatLong.length > 0 && slideIndex == 1) {
-      data["basic_route"] = locationsLatLong;
+      
+      const startDate = new Date(slideOneData.date.start_date);
+      let currentDate = new Date(startDate);
+      
+      const updatedRoute = locationsLatLong.map((location) => {
+        const nights = location.duration || location.nights || 1;
+        const start = new Date(currentDate);
+        currentDate.setDate(currentDate.getDate() + nights);
+        const end = new Date(currentDate);
+        
+        return {
+          ...location,
+          duration: nights,
+          nights: nights,
+          start_date: start.toISOString().split('T')[0],
+          end_date: end.toISOString().split('T')[0],
+        };
+      });
+      
+      // Calculate new trip end date based on total duration
+      newEndDate = new Date(currentDate);
+      totalDuration = Math.ceil((newEndDate - startDate) / (1000 * 60 * 60 * 24));
+      shouldUpdateDates = true; // Set flag to true
+      
+      // Update the dates in the payload
+      data["basic_route"] = updatedRoute;
+      data["dates"] = {
+        ...data["dates"],
+        end_date: newEndDate.toISOString().split('T')[0],
+        duration: totalDuration
+      };
     }
 
     try {
@@ -280,7 +326,24 @@ const Enquiry = (props) => {
       setError(null);
       setItineraryId(resData.itinerary_id);
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+      
+      // Update the locationsLatLong with the response data
+      setLocationsLatLong(resData.basic_route || []);
+      
       dispatch(setItineraryInitiateData(resData));
+      
+      // Update slideOne dates in Redux if routes were changed
+      if (shouldUpdateDates && newEndDate) {
+        dispatch(setFixedDate(
+          slideOneData.date.start_date,
+          newEndDate.toISOString().split('T')[0]
+        ));
+      }
+      
+      // Reset the route changed flag
+      setIsRouteChanged(false);
+      
+      // Navigate to next slide
       router.push({
         pathname: "/new-trip",
         query: {
@@ -297,6 +360,7 @@ const Enquiry = (props) => {
   };
 
   const completeItineraryCreate = () => {
+    const platform = getPlatform();
     const data = {
       source,
       itinerary_id: itineraryId,
@@ -325,7 +389,7 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed");
+        trackItineraryCompleted(itineraryId, "itinerary_completed",platform);
         dispatch(setItineraryCreated(true));
 
         setTimeout(() => {
@@ -380,21 +444,31 @@ const Enquiry = (props) => {
   }, [slideThreeData?.addHotels]);
 
 
-  useEffect(() => {
+ useEffect(() => {
     if (slideOneData) {
       const hasDestination =
         Array.isArray(slideOneData.selectedCities) &&
         slideOneData.selectedCities.length > 0;
 
-      const hasDates =
-        (slideOneData?.date?.start_date && slideOneData?.date?.end_date) || slideOneData.date.duration;
+     
+      let duration = null;
+      
+      if (slideOneData?.date?.type === "fixed" && 
+          slideOneData?.date?.start_date && 
+          slideOneData?.date?.end_date) {
+       
+        const start = new Date(slideOneData.date.start_date);
+        const end = new Date(slideOneData.date.end_date);
+        duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      } else if (slideOneData?.date?.type === "flexible" || 
+                 slideOneData?.date?.type === "anytime") {
+       
+        duration = slideOneData.date.duration;
+      }
 
-      if (hasDestination && hasDates) {
+      if (hasDestination && duration) {
         const cityName = slideOneData.selectedCities[0]?.name;
-        const duration = slideOneData.date?.duration;
-
         const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
-
 
         setSteps(prev =>
           prev.map((title, index) => (index === 0 ? stepTitle : title))
@@ -404,8 +478,9 @@ const Enquiry = (props) => {
   }, [slideOneData]);
 
   return (<>
-    <div className="container">
 
+    <div className="container">
+       
       <div className="py-2xl">
         <div className="text-md-lg font-600 leading-xl-sm mb-md">Plan Your Trip</div>
         <StepsProgress
@@ -457,7 +532,8 @@ const Enquiry = (props) => {
                 </svg>
               </div> */}
 
-      <div className="h-[calc(100vh-300px)] overflow-y-auto">
+    
+      <div className="h-[calc(100vh-300px)] max-sm:h-[calc(100vh-100px)] overflow-y-auto no-scrollbar">
         {!props.tailoredFormModal ? (
           <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
         ) : null}
@@ -684,8 +760,12 @@ const Enquiry = (props) => {
 
       </div>
 
+     
+
     </div>
-    <div className="fixed bottom-[70px] w-100 bg-primary-cornsilk">
+
+    
+    <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
       {/* <div className="border-b-sm"></div> */}
       <div className="container p-md">
         {slideIndex === 0 && (
@@ -699,11 +779,11 @@ const Enquiry = (props) => {
               </button>
 
             <Button
-                width={`${isPageWide ? '300px' : ''}`}
+                width={`${isPageWide ? '300px' : '50%'}`}
                 fontSize="1rem"
                 padding="0.5rem 2rem"
                 fontWeight="500"
-                borderRadius="5px"
+                borderRadius="8px"
                 borderWidth="1px"
                 bgColor="#07213A"
                 onclick={_SlideOneSubmitHandler}
@@ -719,11 +799,10 @@ const Enquiry = (props) => {
           </div>
         )}
 
-        {console.log("SlideIn",slideIndex)}
 
         {slideIndex === 1 && (
           <div
-            className={` bg-primary-cornsilk z-[10] flex justify-between
+            className={` bg-primary-cornsilk z-[15] flex justify-between w-full
     ${!isDesktop && "flex items-center justify-between gap-2"}
   `}
           >
@@ -735,33 +814,32 @@ const Enquiry = (props) => {
               Back
             </button>
 
-            {/* RIGHT SIDE → Skip + Continue */}
-            <div className="flex gap-2">
-              <button
+              {/* <button
                 className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
                 onClick={_slideTwoSkip}
               >
                 Skip
-              </button>
+              </button> */}
               {isRouteChanged ? (
-                <button
-                  // width={`${isPageWide ? '300px' : ''}`}
-                  // fontSize="1rem"
-                  // padding="0.5rem 1rem"
-                  // fontWeight="500"
-                  // bgColor="#07213A"
-                  // color="white"
-                  // height="50px"
-                  // loading={isLoading}
-                  onClick={() => initiateItineraryCreate(slideOneData)}
-                  // className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[120px]"}`}
-                  className={`LargeIndigoOutlinedButton bg-[#07213A] text-white`}
+                <Button
+                  width={`${isPageWide ? '300px' : '50%'}`}
+                  fontSize="1rem"
+                  padding="0.5rem 1rem"
+                  fontWeight="500"
+                  bgColor="#07213A"
+                  borderRadius="8px"
+                  color="white"
+                  height="50px"
+                  loading={isLoading}
+                  disabled={isLoading}
+                  onclick={() => initiateItineraryCreate(slideOneData)}
+                  
                 >
-                  Continue
-                </button>
+                  Update & Continue
+                </Button>
               ) : (
                 <button
-                  className={`LargeIndigoButton cursor-not-allowed ${isDesktop && "w-[300px]"}`}
+                  className={`LargeIndigoButton cursor-not-allowed w-[50%] ${isDesktop && "w-[300px]"} `}
                   onClick={() =>
                     router.push({
                       pathname: "/new-trip",
@@ -772,7 +850,7 @@ const Enquiry = (props) => {
                   Continue
                 </button>
               )}
-            </div>
+            
           </div>
 
         )}
@@ -788,7 +866,7 @@ const Enquiry = (props) => {
               </button>
 
               <Button
-                width={`${isPageWide ? '300px' : ''}`}
+                width={`${isPageWide ? '300px' : '50%'}`}
                 fontSize="1rem"
                 padding="0.5rem 1rem"
                 fontWeight="500"
@@ -816,6 +894,7 @@ const Enquiry = (props) => {
                 Back
               </button>
               <Button
+                width={`${isPageWide ? '300px' : '50%'}`}
                 fontSize="1rem"
                 padding="0.5rem 1rem"
                 fontWeight="500"
@@ -827,7 +906,6 @@ const Enquiry = (props) => {
                 color="white"
                 loading={isSubmitting}
                 disabled={isSubmitting}
-                width={`${isPageWide ? '300px' : ''}`}
 
                 onclick={() => {
                   totalSlides == 4
@@ -879,6 +957,7 @@ const Enquiry = (props) => {
 
       </div>
     </div>
+
   </>
   );
 };
@@ -895,3 +974,4 @@ const mapStateToPros = (state) => {
 };
 
 export default connect(mapStateToPros)(Enquiry);
+

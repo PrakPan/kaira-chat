@@ -6,7 +6,7 @@ export default function StarCategory(props) {
         if (props?.selectedStarCategory?.includes(star)) {
             props.setSelectedStarCategory(prev => prev.filter(item => item !== star));
         } else {
-            props.setSelectedStarCategory(prev => [...prev, star])
+            props.setSelectedStarCategory(star);
         }
     }
 

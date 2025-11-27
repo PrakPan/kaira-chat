@@ -27,8 +27,8 @@ const DropdownContainer = styled.div`
   overflow-y: auto;
   z-index: 1000;
   opacity: ${(props) => (props.show ? 1 : 0)};
-  visibility: ${(props) => (props.show ? 'visible' : 'hidden')};
-  transform: ${(props) => (props.show ? 'translateY(0)' : 'translateY(-10px)')};
+  visibility: ${(props) => (props.show ? "visible" : "hidden")};
+  transform: ${(props) => (props.show ? "translateY(0)" : "translateY(-10px)")};
   transition: all 0.2s ease-in-out;
 `;
 
@@ -44,7 +44,7 @@ const ListItem = styled.div`
   font-family: Poppins;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background-color: #f5f5f5;
   }
@@ -141,25 +141,29 @@ const CircularImageWrapper = styled.div`
   flex-shrink: 0;
   cursor: pointer;
   position: relative;
-  
-  /* Force all children to be circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Force all children to fill and be circular */
   & > * {
     border-radius: 50% !important;
-    width: 2rem !important;
-    height: 2rem !important;
-    max-width: 2rem !important;
-    max-height: 2rem !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
-  
+
   /* Ensure image fills the container properly */
   img {
-    width: 2rem !important;
-    height: 2rem !important;
-    max-width: 2rem !important;
-    max-height: 2rem !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
     object-fit: cover !important;
+    border-radius: 50% !important;
   }
-  
+
   /* Mobile specific fixes */
   @media screen and (max-width: 768px) {
     width: 2rem !important;
@@ -168,20 +172,6 @@ const CircularImageWrapper = styled.div`
     min-height: 2rem !important;
     max-width: 2rem !important;
     max-height: 2rem !important;
-    
-    & > * {
-      width: 2rem !important;
-      height: 2rem !important;
-      max-width: 2rem !important;
-      max-height: 2rem !important;
-    }
-    
-    img {
-      width: 2rem !important;
-      height: 2rem !important;
-      max-width: 2rem !important;
-      max-height: 2rem !important;
-    }
   }
 `;
 
@@ -191,8 +181,8 @@ const ProfileDropDown = (props) => {
   let firstname;
   const router = useRouter();
   const [toggleMenu, setToggleMenu] = useState(false);
-  const {trackUserLogout} = useAnalytics();
-  const {id} = useSelector(state=>state.auth);
+  const { trackUserLogout } = useAnalytics();
+  const { id } = useSelector((state) => state.auth);
 
   if (props.name) {
     firstname = getFirstName(props.name);
@@ -217,9 +207,9 @@ const ProfileDropDown = (props) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -258,7 +248,6 @@ const ProfileDropDown = (props) => {
 
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
 
-
   let AuthMenu = (
     <ProfileContainer
       className={props.headerColor === "white" ? "border" : ""}
@@ -270,15 +259,15 @@ const ProfileDropDown = (props) => {
       showProfileList={props.showDropDownProfileList}
       showProfileListMobile={props.showDropDownProfileListMobile}
     >
-      <button 
-        onClick={() => props.authShowLogin()} 
-        style={{ 
-          background: 'none', 
-          border: 'none', 
-          padding: 0, 
-          cursor: 'pointer',
-          width: '100%',
-          textAlign: 'left'
+      <button
+        onClick={() => props.authShowLogin()}
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          cursor: "pointer",
+          width: "100%",
+          textAlign: "left",
         }}
       >
         <ProfileList>Login</ProfileList>
@@ -341,85 +330,82 @@ const ProfileDropDown = (props) => {
       </ProfileContainer>
     );
 
-    const MainLinksDiv = LinksArr.map((e, i) => {
-      if (e.type === "main")
-        return (
-          <ListItem
-            key={i}
-            onClick={e.onclick && e.onclick}
-            style={
-              router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
-            }
-          >
-            {e.icon && (
-              <ImageLoader
-                leftalign
-                url={e.icon}
-                height="20px"
-                width="20px"
-                dimensions={{ height: 50, width: 50 }}
-                dimensionsMobile={{ height: 50, width: 50 }}
-                widthmobile="20px"
-                noPlaceholder={true}
-              />
-            )}
-            {e.link && (
-              <StyledLink
-                style={{ textDecoration: "none" }}
-                href={e.link}
-                className="next-link"
-                passHref={true}
-              >
-                {e.text}
-              </StyledLink>
-            )}
-            {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
-          </ListItem>
-        );
-    });
-  
-    const OtherLinksDiv = LinksArr.map((e, i) => {
-      if (e.type == "others")
-        return (
-          <ListItem
-            key={i}
-            onClick={e.onclick && e.onclick}
-            style={
-              router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
-            }
-          >
-            {e.icon && (
-              <ImageLoader
-                leftalign
-                url={e.icon}
-                height="20px"
-                width="20px"
-                dimensions={{ height: 50, width: 50 }}
-                dimensionsMobile={{ height: 50, width: 50 }}
-                widthmobile="20px"
-                noPlaceholder={true}
-              />
-            )}
-            {e.link && (
-              <StyledLink
-                style={{ textDecoration: "none" }}
-                href={e.link}
-                className="next-link"
-                passHref={true}
-              >
-                {e.text}
-              </StyledLink>
-            )}
-            {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
-          </ListItem>
-        );
-    });
+  const MainLinksDiv = LinksArr.map((e, i) => {
+    if (e.type === "main")
+      return (
+        <ListItem
+          key={i}
+          onClick={e.onclick && e.onclick}
+          style={
+            router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
+          }
+        >
+          {e.icon && (
+            <ImageLoader
+              leftalign
+              url={e.icon}
+              height="20px"
+              width="20px"
+              dimensions={{ height: 50, width: 50 }}
+              dimensionsMobile={{ height: 50, width: 50 }}
+              widthmobile="20px"
+              noPlaceholder={true}
+            />
+          )}
+          {e.link && (
+            <StyledLink
+              style={{ textDecoration: "none" }}
+              href={e.link}
+              className="next-link"
+              passHref={true}
+            >
+              {e.text}
+            </StyledLink>
+          )}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
+        </ListItem>
+      );
+  });
+
+  const OtherLinksDiv = LinksArr.map((e, i) => {
+    if (e.type == "others")
+      return (
+        <ListItem
+          key={i}
+          onClick={e.onclick && e.onclick}
+          style={
+            router.pathname === e.link ? { backgroundColor: "#ffff4a45" } : {}
+          }
+        >
+          {e.icon && (
+            <ImageLoader
+              leftalign
+              url={e.icon}
+              height="20px"
+              width="20px"
+              dimensions={{ height: 50, width: 50 }}
+              dimensionsMobile={{ height: 50, width: 50 }}
+              widthmobile="20px"
+              noPlaceholder={true}
+            />
+          )}
+          {e.link && (
+            <StyledLink
+              style={{ textDecoration: "none" }}
+              href={e.link}
+              className="next-link"
+              passHref={true}
+            >
+              {e.text}
+            </StyledLink>
+          )}
+          {e.onclick && <div onClick={e.onclick}>{e.text}</div>}
+        </ListItem>
+      );
+  });
 
   return (
-    <div
-      ref={profileRef}
-      className="relative w-fit"
-    >
+    <div ref={profileRef} className="relative w-fit">
       {props.notifications.length && props.notOpenedCount ? (
         <RedDot className="center-div">1</RedDot>
       ) : null}
@@ -450,47 +436,54 @@ const ProfileDropDown = (props) => {
       </div> */}
 
       <div className="w-full flex flex-row items-center gap-1">
-  <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
-    <ImageLoader
-      borderRadius="50%"
-      url={
-        props.image && props.image !== "null" && props.image !== null
-          ? props.image
-          : localStorage.getItem("user_image") !== "null" && localStorage.getItem("user_image") !== null
-          ? localStorage.getItem("user_image")
-          : "media/icons/navigation/profile-user.png"
-      }
-      width="2rem"
-      height="2rem"
-      widthmobile="1.2rem"
-      heightmobile="1.2rem"
-      dimensions={{ width: 300, height: 300 }}
-      dimensionsMobile={{ width: 200, height: 200 }}
-      noPlaceholder={true}
-    />
-  </CircularImageWrapper>
-  <div className="Body2R_14">{props.name}</div>
-  {isPageLoaded ? (
-    <IoIosArrowDown
-      width="18px"
-      height="18px"
-      onClick={() => setToggleMenu(!toggleMenu)}
-      style={{ color: props.headerColor === "black" ? "white" : "black" }}
-    />
-  ) : null}
-</div>
+        <CircularImageWrapper onClick={() => setToggleMenu(!toggleMenu)}>
+          <ImageLoader
+            url={
+              props.image && props.image !== "null" && props.image !== null
+                ? props.image
+                : localStorage.getItem("user_image") !== "null" &&
+                  localStorage.getItem("user_image") !== null
+                ? localStorage.getItem("user_image")
+                : "media/icons/navigation/profile-user.png"
+            }
+            width="2rem"
+            height="2rem"
+            dimensions={{ width: 300, height: 300 }}
+            dimensionsMobile={{ width: 200, height: 200 }}
+            noPlaceholder={true}
+            // Remove the borderRadius prop - let the wrapper handle it
+          />
+        </CircularImageWrapper>
+        <div className="Body2R_14">{props.name}</div>
+        {isPageLoaded ? (
+          <IoIosArrowDown
+            width="18px"
+            height="18px"
+            onClick={() => setToggleMenu(!toggleMenu)}
+            style={{ color: props.headerColor === "black" ? "white" : "black" }}
+          />
+        ) : null}
+      </div>
 
-       <DropdownContainer show={toggleMenu}>
+      <DropdownContainer show={toggleMenu}>
         <ListContainer>
-          {!props.token?<ListItem style={{ backgroundColor: "#F8F8F8" }}>
-            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-            <div onClick={props.handleCTAClick}>Login/Signup</div>
-          </ListItem>:<>
-          <ListItem style={{ backgroundColor: "#F8F8F8" }} className="cursor-pointer" onClick={()=>router.push("/dashboard")}>
-            <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
-            <div>My Profile</div>
-          </ListItem>
-          </>}
+          {!props.token ? (
+            <ListItem style={{ backgroundColor: "#F8F8F8" }}>
+              <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+              <div onClick={props.handleCTAClick}>Login/Signup</div>
+            </ListItem>
+          ) : (
+            <>
+              <ListItem
+                style={{ backgroundColor: "#F8F8F8" }}
+                className="cursor-pointer"
+                onClick={() => router.push("/dashboard")}
+              >
+                <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+                <div>My Profile</div>
+              </ListItem>
+            </>
+          )}
 
           {MainLinksDiv}
 
@@ -499,7 +492,14 @@ const ProfileDropDown = (props) => {
           {OtherLinksDiv}
 
           {props.token && (
-            <ListItem onClick={() => { props.onLogout(); setToggleMenu(false); trackUserLogout(id); }} className="cursor-pointer">
+            <ListItem
+              onClick={() => {
+                props.onLogout();
+                setToggleMenu(false);
+                trackUserLogout(id);
+              }}
+              className="cursor-pointer"
+            >
               <ImageLoader
                 leftalign
                 url={"media/icons/navigation/logout.png"}

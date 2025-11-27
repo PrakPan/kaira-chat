@@ -21,6 +21,7 @@ import { setStays } from "../../../store/actions/StayBookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { openNotification } from "../../../store/actions/notification";
+import { useRouter } from "next/router";
 const localStorageKeyForSessionIds = "chatbotSessionIds";
 
 export const ChatProvider = ({ itinearyId, children }) => {
@@ -32,45 +33,91 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const [isTyping, setIsTyping] = useState(false);
   const [disableQuerySection, setDisableQuerySection] = useState(false);
   const socketRef = useRef(null);
-  // const token = localStorage.getItem("access_token");
   const itinerary = useSelector((state) => state.Itinerary);
   const stays = useSelector((state) => state.Stays);
   const dispatch = useDispatch();
   const origin = " https://thetarzanway.com";
-  // const origin = typeof window !== "undefined" ? window.location.origin : "https://thetarzanway.com/itinerary";
   const [isOpenChatHistoryDrawer, setOpenChatHistoryDrawer] = useState(false);
   const chatBotContainerRef = useRef(null);
   const [chatHistoryList, setChatHistoryList] = useState([]);
   const [isloadingChatHistory, setIsLoadingOfChatHistory] = useState(false);
-  const [sessionId, setSessionId] = useState(() => {
-    const oldSessionIds = JSON.parse(
-      localStorage.getItem(localStorageKeyForSessionIds) || "{}"
-    );
-    return oldSessionIds[itinearyId] || null;
-  });
+  const [sessionId, setSessionId] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { id } = useSelector((state) => state.auth);
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { trackTransferBookingDelete } = useAnalytics();
+  const { trackTransferBookingDelete, trackChatOpened, trackChatMessageReceived } = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const token = useSelector((state) => state.auth.token);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const router = useRouter();
 
+  // Initialize chat session on mount
   useEffect(() => {
-    if (!itinearyId || !token) return;
-    console.log("initial run bot");
-    // console.log("initial run bot")
-    getAllChatHistory(itinearyId);
-    if (sessionId) {
-      showChatHistoryById(sessionId, true);
-    }
+    if (!itinearyId || !token || isInitialized) return;
+    
+    const initializeChat = async () => {
+      console.log("Initializing chat...");
+      
+      // First, get all chat history
+      const history = await getAllChatHistory(itinearyId);
+      
+      if (history && history.length > 0) {
+        // Get the latest session (first item in the sorted array)
+        const latestSession = history[0];
+        console.log("Loading latest session:", latestSession.id);
+        
+        // Update localStorage with latest session
+        let oldSessionIds = JSON.parse(
+          localStorage.getItem(localStorageKeyForSessionIds) || "{}"
+        );
+        oldSessionIds[itinearyId] = latestSession.id;
+        localStorage.setItem(
+          localStorageKeyForSessionIds,
+          JSON.stringify(oldSessionIds)
+        );
+        
+        // Load the latest session
+        await showChatHistoryById(latestSession.id, true);
+        trackChatOpened(router?.query?.id, latestSession.id);
+      } else {
+        // No history exists, wait for finalized status before creating new session
+        console.log("No chat history found, waiting for finalized status");
+      }
+      
+      setIsInitialized(true);
+    };
+    
+    initializeChat();
   }, [itinearyId, token]);
+
+  // Only create new session if no history exists and itinerary is finalized
   useEffect(() => {
-    if (!itinearyId || !token) return;
-    if (!sessionId && finalized_status === "SUCCESS") {
+    if (!itinearyId || !token || !isInitialized) return;
+    
+    if (!sessionId && finalized_status === "SUCCESS" && chatHistoryList.length === 0) {
+      console.log("Creating new session for finalized itinerary");
       connect(null);
     }
-  }, [finalized_status, token]);
+  }, [finalized_status, token, isInitialized, sessionId, chatHistoryList]);
+
+  // Handle visibility change for reconnection
+  useEffect(() => {
+    if (!itinearyId || !token) return;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && sessionId && !isConnected) {
+        console.log("App returned to foreground, reconnecting...");
+        connect(sessionId);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [itinearyId, token, sessionId, isConnected]);
 
   const connect = (id = null) => {
     if (reconnecting) return;
@@ -107,19 +154,12 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
       if (!id) {
         setDisableQuerySection(true);
-        // const interval = setInterval (() => {
-        //   if(finalized_status=="SUCCESS"){
-
         const initialPrompt = `Help me with this itinerary - ${origin}/itinerary/${itinearyId} summarize my trip.`;
         if (socketRef.current?.readyState === WebSocket.OPEN) {
           socketRef.current.send(
             JSON.stringify({ message: initialPrompt, token })
           );
         }
-        // clearInterval(interval);
-
-        //   }
-        // }, 1000);
       }
     };
 
@@ -132,23 +172,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
       console.error("WebSocket Error", error);
       setIsConnected(false);
       setDisableQuerySection(false);
-      setConversations((prev) => [
-        ...prev,
-        {
-          message:
-            "Oops! Looks like we lost connection. Try again in a bit, or hit ‘New Chat’ to keep the conversation continue.",
-          is_bot: true,
-        },
-      ]);
     };
 
     socket.onclose = () => {
-      console.log("WebSocket disconnected. Attempting reconnect...");
+      console.log("WebSocket disconnected. Will reconnect when needed.");
       setIsConnected(false);
-      setTimeout(() => {
-        reconnecting = false;
-        connect(id);
-      }, 2000);
+      setDisableQuerySection(false);
+      reconnecting = false;
     };
   };
 
@@ -170,7 +200,8 @@ export const ChatProvider = ({ itinearyId, children }) => {
         setDisableQuerySection(false);
         setIsTyping(false);
         finalizeBotMessage(data.content);
-        setHasUnreadMessages(true); 
+        setHasUnreadMessages(true);
+        trackChatMessageReceived(router?.query?.id, data.content);
         break;
 
       case "render_action":
@@ -261,7 +292,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         msgObj,
         {
           message:
-            "Uh-oh! Message stuck Connection lost. Give it another try or hit ‘New Chat’ to keep the conversation continue.",
+            "Uh-oh! Message stuck Connection lost. Give it another try or hit 'New Chat' to keep the conversation continue.",
           is_bot: true,
         },
       ]);
@@ -333,34 +364,33 @@ export const ChatProvider = ({ itinearyId, children }) => {
           })
         );
         break;
-      
 
       case "deletePoiBooking":
-        console.log("Payload",payload);
+        console.log("Payload", payload);
         if (payload?.data?.status == 200) {
-        const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        var itineraryCities = newItinerary;
-        itineraryCities = newItinerary.cities.map((city) => {
-          const cityTemp = city;
-          if (city.id === payload?.data?.itinerary_city_id) {
-            cityTemp.day_by_day[payload?.data?.day_by_day_index]?.slab_elements.splice(
-              payload?.data?.poi_index,
-              1
-            );
-          }
-          return cityTemp;
-        });
-        newItinerary.cities = itineraryCities;
+          const newItinerary = JSON.parse(JSON.stringify(itinerary));
+          var itineraryCities = newItinerary;
+          itineraryCities = newItinerary.cities.map((city) => {
+            const cityTemp = city;
+            if (city.id === payload?.data?.itinerary_city_id) {
+              cityTemp.day_by_day[payload?.data?.day_by_day_index]?.slab_elements.splice(
+                payload?.data?.poi_index,
+                1
+              );
+            }
+            return cityTemp;
+          });
+          newItinerary.cities = itineraryCities;
 
-        dispatch(setItinerary(newItinerary));
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `Poi removed successfully`,
-            heading: "Success!",
-          })
-        );
-       }
+          dispatch(setItinerary(newItinerary));
+          dispatch(
+            openNotification({
+              type: "success",
+              text: `Poi removed successfully`,
+              heading: "Success!",
+            })
+          );
+        }
         break;
 
       case "createFlightBooking":
@@ -402,6 +432,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
           );
         }
         break;
+
       case "deleteFlightBooking":
         if (payload.data.status == 204) {
           dispatch(updateTransferBookings(payload.data.booking_id));
@@ -565,15 +596,18 @@ export const ChatProvider = ({ itinearyId, children }) => {
       );
       if (res?.data.length) {
         setChatHistoryList(res?.data);
+        setIsLoadingOfChatHistory(false);
+        return res?.data;
       }
       setIsLoadingOfChatHistory(false);
+      return [];
     } catch (err) {
       setIsLoadingOfChatHistory(false);
       console.error(
         "Error fetching chat history:",
         err.response?.data || err.message
       );
-      return null;
+      return [];
     }
   };
 
@@ -614,19 +648,18 @@ export const ChatProvider = ({ itinearyId, children }) => {
   };
 
   const resetSession = () => {
-  setConversations([]);
-  setQuickReplies([]);
-  setSessionId(null);
-  let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
-  oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
-  delete oldSessionIds[itinearyId];
-  localStorage.setItem(
-    localStorageKeyForSessionIds,
-    JSON.stringify(oldSessionIds)
-  );
-  connect(null);
-};
-
+    setConversations([]);
+    setQuickReplies([]);
+    setSessionId(null);
+    let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
+    oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
+    delete oldSessionIds[itinearyId];
+    localStorage.setItem(
+      localStorageKeyForSessionIds,
+      JSON.stringify(oldSessionIds)
+    );
+    connect(null);
+  };
 
   return (
     <ChatContext.Provider
@@ -648,9 +681,9 @@ export const ChatProvider = ({ itinearyId, children }) => {
         newSessionStart,
         isloadingChatHistory,
         getAllChatHistory,
-        resetSession, 
-        hasUnreadMessages, 
-        setHasUnreadMessages, 
+        resetSession,
+        hasUnreadMessages,
+        setHasUnreadMessages,
       }}
     >
       {children}

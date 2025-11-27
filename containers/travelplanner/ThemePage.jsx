@@ -78,7 +78,7 @@ const SetWidthContainer = styled.div`
 `;
 
 export default function ThemePage(props) {
-  console.log("ladakh props are: ", props);
+
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -255,7 +255,7 @@ export default function ThemePage(props) {
         {props.experienceData.overview_heading &&
         props.experienceData.overview_text &&
         props?.slug !== "ladakh" &&
-        props?.slug !== "thailand" ? (
+        props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" && props?.slug != 'europe-continent' ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -427,6 +427,18 @@ export default function ThemePage(props) {
                           ></BudgetFriendly>
                         </div>
                       )}
+
+                      {component.type === "Why Choose Us?" &&
+                      // component?.heading ===
+                      //   "How We Keep It Budget-Friendly?" && (
+                        <div>
+                          <BudgetFriendly
+                            page_id={props.experienceData?.id}
+                            destination={props.experienceData?.destination}
+                          ></BudgetFriendly>
+                        </div>
+                      // )
+                      }
 
                     {component.type === "How it works?" && (
                       <div>

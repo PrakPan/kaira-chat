@@ -24,6 +24,7 @@ const ActivitiesSummary = (props) => {
             poi_id: poi,
             type: type,
             dayIndex: props?.index1,
+            itinerary_city_id:props?.city.id
           },
         },
         undefined,
@@ -171,6 +172,9 @@ const ActivitiesSummary = (props) => {
           images={images}
         ></FullScreenGallery>
       ) : null}
+
+
+      
     </>
   );
 };

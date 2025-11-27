@@ -71,13 +71,15 @@ const GroupType = (props) => {
     (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
   ) || [];
   
+  
   const _isPreferenceAdded = (preference) => {
     return selectedPreferences.includes(preference);
   };
   
   const _handleClick = (preference) => {
-    dispatch(togglePreference(preference));
-  };
+  dispatch(togglePreference(preference));
+  
+};
 
   return (
     <Container>

@@ -1454,6 +1454,7 @@ export const DestinationPopUp = (props) => {
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
+  const [isSearched,setIsSearched] = useState(false);
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1478,6 +1479,7 @@ export const DestinationPopUp = (props) => {
     setSearch(e.target.value);
   };
   useEffect(() => {
+    if(!isSearched)
     handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
@@ -1525,6 +1527,7 @@ export const DestinationPopUp = (props) => {
     });
 
     setSearchResults(null);
+    setIsSearched(true);
   };
 
   const handleSetNights = (minus = false) => {
@@ -1656,7 +1659,7 @@ export const DestinationPopUp = (props) => {
             type="text"
             autoFocus
             value={search}
-            onChange={(e) => handleSearch(e)}
+            onChange={(e) => {handleSearch(e); setIsSearched(false);} }
             placeholder="Search Destination"
             className="focus:outline-none w-full"
           ></input>
@@ -2438,9 +2441,9 @@ export const DatePicker = (props) => {
 .SingleDatePicker_picker,
 .SingleDatePicker_picker__portal {
   z-index: 15 !important;
-  transform: none !important;
-  top: 100% !important;
-  left: 0 !important;
+  // transform: none !important;
+  // top: 100% !important;
+  // left: 0 !important;
   right: auto !important;
   bottom: auto !important;
 }
@@ -2536,9 +2539,9 @@ export const DatePicker = (props) => {
     }
 
 /* Remove any full screen overlay */
-body > div[data-react-portal] {
-  display: none !important;
-}
+// body > div[data-react-portal] {
+//   display: none !important;
+// }
 
 /* Target the portal container specifically */
 div[data-react-portal] .SingleDatePicker_picker {
@@ -2573,20 +2576,7 @@ body.react-dates__block-scroll {
           })
         }
         focused={focusedInput}
-        onFocusChange={({ focused }) => {
-          setFocusedInput(false);
-          if (focused) {
-            logEvent({
-              action: "Route Edit",
-              params: {
-                page: "Itinerary Page",
-                event_category: "Edit Dates",
-                event_label: "Edit Date",
-                event_action: "Focus on Date Input",
-              },
-            });
-          }
-        }}
+        onFocusChange={({ focused }) => setFocusedInput(focused)}
         id={props.id}
         noBorder={true}
         placeholder={"DD/MM/YYYY"}

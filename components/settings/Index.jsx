@@ -9,6 +9,15 @@ import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
 import setItinerary  from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
+import { togglePreference } from "../../store/actions/slideOneActions";
+
+
+const parseDateString = (dateString) => {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 
 const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
   const dispatch = useDispatch();
@@ -38,109 +47,126 @@ const Settings = ({setShowSettings, isHotelsPresent, handleApply}) => {
   const [numberOfInfants, setNumberOfInfants] = useState(
     itinerary?.number_of_infants || 0
   );
-  
-  const [selectedPreferences, setSelectedPreferences] = useState(
-    itinerary?.experience_filters || []
-  );
+
+  const selectedPreferences = useSelector(
+  (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+) || [];
+
+
+useEffect(() => {
+  if (itinerary?.experience_filters && itinerary.experience_filters.length > 0) {
+    const currentPrefs = selectedPreferences;
+    itinerary.experience_filters.forEach(pref => {
+      if (!currentPrefs.includes(pref)) {
+        dispatch(togglePreference(pref));
+      }
+    });
+  }
+}, []);
 
   // Initialize dates
   const [date, setDate] = useState({
-    type: "fixed",
-    start_date: itinerary?.start_date ? new Date(itinerary.start_date) : null,
-    end_date: itinerary?.end_date ? new Date(itinerary.end_date) : null,
-    month: "",
-    duration: ""
-  });
+  type: "fixed",
+  start_date: itinerary?.start_date ? parseDateString(itinerary.start_date) : null,
+  end_date: itinerary?.end_date ? parseDateString(itinerary.end_date) : null,
+  month: "",
+  duration: ""
+});
+
 
   // Update states if itinerary changes
   useEffect(() => {
-    if (itinerary) {
-      setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
-      setAddFlights(itinerary?.add_flights ?? false);
-      setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
-      setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
-      setNumberOfAdults(itinerary?.number_of_adults || 1);
-      setNumberOfChildren(itinerary?.number_of_children || 0);
-      setNumberOfInfants(itinerary?.number_of_infants || 0);
-      setSelectedPreferences(itinerary?.experience_filters || []);
-      
-      if (itinerary?.start_date && itinerary?.end_date) {
-        setDate({
-          type: "fixed",
-          start_date: new Date(itinerary.start_date),
-          end_date: new Date(itinerary.end_date),
-          month: "",
-          duration: ""
-        });
-      }
-    }
-  }, [itinerary, isHotelsPresent]);
-
-  const handleSetSelectedPreferences = (preference) => {
-    if (selectedPreferences.includes(preference)) {
-      setSelectedPreferences(selectedPreferences.filter((p) => p !== preference));
-    } else {
-      setSelectedPreferences([...selectedPreferences, preference]);
+  if (itinerary) {
+    setAddHotels(itinerary?.add_hotels ?? isHotelsPresent);
+    setAddFlights(itinerary?.add_flights ?? false);
+    setAddActivityTransfers(itinerary?.add_transfers_and_activities ?? false);
+    setRoomConfiguration(itinerary?.hotels_config?.room_configuration || []);
+    setNumberOfAdults(itinerary?.number_of_adults || 1);
+    setNumberOfChildren(itinerary?.number_of_children || 0);
+    setNumberOfInfants(itinerary?.number_of_infants || 0);
+    
+    if (itinerary?.start_date && itinerary?.end_date) {
+      setDate({
+        type: "fixed",
+        start_date: parseDateString(itinerary.start_date),
+        end_date: parseDateString(itinerary.end_date),
+        month: "",
+        duration: ""
+      });
     }
   }
+}, [itinerary, isHotelsPresent]);
+
+  const handleSetSelectedPreferences = (preference) => {
+  dispatch(togglePreference(preference));
+}
 
 const handleApplyDates = (dates) => {
   setDate({
     type: dates.dateType || dates.type, 
-    start_date: dates.start ? new Date(dates.start) : null, 
-    end_date: dates.end ? new Date(dates.end) : null,
+    start_date: dates.start instanceof Date ? dates.start : (dates.start ? parseDateString(dates.start) : null),
+    end_date: dates.end instanceof Date ? dates.end : (dates.end ? parseDateString(dates.end) : null),
     month: dates.month || "",
     duration: dates.duration || ""
   });
 };
 
+const handleUpdate = () => {
+  setIsLoading(true);
+  
+  // Format date for API
+  const formatDateForAPI = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const req = {
+    date: {
+      start_date: formatDateForAPI(date.start_date),
+      end_date: formatDateForAPI(date.end_date),
+    },
+    passengers: {
+      number_of_adults: numberOfAdults,
+      number_of_children: numberOfChildren,
+      number_of_infants: numberOfInfants,
+    },
+    add_hotels: addHotels,
+    add_flights: addFlights,
+    add_transfers_and_activities: addActivityTransfers,
+    room_configuration: roomConfiguration,
+    experience_filters: selectedPreferences,
+  }
+
+  handleApply(req)
+    .then((res) => {
+      dispatch(openNotification({
+        type: "success",
+        text: "Itinerary updated successfully",
+        heading: "Success!",
+      }));
+      setShowSettings(false);
+    })
+    .catch((err) => {
+      console.log("error is:", err);
+      dispatch(openNotification({
+        type: "error",
+        text: err?.response?.data?.errors[0]?.message[0] || "Something went wrong",
+        heading: "Error!",
+      }));
+    })
+    .finally(() => {
+      setIsLoading(false);
+    });
+}
 
 
 
 
   const handleCancel = () => {
     setShowSettings(false);
-  }
-
-  const handleUpdate = () => {
-    setIsLoading(true);
-    const req = {
-      date: {
-        start_date: date.start_date.toISOString().split("T")[0],
-        end_date: date.end_date.toISOString().split("T")[0],
-      },
-      passengers: {
-        number_of_adults: numberOfAdults,
-        number_of_children: numberOfChildren,
-        number_of_infants: numberOfInfants,
-      },
-      add_hotels: addHotels,
-      add_flights: addFlights,
-      add_transfers_and_activities: addActivityTransfers,
-      room_configuration: roomConfiguration,
-      experience_filters: selectedPreferences,
-    }
-    
-    handleApply(req)
-      .then((res) => {
-        dispatch(openNotification({
-          type: "success",
-          text: "Itinerary updated successfully",
-          heading: "Success!",
-        }));
-        setShowSettings(false); // Close settings after successful update
-      })
-      .catch((err) => {
-        console.log("error is:", err);
-        dispatch(openNotification({
-          type: "error",
-          text: "Something went wrong",
-          heading: "Error!",
-        }));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
   }
 
   return (
@@ -248,7 +274,7 @@ const handleApplyDates = (dates) => {
         </div>
       </div>
 
-      <div className={`${isDesktop ? "flex justify-between" : "w-full"}`}>
+      <div className={`${isDesktop ? "flex justify-between w-full" : "w-full"}`}>
         <Buttons 
           handleCancel={handleCancel} 
           handleUpdate={handleUpdate} 

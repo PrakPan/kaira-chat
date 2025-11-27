@@ -1,7 +1,3 @@
-// ================================================================
-// hooks/useAnalytics.js - Fixed with proper Partytown worker communication
-// ================================================================
-
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 
@@ -9,18 +5,30 @@ import { useRouter } from 'next/router';
 let isWorkerReady = false;
 let workerReadyCallbacks = [];
 let callQueue = [];
+let heartbeatInterval = null;
 
 // Check if worker is ready and initialized
 const checkWorkerReady = () => {
   if (typeof window === 'undefined') return false;
   
   try {
-    if (window.JupiterAnalytics && typeof window.JupiterAnalytics.getState === 'function') {
-      const state = window.JupiterAnalytics.getState();
-      return state && state.isInitialized;
+    if (window.JupiterAnalytics) {
+      // Check for both possible function names
+      const hasTrack = typeof window.JupiterAnalytics.track === 'function';
+      const hasTrackEvent = typeof window.JupiterAnalytics.trackEvent === 'function';
+      const hasGetState = typeof window.JupiterAnalytics.getState === 'function';
+      
+      if (hasTrack || hasTrackEvent) {
+        // Verify it's actually initialized by checking state
+        if (hasGetState) {
+          const state = window.JupiterAnalytics.getState();
+          return state && state.isInitialized;
+        }
+        return true;
+      }
     }
   } catch (error) {
-    
+    console.warn('Error checking worker state:', error);
   }
   
   return false;
@@ -44,13 +52,13 @@ const waitForWorker = (callback, timeout = 15000) => {
         isWorkerReady = true;
         clearInterval(checkInterval);
         
-      
         
         // Execute all waiting callbacks
         workerReadyCallbacks.forEach(cb => {
           try {
             cb();
           } catch (error) {
+            console.error('Error in worker ready callback:', error);
           }
         });
         
@@ -59,6 +67,9 @@ const waitForWorker = (callback, timeout = 15000) => {
         
         // Clear callbacks
         workerReadyCallbacks = [];
+        
+        // Start heartbeat
+        startHeartbeat();
       } else if (Date.now() - startTime > timeout) {
         clearInterval(checkInterval);
         workerReadyCallbacks = [];
@@ -69,6 +80,7 @@ const waitForWorker = (callback, timeout = 15000) => {
 
 // Process queued function calls
 const processCallQueue = () => {
+  
   while (callQueue.length > 0) {
     const { functionName, args, resolve, reject } = callQueue.shift();
     
@@ -76,6 +88,7 @@ const processCallQueue = () => {
       const result = callWorkerFunctionDirect(functionName, ...args);
       if (resolve) resolve(result);
     } catch (error) {
+      console.error('Error processing queued call:', error);
       if (reject) reject(error);
     }
   }
@@ -87,16 +100,44 @@ const callWorkerFunctionDirect = (functionName, ...args) => {
     return null;
   }
 
-  if (window.JupiterAnalytics && typeof window.JupiterAnalytics[functionName] === 'function') {
+  if (!window.JupiterAnalytics) {
+    console.warn('⚠️ JupiterAnalytics not available');
+    return null;
+  }
+
+  // Try the function name as provided
+  let fn = window.JupiterAnalytics[functionName];
+  
+  // If not found, try common alternatives
+  if (typeof fn !== 'function') {
+    const alternatives = {
+      'track': ['trackEvent', 'logEvent', 'sendEvent'],
+      'trackEvent': ['track', 'logEvent'],
+      'identifyUser': ['identify', 'setUser'],
+      'trackPageView': ['pageView', 'page'],
+      'flushEvents': ['flush', 'send'],
+    };
+    
+    if (alternatives[functionName]) {
+      for (const altName of alternatives[functionName]) {
+        if (typeof window.JupiterAnalytics[altName] === 'function') {
+          fn = window.JupiterAnalytics[altName];
+          break;
+        }
+      }
+    }
+  }
+
+  if (typeof fn === 'function') {
     try {
-      const result = window.JupiterAnalytics[functionName](...args);
-      
+      const result = fn.call(window.JupiterAnalytics, ...args);
       return result;
     } catch (error) {
-
+      console.error(`❌ Worker function ${functionName} failed:`, error);
       return null;
     }
   } else {
+    console.warn(`⚠️ Function ${functionName} not available on worker`);
     return null;
   }
 };
@@ -112,7 +153,6 @@ const callWorkerFunction = (functionName, ...args) => {
         reject(error);
       }
     } else {
-
       callQueue.push({ functionName, args, resolve, reject });
       
       // Start waiting for worker
@@ -128,15 +168,35 @@ const callWorkerFunctionSync = (functionName, ...args) => {
   if (isWorkerReady || checkWorkerReady()) {
     return callWorkerFunctionDirect(functionName, ...args);
   } else {
-
     
     // Start worker check but don't wait
     waitForWorker(() => {
-     
       callWorkerFunctionDirect(functionName, ...args);
     });
     
     return null;
+  }
+};
+
+// Start session heartbeat (triggers batch flush every 15 seconds)
+const startHeartbeat = () => {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+  }
+  
+  heartbeatInterval = setInterval(() => {
+    if (isWorkerReady || checkWorkerReady()) {
+      // Just flush existing batched events, don't track a new event
+      callWorkerFunctionDirect('flushEvents');
+    }
+  }, 15000); // 15 seconds
+};
+
+// Stop heartbeat on cleanup
+const stopHeartbeat = () => {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
   }
 };
 
@@ -153,8 +213,10 @@ export const useAnalytics = () => {
       if (!ready && !isWorkerReady) {
         waitForWorker(() => {
           setWorkerReady(true);
-
         });
+      } else if (ready && !heartbeatInterval) {
+        // Start heartbeat if worker is ready but heartbeat isn't running
+        startHeartbeat();
       }
     };
 
@@ -165,19 +227,28 @@ export const useAnalytics = () => {
       if (!workerReady && checkWorkerReady()) {
         setWorkerReady(true);
         isWorkerReady = true;
+        startHeartbeat();
       }
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      stopHeartbeat();
+    };
   }, [workerReady]);
 
   return {
     // Status
     isReady: workerReady,
     
-    // Core functions - async versions
+    // Core functions - async versions with immediate event firing
     track: useCallback(async (eventName, properties = {}) => {
-      return await callWorkerFunction('track', eventName, properties);
+      const result = await callWorkerFunction('track', eventName, properties);
+      // Optionally flush immediately for critical events
+      if (properties.immediate) {
+        await callWorkerFunction('flushEvents');
+      }
+      return result;
     }, []),
     
     trackBulk: useCallback(async (events) => {
@@ -228,20 +299,19 @@ export const useAnalytics = () => {
     
     // Itinerary Events
     trackItineraryInitiated: useCallback(async (actionSource) => {
-      return await callWorkerFunction('track',actionSource);
+      return await callWorkerFunction('track', actionSource);
     }, []),
 
-    trackItineraryCompleted: useCallback(async (itineraryId,actionSource) => {
-      return await callWorkerFunction('track',actionSource,{itinerary_id: itineraryId});
+    trackItineraryCompleted: useCallback(async (itineraryId, actionSource, platform = null) => {
+      return await callWorkerFunction('track', actionSource, {itinerary_id: itineraryId,platform});
     }, []),
-
 
     trackItineraryPageView: useCallback(async (itineraryId, isFirstVisit = false) => {
-      return await callWorkerFunction('trackItineraryPageView', itineraryId, isFirstVisit);
+      return await callWorkerFunction('track', itineraryId, isFirstVisit);
     }, []),
     
     trackSwitchItinerary: useCallback(async (fromItineraryId, toItineraryId) => {
-      return await callWorkerFunction('trackSwitchItinerary', fromItineraryId, toItineraryId);
+      return await callWorkerFunction('track', fromItineraryId, toItineraryId);
     }, []),
     
     trackSectionViewed: useCallback(async (itineraryId, sectionId) => {
@@ -271,18 +341,25 @@ export const useAnalytics = () => {
     }, []),
     
     // Payment Events
-    trackPaymentPageViewed: useCallback(async (itineraryId) => {
+    trackPaymentPageViewed: useCallback(async (itineraryId = null) => {
       return await callWorkerFunction('track', 'payment_page_viewed', {
         itinerary_id: itineraryId
       });
     }, []),
     
-    trackPaymentAttempted: useCallback(async (itineraryId, amount, currency, methodMasked, success) => {
-      return await callWorkerFunction('trackPaymentAttempted', itineraryId, amount, currency, methodMasked, success);
+    trackPaymentAttempted: useCallback(async (itineraryId = null,cart_info=null) => {
+      return await callWorkerFunction('track','payment_attempted', {itineraryId, cart_info});
+    }, []),
+
+    trackPaymentSelected: useCallback(async (itineraryId=null, bookingType=null, bookingId=null) => {
+      return await callWorkerFunction('track','payment_selected', {itineraryId, bookingType, bookingId});
+    }, []),
+    trackPaymentDeselected: useCallback(async (itineraryId=null, bookingType=null, bookingId=null) => {
+      return await callWorkerFunction('track', 'payment_deselected', {itineraryId, bookingType, bookingId});
     }, []),
     
-    trackBookingConfirmed: useCallback(async (itineraryId, bookingIds, amount, currency) => {
-      return await callWorkerFunction('trackBookingConfirmed', itineraryId, bookingIds, amount, currency);
+    trackPaymentBookingConfirmed: useCallback(async (itineraryId = null, cart_info=null) => {
+      return await callWorkerFunction('track', 'payment_confirmed',{itineraryId, cart_info});
     }, []),
     
     // Communication Events
@@ -304,11 +381,11 @@ export const useAnalytics = () => {
     
     // Hotel Events
     trackHotelCardClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
-      return await callWorkerFunction('track', 'hotel_card_clicked',{itinerary_id:itineraryId, hotel_id:hotelId});
+      return await callWorkerFunction('track', 'hotel_card_clicked', {itinerary_id: itineraryId, hotel_id: hotelId});
     }, []),
 
     trackHotelListClicked: useCallback(async (itineraryId, hotelId, actionSource) => {
-      return await callWorkerFunction('track', 'hotel_search_list',{itinerary_id:itineraryId, hotel_id:hotelId});
+      return await callWorkerFunction('track', 'hotel_search_list', {itinerary_id: itineraryId, hotel_id: hotelId});
     }, []),
     
     trackHotelCardDetails: useCallback(async (itineraryId, hotelId, actionSource) => {
@@ -343,7 +420,7 @@ export const useAnalytics = () => {
       });
     }, []),
 
-     trackHotelBookingDelete: useCallback(async (itineraryId, hotelId) => {
+    trackHotelBookingDelete: useCallback(async (itineraryId, hotelId) => {
       return await callWorkerFunction('track', 'hotel_booking_delete', {
         itinerary_id: itineraryId,
         hotel_id: hotelId
@@ -361,27 +438,34 @@ export const useAnalytics = () => {
       });
     }, []),
     
-    trackTransferBookingAdd: useCallback(async (itineraryId, transferId,previousData = null,newData = null) => {
+    trackTransferBookingAdd: useCallback(async (itineraryId, transferId,previousData = null ,newData = null,fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_add', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
         previous_data: previousData,
-        new_data: newData
+        new_data: newData,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
 
-    trackTransferBookingDelete: useCallback(async (itineraryId, transferId, previousData = null) => {
+    trackTransferBookingDelete: useCallback(async (itineraryId, transferId, userId = null,previousData = null,fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_delete', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
-        previous_data: previousData
+        user_id: userId,
+        previous_data: previousData,
+        new_data: null,
+        from_city: fromCity,
+        to_city: toCity
       });
     }, []),
 
-     trackTransferBookingChange: useCallback(async (itineraryId, transferId, fromCity = null, toCity = null) => {
+    trackTransferBookingChange: useCallback(async (itineraryId, transferId, userId = null, fromCity = null, toCity = null) => {
       return await callWorkerFunction('track', 'transfer_booking_change', {
         itinerary_id: itineraryId,
         transfer_id: transferId,
+        user_id: userId,
         from_city: fromCity,
         to_city: toCity
       });
@@ -403,7 +487,7 @@ export const useAnalytics = () => {
       });
     }, []),
 
-     trackActivityBookingDelete: useCallback(async (itineraryId, activityId, actionSource) => {
+    trackActivityBookingDelete: useCallback(async (itineraryId, activityId, actionSource) => {
       return await callWorkerFunction('track', 'activity_booking_delete', {
         itinerary_id: itineraryId,
         activity_id: activityId,
@@ -411,7 +495,7 @@ export const useAnalytics = () => {
       });
     }, []),
 
-    // Activity Events
+    // POI Events
     trackPoiCardClicked: useCallback(async (itineraryId, activityId, actionSource) => {
       return await callWorkerFunction('track', 'poi_card_clicked', {
         itinerary_id: itineraryId,
@@ -420,7 +504,7 @@ export const useAnalytics = () => {
       });
     }, []),
     
-    trackPoiBookingAdd: useCallback(async (itineraryId, actionSource) => {
+    trackPoiBookingAdded: useCallback(async (itineraryId, actionSource) => {
       return await callWorkerFunction('track', 'poi_booking_add', {
         itinerary_id: itineraryId,
         action_source: actionSource
@@ -474,24 +558,24 @@ export const useAnalytics = () => {
     }, []),
     
     // Chat Events
-    trackChatOpened: useCallback(async (itineraryId) => {
+    trackChatOpened: useCallback(async (itineraryId,sessionId=null) => {
       return await callWorkerFunction('track', 'chat_opened', {
-        itinerary_id: itineraryId
+        itinerary_id: itineraryId,
+        session_id:sessionId
       });
     }, []),
     
-    trackChatMessageSent: useCallback(async (itineraryId, messageLength, messageMasked) => {
+    trackChatMessageSent: useCallback(async (itineraryId, message=null) => {
       return await callWorkerFunction('track', 'chat_message_sent', {
         itinerary_id: itineraryId,
-        message_length: messageLength,
-        message_masked: messageMasked
+        message: message
       });
     }, []),
     
-    trackChatMessageReceived: useCallback(async (itineraryId, source) => {
+    trackChatMessageReceived: useCallback(async (itineraryId, message=null) => {
       return await callWorkerFunction('track', 'chat_message_received', {
         itinerary_id: itineraryId,
-        source
+        message
       });
     }, []),
   };

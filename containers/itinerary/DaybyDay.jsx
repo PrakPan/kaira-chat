@@ -145,7 +145,7 @@ const DaybyDay = ({
         <div className="flex flex-col">
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={startCity?.place_id}
+            key={startCity?.place_id || 1}
             city={startCity?.city_name}
             onClick={() => alert(`Clicked`)}
             downPresent={false}

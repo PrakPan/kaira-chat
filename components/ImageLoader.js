@@ -544,7 +544,7 @@ export default ImageLoader;
 const SmallImage = (props) => {
   return (
     <Image
-      alt=""
+      alt="Img"
       src={props.src}
       width={145}
       height={145}

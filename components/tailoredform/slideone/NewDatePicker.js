@@ -171,9 +171,8 @@ const DatePicker = (props) => {
 
   // Custom validation function for date selection
   const isOutsideRange = (day) => {
-    // Prevent selection of past dates (before today)
-    return day.startOf("day").isBefore(moment().startOf("day"));
-  };
+  return day.startOf("day").isSameOrBefore(moment().startOf("day"), 'day');
+};
 
   // Custom function to determine initial visible month
   const getInitialVisibleMonth = () => {
@@ -227,7 +226,8 @@ const DatePicker = (props) => {
           // Prevent navigation to past months
           onPrevMonthClick={onPrevMonthClick}
           // Set minimum date to current month's first day to prevent past month navigation
-          minDate={moment().startOf('month')}
+          // minDate={moment().startOf('month')}
+          minDate={moment().add(1, 'day')}
         />
 
         <CalenderIcons

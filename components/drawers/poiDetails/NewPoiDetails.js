@@ -90,10 +90,10 @@ export default function PoiDetails(props) {
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const [boolDetails, setBoolDetail] = useState({
-    generalGuidelines: false,
-    thingsToBring: false,
-    notSuitableFor: false,
-    tipsTricks: false,
+    generalGuidelines: true,
+    thingsToBring: true,
+    notSuitableFor: true,
+    tipsTricks: true,
   });
 
   const [loading, setLoading] = useState(false);
