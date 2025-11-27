@@ -19,6 +19,10 @@ import Loading from "./loading";
 import { usePathname } from "next/navigation";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import JupyterAnalytics from "../components/JupyterAnalytics";
+import { changeUserLocation } from "../store/actions/userLocation";
+import Cookies from "js-cookie";
+import { setCurrencySymbols } from "../store/actions/currencyActions";
+import axios from "axios";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -33,7 +37,7 @@ function MyApp({ Component, pageProps, store }) {
   const initializationAttempts = useRef(0);
   const maxAttempts = 10;
   const { id } = useSelector(state => state.auth);
-
+  const userLocation = useSelector((state) => state.UserLocation?.location);
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -189,6 +193,75 @@ function MyApp({ Component, pageProps, store }) {
     const initTimeout = setTimeout(tryInitialize, 1000);
     return () => clearTimeout(initTimeout);
   }, [id, jupiterInitialized]);
+
+  useEffect(() => {
+    const loadCurrencySymbols = async () => {
+      try {
+        const response = await axios.get('YOUR_S3_BUCKET_URL/currency-symbols.json');
+        dispatch(setCurrencySymbols(response.data));
+      } catch (error) {
+        console.error('Error loading currency symbols:', error);
+        dispatch(setCurrencySymbols({
+          INR: '₹',
+          USD: '$',
+          EUR: '€',
+          GBP: '£',
+          AUD: 'A$',
+          CAD: 'C$',
+        }));
+      }
+    };
+
+    loadCurrencySymbols();
+  }, [dispatch]);
+
+  useEffect(() => {
+    const userLocationCookie = Cookies.get('userLocation');
+
+    if (userLocationCookie) {
+      try {
+        const parsedLocation = JSON.parse(userLocationCookie);
+        dispatch(changeUserLocation({ location: parsedLocation }));
+      } catch (e) {
+        console.error('Error parsing cookie:', e);
+        fetchUserLocation();
+      }
+    }
+    // If no cookie and no Redux location, fetch from API
+    else if (!userLocationCookie) {
+      fetchUserLocation();
+    }
+
+    async function fetchUserLocation() {
+      try {
+        const ipRes = await axios.get("https://api.ipify.org?format=json");
+        const ipAddress = ipRes.data.ip;
+
+        if (ipAddress) {
+          const locationRes = await axios.get(
+            `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ipAddress}`
+          );
+
+          const data = locationRes.data;
+          if (data) {
+            Cookies.set("userLocation", JSON.stringify(data), { expires: 1 });
+            dispatch(changeUserLocation({ location: data }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user location:", error);
+        const defaultLocation = {
+          country: 'India',
+          city: 'Delhi',
+          currency: 'INR',
+          country_code: 'IN'
+        };
+        Cookies.set("userLocation", JSON.stringify(defaultLocation), { expires: 1 });
+        dispatch(changeUserLocation({ location: defaultLocation }));
+      }
+    }
+  }, []);
+
 
   return (
     <>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import Cookies from "js-cookie";
 import SearchInputStarting from "../searchstarting/Input";
 import SearchInput from "../search/Index";
 import { BiTargetLock } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { StyledContainer } from "../../../../styled-components/TailoredForm";
 import Image from "next/image";
+import { changeUserLocation } from "../../../../../store/actions/userLocation";
 
 
 const RightContainer = styled.div`
@@ -19,7 +22,11 @@ const SelectedDestination = (props) => {
   const [focusLocation, setFocusLocation] = useState(false);
   const [focusSearch, setFocusSearch] = useState(null);
   const [showDestination, setShowDestination] = useState(true);
-  const [defaultLocation, setDefaultLocation] = useState(null);
+  const [loading, setLoading] = useState(false);
+  
+  const dispatch = useDispatch();
+  
+  const [userLocation, setUserLocation] = useState(null);
 
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
@@ -35,76 +42,95 @@ const SelectedDestination = (props) => {
     setFocusSearch(true);
   };
 
-  // Helper function to get cookie value
-  const getCookie = (name) => {
-    if (typeof document === 'undefined') return null;
-    
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      return parts.pop().split(';').shift();
-    }
-    return null;
-  };
-
   // Helper function to validate location object
   const isValidLocation = (location) => {
     return (
       location &&
-      location.text &&
-      location.place_id &&
-      location.lat &&
-      location.long &&
+      (location.text || location.city) &&
       location.country
     );
   };
 
   useEffect(() => {
-    const userLocationCookie = getCookie('userLocation');
-    
-    if (userLocationCookie) {
+  const checkCookie = () => {
+    const cookieValue = Cookies.get("userLocation");
+    if (cookieValue) {
       try {
-        const parsedLocation = JSON.parse(decodeURIComponent(userLocationCookie));
-        
-        if (isValidLocation(parsedLocation)) {
-          setDefaultLocation({
-            name: parsedLocation.text,
-            place_id: parsedLocation.place_id,
-            lat: parsedLocation.lat,
-            long: parsedLocation.long,
-            country: parsedLocation.country,
-            currency: parsedLocation.currency,
-            continent: parsedLocation.continent,
-          });
-          
-          if (!props.startingLocation) {
-            props.setStartingLocation({
-              name: parsedLocation.text,
-              place_id: parsedLocation.place_id,
-              lat: parsedLocation.lat,
-              long: parsedLocation.long,
-              country: parsedLocation.country,
-            });
-          }
-        } else {
-          setDefaultLocation({ name: "Delhi, IN" });
-        }
-      } catch (error) {
-        console.error("Error parsing userLocation cookie:", error);
-        setDefaultLocation({ name: "Delhi, IN" });
+        const parsed = JSON.parse(cookieValue);
+        setUserLocation(parsed);
+      } catch (e) {
+        console.error("Error parsing cookie:", e);
+        setUserLocation(null);
       }
     } else {
-      setDefaultLocation({ name: "Delhi, IN" });
+      setUserLocation(null);
     }
-  }, []);
+  };
+
+
+  checkCookie();
+
+  const interval = setInterval(checkCookie, 500);
+
+  return () => clearInterval(interval);
+}, []);
+
+  // Watch for userLocation changes from Redux
+  useEffect(() => {
+    if (userLocation && isValidLocation(userLocation)) {
+      // Location is available, stop loading
+      setLoading(false);
+      
+      // Auto-populate starting location if not already set
+      if (!props.startingLocation) {
+        props.setStartingLocation({
+          name: userLocation.text || userLocation.city,
+          place_id: userLocation.place_id,
+          lat: userLocation.lat,
+          long: userLocation.long,
+          country: userLocation.country,
+          currency: userLocation.currency,
+          country_code: userLocation.country_code,
+        });
+      }
+    } else if (!userLocation) {
+      
+      setLoading(true);
+    }
+  }, [userLocation]); 
+
+  const handleLocationChange = (newLocation) => {
+    props.setStartingLocation(newLocation);
+    
+    if (newLocation && newLocation.currency) {
+      const updatedLocation = {
+        text: newLocation.name,
+        city: newLocation.name,
+        country: newLocation.country,
+        country_code: newLocation.country_code,
+        currency: newLocation.currency,
+        place_id: newLocation.place_id,
+        lat: newLocation.lat,
+        long: newLocation.long,
+      };
+      
+      
+      Cookies.set('userLocation', JSON.stringify(updatedLocation), { expires: 1 });
+      
+
+      dispatch(changeUserLocation({ location: updatedLocation }));
+    }
+  };
 
   const getDisplayLocation = () => {
     if (props.startingLocation) {
       return props.startingLocation.name;
     }
-    return defaultLocation?.name || "Delhi, IN";
+    if (userLocation) {
+      return userLocation.text || userLocation.city || "Delhi, IN";
+    }
+    return "Delhi, IN";
   };
-
 
   return (
     <StyledContainer
@@ -132,30 +158,55 @@ const SelectedDestination = (props) => {
         selectlocation={props.selectlocation}
       >
         {props.selectedCity?.name ? (
-          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} width={32} height={28} className="rounded-[6px] h-[28px] w-[32px]" />   
+          <Image 
+            src={"https://d31aoa0ehgvjdi.cloudfront.net/" + props?.selectedCity?.image} 
+            width={32} 
+            height={28} 
+            className="rounded-[6px] h-[28px] w-[32px]" 
+          />   
         ) : (
           <BiTargetLock
             height={26}
             width={26}
             className="ml-[4px] h-[26px] w-[26px]"
-            />
+          />
         )}
 
         {props.selectlocation ? (
           !props.showSearchStarting ? (
-            !props.startingLocation ? (
-              <div className="flex flex-row gap-2 justify-between">
-                <div className="truncate Body2M_14">{getDisplayLocation()}</div>
+            loading ? (
+              <div className="flex flex-row gap-2 items-center">
+                <svg 
+                  className="animate-spin h-4 w-4 text-gray-600" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24"
+                >
+                  <circle 
+                    className="opacity-25" 
+                    cx="12" 
+                    cy="12" 
+                    r="10" 
+                    stroke="currentColor" 
+                    strokeWidth="4"
+                  />
+                  <path 
+                    className="opacity-75" 
+                    fill="currentColor" 
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <p className="truncate Body2M_14">Getting your location...</p>
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">
-                <div className="truncate Body2M_14">{props.startingLocation.name}</div>
+                <div className="truncate Body2M_14">{getDisplayLocation()}</div>
               </div>
             )
           ) : (
             <SearchInputStarting
               startingLocation={props.startingLocation}
-              setStartingLocation={props.setStartingLocation}
+              setStartingLocation={handleLocationChange}
               onfocus={_handleFocusStarting}
               onblur={() => {
                 setFocusLocation(false);
@@ -163,7 +214,7 @@ const SelectedDestination = (props) => {
               _handleShowSearchStarting={_handleShowSearchStarting}
               setShowSearchStarting={props.setShowSearchStarting}
               showSearchStarting={props.showSearchStarting}
-            ></SearchInputStarting>
+            />
           )
         ) : props.destination && showDestination ? (
           <div className="w-[90%] flex flex-row gap-2 justify-between">
@@ -200,22 +251,22 @@ const SelectedDestination = (props) => {
             eventDates={props.eventDates}
             updatedData={props.updatedData}
             tailoredFormModal={props.tailoredFormModal}
-          ></SearchInput>
+          />
         )}
       </div>
 
-        <RightContainer className="hover-pointer">
-          <Image
-            src="/close.svg"
-            width={18}
-            height={18}
-              onClick={() => {
-                props.setStartingLocation(null);
-              }}
-              className="hover-pointer"
-              style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
-            />
-        </RightContainer>
+      <RightContainer className="hover-pointer">
+        <Image
+          src="/close.svg"
+          width={18}
+          height={18}
+          onClick={() => {
+            props.setStartingLocation(null);
+          }}
+          className="hover-pointer"
+          style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
+        />
+      </RightContainer>
     </StyledContainer>
   );
 };

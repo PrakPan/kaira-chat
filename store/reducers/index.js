@@ -27,6 +27,8 @@ import CallPaymentInfo from "./callPaymentInfo"
 import uiReducer from "./ui";
 import Cart from "./Cart";
 import tailoredInfoReducer from "./tailoredInfo"
+import currencyReducer from "./currencyReducer";
+
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -56,6 +58,7 @@ const rootReducer = combineReducers({
   UIState: uiReducer,
   Cart,
   tailoredInfoReducer:tailoredInfoReducer,
+  currencyReducer,
 });
 
 export default rootReducer;
