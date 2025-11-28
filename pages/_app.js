@@ -197,7 +197,7 @@ function MyApp({ Component, pageProps, store }) {
   useEffect(() => {
     const loadCurrencySymbols = async () => {
       try {
-        const response = await axios.get('YOUR_S3_BUCKET_URL/currency-symbols.json');
+        const response = await axios.get('https://d31aoa0ehgvjdi.cloudfront.net/media/currency_symbols.json');
         dispatch(setCurrencySymbols(response.data));
       } catch (error) {
         console.error('Error loading currency symbols:', error);

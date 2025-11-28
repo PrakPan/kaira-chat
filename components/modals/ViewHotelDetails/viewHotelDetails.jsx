@@ -100,6 +100,8 @@ const ViewHotelDetails = (props) => {
   const [drawerWidth, setDrawerWidth] = useState("50%");
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const currency = useSelector(state=>state.UserLocation)?.location;
+  
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -147,7 +149,7 @@ const ViewHotelDetails = (props) => {
         city_id: props?.city_id
       };
       hotelDetails
-        .post("", requestData, {
+        .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },

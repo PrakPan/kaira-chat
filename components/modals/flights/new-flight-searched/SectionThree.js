@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import media from "../../../media";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const Container = styled.div`
   padding: 0.75rem;
@@ -53,6 +55,7 @@ const Section = (props) => {
   var child;
   if (props.selectedBooking.pax.number_of_children > 1) child = " Childs";
   else child = " Child";
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   if (props.data)
     return (
@@ -73,7 +76,7 @@ const Section = (props) => {
               <Cost className="">
                 {props.data.cost
                   ? props.data.cost
-                    ? "₹" + getIndianPrice(Math.round(props.data.cost))
+                    ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.data.cost))
                     : null
                   : null}
               </Cost>
@@ -81,7 +84,7 @@ const Section = (props) => {
               <Cost className="">
                 {props.data.Fare
                   ? props.data.Fare.OfferedFare
-                    ? "₹" +
+                    ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` +
                       getIndianPrice(Math.round(props.data.Fare.OfferedFare))
                     : null
                   : null}

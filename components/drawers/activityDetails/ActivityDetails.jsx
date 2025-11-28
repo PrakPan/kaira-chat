@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
+import { currencySymbols } from "../../../data/currencySymbols";
 const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
@@ -35,6 +36,7 @@ export default function ActivityDetails(props) {
   });
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   useEffect(() => {
   if (props.data?.prices?.length > 0) {
@@ -535,7 +537,7 @@ export default function ActivityDetails(props) {
               </div>
               <div className="text-right">
               <div className="font-bold text-lg">
-                ₹{getIndianPrice(Math.round(packageItem.total_price))}
+                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(Math.round(packageItem.total_price))}
               </div>
               {/* <div className="text-sm text-gray-600">
                 per package
@@ -596,7 +598,7 @@ export default function ActivityDetails(props) {
             {selectedPackage?.total_price && (
               <div className="font-bold">
                 <span className="text-[34px]">
-                  ₹
+                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}
                   {selectedPackage?.total_price && selectedPackage?.total_price > 0
                     ? getIndianPrice(Math.round(selectedPackage.total_price))
                     : selectedPackage.total_price}
@@ -628,6 +630,7 @@ export default function ActivityDetails(props) {
 export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
   const [isHovered, setIsHovered] = useState(false);
+  const currency = useSelector(state=>state.UserLocation)?.location;
   const popupStyle = {
     display: isHovered ? "block" : "none",
     backgroundColor: "#2b2b2a",
@@ -686,7 +689,7 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
       ) : (
         <div className="flex items-center justify-between">
           <div className="font-semibold text-[24px]">
-            ₹{getIndianPrice(amenity.price)}{" "}
+            {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(amenity.price)}{" "}
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 

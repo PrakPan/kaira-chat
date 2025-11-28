@@ -136,6 +136,7 @@ const ActivityAddDrawer = (props) => {
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   const [error, setError] = useState(null);
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   const dateObj = new Date(props.date);
 
@@ -341,7 +342,7 @@ const formattedDate =
           load_nearby: nearby
         };
         activtySearch
-          .post(`/?limit=30&offset=${offSet}`, requestData)
+          .post(`/?limit=30&offset=${offSet}&currency=${currency?.currency || 'INR'}`, requestData)
           .then((res) => {
             if (res.data?.data?.activities?.length) {
               setTotalResults(res.data.results);

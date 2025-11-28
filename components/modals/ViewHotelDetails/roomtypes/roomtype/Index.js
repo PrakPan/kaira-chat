@@ -8,6 +8,8 @@ import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
 import Image from "next/image";
+import { currencySymbols } from "../../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -16,7 +18,7 @@ const ImageContainer = styled.div`
 
 const RoomType = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
+  const currency = useSelector(state=>state.UserLocation)?.location;
   const [openRooms, setOpenRooms] = useState({});
 
   const getRoomImage = (images) => {
@@ -76,7 +78,7 @@ const RoomType = (props) => {
 
           {roomsByRate.length > 1 && (
             <div className="text-sm font-semibold text-black px-2">
-              ₹{getIndianPrice(Math.round(rate.final_rate))}
+              {``}{getIndianPrice(Math.round(rate.final_rate))}
               {rate.refundable ? (
                 <span className="text-[#3BAF75]">Refundable</span>
               ) : (
@@ -154,7 +156,7 @@ const RoomType = (props) => {
 
                     <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
                       <div className="text-text-charcolblack text-lg font-700 leading-2xl-md">
-                        {"₹" + getIndianPrice(Math.round(props.price)) + "/-"}
+                        {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.round(props.price)) + "/-"}
                       </div>
                       <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">for {pax} people</div>
                     </div>

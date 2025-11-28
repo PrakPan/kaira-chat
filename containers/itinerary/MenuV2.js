@@ -57,6 +57,7 @@ import {
   ChatProvider,
   useChatContext,
 } from "../../components/Chatbot/context/ChatContext.js";
+import { currencySymbols } from "../../data/currencySymbols.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -112,6 +113,7 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
   const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
@@ -1436,7 +1438,7 @@ const SimpleTabsV2 = (props) => {
               {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
-                    ₹{" "}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
                     {!props?.mercuryItinerary
                       ? props?.payment?.pay_only_for_one ||
                         props?.payment?.show_per_person_cost

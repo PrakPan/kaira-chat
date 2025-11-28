@@ -7,6 +7,8 @@ import Accordion, {
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { currencySymbols } from "../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,6 +25,7 @@ const FAQs = (props) => {
   const classes = useStyles();
   let HeadingsJSX = [];
   let bookings = {};
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   try {
     for (var i = 0; i < props.stayBookings.length; i++) {
@@ -127,13 +130,13 @@ const FAQs = (props) => {
             >
               {!props?.mercuryItinerary
                 ? !props.payment.are_prices_hidden
-                  ? "₹ " +
+                  ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` +
                     getIndianPrice(
                       Math.round(props.payment.summary[key].cost / 100)
                     )
                   : null
                 : !props.payment.are_prices_hidden
-                ? "₹ " +
+                ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` +
                   getIndianPrice(Math.round(props.payment.summary[key].cost))
                 : null}
             </Typography>

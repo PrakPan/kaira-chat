@@ -67,6 +67,8 @@ const ComboTaxi = (props) => {
     props?.taxiResults ? props?.taxiResults : []
   );
   const dispatch = useDispatch();
+  const currency = useSelector(state=>state.UserLocation)?.location;
+  
 
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const calendarRef = useRef(null);
@@ -349,7 +351,7 @@ const ComboTaxi = (props) => {
 
     propsToUse?.comboStartDate &&
       axiosTaxiSearch
-        .post("", requestData)
+        .post(`/?currency=${currency?.currency || 'INR'}`, requestData)
         .then((res) => {
           if (res.data.success) {
             setNoResults(false);

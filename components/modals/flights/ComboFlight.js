@@ -152,6 +152,7 @@ const ComboFlight = (props) => {
     props?.flightResults ? props?.flightResults?.length : 0
   );
   const [previousAirlineFilter, setPreviousAirlineFilter] = useState(null);
+    const currency = useSelector(state=>state.UserLocation).location
   
 
   const [pax, setPax] = useState({
@@ -544,7 +545,7 @@ const handleViewMore = async () => {
     };
 
     // Build URL with pagination and airline filter
-    let url = `?limit=${newLimit}&offset=${newOffset}`;
+    let url = `?currency=${currency?.currency || 'INR'}&limit=${newLimit}&offset=${newOffset}`;
     if (filtersState?.airlines) {
       url += `&airlines=${encodeURIComponent(filtersState.airlines)}`;
     }
@@ -671,12 +672,12 @@ const handleViewMore = async () => {
       };
 
       const selectedAirlines = filtersState?.airlines;
-
+      let curr = null;
       const url = selectedAirlines
-        ? `?airlines=${encodeURIComponent(
+        ? `?currency=${currency?.currency || 'INR'}&airlines=${encodeURIComponent(
             selectedAirlines
           )}&limit=${limit}&offset=0`
-        : `?limit=${limit}&offset=0`;
+        : `?currency=${currency?.currency || 'INR'}&limit=${limit}&offset=0`;
 
       axiosFlightSearch
         .post(url, requestData, {
