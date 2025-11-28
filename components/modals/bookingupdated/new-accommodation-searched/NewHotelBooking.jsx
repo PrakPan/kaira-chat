@@ -7,6 +7,8 @@ import { logEvent } from "../../../../services/ga/Index";
 import ImageCarousel, { Carousel } from "../../Carousel/ImageCarousel";
 import { FaLocationDot } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const svgIcons = {
   loaction: (
@@ -100,6 +102,7 @@ export default function NewHotelBooking({
   };
 
    const router = useRouter()
+   const currency = useSelector(state=>state.UserLocation)?.location;
     const { hotel_duration } =
       router?.query;
 
@@ -273,7 +276,7 @@ export default function NewHotelBooking({
                 <div>
                   <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
                     <div className="text-text-charcolblack text-lg font-700 leading-2xl-md">
-                      <>₹{getIndianPrice(Math.ceil(booking.price))}</>
+                      <>{currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.ceil(booking.price))}</>
                     </div>
                     <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">
                       <>for {currentBooking?.duration || duration || hotel_duration} nights</>
