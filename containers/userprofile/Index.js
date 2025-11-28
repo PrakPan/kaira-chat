@@ -71,7 +71,7 @@ const UserDashboard = (props) => {
   const fetchData = (showMore = false) => {
     if (showMore) setShowMoreLoading(true);
     axiomyplansinstance
-      .get(`/currency=${currency?.currency || 'INR'}?limit=9&offset=${offSet}`, {
+      .get(`/?currency=${currency?.currency || 'INR'}&limit=9&offset=${offSet}`, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },

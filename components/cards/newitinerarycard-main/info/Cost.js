@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const StrikedCost = styled.p`
   position: relative;
@@ -102,6 +104,7 @@ const GITText = styled.p`
 `;
 
 const Cost = (props) => {
+  const currency = useSelector(state=>state.UserLocation)?.location;
   return (
     <div className="center-di mb-2">
       {props.starting_cost ? (
@@ -111,7 +114,7 @@ const Cost = (props) => {
               (props.PW ? (
                 <StrikedCost>
                   {" "}
-                  {"₹ " +
+                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ ") +
                     getIndianPrice(Math.round(props.discounted_cost))}
                 </StrikedCost>
               ) : (
@@ -129,7 +132,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className=""
                 >
-                  {"₹" +
+                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ " )+
                     getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </Text>
@@ -139,7 +142,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className=""
                 >
-                  {"₹" +
+                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ ") +
                     getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </GITText>
