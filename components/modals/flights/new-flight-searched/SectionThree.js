@@ -55,7 +55,7 @@ const Section = (props) => {
   var child;
   if (props.selectedBooking.pax.number_of_children > 1) child = " Childs";
   else child = " Child";
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   if (props.data)
     return (

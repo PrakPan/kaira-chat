@@ -36,7 +36,7 @@ export default function ActivityDetails(props) {
   });
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
   if (props.data?.prices?.length > 0) {
@@ -630,7 +630,7 @@ export default function ActivityDetails(props) {
 export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
   const [isHovered, setIsHovered] = useState(false);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   const popupStyle = {
     display: isHovered ? "block" : "none",
     backgroundColor: "#2b2b2a",

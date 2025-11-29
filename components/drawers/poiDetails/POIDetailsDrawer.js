@@ -50,7 +50,7 @@ const POIDetailsDrawer = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     if (props.show) fetchData();

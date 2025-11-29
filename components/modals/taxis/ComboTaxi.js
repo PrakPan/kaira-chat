@@ -67,7 +67,7 @@ const ComboTaxi = (props) => {
     props?.taxiResults ? props?.taxiResults : []
   );
   const dispatch = useDispatch();
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   
 
   const [showDateDropdown, setShowDateDropdown] = useState(false);

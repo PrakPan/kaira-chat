@@ -136,7 +136,7 @@ const ActivityAddDrawer = (props) => {
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   const [error, setError] = useState(null);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const dateObj = new Date(props.date);
 

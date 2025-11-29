@@ -100,7 +100,7 @@ const ViewHotelDetails = (props) => {
   const [drawerWidth, setDrawerWidth] = useState("50%");
   const dispatch = useDispatch();
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   
   useEffect(() => {
     const handleResize = () => {

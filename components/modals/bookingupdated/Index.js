@@ -175,7 +175,7 @@ const Booking = (props) => {
   const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
   const [selectedHotelId, setSelectedHotelId] = useState(null); 
   const debouncedSearch = useDebounce(selectSearch);
- const currency = useSelector(state=>state.UserLocation)?.location;
+ const currency = useSelector(state=>state.currency);
  
 
   const currentBooking = {

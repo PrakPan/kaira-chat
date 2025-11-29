@@ -16,6 +16,8 @@ import Image from "next/image";
 import useMediaQuery from "../../../components/media";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { useRouter } from "next/router";
+import { currencySymbols } from "../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -37,6 +39,7 @@ export default function NewPoiBooking(props) {
 
 
   const { trackPoiBookingAdded, trackPoiCardClicked } = useAnalytics();
+  const currency = useSelector(state=>state.currency);
   const router = useRouter();
 
   useEffect(() => {
@@ -263,7 +266,7 @@ export default function NewPoiBooking(props) {
                       className="!font-[lexend]"
                       style={{ fontFamily: "Lexend" }}
                     >
-                      ₹
+                      {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
@@ -412,7 +415,7 @@ export default function NewPoiBooking(props) {
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
                 <div className="text-[24px] font-bold">
-                  <span>₹</span>
+                  <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
                 <div className="text-[14px] mt-[10px]">

@@ -59,7 +59,7 @@ const ComboSection = (props) => {
   const isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const handleUpdate = (data) => {
     if (props.onSelect) {

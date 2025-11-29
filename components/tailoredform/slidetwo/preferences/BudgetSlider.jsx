@@ -19,7 +19,7 @@ export default function BudgetSlider(props) {
   );
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef(null);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   
   useEffect(() => {
     const handleClickOutside = (event) => {

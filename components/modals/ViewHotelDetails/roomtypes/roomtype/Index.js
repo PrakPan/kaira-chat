@@ -18,7 +18,7 @@ const ImageContainer = styled.div`
 
 const RoomType = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   const [openRooms, setOpenRooms] = useState({});
 
   const getRoomImage = (images) => {

@@ -25,7 +25,7 @@ const FAQs = (props) => {
   const classes = useStyles();
   let HeadingsJSX = [];
   let bookings = {};
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   try {
     for (var i = 0; i < props.stayBookings.length; i++) {

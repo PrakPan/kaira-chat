@@ -103,7 +103,7 @@ const Section = (props) => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [open, setOpen] = useState(false);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const isValidUUID = (uuid) => {
     const regex =

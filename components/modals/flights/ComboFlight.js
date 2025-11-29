@@ -152,7 +152,7 @@ const ComboFlight = (props) => {
     props?.flightResults ? props?.flightResults?.length : 0
   );
   const [previousAirlineFilter, setPreviousAirlineFilter] = useState(null);
-    const currency = useSelector(state=>state.UserLocation).location
+    const currency = useSelector(state=>state.currency);
   
 
   const [pax, setPax] = useState({

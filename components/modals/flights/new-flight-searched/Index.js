@@ -54,7 +54,7 @@ const Flight = (props) => {
   const [showFareDrawer, setShowFareDrawer] = useState(false);
   const [selectedFareData, setSelectedFareData] = useState(null);
   const [selectedFareIndex, setSelectedFareIndex] = useState(null);
-  const currency = useSelector(state=>state.UserLocation).location;
+  const currency = useSelector(state=>state.currency);
 
 
   const totalPax =

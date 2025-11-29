@@ -102,7 +102,7 @@ export default function NewHotelBooking({
   };
 
    const router = useRouter()
-   const currency = useSelector(state=>state.UserLocation)?.location;
+   const currency = useSelector(state=>state.currency);
     const { hotel_duration } =
       router?.query;
 

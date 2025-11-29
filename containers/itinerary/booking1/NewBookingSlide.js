@@ -82,7 +82,7 @@ const CouponModal = ({
   const [loading, setLoading] = useState(false);
   const [applyingCouponId, setApplyingCouponId] = useState(null);
   const ItineraryId = useSelector((state) => state.ItineraryId);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const Cart = useSelector((state) => state.Cart);
 
@@ -346,7 +346,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   const Itinerary = useSelector((state) => state.Itinerary);
 
   const isItineraryInFuture = () => {
@@ -450,7 +450,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   );
 };
 const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   return (
     <div className="bg-white p-2 rounded-lg text-center">
       <div className="mb-2">
@@ -588,7 +588,7 @@ const CouponSection = ({
   isRemoving = false,
   payment,
 }) => {
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   // Pulse loader component
   const PulseLoader = () => (
     <div className="flex items-center justify-center">
@@ -699,7 +699,7 @@ const PriceDetails = ({
   selectedPaymentOption,
 }) => {
   const Cart = useSelector((state) => state.Cart);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const numericItineraryCost =
     typeof itineraryCost === "string"
@@ -781,7 +781,7 @@ const PaymentButton = ({
   onClick,
   paymentType = "full",
 }) => {
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   return (
     <Button
       color="#111"
@@ -823,7 +823,7 @@ const ItineraryInclusions = ({
     Flights: true,
     Activities: true,
   });
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const categorizeBookings = () => {
     const categories = {
@@ -1122,7 +1122,7 @@ const Details = (props) => {
   );
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   const {resetSession} = useChatContext();
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   const { trackWhatsAppClicked,trackPaymentSelected,trackPaymentDeselected,trackPaymentAttempted, trackPaymentBookingConfirmed} = useAnalytics();
 

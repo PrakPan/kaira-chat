@@ -249,7 +249,7 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
 
   useEffect(() => {
@@ -4419,7 +4419,7 @@ const OtherTransfer = ({
   const [lastRequestData, setLastRequestData] = useState(null);
    const {trackTransferBookingAdd} = useAnalytics();
    const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
-   const currency = useSelector(state=>state.UserLocation)?.location;
+   const currency = useSelector(state=>state.currency);
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults

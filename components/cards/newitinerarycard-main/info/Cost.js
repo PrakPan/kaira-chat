@@ -104,7 +104,7 @@ const GITText = styled.p`
 `;
 
 const Cost = (props) => {
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
   return (
     <div className="center-di mb-2">
       {props.starting_cost ? (

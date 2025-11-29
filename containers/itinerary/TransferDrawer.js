@@ -79,7 +79,7 @@ const TransferDrawer = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {

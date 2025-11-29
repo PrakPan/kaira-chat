@@ -113,7 +113,8 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
   const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
-  const currency = useSelector(state=>state.UserLocation)?.location;
+  const currency = useSelector(state=>state.currency);
+
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
