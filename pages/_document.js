@@ -21,132 +21,93 @@ export default class MyDocument extends Document {
     );
 
     const styleTags = sheet.getStyleElement();
+
+    
     return { ...page, styleTags };
   }
 
   render() {
     const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
-    const isDevelopment = true;
+    
+    // Clean the GTM ID by removing any quotes
+    const cleanGTMId = GOOGLE_ANALTICS_ID?.replace(/['"]/g, '');
+    
     return (
       <Html id="html" lang="en">
         <Head>
-        <title>Trip Planner & Itinerary | The Tarzan Way</title>
+          <title>Trip Planner & Itinerary | The Tarzan Way</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
           />
+          
           
           {/* Partytown Configuration */}
           <Partytown 
             debug={isProduction}
             forward={[
               'gtag', 
-              // 'dataLayer.push', 
               'mixpanel',
-              // 'JupiterAnalytics', 
-              // 'JUPITER_CONFIG'
             ]}
-            // resolveUrl={(url) => {
-            //   // Proxy problematic URLs through your own server to avoid CORS
-            //   const proxyUrls = [
-            //     'snap.licdn.com',
-            //     'freshchat.com',
-            //     'fw-cdn.com',
-            //     'clarity.ms'
-            //   ];
-              
-            //   if (proxyUrls.some(domain => url.href.includes(domain))) {
-            //     const proxiedUrl = new URL('/api/proxy', url.origin);
-            //     proxiedUrl.searchParams.append('url', url.href);
-            //     return proxiedUrl;
-            //   }
-              
-            //   return url;
-            // }}
           />
 
-          {/* Jupiter Analytics - Load with Partytown */}
-          {/* <script
-            type="text/partytown"
-            dangerouslySetInnerHTML={{
-              __html: `
-               
-                if (typeof importScripts === 'function') {
-                  try {
-                    importScripts('/jupyter-partytown.js');
-                   
-                  } catch (e) {
-                    console.error('❌ ImportScripts failed:', e);
-                  }
-                } else {
-                  const script = document.createElement('script');
-                  script.src = '/jupyter-partytown.js';
-                  script.onload = () => console.log('✅ Jupiter script loaded');
-                  script.onerror = (e) => console.error('❌ Script load failed:', e);
-                  document.head.appendChild(script);
-                }
-              `
-            }}
-          /> */}
-
           {/* Google Tag Manager */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
-              <>
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GOOGLE_ANALTICS_ID}');`,
-                  }}
-                />
+          {isProduction && (
+            <>
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${cleanGTMId}');`,
+                }}
+              />
 
-                <script
-                  async
-                  src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALTICS_ID}`}
-                />
+              <script
+                async
+                src={`https://www.googletagmanager.com/gtag/js?id=${cleanGTMId}`}
+              />
 
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GOOGLE_ANALTICS_ID}', {
-                page_path: window.location.pathname,
-                });
-                `,
-                  }}
-                />
-              </>
-            )}
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${cleanGTMId}', {
+              page_path: window.location.pathname,
+              });
+              `,
+                }}
+              />
+            </>
+          )}
           {/*  End Google Tag Manager */}
 
-          {/* Partytown */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
-              <>
-                <script
-                  type="text/partytown"
-                  src="//in.fw-cdn.com/30401267/225580.js"
-                  chat="false"
-                ></script>
+          {/* Partytown Scripts */}
+          {isProduction && (
+            <>
+              <script
+                type="text/partytown"
+                src="//in.fw-cdn.com/30401267/225580.js"
+                chat="false"
+              ></script>
 
-                <script
-                  type="text/partytown"
-                  dangerouslySetInnerHTML={{
-                    __html: ` (function(c,l,a,r,i,t,y){
-                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "dxk3hzpt0s");`,
-                  }}
-                />
-              </>
-            )}
+              <script
+                type="text/partytown"
+                dangerouslySetInnerHTML={{
+                  __html: ` (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "dxk3hzpt0s");`,
+                }}
+              />
+            </>
+          )}
 
+          {/* Mixpanel */}
           <script
             type="text/javascript"
             dangerouslySetInnerHTML={{
@@ -160,7 +121,7 @@ export default class MyDocument extends Document {
             }}
           ></script>
 
-         <link
+          <link
             rel="icon"
             href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
           />
@@ -178,19 +139,10 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
 
-          {/* Step 5: Output the styles in the head  */}
           {this.props.styleTags}
         </Head>
 
         <body>
-          {/* <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-              createBot({ botId: "680b71a4a47fab68f44972ab" });
-            `,
-            }}
-          /> */}
           <style>
             {`
             #chatbot-iframe-container {
@@ -207,34 +159,28 @@ export default class MyDocument extends Document {
               border: none;
             }
 
-
-          @media (max-width: 765px) {
-            #chatbot-iframe-container {
-              margin-bottom: 60px;
-              margin-right: 16px;
-              height: calc(100% - 60px) !important;
-              min-height: auto !important;
-              width: calc(100% - 20px) !important;
+            @media (max-width: 765px) {
+              #chatbot-iframe-container {
+                margin-bottom: 60px;
+                margin-right: 16px;
+                height: calc(100% - 60px) !important;
+                min-height: auto !important;
+                width: calc(100% - 20px) !important;
+              }
             }
-        
-          }
-        `}
-        </style>
+          `}
+          </style>
 
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
-              <noscript>
-                <iframe
-                  src={
-                    "https://www.googletagmanager.com/ns.html?id=" +
-                    GOOGLE_ANALTICS_ID
-                  }
-                  height="0"
-                  width="0"
-                  style={{ display: "none", visibility: "hidden" }}
-                ></iframe>
-              </noscript>
-            )}
+          {isProduction && (
+            <noscript>
+              <iframe
+                src={`https://www.googletagmanager.com/ns.html?id=${cleanGTMId}`}
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              ></iframe>
+            </noscript>
+          )}
 
           <Main />
           <div id="modal-portal" />
