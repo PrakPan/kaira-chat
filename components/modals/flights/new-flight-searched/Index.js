@@ -384,6 +384,7 @@ const FareOptionsTable = ({
   flightIndex,
 }) => {
   const router = useRouter();
+  const currency = useSelector(state=>state.currency);
   
   const getIndianPrice = (price) => {
     return new Intl.NumberFormat("en-IN").format(price);
