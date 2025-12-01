@@ -20,6 +20,7 @@ import Accordion, {
   AccordionSummary,
 } from "../../../../ui/Accordion";
 import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
+import { useAnalytics } from "../../../../../hooks/useAnalytics";
 
 
 const Container = styled.div`
@@ -102,6 +103,11 @@ const Section = (props) => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [open, setOpen] = useState(false);
+   const {
+    trackTransferBookingAdd,
+    trackTransferBookingChange,
+    trackTransferCardClicked,
+  } = useAnalytics();
 
   const isValidUUID = (uuid) => {
     const regex =

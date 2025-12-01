@@ -809,6 +809,7 @@ const ItineraryInclusions = ({
   arePricesHidden,
   updatingInclusions = {},
   defaultExpanded = false,
+  disableOnExpiry=false
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
     Hotels: true,
@@ -966,7 +967,7 @@ const ItineraryInclusions = ({
                           type="checkbox"
                           checked={selectedInclusions[booking.id]}
                           onChange={() => onToggleInclusion(booking.id)}
-                          disabled={booking.status === "Paid"}
+                          disabled={disableOnExpiry || booking.status === "Paid"}
                           className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                         />
                       )}
@@ -2814,6 +2815,18 @@ const Details = (props) => {
               pricing_status == "SUCCESS" ? (
               // Show only refresh prices button when expired
               <div>
+                 <ItineraryInclusions
+                  Cart={Cart}
+                  selectedInclusions={selectedInclusions}
+                  onToggleInclusion={handleToggleInclusion}
+                  arePricesHidden={Cart?.are_prices_hidden}
+                  updatingInclusions={updatingInclusions}
+                  defaultExpanded={
+                    Cart?.sales?.some((sale) => sale.status === "Completed") &&
+                    Cart?.total_payable_amount !== 0
+                  }
+                  disableOnExpiry={true}
+                />
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                   <p className="text-red-600 text-sm font-medium mb-2">
                     Your itinerary prices have expired. Please refresh to get
