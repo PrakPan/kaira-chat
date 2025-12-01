@@ -185,7 +185,7 @@ const Details = (props) => {
       {props.travellerType != null ? (
         <div className="border-l min-h-full pl-[24px] pr-[24px]">
           <DateContainer>
-            {props.tripsPage ? (
+            {props.tripsPage || props?.v1 ? (
               <div>
                 <Heading className="flex flex-row gap-2 items-center md:overflow-visible">
                   Dates
