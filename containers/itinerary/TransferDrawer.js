@@ -21,6 +21,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
+import { currencySymbols } from "../../data/currencySymbols";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
