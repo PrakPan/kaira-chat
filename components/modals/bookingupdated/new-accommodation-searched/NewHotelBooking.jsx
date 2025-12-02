@@ -138,7 +138,7 @@ export default function NewHotelBooking({
             className={`w-full h-full flex md:flex-row md:items-center flex-col gap-xl grayscale-0`}
           >
             <div className={`relative w-[260px] max-ph:w-full h-[12rem] `}>
-              <ImageCarousel images={booking.images} noCaption={true} />
+              <ImageCarousel images={booking?.images && booking.images.length ? booking.images : ["https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"]} noCaption={true} />
 
               {/* text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm-md font-400 leading-md text-text-spacegreynsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl */}
               {booking.star_category && booking.star_category != "0" ? (
@@ -146,7 +146,7 @@ export default function NewHotelBooking({
                   starHotel
                   className={` bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md`}
                 >
-                  {booking.star_category} star hotel
+                  {booking.star_category } star hotel
                 </div>
               ) : null}
             </div>
