@@ -21,6 +21,7 @@ import Accordion, {
 } from "../../../../ui/Accordion";
 import { updateFlightBookingWarning } from "../../../../../services/bookings/UpdateBookings";
 import { useAnalytics } from "../../../../../hooks/useAnalytics";
+import { currencySymbols } from "../../../../../data/currencySymbols";
 
 
 const Container = styled.div`
@@ -103,6 +104,7 @@ const Section = (props) => {
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [open, setOpen] = useState(false);
+  const currency = useSelector(state=>state.currency);
    const {
     trackTransferBookingAdd,
     trackTransferBookingChange,
@@ -446,7 +448,7 @@ const Section = (props) => {
           <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
             <div>
               <span className="text-lg font-700 2xl-md">
-                {"₹" + getIndianPrice(Math.ceil(props.data.price.total))}
+                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
               </span>
             </div>
             <div className="flex items-end justify-center">

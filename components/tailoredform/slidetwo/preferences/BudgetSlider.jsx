@@ -4,6 +4,8 @@ import { BsInfoCircleFill } from "react-icons/bs";
 import RangeSliderInput from "../../../modals/bookingupdated/filtersmobile/RangeSlider";
 import Question from "../../Question";
 import media from "../../../media";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 export default function BudgetSlider(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -17,7 +19,8 @@ export default function BudgetSlider(props) {
   );
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef(null);
-
+  const currency = useSelector(state=>state.currency);
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
@@ -87,8 +90,8 @@ export default function BudgetSlider(props) {
                   ref={tooltipRef}
                   className={`z-50 absolute -top-[50px] text-xs font-medium bg-[#FFEFE5] p-2 rounded-md w-full shadow-2xl drop-shadow-xl`}
                 >
-                  Hotels in {props.destination} typically range from ₹
-                  {props.defaultValue.min_price} to ₹
+                  Hotels in {props.destination} typically range from {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}
+                  {props.defaultValue.min_price} to {``}
                   {props.defaultValue.max_price} per night
                 </div>
               )}
@@ -113,7 +116,7 @@ export default function BudgetSlider(props) {
           <div className="flex flex-col items-center gap-1">
             <label className="text-sm">Minimum</label>
             <div className="flex flex-row items-center border-2 px-4 py-2 rounded-full">
-              <div>₹</div>
+              <div>{`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}</div>
               <input
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
@@ -126,7 +129,7 @@ export default function BudgetSlider(props) {
           <div className="flex flex-col items-center gap-1">
             <label className="text-sm">Maximum</label>
             <div className="flex flex-row items-center border-2 px-4 py-2 rounded-full">
-              <div>₹</div>
+              <div>{`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}</div>
               <input
                 value={parseInt(maxPrice) === 10000 ? `${maxPrice}+` : maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}

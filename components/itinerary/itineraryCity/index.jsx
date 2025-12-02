@@ -161,7 +161,6 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
-    console.log("Hii I'm there")
     
     const targetHotelId = hotelId || (stay?.[props?.index]?.id || multiHotelStays?.[0]?.id);
 

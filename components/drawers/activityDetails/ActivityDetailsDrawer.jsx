@@ -58,6 +58,7 @@ const ActivityDetailsDrawer = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const [hotelPickupIncluded,setHotelPickupIncluded] = useState(false);
+  const currency = useSelector(state=>state.currency);
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
@@ -102,7 +103,7 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/`, requestData, {
+      .post(`/${props.activityId}/?currency=${currency.currency || 'INR'}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },

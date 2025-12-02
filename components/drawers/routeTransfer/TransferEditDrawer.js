@@ -249,6 +249,8 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
+  const currency = useSelector(state=>state.currency);
+
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -306,7 +308,7 @@ const TransferEditDrawer = (props) => {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
             .get(
-              `/${router.query.id}/`
+              `/${router.query.id}/?currency=${currency?.currency || 'INR'}`
               // multiCityRoundtripRequestData
             )
             .then((response) => {
@@ -4417,6 +4419,7 @@ const OtherTransfer = ({
   const [lastRequestData, setLastRequestData] = useState(null);
    const {trackTransferBookingAdd} = useAnalytics();
    const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
+   const currency = useSelector(state=>state.currency);
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -4523,7 +4526,7 @@ const OtherTransfer = ({
         };
 
         const response = await loadOtherTransfers.post(
-          `/search/`,
+          `/search/?currency=${currency?.currency || 'INR'}`,
           requestBody,
           {
             headers: {

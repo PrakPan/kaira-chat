@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import axiomyplansinstance from "../../services/sales/MyPlans";
 import styled from "styled-components";
 import CheckAuthRedirect from "../../components/HOC/CheckAuthRedirect";
@@ -13,6 +13,7 @@ import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main
 import Button from "../../components/ui/button/Index";
 import { logEvent } from "../../services/ga/Index";
 import H2 from "../../components/heading/H2";
+import { useSearchParams } from "next/navigation";
 
 const Container = styled.div`
   width: 100%;
@@ -58,6 +59,7 @@ const UserDashboard = (props) => {
   const [offSet, setOffSet] = useState(0);
   let isPageWide = media("(min-width: 768px)");
   let router = useRouter();
+  const currency = useSelector(state=>state.UserLocation)?.location;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -69,7 +71,7 @@ const UserDashboard = (props) => {
   const fetchData = (showMore = false) => {
     if (showMore) setShowMoreLoading(true);
     axiomyplansinstance
-      .get(`/?limit=9&offset=${offSet}`, {
+      .get(`/?currency=${currency?.currency || 'INR'}&limit=9&offset=${offSet}`, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },

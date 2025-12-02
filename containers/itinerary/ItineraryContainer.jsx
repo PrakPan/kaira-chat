@@ -41,6 +41,7 @@ import NotesPopup from "./NotesPopup";
 import axios from "axios";
 import { ChatProvider } from "../../components/Chatbot/context/ChatContext";
 import setItineraryId from "../../store/actions/itineraryId";
+import { setCurrency } from "../../store/actions/currencyActions";
 
 const Container = styled.div`
   width: 100%;
@@ -487,6 +488,7 @@ const ItineraryContainer = (props) => {
       let data = res.data;
       setPayment(data);
       dispatch(setCart(data));
+      dispatch(setCurrency(data?.currency));
       dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
 
       for (let category in data.summary) {
@@ -627,6 +629,7 @@ const ItineraryContainer = (props) => {
 
         if (status?.PRICING === "FAILURE") {
           dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+          dispatch(setCurrency('INR'))
         }
         if (status?.TRANSFERS === "FAILURE") {
           dispatch(setItineraryStatus("transfers_status", "FAILURE"));

@@ -175,6 +175,7 @@ const Booking = (props) => {
   const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
   const [selectedHotelId, setSelectedHotelId] = useState(null); 
   const debouncedSearch = useDebounce(selectSearch);
+ const currency = useSelector(state=>state.currency);
  
 
   const currentBooking = {
@@ -444,7 +445,7 @@ if (priceOrderValue && filters.sort) {
 }
 
     hotelSearch
-      .post("", requestData, {
+      .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -584,7 +585,7 @@ if (priceOrderValue && filters.sort) {
       setAutocompleteLoading(true); 
 
       hotelSearchAutocomplete
-        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}`, {
+        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}&currency=${currency?.currency || 'INR'}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -681,7 +682,7 @@ if (priceOrderValue) {
 }
 
       hotelSearch
-        .post("", requestData, {
+        .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },

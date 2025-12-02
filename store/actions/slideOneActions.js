@@ -66,7 +66,6 @@ export const resetDate = () => ({
 });
 
 export const setItineraryInitiateData = (data) => {
-  console.log("itinerary initiate data is: ",data)
   return {
   type: actionTypes.SET_ITINERARY_INITIATE_DATA,
   payload:data,

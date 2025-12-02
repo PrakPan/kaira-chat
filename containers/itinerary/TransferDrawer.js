@@ -14,7 +14,7 @@ import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
 import { FaTaxi } from "react-icons/fa";
 import ImageLoader from "../../components/ImageLoader";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
@@ -78,6 +78,8 @@ const TransferDrawer = ({
   const [isDrawerOpen, setIsDrawerOpen] = useState(show);
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
+
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
@@ -326,7 +328,7 @@ const TransferDrawer = ({
               <div className="hidden md:flex items-center space-x-4">
                 <div className="text-right">
                   <div className="text-lg font-bold text-gray-900">
-                    ₹{transferData.price?.toLocaleString()}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{transferData.price?.toLocaleString()}
                   </div>
                   <div className="text-xs text-gray-500">{checkIn.date}</div>
                 </div>

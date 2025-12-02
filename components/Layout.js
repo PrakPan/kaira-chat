@@ -31,7 +31,7 @@ const Layout = React.memo((props) => {
     async function getUserLocation(ip) {
       try {
         const res = await axios.get(
-          `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
+          `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
         );
 
         const data = res.data;
