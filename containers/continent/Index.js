@@ -143,7 +143,10 @@ const Index = (props) => {
     //   convertDbNameToCapitalFirst(props.data.slug),
     //   props.type
     // );
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -168,6 +171,7 @@ const Index = (props) => {
             `Craft a trip to ${props.data.destination} now!`
           )}
           image={`${imgUrlEndPoint}${props.data.image}`}
+          slug={props?.data?.slug}
         />
 
         <SetWidthContainer>
@@ -175,7 +179,10 @@ const Index = (props) => {
              <DesktopBanner
             loading={desktopBannerLoading}
             onclick={() =>
-              {router.push("/new-trip");}
+              {router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });}
               // openTailoredModal(
               //   router,
               //   props.data.id,

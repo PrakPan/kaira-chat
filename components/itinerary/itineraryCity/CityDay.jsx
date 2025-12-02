@@ -21,13 +21,14 @@ const SectionHeading = styled.div`
 
 const DivideSlabElement = styled.div`
     border-left: 1px dashed #A09E9E;
-    margin-left: 1rem;
+    margin-left: 2.5rem;
     padding: 10px 5px;
     font-family: Montserrat;
     font-weight: 500;
     font-size: 12px;
     color: #A09E9E;
-    min-height: 45px
+    min-height: 32px;
+    gap:6px;
 `
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
@@ -124,9 +125,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
     }
   );
   return (
-    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
-      <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 mr-[7px]' : ''}`}>
-        <div className="flex items-center justify-between bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px] mb-[8px] cursor-pointer" onClick={() => setViewMore((prev) => !prev)}>
+    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB] mb-2">
+      <div className={`flex flex-col  md:w-[100%] rounded-lg bg-[#FFFAF5] shadow-[0_4px_17px_rgba(193,190,190,0.25)] border  ${isPageWide ? 'ml-4 mr-[7px] ' : ''}`}>
+        <div className={`flex items-center justify-between rounded-[8px] shadow-sm py-[8px] px-[16px]  cursor-pointer ${viewMore ? 'bg-[#FFFAF5] border-none shadow-none' : 'bg-white border-[#E5E5E5] border-[1px]'}`} onClick={() => setViewMore((prev) => !prev)}>
           <div className={`Body2M_14`}> 
             {isPageWide ? `Day ${props.index + 1} |` : ''} 
              <span>  {getHumanDateWithYearv2(props?.day?.date)} {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}</span></div>
@@ -167,12 +168,12 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           {finalized_status === "PENDING" ? (
             <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
           ) : (
-            <div className="flex justify-end">
+            <div className="flex justify-start">
             <button
               onClick={handleAddActivity}
-              className="mt-3  w-fit text-[14px] text-[#3A85FC;] underline font-medium font-montserrat"
+              className="mt-3 mb-2 ml-4 py-[4px] px-[10px] bg-[#07213A] rounded-[8px] w-fit text-sm md:text-[14px] text-white font-normal font-inter"
             >
-              + Add 
+              + Activity
             </button>
             </div>
           )}

@@ -13,7 +13,7 @@ import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const HeadingContent = ({ title, subtitle }) => {
+const HeadingContent = ({ title, subtitle, slug=null }) => {
   const headingRef = useRef(null);
   const containerRef = useRef(null);
   const contentWrapperRef = useRef(null);
@@ -80,7 +80,7 @@ const HeadingContent = ({ title, subtitle }) => {
         </p>
       </div>
       <div ref={buttonRef}>
-        <Link href="/new-trip">
+        <Link href={`/new-trip/?source=${slug || 'home'}`}>
           <Button
             variant="filled"
             color="default"

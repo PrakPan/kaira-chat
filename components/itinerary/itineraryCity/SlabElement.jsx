@@ -51,7 +51,7 @@ const SlabElement = (props) => {
 
   
   return (
-    <div className="">
+    <div className="w-[95%] mx-auto">
       {props.element.element_type === "activity" ? (
         <Activity
           element={props.element}
@@ -401,12 +401,12 @@ const Activity = (props) => {
                 : null}
             </div>
 
-            <div className="flex flex-row gap-xs flex-wrap ">
-              {props?.element?.tags && props.element.tags.map((item, i) => (
-                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-[#07213A] ${!i % 2 ? 'bg-lightGreen' : 'bg-lightPink'}`} key={i}>{item}</div>
-              ))}
+            {!props?.element?.poi ? <div className="flex flex-row gap-xs flex-wrap ">
+              {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
+                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white ${'bg-[#5CBA66]'}`}>✓ Included</div>
+              {/* ))} */}
 
-            </div>
+            </div> : null}
           </div>
         </div>
 
@@ -686,9 +686,9 @@ const Recommendation = (props) => {
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {props?.element?.tags && props.element.tags.map((item, i) => (
+              {/* {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
-              ))}
+              ))} */}
 
             </div>
           </div>
