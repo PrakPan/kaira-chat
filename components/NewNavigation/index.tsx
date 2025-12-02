@@ -43,6 +43,7 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSec
               if (ClickHandler) {
                 ClickHandler(item.label);
               }
+              if(trackSectionViewed)
               trackSectionViewed(router.query.id,item.label);
               setSelectedTab(`${item.id}`);
             }}
