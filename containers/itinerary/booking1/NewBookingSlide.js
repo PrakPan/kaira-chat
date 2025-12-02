@@ -940,7 +940,7 @@ const ItineraryInclusions = ({
                 </div>
               </div>
 
-              {categoryTotal > 0 && (
+              {categoryTotal > 0 && !arePricesHidden && (
                 <div className="font-semibold text-sm mr-2">
                   {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(Math.round(categoryTotal))}
                 </div>
@@ -1025,7 +1025,7 @@ const ItineraryInclusions = ({
 
                         {/* Show individual booking cost */}
                         {
-                          // !arePricesHidden &&
+                          !arePricesHidden &&
                           booking.booking_cost > 0 && (
                             <div className="flex items-center gap-1 text-green-600 font-medium">
                               <span>•</span>
