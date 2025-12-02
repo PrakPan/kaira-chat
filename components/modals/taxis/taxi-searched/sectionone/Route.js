@@ -105,6 +105,7 @@ const Section = (props) => {
   const [isChecked, setIsChecked] = useState(false);
   const [open, setOpen] = useState(false);
   const currency = useSelector(state=>state.currency);
+  const {intercity} = useSelector(state=>state.TransferBookings).transferBookings
    const {
     trackTransferBookingAdd,
     trackTransferBookingChange,
@@ -395,7 +396,7 @@ const Section = (props) => {
             <div className="flex flex-row justify-between">
               <div className="flex flex-col ">
                 <div className="font-600 text-md-lg leading-xl-sm">
-                  {props.data?.taxi_category?.seating_capacity + "-seater"}
+                  {props.data?.taxi_category?.seating_capacity ?  props.data?.taxi_category?.seating_capacity + "-seater" : null}
                 </div>
                 <div>
                   <Accordion
