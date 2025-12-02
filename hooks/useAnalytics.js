@@ -314,10 +314,10 @@ export const useAnalytics = () => {
       return await callWorkerFunction('track', fromItineraryId, toItineraryId);
     }, []),
     
-    trackSectionViewed: useCallback(async (itineraryId, sectionId) => {
+    trackSectionViewed: useCallback(async (itineraryId, sectionName=null) => {
       return await callWorkerFunction('track', 'section_viewed', {
         itinerary_id: itineraryId,
-        section_id: sectionId
+        section_name: sectionName
       });
     }, []),
     

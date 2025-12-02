@@ -122,7 +122,7 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened} = useAnalytics();
+  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
 
   const [isHovered, setIsHovered] = useState(false);
@@ -973,6 +973,7 @@ const SimpleTabsV2 = (props) => {
               items={items}
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
+              trackSectionViewed={trackSectionViewed}
             />
             <div
               id={"Itenary"}
