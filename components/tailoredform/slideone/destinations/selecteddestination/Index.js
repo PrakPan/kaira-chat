@@ -46,8 +46,8 @@ const SelectedDestination = (props) => {
   const isValidLocation = (location) => {
     return (
       location &&
-      (location.text || location.city) &&
-      location.country
+      (location.text || location.city)
+      //  && location.country
     );
   };
 
