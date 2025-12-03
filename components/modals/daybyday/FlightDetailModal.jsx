@@ -223,7 +223,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
                         </div>
                       </div>
                     </div>
-                    {isPageWide && (
+                    {/* {isPageWide && (
                       <div className="text-right">
                         <div className="text-md md:text-md font-bold">
                           {data?.transfer_details?.price_details?.total_amount
@@ -234,7 +234,7 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
                         </div>
                         <div className="text-xs text-gray-500">for {totalPax} person</div>
                       </div>
-                    )}
+                    )} */}
                   </div>
       
                   <div className="flex flex-row w-full justify-between items-center p-2">
