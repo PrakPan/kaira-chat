@@ -654,7 +654,7 @@ const Recommendation = (props) => {
             </div>
 
 
-            <div className="flex flex-row items-center text-sm">
+            <div className="flex flex-wrap items-center text-sm">
               <div className="pr-[8px] flex gap-[8px]">
                 <Image
                   src={'/assets/Itinerary/restaurant.svg'}
@@ -666,11 +666,11 @@ const Recommendation = (props) => {
               </div>
 
               {/* <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div> */}
-              {(props.element?.restaurants?.[0]?.start_time || props.element?.restaurants?.[0]?.end_time) && (
+              {(props.element?.start_time || props.element?.end_time) && (
   <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]">
-    {props.element?.restaurants?.[0]?.start_time && formatTime(props.element.restaurants?.[0]?.start_time)}
-    {props.element?.restaurants?.[0]?.start_time && props.element?.restaurants?.[0]?.end_time && ' - '}
-    {props.element?.restaurants?.[0]?.end_time && formatTime(props.element.restaurants?.[0]?.end_time)}
+    {props.element?.start_time && formatTime(props.element?.start_time)}
+    {props.element?.start_time && props.element?.end_time && ' - '}
+    {props.element?.end_time && formatTime(props.element?.end_time)}
   </div>
 )}
 
