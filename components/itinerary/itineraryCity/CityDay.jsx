@@ -313,12 +313,12 @@ const CityDay = (props) => {
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 && (
             <>
-              <hr />
+              {/* <hr /> */}
               <div className="">
                 <SectionHeading className="p-2">
                   {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
                 </SectionHeading>
-                <div className="flex flex-col gap-2 w-full font-montserrat">
+                <div className="flex flex-col gap-2 w-[95%] mx-auto font-inter">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
                       <>

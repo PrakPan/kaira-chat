@@ -135,8 +135,8 @@ const ViewHotelDetails = (props) => {
     if (props?.mercury) {
       const requestData = {
         trace_id: props?.traceId,
-        check_in: (props?.check_in).split("/").join("-"),
-        check_out: (props?.check_out).split("/").join("-"),
+        check_in: (props?.check_in)?.split("/")?.join("-"),
+        check_out: (props?.check_out)?.split("/")?.join("-"),
         hotel_id: props?.id,
         occupancies: props?.occupancies?.map((item) => {
           return {
@@ -165,9 +165,9 @@ const ViewHotelDetails = (props) => {
     } else {
       setLoading(true);
       setError(false);
-      if (props.check_in.includes("/")) {
-        check_in = props.check_in.split("/").reverse().join("-");
-        check_out = props.check_out.split("/").reverse().join("-");
+      if (props?.check_in?.includes("/")) {
+        check_in = props.check_in?.split("/")?.reverse()?.join("-");
+        check_out = props.check_out?.split("/")?.reverse()?.join("-");
       }
       let paramsObj = {
         accommodation_id: props.id,
@@ -203,13 +203,13 @@ const ViewHotelDetails = (props) => {
     }
   };
 
-  const index = props.plan.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
+  // const index = props?.plan?.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
-    let stayBookings = props.plan;
-    let index = stayBookings.findIndex(item => {
-      const sameCity = item.itinerary_city_id == props?.itinerary_city_id;
+    let stayBookings = props?.plan;
+    let index = stayBookings?.findIndex(item => {
+      const sameCity = item?.itinerary_city_id == props?.itinerary_city_id;
       const sameBooking = item.id == props?.bookingId;
 
       const duplicateCityCount = stayBookings.filter(

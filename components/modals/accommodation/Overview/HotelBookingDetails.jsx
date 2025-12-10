@@ -1467,14 +1467,15 @@ const HotelBookingDetails = (props) => {
             </div>
           )}
         </Container>
-      </Drawer>
-      {imagesGallery && imagesGallery?.length > 0 ? (
+        {imagesGallery && imagesGallery?.length > 0 ? (
         <FullScreenGallery
           mercury={false}
           closeGalleryHandler={() => setImagesGallery(null)}
           images={imagesGallery}
         ></FullScreenGallery>
       ) : null}
+      </Drawer>
+      
     </>
   );
 };
