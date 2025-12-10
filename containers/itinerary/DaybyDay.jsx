@@ -267,10 +267,7 @@ const DaybyDay = ({
               hotel?.itinerary_city_id === city?.id
             ) || [];
 
-            const totalDuration = cityHotels.reduce(
-              (total, hotel) => total + (hotel?.duration || 0),
-              0
-            ) || city?.duration;
+            const totalDuration = city?.duration;
 
             let sourceKey = city?.id;
             let airportBookings = [
