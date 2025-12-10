@@ -2,7 +2,7 @@ import Head from "next/head";
 import Layout from "../../components/Layout";
 import axiospagelistinstance from "../../services/pages/list";
 import activityDetail from "../../services/poi/poiActivities";
-import AffiliatePage from "../../containers/corporates[dev]/Index";
+import AffiliatePage from "../../containers/corporates[dev]/index";
 
 const Covid = (props) => {
   return (
