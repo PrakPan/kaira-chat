@@ -186,7 +186,7 @@ const CityDay = (props) => {
 
                     {/* Text content on the right */}
                     <div className="flex-1">
-                      <div className="text-[16px] font-semibold text-[#333333] mb-[8px]">
+                      <div className="text-[16px] text-[#333333] mb-[8px]">
                         No activities
                       </div>
                       <div className="text-[14px] text-[#666666] mb-[16px]">
@@ -198,7 +198,7 @@ const CityDay = (props) => {
                       <div className="flex gap-[12px]">
                         <button
                           onClick={handleAddActivity}
-                          className="py-[8px] px-[16px] bg-[#07213A] rounded-[8px] text-[14px] text-white font-medium"
+                          className="py-[8px] px-[16px] bg-[#07213A] rounded-[8px] text-[14px] text-white"
                         >
                           + Activity
                         </button>
@@ -271,7 +271,7 @@ const CityDay = (props) => {
                   <div className="flex justify-start pl-[16px] pb-[16px] pt-[8px]">
                     <button
                       onClick={handleAddActivity}
-                      className="py-[8px] px-[16px] bg-[#07213A] rounded-[8px] text-[14px] text-white font-medium"
+                      className="py-[8px] px-[16px] bg-[#07213A] rounded-[8px] text-[14px] text-white"
                     >
                       + Activity
                     </button>
