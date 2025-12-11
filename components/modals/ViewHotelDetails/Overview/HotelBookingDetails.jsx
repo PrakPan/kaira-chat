@@ -333,12 +333,12 @@ const HotelBookingDetails = (props) => {
 
   return (
     <Container>
-      {props?.data?.star_category &&  props?.data?.star_category != "0" &&
+      {props?.data?.star_category &&  props?.data?.star_category != "0" ?
         <>
           <span className="bg-text-smokywhite rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
             {props?.data?.star_category} Star Hotel
           </span>
-        </>
+        </> : null
       }
       <FlexBox>
         <div className="text-xl text-black font-600 leading-2xl">

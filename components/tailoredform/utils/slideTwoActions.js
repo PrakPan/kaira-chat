@@ -1,4 +1,4 @@
-import { addDays, differenceInDays, getDate, isSameDay } from "date-fns";
+import { addDays, differenceInDays, getDate, isSameDay,parseISO } from "date-fns";
 import { getDateString } from "../../../helper/DateUtils";
 import { logEvent } from "../../../services/ga/Index";
 import axiossearchstartinginstance from "../../../services/search/startinglocation";
@@ -190,11 +190,14 @@ export function buildDestinations(routes, itinerary, getDate, CITY_COLOR_CODES) 
 
 export function validateDates(destinations, startDate, endDate, setInvalidDateError) {
   const today = new Date();
+  
+  
+  const parsedStartDate = typeof startDate === 'string' ? parseISO(startDate) : startDate;
 
   if (
-    !new Date(startDate) ||
-    isNaN(Date.parse(startDate)) ||
-    (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
+    !parsedStartDate ||
+    isNaN(parsedStartDate.getTime()) ||
+    (!isSameDay(parsedStartDate, today) && parsedStartDate < today)
   ) {
     setInvalidDateError(
       `Invalid date selected for starting city ${destinations[0].cityData.city_name}`
@@ -202,26 +205,45 @@ export function validateDates(destinations, startDate, endDate, setInvalidDateEr
     return false;
   }
 
-  let prevDate = new Date(startDate);
+  let prevDate = parsedStartDate;
 
   for (let i = 1; i < destinations.length - 1; i++) {
-    const checkin_date = getDate(destinations[i].cityData.checkin_date);
-    const checkout_date = getDate(destinations[i].cityData.checkout_date);
+    const checkin_date = destinations[i].cityData.checkin_date;
+    const checkout_date = destinations[i].cityData.checkout_date;
+    
+    // Parse dates if they're strings
+    const parsedCheckinDate = typeof checkin_date === 'string' ? parseISO(checkin_date) : checkin_date;
+    const parsedCheckoutDate = typeof checkout_date === 'string' ? parseISO(checkout_date) : checkout_date;
 
-    if (!new Date(checkin_date) || isNaN(Date.parse(checkin_date)) || new Date(checkin_date) < prevDate) {
+    if (
+      !parsedCheckinDate || 
+      isNaN(parsedCheckinDate.getTime()) || 
+      (!isSameDay(parsedCheckinDate, prevDate) && parsedCheckinDate < prevDate)
+    ) {
       setInvalidDateError(`Invalid Arrival date for ${destinations[i].cityData.city_name}`);
       return false;
     }
 
-    if (!new Date(checkout_date) || isNaN(Date.parse(checkout_date)) || new Date(checkout_date) < new Date(checkin_date)) {
+    if (
+      !parsedCheckoutDate || 
+      isNaN(parsedCheckoutDate.getTime()) || 
+      (!isSameDay(parsedCheckoutDate, parsedCheckinDate) && parsedCheckoutDate < parsedCheckinDate)
+    ) {
       setInvalidDateError(`Invalid Departure date for ${destinations[i].cityData.city_name}`);
       return false;
     }
 
-    prevDate = new Date(checkout_date);
+    prevDate = parsedCheckoutDate;
   }
 
-  if (!new Date(endDate) || isNaN(Date.parse(endDate)) || new Date(endDate) < prevDate) {
+  // Parse endDate if it's a string
+  const parsedEndDate = typeof endDate === 'string' ? parseISO(endDate) : endDate;
+
+  if (
+    !parsedEndDate || 
+    isNaN(parsedEndDate.getTime()) || 
+    (!isSameDay(parsedEndDate, prevDate) && parsedEndDate < prevDate)
+  ) {
     setInvalidDateError(
       `Invalid date selected for ending city ${destinations[destinations.length - 1].cityData.city_name}`
     );

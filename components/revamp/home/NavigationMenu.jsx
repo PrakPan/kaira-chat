@@ -133,10 +133,10 @@ const NavigationMenu = (props) => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <div className="flex  gap-4 md:hidden">
-        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
+        <div className="flex gap-2 md:hidden">
+        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
                   My Trips
-        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
+        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px]" onClick={()=>router.push("/new-trip")}>
                   Create a trip
         </button>}</>}
           <MobileMenu 
@@ -198,7 +198,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo} />
+          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo}  />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}

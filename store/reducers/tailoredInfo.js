@@ -48,13 +48,13 @@ const reducer = (state = initialReducer, action) => {
             };
         case actionTypes.SET_DESTINATIONS:
             const { id, input_id, data } = action.payload;
-            console.log("id os: ", id)
+            // console.log("id os: ", id)
             let cityExists = false;
 
             const newCities = state.slideOne.selectedCities.map((item) => {
                 if (item.input_id === input_id) {
                     cityExists = true;
-                    console.log("id os selectedcity: ", item)
+                    // console.log("id os selectedcity: ", item)
                     return { ...item, ...data, id };
                 }
                 return item;
@@ -136,7 +136,7 @@ const reducer = (state = initialReducer, action) => {
             };
 
         case actionTypes.SET_CALENDAR_DATES:
-            console.log("Setting calendar dates:", action.payload);
+            // console.log("Setting calendar dates:", action.payload);
             return {
                 ...state,
                 slideOne: {
@@ -214,7 +214,7 @@ const reducer = (state = initialReducer, action) => {
             };
 
         case actionTypes.SET_ITINERARY_INITIATE_DATA:
-            console.log("itinerary initiate data is:2  ", action.payload)
+            // console.log("itinerary initiate data is:2  ", action.payload)
             return {
                 ...state,
                 itineraryInititateData: action.payload,
