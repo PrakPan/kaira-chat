@@ -35,6 +35,7 @@ import TestimonialCarousel from "../components/theme/TestimonialCarousel";
 import PartnersSection from "../components/theme/PartnersSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 import TrustFactors from "../components/revamp/home/TrustFactors";
+import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 
 
 
@@ -135,7 +136,7 @@ const Home = (props) => {
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
-        
+        {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
         <HeroSection slug={'home'} />
         <TrustFactors/>
         <JourneySimplified />

@@ -78,6 +78,7 @@ const HotelBooking = ({
   start_date,
   setStayBookings,
   itinerary_city_id,
+  _setImagesHandler
 }) => {
   const router = useRouter();
 
@@ -341,9 +342,7 @@ const starRating = (rating, length) => {
     );
   }
 
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
+
 
   const _changeBookingHandler = (
     name,

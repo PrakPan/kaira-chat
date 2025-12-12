@@ -327,7 +327,8 @@ const AffiliatePage = (props) => {
           </h2>
 
           {/* Tab Navigation */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8 border-b border-gray-200">
+          <div className="flex justify-center items-center overflow-x-auto whitespace-nowrap gap-2 mb-8 border-b border-gray-200 no-scrollbar">
+
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -371,7 +372,7 @@ const AffiliatePage = (props) => {
                       spaceBetween: 20,
                     },
                     1024: {
-                      slidesPerView: 3,
+                      slidesPerView: 4,
                       spaceBetween: 24,
                     },
                   }}
@@ -398,8 +399,8 @@ const AffiliatePage = (props) => {
                               : [])
                           }
                           gradientOverlay={destination.gradientOverlay}
-                          onClick={() =>
-                            handleOpenDrawer(destination, "activity")
+                          onClick={() => {}
+                            // handleOpenDrawer(destination, "activity")
                           }
                         />
                       </div>
@@ -447,7 +448,7 @@ const AffiliatePage = (props) => {
               {/* Call to Action Button */}
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="border-2 border-black rounded-lg px-5 py-2 mx-auto text-black bg-[#f7e700] transition-all"
+                className="rounded-lg px-5 py-2 mx-auto text-black bg-[#f7e700] transition-all"
               >
                 Schedule a Callback Now!
               </button>

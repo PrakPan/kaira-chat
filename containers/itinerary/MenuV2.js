@@ -58,6 +58,7 @@ import {
   useChatContext,
 } from "../../components/Chatbot/context/ChatContext.js";
 import { currencySymbols } from "../../data/currencySymbols.js";
+import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -114,6 +115,10 @@ const SimpleTabsV2 = (props) => {
   const [countCartItems, setCountCartItems] = useState(0);
   const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
   const currency = useSelector(state=>state.currency);
+   const [imagesGallery, setImagesGallery] = useState(null);
+  const _setImagesHandler = (images) => {
+    setImagesGallery(images);
+  };
 
 
   const transferBooking = useSelector(
@@ -125,6 +130,7 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
+
 
    
   const [isHovered, setIsHovered] = useState(false);
@@ -441,6 +447,14 @@ const SimpleTabsV2 = (props) => {
 
   return (
     <div className={classes.root}>
+
+       {imagesGallery && imagesGallery?.length > 0 ? (
+        <FullScreenGallery
+          mercury={false}
+          closeGalleryHandler={() => setImagesGallery(null)}
+          images={imagesGallery}
+        ></FullScreenGallery>
+      ) : null}
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
         <Breif
@@ -798,6 +812,7 @@ const SimpleTabsV2 = (props) => {
               {props.mercuryItinerary ? (
                 <StaysContainer
                   payment={props.payment}
+                  _setImagesHandler={_setImagesHandler}
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
@@ -1092,6 +1107,7 @@ const SimpleTabsV2 = (props) => {
                   {props.mercuryItinerary ? (
                     <StaysContainer
                       payment={props.payment}
+                      _setImagesHandler={_setImagesHandler}
                       _updateBookingHandler={props._updateBookingHandler}
                       _updateStayBookingHandler={
                         props._updateStayBookingHandler
