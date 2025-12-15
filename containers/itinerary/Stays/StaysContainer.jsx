@@ -22,6 +22,7 @@ const StaysContainer = (props) => {
             <>
               <HotelBooking
                 key={booking?.id}
+                _setImagesHandler={props?._setImagesHandler}
                 index={index}
                 booking={booking}
                 payment={props.payment}

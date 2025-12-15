@@ -39,6 +39,14 @@ export const authStartLoading = () => {
   };
 };
 
+export const authStopLoading = () => {
+  return {
+    type: actionTypes.AUTH_STOPLOADING,
+  };
+};
+
+
+
 //Show spinner for social login
 export const authStartLoadingSocial = () => {
   return {

@@ -37,7 +37,7 @@ const ThemeHeadline = (props) => {
         // <Link href={"/event/new-year-2025"} className='text-black no-underline'>
             <div
                 ref={bannerRef}
-                className="bg-[#F7E700] py-2 md:mt-[80px] overflow-hidden banner-container text-black flex flex-row items-center justify-between">
+                className="bg-[#07213A] py-2  overflow-hidden banner-container text-white flex flex-row items-center justify-between">
                 <div
                     className="inline-block whitespace-nowrap"
                     style={{

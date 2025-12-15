@@ -58,24 +58,24 @@ const Carousel3D = () => {
       description: "Largest monastic institution in Ladakh",
       tags: ["Monastery"],
     },
-    {
-      image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
-      title: "Hemis Monastery",
-      description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery"],
-    },
-    {
-      image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
-      title: "Hemis Monastery",
-      description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery"],
-    },
-    {
-      image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
-      title: "Hemis Monastery",
-      description: "Largest monastic institution in Ladakh",
-      tags: ["Monastery"],
-    },
+   {
+  image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
+  title: "Stok Kangri Viewpoint",
+  description: "A breathtaking viewpoint offering panoramic vistas of the Stok Range.",
+  tags: ["Mountains"],
+},
+{
+  image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
+  title: "Thiksey Monastery",
+  description: "A majestic hilltop monastery known for its stunning architecture and morning prayers.",
+  tags: ["Monastery"],
+},
+{
+  image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
+  title: "Khardung La Pass",
+  description: "One of the world’s highest motorable roads surrounded by dramatic snow-capped peaks.",
+  tags: ["Mountain Pass"],
+},
   ];
 
   return (

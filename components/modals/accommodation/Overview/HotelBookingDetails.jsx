@@ -286,10 +286,10 @@ const HotelBookingDetails = (props) => {
     3: false,
   });
 
-  const [imagesGallery, setImagesGallery] = useState(null);
-  const _setImagesHandler = (images) => {
-    setImagesGallery(images);
-  };
+  // const [imagesGallery, setImagesGallery] = useState(null);
+  // const _setImagesHandler = (images) => {
+  //   setImagesGallery(images);
+  // };
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -471,7 +471,7 @@ const HotelBookingDetails = (props) => {
   const viewAllGalleryLink = hotelImages && hotelImages.length && ImagesLoaded[0] ? (
     <div className="absolute top-0 left-0 right-0 bottom-0 flex align-items-center justify-center bg-trans-black_70"
     >
-      <span onClick={() => _setImagesHandler(images)} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
+      <span onClick={() => props?._setImagesHandler(images)} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
     </div>
   ) : null;
 
@@ -1467,15 +1467,15 @@ const HotelBookingDetails = (props) => {
             </div>
           )}
         </Container>
-        {imagesGallery && imagesGallery?.length > 0 ? (
+        
+      </Drawer>
+      {/* {imagesGallery && imagesGallery?.length > 0 ? (
         <FullScreenGallery
           mercury={false}
           closeGalleryHandler={() => setImagesGallery(null)}
           images={imagesGallery}
         ></FullScreenGallery>
-      ) : null}
-      </Drawer>
-      
+      ) : null} */}
     </>
   );
 };

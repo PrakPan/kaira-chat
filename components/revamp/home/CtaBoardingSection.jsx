@@ -33,7 +33,7 @@ const CtaBoardingSection = () => {
 
             <p className="text-sm md:text-base text-white/90 mb-8 leading-relaxed max-w-lg mx-auto">
               We'll take you from "wish you fun" to a perfectly curated
-              adventure. All you have to do is show up, grinning like Tazan!
+              adventure. All you have to do is show up, grinning like Tarzan!
             </p>
 
             <Link href="/new-trip">
