@@ -151,13 +151,13 @@ const SimpleTabsV2 = (props) => {
   }
 }, []);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      scrollToElement("Itenary");
-    }, 300);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     scrollToElement("Itenary");
+  //   }, 300);
 
-    return () => clearTimeout(timeout);
-  }, []);
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   useEffect(() => {
     if (

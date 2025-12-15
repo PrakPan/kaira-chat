@@ -211,7 +211,7 @@ const CityDay = (props) => {
         )}
       </>
     ) : props?.isLastDay ? (
-      // No activities AND it's last day - show checkout card
+      <>
       <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
         <div className="flex gap-[16px]">
           <div className="flex-shrink-0">
@@ -239,7 +239,11 @@ const CityDay = (props) => {
               .
             </div>
 
-            <div className="flex gap-[12px]">
+           
+          </div>
+        </div>
+      </div>
+       <div className="flex justify-start pl-[16px] pb-[16px] pt-[4px] mt-2">
               <button
                 onClick={handleAddActivity}
                 className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
@@ -247,9 +251,7 @@ const CityDay = (props) => {
                 + Activity
               </button>
             </div>
-          </div>
-        </div>
-      </div>
+            </>
     ) : (
       // No activities AND not last day - show rest day card
       <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
@@ -259,7 +261,7 @@ const CityDay = (props) => {
           </div>
 
           <div className="flex-1">
-            <div className="text-[16px] text-[#333333] mb-[8px]">
+            <div className="text-[16px] text-[#333333]">
               This is your rest day
             </div>
             <div className="text-[14px] text-[#666666] mb-[16px]">

@@ -52,6 +52,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         loading: true,
       };
+    
+    case actionTypes.AUTH_STOPLOADING:
+    return {
+    ...state,
+    loading: false,
+  };
     case actionTypes.AUTH_STARTLOADINGSOCIAL:
       return {
         ...state,
