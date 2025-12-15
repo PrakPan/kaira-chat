@@ -113,7 +113,10 @@ export default function ThemePage(props) {
   }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.slug || 'home' }
+    });
     // if (isPageWide) {
     //   setShowTailoredModal(true);
     // } else {
@@ -198,7 +201,7 @@ export default function ThemePage(props) {
         // />
          <HeroSection title={props.experienceData.banner_heading}
          subtitle={props.experienceData.banner_text}
-          image={`${imgUrlEndPoint}${props.experienceData.image}`}/>
+          image={`${imgUrlEndPoint}${props.experienceData.image}`} slug={props?.slug}/>
       )}
       {props.slug === "ladakh" && <LadakhLogo />}
 
@@ -281,6 +284,7 @@ export default function ThemePage(props) {
               destination={convertDbNameToCapitalFirst(
                 props.experienceData.slug
               )}
+              slug={props?.slug}
             />
           </>
         )}
@@ -308,7 +312,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug}/>
                   </div>
                 ) : null;
               }
@@ -475,7 +479,7 @@ export default function ThemePage(props) {
                             })),
                           ]}
                         />
-                        <PlanYourTripButton text={"Start your journey now!"} />
+                        <PlanYourTripButton text={"Start your journey now!"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
@@ -494,9 +498,10 @@ export default function ThemePage(props) {
                             destination={convertDbNameToCapitalFirst(
                               props.experienceData.slug
                             )}
+                            slug={props?.slug}
                           />
                         ) : (
-                          <PlanYourTripButton />
+                          <PlanYourTripButton slug={props?.slug} />
                         )}
                       </>
                     ) : component.carousel === "itinerary-2" ? (
@@ -625,6 +630,7 @@ export default function ThemePage(props) {
           </div>
                         <PlanYourTripButton
                           text={"Create your free itinerary"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "review-1" ? (
@@ -654,9 +660,10 @@ export default function ThemePage(props) {
                               "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                             }
                             text={"+ Plan Your Trip Now!"}
+                            slug={props?.slug}
                           />
                         ) : (
-                          <PlanYourTripButton />
+                          <PlanYourTripButton slug={props?.slug}/>
                         )}
                       </div>
                     ) : component.carousel === "destination-3" ? (
@@ -672,6 +679,7 @@ export default function ThemePage(props) {
                         ></SwiperLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "state-1" ? (
@@ -687,6 +695,7 @@ export default function ThemePage(props) {
                         ></OldLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "destination-4" ? (
@@ -710,7 +719,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -723,7 +732,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug}/>
                       </>
                     ) : component.carousel === "destination-5" ? (
                       <>
@@ -829,6 +838,7 @@ export default function ThemePage(props) {
                           page={"Country Page"}
                         ></Continentcarousel>
                         <PlanYourTripButton
+                          slug={props?.slug}
                           text={"Create your travel plan now!"}
                         />
                       </>
@@ -836,6 +846,7 @@ export default function ThemePage(props) {
                       <>
                         <ImageCarousel slug={props?.slug} />
                         <PlanYourTripButton
+                          slug={props?.slug}
                           text={"Create your travel plan now!"}
                         />
                       </>
@@ -856,6 +867,7 @@ export default function ThemePage(props) {
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[176px] !h-[56px] !px-0 !py-0"
                           }
                           text={"Plan a Trip Now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "Activity-3" ? (
@@ -874,6 +886,7 @@ export default function ThemePage(props) {
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
                           text={"Create your free itinerary"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "destination-8" ? (
@@ -897,6 +910,7 @@ export default function ThemePage(props) {
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
                           text={"+ Plan Your Trip Now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel == "images-1" ? (
@@ -912,6 +926,7 @@ export default function ThemePage(props) {
                           destination={convertDbNameToCapitalFirst(
                             props.experienceData.slug
                           )}
+                          slug={props?.slug}
                         />
                       </div>
                     ) : component.carousel == "journey-1" ? (
@@ -1031,7 +1046,10 @@ export const PlanYourTripButton = (props) => {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -1078,7 +1096,10 @@ export const PlanYourTripLadakhButton = (props) => {
 
   const handlePlanButton = () => {
     // openTailoredModal(router, props.page_id, props.destination, props.type);
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",

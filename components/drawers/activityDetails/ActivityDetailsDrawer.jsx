@@ -58,6 +58,7 @@ const ActivityDetailsDrawer = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const [hotelPickupIncluded,setHotelPickupIncluded] = useState(false);
+  const currency = useSelector(state=>state.currency);
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
@@ -102,7 +103,7 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/`, requestData, {
+      .post(`/${props.activityId}/?currency=${currency.currency || 'INR'}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -111,7 +112,7 @@ const ActivityDetailsDrawer = (props) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {
           setData(res.data?.data?.activity);
-          setHotelPickupIncluded(res?.data?.data?.hotel_pickup_included);
+          setHotelPickupIncluded(res?.data?.data?.activity?.hotel_pickup_included);
         } else throw new Error(res.data?.message);
         setLoading(false);
         setUpdateAmenities(false);
@@ -250,6 +251,7 @@ const ActivityDetailsDrawer = (props) => {
               setShowLoginModal={props?.setShowLoginModal}
               itinerary_city_id={props?.itinerary_city_id}
               hotel_pickup_included={hotelPickupIncluded}
+              isBotQuery={props?.isBotQuery}
             />
           ) : (
             <ActivityDetailsSkeleton

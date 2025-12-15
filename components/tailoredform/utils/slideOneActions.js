@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { fadeIn } from "react-animations";
 import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
+import getPlatform from "../../../utils/getPlatform";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
@@ -141,6 +142,7 @@ export const useSourceParams = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const params = useParams();
+  const platform = getPlatform();
 
   const source = useMemo(() => {
     const queryObj = {};
@@ -158,6 +160,7 @@ export const useSourceParams = () => {
 
     return {
       path: resolvedPath,
+      platform,
       ...queryObj,
     };
   }, [pathname, searchParams, params]);

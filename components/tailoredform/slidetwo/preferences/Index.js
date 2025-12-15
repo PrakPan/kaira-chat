@@ -89,7 +89,7 @@ const GroupType = (props) => {
           
           return (
             <div
-              key={i}
+              key={`${filter.display}-${isSelected}`} 
               is_selected={isSelected.toString()}
               className="hover-pointer"
               onClick={() => _handleClick(filter.display)}

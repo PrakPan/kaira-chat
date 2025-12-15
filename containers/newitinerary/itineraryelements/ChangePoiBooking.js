@@ -224,10 +224,10 @@ export default function ChangePoiBooking(props) {
               )}
               <div>
                 <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-                  {props.data.short_description
-                    .split(" ")
+                  {props.data.short_description ? props.data.short_description
+                    ?.split(" ")
                     .slice(0, 40)
-                    .join(" ")}
+                    .join(" "): null}
                   {props?.data?.source !== "Gmaps" && (
                     <span className="font-bold text-gray-500"> ...more</span>
                   )}
@@ -378,7 +378,7 @@ export default function ChangePoiBooking(props) {
 
         <div className="my-2">
           <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-            {props.data.short_description.split(" ").slice(0, 40).join(" ")}
+            {props.data.short_description ? props.data.short_description?.split(" ")?.slice(0, 40)?.join(" ") : null}
             <span className="font-bold text-gray-500"> ...more</span>
           </div>
         </div>

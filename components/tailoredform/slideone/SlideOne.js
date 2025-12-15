@@ -174,8 +174,8 @@ const SlideOne = (props) => {
         <div className="mt-[12px]">
           <Preferences
             tailoredFormModal={props.tailoredFormModal}
-            selectedPreferences={selectedPreferences}
-            setSelectedPreferences={setSelectedPrefrences}
+            // selectedPreferences={selectedPreferences}
+            // setSelectedPreferences={setSelectedPrefrences}
           />
         </div>
       </Section>

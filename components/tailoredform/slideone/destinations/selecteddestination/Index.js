@@ -46,8 +46,8 @@ const SelectedDestination = (props) => {
   const isValidLocation = (location) => {
     return (
       location &&
-      (location.text || location.city) &&
-      location.country
+      (location.text || location.city)
+      //  && location.country
     );
   };
 
@@ -175,8 +175,8 @@ const SelectedDestination = (props) => {
         {props.selectlocation ? (
           !props.showSearchStarting ? (
             loading ? (
-              <div className="flex flex-row gap-2 items-center">
-                <svg 
+              <div className="flex flex-row gap-2 items-center justify-center">
+                {/* <svg 
                   className="animate-spin h-4 w-4 text-gray-600" 
                   xmlns="http://www.w3.org/2000/svg" 
                   fill="none" 
@@ -195,8 +195,8 @@ const SelectedDestination = (props) => {
                     fill="currentColor" 
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
-                </svg>
-                <p className="truncate Body2M_14">Getting your location...</p>
+                </svg> */}
+                <p className="truncate Body2M_14 mb-0">Getting your location...</p>
               </div>
             ) : (
               <div className="w-[90%] flex flex-row gap-2 justify-between">

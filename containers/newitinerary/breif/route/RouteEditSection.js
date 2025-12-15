@@ -420,13 +420,7 @@ const RouteEditSection = (props) => {
       ].every((status) => status === "SUCCESS" || status === "FAILURE");
 
       if (allStatusesCompleted) {
-        console.log(
-          "Status update complete",
-          itinerary_status,
-          transfers_status,
-          pricing_status,
-          hotels_status
-        );
+      
         dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
         setItineraryLoading(false);
         setWaitingForStatusUpdate(false);
@@ -500,7 +494,6 @@ const RouteEditSection = (props) => {
 
   const validateDates = () => {
     const today = new Date();
-    console.log("Valid D", destinations);
     if (
       !new Date(startDate) ||
       isNaN(Date.parse(startDate)) ||
@@ -606,7 +599,6 @@ const RouteEditSection = (props) => {
       },
     };
 
-    console.log("New Request Data", data, destinations);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1549,7 +1541,6 @@ export const DestinationPopUp = (props) => {
 
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
-    console.log("New Desti", destination);
 
     setDestinations((prev) => {
       let destinations = [...prev];

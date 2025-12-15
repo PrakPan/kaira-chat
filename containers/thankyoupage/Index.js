@@ -159,6 +159,7 @@ const Index = (props) => {
         subtitle={`It takes one step to begin the journey of a thousand miles. We will get in touch with you within 12 hours. :)`}
         _startPlanningFunction={() => openTailoredModal(router)}
         page={"Thank you Page"}
+        slug={'thank-you'}
         />
       {/* <HeroBanner
         image={

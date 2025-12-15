@@ -495,12 +495,12 @@ const HotelBookingDetails = (props) => {
             <POIDetailsSkeleton />
           ) : (
             <div>
-              {data?.hotel_details?.star_category &&
+              {data?.hotel_details?.star_category && data?.hotel_details?.star_category!="0" ?
                 <>
                   <span className="bg-text-smokywhite rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
                     {data?.hotel_details?.star_category} Star Hotel
                   </span>
-                </>
+                </> : null
               }
               <FlexBox>
                 <div className="text-xl text-black font-600 leading-2xl">
@@ -1467,14 +1467,15 @@ const HotelBookingDetails = (props) => {
             </div>
           )}
         </Container>
-      </Drawer>
-      {imagesGallery && imagesGallery?.length > 0 ? (
+        {imagesGallery && imagesGallery?.length > 0 ? (
         <FullScreenGallery
           mercury={false}
           closeGalleryHandler={() => setImagesGallery(null)}
           images={imagesGallery}
         ></FullScreenGallery>
       ) : null}
+      </Drawer>
+      
     </>
   );
 };

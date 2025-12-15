@@ -135,7 +135,10 @@ const Index = (props) => {
 
   const handlePlanButtonClick = (location) => {
     // openTailoredModal(router, props.data.id, props.data.name);
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -180,6 +183,7 @@ const Index = (props) => {
             `Craft a trip to ${props.data.name} now!`
           )}
           image={`${imgUrlEndPoint}${props?.data?.image}`}
+          slug={props?.data?.slug}
         />
         {/* <HeroBanner
           image={props?.data?.image}
@@ -194,7 +198,10 @@ const Index = (props) => {
            <DesktopBanner
             loading={desktopBannerLoading}
             onclick={() =>
-              {router.push("/new-trip");}
+              {router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });}
               // openTailoredModal(
               //   router,
               //   props.data.id,
@@ -326,7 +333,7 @@ const Index = (props) => {
                 </div>
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
                   <button
                     variant="filled"
                     size="medium"
@@ -502,7 +509,7 @@ const Index = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
                   <button
                     variant="filled"
                     size="medium"
@@ -629,7 +636,7 @@ const Index = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
                   <button
                     variant="filled"
                     size="medium"

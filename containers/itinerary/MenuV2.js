@@ -57,16 +57,17 @@ import {
   ChatProvider,
   useChatContext,
 } from "../../components/Chatbot/context/ChatContext.js";
+import { currencySymbols } from "../../data/currencySymbols.js";
 
 const NotificationDot = styled.div`
   position: absolute;
-  top: 8px;
+  top: 7px;
   right: 19px;
   width: 16px;
-  height: 16px;
-  background-color: #fd6d6c;
-  border-radius: 50%;
-  border: 2px solid white;
+  // height: 16px;
+  // background-color: #fd6d6c;
+  // border-radius: 50%;
+  // border: 2px solid white;
   // animation: pulse 2s infinite;
 
   // @keyframes pulse {
@@ -112,6 +113,8 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
   const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
+  const currency = useSelector(state=>state.currency);
+
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
@@ -119,9 +122,11 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened} = useAnalytics();
+  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
+  const [showChatBanner, setShowChatBanner] = useState(false);
 
+   
   const [isHovered, setIsHovered] = useState(false);
   const popupStyle = {
     display: isHovered ? "block" : "none",
@@ -131,6 +136,14 @@ const SimpleTabsV2 = (props) => {
     padding: "5px 10px",
     marginBottom: "5px",
   };
+
+  useEffect(() => {
+  const hasSeenBanner = localStorage.getItem('hasSeenChatBanner');
+  if (!hasSeenBanner) {
+    setShowChatBanner(true);
+    localStorage.setItem('hasSeenChatBanner', 'true');
+  }
+}, []);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -917,33 +930,62 @@ const SimpleTabsV2 = (props) => {
             </div>
           </div>
 
-          <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] ">
-            <Button
-              borderWidth="0px"
-              onclick={() => {
-                handleChatBotOpen(true);
-                router.push(
-                  {
-                    pathname: `/itinerary/${router.query.id}/`,
-                    query: {
-                      drawer: "chat",
-                    },
-                  },
-                  undefined,
-                  { scroll: false }
-                );
-                setHasUnreadMessages(false);
-              }}
-            >
-              <Image
-                src={"/assets/chatbot/chatbot-avaatar.svg"}
-                alt="ticket"
-                width={80}
-                height={80}
-              />
-            </Button>
-            {hasUnreadMessages && <NotificationDot />}
-          </div>
+          <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] flex flex-col items-end gap-2">
+  {/* Chat Banner */}
+  {showChatBanner && !isPageWide && (
+    <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+      <button
+        onClick={() => setShowChatBanner(false)}
+        className="absolute top-2 right-2 text-black hover:text-gray-700"
+      >
+        <RxCross2 size={18} />
+      </button>
+      <p className="text-[14px] pr-6 mb-0 ">
+        Hi, I am Kiara Your travel partner
+      </p>
+      {/* Speech bubble arrow */}
+      <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]"></div>
+    </div>
+  )}
+  
+  {/* Chat Button */}
+  <div className="relative">
+    <Button
+      borderWidth="0px"
+      onclick={() => {
+        handleChatBotOpen(true);
+        setShowChatBanner(false);
+        router.push(
+          {
+            pathname: `/itinerary/${router.query.id}/`,
+            query: {
+              drawer: "chat",
+            },
+          },
+          undefined,
+          { scroll: false }
+        );
+        setHasUnreadMessages(false);
+      }}
+    >
+      <Image
+        src={"/assets/chatbot/chatbot-avaatar.svg"}
+        alt="ticket"
+        width={80}
+        height={80}
+      />
+    </Button>
+    {hasUnreadMessages && (
+      <NotificationDot>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle opacity="0.2" cx="12" cy="12" r="11" fill="#FA3530" stroke="white" strokeWidth="2"/>
+          <circle opacity="0.4" cx="12" cy="12" r="8" fill="#FA3530"/>
+          <circle cx="12" cy="12" r="6" fill="#FA3530"/> 
+        </svg>
+      </NotificationDot>
+    )}
+  </div>
+</div>
           {isChatBotEnable ? (
             <Drawer
               show={isChatBotEnable}
@@ -970,6 +1012,7 @@ const SimpleTabsV2 = (props) => {
               items={items}
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
+              trackSectionViewed={trackSectionViewed}
             />
             <div
               id={"Itenary"}
@@ -1437,7 +1480,7 @@ const SimpleTabsV2 = (props) => {
               {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
-                    ₹{" "}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
                     {!props?.mercuryItinerary
                       ? props?.payment?.pay_only_for_one ||
                         props?.payment?.show_per_person_cost

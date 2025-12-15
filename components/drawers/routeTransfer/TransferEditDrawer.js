@@ -66,6 +66,7 @@ import { useGenericAPIModal } from "../../modals/warning/Index";
 import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBookings";
 import { getDateInfo } from "../../../utils/dateFormate";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 const svgIcons = {
   time: (
@@ -249,6 +250,8 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
+  const currency = useSelector(state=>state.currency);
+
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -306,7 +309,7 @@ const TransferEditDrawer = (props) => {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
             .get(
-              `/${router.query.id}/`
+              `/${router.query.id}/?currency=${currency?.currency || 'INR'}`
               // multiCityRoundtripRequestData
             )
             .then((response) => {
@@ -327,7 +330,7 @@ const TransferEditDrawer = (props) => {
       booking_type != "multicity" && (mercury || props?.isMercury)
         ? fetchTransferMode
             .post(
-              "",
+              `?currency=${currency?.currency || 'INR'}`,
               {
                 origin:
                   props?.origin ||
@@ -3800,6 +3803,7 @@ const RoundTripSuggestion = ({
     ...Array(roundTripSuggestions.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const currency = useSelector(state=>state.currency);
 
  useEffect(() => {
   const routes = [];
@@ -3945,7 +3949,7 @@ const RoundTripSuggestion = ({
                       price.transfer_details?.type}
                     :{" "}
                     <span className="text-black font-bold">
-                      ₹
+                      {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}
                       {getIndianPrice(
                         Math.floor(price?.transfer_details?.total)
                       )}
@@ -4005,6 +4009,7 @@ const MultiCityTripSuggestion = ({
     ...Array(multiCitySuggestions?.data?.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     const routes = [];
@@ -4152,7 +4157,7 @@ const MultiCityTripSuggestion = ({
                       price?.taxi_category?.type}
                     :{" "}
                     <span className="text-black font-bold">
-                      ₹{getIndianPrice(Math.floor(price?.price?.total))}
+                      {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
                   </div>
                   {(viewDetails[i] || true) && (
@@ -4417,6 +4422,7 @@ const OtherTransfer = ({
   const [lastRequestData, setLastRequestData] = useState(null);
    const {trackTransferBookingAdd} = useAnalytics();
    const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
+   const currency = useSelector(state=>state.currency);
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -4523,7 +4529,7 @@ const OtherTransfer = ({
         };
 
         const response = await loadOtherTransfers.post(
-          `/search/`,
+          `/search/?currency=${currency?.currency || 'INR'}`,
           requestBody,
           {
             headers: {
@@ -5383,8 +5389,8 @@ const OtherTransfer = ({
         !error &&
         otherTransfer.prices.map((priceOption, priceIndex) => {
           const price = priceOption.price || 0;
-          const currency =
-            priceOption.currency === "INR" ? "₹" : priceOption.currency;
+          const transfer_currency = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
+            // priceOption.currency === "INR" ? "₹" : currencySymbols?.[priceOption.currency] || priceOption.currency;
           const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
 
           const isOptionSelected = isPriceOptionSelected(
@@ -5484,7 +5490,7 @@ const OtherTransfer = ({
                   <div>
                     <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
                       {" "}
-                      {currency} {price}{" "}
+                      {transfer_currency} {price}{" "}
                     </div>
                     <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
                       for {pax?.adults + pax?.children + pax?.infants} people

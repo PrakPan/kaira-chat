@@ -1,8 +1,8 @@
-import CovidContainer from "../../containers/corporates[dev]/Index";
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import axiospagelistinstance from "../../services/pages/list";
 import activityDetail from "../../services/poi/poiActivities";
+import AffiliatePage from "../../containers/corporates[dev]/Index";
 
 const Covid = (props) => {
   return (
@@ -29,13 +29,19 @@ const Covid = (props) => {
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, corporate trip, business trip, business travel,  large group, group trips, group travel package, travel allowance, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers, solo travel, family travel"
         />
 
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
+
         <link
           rel="canonical"
           href={`https://thetarzanway.com/corporates`}
         ></link>
       </Head>
 
-      <CovidContainer {...props}></CovidContainer>
+      <AffiliatePage {...props}></AffiliatePage>
     </Layout>
   );
 };
@@ -191,3 +197,175 @@ export async function getStaticProps() {
 }
 
 export default Covid;
+
+
+// import { useState, useEffect } from "react";
+// import Head from "next/head";
+// import Layout from "../../components/Layout";
+// import axiospagelistinstance from "../../services/pages/list";
+// import activityDetail from "../../services/poi/poiActivities";
+// import AffiliatePage from "../../containers/corporates[dev]/index";
+
+// const Covid = () => {
+//   const [data, setData] = useState({
+//     corporate_gateways_activities: [],
+//     in_office_activities: [],
+//     team_outing_activities: [],
+//     conference_activities: [],
+//     weekend_excursions_activities: [],
+//     add_on_activities: [],
+//     locations: [],
+//   });
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const corporate_gateways = [
+//         "Ozm4gEXNEPRWpVqS",
+//         "5YoPLy1QGB0iurIb",
+//         "Acb2fFF4ONBZdHH8",
+//         "mP37ksLdAmAWhxA0",
+//         "ZwwoboSp6gQVt279",
+//         "HU68gVotMm5ITaY4",
+//       ];
+
+//       const in_office = [
+//         "oozEpnJxf8qLpuMu",
+//         "EPtUxvBVWbUrKJQj",
+//         "5wyhpQxyooqi8PTf",
+//         "uJNMWr2mwCnTe5Q8",
+//         "EAkSIqCPwciwxTJ8",
+//         "Pdze59WW7nEufbCZ",
+//         "YKcoGDmmN1CuSpyj",
+//         "M2BptKDkbjNmi5aO",
+//       ];
+
+//       const team_outing = [
+//         "ZXUfjRHEcnT4DF9n",
+//         "qXqoQAbtKDSCFrHt",
+//         "PM1DzVUJUye2jzoL",
+//         "2zjrgeMEe5BbB4dP",
+//         "Zy8FVvBXRRbqLoMm",
+//         "PC2rtR8Lpx0U4ql3",
+//         "LMLqTtTdZBNPmAsh",
+//       ];
+
+//       const conference = [
+//         "xfTmAutmruRWirxL",
+//         "pVAazCM6RBMrVbeB",
+//         "cs27nZbl5fzHVvov",
+//         "bgtPQPT8xYhYR532",
+//       ];
+
+//       const weekend_excursions = [
+//         "5EULhmJwouD5NN2A",
+//         "mB41NUAncHsprakh",
+//         "jaI9b4RopHpOvcoz",
+//         "2nVXqISpq9quVrdD",
+//       ];
+
+//       const add_on = ["M2BptKDkbjNmi5aO", "agNqMJktHadqViPS"];
+
+//       const fetchActivities = async (ids) => {
+//         const activities = [];
+//         for (let i = 0; i < ids.length; i++) {
+//           try {
+//             const res = await activityDetail.get(`/?id=${ids[i]}`);
+//             if (res?.data?.name) {
+//               activities.push(res.data);
+//             }
+//           } catch (err) {
+//             console.log("[ERROR][corporatespage:fetchActivities]: ", err.message);
+//           }
+//         }
+//         return activities;
+//       };
+
+//       try {
+//         // Fetch locations
+//         let locations = [];
+//         try {
+//           const pageListResponse = await axiospagelistinstance.get(
+//             `/?country=india&page_type=Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type,budget`
+//           );
+//           locations = pageListResponse.data;
+//         } catch (err) {
+//           console.log("[ERROR][corporatespage:fetchData]: ", err.message);
+//         }
+
+//         // Fetch all activities in parallel for better performance
+//         const [
+//           corporate_gateways_activities,
+//           in_office_activities,
+//           team_outing_activities,
+//           conference_activities,
+//           weekend_excursions_activities,
+//           add_on_activities,
+//         ] = await Promise.all([
+//           fetchActivities(corporate_gateways),
+//           fetchActivities(in_office),
+//           fetchActivities(team_outing),
+//           fetchActivities(conference),
+//           fetchActivities(weekend_excursions),
+//           fetchActivities(add_on),
+//         ]);
+
+//         setData({
+//           corporate_gateways_activities,
+//           in_office_activities,
+//           team_outing_activities,
+//           conference_activities,
+//           weekend_excursions_activities,
+//           add_on_activities,
+//           locations,
+//         });
+//       } catch (err) {
+//         console.log("[ERROR][corporatespage:fetchData]: ", err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   return (
+//     <Layout>
+//       <Head>
+//         <title>
+//           Corporate Travel Support | Business Travel India | The Tarzan Way
+//         </title>
+//         <meta
+//           name="description"
+//           content="Streamline corporate travel with our AI-powered planning and support. Enjoy personalized itineraries, cost savings, and 24/7 assistance for a hassle-free business travel experience."
+//         ></meta>
+//         <meta
+//           property="og:title"
+//           content="Corporate Travel Support | Business Travel India | The Tarzan Way"
+//         />
+//         <meta
+//           property="og:description"
+//           content="Streamline corporate travel with our AI-powered planning and support. Enjoy personalized itineraries, cost savings, and 24/7 assistance for a hassle-free business travel experience."
+//         />
+//         <meta property="og:image" content="/logoblack.svg" />
+//         <meta
+//           name="keyword"
+//           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, corporate trip, business trip, business travel,  large group, group trips, group travel package, travel allowance, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers, solo travel, family travel"
+//         />
+
+//         <link
+//           rel="canonical"
+//           href={`https://thetarzanway.com/corporates`}
+//         ></link>
+//       </Head>
+
+//       {loading ? (
+//         <div style={{ padding: "2rem", textAlign: "center" }}>Loading...</div>
+//       ) : (
+//         <AffiliatePage {...data}></AffiliatePage>
+//       )}
+//     </Layout>
+//   );
+// };
+
+// export default Covid;

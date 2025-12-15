@@ -9,12 +9,13 @@ import Accordion, {
   AccordionDetails,
   AccordionSummary,
 } from "../../../../ui/Accordion";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
 import dayjs from "dayjs";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
+import { currencySymbols } from "../../../../../data/currencySymbols";
 
 
 const Container = styled.div`
@@ -58,6 +59,7 @@ const ComboSection = (props) => {
   const isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const currency = useSelector(state=>state.currency);
 
   const handleUpdate = (data) => {
     if (props.onSelect) {
@@ -202,7 +204,7 @@ const ComboSection = (props) => {
             <div className="flex flex-col justify-between h-full items-end  max-ph:flex-row">
               <div>
                 <span className="text-lg font-700 2xl-md">
-                  {"₹" + getIndianPrice(Math.ceil(props.data.price.total))}
+                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}` + getIndianPrice(Math.ceil(props.data.price.total))}
                 </span>
               </div>
               <div className="flex items-end justify-center">

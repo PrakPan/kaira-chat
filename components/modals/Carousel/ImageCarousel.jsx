@@ -140,6 +140,7 @@ const ImageCarousel = ({ images, noCaption }) => {
 
   if (emptyImages) return null;
 
+
   return (
     <div
       onMouseEnter={() => setMouseHovered(true)}
@@ -155,7 +156,7 @@ const ImageCarousel = ({ images, noCaption }) => {
                 index === currentIndex ? "opacity-100" : "opacity-0"
               }`}
             >
-              <Image src={src.image} alt={`Slide ${index + 1}`} fill />
+              <Image src={src.image || src} alt={`Slide ${index + 1}`} fill />
               {!noCaption && src?.caption &&(
                 <div className="bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md">
                   {src?.caption}

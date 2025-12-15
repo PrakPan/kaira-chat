@@ -232,7 +232,7 @@ export const EditDestinations = (props) => {
                             onSetDestination={(dest) => setNewDestination(dest)}
                             onClose={() => {
                                 props?.setIsAddMode(false)
-                                console.log("close add destination called close: ", props.isAddMode)
+                                // console.log("close add destination called close: ", props.isAddMode)
                             }}
                             setIsRouteChanged={props.setIsRouteChanged}
                             setPopUp={props.setIsAddMode} // Add this to prevent conflicts
@@ -538,6 +538,7 @@ export const DestinationPopUp = (props) => {
     const [destination, setDestination] = useState(cityData);
     const [nights, setNights] = useState(cityData?.nights ?? 1);
     const [searchResults, setSearchResults] = useState(null);
+    const [validDestination, setValidDestination] = useState(!!cityData?.resource_id); 
 
     useEffect(() => {
         return () => {
@@ -564,10 +565,30 @@ export const DestinationPopUp = (props) => {
         }
     };
 
+   
+    const handleSearchChange = (e) => {
+        handleSearchInput(e, setSearch);
+        const currentDestinationName = destination?.name || destination?.city_name || destination?.text;
+        if (e.target.value !== currentDestinationName) {
+            setValidDestination(false);
+        }
+    };
+
+    const handleSelectDestination = (ind) => {
+        handleSetDestination(
+            ind,
+            searchResults,
+            setSearch,
+            setDestination,
+            setSearchResults
+        );
+        setValidDestination(true); 
+    };
+
     return (
         <div
             ref={destinationRef}
-            className={`z-50 drop-shadow-xl w-[90%] lg:w-[70%] absolute ${index !== undefined
+            className={`z-50 drop-shadow-xl w-[90%] lg:w-[80%] absolute ${index !== undefined
                 ? `top-0 left-[10%] lg:left-[30%]`
                 : "-bottom-[150px] left-[10%] lg:left-[15%]"
                 }  bg-gray-200 rounded-lg`}
@@ -600,29 +621,24 @@ export const DestinationPopUp = (props) => {
                         type="text"
                         autoFocus
                         value={search}
-                        onChange={(e) => handleSearchInput(e, setSearch)}
+                        onChange={handleSearchChange} 
                         placeholder="Search Destination"
                         className="focus:outline-none w-full placeholder:font-weight-400"
                     />
                     <RxCrossCircled
-                        onClick={() => setSearch("")}
+                        onClick={() => {
+                            setSearch("");
+                            setValidDestination(false);
+                        }}
                         className="text-2xl cursor-pointer"
                     />
 
                     {searchResults?.length > 0 && (
-                        <div className="fixed top-[6rem] left-[5%] w-[90%] max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+                        <div className="fixed top-[6rem] left-[5%] w-[90%] max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3 z-[100]">
                             {searchResults.map((res, ind) => (
                                 <div
                                     key={ind}
-                                    onClick={() =>
-                                        handleSetDestination(
-                                            ind,
-                                            searchResults,
-                                            setSearch,
-                                            setDestination,
-                                            setSearchResults
-                                        )
-                                    }
+                                    onClick={() => handleSelectDestination(ind)} // Use modified handler
                                     className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
                                 >
                                     <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center">
@@ -665,26 +681,38 @@ export const DestinationPopUp = (props) => {
                     </div>
                 )}
 
+                {(!validDestination || !destination?.resource_id) && search && (
+                    <div className="text-xs text-red-600 px-2">
+                        Please select a destination from the dropdown
+                    </div>
+                )}
+
                 <button
                     onClick={() => {
+                       
+                        if (!validDestination || !destination?.resource_id || !destination?.name) {
+                            // console.log("Validation failed - please select from dropdown");
+                            return;
+                        }
+
                         const updatedDestination = { ...destination, nights };
 
-                        // If adding a new destination, pass it to parent
+                       
                         if (props.onSetDestination) props.onSetDestination(updatedDestination);
 
-                        // Determine if this is Add Mode (index is undefined) or Edit Mode
+                        
                         const isAddMode = index === undefined;
 
                         if (props.setDestinations) {
                             handleUpdateDestination({
-                                index, // undefined if Add
+                                index, 
                                 destination: updatedDestination,
                                 nights,
                                 setDestinations: setDestinations,
                                 setDestinationChanges: setDestinationChanges || (() => { }),
                                 updateDestinationsDates,
                                 updateLatLong,
-                                setPopUp: null, // Don't auto-close, let handleClose handle it
+                                setPopUp: null, 
                                 isAddMode,
                                 setIsRouteChanged
                             });
@@ -693,7 +721,12 @@ export const DestinationPopUp = (props) => {
                         // Close popup
                         handleClose();
                     }}
-                    className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
+                    disabled={!validDestination || !destination?.resource_id || !destination?.name} 
+                    className={`w-full rounded-lg border-2 border-black p-2 text-sm font-semibold ${
+                        (!validDestination || !destination?.resource_id || !destination?.name)
+                            ? 'bg-gray-300 cursor-not-allowed' 
+                            : 'bg-yellow'
+                    }`}
                 >
                     Update
                 </button>

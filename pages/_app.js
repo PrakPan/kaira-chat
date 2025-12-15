@@ -194,26 +194,26 @@ function MyApp({ Component, pageProps, store }) {
     return () => clearTimeout(initTimeout);
   }, [id, jupiterInitialized]);
 
-  useEffect(() => {
-    const loadCurrencySymbols = async () => {
-      try {
-        const response = await axios.get('YOUR_S3_BUCKET_URL/currency-symbols.json');
-        dispatch(setCurrencySymbols(response.data));
-      } catch (error) {
-        console.error('Error loading currency symbols:', error);
-        dispatch(setCurrencySymbols({
-          INR: '₹',
-          USD: '$',
-          EUR: '€',
-          GBP: '£',
-          AUD: 'A$',
-          CAD: 'C$',
-        }));
-      }
-    };
+  // useEffect(() => {
+  //   const loadCurrencySymbols = async () => {
+  //     try {
+  //       const response = await axios.get('https://d31aoa0ehgvjdi.cloudfront.net/media/currency_symbols.json');
+  //       dispatch(setCurrencySymbols(response.data));
+  //     } catch (error) {
+  //       console.error('Error loading currency symbols:', error);
+  //       dispatch(setCurrencySymbols({
+  //         INR: '₹',
+  //         USD: '$',
+  //         EUR: '€',
+  //         GBP: '£',
+  //         AUD: 'A$',
+  //         CAD: 'C$',
+  //       }));
+  //     }
+  //   };
 
-    loadCurrencySymbols();
-  }, [dispatch]);
+  //   loadCurrencySymbols();
+  // }, [dispatch]);
 
   useEffect(() => {
     const userLocationCookie = Cookies.get('userLocation');
@@ -239,7 +239,7 @@ function MyApp({ Component, pageProps, store }) {
 
         if (ipAddress) {
           const locationRes = await axios.get(
-            `https://dev.mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ipAddress}`
+            `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ipAddress}`
           );
 
           const data = locationRes.data;

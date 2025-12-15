@@ -7,6 +7,8 @@ import { logEvent } from "../../../../services/ga/Index";
 import ImageCarousel, { Carousel } from "../../Carousel/ImageCarousel";
 import { FaLocationDot } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import { currencySymbols } from "../../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const svgIcons = {
   loaction: (
@@ -100,6 +102,7 @@ export default function NewHotelBooking({
   };
 
    const router = useRouter()
+   const currency = useSelector(state=>state.currency);
     const { hotel_duration } =
       router?.query;
 
@@ -135,7 +138,7 @@ export default function NewHotelBooking({
             className={`w-full h-full flex md:flex-row md:items-center flex-col gap-xl grayscale-0`}
           >
             <div className={`relative w-[260px] max-ph:w-full h-[12rem] `}>
-              <ImageCarousel images={booking.images} noCaption={true} />
+              <ImageCarousel images={booking?.images && booking.images.length ? booking.images : ["https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"]} noCaption={true} />
 
               {/* text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm-md font-400 leading-md text-text-spacegreynsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl */}
               {booking.star_category && booking.star_category != "0" ? (
@@ -143,7 +146,7 @@ export default function NewHotelBooking({
                   starHotel
                   className={` bg-text-smokywhite absolute rounded-67br text-sm font-500 leading-lg px-md py-xs absolute top-md left-md`}
                 >
-                  {booking.star_category} star hotel
+                  {booking.star_category } star hotel
                 </div>
               ) : null}
             </div>
@@ -273,7 +276,7 @@ export default function NewHotelBooking({
                 <div>
                   <div className="flex flex-row md:flex-row gap-1 items-center w-full font-bold">
                     <div className="text-text-charcolblack text-lg font-700 leading-2xl-md">
-                      <>₹{getIndianPrice(Math.ceil(booking.price))}</>
+                      <>{currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.ceil(booking.price))}</>
                     </div>
                     <div className="text-text-spacegrey text-sm-md font-400 leading-lg mt-xxs">
                       <>for {currentBooking?.duration || duration || hotel_duration} nights</>

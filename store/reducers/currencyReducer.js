@@ -11,6 +11,7 @@ const currencyReducer = (state = initialState, action) => {
         ...state,
         symbols: action.payload
       };
+    
     default:
       return state;
   }

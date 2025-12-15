@@ -175,6 +175,7 @@ const Booking = (props) => {
   const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
   const [selectedHotelId, setSelectedHotelId] = useState(null); 
   const debouncedSearch = useDebounce(selectSearch);
+ const currency = useSelector(state=>state.currency);
  
 
   const currentBooking = {
@@ -444,7 +445,7 @@ if (priceOrderValue && filters.sort) {
 }
 
     hotelSearch
-      .post("", requestData, {
+      .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -462,22 +463,25 @@ if (priceOrderValue && filters.sort) {
           if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
+
+
           let options = [];
           for (var i = 0; i < res.data.data.length; i++) {
-            if (
-              res.data.data[i]?.images &&
-              res.data.data[i]?.images?.length 
-            ) {
+            // if (
+            //   res.data.data[i]?.images &&
+            //   res.data.data[i]?.images?.length 
+            // ) {
               let img = false;
-              for (let j = 0; j < res.data.data[i].images.length; j++) {
+              for (let j = 0; j < res.data.data[i]?.images.length; j++) {
                 if (res.data.data[i].images[j]?.image) {
                   img = res.data.data[i].images[j].image;
                   break;
                 }
               }
+            
               
 
-              if (img)
+              if (img || res?.data?.data)
                 options.push(
                   <AccommodationSearched
                     mercury
@@ -491,7 +495,7 @@ if (priceOrderValue && filters.sort) {
                     tailored_id={props.tailored_id}
                     accommodation={res.data.data[i]}
                     key={i}
-                    images={res.data.data[i].images}
+                    images={res.data.data[i]?.images}
                     banner_image={img}
                     bookings={props.bookings}
                     num_adults={(filters?.occupancies).reduce(
@@ -516,7 +520,7 @@ if (priceOrderValue && filters.sort) {
                     city_id={currentBooking?.city_id}
                   ></AccommodationSearched>
                 );
-            }
+            
           }
           if (
             filtersObj?.type?.length == 0 &&
@@ -584,7 +588,7 @@ if (priceOrderValue && filters.sort) {
       setAutocompleteLoading(true); 
 
       hotelSearchAutocomplete
-        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}`, {
+        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}&currency=${currency?.currency || 'INR'}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -681,7 +685,7 @@ if (priceOrderValue) {
 }
 
       hotelSearch
-        .post("", requestData, {
+        .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },

@@ -2,6 +2,7 @@ import { useNavigationMarker, NavigationMarker } from "./NavigationMarker";
 import styled from "styled-components";
 import { NavigationLink } from "./NavigationLink";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   min-width: 100%;
@@ -25,10 +26,11 @@ const InnerContainer = styled.div`
   height: 100%;
 `;
 
-export const Navigation = ({ items, BarName, ClickHandler, selectedItem }) => {
+export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSectionViewed }) => {
   const [selectedTab, setSelectedTab] = useState(
     selectedItem ? selectedItem : `${items[0].id}`
   );
+  const router = useRouter();
   const { markerPos, ...markerHandlers } = useNavigationMarker();
 
   return (
@@ -41,7 +43,8 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem }) => {
               if (ClickHandler) {
                 ClickHandler(item.label);
               }
-
+              if(trackSectionViewed)
+              trackSectionViewed(router.query.id,item.label);
               setSelectedTab(`${item.id}`);
             }}
             isSelected={selectedTab === `${item.id}`}

@@ -136,7 +136,7 @@ const Home = (props) => {
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
         
-        <HeroSection />
+        <HeroSection slug={'home'} />
         <TrustFactors/>
         <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 

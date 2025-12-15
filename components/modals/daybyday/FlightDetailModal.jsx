@@ -191,95 +191,95 @@ const FlightDetailModal = ({
 
 
       <div className="flex flex-row gap-2 justify-between md:items-start items-center mt-2 p-2">
-        <div className="flex flex-row items-center gap-3">
-          <div
-            className="rounded-full overflow-hidden flex-shrink-0"
-            style={{
-              width: isPageWide ? "48px" : "40px",
-              height: isPageWide ? "48px" : "40px",
-            }}
-          >
-
-            <LogoContainer
-              data={
-                data?.transfer_details?.items?.[0] || segments
-              }
-              width={isPageWide ? 48 : 40}
-              height={isPageWide ? 48 : 40}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
-              {segments?.[0]?.airline?.name ||
-                segments?.[0]?.airline?.name}
-              {(
-                data?.transfer_details?.items?.[0]?.transfer_details?.items?.[0]?.is_refundable) && (
-                  <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
-                    Refundable
-                  </span>
-                )}
-            </div>
-            <div className="text-xs md:text-sm text-gray-600">
-              {segments?.[0]?.airline?.code ||
-                segments?.[0]?.airline?.code}
-              -
-              {segments?.[0]?.airline?.flight_number ||
-                segments?.[0]?.airline?.flight_number}
-            </div>
-          </div>
-        </div>
-        {isPageWide && (
-          <div className="text-right">
-            <div className="text-md md:text-md font-bold">
-              {data?.transfer_details?.price_details?.total_amount
-                ? `₹${getIndianPrice(
-                  data?.transfer_details?.price_details?.total_amount
-                )}`
-                : null}
-            </div>
-            <div className="text-xs text-gray-500">for {totalPax} person</div>
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-row w-full justify-between items-center p-2">
-        <FlightDetails
-          data={data?.transfer_details?.items?.[0]}
-          origin={
-            segments?.[0]?.origin ||
-            segments[0]?.origin
-          }
-          destination={
-            segments?.[
-              segments?.length - 1
-            ]?.destination ||
-            segments[segments?.length - 1]
-              ?.destination
-          }
-          duration={
-            typeof (
-              data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
-              data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
-            ) == "number"
-              ? convertMinutesToHours(
-                data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
-                data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
-              )
-              : data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
-              data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
-          }
-          isNonStop={
-            (segments?.length ||
-              segments?.length) === 1
-          }
-          numStops={
-            (segments?.length ||
-              segments?.length) - 1
-          }
-          segments={segments}
-          setShowDetails={setShowDetails}
-        />
-      </div>
+                    <div className="flex flex-row items-center gap-3">
+                      <div
+                        className="rounded-full overflow-hidden flex-shrink-0"
+                        style={{
+                          width: isPageWide ? "48px" : "40px",
+                          height: isPageWide ? "48px" : "40px",
+                        }}
+                      >
+                       
+                        <LogoContainer
+                          data={
+                            data?.transfer_details?.items?.[0] || segments
+                          }
+                          width={isPageWide ? 48 : 40}
+                          height={isPageWide ? 48 : 40}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+                          {segments?.[0]?.airline?.name ||
+                            segments?.[0]?.airline?.name}
+                          {(
+                            data?.transfer_details?.items?.[0]?.transfer_details?.items?.[0]?.is_refundable) && (
+                            <span className="bg-[#4CAF50] text-white  px-2.5 py-0.5 rounded text-[12px] font-medium">
+                              Refundable
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs md:text-sm text-gray-600">
+                          {segments?.[0]?.airline?.code ||
+                            segments?.[0]?.airline?.code}
+                          -
+                          {segments?.[0]?.airline?.flight_number ||
+                            segments?.[0]?.airline?.flight_number}
+                        </div>
+                      </div>
+                    </div>
+                    {/* {isPageWide && (
+                      <div className="text-right">
+                        <div className="text-md md:text-md font-bold">
+                          {data?.transfer_details?.price_details?.total_amount
+                            ? `₹${getIndianPrice(
+                                data?.transfer_details?.price_details?.total_amount
+                              )}`
+                            : null}
+                        </div>
+                        <div className="text-xs text-gray-500">for {totalPax} person</div>
+                      </div>
+                    )} */}
+                  </div>
+      
+                  <div className="flex flex-row w-full justify-between items-center p-2">
+                    <FlightDetails
+                      data={data?.transfer_details?.items?.[0]}
+                      origin={
+                        segments?.[0]?.origin ||
+                        segments[0]?.origin
+                      }
+                      destination={
+                        segments?.[
+                          segments?.length - 1
+                        ]?.destination ||
+                        segments[segments?.length - 1]
+                          ?.destination
+                      }
+                      duration={
+                        typeof (
+                          data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
+                          data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
+                        ) == "number"
+                          ? convertMinutesToHours(
+                              data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
+                                data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
+                            )
+                          : data?.transfer_details?.items?.[0]?.segments?.[segments?.length - 1]?.accumulated_duration ||
+                            data?.transfer_details?.items?.[0]?.segments?.[0]?.duration
+                      }
+                      isNonStop={
+                        (segments?.length ||
+                          segments?.length) === 1
+                      }
+                      numStops={
+                        (segments?.length ||
+                          segments?.length) - 1
+                      }
+                      segments={segments}
+                      setShowDetails={setShowDetails}
+                    />
+                  </div>
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
           segments={segments}

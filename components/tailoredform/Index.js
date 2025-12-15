@@ -103,6 +103,7 @@ const Enquiry = (props) => {
     group: false,
     InputOne: false,
   };
+  const currency = useSelector(state=>state.UserLocation).location
   const [showPopup, setShowPopup] = useState(popupObj);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
@@ -370,6 +371,7 @@ const initiateItineraryCreate = async (slideOneData) => {
       number_of_infants: slideThreeData.numberOfInfants,
       room_configuration: slideThreeData.roomConfiguration,
       add_flights: slideThreeData.addFlights,
+      currency: currency?.currency || "INR",
       add_hotels: slideThreeData.addHotels,
       add_transfers_and_activities: slideThreeData.addInclusions,
       hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
