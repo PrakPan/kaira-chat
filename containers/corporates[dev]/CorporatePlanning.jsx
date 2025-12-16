@@ -150,7 +150,7 @@ const CorporatePlanning = () => {
               </h3>
 
               {/* Description */}
-              <p className="text-sm font-normal text-gray-700 leading-relaxed">
+              <p className="text-sm leading-relaxed text-text-default">
                 {feature.description}
               </p>
             </div>

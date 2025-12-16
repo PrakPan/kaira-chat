@@ -27,7 +27,17 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
     { name: 'Physics Wallah', logo: '/P01.svg' },
     { name: 'TEC Analytics', logo: '/P02.svg' },
     { name: 'Generic Food', logo: '/P03.svg' },
-    { name: 'Budvieser', logo: '/P04.svg' }
+    { name: 'Budvieser', logo: '/P04.svg' },
+     {
+      name: "Fever FM",
+      logo: "/Fever FM.png ",
+      alt: "Fever FM"
+    },
+    {
+      name: "Budveiser",
+      logo: "/Budveiser.png",
+      alt: "Budveiser"
+    }
   ];
 
   return (
@@ -84,7 +94,7 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
               </h1>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#0f1c2e] text-white px-4 py-2 rounded-lg text-base font-semibold hover:bg-[#1a2b3f] transition-colors"
+                className="bg-[#0f1c2e] text-white px-8 py-2.5 rounded-lg text-base hover:bg-[#1a2b3f] transition-colors"
               >
                 Enquire Now
               </button>
@@ -155,7 +165,7 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
               <div className="text-3xl font-bold text-gray-900 mb-1">15K+</div>
               <div className="text-gray-900 font-medium text-xs">Travellers<br/>Hosted</div>
             </div>
-            <div className="rounded-2xl overflow-hidden h-[10rem]">
+            <div className="rounded-2xl overflow-hidden flex items-center justify-center h-[10rem]">
               {/* <img src={images[2]} alt="Group photo" className="w-full h-full object-cover" /> */}
               <div className="col-span-2 text-center">
             <h1 className="font-bold text-base text-gray-900 leading-tight">
@@ -163,7 +173,7 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
             </h1>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#0f1c2e] text-white px-2 py-2 rounded-lg text-sm font-semibold hover:bg-[#1a2b3f] transition-colors"
+              className="bg-[#0f1c2e] text-white px-2 py-2 rounded-[8px] text-sm hover:bg-[#1a2b3f] transition-colors"
             >
               Enquire Now
             </button>
@@ -189,7 +199,7 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
             {partners.map((partner, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div className=" flex items-center justify-center text-white font-bold text-xs">
-                  <img src={partner.logo} alt={partner.name}/>
+                  <img src={partner.logo} alt={partner.name} height={"90px"} width={"90px"}/>
                 </div>
                 {/* <span className="text-gray-900 font-semibold text-sm lg:text-base">{partner.name}</span> */}
               </div>

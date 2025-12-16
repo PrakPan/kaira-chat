@@ -120,7 +120,7 @@ const OurCorporatesOffering = () => {
           </h2>
           <p
             // ref={stepsRef}
-            className="text-base font-normal text-gray-600 max-w-2xl mx-auto"
+            className="text-[16px] leading-relaxed text-text-default max-w-2xl mx-auto"
             style={{ fontStyle: "normal" }}
           >
             Comprehensive solutions designed to enhance collaboration, engagement, and productivity across your corporate experiences.
@@ -148,7 +148,7 @@ const OurCorporatesOffering = () => {
               </h3>
 
               {/* Description */}
-              <p className="text-sm font-normal text-gray-700 leading-relaxed">
+              <p className="text-sm leading-relaxed text-text-default">
                 {feature.description}
               </p>
             </div>

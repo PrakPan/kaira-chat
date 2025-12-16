@@ -95,7 +95,7 @@ const RouteEditSection = (props) => {
 
     return (
         <div
-            className={`w-full h-full relative  flex flex-col bg-white items-center overflow-y-auto hide-scrollbar ${!isDesktop ? 'p-lg border-sm border-solid border-primary-yellow rounded-xl mb-xl' : ''}`}
+            className={`w-full h-full relative  flex flex-col bg-white items-center overflow-y-auto hide-scrollbar ${!isDesktop ? 'p-2 border-sm border-solid border-primary-yellow rounded-xl mb-xl' : ''}`}
         >
             <ScrollContainer className="w-full h-full">
             <div className="w-full h-full  hide-scrollbar overflow-y-auto" style={{ pointerEvents: 'auto' }}>
@@ -428,7 +428,7 @@ export const Destination = (props) => {
             )}
 
             <div className="w-full flex flex-row font-inter items-center justify-between gap-1 sm:gap-4 mt-3 relative z-10">
-                <div className="flex flex-row items-center gap-3">
+                <div className="flex flex-row items-center gap-1 sm:gap-3">
                     {!(startingCity || endingCity) && (
                         <div className="text-gray-400 cursor-grab active:cursor-grabbing">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -453,8 +453,8 @@ export const Destination = (props) => {
                             <CustomMapPin color={cityData?.color || pinColour} />
                         )}
 
-                        <div className="flex flex-row items-center justify-center gap-3">
-                            <div className=" Body1M_16  cursor-pointer">
+                        <div className="flex flex-row items-center justify-center gap-2 sm:gap-3">
+                            <div className=" Body1M_16  cursor-pointer ">
                                 {cityData.city_name || cityData.name || cityData.text}
                             </div>
                             {!(startingCity || endingCity) && cityData?.nights && (
@@ -505,7 +505,7 @@ export const Destination = (props) => {
             {index < props?.totalDestinations - 1 && (
                 <div
                     className={`absolute z-0
-                         left-[51px] top-[45px]
+                         left-[39px] top-[45px]
                     `}
                 >
                     <DottedLine />

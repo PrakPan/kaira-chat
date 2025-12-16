@@ -837,7 +837,7 @@ const initiateItineraryCreate = async (slideOneData) => {
                   onclick={() => initiateItineraryCreate(slideOneData)}
                   
                 >
-                  Update & Continue
+                 Continue
                 </Button>
               ) : (
                 <button

@@ -34,6 +34,7 @@ import CorporatePlanning from "./CorporatePlanning";
 import TravelerMadeItinerariesSection from "../../components/revamp/home/TravelerMadeItinerariesSection";
 import { useRouter } from "next/router";
 import axiosbdinstance from "../../services/leads/bd";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -144,6 +145,15 @@ const AffiliatePage = (props) => {
   });
 
   const [selectedCategory, setSelectedCategory] = useState("in_office");
+
+   const [activeDrawer, setActiveDrawer] = useState(null);
+
+  const handleOpenDrawer = (data, type) => {
+    setActiveDrawer({ data, type });
+  };
+  const handleCloseDrawer = () => {
+    setActiveDrawer(null);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -383,7 +393,7 @@ const AffiliatePage = (props) => {
                         <DestinationCard
                           title={destination.title || destination.name}
                           description={
-                            destination.description || destination.tagline
+                            destination.description || destination.tagline || destination.short_description
                           }
                           image={destination.image}
                           rating={destination.rating}
@@ -392,6 +402,7 @@ const AffiliatePage = (props) => {
                           }
                           reviewCount={destination.user_ratings_total}
                           showImageText={false}
+                          height="280px"
                           tags={
                             destination.tags ||
                             (destination.continent
@@ -399,9 +410,9 @@ const AffiliatePage = (props) => {
                               : [])
                           }
                           gradientOverlay={destination.gradientOverlay}
-                          onClick={() => {}
-                            // handleOpenDrawer(destination, "activity")
-                          }
+                          onClick={() => {
+                            handleOpenDrawer(destination, "activity")
+                          }}
                         />
                       </div>
                     </SwiperSlide>
@@ -411,9 +422,9 @@ const AffiliatePage = (props) => {
                 {/* Custom Prev Button */}
                 <div className={`swiper-prev-${selectedCategory}`} aria-hidden>
                   <div
-                    className="absolute left-3 sm:left-1 z-10"
+                    className="absolute left-3 sm:-left-[0.55rem] z-10"
                     style={{
-                      top: "calc(376px / 2)",
+                      top: "calc(280px / 2)",
                       transform: "translateY(-50%)",
                     }}
                   >
@@ -429,9 +440,9 @@ const AffiliatePage = (props) => {
                 {/* Custom Next Button */}
                 <div className={`swiper-next-${selectedCategory}`} aria-hidden>
                   <div
-                    className="absolute right-3 sm:right-1 z-10"
+                    className="absolute right-3 sm:-right-[0.55rem] z-10"
                     style={{
-                      top: "calc(376px / 2)",
+                      top: "calc(280px / 2)",
                       transform: "translateY(-50%)",
                     }}
                   >
@@ -646,6 +657,32 @@ const AffiliatePage = (props) => {
           </div>
         </div>
       )}
+
+      {activeDrawer?.type === "poi" && (
+          <POIDetailsDrawer
+            show={true}
+            iconId={activeDrawer.data.id}
+            handleCloseDrawer={handleCloseDrawer}
+            name={activeDrawer.data.name}
+            id={activeDrawer.data.id}
+            activityData={{
+              type: "poi",
+              id: activeDrawer.data.id,
+            }}
+            removeDelete={true}
+            removeChange={true}
+          />
+        )}
+
+        {activeDrawer?.type === "activity" && (
+          <POIDetailsDrawer
+            show={true}
+            ActivityiconId={activeDrawer.data.id}
+            handleCloseDrawer={handleCloseDrawer}
+            name={activeDrawer.data.name}
+            removeDelete={true}
+          ></POIDetailsDrawer>
+        )}
     </div>
   );
 };

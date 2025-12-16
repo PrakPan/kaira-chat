@@ -100,7 +100,7 @@ const DestinationCard = ({
     </div>
 
    {showImageText === false && (
-        <div className="pt-3 sm:pt-4" style={{ backgroundColor: 'white', minHeight: '80px' }}>
+        <div className="pt-3 sm:pt-4" style={{ backgroundColor: 'white', height: 'auto' }}>
           <h3 className="text-gray-900 font-semibold mb-1 text-base text-md" style={{ color: '#000' }}>
             {title}
           </h3>
