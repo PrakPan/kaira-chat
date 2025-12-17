@@ -270,22 +270,26 @@ const Enquiry = (props) => {
     }
   };
 
-  const initiateItineraryCreate = async (slideOneData) => {
-    const data = buildItineraryPayload({
-      source,
-      selectedPreferences: slideOneData.selectedPreferences,
-      EXPERIENCE_FILTERS_BOX,
-      selectedCities,
-      startingLocation,
-      dateData: slideOneData.date,
-      ...(isReady && sessionId && { session_id: sessionId }),
-    });
+const initiateItineraryCreate = async (slideOneData) => {
+  const data = buildItineraryPayload({
+    source,
+    selectedPreferences: slideOneData.selectedPreferences,
+    EXPERIENCE_FILTERS_BOX,
+    selectedCities,
+    startingLocation,
+    dateData: slideOneData.date,
+    ...(isReady && sessionId && { session_id: sessionId }),
+  });
 
-    let newEndDate = null;
-    let totalDuration = null;
-    let shouldUpdateDates = false;
+  let newEndDate = null;
+  let totalDuration = null;
+  let shouldUpdateDates = false;
 
-    if (locationsLatLong.length > 0 && slideIndex == 1) {
+  const isFixedDate = slideOneData.date.type === "fixed";
+  
+  if (locationsLatLong.length > 0 && slideIndex == 1) {
+    if (isFixedDate && slideOneData.date.start_date) {
+     
       const startDate = new Date(slideOneData.date.start_date);
       let currentDate = new Date(startDate);
 
@@ -304,72 +308,118 @@ const Enquiry = (props) => {
         };
       });
 
-      // Calculate new trip end date based on total duration
+     
       newEndDate = new Date(currentDate);
       totalDuration = Math.ceil(
         (newEndDate - startDate) / (1000 * 60 * 60 * 24)
       );
-      shouldUpdateDates = true; // Set flag to true
+      shouldUpdateDates = true;
 
-      // Update the dates in the payload
+    
       data["basic_route"] = updatedRoute;
       data["dates"] = {
         ...data["dates"],
         end_date: newEndDate.toISOString().split("T")[0],
         duration: totalDuration,
       };
-    }
+    } else {
+    
+      const hasResponseDates = locationsLatLong.some(loc => loc.start_date && loc.end_date);
+      
+      if (hasResponseDates && itineraryInititateData?.start_date) {
+       
+        const startDate = new Date(itineraryInititateData.start_date);
+        let currentDate = new Date(startDate);
 
-    const token = localStorage.getItem("access_token");
+        const updatedRoute = locationsLatLong.map((location) => {
+          const nights = location.duration || location.nights || 1;
+          const start = new Date(currentDate);
+          currentDate.setDate(currentDate.getDate() + nights);
+          const end = new Date(currentDate);
 
-    try {
-      setIsLoading(true);
-      const res = await itineraryInitiate.post("", data, {
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-      const resData = res.data;
-      trackItineraryInitiated("itinerary_initiated");
+          return {
+            ...location,
+            duration: nights,
+            nights: nights,
+            start_date: start.toISOString().split("T")[0],
+            end_date: end.toISOString().split("T")[0],
+          };
+        });
 
-      setError(null);
-      setItineraryId(resData.itinerary_id);
-      setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+        data["basic_route"] = updatedRoute;
+      } else {
+        
+        const updatedRoute = locationsLatLong.map((location) => {
+          const { start_date, end_date, ...locationWithoutDates } = location;
+          const nights = location.duration || location.nights || 1;
+          
+          return {
+            ...locationWithoutDates,
+            duration: nights,
+            nights: nights,
+          };
+        });
 
-      // Update the locationsLatLong with the response data
-      setLocationsLatLong(resData.basic_route || []);
-
-      dispatch(setItineraryInitiateData(resData));
-
-      // Update slideOne dates in Redux if routes were changed
-      if (shouldUpdateDates && newEndDate) {
-        dispatch(
-          setFixedDate(
-            slideOneData.date.start_date,
-            newEndDate.toISOString().split("T")[0]
-          )
-        );
+        data["basic_route"] = updatedRoute;
       }
-
-      // Reset the route changed flag
-      setIsRouteChanged(false);
-
-      // Navigate to next slide
-      router.push({
-        pathname: "/new-trip",
-        query: {
-          slideIndex: slideIndex + 1,
-        },
-      });
-      // setShowRouteOverview(true);
-    } catch (err) {
-      console.log("ERROR: ", err.message);
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
+      
+      totalDuration = data["basic_route"].reduce((sum, loc) => sum + (loc.duration || 1), 0);
+  
+      if (data["dates"]) {
+        const { start_date, end_date, ...datesWithoutFixed } = data["dates"];
+        data["dates"] = {
+          ...datesWithoutFixed,
+          duration: totalDuration,
+        };
+      }
     }
-  };
+  }
 
+  const token = localStorage.getItem("access_token");
+
+  try {
+    setIsLoading(true);
+    const res = await itineraryInitiate.post("", data, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    });
+    const resData = res.data;
+    trackItineraryInitiated("itinerary_initiated");
+
+    setError(null);
+    setItineraryId(resData.itinerary_id);
+    setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+
+    setLocationsLatLong(resData.basic_route || []);
+
+    dispatch(setItineraryInitiateData(resData));
+
+    if (shouldUpdateDates && newEndDate && isFixedDate) {
+      dispatch(
+        setFixedDate(
+          slideOneData.date.start_date,
+          newEndDate.toISOString().split("T")[0]
+        )
+      );
+    }
+
+
+    setIsRouteChanged(false);
+
+    router.push({
+      pathname: "/new-trip",
+      query: {
+        slideIndex: slideIndex + 1,
+      },
+    });
+  } catch (err) {
+    console.log("ERROR: ", err.message);
+    setError(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
   const completeItineraryCreate = () => {
     const platform = getPlatform();
     const data = {
