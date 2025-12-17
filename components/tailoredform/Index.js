@@ -41,7 +41,7 @@ import { authCloseLogin } from "../../store/actions/auth";
 import Login from "../modals/Login";
 import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
-
+import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 
 const ScrollContainer = styled.div`
   scrollbar-width: none;
@@ -103,7 +103,7 @@ const Enquiry = (props) => {
     group: false,
     InputOne: false,
   };
-  const currency = useSelector(state=>state.UserLocation).location
+  const currency = useSelector((state) => state.UserLocation).location;
   const [showPopup, setShowPopup] = useState(popupObj);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
@@ -116,7 +116,7 @@ const Enquiry = (props) => {
 
   const slideIndex = Number(router.query.slideIndex) || 0;
   const { trackItineraryInitiated, trackItineraryCompleted } = useAnalytics();
-
+  const { sessionId, isReady } = useAnalyticsSession();
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
 
@@ -270,7 +270,7 @@ const Enquiry = (props) => {
     }
   };
 
-const initiateItineraryCreate = async (slideOneData) => {
+  const initiateItineraryCreate = async (slideOneData) => {
     const data = buildItineraryPayload({
       source,
       selectedPreferences: slideOneData.selectedPreferences,
@@ -278,72 +278,82 @@ const initiateItineraryCreate = async (slideOneData) => {
       selectedCities,
       startingLocation,
       dateData: slideOneData.date,
+      ...(isReady && sessionId && { session_id: sessionId }),
     });
-    
+
     let newEndDate = null;
     let totalDuration = null;
-    let shouldUpdateDates = false; 
-    
+    let shouldUpdateDates = false;
+
     if (locationsLatLong.length > 0 && slideIndex == 1) {
-      
       const startDate = new Date(slideOneData.date.start_date);
       let currentDate = new Date(startDate);
-      
+
       const updatedRoute = locationsLatLong.map((location) => {
         const nights = location.duration || location.nights || 1;
         const start = new Date(currentDate);
         currentDate.setDate(currentDate.getDate() + nights);
         const end = new Date(currentDate);
-        
+
         return {
           ...location,
           duration: nights,
           nights: nights,
-          start_date: start.toISOString().split('T')[0],
-          end_date: end.toISOString().split('T')[0],
+          start_date: start.toISOString().split("T")[0],
+          end_date: end.toISOString().split("T")[0],
         };
       });
-      
+
       // Calculate new trip end date based on total duration
       newEndDate = new Date(currentDate);
-      totalDuration = Math.ceil((newEndDate - startDate) / (1000 * 60 * 60 * 24));
+      totalDuration = Math.ceil(
+        (newEndDate - startDate) / (1000 * 60 * 60 * 24)
+      );
       shouldUpdateDates = true; // Set flag to true
-      
+
       // Update the dates in the payload
       data["basic_route"] = updatedRoute;
       data["dates"] = {
         ...data["dates"],
-        end_date: newEndDate.toISOString().split('T')[0],
-        duration: totalDuration
+        end_date: newEndDate.toISOString().split("T")[0],
+        duration: totalDuration,
       };
     }
 
+    const token = localStorage.getItem("access_token");
+
     try {
       setIsLoading(true);
-      const res = await itineraryInitiate.post("", data);
+      const res = await itineraryInitiate.post("", data, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
       const resData = res.data;
       trackItineraryInitiated("itinerary_initiated");
 
       setError(null);
       setItineraryId(resData.itinerary_id);
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
-      
+
       // Update the locationsLatLong with the response data
       setLocationsLatLong(resData.basic_route || []);
-      
+
       dispatch(setItineraryInitiateData(resData));
-      
+
       // Update slideOne dates in Redux if routes were changed
       if (shouldUpdateDates && newEndDate) {
-        dispatch(setFixedDate(
-          slideOneData.date.start_date,
-          newEndDate.toISOString().split('T')[0]
-        ));
+        dispatch(
+          setFixedDate(
+            slideOneData.date.start_date,
+            newEndDate.toISOString().split("T")[0]
+          )
+        );
       }
-      
+
       // Reset the route changed flag
       setIsRouteChanged(false);
-      
+
       // Navigate to next slide
       router.push({
         pathname: "/new-trip",
@@ -391,7 +401,7 @@ const initiateItineraryCreate = async (slideOneData) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed",platform);
+        trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
         dispatch(setItineraryCreated(true));
 
         setTimeout(() => {
@@ -415,11 +425,19 @@ const initiateItineraryCreate = async (slideOneData) => {
   };
 
   const totalSlides = localStorage.getItem("access_token")
-    ? (slideThreeData.addHotels ? 4 : 3)
-    : (slideThreeData.addHotels ? 5 : 4);
+    ? slideThreeData.addHotels
+      ? 4
+      : 3
+    : slideThreeData.addHotels
+    ? 5
+    : 4;
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
-  const [steps, setSteps] = useState(['Introduction', 'Customize Route', 'Who’s Going & Inclusions']);
+  const [steps, setSteps] = useState([
+    "Introduction",
+    "Customize Route",
+    "Who’s Going & Inclusions",
+  ]);
 
   useEffect(() => {
     const isLoggedIn = !!localStorage.getItem("access_token");
@@ -445,26 +463,26 @@ const initiateItineraryCreate = async (slideOneData) => {
     });
   }, [slideThreeData?.addHotels]);
 
-
- useEffect(() => {
+  useEffect(() => {
     if (slideOneData) {
       const hasDestination =
         Array.isArray(slideOneData.selectedCities) &&
         slideOneData.selectedCities.length > 0;
 
-     
       let duration = null;
-      
-      if (slideOneData?.date?.type === "fixed" && 
-          slideOneData?.date?.start_date && 
-          slideOneData?.date?.end_date) {
-       
+
+      if (
+        slideOneData?.date?.type === "fixed" &&
+        slideOneData?.date?.start_date &&
+        slideOneData?.date?.end_date
+      ) {
         const start = new Date(slideOneData.date.start_date);
         const end = new Date(slideOneData.date.end_date);
         duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      } else if (slideOneData?.date?.type === "flexible" || 
-                 slideOneData?.date?.type === "anytime") {
-       
+      } else if (
+        slideOneData?.date?.type === "flexible" ||
+        slideOneData?.date?.type === "anytime"
+      ) {
         duration = slideOneData.date.duration;
       }
 
@@ -472,26 +490,27 @@ const initiateItineraryCreate = async (slideOneData) => {
         const cityName = slideOneData.selectedCities[0]?.name;
         const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
 
-        setSteps(prev =>
+        setSteps((prev) =>
           prev.map((title, index) => (index === 0 ? stepTitle : title))
         );
       }
     }
   }, [slideOneData]);
 
-  return (<>
-
-    <div className="container">
-       
-      <div className="py-2xl">
-        <div className="text-md-lg font-600 leading-xl-sm mb-md">Plan Your Trip</div>
-        <StepsProgress
-          slideIndex={slideIndex}
-          totalSlides={totalSlides}
-          steps={steps}
-        ></StepsProgress>
-      </div>
-      {/*       
+  return (
+    <>
+      <div className="container">
+        <div className="py-2xl">
+          <div className="text-md-lg font-600 leading-xl-sm mb-md">
+            Plan Your Trip
+          </div>
+          <StepsProgress
+            slideIndex={slideIndex}
+            totalSlides={totalSlides}
+            steps={steps}
+          ></StepsProgress>
+        </div>
+        {/*       
               <div className=" ">
                 <svg width="64" height="64" viewBox="0 0 64 64">
                   <circle
@@ -534,51 +553,48 @@ const initiateItineraryCreate = async (slideOneData) => {
                 </svg>
               </div> */}
 
-    
-      <div className="h-[calc(100vh-300px)] max-sm:h-[calc(100vh-100px)] overflow-y-auto no-scrollbar">
-        {!props.tailoredFormModal ? (
-          <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
-        ) : null}
+        <div className="h-[calc(100vh-300px)] max-sm:h-[calc(100vh-100px)] overflow-y-auto no-scrollbar">
+          {!props.tailoredFormModal ? (
+            <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
+          ) : null}
 
-        <Container
-          tailoredFormModal={props.tailoredFormModal}
-          slideIndex={slideIndex}
-        >
-          {showPopup.InputOne && (
-            <Popup
-              setShowPopup={setShowPopup}
-              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
-              mobileTop="14rem"
-              left="10px"
-              text="Please select your destination!"
-            />
-          )}
+          <Container
+            tailoredFormModal={props.tailoredFormModal}
+            slideIndex={slideIndex}
+          >
+            {showPopup.InputOne && (
+              <Popup
+                setShowPopup={setShowPopup}
+                top={props.tailoredFormModal ? "17rem" : "12.6rem"}
+                mobileTop="14rem"
+                left="10px"
+                text="Please select your destination!"
+              />
+            )}
 
-          {showPopup.dateStart && (
-            <Popup
-              setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-              left="10px"
-              text="Please select starting date!"
-            />
-          )}
+            {showPopup.dateStart && (
+              <Popup
+                setShowPopup={setShowPopup}
+                bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+                left="10px"
+                text="Please select starting date!"
+              />
+            )}
 
-          {showPopup.dateEnd && (
-            <Popup
-              setShowPopup={setShowPopup}
-              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
-              left="170px"
-              mobileleft={"135px"}
-              text="Please select ending date!"
-            />
-          )}
+            {showPopup.dateEnd && (
+              <Popup
+                setShowPopup={setShowPopup}
+                bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+                left="170px"
+                mobileleft={"135px"}
+                text="Please select ending date!"
+              />
+            )}
 
-          <div className="flex flex-col items-center justify-center  h-full">
-            <div
-              className="h-max  font-inter flex flex-col gap-[30px] w-100"
-            >
-              <div className="flex flex-col gap-[24px]">
-                {/* {slideIndex && !isDesktop ? (
+            <div className="flex flex-col items-center justify-center  h-full">
+              <div className="h-max  font-inter flex flex-col gap-[30px] w-100">
+                <div className="flex flex-col gap-[24px]">
+                  {/* {slideIndex && !isDesktop ? (
               <div>
                 <BiArrowBack
                   onClick={_prevSlideHandler}
@@ -589,8 +605,8 @@ const initiateItineraryCreate = async (slideOneData) => {
             ) : (
               <></>
             )} */}
-                <div className={`w-full flex items-center justify-center`}>
-                  {/* {isDesktop && (
+                  <div className={`w-full flex items-center justify-center`}>
+                    {/* {isDesktop && (
                 <div
                   style={{
                     padding: props.tailoredFormModal
@@ -613,16 +629,14 @@ const initiateItineraryCreate = async (slideOneData) => {
                   )}
                 </div>
               )} */}
-                  <div>
-                    {headings[slideIndex] &&
-                      <h1
-                        className="text-xl-md font-600 leading-2xl-md max-pg:text-xl max-ph:text-center mb-zero"
-                      >
-                        {headings[slideIndex]}
-                      </h1>
-                    }
-                  </div>
-                  {/* 
+                    <div>
+                      {headings[slideIndex] && (
+                        <h1 className="text-xl-md font-600 leading-2xl-md max-pg:text-xl max-ph:text-center mb-zero">
+                          {headings[slideIndex]}
+                        </h1>
+                      )}
+                    </div>
+                    {/* 
               <div className=" ">
                 <svg width="64" height="64" viewBox="0 0 64 64">
                   <circle
@@ -664,157 +678,157 @@ const initiateItineraryCreate = async (slideOneData) => {
                   </text>
                 </svg>
               </div> */}
-
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col items-center">
-                <div id="login" className="z-[1650]">
-                  <Login
-                    show={showLogin}
-                    onhide={onHide}
-                    zIndex={"3300"}
-                    onSuccess={() => {
-                      completeItineraryCreate();
-                    }}
-                  />
-                </div>
-                <div
-                  className={`${slideIndex == 1 ? "w-[100%]" : isDesktop ? "max-w-[600px]" : "w-full"}`}
-                >
-                  <Flickity
-                    initialInputId={initialInputId}
-                    tailoredFormModal={props.tailoredFormModal}
-                    startingLocation={startingLocation}
-                    setStartingLocation={setStartingLocation}
-                    showSearchStarting={showSearchStarting}
-                    setShowSearchStarting={setShowSearchStarting}
-                    showCities={showCities}
-                    setShowCities={setShowCities}
-                    destination={destination}
-                    setDestination={setDestination}
-                    cities={props.cities}
-                    selectedCities={selectedCities}
-                    setSubmitSecondSlide={setSubmitSecondSlide}
-                    eventDates={props.eventDates}
-                    route={
-                      itineraryInititateData?.start_city
-                        ? [
-                          itineraryInititateData?.start_city,
-                          ...locationsLatLong,
-                          itineraryInititateData?.end_city,
-                        ]
-                        : route
-                    }
-                    _submitDataHandler={_submitDataHandler}
-                    setLocationsLatLong={setLocationsLatLong}
-                    locationsLatLong={
-                      locationsLatLong?.length > 0 ? locationsLatLong : route
-                    }
-                    errors={errors}
-                    completeItineraryCreate={completeItineraryCreate}
-                    setIsRouteChanged={setIsRouteChanged}
-                    isloading={isLoading}
-                  ></Flickity>
-                  {isDesktop ? (
-                    <ModalWithBackdrop
-                      centered
-                      show={showRouteOverview == true}
-                      mobileWidth="100%"
-                      backdrop
-                      closeIcon={true}
-                      onHide={() => setShowRouteOverview(false)}
-                      borderRadius={"12px"}
-                      animation={false}
-                      backdropStyle={{
-                        backgroundColor: "rgba(0,0,0,0.4)",
-                        backdropFilter: "blur(1px)",
-                      }} // <- add this
-                      paddingX="20px"
-                      paddingY="20px"
-                    >
-                      <RouteOverviewModal
-                        setShowRouteOverview={setShowRouteOverview}
-                      />
-                    </ModalWithBackdrop>
-                  ) : (
-                    <BottomModal
-                      show={showRouteOverview == true}
-                      onHide={() => setShowRouteOverview(false)}
-                      width="100%"
-                      height="max-content"
-                      paddingX="20px"
-                      paddingY="20px"
-                    >
-                      <RouteOverviewModal
-                        setShowRouteOverview={setShowRouteOverview}
-                      />
-                    </BottomModal>
-                  )}
+                <div className="flex flex-col items-center">
+                  <div id="login" className="z-[1650]">
+                    <Login
+                      show={showLogin}
+                      onhide={onHide}
+                      zIndex={"3300"}
+                      onSuccess={() => {
+                        completeItineraryCreate();
+                      }}
+                    />
+                  </div>
+                  <div
+                    className={`${
+                      slideIndex == 1
+                        ? "w-[100%]"
+                        : isDesktop
+                        ? "max-w-[600px]"
+                        : "w-full"
+                    }`}
+                  >
+                    <Flickity
+                      initialInputId={initialInputId}
+                      tailoredFormModal={props.tailoredFormModal}
+                      startingLocation={startingLocation}
+                      setStartingLocation={setStartingLocation}
+                      showSearchStarting={showSearchStarting}
+                      setShowSearchStarting={setShowSearchStarting}
+                      showCities={showCities}
+                      setShowCities={setShowCities}
+                      destination={destination}
+                      setDestination={setDestination}
+                      cities={props.cities}
+                      selectedCities={selectedCities}
+                      setSubmitSecondSlide={setSubmitSecondSlide}
+                      eventDates={props.eventDates}
+                      route={
+                        itineraryInititateData?.start_city
+                          ? [
+                              itineraryInititateData?.start_city,
+                              ...locationsLatLong,
+                              itineraryInititateData?.end_city,
+                            ]
+                          : route
+                      }
+                      _submitDataHandler={_submitDataHandler}
+                      setLocationsLatLong={setLocationsLatLong}
+                      locationsLatLong={
+                        locationsLatLong?.length > 0 ? locationsLatLong : route
+                      }
+                      errors={errors}
+                      completeItineraryCreate={completeItineraryCreate}
+                      setIsRouteChanged={setIsRouteChanged}
+                      isloading={isLoading}
+                    ></Flickity>
+                    {isDesktop ? (
+                      <ModalWithBackdrop
+                        centered
+                        show={showRouteOverview == true}
+                        mobileWidth="100%"
+                        backdrop
+                        closeIcon={true}
+                        onHide={() => setShowRouteOverview(false)}
+                        borderRadius={"12px"}
+                        animation={false}
+                        backdropStyle={{
+                          backgroundColor: "rgba(0,0,0,0.4)",
+                          backdropFilter: "blur(1px)",
+                        }} // <- add this
+                        paddingX="20px"
+                        paddingY="20px"
+                      >
+                        <RouteOverviewModal
+                          setShowRouteOverview={setShowRouteOverview}
+                        />
+                      </ModalWithBackdrop>
+                    ) : (
+                      <BottomModal
+                        show={showRouteOverview == true}
+                        onHide={() => setShowRouteOverview(false)}
+                        width="100%"
+                        height="max-content"
+                        paddingX="20px"
+                        paddingY="20px"
+                      >
+                        <RouteOverviewModal
+                          setShowRouteOverview={setShowRouteOverview}
+                        />
+                      </BottomModal>
+                    )}
 
-                  {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
+                    {error ? (
+                      <p className="text-sm text-red-600">{error}</p>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Container>
-
+          </Container>
+        </div>
       </div>
 
-     
+      <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
+        {/* <div className="border-b-sm"></div> */}
+        <div className="container p-md">
+          {slideIndex === 0 && (
+            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+              <div className="flex justify-between">
+                <button
+                  className={`LargeIndigoOutlinedButton `}
+                  onClick={() => router.back()}
+                >
+                  Cancel
+                </button>
 
-    </div>
-
-    
-    <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
-      {/* <div className="border-b-sm"></div> */}
-      <div className="container p-md">
-        {slideIndex === 0 && (
-          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-            <div className="flex justify-between">
-              <button
-                className={`LargeIndigoOutlinedButton `}
-                onClick={() => router.back()}
-              >
-                Cancel
-              </button>
-
-            <Button
-                width={`${isPageWide ? '300px' : '50%'}`}
-                fontSize="1rem"
-                padding="0.5rem 2rem"
-                fontWeight="500"
-                borderRadius="8px"
-                borderWidth="1px"
-                bgColor="#07213A"
-                onclick={_SlideOneSubmitHandler}
-                loading={isLoading}
-                disabled={isLoading}
-                height="50px"
-                color="white"
-                className="whitespace-nowrap"
-              >
-                Continue
-              </Button>
+                <Button
+                  width={`${isPageWide ? "300px" : "50%"}`}
+                  fontSize="1rem"
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  borderRadius="8px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  onclick={_SlideOneSubmitHandler}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  height="50px"
+                  color="white"
+                  className="whitespace-nowrap"
+                >
+                  Continue
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-
-        {slideIndex === 1 && (
-          <div
-            className={` bg-primary-cornsilk z-[15] flex justify-between w-full
+          {slideIndex === 1 && (
+            <div
+              className={` bg-primary-cornsilk z-[15] flex justify-between w-full
     ${!isDesktop && "flex items-center justify-between gap-2"}
   `}
-          >
-            {/* LEFT SIDE */}
-            <button
-              className={`LargeIndigoOutlinedButton `}
-              onClick={_prevSlideHandler}
             >
-              Back
-            </button>
+              {/* LEFT SIDE */}
+              <button
+                className={`LargeIndigoOutlinedButton `}
+                onClick={_prevSlideHandler}
+              >
+                Back
+              </button>
 
               {/* <button
                 className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
@@ -824,7 +838,7 @@ const initiateItineraryCreate = async (slideOneData) => {
               </button> */}
               {isRouteChanged ? (
                 <Button
-                  width={`${isPageWide ? '300px' : '50%'}`}
+                  width={`${isPageWide ? "300px" : "50%"}`}
                   fontSize="1rem"
                   padding="0.5rem 1rem"
                   fontWeight="500"
@@ -835,13 +849,14 @@ const initiateItineraryCreate = async (slideOneData) => {
                   loading={isLoading}
                   disabled={isLoading}
                   onclick={() => initiateItineraryCreate(slideOneData)}
-                  
                 >
-                 Continue
+                  Continue
                 </Button>
               ) : (
                 <button
-                  className={`LargeIndigoButton cursor-not-allowed w-[50%] ${isDesktop && "w-[300px]"} `}
+                  className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
+                    isDesktop && "w-[300px]"
+                  } `}
                   onClick={() =>
                     router.push({
                       pathname: "/new-trip",
@@ -852,115 +867,110 @@ const initiateItineraryCreate = async (slideOneData) => {
                   Continue
                 </button>
               )}
-            
-          </div>
-
-        )}
-
-        {slideIndex === 2 && (
-          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-            <div className="flex justify-between items-center">
-              <button
-                className={`LargeIndigoOutlinedButton`}
-                onClick={_prevSlideHandler}
-              >
-                Back
-              </button>
-
-              <Button
-                width={`${isPageWide ? '300px' : '50%'}`}
-                fontSize="1rem"
-                padding="0.5rem 1rem"
-                fontWeight="500"
-                bgColor="#07213A"
-                color="white"
-                height="50px"
-                onclick={_SlideThreeSubmitHandler}
-                loading={isLoading}
-                borderRadius="8px"
-                className={`${!isDesktop && "w-[120px]"}`}
-              >
-                {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
-              </Button>
             </div>
-          </div>
-        )}
+          )}
 
-        {slideIndex === 3 && (
-          <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
-            <div className="flex justify-between items-center">
-              <button
-                className={`LargeIndigoOutlinedButton`}
-                onClick={_prevSlideHandler}
-              >
-                Back
-              </button>
+          {slideIndex === 2 && (
+            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+              <div className="flex justify-between items-center">
+                <button
+                  className={`LargeIndigoOutlinedButton`}
+                  onClick={_prevSlideHandler}
+                >
+                  Back
+                </button>
+
+                <Button
+                  width={`${isPageWide ? "300px" : "50%"}`}
+                  fontSize="1rem"
+                  padding="0.5rem 1rem"
+                  fontWeight="500"
+                  bgColor="#07213A"
+                  color="white"
+                  height="50px"
+                  onclick={_SlideThreeSubmitHandler}
+                  loading={isLoading}
+                  borderRadius="8px"
+                  className={`${!isDesktop && "w-[120px]"}`}
+                >
+                  {totalSlides == 3 ? "Get Itinerary!" : "Continue"}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {slideIndex === 3 && (
+            <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
+              <div className="flex justify-between items-center">
+                <button
+                  className={`LargeIndigoOutlinedButton`}
+                  onClick={_prevSlideHandler}
+                >
+                  Back
+                </button>
+                <Button
+                  width={`${isPageWide ? "300px" : "50%"}`}
+                  fontSize="1rem"
+                  padding="0.5rem 1rem"
+                  fontWeight="500"
+                  margin="30px 0"
+                  borderRadius="8px"
+                  borderWidth="1px"
+                  bgColor="#07213A"
+                  height="50px"
+                  color="white"
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
+                  onclick={() => {
+                    totalSlides == 4
+                      ? _submitDataHandler()
+                      : router.push({
+                          pathname: "/new-trip",
+                          query: {
+                            slideIndex: slideIndex + 1,
+                          },
+                        });
+                  }}
+                >
+                  {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+                </Button>
+              </div>
+            </div>
+          )}
+          {slideIndex === 4 ? (
+            <div className="flex justify-end">
               <Button
-                width={`${isPageWide ? '300px' : '50%'}`}
                 fontSize="1rem"
-                padding="0.5rem 1rem"
+                style={
+                  !isPageWide
+                    ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                    : {}
+                }
+                padding="0.5rem 2rem"
                 fontWeight="500"
-                margin="30px 0"
-                borderRadius="8px"
+                margin="40px 0"
+                borderRadius="5px"
                 borderWidth="1px"
                 bgColor="#07213A"
-                height="50px"
                 color="white"
                 loading={isSubmitting}
                 disabled={isSubmitting}
-
-                onclick={() => {
-                  totalSlides == 4
-                    ? _submitDataHandler()
-                    : router.push({
-                      pathname: "/new-trip",
-                      query: {
-                        slideIndex: slideIndex + 1,
-                      },
-                    });
-                }}
+                onClick={_submitDataHandler}
+                height="50px"
+                width={`${isPageWide ? "300px" : ""}`}
               >
-                {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+                {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
               </Button>
             </div>
-          </div>
-        )}
-        {slideIndex === 4 ? (
-          <div className="flex justify-end">
-            <Button
-              fontSize="1rem"
-              style={
-                !isPageWide
-                  ? {
-                    position: "fixed",
-                    left: "1rem",
-                    right: "1rem",
-                    bottom: "0",
-                  }
-                  : {}
-              }
-              padding="0.5rem 2rem"
-              fontWeight="500"
-              margin="40px 0"
-              borderRadius="5px"
-              borderWidth="1px"
-              bgColor="#07213A"
-              color="white"
-              loading={isSubmitting}
-              disabled={isSubmitting}
-              onClick={_submitDataHandler}
-              height="50px"
-              width={`${isPageWide ? '300px' : ''}`}
-            >
-              {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
-            </Button>
-          </div>
-        ) : null}
-
+          ) : null}
+        </div>
       </div>
-    </div>
-
-  </>
+    </>
   );
 };
 
@@ -976,4 +986,3 @@ const mapStateToPros = (state) => {
 };
 
 export default connect(mapStateToPros)(Enquiry);
-

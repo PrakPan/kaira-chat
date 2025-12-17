@@ -104,7 +104,8 @@ export function buildItineraryPayload({
   EXPERIENCE_FILTERS_BOX,
   selectedCities,
   startingLocation,
-  dateData
+  dateData,
+  session_id = null,
 }) {
   const preferences = buildPreferences(selectedPreferences, EXPERIENCE_FILTERS_BOX);
   const { cityids, stateIds, countryIds, continentIds, pageIds } =
@@ -135,6 +136,8 @@ export function buildItineraryPayload({
     pages: pageIds,
     end_location: {},
     dates: datesPayload,
+    ...(session_id != null && { session_id })
+
   };
 }
 
@@ -199,7 +202,7 @@ export const BlackContainer = styled.div`
 export const headings = [
   "Select Your Travel Destinations and Dates",
   "Customize Your Journey from Start to Finish",
-  "Tell Us Who’s In and What You Need to Make It Perfect",
-  "Let Us Know Your Stay Preferences and Get Your Itinerary",
+  "Select your Group Type & Inclusions",
+  "Select Your Hotel Preferences",
   // "Awesome! We've Got Your Details",
 ];
