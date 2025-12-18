@@ -116,7 +116,7 @@ const OurCorporatesOffering = () => {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-[48px]"
             style={{ maxFontSize: "40px" }}
           >
-            Our Corporate Offerings.
+            Our Corporate Offerings
           </h2>
           <p
             // ref={stepsRef}

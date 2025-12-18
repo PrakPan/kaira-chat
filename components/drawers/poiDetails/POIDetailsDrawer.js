@@ -222,6 +222,8 @@ const POIDetailsDrawer = (props) => {
                   getPaymentHandler={props?.getPaymentHandler}
                   removeDelete={props?.removeDelete}
                   activityData={activityData}
+                  showCallback={props?.showCallback}
+                  setIsModalOpen={props?.setIsModalOpen}
                   
                 >
                   {props?.children}

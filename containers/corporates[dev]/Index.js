@@ -333,7 +333,7 @@ const AffiliatePage = (props) => {
         {/* Navigation Tabs */}
         <div className="max-w-[1400px] mx-auto px-4 py-12 mb-2 lg:mb-4">
           <h2 className="text-2xl text-center sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-8 leading-[48px]">
-            Explore By Activity Category.
+            Explore By Activity Category
           </h2>
 
           {/* Tab Navigation */}
@@ -671,6 +671,8 @@ const AffiliatePage = (props) => {
             }}
             removeDelete={true}
             removeChange={true}
+            showCallback={true}
+            setIsModalOpen={setIsModalOpen}
           />
         )}
 
@@ -681,6 +683,8 @@ const AffiliatePage = (props) => {
             handleCloseDrawer={handleCloseDrawer}
             name={activeDrawer.data.name}
             removeDelete={true}
+            showCallback={true}
+            setIsModalOpen={setIsModalOpen}
           ></POIDetailsDrawer>
         )}
     </div>

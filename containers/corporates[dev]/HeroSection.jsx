@@ -90,11 +90,11 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
             {/* Main Heading and CTA */}
             <div className="flex flex-col items-center justify-center flex-1 text-center px-2">
               <h1 className="text-xl xl:text-2xl 2xl:text-6xl font-bold text-gray-900 mb-6 xl:mb-8 leading-tight">
-                Designing Moments That<br />Build Teams.
+                Designing Moments That<br />Build Teams
               </h1>
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-[#0f1c2e] text-white px-8 py-2.5 rounded-lg text-base hover:bg-[#1a2b3f] transition-colors"
+                className="bg-[#0f1c2e] text-white px-8 sm:px-20 py-2.5 rounded-lg text-base hover:bg-[#1a2b3f] transition-colors"
               >
                 Enquire Now
               </button>
@@ -169,11 +169,11 @@ export default function HeroSection({setFormData,formData,setIsModalOpen,isModal
               {/* <img src={images[2]} alt="Group photo" className="w-full h-full object-cover" /> */}
               <div className="col-span-2 text-center">
             <h1 className="font-bold text-base text-gray-900 leading-tight">
-              Designing Moments That Build Teams.
+              Designing Moments That Build Teams
             </h1>
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-[#0f1c2e] text-white px-2 py-2 rounded-[8px] text-sm hover:bg-[#1a2b3f] transition-colors"
+              className="bg-[#0f1c2e] text-white px-10 py-2 rounded-[8px] text-sm hover:bg-[#1a2b3f] transition-colors"
             >
               Enquire Now
             </button>

@@ -125,7 +125,7 @@ const CorporatePlanning = () => {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-[48px]"
             style={{ maxFontSize: "40px" }}
           >
-            Seamless Corporate Travel & Experience Planning.
+            Seamless Corporate Travel & Experience Planning
           </h2>
         </div>
 
