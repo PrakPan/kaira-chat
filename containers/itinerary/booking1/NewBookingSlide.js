@@ -2730,6 +2730,19 @@ const Details = (props) => {
               />
             ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
               // Show only update dates when itinerary is in past
+              <>
+              <ItineraryInclusions
+               Cart={Cart}
+                  selectedInclusions={selectedInclusions}
+                  onToggleInclusion={handleToggleInclusion}
+                  arePricesHidden={Cart?.are_prices_hidden}
+                  updatingInclusions={updatingInclusions}
+                  defaultExpanded={
+                    Cart?.sales?.some((sale) => sale.status === "Completed") &&
+                    Cart?.total_payable_amount !== 0
+                  }
+                  disableOnExpiry={true}
+              />
               <div>
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
                   <p className="text-amber-700 text-sm font-medium mb-2">
@@ -2779,6 +2792,7 @@ const Details = (props) => {
                   </Link>
                 </div>
               </div>
+              </>
             ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
               <>
                 <GetInTouchContainer>

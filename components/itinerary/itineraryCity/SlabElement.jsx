@@ -84,7 +84,15 @@ const SlabElement = (props) => {
 export default SlabElement;
 
 
-const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_city_id, dayIndex, slabIndex, position, heading) => {
+const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_city_id, dayIndex, slabIndex, position, heading, setShowLoginModal) => {
+  const token = localStorage.getItem("access_token")
+  if(!token){
+    if(setShowLoginModal) {
+    setShowLoginModal(true);
+    return;
+    }
+  
+  }
   try {
     const res = await axios.post(
       `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/element/move/`,
@@ -226,6 +234,14 @@ const Activity = (props) => {
 
 
   const handleDelete = async (e) => {
+    const token = localStorage.getItem("access_token")
+  if(!token){
+    if(props?.setShowLoginModal) {
+    props?.setShowLoginModal(true);
+    return;
+    }
+  
+  }
     try {
       let res;
       if (props?.element?.poi != null) {
@@ -319,7 +335,7 @@ const Activity = (props) => {
   };
 
   const handleMoveElement = async (position) => {
-    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading,props?.setShowLoginModal);
     handleCloseMenue()
   }
 
@@ -545,6 +561,15 @@ const Recommendation = (props) => {
   };
 
   const handleDelete = async (e) => {
+    const token = localStorage.getItem("access_token")
+  if(!token){
+    if(props?.setShowLoginModal) {
+    props?.setShowLoginModal(true);
+    return;
+    }
+  
+  }
+    
     try {
       let res;
       res = await axios.delete(
@@ -610,7 +635,7 @@ const Recommendation = (props) => {
 
 
   const handleMoveElement = async (position) => {
-    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
+    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading,props?.setShowLoginModal);
     handleCloseMenue()
   }
 

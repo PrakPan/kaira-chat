@@ -213,6 +213,7 @@ const SlideOne = (props) => {
           height="max-content"
           paddingX="20px"
           paddingY="20px"
+          isMobile={true}
         >
           <AirbnbCalendarMobile
             valueStart={valueStart}

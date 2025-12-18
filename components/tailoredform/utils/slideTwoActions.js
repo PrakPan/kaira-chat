@@ -545,7 +545,7 @@ export const handleSearchInput = (e, setSearch) => {
 };
 
 // 📍 Set selected destination
-export const handleSetDestination = (i, searchResults, setSearch, setDestination, setSearchResults) => {
+export const handleSetDestination = (i, searchResults, setSearch, setDestination, setSearchResults, setIsSearched) => {
     setSearch(searchResults[i].name || searchResults[i].text);
 
     setDestination((prev) => {
@@ -566,6 +566,7 @@ export const handleSetDestination = (i, searchResults, setSearch, setDestination
     });
 
     setSearchResults(null);
+    setIsSearched(true);
 };
 
 

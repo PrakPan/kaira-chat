@@ -88,11 +88,11 @@ export const getotp = (data) => {
           dispatch(authMobileFail(errorMsg));
 
           setTimeout(() => {
-            dispatch(openNotification({
-              type: "error",
-              text: "Failed to send OTP. Please try again.",
-              heading: "Error!",
-            }));
+            // dispatch(openNotification({
+            //   type: "error",
+            //   text: "Failed to send OTP. Please try again.",
+            //   heading: "Error!",
+            // }));
           }, 100);
         }
       })
@@ -130,11 +130,11 @@ export const getotp = (data) => {
         dispatch(authMobileFail(errorMessage));
         
         setTimeout(() => {
-          dispatch(openNotification({
-            type: "error",
-            text: errorMessage,
-            heading: "Error!",
-          }));
+          // dispatch(openNotification({
+          //   type: "error",
+          //   text: errorMessage,
+          //   heading: "Error!",
+          // }));
         }, 100);
       });
   };

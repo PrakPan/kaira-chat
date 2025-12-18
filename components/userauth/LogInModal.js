@@ -21,6 +21,7 @@ import { getCountryCodes } from "../../store/actions/countryCodes";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { RxCross2 } from "react-icons/rx";
+import { FaEdit, FaPen } from "react-icons/fa";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -369,6 +370,21 @@ const LogIn = React.memo((props) => {
     }
   };
 
+
+  const handleEditPhone = () => {
+  setOtp("");
+  setUserDetailsRequired(false);
+  setCounter(30);
+  props.onResetLogin();
+  
+  setTimeout(() => {
+    if (mobileRef.current) {
+      mobileRef.current.focus();
+    }
+  }, 100);
+};
+
+
   mobileInput = (
     <div className="w-full">
       <input
@@ -455,10 +471,10 @@ const LogIn = React.memo((props) => {
       className={`${
         isPageWide
           ? "pt-[36px] px-[32px]"
-          : "pt-[19px] pb-[13px] px-[16px] h-full"
+          : "pt-[12px] pb-[13px] px-[16px] h-full"
       } h-max`}
     >
-      <div className="flex flex-col gap-[24px] h-full">
+      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full">
         {!isPageWide && (
           <div className="flex justify-end">
             <RxCross2
@@ -480,16 +496,16 @@ const LogIn = React.memo((props) => {
                   textAlign: isPageWide ? "left" : "center",
                   margin: isPageWide
                     ? "0 0rem 32px 0rem"
-                    : "0rem 0rem 1rem 0.5rem",
+                    : "0rem 0rem 1rem 0rem",
                   fontWeight: "700",
                 }}
               >
                 {!props?.onSuccess ? (
                   <>
-                    <h1 className="text-bold font-700">
+                    <h1 className="text-bold font-700 text-left ">
                       {props.loginmessage ? props.loginmessage : "Welcome to"}
                     </h1>
-                    <h1 className="text-bold font-700">
+                    <h1 className="text-bold font-700 text-left">
                       {props.loginmessage
                         ? props.loginmessage
                         : "The Tarzan Way!"}
@@ -712,7 +728,20 @@ const LogIn = React.memo((props) => {
                   isPageWide ? "text-left" : "text-center"
                 }`}
               >
-                We’ve sent a 4-digit OTP to your registered phone number.
+          <span className="flex items-center gap-2 flex-wrap">
+  <span>We’ve sent a 4-digit OTP to your registered phone number</span>
+
+  <span className="flex items-center gap-1 font-medium m-auto sm:m-0">
+    {phone}
+    <FaPen
+      onClick={handleEditPhone}
+      className="cursor-pointer text-blue  transition-colors "
+      title="Edit phone number"
+    />
+  </span>
+</span>
+
+
               </div>
 
               {props.otpSent ? password : null}
@@ -761,8 +790,8 @@ const LogIn = React.memo((props) => {
               !userDetailsRequired
                 ? `${
                     counter == 0 && !userDetailsRequired
-                      ? "mt-[80px]"
-                      : "mt-[120px]"
+                      ? "mt-[30px] sm:mt-[80px]"
+                      : "mt-[20px] sm:mt-[120px]"
                   }`
                 : "mt-[46px]"
             }`}

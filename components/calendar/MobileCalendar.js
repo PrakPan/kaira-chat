@@ -120,10 +120,10 @@ const [currentMonth, setCurrentMonth] = useState(() =>
             <div
               key={idx}
               className={`aspect-square flex items-center justify-center relative
-                ${date && isDateInRange(date, selectedDates) ? 'bg-gray-100' : ''}
+                ${date && isDateInRange(date, selectedDates) ? 'bg-primary-jasmineWhite' : ''}
                 ${date && isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200' : ''}
-                ${date && isDateRangeStart(date, selectedDates) ? 'bg-gray-100 rounded-l-full' : ''}
-                ${date && isDateRangeEnd(date, selectedDates) ? 'bg-gray-100 rounded-r-full' : ''}
+                ${date && isDateRangeStart(date, selectedDates) ? 'bg-primary-jasmineWhite rounded-l-full' : ''}
+                ${date && isDateRangeEnd(date, selectedDates) ? 'bg-primary-jasmineWhite rounded-r-full' : ''}
                 ${date && isDateInRange(date, selectedDates) && isRowStart ? 'rounded-l-full' : ''}
                 ${date && isDateInRange(date, selectedDates) && isRowEnd ? 'rounded-r-full' : ''}
                 ${date && isDateInHoverRange(date, selectedDates, hoveredDate) && isRowStart ? 'rounded-l-full' : ''}
@@ -143,7 +143,7 @@ const [currentMonth, setCurrentMonth] = useState(() =>
                   disabled={isBeforeToday(date)}
                   className={`w-full h-full rounded-full flex items-center justify-center text-[10px] font-medium transition-colors
                   ${isBeforeToday(date) ? 'text-gray-300 cursor-not-allowed' :
-                      isDateSelected(date, selectedDates) ? 'bg-black text-white' :
+                      isDateSelected(date, selectedDates) ? 'bg-primary-yellow text-black' :
                         isDateInRange(date, selectedDates) ? 'hover:bg-gray-200 text-gray-900' :
                           isDateInHoverRange(date, selectedDates, hoveredDate) ? 'bg-gray-200 text-gray-900' :
                             'hover:bg-gray-100 text-gray-900'}`}

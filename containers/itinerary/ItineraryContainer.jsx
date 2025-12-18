@@ -52,6 +52,9 @@ const Container = styled.div`
     margin: -5vh auto 0 auto;
     padding: 0;
   }
+  @media screen and (max-width: 639px) {
+   overflow-x:hidden;
+  }
 `;
 
 export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
@@ -272,7 +275,6 @@ const ItineraryContainer = (props) => {
   const [showNotesPopup, setShowNotesPopup] = useState(false);
   const [gallery, setGallery] = useState([]);
 
-  useEffect(() => {
     const fetchGallery = async () => {
       try {
         const response = await axios.get(`${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`);
@@ -283,10 +285,7 @@ const ItineraryContainer = (props) => {
       }
     };
 
-    if (props.id) {
-      fetchGallery();
-    }
-  }, [props.id]);
+   
 
 
    const resetRef = () => {
@@ -669,6 +668,10 @@ const ItineraryContainer = (props) => {
     const statusField = `${key.toLowerCase()}_status`;
     dispatch(setItineraryStatus(statusField, statusValue));
   });
+           if (props.id) {
+            fetchGallery();
+          }
+
           setPolling(false);
           if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
     setNotes(res.data.celery.notes);

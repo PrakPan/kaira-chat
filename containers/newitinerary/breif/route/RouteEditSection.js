@@ -1353,7 +1353,7 @@ export const Destination = (props) => {
       <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
         <div
           onClick={handleEditDestination}
-          className="w-[70%] flex flex-row items-center gap-3"
+          className="w-[70%] flex flex-row items-center gap-1 sm:gap-3"
         >
           {!(startingCity || endingCity) && (
             <div className="text-gray-400 cursor-grab active:cursor-grabbing">
@@ -1415,7 +1415,7 @@ export const Destination = (props) => {
       {index < props?.totalDestinations - 1 && (
         <div
           className={`absolute z-0
-                         left-[51px] top-[45px]
+                         left-[39px] top-[45px]
                     `}
         >
           <DottedLine />
@@ -1447,6 +1447,7 @@ export const DestinationPopUp = (props) => {
   const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
   const [isSearched,setIsSearched] = useState(false);
+  const [validDestination, setValidDestination] = useState(!!cityData?.resource_id); 
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1469,6 +1470,10 @@ export const DestinationPopUp = (props) => {
       });
     }
     setSearch(e.target.value);
+    const currentDestinationName = destination?.name || destination?.city_name || destination?.text;
+        if (e.target.value !== currentDestinationName) {
+            setValidDestination(false);
+     }
   };
   useEffect(() => {
     if(!isSearched)
@@ -1520,6 +1525,7 @@ export const DestinationPopUp = (props) => {
 
     setSearchResults(null);
     setIsSearched(true);
+    setValidDestination(true); 
   };
 
   const handleSetNights = (minus = false) => {
@@ -1655,7 +1661,7 @@ export const DestinationPopUp = (props) => {
             className="focus:outline-none w-full"
           ></input>
           <RxCrossCircled
-            onClick={() => setSearch("")}
+            onClick={() => {setSearch(""); setValidDestination(false);}}
             className="text-2xl cursor-pointer"
           />
 
@@ -1709,8 +1715,15 @@ export const DestinationPopUp = (props) => {
           </div>
         )}
 
+        {(!validDestination || !destination?.resource_id) && search && (
+                        <div className="text-xs text-red-600 px-2">
+                            Please select a destination from the dropdown
+                        </div>
+                    )}
+
         <button
           onClick={handleUpdateDestination}
+          disabled={!validDestination || !destination?.resource_id || !destination?.name} 
           className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
         >
           Update
