@@ -219,7 +219,7 @@ const RouteEditSection = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
 
-  const {resetSession} = useChatContext();
+  const { resetSession } = useChatContext();
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -420,7 +420,6 @@ const RouteEditSection = (props) => {
       ].every((status) => status === "SUCCESS" || status === "FAILURE");
 
       if (allStatusesCompleted) {
-      
         dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
         setItineraryLoading(false);
         setWaitingForStatusUpdate(false);
@@ -598,7 +597,6 @@ const RouteEditSection = (props) => {
         place_id: destinations[destinations.length - 1].cityData.place_id,
       },
     };
-
 
     const headers = {
       "Content-Type": "application/json",
@@ -1446,8 +1444,10 @@ export const DestinationPopUp = (props) => {
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
-  const [isSearched,setIsSearched] = useState(false);
-  const [validDestination, setValidDestination] = useState(!!cityData?.resource_id); 
+  const [isSearched, setIsSearched] = useState(false);
+  const [validDestination, setValidDestination] = useState(
+    !!cityData?.resource_id
+  );
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1470,14 +1470,14 @@ export const DestinationPopUp = (props) => {
       });
     }
     setSearch(e.target.value);
-    const currentDestinationName = destination?.name || destination?.city_name || destination?.text;
-        if (e.target.value !== currentDestinationName) {
-            setValidDestination(false);
-     }
+    const currentDestinationName =
+      destination?.name || destination?.city_name || destination?.text;
+    if (e.target.value !== currentDestinationName) {
+      setValidDestination(false);
+    }
   };
   useEffect(() => {
-    if(!isSearched)
-    handleDestinationSeach(debouncedSearch);
+    if (!isSearched) handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
   const handleDestinationSeach = (value) => {
@@ -1525,7 +1525,7 @@ export const DestinationPopUp = (props) => {
 
     setSearchResults(null);
     setIsSearched(true);
-    setValidDestination(true); 
+    setValidDestination(true);
   };
 
   const handleSetNights = (minus = false) => {
@@ -1656,12 +1656,18 @@ export const DestinationPopUp = (props) => {
             type="text"
             autoFocus
             value={search}
-            onChange={(e) => {handleSearch(e); setIsSearched(false);} }
+            onChange={(e) => {
+              handleSearch(e);
+              setIsSearched(false);
+            }}
             placeholder="Search Destination"
             className="focus:outline-none w-full"
           ></input>
           <RxCrossCircled
-            onClick={() => {setSearch(""); setValidDestination(false);}}
+            onClick={() => {
+              setSearch("");
+              setValidDestination(false);
+            }}
             className="text-2xl cursor-pointer"
           />
 
@@ -1715,15 +1721,24 @@ export const DestinationPopUp = (props) => {
           </div>
         )}
 
-        {(!validDestination || !destination?.resource_id) && search && (
-                        <div className="text-xs text-red-600 px-2">
-                            Please select a destination from the dropdown
-                        </div>
-                    )}
+        {!destination?.place_id &&
+          (!validDestination ||
+            !destination?.resource_id ||
+            !destination?.name) &&
+          search && (
+            <div className="text-xs text-red-600 px-2">
+              Please select a destination from the dropdown
+            </div>
+          )}
 
         <button
           onClick={handleUpdateDestination}
-          disabled={!validDestination || !destination?.resource_id || !destination?.name} 
+          disabled={
+            !destination?.place_id &&
+            (!validDestination ||
+              !destination?.resource_id ||
+              !destination?.name)
+          }
           className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
         >
           Update

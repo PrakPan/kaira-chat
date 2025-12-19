@@ -289,7 +289,6 @@ const initiateItineraryCreate = async (slideOneData) => {
   
   if (locationsLatLong.length > 0 && slideIndex == 1) {
     if (isFixedDate && slideOneData.date.start_date) {
-     
       const startDate = new Date(slideOneData.date.start_date);
       let currentDate = new Date(startDate);
 
@@ -308,14 +307,12 @@ const initiateItineraryCreate = async (slideOneData) => {
         };
       });
 
-     
       newEndDate = new Date(currentDate);
       totalDuration = Math.ceil(
         (newEndDate - startDate) / (1000 * 60 * 60 * 24)
       );
       shouldUpdateDates = true;
 
-    
       data["basic_route"] = updatedRoute;
       data["dates"] = {
         ...data["dates"],
@@ -323,11 +320,9 @@ const initiateItineraryCreate = async (slideOneData) => {
         duration: totalDuration,
       };
     } else {
-    
       const hasResponseDates = locationsLatLong.some(loc => loc.start_date && loc.end_date);
       
       if (hasResponseDates && itineraryInititateData?.start_date) {
-       
         const startDate = new Date(itineraryInititateData.start_date);
         let currentDate = new Date(startDate);
 
@@ -348,7 +343,6 @@ const initiateItineraryCreate = async (slideOneData) => {
 
         data["basic_route"] = updatedRoute;
       } else {
-        
         const updatedRoute = locationsLatLong.map((location) => {
           const { start_date, end_date, ...locationWithoutDates } = location;
           const nights = location.duration || location.nights || 1;
@@ -375,6 +369,11 @@ const initiateItineraryCreate = async (slideOneData) => {
     }
   }
 
+  // Add itinerary_id to payload if it exists (for subsequent calls)
+  if (itineraryId) {
+    data.itinerary_id = itineraryId;
+  }
+
   const token = localStorage.getItem("access_token");
 
   try {
@@ -388,7 +387,11 @@ const initiateItineraryCreate = async (slideOneData) => {
     trackItineraryInitiated("itinerary_initiated");
 
     setError(null);
-    setItineraryId(resData.itinerary_id);
+    
+    if (!itineraryId) {
+      setItineraryId(resData.itinerary_id);
+    }
+    
     setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
 
     setLocationsLatLong(resData.basic_route || []);
@@ -404,15 +407,16 @@ const initiateItineraryCreate = async (slideOneData) => {
       );
     }
 
-
     setIsRouteChanged(false);
 
-    router.push({
-      pathname: "/new-trip",
-      query: {
-        slideIndex: slideIndex + 1,
-      },
-    });
+    if (!itineraryId) {
+      router.push({
+        pathname: "/new-trip",
+        query: {
+          slideIndex: slideIndex + 1,
+        },
+      });
+    }
   } catch (err) {
     console.log("ERROR: ", err.message);
     setError(err.message);
@@ -420,6 +424,8 @@ const initiateItineraryCreate = async (slideOneData) => {
     setIsLoading(false);
   }
 };
+
+
   const completeItineraryCreate = () => {
     const platform = getPlatform();
     const data = {

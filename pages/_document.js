@@ -28,8 +28,6 @@ export default class MyDocument extends Document {
 
   render() {
     const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
-    
-    // Clean the GTM ID by removing any quotes
     const cleanGTMId = GOOGLE_ANALTICS_ID?.replace(/['"]/g, '');
 
     
