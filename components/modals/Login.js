@@ -163,7 +163,7 @@ const Enquiry = (props) => {
         zIndex={props?.zIndex}
         // className="overflow-y-auto"
         overflow="hidden"
-        // style={{ overflowY: "scroll" }}
+        style={{ overflowY: "scroll" }}
       >
           <ImgContainer style={{
             display: showImage ? "block" : "none",

@@ -714,7 +714,7 @@ const LogIn = React.memo((props) => {
               <div
                 style={{
                   fontSize: "32px",
-                  textAlign: isPageWide ? "left" : "center",
+                  textAlign: isPageWide ? "left" : "left",
                   fontWeight: "700",
                 }}
               >
@@ -725,13 +725,13 @@ const LogIn = React.memo((props) => {
             <div className="flex flex-col gap-[24px]">
               <div
                 className={`Body1R_16 text-[#6E757A] ${
-                  isPageWide ? "text-left" : "text-center"
+                  isPageWide ? "text-left" : "text-left"
                 }`}
               >
-          <span className="flex items-center gap-2 flex-wrap">
+          <span className="flex items-start gap-2 flex-wrap">
   <span>We’ve sent a 4-digit OTP to your registered phone number</span>
 
-  <span className="flex items-center gap-1 font-medium m-auto sm:m-0">
+  <span className="flex items-start gap-1 font-medium">
     {phone}
     <FaPen
       onClick={handleEditPhone}
@@ -746,7 +746,7 @@ const LogIn = React.memo((props) => {
 
               {props.otpSent ? password : null}
               {counter > 0 && (
-                <div className="Body1R_16 text-[#6E757A;]">
+                <div className="Body1R_16 text-[#6E757A;] text-center sm:text-left">
                   You can resend OTP in{" "}
                   <span className="text-black Body1M_16">
                     {minutes}:{seconds}
@@ -790,8 +790,8 @@ const LogIn = React.memo((props) => {
               !userDetailsRequired
                 ? `${
                     counter == 0 && !userDetailsRequired
-                      ? "mt-[30px] sm:mt-[80px]"
-                      : "mt-[20px] sm:mt-[120px]"
+                      ? "mt-[30px] sm:mt-[60px]"
+                      : "mt-[20px] sm:mt-[100px]"
                   }`
                 : "mt-[46px]"
             }`}
