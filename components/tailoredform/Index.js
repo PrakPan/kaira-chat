@@ -409,14 +409,17 @@ const initiateItineraryCreate = async (slideOneData) => {
 
     setIsRouteChanged(false);
 
-    if (!itineraryId) {
-      router.push({
-        pathname: "/new-trip",
-        query: {
-          slideIndex: slideIndex + 1,
-        },
-      });
-    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const currentSlideIndex = Number(router.query.slideIndex) || 0;
+    const nextSlideIndex = currentSlideIndex + 1;
+    
+    router.push({
+      pathname: "/new-trip",
+      query: {
+        slideIndex: nextSlideIndex,
+      },
+    }, undefined, { shallow: true });
+
   } catch (err) {
     console.log("ERROR: ", err.message);
     setError(err.message);
