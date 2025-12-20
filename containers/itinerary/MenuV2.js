@@ -1010,11 +1010,11 @@ const SimpleTabsV2 = (props) => {
               height={"100vh"}
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-              isCloseButtonEnable={true}
+              // isCloseButtonEnable={true}
               onHide={() => {handleChatBotOpen(false)}}
               className="overflow-y-hidden"
             >
-              <ChatBot showAsPopup={true} />
+              <ChatBot showAsPopup={true} hideDrawer={() => {handleChatBotOpen(false)}}/>
             </Drawer>
           ) : null}
         </>

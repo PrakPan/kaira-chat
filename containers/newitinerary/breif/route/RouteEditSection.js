@@ -232,7 +232,6 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  // console.log("Route Edittt",props.routes)
 
   useEffect(() => {
     const cities = [];

@@ -51,7 +51,6 @@ const CityDay = (props) => {
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
 
-
   const router = useRouter();
   const { drawer, idx, itinerary_city_id, date } = router?.query;
   const handleAddActivity = () => {
@@ -136,11 +135,11 @@ const CityDay = (props) => {
   return (
     <div
       id="cityday"
-      className="flex flex-col md:flex-row bg-transparent mb-[8px]"
+      className="flex flex-col md:flex-row bg-transparent mb-[8px] "
     >
       <div
         className={`flex flex-col md:w-[100%] rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden ${
-          viewMore ? "bg-[#FFFAF5]" : "bg-white"
+          viewMore ? "bg-[#FFFAF5] " : "bg-white"
         }`}
       >
         <div
@@ -167,122 +166,116 @@ const CityDay = (props) => {
           </button>
         </div>
 
-      
-
-{viewMore && (
-  <>
-    {elements.length > 0 ? (
-      <>
-        {elements.map((element, index) => (
+        {viewMore && (
           <>
-            <SlabElement
-              itinerary_city_id={props?.itinerary_city_id}
-              element={element}
-              key={props?.itinerary_city_id + index}
-              dayIndex={props?.index}
-              slabIndex={index}
-              setShowLoginModal={props?.setShowLoginModal}
-              date={props?.date}
-              cityID={props.city.id}
-              cityName={props.city.name}
-              totalElements={elements.length}
-            />
+            {elements.length > 0 ? (
+              <>
+                {elements.map((element, index) => (
+                  <>
+                    <SlabElement
+                      itinerary_city_id={props?.itinerary_city_id}
+                      element={element}
+                      key={props?.itinerary_city_id + index}
+                      dayIndex={props?.index}
+                      slabIndex={index}
+                      setShowLoginModal={props?.setShowLoginModal}
+                      date={props?.date}
+                      cityID={props.city.id}
+                      cityName={props.city.name}
+                      totalElements={elements.length}
+                    />
 
-            {index !== elements.length - 1 && (
-              <DivideSlabElement>
-                {props?.city?.nextTime ? "2h" : ""}
-              </DivideSlabElement>
+                    {index !== elements.length - 1 && (
+                      <DivideSlabElement>
+                        {props?.city?.nextTime ? "2h" : ""}
+                      </DivideSlabElement>
+                    )}
+                  </>
+                ))}
+
+                {/* Add Activity button */}
+                {finalized_status === "PENDING" ? (
+                  <div className="mt-3 ml-4 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+                ) : (
+                  <div className="flex justify-start pl-[16px] pb-[16px] pt-[8px] mt-2">
+                    <button
+                      onClick={handleAddActivity}
+                      className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                    >
+                      + Activity
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : props?.isLastDay ? (
+              <>
+                <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                  <div className="flex gap-[16px]">
+                    <div className="flex-shrink-0">
+                      <img
+                        src="/checkout.png"
+                        alt="checkout"
+                        className="w-[71px] h-[47px] object-contain flex-shrink-0"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="Body2M_14">Check out day</div>
+                      <div className="Body3M_12 text-[#6E757A] mb-[16px]">
+                        This is your check out day in {props?.city?.name}, take
+                        a{" "}
+                        {transferBookings?.intercity?.[
+                          `${props?.city?.id}:${
+                            props?.nextCity?.id ||
+                            props?.nextCity?.gmaps_place_id
+                          }`
+                        ]?.booking_type || "transfer"}{" "}
+                        to{" "}
+                        {props?.nextCity?.city?.name ||
+                          itineraryDaybyDay?.end_city?.name}
+                        .
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-start pl-[16px] pb-[16px] pt-[4px] mt-2">
+                  <button
+                    onClick={handleAddActivity}
+                    className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                  >
+                    + Activity
+                  </button>
+                </div>
+              </>
+            ) : (
+              // No activities AND not last day - show rest day card
+              <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                <div className="flex gap-[16px]">
+                  <div className="flex-shrink-0">
+                    <MdOutlineDownhillSkiing color="#A09E9E" size={24} />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="Body2M_14">This is your rest day</div>
+                    <div className="Body3M_12 text-[#6E757A] mb-[16px] mt-1">
+                      No activities or attractions have been planned yet. Click
+                      on '+' to add one
+                    </div>
+
+                    <div className="flex gap-[12px]">
+                      <button
+                        onClick={handleAddActivity}
+                        className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                      >
+                        + Activity
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </>
-        ))}
-
-        {/* Add Activity button */}
-        {finalized_status === "PENDING" ? (
-          <div className="mt-3 ml-4 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
-        ) : (
-          <div className="flex justify-start pl-[16px] pb-[16px] pt-[8px] mt-2">
-            <button
-              onClick={handleAddActivity}
-              className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
-            >
-              + Activity
-            </button>
-          </div>
         )}
-      </>
-    ) : props?.isLastDay ? (
-      <>
-      <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
-        <div className="flex gap-[16px]">
-          <div className="flex-shrink-0">
-            <img
-              src="/checkout.png"
-              alt="checkout"
-              className="w-[71px] h-[47px] object-contain flex-shrink-0"
-            />
-          </div>
-
-          <div className="flex-1">
-            <div className="text-[16px] text-[#333333]">
-              Check out day
-            </div>
-            <div className="text-[14px] text-[#666666] mb-[16px]">
-              This is your check out day in {props?.city?.name}, take a{" "}
-              {transferBookings?.intercity?.[
-                `${props?.city?.id}:${
-                  props?.nextCity?.id || props?.nextCity?.gmaps_place_id
-                }`
-              ]?.booking_type || "transfer"}{" "}
-              to{" "}
-              {props?.nextCity?.city?.name ||
-                itineraryDaybyDay?.end_city?.name}
-              .
-            </div>
-
-           
-          </div>
-        </div>
-      </div>
-       <div className="flex justify-start pl-[16px] pb-[16px] pt-[4px] mt-2">
-              <button
-                onClick={handleAddActivity}
-                className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
-              >
-                + Activity
-              </button>
-            </div>
-            </>
-    ) : (
-      // No activities AND not last day - show rest day card
-      <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
-        <div className="flex gap-[16px]">
-          <div className="flex-shrink-0">
-            <MdOutlineDownhillSkiing color="#A09E9E" size={24} />
-          </div>
-
-          <div className="flex-1">
-            <div className="text-[16px] text-[#333333]">
-              This is your rest day
-            </div>
-            <div className="text-[14px] text-[#666666] mb-[16px]">
-              No activities or attractions have been planned yet. Click
-              on '+' to add one
-            </div>
-
-            <div className="flex gap-[12px]">
-              <button
-                onClick={handleAddActivity}
-                className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
-              >
-                + Activity
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-  </>
-)}
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&

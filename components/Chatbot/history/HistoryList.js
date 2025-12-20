@@ -9,6 +9,7 @@ import Image from "next/image";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
+import useMediaQuery from "../../media";
 
 const Container = styled.div`
 padding:20px;
@@ -155,6 +156,7 @@ function HistoryList() {
     getAllChatHistory(router.query.id);
   }
 }, [isOpenChatHistoryDrawer]);
+ const isDesktop = useMediaQuery("(min-width:767px)");
 
     return (
         <Modal
@@ -176,7 +178,7 @@ function HistoryList() {
                     position: "absolute",
                     top: 0,
                     right: 0,
-                    width: '400px',
+                    width: isDesktop ? '400px' : '75%',
                     height: "100%",
                     bgcolor: "background.paper",
                     boxShadow: 3,

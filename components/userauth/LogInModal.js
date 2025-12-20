@@ -724,25 +724,20 @@ const LogIn = React.memo((props) => {
 
             <div className="flex flex-col gap-[24px]">
               <div
-                className={`Body1R_16 text-[#6E757A] ${
-                  isPageWide ? "text-left" : "text-left"
-                }`}
-              >
-          <span className="flex items-start gap-2 flex-wrap">
-  <span>We’ve sent a 4-digit OTP to your registered phone number</span>
-
-  <span className="flex items-start gap-1 font-medium">
-    {phone}
-    <FaPen
-      onClick={handleEditPhone}
-      className="cursor-pointer text-blue  transition-colors "
-      title="Edit phone number"
-    />
-  </span>
-</span>
-
-
-              </div>
+  className={`Body1R_16 text-[#6E757A] ${
+    isPageWide ? "text-left" : "text-left"
+  }`}
+>
+  <div className="flex flex-wrap items-center">
+    <span className="">We've sent a 4-digit OTP to your registered phone number</span>
+    <span className="whitespace-nowrap font-medium mt-2">
+      {phone} 
+      <span className="text-blue underline cursor-pointer ml-1" onClick={handleEditPhone}>
+        Change
+      </span>
+    </span>
+  </div>
+</div>
 
               {props.otpSent ? password : null}
               {counter > 0 && (
@@ -790,8 +785,8 @@ const LogIn = React.memo((props) => {
               !userDetailsRequired
                 ? `${
                     counter == 0 && !userDetailsRequired
-                      ? "mt-[30px] sm:mt-[60px]"
-                      : "mt-[20px] sm:mt-[100px]"
+                      ? "mt-[30px] sm:mt-[40px]"
+                      : "mt-[20px] sm:mt-[40px]" 
                   }`
                 : "mt-[46px]"
             }`}
@@ -841,7 +836,7 @@ const LogIn = React.memo((props) => {
         <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
           <div
             className={`Body2R_14 text-[#6E757A] ${
-              isPageWide ? "text-left" : "text-center"
+              isPageWide ? "text-center" : "text-center"
             }`}
           >
             By continuing, you agree to our{" "}
