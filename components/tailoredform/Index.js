@@ -92,6 +92,7 @@ const Enquiry = (props) => {
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [startingLocation, setStartingLocation] = useState(false);
+  const [selectedRoutes,setSelectedRoutes] = useState();
   const isPageLoaded = usePageLoaded();
   const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
@@ -115,10 +116,15 @@ const Enquiry = (props) => {
   });
 
   const slideIndex = Number(router.query.slideIndex) || 0;
-  const { trackItineraryInitiated, trackItineraryCompleted } = useAnalytics();
+  const { trackItineraryInitiated, trackItineraryCompleted, trackItineraryCreation, trackItineraryInclusion, trackItineraryPreference, trackItineraryRoute} = useAnalytics();
   const { sessionId, isReady } = useAnalyticsSession();
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
+
+  useEffect(()=>{{
+   trackItineraryCreation();
+  }},[]);
+
 
   useEffect(() => {
     if (props.tailoredFormModal) {
@@ -284,6 +290,7 @@ const initiateItineraryCreate = async (slideOneData) => {
   let newEndDate = null;
   let totalDuration = null;
   let shouldUpdateDates = false;
+  let routeToTrack = null;
 
   const isFixedDate = slideOneData.date.type === "fixed";
   
@@ -314,6 +321,7 @@ const initiateItineraryCreate = async (slideOneData) => {
       shouldUpdateDates = true;
 
       data["basic_route"] = updatedRoute;
+      routeToTrack = updatedRoute;
       data["dates"] = {
         ...data["dates"],
         end_date: newEndDate.toISOString().split("T")[0],
@@ -342,6 +350,7 @@ const initiateItineraryCreate = async (slideOneData) => {
         });
 
         data["basic_route"] = updatedRoute;
+        routeToTrack = updatedRoute;
       } else {
         const updatedRoute = locationsLatLong.map((location) => {
           const { start_date, end_date, ...locationWithoutDates } = location;
@@ -355,6 +364,7 @@ const initiateItineraryCreate = async (slideOneData) => {
         });
 
         data["basic_route"] = updatedRoute;
+        routeToTrack = updatedRoute;
       }
       
       totalDuration = data["basic_route"].reduce((sum, loc) => sum + (loc.duration || 1), 0);
@@ -384,7 +394,15 @@ const initiateItineraryCreate = async (slideOneData) => {
       },
     });
     const resData = res.data;
+
+    
     trackItineraryInitiated("itinerary_initiated");
+    trackItineraryPreference(itineraryId,slideOneData?.selectedPreferences);
+    if (routeToTrack) {
+      trackItineraryRoute(itineraryId, routeToTrack);
+    } else if (resData.basic_route) {
+      trackItineraryRoute(itineraryId, resData.basic_route);
+    }
 
     setError(null);
     
@@ -447,6 +465,12 @@ const initiateItineraryCreate = async (slideOneData) => {
       meal_preferences: slideFourData.mealPreferences,
       special_request: slideFourData.specialRequests,
     };
+
+    trackItineraryInclusion(itineraryId,{
+      add_flights: slideThreeData.addFlights,
+      add_hotels: slideThreeData.addHotels,
+      add_transfers_and_activities: slideThreeData.addInclusions,
+    })
 
     setIsSubmitting(true);
     setIsLoading(true);
@@ -907,7 +931,7 @@ const initiateItineraryCreate = async (slideOneData) => {
                   height="50px"
                   loading={isLoading}
                   disabled={isLoading}
-                  onclick={() => initiateItineraryCreate(slideOneData)}
+                  onclick={() => {initiateItineraryCreate(slideOneData)}}
                 >
                   Continue
                 </Button>
@@ -916,12 +940,14 @@ const initiateItineraryCreate = async (slideOneData) => {
                   className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
                     isDesktop && "w-[300px]"
                   } `}
-                  onClick={() =>
+                  onClick={() =>{
+                    trackItineraryRoute(itineraryId, locationsLatLong);
                     router.push({
                       pathname: "/new-trip",
                       query: { slideIndex: slideIndex + 1 },
                     })
                   }
+                }
                 >
                   Continue
                 </button>

@@ -1248,6 +1248,12 @@ const Details = (props) => {
       if (response.data) {
         dispatch(setCart(response.data));
 
+        if(newSelections[bookingId]){
+          trackPaymentSelected(router?.query?.id,bookingType?.toLowerCase(),bookingId);
+        }else {
+          trackPaymentDeselected(router?.query?.id,bookingType?.toLowerCase(),bookingId);
+        }
+
 
         dispatch(
           openNotification({

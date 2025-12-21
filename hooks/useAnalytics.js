@@ -361,6 +361,26 @@ export const useAnalytics = () => {
     trackPaymentBookingConfirmed: useCallback(async (itineraryId = null, cart_info=null) => {
       return await callWorkerFunction('track', 'payment_confirmed',{itineraryId, cart_info});
     }, []),
+
+
+    //Tailored Form 
+    trackItineraryCreation: useCallback(async () => {
+      return await callWorkerFunction('track', 'Itinerary_creation_started',{});
+    }, []),
+
+     trackItineraryRoute: useCallback(async (itineraryId = null, route=null) => {
+      return await callWorkerFunction('track', 'itinerary_route_completed',{itineraryId, route});
+    }, []),
+
+     trackItineraryPreference: useCallback(async (itineraryId = null, preferences=null) => {
+      return await callWorkerFunction('track', 'itinerary_preferences_completed',{itineraryId, preferences});
+    }, []),
+
+     trackItineraryInclusion: useCallback(async (itineraryId = null, inclusions=null) => {
+      return await callWorkerFunction('track', 'itinerary_inclusions_completed',{itineraryId, inclusions});
+    }, []),
+
+
     
     // Communication Events
     trackWhatsAppClicked: useCallback(async (itineraryId, amount, currency) => {
