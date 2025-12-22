@@ -61,45 +61,17 @@ const Activity = (props) => {
       <div className="hidden-mobile">
         <SwiperCarousel
           navigationButtons={true}
-          slidesPerView={4}
+          slidesPerView={3}
           cards={cards}
-          navButtonsTop={"50%"}
+          navButtonsTop={"40%"}
           spaceBetween={10}
         ></SwiperCarousel>
 
-        {/* {props?.slug != "japan-cherry-blossom" && <Button
-          onClick={() => {
-            props?.data
-              ? props.handlePlanButtonClick(
-                  `Things to do in ${props.data.name}`
-                )
-              : null;
-          }}
-        >
-          {validateTextSize(
-            `Craft a trip to ${props.city} now!`,
-            8,
-            "Craft a trip now!"
-          )}
-        </Button>} */}
       </div>
 
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
-        {/* {props?.slug != "japan-cherry-blossom" && <Button
-          onClick={() => {
-            props?.data
-              ? openTailoredModal(router, props.data.id, props.data.name)
-              : null;
-          }}
-        >
-          {validateTextSize(
-            `Craft a trip to ${props.city} now!`,
-            8,
-            "Craft a trip now!"
-          )}
-        </Button>
-        } */}
+
       </div>
     </div>
   );

@@ -75,8 +75,8 @@ const Experience = (props) => {
             9,
             `Craft a trip to ${props.cityData.name} now!`
           )} x
-          image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
-          slug={props?.cityData?.name}
+            image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
+            slug={props?.cityData?.name}
           />
 
           <NewMenu
