@@ -146,11 +146,10 @@ const Menu = (props) => {
           //   convertDbNameToCapitalFirst(props.data.slug)
           // )
         }
-        text={`Craft a personalized itinerary${
-          props.data?.slug
+        text={`Craft a personalized itinerary${props.data?.slug
             ? " to " + convertDbNameToCapitalFirst(props.data?.slug) + " now"
             : ""
-        }!`}
+          }!`}
       ></DesktopBanner>
       <PathNavigation path={props.data?.path} />
 
@@ -232,7 +231,7 @@ const Menu = (props) => {
                 },
                 // when window width is >= 1024px
                 1024: {
-                  slidesPerView: 4,
+                  slidesPerView: 3,
                   spaceBetween: 24,
                 },
               }}
@@ -357,7 +356,7 @@ const Menu = (props) => {
                 },
                 // when window width is >= 1024px
                 1024: {
-                  slidesPerView: 4,
+                  slidesPerView: 3,
                   spaceBetween: 24,
                 },
               }}
