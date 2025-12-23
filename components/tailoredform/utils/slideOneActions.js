@@ -1,5 +1,5 @@
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { fadeIn } from "react-animations";
 import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
