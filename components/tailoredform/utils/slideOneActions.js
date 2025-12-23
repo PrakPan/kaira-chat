@@ -147,29 +147,37 @@ export const useSourceParams = () => {
   const params = useParams();
   const platform = getPlatform();
 
-  const source = useMemo(() => {
+  const source = React.useMemo(() => {
     const queryObj = {};
+
     for (const [key, value] of searchParams.entries()) {
       if (value === "true") queryObj[key] = true;
       else if (value === "false") queryObj[key] = false;
-      else if (!isNaN(value)) queryObj[key] = Number(value);
+      else if (!isNaN(Number(value))) queryObj[key] = Number(value);
       else queryObj[key] = value;
     }
 
     let resolvedPath = pathname;
-    for (const [key, val] of Object?.entries(params)) {
-      resolvedPath = resolvedPath?.replace(`[${key}]`, val);
+    for (const [key, val] of Object.entries(params || {})) {
+      resolvedPath = resolvedPath.replace(`[${key}]`, val);
     }
+
+    const resolvedSource =
+      queryObj.utm_source ||
+      queryObj.source ||
+      "new-trip";
 
     return {
       path: resolvedPath,
       platform,
       ...queryObj,
+      source: resolvedSource,
     };
-  }, [pathname, searchParams, params]);
+  }, [pathname, searchParams, params, platform]);
 
   return source;
 };
+
 
 export const Container = styled.div`
   height: max-content;
