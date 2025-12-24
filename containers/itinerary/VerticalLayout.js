@@ -327,9 +327,9 @@ const AirportBookingItem = ({
         //   ...pickupBookings[0],
         //   selectedType: "Airport Pickup",
         // });
-          // setTransferType("Taxi")
+        // setTransferType("Taxi")
         handleEdit(false, pickupBookings[0]);
-       
+
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -341,9 +341,9 @@ const AirportBookingItem = ({
         //   ...dropBookings[0],
         //   selectedType: "Airport Drop",
         // });
-          // setTransferType("Taxi")
+        // setTransferType("Taxi")
         handleEdit(false, dropBookings[0]);
-   
+
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -355,9 +355,9 @@ const AirportBookingItem = ({
         //   ...booking[0],
         //   selectedType: "Airport Transfer",
         // });
-          // setTransferType("Taxi")
+        // setTransferType("Taxi")
         handleEdit(false, booking[0]);
-      
+
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -418,7 +418,7 @@ const AirportBookingItem = ({
       !hasPickup &&
       !hasDrop &&
       noPickupDropBookings.length === 0 &&
-      supportsTransfers(bookingMode) 
+      supportsTransfers(bookingMode)
     ) {
       return (
         <div className="flex flex-col gap-1">
@@ -670,7 +670,7 @@ const AirportBookingItem = ({
       <div key={-3} className="group relative" ref={dropdownRef}>
         <div className="flex items-center gap-2">
           <span
-            className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
+            className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
             onClick={handleClick}
           >
             + Add Pickup and Drop
@@ -763,8 +763,8 @@ const CityItem = ({
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
-  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferBookingDelete,trackTransferCardClicked} = useAnalytics();
-  const {id} = useSelector((state) => state.auth);
+  const { trackTransferBookingAdd, trackTransferBookingChange, trackTransferBookingDelete } = useAnalytics();
+  const { id } = useSelector((state) => state.auth);
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
@@ -813,7 +813,7 @@ const CityItem = ({
     }
   };
 
-    const handleClose=useHandleClose()
+  const handleClose = useHandleClose()
 
   const [data, setData] = useState({});
   const [visible, setVisible] = useState(false);
@@ -837,7 +837,7 @@ const CityItem = ({
   }, [airportBookings]);
 
   useEffect(() => {
-}, [bookingId]);
+  }, [bookingId]);
 
   useEffect(() => {
     if (!booking_id) {
@@ -847,17 +847,17 @@ const CityItem = ({
     }
   }, [booking_id]);
 
-useEffect(() => {
-  // If URL has bookingId and transferType, set airportBookingId from URL
-  if (router.query.bookingId && router.query.transferType) {
-    setAirportBookingId(router.query.bookingId);
-    setTransferType(router.query.transferType);
-  } else if (!router.query.drawer) {
-    // Reset airportBookingId when drawer is closed
-    setAirportBookingId(null);
-    setTransferType(null);
-  }
-}, [router.query.bookingId, router.query.transferType, router.query.drawer]);
+  useEffect(() => {
+    // If URL has bookingId and transferType, set airportBookingId from URL
+    if (router.query.bookingId && router.query.transferType) {
+      setAirportBookingId(router.query.bookingId);
+      setTransferType(router.query.transferType);
+    } else if (!router.query.drawer) {
+      // Reset airportBookingId when drawer is closed
+      setAirportBookingId(null);
+      setTransferType(null);
+    }
+  }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
 
 useEffect(() => {
   const isDrawerClosed = !drawer;
@@ -895,34 +895,34 @@ useEffect(() => {
   //     }
   //   );
   // };
-const handleEdit = async (combo, book) => {
-  const bookingType = book?.booking_type || booking_type;
-  setTransferType(bookingType);
-  trackTransferBookingChange(router.query.id,bookingIdToDelete,oCityData?.name || oCityData?.city_name,dCityData?.name || dCityData?.city_name);
-  setIsIntracity(false);
-  if (combo) {
-    setComboDetails(true);
-  }
-  setLoading(true);
-  
-  // Navigate to the URL with bookingId and transferType
-  router.push(
-    {
-      pathname: `/itinerary/${router.query.id}`,
-      query: {
-        drawer: "Intracity",
-        bookingId: book?.id,
-        transferType: bookingType,
-        oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-        dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
-      },
-    },
-    undefined,
-    {
-      scroll: false,
+  const handleEdit = async (combo, book) => {
+    const bookingType = book?.booking_type || booking_type;
+    setTransferType(bookingType);
+    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
+    setIsIntracity(false);
+    if (combo) {
+      setComboDetails(true);
     }
-  );
-};
+    setLoading(true);
+
+    // Navigate to the URL with bookingId and transferType
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "Intracity",
+          bookingId: book?.id,
+          transferType: bookingType,
+          oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
+  };
 
   const handlePickupDropDrawer = (drawerType) => {
     console.log("Drawer Clicked", drawerType);
@@ -1009,7 +1009,7 @@ const handleEdit = async (combo, book) => {
         dispatch(updateTransferBookings(dataPassed?.id));
         setLoading(false);
         getPaymentHandler();
-        trackTransferBookingDelete(router.query.id,bookingIdToDelete,id);
+        trackTransferBookingDelete(router.query.id, bookingIdToDelete, id);
 
         if (isIntracity) {
           setCurrentAirportBookings((prev) =>
@@ -1019,7 +1019,6 @@ const handleEdit = async (combo, book) => {
           setVisible(true);
         }
 
-
         dispatch(
           openNotification({
             type: "success",
@@ -1027,7 +1026,6 @@ const handleEdit = async (combo, book) => {
             heading: "Success!",
           })
         );
-
         handleClose();
 
         const bodyStyle = window.getComputedStyle(document.body).overflow;
@@ -1052,43 +1050,43 @@ const handleEdit = async (combo, book) => {
     }
   };
 
-//   useEffect(() => {
-//   if (transferType !== null && airportBookingId) {
-//     router.push(
-//       {
-//         pathname: `/itinerary/${router.query.id}`,
-//         query: {
-//           drawer: "Intracity",
-//           bookingId: airportBookingId,
-//           transferType: transferType,
-//           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-//           dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
-//         },
-//       },
-//       undefined,
-//       {
-//         scroll: false,
-//       }
-//     );
-//   }
-// }, [transferType, airportBookingId]);
+  //   useEffect(() => {
+  //   if (transferType !== null && airportBookingId) {
+  //     router.push(
+  //       {
+  //         pathname: `/itinerary/${router.query.id}`,
+  //         query: {
+  //           drawer: "Intracity",
+  //           bookingId: airportBookingId,
+  //           transferType: transferType,
+  //           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
+  //           dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+  //         },
+  //       },
+  //       undefined,
+  //       {
+  //         scroll: false,
+  //       }
+  //     );
+  //   }
+  // }, [transferType, airportBookingId]);
 
   useEffect(() => {
-  if (router.query.transferType || transferType !== null) {
-   
-  } else {
-    setAirportBookingId(null);
-  }
-}, [router.query.transferType, transferType]);
+    if (router.query.transferType || transferType !== null) {
 
-useEffect(() => {
-  
-  if (!router.query.drawer) {
-    setTransferType(null);
-    setAirportBookingId(null);
-    setLoading(false);
-  }
-}, [router.query.drawer]);
+    } else {
+      setAirportBookingId(null);
+    }
+  }, [router.query.transferType, transferType]);
+
+  useEffect(() => {
+
+    if (!router.query.drawer) {
+      setTransferType(null);
+      setAirportBookingId(null);
+      setLoading(false);
+    }
+  }, [router.query.drawer]);
 
 
   const extractMode = (text) => {
@@ -1210,10 +1208,10 @@ useEffect(() => {
       <PinWrapper>
         {upPresent && <VerticalLine height={"50px"} gradient="top" />}
         {upPresent && downPresent ? (
-          <Pin length={length}  pinColour={pinColour}/>
+          <Pin length={length} pinColour={pinColour} />
         ) : (
 
-          <Pin length={length}  pinColour={"black"} inner={true}/>
+          <Pin length={length} pinColour={"black"} inner={true} />
           // <svg
           //   width="24"
           //   height="24"
@@ -1246,7 +1244,7 @@ useEffect(() => {
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className={`${isDesktop?"Body1M_16":"Body2M_14"}`}>{city}</div>}
+          {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
 
           {transfers_status === "PENDING" ? (
             upPresent && downPresent ? (
@@ -1259,12 +1257,12 @@ useEffect(() => {
             downPresent && (
               <div
                 className={`text-[16px] font-[500] flex gap-1 ${(currentAirportBookings &&
-                    currentAirportBookings.length > 0) ||
-                    ["flight", "train", "ferry"].includes(
-                      booking_type?.toLowerCase()
-                    )
-                    ? "mt-5"
-                    : (booking_id || city) && !visible ? "mt-5" : "mt-0"
+                  currentAirportBookings.length > 0) ||
+                  ["flight", "train", "ferry"].includes(
+                    booking_type?.toLowerCase()
+                  )
+                  ? "mt-5"
+                  : (booking_id || city) && !visible ? "mt-5" : "mt-0"
                   }`}
               >
                 {(booking_id || city) && !visible ? (
@@ -1292,8 +1290,8 @@ useEffect(() => {
                     <div className="flex flex-col">
                       <div
                         className={`flex items-center gap-2 ${upPresent && downPresent
-                            ? "group hover:cursor-pointer"
-                            : ""
+                          ? "group hover:cursor-pointer"
+                          : ""
                           }`}
                         onClick={() => {
                           upPresent &&
@@ -1301,7 +1299,7 @@ useEffect(() => {
                             handleEdit(transfer_type === "combo", booking);
                         }}
                       >
-                        <div className={`${isDesktop?"Body1M_16":"Body2M_14"} group-hover:text-blue `}>
+                        <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"} group-hover:text-blue `}>
                           {upPresent && downPresent ? city : ""}
                         </div>
                         {upPresent && downPresent && (
@@ -1325,7 +1323,7 @@ useEffect(() => {
                 ) : isPageWide ? (
                   <button
                     onClick={handleAddTransfer}
-                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
+                    className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer from {origin_city_name} to{" "}
                     {destination_city_name}
@@ -1333,7 +1331,7 @@ useEffect(() => {
                 ) : (
                   <button
                     onClick={handleAddTransfer}
-                    className={`${isDesktop?"Body1M_16":"Body2M_14"} text-blue hover:underline `}
+                    className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
                   >
                     + Add Transfer
                   </button>
@@ -1344,10 +1342,10 @@ useEffect(() => {
           {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
           {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && <div
             className={`flex flex-col gap-1 mb-3 ${!(upPresent && downPresent) ||
-                (!booking_id &&
-                  !(currentAirportBookings && currentAirportBookings.length > 0))
-                ? "hidden"
-                : ""
+              (!booking_id &&
+                !(currentAirportBookings && currentAirportBookings.length > 0))
+              ? "hidden"
+              : ""
               }`}
           >
             <AirportBookingItem
@@ -1372,7 +1370,7 @@ useEffect(() => {
               setAirportBookingId={setAirportBookingId}
               setTransferType={setTransferType}
               firstCity={firstCity}
-              lastCity={lastCity} 
+              lastCity={lastCity}
             />
           </div>}
           {/* )} */}
@@ -1384,8 +1382,8 @@ useEffect(() => {
         dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
           <PickupDropDrawer
             isOpen={drawer === "addPickupDrop" &&
-            oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-            dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
+              oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+              dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)}
             hotelName={hotelName}
             destinationHotelName={destinationHotelName}
             sourceLat={sourceLat}
@@ -1423,12 +1421,12 @@ useEffect(() => {
           />
         )}
 
-      
+
 
       {((drawer == "editTransfer" &&
         (bookingId === booking_id || (bookingId === "" && !booking_id)) &&
         oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) || drawerType == "multicity" )&& (
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id)) || drawerType == "multicity") && (
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
@@ -1464,8 +1462,8 @@ useEffect(() => {
         )}
 
       {"Intracity" === drawer &&
-        (bookingId === airportBookingId || bookingId === booking_id) &&  oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
-        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) &&(
+        (bookingId === airportBookingId || bookingId === booking_id) && oItineraryCity == (oCityData?.id || oCityData?.gmaps_place_id) &&
+        dItineraryCity == (dCityData?.id || dCityData?.gmaps_place_id) && (
           <TransferDrawer
             show={
               "Intracity" === drawer && (bookingId === airportBookingId || bookingId === booking_id)
