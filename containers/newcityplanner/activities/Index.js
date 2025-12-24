@@ -21,6 +21,13 @@ const Button = styled.button`
   }
 `;
 
+const Container = styled.div`
+  
+.swiper-button-next, .swiper-button-prev{
+top:calc(280px / 2)
+}
+`
+
 const Activity = (props) => {
   const router = useRouter();
   const drawerShowArr = props.activities?.map((e) => {
@@ -56,12 +63,13 @@ const Activity = (props) => {
     />
   ));
 
+
   return (
-    <div className="">
+    <Container className="">
       <div className="hidden-mobile">
         <SwiperCarousel
           navigationButtons={true}
-          slidesPerView={3}
+          slidesPerView={4}
           cards={cards}
           navButtonsTop={"40%"}
           spaceBetween={10}
@@ -73,7 +81,7 @@ const Activity = (props) => {
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
 
       </div>
-    </div>
+    </Container>
   );
 };
 

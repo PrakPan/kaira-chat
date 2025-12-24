@@ -55,14 +55,15 @@ export default function ActivityCard(props) {
         description={
           props?.data?.short_description || props?.data?.one_liner_description
         }
+        height="280px"
         image={props?.data?.image}
         rating={props.data?.rating}
         reviewCount={props?.data?.user_ratings_total}
         showImageText={false}
-        total_price={props?.data?.pricing?.total_price }
+        total_price={props?.data?.pricing?.total_price}
         onClick={() => handleActivityClick()}
       />
-     
+
       <POIDetailsDrawer
         show={show}
         ActivityiconId={props.data.id}

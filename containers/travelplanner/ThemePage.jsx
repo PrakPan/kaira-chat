@@ -767,7 +767,7 @@ export default function ThemePage(props) {
                               },
                               // when window width is >= 1024px
                               1024: {
-                                slidesPerView: 3,
+                                slidesPerView: 4,
                                 spaceBetween: 24,
                               },
                             }}
@@ -784,6 +784,7 @@ export default function ThemePage(props) {
                                     rating={destination.rating}
                                     reviewCount={destination.user_ratings_total}
                                     showImageText={false}
+                                    height="280px"
                                     tags={
                                       destination.tags ||
                                       (destination.continent ? [destination.continent] : [])
@@ -799,7 +800,7 @@ export default function ThemePage(props) {
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
-                                top: "calc(376px / 2)",
+                                top: "calc(280px / 2)",
                                 transform: "translateY(-50%)",
                               }}
                             >
@@ -817,7 +818,7 @@ export default function ThemePage(props) {
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
-                                top: "calc(376px / 2)",
+                                top: "calc(280px / 2)",
                                 transform: "translateY(-50%)",
                               }}
                             >

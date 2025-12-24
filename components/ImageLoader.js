@@ -12,7 +12,7 @@ const ImageLoader = (props) => {
   const [fullLoaded, setFullLoaded] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
 
-  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const imgUrlEndPoint = props?.imgUrlEndPoint ? (typeof props?.imgUrlEndPoint) === 'boolean' ? '' : props?.imgUrlEndPoint   : "https://d31aoa0ehgvjdi.cloudfront.net/";
   const transparentImageUrl =
     "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
 
