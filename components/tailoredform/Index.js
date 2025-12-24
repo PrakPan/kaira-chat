@@ -12,7 +12,6 @@ import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
 import Popup from "../ErrorPopup";
 import usePageLoaded from "../custom hooks/usePageLoaded";
-import { logEvent } from "../../services/ga/Index";
 import {
   setFixedDate,
   setItineraryCreated,
@@ -214,6 +213,7 @@ const Enquiry = (props) => {
     selectedCities.length,
     slideIndex,
   ]);
+
 
   const _SlideOneSubmitHandler = () => {
     if (!slideOneData.selectedCities[0].id) {
@@ -466,66 +466,134 @@ const initiateItineraryCreate = async (slideOneData) => {
 };
 
 
-  const completeItineraryCreate = () => {
-    const platform = getPlatform();
-    const data = {
-      source,
-      itinerary_id: itineraryId,
-      group_type: slideThreeData.groupType || "Solo",
-      number_of_adults: slideThreeData.numberOfAdults,
-      number_of_children: slideThreeData.numberOfChildren,
-      number_of_infants: slideThreeData.numberOfInfants,
-      room_configuration: slideThreeData.roomConfiguration,
-      add_flights: slideThreeData.addFlights,
-      currency: currency?.currency || "INR",
-      add_hotels: slideThreeData.addHotels,
-      add_transfers_and_activities: slideThreeData.addInclusions,
-      hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
-      meal_preferences: slideFourData.mealPreferences,
-      special_request: slideFourData.specialRequests,
-    };
-
-    trackItineraryInclusion(itineraryId,{
-      add_flights: slideThreeData.addFlights,
-      add_hotels: slideThreeData.addHotels,
-      add_transfers_and_activities: slideThreeData.addInclusions,
-    })
-
-    setIsSubmitting(true);
-    setIsLoading(true);
-    localStorage.removeItem("MyPlans");
-    let token = localStorage.getItem("access_token");
-    itineraryComplete
-      .post("", data, {
-        headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-        },
-       })
-      .then((response) => {
-        setError(null);
-        setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
-        dispatch(setItineraryCreated(true));
-
-        setTimeout(() => {
-          window.location.href = `/itinerary/${itineraryId}`;
-          window.scrollTo(0, 0);
-        }, 100);
-
-        logEvent({
-          action: "conversion",
-          params: {
-            send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-          },
-        });
-      })
-      .catch((err) => {
-        console.log("ERROR >>>", err);
-        setIsSubmitting(false);
-        setIsLoading(false);
-        setError(err.message);
-      });
+const completeItineraryCreate = () => {
+  const platform = getPlatform();
+  const data = {
+    source,
+    itinerary_id: itineraryId,
+    group_type: slideThreeData.groupType || "Solo",
+    number_of_adults: slideThreeData.numberOfAdults,
+    number_of_children: slideThreeData.numberOfChildren,
+    number_of_infants: slideThreeData.numberOfInfants,
+    room_configuration: slideThreeData.roomConfiguration,
+    add_flights: slideThreeData.addFlights,
+    currency: currency?.currency || "INR",
+    add_hotels: slideThreeData.addHotels,
+    add_transfers_and_activities: slideThreeData.addInclusions,
+    hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
+    meal_preferences: slideFourData.mealPreferences,
+    special_request: slideFourData.specialRequests,
   };
+
+  trackItineraryInclusion(itineraryId, {
+    add_flights: slideThreeData.addFlights,
+    add_hotels: slideThreeData.addHotels,
+    add_transfers_and_activities: slideThreeData.addInclusions,
+  });
+
+  setIsSubmitting(true);
+  setIsLoading(true);
+  localStorage.removeItem("MyPlans");
+  let token = localStorage.getItem("access_token");
+  
+  itineraryComplete
+    .post("", data, {
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+    })
+    .then((response) => {
+      setError(null);
+      setSubmitted(true);
+      trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
+      dispatch(setItineraryCreated(true));
+      
+      const isProduction = process.env.NODE_ENV === "production";
+      const hasGtag = typeof window.gtag === "function";
+      const hasDataLayer = Array.isArray(window.dataLayer);
+      
+
+      let hasNavigated = false;
+      
+      const navigateToItinerary = () => {
+        if (hasNavigated) {
+  
+          return;
+        }
+        hasNavigated = true;
+        router.push(`/itinerary/${itineraryId}`);
+      };
+
+     
+      if (hasGtag) {
+        try {
+          window.gtag('event', 'conversion', {
+            'send_to': 'AW-738037519/IF5rCMyxhL8ZEI-e9t8C',
+            'transaction_id': itineraryId,
+            'value': 1.0,
+            'currency': currency?.currency || 'INR',
+            'event_callback': function() {
+            
+              navigateToItinerary();
+            },
+            'event_timeout': 2000 
+          });
+          
+         
+          
+          
+          setTimeout(() => {
+            if (!hasNavigated) {
+            
+              navigateToItinerary();
+            }
+          }, 2500);
+          
+        } catch (error) {
+          console.error("✗ Error firing Google Ads conversion:", error);
+         
+          navigateToItinerary();
+        }
+      } else {
+        navigateToItinerary();
+      }
+
+     
+      if (hasDataLayer) {
+        try {
+          window.dataLayer.push({
+            event: 'itinerary_completed',
+            itinerary_id: itineraryId,
+            platform: platform,
+            currency: currency?.currency || 'INR',
+            group_type: slideThreeData.groupType || "Solo",
+            number_of_travelers: slideThreeData.numberOfAdults + slideThreeData.numberOfChildren,
+            add_flights: slideThreeData.addFlights,
+            add_hotels: slideThreeData.addHotels,
+            timestamp: new Date().toISOString()
+          });
+         
+        } catch (error) {
+          console.error("✗ Error pushing to dataLayer:", error);
+        }
+      }
+
+     
+      setTimeout(() => {
+        if (!hasNavigated) {
+         
+        }
+      }, 1000);
+      
+    })
+    .catch((err) => {
+     
+      setIsSubmitting(false);
+      setIsLoading(false);
+      setError(err.message);
+    });
+};
+
 
   const totalSlides = localStorage.getItem("access_token")
     ? slideThreeData.addHotels

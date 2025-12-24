@@ -2,7 +2,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
 import Script from "next/script";
-import { Partytown } from '@builder.io/partytown/react';
+import { Partytown } from "@builder.io/partytown/react";
 
 const Container = styled.div`
   margin-right: -0.6rem;
@@ -22,15 +22,15 @@ export default class MyDocument extends Document {
 
     const styleTags = sheet.getStyleElement();
 
-    
     return { ...page, styleTags };
   }
 
   render() {
-    const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
-    const cleanGTMId = GOOGLE_ANALTICS_ID?.replace(/['"]/g, '');
+    const isProduction =
+      process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev");
+    const cleanGTMId = GOOGLE_ANALTICS_ID?.replace(/['"]/g, "");
 
-    
     return (
       <Html id="html" lang="en">
         <Head>
@@ -40,36 +40,63 @@ export default class MyDocument extends Document {
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
           />
 
-          <meta 
-  name="viewport" 
-  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" 
-/>
-          
-          
-          {/* Partytown Configuration */}
-          <Partytown 
-            debug={isProduction}
-            forward={[
-              'gtag', 
-              'mixpanel',
-            ]}
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
           />
+
+          {/* Partytown Configuration */}
+          <Partytown debug={isProduction} forward={["gtag", "mixpanel"]} />
 
           {/* Google Tag Manager */}
           {isProduction && cleanGTMId && (
-  <>
-    {/* Google Tag Manager - Head */}
-    <script
-      dangerouslySetInnerHTML={{
-        __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            <>
+              {/* Google Tag Manager - Head */}
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${cleanGTMId}');`,
-      }}
-    />
-  </>
-)}
+                }}
+              />
+            </>
+          )}
+
+          {/* Google Ads Global Tag (gtag.js) - For Conversion Tracking */}
+          {
+            // isProduction &&
+            isProduction && (
+              <>
+                {/* Initialize dataLayer FIRST */}
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+        `,
+                  }}
+                />
+
+                {/* Then load gtag script */}
+                <script
+                  async
+                  src={`https://www.googletagmanager.com/gtag/js?id=AW-738037519`}
+                />
+
+                {/* Finally configure gtag */}
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+          gtag('js', new Date());
+          gtag('config', 'AW-738037519');
+        `,
+                  }}
+                />
+              </>
+            )
+          }
           {/* {isProduction && (
             <>
               <script
