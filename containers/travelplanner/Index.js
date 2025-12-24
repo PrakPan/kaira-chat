@@ -305,7 +305,8 @@ const Homepage = (props) => {
 
           <HeroSection
             title={validateTextSize(
-            `Craft a personalized itinerary to ${props.experienceData.name} now!`,
+              `Your ${props.experienceData.name} Trip, Designed Around You`,
+            // `Craft a personalized itinerary to ${props.experienceData.name} now!`,
             9,
             `Craft a trip to ${props.experienceData.name} now!`
           )}

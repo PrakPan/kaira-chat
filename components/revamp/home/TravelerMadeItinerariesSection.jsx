@@ -3647,13 +3647,14 @@ const TravelerMadeItinerariesSection = () => {
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-[48px]">
-            Our Most Loved Itineraries
+            Trips Travelers Can’t Stop Loving
+            {/* Our Most Loved Itineraries */}
           </h2>
-          <p className="text-[#7d8590] text-base max-w-2xl mx-auto leading-6">
-            These aren't just plans — they're journeys thousands of travelers
-            created with love.
-            <br />
-            We would love to see what you can create now?
+          <p className="text-[#7d8590] text-base max-w-[55rem] mx-auto leading-6">
+            Created and loved by travellers like you. These itineraries are customised, bookable, and trending right now.
+
+            {/* <br />
+            We would love to see what you can create now? */}
           </p>
         </div>
 

@@ -7,6 +7,7 @@ import {
   useGSAP,
 } from "../common/gsapConfig";
 import Link from "next/link";
+import useMediaQuery from "../../media";
 
 const JourneySimplified = () => {
   // Refs for GSAP animations
@@ -89,7 +90,7 @@ const JourneySimplified = () => {
       icon: <StarIcon />,
       title: "Dream It, Tell Us.",
       description:
-        "Tell us your vibe: romantic escape, offbeat solo trip, or team getaway — we got your moodboard.",
+        "Tell us your vibe — romantic, offbeat, solo, or group. Kaira turns it into a real plan instantly.",
       iconBgColor: "#FFF9DC",
     },
     {
@@ -224,6 +225,8 @@ const JourneySimplified = () => {
     { scope: containerRef, dependencies: [] }
   );
 
+  const isDesktop = useMediaQuery("(min-width:767px)");
+
   return (
     <section
       ref={containerRef}
@@ -237,14 +240,15 @@ const JourneySimplified = () => {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 px-5"
             style={{ maxFontSize: "40px" }}
           >
-            Your Journey, Simplified
+            {isDesktop ? "Because Great Trips Should Feel Easy" : "Your Journey, Simplified"}
           </h2>
           <p
             // ref={stepsRef}
-            className="text-base font-normal text-gray-600 max-w-2xl mx-auto"
+            className="text-base font-normal text-gray-600 max-w-2xl mx-auto italic"
             style={{ fontStyle: "normal" }}
           >
-            Plan → Personalize → Pack → Peace of Mind
+            No chaos. No guesswork. Just good journeys.
+            {/* Plan → Personalize → Pack → Peace of Mind */}
           </p>
         </div>
 
@@ -287,7 +291,7 @@ const JourneySimplified = () => {
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
-                    + Create a Trip Now!
+                    Explore how Kaira plans trips →
                   </Button>
                 </Link>
               </div>

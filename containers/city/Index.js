@@ -71,7 +71,8 @@ const Experience = (props) => {
           /> */}
 
           <HeroSection title={validateTextSize(
-            `Craft a personalized itinerary to ${props.cityData.name} now!`,
+            // `Craft a personalized itinerary to ${props.cityData.name} now!`,
+            `Your ${props.cityData.name} Trip, Designed Around You`,
             9,
             `Craft a trip to ${props.cityData.name} now!`
           )} x

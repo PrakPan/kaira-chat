@@ -12,6 +12,7 @@ import Link from "next/link";
 import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { capitalizeFirstLetter } from "../../../utils/tailoredform";
 
 const HeadingContent = ({ title, subtitle, slug=null }) => {
   const headingRef = useRef(null);
@@ -89,7 +90,7 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
           >
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-              <span>Get your Customised Itinerary</span>
+              <span>{slug ? `Create My ${capitalizeFirstLetter(slug)} Trip` : "Get your Customised Itinerary"}</span>
             </div>
           </Button>
         </Link>
