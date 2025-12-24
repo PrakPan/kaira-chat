@@ -108,8 +108,7 @@ const NavigationMenu = (props) => {
         },
       }
     );
-      if(response.status === 200)
-      props.fetchData();
+      
   
   } catch (error) {
     console.error('Error attaching user to itinerary:', error);

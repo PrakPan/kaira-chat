@@ -497,7 +497,7 @@ const initiateItineraryCreate = async (slideOneData) => {
     let token = localStorage.getItem("access_token");
     itineraryComplete
       .post("", data, {
-      headers: {
+        headers: {
         ...(token && { Authorization: `Bearer ${token}` }),
         },
        })
@@ -543,7 +543,9 @@ const initiateItineraryCreate = async (slideOneData) => {
   ]);
 
   useEffect(() => {
-   setSteps((prevSteps) => {
+    // const isLoggedIn = !!localStorage.getItem("access_token");
+
+    setSteps((prevSteps) => {
       let updatedSteps = [...prevSteps];
 
       updatedSteps = updatedSteps.filter(
@@ -551,7 +553,8 @@ const initiateItineraryCreate = async (slideOneData) => {
       );
 
       if (slideThreeData?.addHotels) 
-       updatedSteps.push("Stay Preferences");
+        updatedSteps.push("Stay Preferences");
+
 
       return updatedSteps;
     });

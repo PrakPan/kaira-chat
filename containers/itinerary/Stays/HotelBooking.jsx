@@ -162,8 +162,36 @@ const starRating = (rating, length) => {
     }
   }
 
-  // In HotelBooking component (document index 4)
-const handleChangeHotel = (e, label, value, clickType) => {
+
+  const handleViewDetails = (value) => {
+  const isAuthenticated = requireAuth('view', () => {
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "showHotelDetail",
+        idx: index,
+        booking_id: booking.id,
+        city_id: booking.city_id,
+        },
+       }, undefined, { scroll: false });
+    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
+    });
+  
+  if (!isAuthenticated) return;
+
+  logEvent({
+    action: "Hotel_Details",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: "View Details",
+      event_value: value,
+      event_action: "Stays",
+    },
+  });
+};
+
+  const handleChangeHotel = (e, label, value, clickType) => {
   e.stopPropagation();
   
   // Use requireAuth instead of direct token check
@@ -187,7 +215,6 @@ const handleChangeHotel = (e, label, value, clickType) => {
     handleClickAc(index, booking, booking.city_id, clickType);
   });
   
-  // Don't proceed if not authenticated
   if (!isAuthenticated) return;
   
   setBookingId(key);
@@ -203,66 +230,6 @@ const handleChangeHotel = (e, label, value, clickType) => {
     },
   });
 };
-
-const handleViewDetails = (value) => {
-  const isAuthenticated = requireAuth('view', () => {
-    router.push({
-      pathname: `/itinerary/${router.query.id}`,
-      query: {
-        drawer: "showHotelDetail",
-        idx: index,
-        booking_id: booking.id,
-        city_id: booking.city_id,
-      },
-    }, undefined, { scroll: false });
-    
-    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
-  });
-  
-  if (!isAuthenticated) return;
-
-  logEvent({
-    action: "Hotel_Details",
-    params: {
-      page: "Itinerary Page",
-      event_category: "Button Click",
-      event_label: "View Details",
-      event_value: value,
-      event_action: "Stays",
-    },
-  });
-};
-
-
-  // const handleViewDetails = (value) => {
-  //   // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
-  //   router.push(
-  //     {
-  //       pathname: `/itinerary/${router.query.id}`,
-  //       query: {
-  //         drawer: "showHotelDetail",
-  //         idx: index,
-  //         booking_id: booking.id,
-  //         city_id: booking.city_id,
-  //       },
-  //     },
-  //     undefined,
-  //     {
-  //       scroll: false,
-  //     }
-  //   );
-  //   handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
-  //   logEvent({
-  //     action: "Hotel_Details",
-  //     params: {
-  //       page: "Itinerary Page",
-  //       event_category: "Button Click",
-  //       event_label: "View Details",
-  //       event_value: value,
-  //       event_action: "Stays",
-  //     },
-  //   });
-  // };
 
   // const handleChangeHotel = (e, label, value, clickType) => {
   //   e.stopPropagation();

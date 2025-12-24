@@ -86,7 +86,7 @@ const HeadingContent = ({ title, subtitle }) => {
           >
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-              <span>Create a Trip in Seconds</span>
+              <span>Plan & Book My Trip with AI</span>
             </div>
           </Button>
         </Link>

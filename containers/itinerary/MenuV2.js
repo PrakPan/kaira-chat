@@ -135,8 +135,6 @@ const SimpleTabsV2 = (props) => {
   const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
 
 
-
-
    
   const [isHovered, setIsHovered] = useState(false);
   const popupStyle = {
@@ -1221,6 +1219,7 @@ const attachUserToItinerary = async () => {
                       payment={props.payment}
                       booking={props.booking}
                       _GetInTouch={_GetInTouch}
+                      requireAuth={requireAuth}
                     ></HotelsBooking>
                   )}
                 </div>
@@ -1642,7 +1641,7 @@ const attachUserToItinerary = async () => {
                       </svg>
                       <button
                         className="ttw-btn-secondary-fill"
-                         onClick={() => {
+                        onClick={() => {
                           if(!props?.itinerary?.customer){
                           requireAuth('view',()=>
                           handleFooterBannerMobile("View Inclusions"));
@@ -1677,7 +1676,7 @@ const attachUserToItinerary = async () => {
                     <div className="">
                       <button
                         className="ttw-btn-secondary-fill"
-                         onClick={() => {
+                        onClick={() => {
                           if(!props?.itinerary?.customer){
                           requireAuth('view',()=>
                           handleFooterBannerMobile("View Inclusions"));
@@ -1839,7 +1838,7 @@ const attachUserToItinerary = async () => {
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
-          message={loginModalMessage}
+           message={loginModalMessage}
   onSuccess={async () => {
     await attachUserToItinerary();
   }}

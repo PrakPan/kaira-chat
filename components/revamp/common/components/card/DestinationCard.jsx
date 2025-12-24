@@ -51,7 +51,7 @@ const DestinationCard = ({
         {/* Gradient Overlay */}
         {showImageText && (
             <div
-              className="absolute inset-0"
+              className="absolute inset-0 bg-black/30"
               style={{
                 background: gradientOverlay,
               }}
