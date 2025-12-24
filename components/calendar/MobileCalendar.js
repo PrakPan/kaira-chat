@@ -59,28 +59,46 @@ const [currentMonth, setCurrentMonth] = useState(() =>
   };
 
   const handleDateClick = (date) => {
-    if (!selectedDates.start) {
-      setSelectedDates({ start: date, end: null });
-    } else if (!selectedDates.end) {
-      if (date > selectedDates.start) {
-        setSelectedDates(prev => ({
-          ...prev,
-          end: date
-        }));
-        setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
-      } else {
-        setSelectedDates({ start: date, end: null });
-      }
+  const dateTime = date.getTime();
+  
+  if (!selectedDates.start) {
+    setSelectedDates({ start: date, end: null });
+    setTripDuration(1);
+    return;
+  }
+  
+  const startTime = selectedDates.start.getTime();
+  
+
+  if (!selectedDates.end) {
+    if (dateTime === startTime) {
+      setSelectedDates({ start: null, end: null });
+      setTripDuration(1);
+    } else if (dateTime > startTime) {
+      
+      setSelectedDates({ start: selectedDates.start, end: date });
+      setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
     } else {
-      if (date < selectedDates.start) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.start && date < selectedDates.end) {
-        setSelectedDates({ start: date, end: selectedDates.end });
-      } else if (date > selectedDates.end) {
-        setSelectedDates({ start: date, end: null });
-      }
+     
+      setSelectedDates({ start: date, end: selectedDates.start });
+      setTripDuration(Math.ceil((selectedDates.start - date) / (1000 * 60 * 60 * 24)) + 1);
     }
-  };
+    return;
+  }
+  
+  const endTime = selectedDates.end.getTime();
+  
+  if (dateTime === startTime || dateTime === endTime) {
+    setSelectedDates({ start: null, end: null });
+    setTripDuration(1);
+  } else if (dateTime < startTime) {
+    setSelectedDates({ start: date, end: null });
+    setTripDuration(1);
+  } else {
+    setSelectedDates({ start: selectedDates.start, end: date });
+    setTripDuration(Math.ceil((date - selectedDates.start) / (1000 * 60 * 60 * 24)) + 1);
+  }
+};
 
    const handleApplyDates = async () => {
   props.setDateType(dateType)
