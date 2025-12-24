@@ -268,7 +268,7 @@ export const auth = (
 ) => {
   //name and email null incase of old user
    
-
+ console.log("OnSuccess",onSuccess)
   const authData = {
     grant_type: "password",
     username: mobile,

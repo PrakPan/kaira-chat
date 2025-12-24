@@ -4,7 +4,7 @@ const initialReducer = {
     slideOne: {
         startingLocation: null,
         selectedCities: [
-            // { id: null, input_id: Date.now(), data: null, }
+            { id: null, input_id: Date.now(), data: null, }
         ],
         valueStart: null,
         valueEnd: null,

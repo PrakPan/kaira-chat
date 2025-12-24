@@ -153,7 +153,7 @@ const handleUpdate = () => {
       console.log("error is:", err);
       dispatch(openNotification({
         type: "error",
-        text: err?.response?.data?.errors[0]?.message[0] || "Something went wrong",
+        text: err?.response?.data?.errors[0]?.message?.[0] || "Something went wrong",
         heading: "Error!",
       }));
     })
@@ -161,6 +161,7 @@ const handleUpdate = () => {
       setIsLoading(false);
     });
 }
+
 
 
 

@@ -78,7 +78,8 @@ const HotelBooking = ({
   start_date,
   setStayBookings,
   itinerary_city_id,
-  _setImagesHandler
+  _setImagesHandler,
+  requireAuth
 }) => {
   const router = useRouter();
 
@@ -161,77 +162,148 @@ const starRating = (rating, length) => {
     }
   }
 
-
-  const handleViewDetails = (value) => {
-    // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-        query: {
-          drawer: "showHotelDetail",
-          idx: index,
-          booking_id: booking.id,
-          city_id: booking.city_id,
-        },
+  // In HotelBooking component (document index 4)
+const handleChangeHotel = (e, label, value, clickType) => {
+  e.stopPropagation();
+  
+  // Use requireAuth instead of direct token check
+  const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
+    // This callback executes only if user is authenticated
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "changeHotelBooking",
+        clickType: clickType,
+        itineraryCityId: itinerary_city_id,
+        booking_id: booking.id,
+        check_in: stayBookings[index]["check_in"],
+        check_out: stayBookings[index]["check_out"],
+        duration: booking?.duration,
+        city_id: booking.city_id,
+        city_name: stayBookings[index]["city_name"],
       },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
+    }, undefined, { scroll: false });
+    
+    handleClickAc(index, booking, booking.city_id, clickType);
+  });
+  
+  // Don't proceed if not authenticated
+  if (!isAuthenticated) return;
+  
+  setBookingId(key);
+
+  logEvent({
+    action: "Hotel_Add_Change",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: label,
+      event_value: value,
+      event_action: "Stays",
+    },
+  });
+};
+
+const handleViewDetails = (value) => {
+  const isAuthenticated = requireAuth('view', () => {
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: "showHotelDetail",
+        idx: index,
+        booking_id: booking.id,
+        city_id: booking.city_id,
+      },
+    }, undefined, { scroll: false });
+    
     handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
-    logEvent({
-      action: "Hotel_Details",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: "View Details",
-        event_value: value,
-        event_action: "Stays",
-      },
-    });
-  };
+  });
+  
+  if (!isAuthenticated) return;
 
-  const handleChangeHotel = (e, label, value, clickType) => {
-    e.stopPropagation();
-    // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
-    if (token) {
-      router.push(
-        {
-          pathname: `/itinerary/${router.query.id}`,
-          query: {
-            drawer: "changeHotelBooking",
-            clickType: clickType,
-            itineraryCityId: itinerary_city_id,
-            booking_id: booking.id,
-            check_in: stayBookings[index]["check_in"],
-            check_out: stayBookings[index]["check_out"],
-            duration: booking?.duration,
-            city_id: booking.city_id,
-            city_name: stayBookings[index]["city_name"],
-          },
-        },
-        undefined,
-        {
-          scroll: false,
-        }
-      );
-    }
-    if (token) handleClickAc(index, booking, booking.city_id, clickType);
-    else setShowLoginModal(true);
-    setBookingId(key);
+  logEvent({
+    action: "Hotel_Details",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: "View Details",
+      event_value: value,
+      event_action: "Stays",
+    },
+  });
+};
 
-    logEvent({
-      action: "Hotel_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: value,
-        event_action: "Stays",
-      },
-    });
-  };
+
+  // const handleViewDetails = (value) => {
+  //   // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
+  //   router.push(
+  //     {
+  //       pathname: `/itinerary/${router.query.id}`,
+  //       query: {
+  //         drawer: "showHotelDetail",
+  //         idx: index,
+  //         booking_id: booking.id,
+  //         city_id: booking.city_id,
+  //       },
+  //     },
+  //     undefined,
+  //     {
+  //       scroll: false,
+  //     }
+  //   );
+  //   handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
+  //   logEvent({
+  //     action: "Hotel_Details",
+  //     params: {
+  //       page: "Itinerary Page",
+  //       event_category: "Button Click",
+  //       event_label: "View Details",
+  //       event_value: value,
+  //       event_action: "Stays",
+  //     },
+  //   });
+  // };
+
+  // const handleChangeHotel = (e, label, value, clickType) => {
+  //   e.stopPropagation();
+  //   // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
+  //   if (token) {
+  //     router.push(
+  //       {
+  //         pathname: `/itinerary/${router.query.id}`,
+  //         query: {
+  //           drawer: "changeHotelBooking",
+  //           clickType: clickType,
+  //           itineraryCityId: itinerary_city_id,
+  //           booking_id: booking.id,
+  //           check_in: stayBookings[index]["check_in"],
+  //           check_out: stayBookings[index]["check_out"],
+  //           duration: booking?.duration,
+  //           city_id: booking.city_id,
+  //           city_name: stayBookings[index]["city_name"],
+  //         },
+  //       },
+  //       undefined,
+  //       {
+  //         scroll: false,
+  //       }
+  //     );
+  //   }
+  //   if (token) handleClickAc(index, booking, booking.city_id, clickType);
+  //   else setShowLoginModal(true);
+  //   setBookingId(key);
+
+  //   logEvent({
+  //     action: "Hotel_Add_Change",
+  //     params: {
+  //       page: "Itinerary Page",
+  //       event_category: "Button Click",
+  //       event_label: label,
+  //       event_value: value,
+  //       event_action: "Stays",
+  //     },
+  //   });
+  // };
 
   let hotel_image = "";
   if (booking && booking?.images && booking?.images.length) {

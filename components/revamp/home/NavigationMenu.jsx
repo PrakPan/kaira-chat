@@ -22,6 +22,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import Login from "../../modals/Login";
+
 const NavigationMenu = (props) => {
   const {
     isMobileMenuOpen,
@@ -39,6 +40,7 @@ const NavigationMenu = (props) => {
   const [Height, setHeight] = useState(false);
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
   const [hideNav, setHideNav] = useState(false);
+  const itinerary = useSelector(state=>state.Itinerary);
   const dispatch = useDispatch();
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
@@ -90,6 +92,29 @@ const NavigationMenu = (props) => {
       dispatch(setHotLocationSearch(res.data));
     });
   }, [props]);
+
+  const attachUserToItinerary = async () => {
+  if (itinerary?.customer) {
+    return; 
+  }
+  
+  try {
+    const response = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+      if(response.status === 200)
+      props.fetchData();
+  
+  } catch (error) {
+    console.error('Error attaching user to itinerary:', error);
+  }
+};
 
 
   return (
@@ -231,6 +256,11 @@ const NavigationMenu = (props) => {
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}
           zIndex={"3300"}
+          onSuccess={async ()=>{
+            if(props?.isItinerary && router.query.id){
+              await attachUserToItinerary();
+            }
+          }}
         />
       </div>}
       </div>
