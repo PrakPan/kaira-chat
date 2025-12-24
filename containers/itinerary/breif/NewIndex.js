@@ -159,14 +159,16 @@ const Details = (props) => {
             <span className="Body2M_14">Trip Summary</span></div>
           <button
             className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
-            onClick={() =>
-              router.push({
+           onClick={() => {
+              props?.requireAuth('view',()=>{
+                 router.push({
                 pathname: `/itinerary/${router?.query?.id}`,
                 query: {
                   drawer: "handleEditRoute",
                 },
               })
-            }
+            })  
+            }}
           >
             View
           </button>

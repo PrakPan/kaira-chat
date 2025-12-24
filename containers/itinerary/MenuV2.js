@@ -29,6 +29,7 @@ import Modal from "../../components/ui/Modal";
 import {
   CONTENT_SERVER_HOST,
   ITINERARY_STATUSES,
+  MERCURY_HOST,
 } from "../../services/constants";
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
@@ -59,6 +60,7 @@ import {
 } from "../../components/Chatbot/context/ChatContext.js";
 import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
+import axios from 'axios';
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -130,6 +132,7 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
+  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
 
 
    
@@ -268,6 +271,7 @@ const SimpleTabsV2 = (props) => {
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
+    setLoginModalMessage('Welcome to The Tarzan Way!');
   };
 
   const items = [
@@ -405,6 +409,64 @@ const SimpleTabsV2 = (props) => {
     description: "",
   });
 
+  const requireAuth = (action, callback) => {
+  if (!props.token) {
+    let message = 'Please login to continue';
+    
+    switch(action) {
+      case 'edit':
+        message = 'Please login to edit this booking';
+        break;
+      case 'delete':
+        message = 'Login to delete this booking';
+        break;
+      case 'view':
+        message = 'Please login to view details';
+        break;
+      case 'change':
+        message = 'Login to change this booking';
+        break;
+      case 'add':
+        message = 'Login to add a booking';
+        break;
+      default:
+        message = 'Please login to continue';
+    }
+    
+    setLoginModalMessage(message);
+    setShowLoginModal(true);
+    return false;
+  }
+  
+  if (callback) callback();
+  return true;
+};
+
+
+
+const attachUserToItinerary = async () => {
+  if (props.itinerary?.customer) {
+    return; 
+  }
+  
+  try {
+    const response = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+      if(response.status === 200)
+      props.fetchData();
+  
+  } catch (error) {
+    console.error('Error attaching user to itinerary:', error);
+  }
+};
+
   const trustFactors = [
     {
       icon: "/assets/trustfactor/trust-factor-1.svg",
@@ -483,6 +545,7 @@ const SimpleTabsV2 = (props) => {
           travellerType={props.travellerType}
           editRoute={props.editRoute}
           setEditRoute={props.setEditRoute}
+          requireAuth={requireAuth}
         ></Breif>
       ) : (
         citydatadone && (
@@ -826,6 +889,7 @@ const SimpleTabsV2 = (props) => {
                   setStayBookings={props.setStayBookings}
                   CityData={CityData}
                   cities={props?.cities}
+                  requireAuth={requireAuth}
                 />
               ) : (
                 <HotelsBooking
@@ -1125,6 +1189,7 @@ const SimpleTabsV2 = (props) => {
                       setStayBookings={props.setStayBookings}
                       CityData={CityData}
                       cities={props?.cities}
+                      requireAuth={requireAuth}
                     />
                   ) : (
                     <HotelsBooking
@@ -1154,6 +1219,7 @@ const SimpleTabsV2 = (props) => {
                       payment={props.payment}
                       booking={props.booking}
                       _GetInTouch={_GetInTouch}
+                      requireAuth={requireAuth}
                     ></HotelsBooking>
                   )}
                 </div>
@@ -1480,7 +1546,7 @@ const SimpleTabsV2 = (props) => {
                   </GetInTouchContainer>
                 ) : null}
               </div>
-              {props?.payment && (
+              {props?.payment && props?.token && (
                 <div className="text-[12px] text-[#6E757A]">
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
@@ -1492,7 +1558,7 @@ const SimpleTabsV2 = (props) => {
                     : "Total Cost"}
                 </div>
               )}
-              {props.payment ? (
+              {props.payment && props?.token ? (
                 <div>
                   <span className="font-bold font-[20px] ">
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
@@ -1524,7 +1590,7 @@ const SimpleTabsV2 = (props) => {
                     {"/-"}
                   </span>
                 </div>
-              ) : null}
+              ) : <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>}
             </div>
             {props?.token && props?.payment?.paid_user && (
               <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
@@ -1575,9 +1641,13 @@ const SimpleTabsV2 = (props) => {
                       </svg>
                       <button
                         className="ttw-btn-secondary-fill"
-                        onClick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
+                        onClick={() => {
+                          if(!props?.itinerary?.customer){
+                          requireAuth('view',()=>
+                          handleFooterBannerMobile("View Inclusions"));
+                        } else handleFooterBannerMobile("View Inclusions");
+                        
+                      }}
                       >
                         View Cart{" "}
                         <span className="ttw-btn-count-white">
@@ -1606,9 +1676,13 @@ const SimpleTabsV2 = (props) => {
                     <div className="">
                       <button
                         className="ttw-btn-secondary-fill"
-                        onClick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
+                        onClick={() => {
+                          if(!props?.itinerary?.customer){
+                          requireAuth('view',()=>
+                          handleFooterBannerMobile("View Inclusions"));
+                        } else handleFooterBannerMobile("View Inclusions");
+                        
+                      }}
                       >
                         View Cart{" "}
                         <span className="ttw-btn-count-white">
@@ -1764,6 +1838,10 @@ const SimpleTabsV2 = (props) => {
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
+           message={loginModalMessage}
+  onSuccess={async () => {
+    await attachUserToItinerary();
+  }}
         ></LogInModal>
       </div>
     </div>

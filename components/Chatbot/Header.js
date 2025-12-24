@@ -93,7 +93,7 @@ React.useEffect(() => {
     <>
      {!isDesktop ? 
       <div className="sticky top-0 bg-white z-[30] border-b border-gray-100 shrink-0">
-         <div className="flex justify-between px-3 py-1">
+         <div className="flex justify-between flex-row-reverse px-3 py-1">
           <div className="flex gap-3">
           <div className="relative icon-button-wrapper">
   <IconButton

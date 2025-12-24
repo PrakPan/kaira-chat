@@ -475,10 +475,11 @@ const initiateItineraryCreate = async (slideOneData) => {
     setIsSubmitting(true);
     setIsLoading(true);
     localStorage.removeItem("MyPlans");
+    let token = localStorage.getItem("access_token");
     itineraryComplete
       .post("", data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
         },
       })
       .then((response) => {
@@ -512,8 +513,8 @@ const initiateItineraryCreate = async (slideOneData) => {
       ? 4
       : 3
     : slideThreeData.addHotels
-    ? 5
-    : 4;
+    ? 4
+    : 3;
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
   const [steps, setSteps] = useState([
@@ -523,7 +524,7 @@ const initiateItineraryCreate = async (slideOneData) => {
   ]);
 
   useEffect(() => {
-    const isLoggedIn = !!localStorage.getItem("access_token");
+    // const isLoggedIn = !!localStorage.getItem("access_token");
 
     setSteps((prevSteps) => {
       let updatedSteps = [...prevSteps];
@@ -532,15 +533,9 @@ const initiateItineraryCreate = async (slideOneData) => {
         (step) => step !== "Stay Preferences" && step !== "Login"
       );
 
-      if (slideThreeData?.addHotels) {
-        if (isLoggedIn) {
-          updatedSteps.push("Stay Preferences");
-        } else {
-          updatedSteps.push("Stay Preferences", "Login");
-        }
-      } else if (!isLoggedIn) {
-        updatedSteps.push("Login");
-      }
+      if (slideThreeData?.addHotels) 
+        updatedSteps.push("Stay Preferences");
+
 
       return updatedSteps;
     });
