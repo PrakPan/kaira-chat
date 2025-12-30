@@ -1217,7 +1217,7 @@ const Details = (props) => {
             if (found) {
               clickedBooking = found;
               bookingType =
-                category === "Hotels"
+                category === "Hotels" || category === "Stays"
                   ? "accommodation"
                   : category === "Flights"
                   ? "flight"
