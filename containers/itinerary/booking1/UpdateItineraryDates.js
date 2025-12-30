@@ -269,6 +269,7 @@ const UpdateItineraryDates = ({
   duration,
   resetRef,
   handleCloseDrawer,
+  cartValue=false,
 }) => {
 
  
@@ -457,7 +458,7 @@ const handleUpdateDates = async (dateObj) => {
   return (
     <div className="">
       {/* Date display with pen icon */}
-      <div className="font-400 text-black flex flex-row items-center gap-2">
+      <div className={`font-400 ${cartValue ? 'text-white font-normal': ''} flex flex-row items-center gap-2`}>
         {!isEditing ? (
           <div className="min-w-max ">
             {convertDFormat
@@ -482,11 +483,11 @@ const handleUpdateDates = async (dateObj) => {
           >
             <FaPen
               size={16}
-              className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500"
+              className={`transition-transform hover:scale-150 duration-300 ${cartValue ? 'text-white': ''}`}
             />
           </button>
         ) : (
-          <div className="cursor-pointer text-blue underline text-sm" onClick={handleCancel}>
+          <div className={`cursor-pointer ${cartValue ? 'text-white': 'text-blue'} underline text-sm`} onClick={handleCancel}>
             Reset
           </div>
         ) }
@@ -497,9 +498,9 @@ const handleUpdateDates = async (dateObj) => {
         <button
           onClick={handleUpdateDates}
           disabled={isLoading}
-          className={`px-4 py-2 bg-[#f8e000] text-black border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${isLoading
+          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${isLoading
             ? "opacity-50 cursor-not-allowed"
-            : "hover:bg-[#e6cc00]"
+            : ""
             }`}
         >
           {isLoading ? "Applying..." : "Apply Date Change!"}

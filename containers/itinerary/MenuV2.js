@@ -132,7 +132,7 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
-  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
+  const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
 
 
    

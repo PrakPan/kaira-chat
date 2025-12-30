@@ -521,7 +521,7 @@ const LogIn = React.memo((props) => {
                     <h1 className="text-bold font-700">
                       {props.loginmessage
                         ? props.loginmessage
-                        : props?.message || "Sign in to access your plan"}
+                        : props?.message || "Please login to view details"}
                     </h1>
                   </>
                 )}
