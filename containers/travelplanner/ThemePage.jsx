@@ -666,7 +666,7 @@ export default function ThemePage(props) {
                           <PlanYourTripButton slug={props?.slug} />
                         )}
                       </div>
-                    ) : component.carousel === "destination-3" ? (
+                    ) : component.carousel === "destination-3" || component.carousel === "country-1"? (
                       <>
                         <SwiperLocations
                           locations={component?.countries}

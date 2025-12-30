@@ -515,7 +515,7 @@ const PaymentFailed = ({ onClickButton, loading }) => {
                   alignItems: "center",
                 }}
               >
-                {loading ? <PulseLoader /> : <span>Retry</span>}
+                {loading ? <PulseLoader color="white"/> : <span>Retry</span>}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -576,6 +576,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
                   justifyContent: "center",
                   gap: "0.5rem",
                   alignItems: "center",
+                  color:`white`
                 }}
               >
                 {loading ? <PulseLoader /> : <span>Get in touch</span>}
@@ -829,43 +830,45 @@ const ItineraryInclusions = ({
   });
 
   const categorizeBookings = () => {
-    const categories = {
-      Hotels: [],
-      Transfers: [],
-      Flights: [],
-      Activities: [],
-    };
-
-    if (Cart?.summary) {
-      Object.entries(Cart.summary).forEach(([category, data]) => {
-        if (data.bookings && data.bookings.length > 0) {
-          categories[category] = data.bookings.map((booking) => ({
-            id: booking.id,
-            booking_cost: booking.booking_cost,
-            detail: {
-              name: booking.name,
-              check_in: booking.check_in,
-              check_out: booking.check_out,
-              duration: booking.duration,
-              pax: booking.pax,
-              transfer_type: booking.transfer_type,
-            },
-            status: booking.status,
-            booking_type:
-              category === "Hotels"
-                ? "Accommodation"
-                : category === "Flights"
-                ? "Flight"
-                : category === "Transfers"
-                ? "Transfer"
-                : "Activity",
-          }));
-        }
-      });
-    }
-
-    return categories;
+  const categories = {
+    Flights: [],
+    Stays: [],
+    Activities: [],
+    Transfers: [],
   };
+
+  if (!Cart?.summary) return categories;
+
+  const orderedCategories = [
+    { key: "Flights", ui: "Flights", type: "Flight" },
+    { key: "Stays", ui: "Stays", type: "Accommodation" },
+    { key: "Activities", ui: "Activities", type: "Activity" },
+    { key: "Transfers", ui: "Transfers", type: "Transfer" },
+  ];
+
+  orderedCategories.forEach(({ key, ui, type }) => {
+    const data = Cart.summary[key];
+    if (!data?.bookings?.length) return;
+
+    categories[ui] = data.bookings.map((booking) => ({
+      id: booking.id,
+      booking_cost: booking.booking_cost,
+      detail: {
+        name: booking.name,
+        check_in: booking.check_in,
+        check_out: booking.check_out,
+        duration: booking.duration,
+        pax: booking.pax,
+        transfer_type: booking.transfer_type,
+      },
+      status: booking.status,
+      booking_type: type,
+    }));
+  });
+
+  return categories;
+};
+
 
   const categories = categorizeBookings();
 
@@ -991,14 +994,10 @@ const ItineraryInclusions = ({
                         <div className="flex items-center gap-1">
                           {/* <BsCalendar2 className="flex-shrink-0" /> */}
                           <span className="text-sm font-400 leading-md text-text-spacegrey">
-                            {formatDate(booking.detail.check_in)}
+                            {formatDate(booking.detail.check_in)}  {category == "Stays" ? "- " + formatDate(booking.detail.check_out) : null}
                           </span>
                         </div>
-                        {booking.detail.duration && (
-                          <span className="ml-1">
-                            ({booking.detail.duration}N)
-                          </span>
-                        )}
+                        
                         {booking.detail.duration && (
                           <>
                             <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
@@ -1264,7 +1263,7 @@ const Details = (props) => {
             if (found) {
               clickedBooking = found;
               bookingType =
-                category === "Hotels"
+                category === "Hotels" || category === "Stays"
                   ? "accommodation"
                   : category === "Flights"
                   ? "flight"
@@ -1669,9 +1668,12 @@ const Details = (props) => {
       console.error("Error initiating full payment:", error);
 
       props.getPaymentHandler();
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        "Something went wrong"
       dispatch(
         openNotification({
-          text: "Something went wrong",
+          text: errorMsg,
           heading: "Error!",
           type: "error",
         })
@@ -1965,19 +1967,25 @@ const Details = (props) => {
       icon: "/assets/trip-condition/trip-condition-1.svg",
       title: "All Taxes & Fees Included",
       subheading:
-        "All Taxes & Fees Included All Taxes & Fees Included All Taxes",
+        "What you see is what you pay. No last-minute taxes, service fees, or surprises at checkout.",
     },
     {
       icon: "/assets/trip-condition/trip-condition-2.svg",
-      title: "No Hidden Charges",
+      title: "Transparent Inclusions",
       subheading:
-        "All Taxes & Fees Included All Taxes & Fees Included All Taxes",
+        "A clear breakdown of stays, transfers, experiences, and support — shared before confirmation.",
     },
     {
       icon: "/assets/trip-condition/trip-condition-3.svg",
       title: "Secure Payments",
       subheading:
-        "All Taxes & Fees Included All Taxes & Fees Included All Taxes",
+        "Safe, encrypted payment gateways with flexible payment options where applicable.",
+    },
+    {
+      icon: "/info.svg",
+      title: "On-Ground & Remote Support",
+      subheading:
+        "Local assistance during your trip plus WhatsApp support from our team whenever you need it.",
     },
   ];
 
@@ -2008,7 +2016,12 @@ const Details = (props) => {
           <div className="container mt-xl">
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
-                <div className="cursor-pointer text-[14px] mb-2" onClick={() => handleCloseDrawer()}>{"<"} {" "} Back to Itinerary</div>
+                <div
+                  className="cursor-pointer text-[14px] mb-2"
+                  onClick={() => handleCloseDrawer()}
+                >
+                  {"<"} Back to Itinerary
+                </div>
                 <div className="flex items-center w-100 justify-between">
                   <div className="text-lg font-500 leading-xl-md flex">
                     Booking Details
@@ -2048,7 +2061,7 @@ const Details = (props) => {
                       </div>
                     )}
 
-                  {Cart?.sales?.length > 0 &&
+                  {Cart?.sales?.length > 0 && isItineraryInFuture() && 
                     Cart?.sales[Cart?.sales?.length - 1]?.orders?.length > 0 &&
                     Cart?.sales[Cart?.sales?.length - 1]?.orders[
                       Cart?.sales[Cart?.sales?.length - 1]?.orders.length - 1
@@ -2108,7 +2121,49 @@ const Details = (props) => {
                     </div>
                   ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
                     <GetInTouchContainer>
-                      <Button
+                      <div>
+                      <div className="bg-white rounded-lg">
+                        <div className="mb-2">
+                          <div className="mb-lg">
+                            <TbClockExclamation size={34} color="red" />
+                          </div>
+                          <div className="flex justify-between max-ph:flex-col">
+                            <div>
+                              <h2 className="text-lg font-500 leading-xl">
+                                Itinerary Prices Expired.
+                              </h2>
+                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+                                Your itinerary prices have expired. Please
+                                refresh to get the latest prices.
+                              </p>
+                            </div>
+
+                            <Button
+                              color="#fff"
+                              fontWeight="500"
+                              fontSize="16px"
+                              borderWidth="1px"
+                              borderRadius="6px"
+                              bgColor="#07213A"
+                              padding="6px 30px"
+                              onclick={handleRepriceBookings}
+                              disabled={repriceLoading}
+                            >
+                              {repriceLoading ? (
+                                <div className="flex items-center justify-center">
+                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2 text-white font-normal"></div>
+                                  Repricing...
+                                </div>
+                              ) : (
+                                "Refresh Prices"
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+                    </div>
+                      {/* <Button
                         color="white"
                         fontWeight="500"
                         fontSize="1rem"
@@ -2134,7 +2189,7 @@ const Details = (props) => {
                             width={"20px"}
                             widthmobile={"20px"}
                             leftalign
-                            url={"media/icons/login/customer-service-black.png"}
+                            url={"media/icons/login/customer-service.png"}
                           />
                           {props?.loading ? (
                             <PulseLoader />
@@ -2142,7 +2197,7 @@ const Details = (props) => {
                             <span>Get in touch!</span>
                           )}
                         </div>
-                      </Button>
+                      </Button> */}
                     </GetInTouchContainer>
                   ) : hasPlanExpired &&
                     isItineraryInFuture() &&
@@ -2373,7 +2428,7 @@ const Details = (props) => {
                                 widthmobile={"20px"}
                                 leftalign
                                 url={
-                                  "media/icons/login/customer-service-black.png"
+                                  "media/icons/login/customer-service.png"
                                 }
                               />
                               {props?.loading ? (
@@ -2399,27 +2454,6 @@ const Details = (props) => {
                     )}
 
                     {/* WhatsApp Button */}
-                    <button
-                      className="border-sm border-primary-indigo text-primary-indigo text-sm font-500 leading-md rounded-md-lg py-xs px-md w-full mt-md"
-                      onClick={handleWhatsappChat}
-                    >
-                      <div className="flex flex-row justify-center items-center">
-                        <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-                        <div>Chat on WhatsApp</div>
-                      </div>
-                    </button>
-
-                    {/* Terms & Conditions */}
-                    <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-                      <Link
-                        href="/terms-conditions"
-                        target="_blank"
-                        onClick={handleTermsConditions}
-                      >
-                        <div className="text-sm">Terms & Conditions</div>
-                      </Link>
-                    </div>
-
                     {/* Help Section */}
                     {
                       <>
@@ -2440,11 +2474,11 @@ const Details = (props) => {
                             fontWeight="500"
                             fontSize="1rem"
                             borderWidth="1px"
-                            width="40%"
+                            width="60%"
                             borderRadius="8px"
                             bgColor="#07213A"
                             padding="6px"
-                            onclick={handleGetInTouch}
+                            onclick={handleWhatsappChat}
                           >
                             <div
                               style={{
@@ -2454,19 +2488,13 @@ const Details = (props) => {
                                 alignItems: "center",
                               }}
                             >
-                              <ImageLoader
-                                dimensions={{ height: 50, width: 50 }}
-                                dimensionsMobile={{ height: 50, width: 50 }}
-                                height={"20px"}
-                                width={"20px"}
-                                widthmobile={"20px"}
-                                leftalign
-                                url={"media/icons/login/customer-service.png"}
-                              />
                               {props?.loading ? (
                                 <PulseLoader />
                               ) : (
-                                <span className="font-normal">Contact Us</span>
+                                <div className="flex flex-row justify-center items-center">
+                                  <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
+                                  <div>Chat on WhatsApp</div>
+                                </div>
                               )}
                             </div>
                           </Button>
@@ -2500,6 +2528,17 @@ const Details = (props) => {
                           </div>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Terms & Conditions */}
+                    <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
+                      <Link
+                        href="/terms-conditions"
+                        target="_blank"
+                        onClick={handleTermsConditions}
+                      >
+                        <div className="text-sm">Terms & Conditions</div>
+                      </Link>
                     </div>
                   </div>
                 </div>

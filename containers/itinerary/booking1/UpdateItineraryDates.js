@@ -459,7 +459,7 @@ const handleUpdateDates = async (dateObj) => {
     <div className="">
       {/* Date display with pen icon */}
       <div className={`font-400 ${cartValue ? 'text-white font-normal': ''} flex flex-row items-center gap-2`}>
-        {!isEditing ? (
+        {!isEditing && !cartValue ? (
           <div className="min-w-max ">
             {convertDFormat
               ? convertDFormat(itinerary?.start_date)
@@ -469,14 +469,14 @@ const handleUpdateDates = async (dateObj) => {
               ? convertDFormat(itinerary?.end_date)
               : itinerary?.end_date}
           </div>
-        ) : (
+        ) : !cartValue ? (
           <div className="min-w-max">
             {formatDateRangeDisplay()}
           </div>
-        )}
+        ) : <div className="text-white min-w-max cursor-pointer" onClick={handleEditClick}>Update Dates</div>}
 
         {/* Show pencil icon when not editing, reset button when editing */}
-        {!isEditing ? (
+        {!isEditing && !cartValue ? (
           <button
             onClick={handleEditClick}
             className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 hover:text-blue-500 hover:scale-110 active:scale-90"
@@ -486,11 +486,11 @@ const handleUpdateDates = async (dateObj) => {
               className={`transition-transform hover:scale-150 duration-300 ${cartValue ? 'text-white': ''}`}
             />
           </button>
-        ) : (
+        ) :  !cartValue ? (
           <div className={`cursor-pointer ${cartValue ? 'text-white': 'text-blue'} underline text-sm`} onClick={handleCancel}>
             Reset
           </div>
-        ) }
+        ): null }
       </div>
 
       {/* Update button - show only when editing and dates are selected */}
