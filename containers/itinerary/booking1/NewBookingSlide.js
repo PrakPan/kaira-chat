@@ -64,6 +64,8 @@ import TrustFactor from "../../../components/tailoredform/TrustFactor";
 import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 import { TbClockExclamation } from "react-icons/tb";
 import { FcCalendar } from "react-icons/fc";
+import { MdArrowBackIosNew } from "react-icons/md";
+
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -467,9 +469,10 @@ const PaymentCreated = ({ onClickButton, loading }) => {
                   justifyContent: "center",
                   gap: "0.5rem",
                   alignItems: "center",
+                  color:"white"
                 }}
               >
-                {loading ? <PulseLoader /> : <span>Retry</span>}
+                {loading ? <PulseLoader color="white"/> : <span>Retry</span>}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -579,7 +582,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
                   color:`white`
                 }}
               >
-                {loading ? <PulseLoader /> : <span>Get in touch</span>}
+                {loading ? <PulseLoader color="white"/> : <span>Get in touch</span>}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -656,7 +659,7 @@ const CouponSection = ({
               onClick={() => onRemoveCoupon(couponData?.code || appliedCoupon)}
               disabled={isRemoving}
             >
-              {isRemoving ? <PulseLoader /> : "Remove"}
+              {isRemoving ? <PulseLoader color="white" /> : "Remove"}
             </button>
           </div>
         </div>
@@ -679,10 +682,10 @@ const CouponSection = ({
             </div>
           </div>
 
-          <p className="text-xs text-gray-500 mt-2">
+          {/* <p className="text-xs text-gray-500 mt-2">
             Note: Coupons and discounts are not applicable on the itinerary
             lock-in fee.
-          </p>
+          </p> */}
         </div>
       )}
     </div>
@@ -790,13 +793,13 @@ const PaymentButton = ({
 }) => {
   return (
     <button
-      className="ttw-btn-secondary-fill w-full"
+      className="ttw-btn-secondary-fill w-full !bg-[#f8e000] !text-black border-black"
       onClick={onClick}
       disabled={isLoading}
     >
       {isLoading ? (
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-text-white mr-2"></div>
+          {/* <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-text-white mr-2"></div> */}
           Processing...
         </div>
       ) : paymentType === "lockin" ? (
@@ -821,9 +824,10 @@ const ItineraryInclusions = ({
   arePricesHidden,
   updatingInclusions = {},
   defaultExpanded = false,
+  arePricesExpired=false
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
-    Hotels: true,
+    Stays: true,
     Transfers: true,
     Flights: true,
     Activities: true,
@@ -1056,31 +1060,48 @@ const ItineraryInclusions = ({
 
                     {/* Checkbox */}
                     <div className="pt-0.5">
-                      {updatingInclusions[booking.id] ? (
-                        <div className="w-4 h-4 flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-                        </div>
-                      ) : (
-                        <span className="relative mr-xl">
-                          <label className="cursor-pointer ttw-custom-greenCheckbox-label">
-                            <input
-                              type="checkbox"
-                              checked={selectedInclusions[booking.id]}
-                              onChange={() => onToggleInclusion(booking.id)}
-                              disabled={booking.status === "Paid"}
-                              className=" accent-primary-yellow cursor-pointer ttw-custom-greenCheckbox"
-                            />
-                          </label>
-                        </span>
-                        // <input
-                        //   type="checkbox"
-                        //   checked={selectedInclusions[booking.id]}
-                        //   onChange={() => onToggleInclusion(booking.id)}
-                        //   disabled={booking.status === "Paid"}
-                        //   className="w-4 h-4 text-yellow-400 border-gray-300 rounded focus:ring-yellow-400 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-                        // />
-                      )}
-                    </div>
+  {updatingInclusions[booking.id] ? (
+    <div className="w-4 h-4 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+    </div>
+  ) : arePricesExpired ? (
+    <div className="relative group cursor-pointer">
+      <span className="relative mr-xl pointer-events-none">
+        <label className="ttw-custom-greenCheckbox-label opacity-60">
+          <input
+            type="checkbox"
+            checked={selectedInclusions[booking.id]}
+            disabled
+            className="ttw-custom-greenCheckbox"
+          />
+        </label>
+      </span>
+
+      {/* Tooltip */}
+      <div className="absolute z-[999] bottom-full left-1/6 -translate-x-1/2 mb-2
+                       hidden group-hover:!block whitespace-nowrap overflow-visible
+                      bg-black text-white text-xs px-2 py-1 rounded cursor-pointer">
+        Refresh Prices
+      </div>
+    </div>
+  ) : (
+    <span className="relative mr-xl">
+      <label className="cursor-pointer ttw-custom-greenCheckbox-label">
+        <input
+          type="checkbox"
+          checked={selectedInclusions[booking.id]}
+          onChange={() => onToggleInclusion(booking.id)}
+          disabled={booking.status === "Paid"}
+          className="accent-primary-yellow cursor-pointer
+                     disabled:cursor-not-allowed disabled:opacity-50
+                     ttw-custom-greenCheckbox"
+        />
+      </label>
+    </span>
+  )}
+</div>
+
+                    
 
                     {/* Price - Desktop only */}
                     {!arePricesHidden && booking.booking_cost > 0 && (
@@ -2020,16 +2041,19 @@ const Details = (props) => {
                   className="cursor-pointer text-[14px] mb-2"
                   onClick={() => handleCloseDrawer()}
                 >
-                  {"<"} Back to Itinerary
+                  {/* <div className="flex gap-2 items-center">
+                  
+                  </div> */}
                 </div>
                 <div className="flex items-center w-100 justify-between">
-                  <div className="text-lg font-500 leading-xl-md flex">
-                    Booking Details
+                  <div className="font-400 leading-xl-md flex items-center gap-1">
+                    <MdArrowBackIosNew/> Back to Itinerary
                   </div>
                   <div>
                     <IoMdClose
                       className="cursor-pointer"
                       onClick={() => handleCloseDrawer()}
+                      size={18}
                     ></IoMdClose>
                   </div>
                 </div>
@@ -2305,6 +2329,8 @@ const Details = (props) => {
                           (sale) => sale.status === "Completed"
                         ) && Cart?.total_payable_amount !== 0
                       }
+                      arePricesExpired={(!isItineraryInFuture() && areAnyInclusionsPaid())|| (hasPlanExpired &&
+                    isItineraryInFuture()) || (!isItineraryInFuture())}
                     />
                   </div>
                 </div>
@@ -2432,7 +2458,7 @@ const Details = (props) => {
                                 }
                               />
                               {props?.loading ? (
-                                <PulseLoader />
+                                <PulseLoader color="white"/>
                               ) : (
                                 <span>Get in touch!</span>
                               )}
@@ -2466,17 +2492,17 @@ const Details = (props) => {
                             </div>
                           </div>
                           <div className="text-sm-md font-400 leading-xl text-text-spacegrey mb-2">
-                            About any issue related to your bookings
+                            Connect with a travel expert on WhatsApp
                           </div>
 
                           <Button
-                            color="white"
+                            color="#000000"
                             fontWeight="500"
                             fontSize="1rem"
                             borderWidth="1px"
                             width="60%"
                             borderRadius="8px"
-                            bgColor="#07213A"
+                            bgColor="#ffffff"
                             padding="6px"
                             onclick={handleWhatsappChat}
                           >
@@ -2489,11 +2515,11 @@ const Details = (props) => {
                               }}
                             >
                               {props?.loading ? (
-                                <PulseLoader />
+                                <PulseLoader color="white"/>
                               ) : (
                                 <div className="flex flex-row justify-center items-center">
                                   <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-                                  <div>Chat on WhatsApp</div>
+                                  <div className="font-normal">Chat on WhatsApp</div>
                                 </div>
                               )}
                             </div>

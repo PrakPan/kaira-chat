@@ -26,6 +26,7 @@ import PickupDropDrawer from "./PickupDropDrawer";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import useMediaQuery from "../../components/media";
+import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 
 const Container = styled.div`
   display: flex;
@@ -830,6 +831,8 @@ const CityItem = ({
 
 
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const auth = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   useEffect(() => {
     setCurrentAirportBookings(airportBookings || []);
@@ -896,6 +899,13 @@ useEffect(() => {
   //   );
   // };
   const handleEdit = async (combo, book) => {
+     if(!localStorage.getItem("access_token")){
+      setShowLoginModal(true);
+     }
+     if( auth?.id != customer){
+      dispatch(setCloneItineraryDrawer(true));
+      return;
+    }
     const bookingType = book?.booking_type || booking_type;
     setTransferType(bookingType);
     trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
@@ -944,6 +954,11 @@ useEffect(() => {
   };
 
   const handleAddTransfer = () => {
+    if(localStorage.getItem("access_token")){
+    if( id != customer){
+      dispatch(setCloneItineraryDrawer(true));
+      return;
+    }
     trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
@@ -960,6 +975,9 @@ useEffect(() => {
         scroll: false,
       }
     );
+  } else {
+    setShowLoginModal(true);
+  }
   };
 
 
