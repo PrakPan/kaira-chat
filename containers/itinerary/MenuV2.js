@@ -132,7 +132,9 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
-  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
+  const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
 
    
@@ -1219,6 +1221,7 @@ const attachUserToItinerary = async () => {
                     setShowFooterBannerMobile={() =>
                       setShowFooterBannerMobile(false)
                     }
+                    trip_name={props?.itinerary?.name}
                     openPaymentDrawer={true}
                     blur={props.blur}
                     loading={loading}
@@ -1391,7 +1394,7 @@ const attachUserToItinerary = async () => {
               </Button>
             ) : (
               <>
-                {props.payment ? (
+                {props.payment  ? (
                   (props.payment?.itinerary_status ===
                     ITINERARY_STATUSES?.itinerary_finalized ||
                     pricing_status === "SUCCESS") &&
@@ -1424,7 +1427,6 @@ const attachUserToItinerary = async () => {
                           requireAuth('view',()=>
                           handleFooterBannerMobile("View Inclusions"));
                         } else handleFooterBannerMobile("View Inclusions");
-                        
                       }}
                       >
                         View Cart{" "}
@@ -1433,7 +1435,7 @@ const attachUserToItinerary = async () => {
                           {countCartItems}{" "}
                         </span>
                       </button>
-
+                      
                       <div
                         style={popupStyle}
                         className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"

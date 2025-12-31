@@ -270,6 +270,7 @@ const ComboFlight = (props) => {
     };
   }, []);
 
+
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);

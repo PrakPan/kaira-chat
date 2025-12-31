@@ -8,6 +8,8 @@ import WhyTarzan from "./whyttw/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 import PartnersSection from "../../components/theme/PartnersSection";
+import CtaBoardingSection from "../../components/revamp/home/CtaBoardingSection";
+import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection";
 
 const HeadingContainer = styled.div`
   border-style: solid none none none;
@@ -53,7 +55,8 @@ const Testimonial = (props) => {
       <StoriesMap></StoriesMap>
       <TravellerCounter></TravellerCounter>
       <Reviews />
-      <WhyTarzan />
+      <WhatMakesUsSection/>
+      {/* <WhyTarzan /> */}
       <SetWidthContainer>
         {/* <div style={{ margin: "3rem 0" }}>
           <HeadingNew className="">What they say?</HeadingNew>
@@ -62,6 +65,7 @@ const Testimonial = (props) => {
         {/* <AsSeenIn /> */}
         <PartnersSection />
         <ChatWithUs link="/contact" />
+        <CtaBoardingSection/>
       </SetWidthContainer>
     </div>
   );

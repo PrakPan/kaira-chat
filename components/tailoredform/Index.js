@@ -18,6 +18,7 @@ import {
   setItineraryInitiateData,
   setItineraryNotCreated,
   setRoomConfiguration,
+  setSelectedCities,
 } from "../../store/actions/slideOneActions";
 import {
   BlackContainer,
@@ -42,6 +43,8 @@ import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 
+
+{/* <Login/> to see this itinerary's cost */}
 const ScrollContainer = styled.div`
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -134,6 +137,22 @@ const Enquiry = (props) => {
       document.documentElement.style.overflow = "auto";
     };
   }, [props.tailoredFormModal]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    
+    const { page_id, destination, type } = router.query;
+    if (page_id && destination && (slideOneData?.selectedCities?.length === 0)) {
+      const initialInputId = Date.now();
+      let data ={
+        id: page_id,
+        name: destination,
+        input_id: initialInputId,
+        type: type || 'City',
+      }
+      dispatch(setSelectedCities(page_id,initialInputId, data));
+    }
+  }, [router.isReady, router.query.page_id, router.query.destination]);
 
   useEffect(() => {
     if ((slideIndex && slideIndex != 0) || isItineraryCreated) {

@@ -22,6 +22,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import Login from "../../modals/Login";
+
 const NavigationMenu = (props) => {
   const {
     isMobileMenuOpen,
@@ -117,6 +118,7 @@ const NavigationMenu = (props) => {
 
   return (
     <>
+    <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
         <div className="hover-pointer" onClick={() => router.push("/")}>
           <Image src={TTW} alt="TTW Logo" priority  />
@@ -200,6 +202,7 @@ const NavigationMenu = (props) => {
           } */}
         </div>
       </nav>
+      </div>
 
       {/* Mobile Sidebar Overlay */}
       <div

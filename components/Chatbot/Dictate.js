@@ -32,6 +32,9 @@ const Dictate = forwardRef((props, ref) => {
 
 
     const startListening = async () => {
+        if(props?.disabled){
+            return;
+        }
         try {
             const micPermission = await navigator.permissions.query({ name: 'microphone' });
 

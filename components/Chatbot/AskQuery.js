@@ -5,6 +5,7 @@ import Dictate from "./Dictate";
 import Image from "next/image";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 const Container = styled.div`
   border-radius: 12px;
   padding: 12px;
@@ -104,6 +105,8 @@ function AskQuery() {
   const dictateRef = useRef();
   const {trackChatMessageSent} = useAnalytics();
   const router = useRouter();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const handleSubmitQuery = (input) => {
     const userMsg = { is_bot: false, message: input || query.trim() };
@@ -172,6 +175,7 @@ function AskQuery() {
               rows={1}
               placeholder="Ask anything..."
               value={query}
+              disabled={ id != customer}
               onChange={handleInput}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -199,11 +203,12 @@ function AskQuery() {
                   ref={dictateRef}
                   stopDictation={stopDictation}
                   onTranscriptChange={handleTranscriptChange}
+                  disabled={id != customer}
                 />{" "}
               </div>
               <div className="flex">
                 <SubmitButton
-                  disabled={isSubmitDisabled || disableQuerySection}
+                  disabled={isSubmitDisabled || disableQuerySection || (id != customer)}
                   onClick={(e) => {
                     e.preventDefault();
                     handleSubmitQuery();

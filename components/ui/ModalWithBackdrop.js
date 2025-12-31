@@ -25,7 +25,7 @@ const ModalWithBackdrop = ({
       // For showPhoneView: 85% on mobile, 60% on desktop
       return {
         base: "85%",
-        desktop: "60%",
+        desktop: "32%",
       };
     }
     // Default behavior

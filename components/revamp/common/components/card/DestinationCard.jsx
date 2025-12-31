@@ -5,6 +5,7 @@ import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../../../theme/ThemeConstants";
 import { AiFillStar } from "react-icons/ai";
 import { useRouter } from "next/router";
+import { getIndianPrice } from "../../../../../services/getIndianPrice";
 const DestinationCard = ({
   title,
   one_liner_description,
@@ -20,6 +21,7 @@ const DestinationCard = ({
   showImageText = true,
   placesBragSection,
   link,
+  total_price,
   ...props
 }) => {
   const router = useRouter();
@@ -126,6 +128,15 @@ const DestinationCard = ({
           ): null}
         </div>
       )}
+
+        {total_price ? (
+        <div className="flex flex-col">
+          <div className="flex flex-row items-center text-[20px] font-bold">
+            ₹{getIndianPrice(total_price)}/-
+            <span className="text-[12px] font-[400] ml-2">per person</span>
+          </div>
+        </div>
+      ) : null}
       </div>
     
   );

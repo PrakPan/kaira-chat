@@ -10,7 +10,8 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import setItineraryStatus from "../store/actions/itineraryStatus";
 import { axiosGetItineraryStatus } from "../services/itinerary/daybyday/preview";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setCloneItineraryDrawer } from "../store/actions/cloneItinerary";
 const divideTravellers = (val) => {
   let distribution = [];
 
@@ -75,6 +76,7 @@ export default function TravelPartnerContact(props) {
   const [showSettings, setShowSettings] = useState(false);
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
   const router = useRouter();
+  const {id} = useSelector(state=>state.auth);
   const itinerary_id = router.query.id;
   const dispatch = useDispatch();
 
@@ -159,7 +161,12 @@ export default function TravelPartnerContact(props) {
                 setIsHotelsPresent(false);
               })
               .finally(() => {
-                setShowSettings(true);
+                console.log("Customer",id,props?.itinerary?.customer)
+                if(id != props?.itinerary?.customer){
+
+                  dispatch(setCloneItineraryDrawer(true));
+                }
+                else setShowSettings(true);
               });
           }}
         >

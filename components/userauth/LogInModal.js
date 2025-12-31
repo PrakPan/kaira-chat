@@ -96,6 +96,8 @@ const LogIn = React.memo((props) => {
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
   const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
 
+  console.log("Message",props?.message)
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -208,10 +210,13 @@ const LogIn = React.memo((props) => {
       return;
     }
 
+     console.log("OnSuccess",props?.onSuccess);
+
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
 
       if (!userDetails.userName) return setUserNameError(true);
+
 
       if (newUserValidity)
         props.onAuth(

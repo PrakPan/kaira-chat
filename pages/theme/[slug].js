@@ -11,25 +11,25 @@ import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
 const TravelPlanner = ({
-  Data,
-  hotLocationSearch,
-  slug,
-  setHotLocationSearch,
+  // Data,
+  // hotLocationSearch,
+  // slug,
+  // setHotLocationSearch,
 }) => {
-  // const router = useRouter();
-  // const [Data, setData] = useState(null);
-  // const [hotLocationSearch, sethotLocationSearch] = useState([]);
-  // const [slug, setSlug] = useState(null);
+  const router = useRouter();
+  const [Data, setData] = useState(null);
+  const [hotLocationSearch, sethotLocationSearch] = useState([]);
+  const [slug, setSlug] = useState(null);
 
-  // useEffect(() => {
-  //   if (router.query.slug) {
-  //     setSlug(router.query.slug);
-  //   }
-  // }, [router]);
+  useEffect(() => {
+    if (router.query.slug) {
+      setSlug(router.query.slug);
+    }
+  }, [router]);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, [slug]);
+  useEffect(() => {
+    fetchData();
+  }, [slug]);
 
   useEffect(() => {
     setHotLocationSearch(hotLocationSearch);

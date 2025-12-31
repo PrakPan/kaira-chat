@@ -5,14 +5,15 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { logEvent } from "../../../services/ga/Index";
 import H8 from "../../../components/heading/H8";
+import { DestinationCard } from "../../../components/revamp/common/components/card";
 
 export default function ActivityCard(props) {
   const [show, setShow] = useState(false);
   const [stars, setStars] = useState(null);
   const [hover, setHover] = useState(false);
-  const activityData={
-    type:"activity",
-    id:props.dataid
+  const activityData = {
+    type: "activity",
+    id: props.dataid
   }
 
   useEffect(() => {
@@ -48,72 +49,20 @@ export default function ActivityCard(props) {
 
   return (
     <div
-      onClick={handleActivityClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="h-[420px] group relative cursor-pointer p-2 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300"
     >
-      <div
-        className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-200 px-2 py-1 rounded-md drop-shadow-2xl text-sm ${hover ? "opacity-100" : "opacity-0"
-          } `}
-      >
-        {props?.data?.name}
-      </div>
-
-      <div className="h-[45%]">
-        <ImageLoader
-          url={props?.data?.image}
-          dimensions={{ width: 500, height: 250 }}
-          dimensionsMobile={{ width: 500, height: 250 }}
-          borderRadius="10px"
-          noLazy
-          hoverpointer
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="">
-          <H8
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {props?.data?.name}
-          </H8>
-        </div>
-
-        <div className="w-full">
-          {stars && (
-            <span className="flex flex-row items-center gap-1 text-sm text-[#7A7A7A]">
-              <span className="flex flex-row gap-1 text-[#FFD201]">
-                {stars}
-              </span>
-              <span className="text-[12px] font-normal">
-                {props.data?.rating}
-                {` (${props?.data?.user_ratings_total})`}
-              </span>
-            </span>
-          )}
-        </div>
-
-        <div className="text-[14px] font-[400] line-clamp-3">
-          <div>{props?.data?.short_description || props?.data?.one_liner_description}</div>
-        </div>
-      </div>
-
-      {props?.data?.pricing?.total_price ? (
-        <div className="flex flex-col">
-          <div className="flex flex-row items-center text-[20px] font-bold">
-            ₹{getIndianPrice(props?.data?.pricing?.total_price)}/-
-            <span className="text-[12px] font-[400] ml-2">per person</span>
-          </div>
-          <div className="text-[12px] font-light text-[#7A7A7A]">
-            Excluding applicable taxes
-          </div>
-        </div>
-      ) : null}
+      <DestinationCard
+        title={props?.data?.name}
+        description={
+          props?.data?.short_description || props?.data?.one_liner_description
+        }
+        height="280px"
+        image={props?.data?.image}
+        rating={props.data?.rating}
+        reviewCount={props?.data?.user_ratings_total}
+        showImageText={false}
+        total_price={props?.data?.pricing?.total_price}
+        onClick={() => handleActivityClick()}
+      />
 
       <POIDetailsDrawer
         show={show}
@@ -121,7 +70,7 @@ export default function ActivityCard(props) {
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
         removeDelete={props?.removeDelete}
-        // activityData={activityData}
+      // activityData={activityData}
       >
         {props.setEnquiryOpen ? (
           <button

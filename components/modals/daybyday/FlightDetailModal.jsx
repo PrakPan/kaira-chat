@@ -75,7 +75,7 @@ const FlightDetailModal = ({
   const { trackTransferBookingDelete } = useAnalytics();
 
 
-const totalPax = data?.number_of_adults + data?.number_of_children + data?.number_of_infants
+  const totalPax = data?.number_of_adults + data?.number_of_children + data?.number_of_infants
 
   const handleDelete = async () => {
     if (!localStorage.getItem("access_token")) {
@@ -106,6 +106,11 @@ const totalPax = data?.number_of_adults + data?.number_of_children + data?.numbe
           })
         );
         handleClose()
+        const bodyStyle = window.getComputedStyle(document.body).overflow;
+        if (bodyStyle === "hidden") {
+          document.body.style.overflow = "initial";
+        }
+
       }
     } catch (err) {
       const errorMsg =

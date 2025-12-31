@@ -178,7 +178,8 @@ module.exports = {
           indigo: "#07213A",
           stars: "#FFD201",
           cornsilk: "#FFFAF5",
-          jasmineWhite: "#FFFFE7"
+          jasmineWhite: "#FFFFE7",
+          lightPurple : "#F7ECFF"
         },
         // Secondary Colors
         secondary: {
@@ -203,9 +204,10 @@ module.exports = {
           charcolblack: "#212529",
           spacegrey: "#6E757A",
           smoothwhite: "#f6f6f6",
+          spanishWhite :"#F0F0F0",
           svgIconFill: "#ACACAC",
           chinesWhite: "#F9F9F9",
-          error: "#FA3530"
+          error: "#FA3530",
         },
         tag : {
           sky:"#2AB0FC",

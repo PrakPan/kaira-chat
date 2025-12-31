@@ -58,6 +58,7 @@ const Enquiry = (props) => {
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
 
+  console.log("Message",props.message)
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
