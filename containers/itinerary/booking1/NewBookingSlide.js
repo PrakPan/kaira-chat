@@ -2037,16 +2037,8 @@ const Details = (props) => {
           <div className="container mt-xl">
             <div className="row">
               <div className="col-12 col-sm-12 col-lg-12 col-md-12 mb-sm">
-                <div
-                  className="cursor-pointer text-[14px] mb-2"
-                  onClick={() => handleCloseDrawer()}
-                >
-                  {/* <div className="flex gap-2 items-center">
-                  
-                  </div> */}
-                </div>
                 <div className="flex items-center w-100 justify-between">
-                  <div className="font-400 leading-xl-md flex items-center gap-1">
+                  <div className="font-400 leading-xl-md flex items-center gap-1 cursor-pointer"  onClick={() => handleCloseDrawer()}>
                     <MdArrowBackIosNew/> Back to Itinerary
                   </div>
                   <div>
