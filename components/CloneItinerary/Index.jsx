@@ -228,7 +228,7 @@ const CloneItinerary = ({ isHotelsPresent }) => {
           openNotification({
             type: "error",
             text:
-              err?.response?.data?.errors?.[0]?.message?.[0] ||
+              err?.response?.data?.errors?.[0]?.detail?.[0] ||
               "Something went wrong",
             heading: "Error!",
           })
@@ -277,7 +277,7 @@ const CloneItinerary = ({ isHotelsPresent }) => {
 
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="grid grid-cols-3 justify-between items-center">
+        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center ">
           <label
             htmlFor="add-activities-transfers"
             className="flex items-center gap-2 p-2 rounded-md w-fit cursor-pointer"

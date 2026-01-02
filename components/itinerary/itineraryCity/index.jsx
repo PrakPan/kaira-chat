@@ -162,6 +162,15 @@ const ItineraryCity = (props) => {
   }, [drawer, poi_id, dayByDay, itinerary_city_id, props.city.id]);
 
   const fetchDetails = async (hotelId = null) => {
+    if(!token){
+      props?.setShowLoginModal(true);
+      return;
+    }
+    if(id != customer){
+        dispatch(setCloneItineraryDrawer(true));
+        return;
+    } 
+    
     setShowDetails(true);
     setLoading(true);
     

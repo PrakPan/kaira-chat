@@ -19,6 +19,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 export const getStars = (rating) => {
   var stars = [];
@@ -51,6 +52,9 @@ const SlabElement = (props) => {
     trackActivityCardClicked,
     trackPoiCardClicked,
   } = useAnalytics();
+
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   return (
     <div className="w-[95%] mx-auto">
@@ -94,14 +98,23 @@ const handleMoveElementCommonly = async (
   slabIndex,
   position,
   heading,
-  setShowLoginModal
+  setShowLoginModal,
+  id,
+  customer
 ) => {
   const token = localStorage.getItem("access_token");
+  
+
   if (!token) {
     if (setShowLoginModal) {
       setShowLoginModal(true);
       return;
     }
+  }
+
+  if( id != customer){
+    dispatch(setCloneItineraryDrawer(true));
+    return;
   }
   try {
     const res = await axios.post(
@@ -180,6 +193,8 @@ const Activity = (props) => {
   const open = Boolean(anchorEl);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
@@ -210,6 +225,10 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type, dayIndex) => {
+    if( id != customer){
+      dispatch(setCloneItineraryDrawer(true));
+      return;
+    }
     if (type === "activity") {
       props?.trackActivityCardClicked(
         router.query.id,
@@ -363,7 +382,9 @@ const Activity = (props) => {
       props.slabIndex,
       position,
       props.element.heading,
-      props?.setShowLoginModal
+      props?.setShowLoginModal,
+      id,
+      customer
     );
     handleCloseMenue();
   };
@@ -630,6 +651,9 @@ const Recommendation = (props) => {
   });
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
@@ -647,6 +671,10 @@ const Recommendation = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
+    if( id != customer){
+      dispatch(setCloneItineraryDrawer(true));
+      return;
+    }
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -746,7 +774,9 @@ const Recommendation = (props) => {
       props.slabIndex,
       position,
       props.element.heading,
-      props?.setShowLoginModal
+      props?.setShowLoginModal,
+      id,
+      customer
     );
     handleCloseMenue();
   };

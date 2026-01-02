@@ -61,6 +61,7 @@ import {
 import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 import axios from 'axios';
+import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -103,6 +104,7 @@ const SimpleTabsV2 = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
   const classes = useStyles;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
@@ -372,6 +374,10 @@ useEffect(() => {
   };
 
   const handleFooterBannerMobile = (label) => {
+    if( id != customer){
+      dispatch(setCloneItineraryDrawer(true));
+      return;
+    }
     setShowFooterBannerMobile(!showFooterBannerMobile);
     trackPaymentPageViewed(router?.query?.id)
 

@@ -77,7 +77,7 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
     </div>
     
     {/* Combined container for button and subheading */}
-    <div className="absolute bottom-[12%] sm:bottom-[8%] md:bottom-[10%] left-1/2 -translate-x-1/2 w-[90%] sm:w-auto flex flex-col items-center gap-3 sm:gap-4">
+    <div className="absolute bottom-[4%] sm:bottom-[8%] md:bottom-[10%] left-1/2 -translate-x-1/2 w-[90%] sm:w-auto flex flex-col items-center gap-3 sm:gap-4">
       <div ref={buttonRef}>
         <Link href={`/new-trip/?source=${slug || 'home'}`}>
           <Button
@@ -94,7 +94,7 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
         </Link>
       </div>
       
-      <div ref={contentWrapperRef} className="text-center">
+      <div ref={contentWrapperRef} className="text-center invisible">
         <p className={`${styles.subtitle}  text-text-focused !text-sm sm:text-sm md:!text-base `}>
           No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates.
         </p>

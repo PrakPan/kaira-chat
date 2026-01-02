@@ -20,6 +20,7 @@ const Buttons = (props) => {
                     disabled={props.isLoading}
                     color="white"
                     padding="8px 16px"
+                    fontSize="12px"
                   >
                    {props?.isEdit ? "Update Itinerary":"Continue"}
                   </Button>

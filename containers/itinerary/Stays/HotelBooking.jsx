@@ -19,7 +19,7 @@ import media from "../../../components/media";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format } from "date-fns";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -46,6 +46,7 @@ const svgIcons = {
 
 }
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -82,7 +83,9 @@ const HotelBooking = ({
   requireAuth
 }) => {
   const router = useRouter();
-
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+  const dispatch = useDispatch();
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -164,6 +167,12 @@ const starRating = (rating, length) => {
 
 
   const handleViewDetails = (value) => {
+
+  if( id != customer){
+    dispatch(setCloneItineraryDrawer(true));
+    return;
+  }
+  
   const isAuthenticated = requireAuth('view', () => {
     router.push({
       pathname: `/itinerary/${router.query.id}`,
@@ -192,7 +201,13 @@ const starRating = (rating, length) => {
 };
 
   const handleChangeHotel = (e, label, value, clickType) => {
+
   e.stopPropagation();
+
+  if( id != customer){
+    dispatch(setCloneItineraryDrawer(true));
+    return;
+  }
   
   // Use requireAuth instead of direct token check
   const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
