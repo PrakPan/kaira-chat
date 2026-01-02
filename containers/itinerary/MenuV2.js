@@ -374,10 +374,10 @@ useEffect(() => {
   };
 
   const handleFooterBannerMobile = (label) => {
-    if( id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     setShowFooterBannerMobile(!showFooterBannerMobile);
     trackPaymentPageViewed(router?.query?.id)
 

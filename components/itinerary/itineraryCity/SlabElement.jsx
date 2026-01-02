@@ -112,10 +112,10 @@ const handleMoveElementCommonly = async (
     }
   }
 
-  if( id != customer){
-    dispatch(setCloneItineraryDrawer(true));
-    return;
-  }
+  // if( id != customer){
+  //   dispatch(setCloneItineraryDrawer(true));
+  //   return;
+  // }
   try {
     const res = await axios.post(
       `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/element/move/`,
@@ -225,10 +225,10 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type, dayIndex) => {
-    if( id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     if (type === "activity") {
       props?.trackActivityCardClicked(
         router.query.id,
@@ -671,10 +671,10 @@ const Recommendation = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    if( id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,

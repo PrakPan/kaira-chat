@@ -59,10 +59,10 @@ const CityDay = (props) => {
   const { drawer, idx, itinerary_city_id, date } = router?.query;
   const handleAddActivity = () => {
     if(localStorage.getItem("access_token")){
-      if(id != customer){
-        dispatch(setCloneItineraryDrawer(true));
-        return;
-      }
+      // if(id != customer){
+      //   dispatch(setCloneItineraryDrawer(true));
+      //   return;
+      // }
     } else {
       props?.setShowLoginModal(true);
       return;

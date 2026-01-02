@@ -144,10 +144,10 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
-    if( id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     trackTransferCardClicked(
       router.query.id,
       book?.id || booking_id,
@@ -992,10 +992,10 @@ const FlightBooking = ({
   } catch {}
 
   const handleRoute = (book) => {
-    if(id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if(id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

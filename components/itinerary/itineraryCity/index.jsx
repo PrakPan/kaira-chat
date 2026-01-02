@@ -166,10 +166,10 @@ const ItineraryCity = (props) => {
       props?.setShowLoginModal(true);
       return;
     }
-    if(id != customer){
-        dispatch(setCloneItineraryDrawer(true));
-        return;
-    } 
+    // if(id != customer){
+    //     dispatch(setCloneItineraryDrawer(true));
+    //     return;
+    // } 
     
     setShowDetails(true);
     setLoading(true);
@@ -198,10 +198,10 @@ const ItineraryCity = (props) => {
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
     if (token) {
-      if(id != customer){
-        dispatch(setCloneItineraryDrawer(true));
-        return;
-      }
+      // if(id != customer){
+      //   dispatch(setCloneItineraryDrawer(true));
+      //   return;
+      // }
       const index = multiHotelStays.findIndex(h => h?.id === hotelId);
       props?.handleClickAc(
          index !== -1 ? index : props?.index,

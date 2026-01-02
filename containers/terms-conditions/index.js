@@ -19,14 +19,15 @@ const Container = styled.div`
 `;
 
 const Heading = styled.p`
-  font-size: 3.25rem;
+  font-size: 2.25rem;
   font-weight: 700;
   margin: 1.5rem 0 0 0;
   padding: 2rem;
   text-align: center;
   @media screen and (min-width: 768px) {
-    font-size: 5rem;
+    font-size: 4rem;
     padding: 1rem 0rem 4rem 4rem;
+    
   }
 `;
 

@@ -65,6 +65,7 @@ import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 import { TbClockExclamation } from "react-icons/tb";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 
 const GetInTouchContainer = styled.div`
@@ -94,8 +95,8 @@ const CouponModal = ({
   const [loading, setLoading] = useState(false);
   const [applyingCouponId, setApplyingCouponId] = useState(null);
   const ItineraryId = useSelector((state) => state.ItineraryId);
-
   const Cart = useSelector((state) => state.Cart);
+  const {currency} = useSelector(state=>state.currency)
 
   useEffect(() => {
     if (show) {
@@ -119,14 +120,14 @@ const CouponModal = ({
   const fetchAvailableCoupons = async () => {
     try {
       setLoading(true);
-      const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}`, {
+      const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}&currency=${currency || 'INR'}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const formattedCoupons = response.data.map((coupon) => ({
         id: coupon.id,
         code: coupon.code,
-        title: `Save ₹${coupon.discount_value}`,
+        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}${coupon.discount_value}`,
         description: coupon.description,
         expiry: new Date(coupon.end_time).toLocaleDateString("en-IN"),
         type: coupon.discount_type.toLowerCase(),
@@ -372,7 +373,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   if (!targetTime || timeLeft <= 0) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
-        Prices Expired! Refresh Prices to check updated itinerary cost
+        Prices Expired! Click on reprice itinerary to check updated itinerary cost
       </div>
     );
   }
@@ -530,6 +531,7 @@ const PaymentFailed = ({ onClickButton, loading }) => {
 };
 
 const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
+  const {currency} = useSelector(state=>state.currency);
   return (
     <div className="bg-white px-2 rounded-lg">
       <div className="mb-2">
@@ -558,7 +560,7 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
               All set—your payment was successful.
             </h2>
             <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-              Your full payment of ₹{amount?.toLocaleString("en-IN")} has been
+              Your full payment of {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}{amount?.toLocaleString("en-IN")} has been
               received. No pending balance.
             </p>
           </div>
@@ -702,6 +704,7 @@ const PriceDetails = ({
   selectedPaymentOption,
 }) => {
   const Cart = useSelector((state) => state.Cart);
+  const {currency} = useSelector(state=>state.currency);
 
   const numericItineraryCost =
     typeof itineraryCost === "string"
@@ -746,7 +749,7 @@ const PriceDetails = ({
         <div className="flex justify-between text-sm font-400 leading-md mb-sm">
           <span> Total Itinerary Cost </span>
           <span>
-            ₹
+            {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
             {typeof itineraryCost === "string"
               ? itineraryCost
               : itineraryCost.toLocaleString("en-IN")}
@@ -767,8 +770,8 @@ const PriceDetails = ({
             <span>Coupon Discount</span>
             <span>
               {couponDiscount
-                ? "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
-                : "₹0"}
+                ? currencySymbols?.[currency] ? currencySymbols?.[currency] + Math.abs(couponDiscount).toLocaleString("en-IN")  : '₹' + Math.abs(couponDiscount).toLocaleString("en-IN")
+                : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}0`}
             </span>
           </div>
         ) : null}
@@ -776,7 +779,7 @@ const PriceDetails = ({
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <span>Total Amount</span>
-            <span>₹ {finalTotal.toLocaleString("en-IN")}</span>
+            <span> {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'} {finalTotal.toLocaleString("en-IN")}</span>
           </div>
         </div>
       </div>
@@ -832,6 +835,7 @@ const ItineraryInclusions = ({
     Flights: true,
     Activities: true,
   });
+  const {currency} = useSelector(state=>state.currency);
 
   const categorizeBookings = () => {
   const categories = {
@@ -960,9 +964,9 @@ const ItineraryInclusions = ({
 
               {categoryTotal > 0 && (
                 <>
-                  <div className="text-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
-                    ₹{getIndianPrice(Math.round(categoryTotal))}
-                  </div>
+                  {!arePricesHidden && <div className="text-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
+                    {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'} {getIndianPrice(Math.round(categoryTotal))}
+                  </div>}
                 </>
               )}
 
@@ -1043,11 +1047,11 @@ const ItineraryInclusions = ({
 
                         {/* Show individual booking cost */}
                         {
-                          // !arePricesHidden &&
+                          !arePricesHidden &&
                           booking.booking_cost > 0 && (
                             <div className="flex items-center gap-1">
                               <span className="text-sm font-500 leading-md">
-                                ₹
+                                {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
                                 {getIndianPrice(
                                   Math.round(booking.booking_cost)
                                 )}
@@ -1078,10 +1082,10 @@ const ItineraryInclusions = ({
       </span>
 
       {/* Tooltip */}
-      <div className="absolute z-[999] bottom-full left-1/6 -translate-x-1/2 mb-2
+      <div className="absolute z-[999] bottom-full -left-1 -translate-x-1/2 mb-2
                        hidden group-hover:!block whitespace-nowrap overflow-visible
                       bg-black text-white text-xs px-2 py-1 rounded cursor-pointer">
-        Refresh Prices
+        Reprice Itinerary
       </div>
     </div>
   ) : (
@@ -1106,7 +1110,7 @@ const ItineraryInclusions = ({
                     {/* Price - Desktop only */}
                     {!arePricesHidden && booking.booking_cost > 0 && (
                       <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
-                        ₹{getIndianPrice(Math.round(booking.booking_cost))}
+                        {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}{getIndianPrice(Math.round(booking.booking_cost))}
                       </div>
                     )}
                   </div>
@@ -1152,6 +1156,7 @@ const Details = (props) => {
     useSelector((state) => state.ItineraryStatus);
   const Itinerary = useSelector((state) => state.Itinerary);
   const Cart = useSelector((state) => state.Cart);
+  const {currency} = useSelector(state=>state.currency);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -2149,8 +2154,8 @@ const Details = (props) => {
                                 Itinerary Prices Expired.
                               </h2>
                               <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-                                Your itinerary prices have expired. Please
-                                refresh to get the latest prices.
+                                Your itinerary prices have expired. Click on
+                                reprice itinerary to get the latest prices.
                               </p>
                             </div>
 
@@ -2171,7 +2176,7 @@ const Details = (props) => {
                                   Repricing...
                                 </div>
                               ) : (
-                                "Refresh Prices"
+                                "Reprice Itinerary"
                               )}
                             </Button>
                           </div>
@@ -2231,8 +2236,8 @@ const Details = (props) => {
                                 Itinerary Prices Expired.
                               </h2>
                               <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-                                Your itinerary prices have expired. Please
-                                refresh to get the latest prices.
+                                Your itinerary prices have expired. Click on 
+                                reprice itinerary to get the latest prices.
                               </p>
                             </div>
 
@@ -2253,7 +2258,7 @@ const Details = (props) => {
                                   Repricing...
                                 </div>
                               ) : (
-                                "Refresh Prices"
+                                "Reprice Itinerary"
                               )}
                             </Button>
                           </div>
@@ -2400,7 +2405,7 @@ const Details = (props) => {
                             color="green"
                             className="inline align-middle mr-1 font-semibold"
                           />
-                          {`You have paid ₹${Math.round(
+                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}${Math.round(
                             Cart?.amount_paid
                           )} for your itinerary. ${
                             Cart.total_payable_amount != 0

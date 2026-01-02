@@ -167,10 +167,10 @@ const Details = (props) => {
             className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
            onClick={() => {
               props?.requireAuth('view',()=>{
-                if(id != customer){
-                  dispatch(setCloneItineraryDrawer(true));
-                  return;
-                }
+                // if(id != customer){
+                //   dispatch(setCloneItineraryDrawer(true));
+                //   return;
+                // }
 
                 router.push({
                 pathname: `/itinerary/${router?.query?.id}`,

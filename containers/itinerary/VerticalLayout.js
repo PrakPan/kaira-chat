@@ -902,10 +902,10 @@ useEffect(() => {
      if(!localStorage.getItem("access_token")){
       setShowLoginModal(true);
      }
-     if( auth?.id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    //  if( auth?.id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     const bookingType = book?.booking_type || booking_type;
     setTransferType(bookingType);
     trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
@@ -955,10 +955,10 @@ useEffect(() => {
 
   const handleAddTransfer = () => {
     if(localStorage.getItem("access_token")){
-    if( id != customer){
-      dispatch(setCloneItineraryDrawer(true));
-      return;
-    }
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {

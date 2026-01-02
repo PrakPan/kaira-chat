@@ -168,10 +168,10 @@ const starRating = (rating, length) => {
 
   const handleViewDetails = (value) => {
 
-  if( id != customer){
-    dispatch(setCloneItineraryDrawer(true));
-    return;
-  }
+  // if( id != customer){
+  //   dispatch(setCloneItineraryDrawer(true));
+  //   return;
+  // }
   
   const isAuthenticated = requireAuth('view', () => {
     router.push({
@@ -204,10 +204,10 @@ const starRating = (rating, length) => {
 
   e.stopPropagation();
 
-  if( id != customer){
-    dispatch(setCloneItineraryDrawer(true));
-    return;
-  }
+  // if( id != customer){
+  //   dispatch(setCloneItineraryDrawer(true));
+  //   return;
+  // }
   
   // Use requireAuth instead of direct token check
   const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {

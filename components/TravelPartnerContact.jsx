@@ -161,12 +161,14 @@ export default function TravelPartnerContact(props) {
                 setIsHotelsPresent(false);
               })
               .finally(() => {
-                console.log("Customer",id,props?.itinerary?.customer)
-                if(id != props?.itinerary?.customer){
+                // if(id != props?.itinerary?.customer){
 
-                  dispatch(setCloneItineraryDrawer(true));
-                }
-                else setShowSettings(true);
+                //   dispatch(setCloneItineraryDrawer(true));
+                // }
+                // else 
+                  setShowSettings(true);
+
+
               });
           }}
         >
