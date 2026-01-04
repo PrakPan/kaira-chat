@@ -71,9 +71,11 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
     <div ref={containerRef} className={styles.headingContent} style={{height:"100%",width:"100%"}}>
     <div ref={headingRef}>
       <h1 className={`${styles.title} heading-text`}>{`${title || '' }`} </h1>
-      {/* <h1 className={`${styles.title} heading-text`}>
-        Crafted by AI, Inspired by You.
-      </h1> */}
+      <div ref={contentWrapperRef} className={styles.contentWrapper}>
+        <p className={`${styles.subtitle} text-text-focused`}>
+          {`${subtitle || '' }`}
+        </p>
+      </div>
     </div>
     
     {/* Combined container for button and subheading */}

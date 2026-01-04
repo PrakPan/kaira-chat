@@ -219,7 +219,7 @@ const Enquiry = (props) => {
     if (!slideOneData.selectedCities[0].id) {
       setErrors({
         startLocation: null,
-        destination1: "destination can't be null",
+        destination1: "Select a destination to proceed",
         when: null,
       });
       return;
@@ -231,7 +231,7 @@ const Enquiry = (props) => {
       setErrors({
         startLocation: null,
         destination1: null,
-        when: "start or end date can't be null",
+        when: "Select a date to proceed",
       });
       return;
     }
@@ -243,7 +243,7 @@ const Enquiry = (props) => {
       setErrors({
         startLocation: null,
         destination1: null,
-        when: "month or duration can't be null",
+        when: "month or duration can't be empty",
       });
       return;
     }
@@ -251,7 +251,7 @@ const Enquiry = (props) => {
     if (slideOneData.date.type === "anytime" && !slideOneData.date.duration) {
       setErrors({
         startLocation: null,
-        when: "duration can't be null",
+        when: "duration can't be empty",
       });
       return;
     }
@@ -590,7 +590,7 @@ const completeItineraryCreate = () => {
      
       setIsSubmitting(false);
       setIsLoading(false);
-      setError(err.message);
+      setError(err.response.data?.errors?.[0]?.message?.[0]);
     });
 };
 
@@ -600,8 +600,8 @@ const completeItineraryCreate = () => {
       ? 4
       : 3
     : slideThreeData.addHotels
-    ? 4
-    : 3;
+    ? 5
+    : 4;
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
   const [steps, setSteps] = useState([
@@ -611,7 +611,7 @@ const completeItineraryCreate = () => {
   ]);
 
   useEffect(() => {
-    // const isLoggedIn = !!localStorage.getItem("access_token");
+    const isLoggedIn = !!localStorage.getItem("access_token");
 
     setSteps((prevSteps) => {
       let updatedSteps = [...prevSteps];
@@ -620,8 +620,14 @@ const completeItineraryCreate = () => {
         (step) => step !== "Stay Preferences" && step !== "Login"
       );
 
+
+
       if (slideThreeData?.addHotels) 
         updatedSteps.push("Stay Preferences");
+
+      if(!isLoggedIn){
+        updatedSteps.push("Login");
+      }
 
 
       return updatedSteps;
@@ -1127,7 +1133,16 @@ const completeItineraryCreate = () => {
                 color="white"
                 loading={isSubmitting}
                 disabled={isSubmitting}
-                onClick={_submitDataHandler}
+                onClick={()=>{ totalSlides == 5
+                      ?
+                       _submitDataHandler()
+                      : router.push({
+                          pathname: "/new-trip",
+                          query: {
+                            slideIndex: slideIndex + 1,
+                          },
+                        });
+                      }}
                 height="50px"
                 width={`${isPageWide ? "300px" : ""}`}
               >
@@ -1135,6 +1150,7 @@ const completeItineraryCreate = () => {
               </Button>
             </div>
           ) : null}
+
         </div>
       </div>
     </>

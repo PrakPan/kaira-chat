@@ -11,61 +11,61 @@ import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
 const TravelPlanner = ({
-  // Data,
-  // hotLocationSearch,
-  // slug,
-  // setHotLocationSearch,
+  Data,
+  hotLocationSearch,
+  slug,
+  setHotLocationSearch,
 }) => {
   const router = useRouter();
-  const [Data, setData] = useState(null);
-  const [hotLocationSearch, sethotLocationSearch] = useState([]);
-  const [slug, setSlug] = useState(null);
+  // const [Data, setData] = useState(null);
+  // const [hotLocationSearch, sethotLocationSearch] = useState([]);
+  // const [slug, setSlug] = useState(null);
 
-  useEffect(() => {
-    if (router.query.slug) {
-      setSlug(router.query.slug);
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (router.query.slug) {
+  //     setSlug(router.query.slug);
+  //   }
+  // }, [router]);
 
-  useEffect(() => {
-    fetchData();
-  }, [slug]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [slug]);
 
   useEffect(() => {
     setHotLocationSearch(hotLocationSearch);
   }, [hotLocationSearch]);
 
-  const fetchData = async () => {
-    if (slug) {
-      try {
-        const res = await axiosPageInstance.get(`/${slug}/`);
-        if (res?.data?.success) {
-          setData(res.data.data);
-        } else {
-          router.replace("/404"); // Redirect to 404 if data is not found
-          return;
-        }
-      } catch (err) {
-        console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
-        router.replace("/404"); // Redirect to 404 if data is not found
-        return;
-      }
+  // const fetchData = async () => {
+  //   if (slug) {
+  //     try {
+  //       const res = await axiosPageInstance.get(`/${slug}/`);
+  //       if (res?.data?.success) {
+  //         setData(res.data.data);
+  //       } else {
+  //         router.replace("/404"); // Redirect to 404 if data is not found
+  //         return;
+  //       }
+  //     } catch (err) {
+  //       console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
+  //       router.replace("/404"); // Redirect to 404 if data is not found
+  //       return;
+  //     }
 
-      try {
-        const hotDestRes = await axioslocationsinstance.get(
-          `hot_destinations/?state=${slug}/`
-        );
-        if (hotDestRes?.data?.length) {
-          sethotLocationSearch(hotDestRes.data);
-        }
-      } catch (err) {
-        console.error(
-          `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
-          err.message
-        );
-      }
-    }
-  };
+  //     try {
+  //       const hotDestRes = await axioslocationsinstance.get(
+  //         `hot_destinations/?state=${slug}/`
+  //       );
+  //       if (hotDestRes?.data?.length) {
+  //         sethotLocationSearch(hotDestRes.data);
+  //       }
+  //     } catch (err) {
+  //       console.error(
+  //         `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
+  //         err.message
+  //       );
+  //     }
+  //   }
+  // };
 
   if (!Data) return null;
 
