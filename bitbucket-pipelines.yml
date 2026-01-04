@@ -1,0 +1,124 @@
+image: node:18
+
+definitions:
+  caches:
+    npm: ~/.npm
+    
+  steps:
+    - step: &build-and-deploy
+        name: Build and Deploy to AWS
+        caches:
+          - node
+          - npm
+        script:
+          # Install dependencies
+          - npm ci
+          
+          # Install Python for index_path.py script
+          - apt-get update && apt-get install -y python3
+          
+          # Install AWS CLI
+          - apt-get install -y awscli
+          
+          # Make deploy script executable
+          - chmod +x s3-deploy.sh
+          
+          # Run deployment script
+          - ./s3-deploy.sh $DEPLOY_ENV $DEPLOY_OPTIONS
+        artifacts:
+          - out/**
+
+pipelines:
+  branches:
+    develop:
+      - step:
+          <<: *build-and-deploy
+          deployment: development
+          name: Deploy to Development
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh dev
+    
+    master:
+      - step:
+          <<: *build-and-deploy
+          deployment: production
+          name: Deploy to Production
+          trigger: manual
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh prod
+    
+    yourtrips:
+      - step:
+          <<: *build-and-deploy
+          deployment: yourtrips
+          name: Deploy to YourTrips
+          trigger: manual
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh yourtrips -trips
+
+  custom:
+    deploy-dev:
+      - step:
+          <<: *build-and-deploy
+          deployment: development
+          name: Manual Deploy to Development
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh dev
+    
+    deploy-prod:
+      - step:
+          <<: *build-and-deploy
+          deployment: production
+          name: Manual Deploy to Production
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh prod
+    
+    deploy-yourtrips:
+      - step:
+          <<: *build-and-deploy
+          deployment: yourtrips
+          name: Manual Deploy to YourTrips
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3 awscli
+            - chmod +x s3-deploy.sh
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - ./s3-deploy.sh yourtrips -trips
