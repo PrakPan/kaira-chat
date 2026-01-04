@@ -30,7 +30,7 @@ definitions:
 
 pipelines:
   branches:
-    development:
+    develop:
       - step:
           <<: *build-and-deploy
           deployment: development
@@ -45,37 +45,65 @@ pipelines:
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
             - ./s3-deploy.sh dev
     
-    main:
+    master:
       - step:
-          <<: *build-and-deploy
+          name: Build
+          caches:
+            - node
+            - npm
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - chmod +x s3-deploy.sh
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - node scripts/removeTripsPage.js prebuild || exit 0
+            - npm run build
+            - node scripts/removeTripsPage.js postbuild || exit 0
+            - python3 index_path.py
+          artifacts:
+            - out/**
+      - step:
           deployment: production
           name: Deploy to Production
           trigger: manual
           script:
-            - npm ci
-            - apt-get update && apt-get install -y python3 awscli
-            - chmod +x s3-deploy.sh
+            - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - ./s3-deploy.sh prod
+            - echo "Deploying to S3..."
+            - aws s3 sync out/ s3://ttw-nextjs --cache-control max-age=31536000,public
+            - echo "Invalidating CloudFront cache..."
+            - aws cloudfront create-invalidation --distribution-id EW37HZUU6T8S9 --paths "/*"
     
     yourtrips:
       - step:
-          <<: *build-and-deploy
+          name: Build
+          caches:
+            - node
+            - npm
+          script:
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - chmod +x s3-deploy.sh
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - npm run build
+            - python3 index_path.py
+          artifacts:
+            - out/**
+      - step:
           deployment: yourtrips
           name: Deploy to YourTrips
           trigger: manual
           script:
-            - npm ci
-            - apt-get update && apt-get install -y python3 awscli
-            - chmod +x s3-deploy.sh
+            - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
             - export AWS_DEFAULT_REGION=$AWS_REGION
-            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
-            - ./s3-deploy.sh yourtrips -trips
+            - echo "Deploying to S3..."
+            - aws s3 sync out/ s3://yourtrips-nextjs --delete --cache-control max-age=31536000,public
+            - echo "Invalidating CloudFront cache..."
+            - aws cloudfront create-invalidation --distribution-id E28HVCR7LF1VH2 --paths "/*"
 
   custom:
     deploy-dev:
