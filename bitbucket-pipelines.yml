@@ -30,7 +30,7 @@ definitions:
 
 pipelines:
   branches:
-    develop:
+    development:
       - step:
           <<: *build-and-deploy
           deployment: development
@@ -45,7 +45,7 @@ pipelines:
             - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
             - ./s3-deploy.sh dev
     
-    master:
+    main:
       - step:
           <<: *build-and-deploy
           deployment: production
