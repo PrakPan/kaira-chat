@@ -85,7 +85,7 @@ yarn-error.log*
 .vercel
 
 
-bitbucket-pipelines.yml
+# bitbucket-pipelines.yml
 docker-compose.yml
 Dockerfile
 
