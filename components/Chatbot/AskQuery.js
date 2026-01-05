@@ -175,7 +175,7 @@ function AskQuery() {
               rows={1}
               placeholder="Ask anything..."
               value={query}
-              disabled={ id != customer}
+              // disabled={ id != customer}
               onChange={handleInput}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -203,12 +203,12 @@ function AskQuery() {
                   ref={dictateRef}
                   stopDictation={stopDictation}
                   onTranscriptChange={handleTranscriptChange}
-                  disabled={id != customer}
+                  // disabled={id != customer}
                 />{" "}
               </div>
               <div className="flex">
                 <SubmitButton
-                  disabled={isSubmitDisabled || disableQuerySection || (id != customer)}
+                  disabled={isSubmitDisabled || disableQuerySection}
                   onClick={(e) => {
                     e.preventDefault();
                     handleSubmitQuery();

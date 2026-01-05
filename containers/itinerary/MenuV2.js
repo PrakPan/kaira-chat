@@ -137,6 +137,7 @@ const SimpleTabsV2 = (props) => {
   const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
+  const cart = useSelector(state=>state.Cart);
 
 
    
@@ -1333,14 +1334,14 @@ const attachUserToItinerary = async () => {
                   </GetInTouchContainer>
                 ) : null}
               </div>
-              {props?.payment && props?.token && (
+              {cart && props?.token && (
                 <div className="text-[12px] text-[#6E757A]">
-                  {props?.payment?.pay_only_for_one ||
-                  props?.payment?.show_per_person_cost
+                  {cart?.pay_only_for_one ||
+                  cart?.show_per_person_cost
                     ? "Per Person"
-                    : props.payment?.is_estimated_price
+                    : cart?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0 ? "" : "Estimated Price"
+                        cart?.total_cost == 0 ? "" : "Estimated Price"
                       }`
                     : "Total Cost"}
                 </div>
@@ -1350,29 +1351,29 @@ const attachUserToItinerary = async () => {
                   <span className="font-bold font-[20px] ">
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
                     {!props?.mercuryItinerary
-                      ? props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      ? cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost
+                                cart?.per_person_discounted_cost
                               ) / 100
                             )
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
+                              Math.round(cart?.discounted_cost) / 100
                             )
                           )
-                      : props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      : cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                       ? getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.per_person_discounted_cost)
+                            Math.round(cart?.per_person_discounted_cost)
                           )
                         )
                       : getIndianPrice(
-                          Math.round(Math.round(props.payment.discounted_cost))
+                          Math.round(Math.round(cart?.discounted_cost))
                         )}
                     {"/-"}
                   </span>
