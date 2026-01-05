@@ -7,6 +7,7 @@ definitions:
   steps:
     - step: &build-and-deploy
         name: Build and Deploy to AWS
+        size: 4x
         caches:
           - node
           - npm
@@ -35,6 +36,7 @@ pipelines:
           <<: *build-and-deploy
           deployment: development
           name: Deploy to Development
+          size: 4x
           script:
             - npm ci
             - apt-get update && apt-get install -y python3 awscli
@@ -48,6 +50,7 @@ pipelines:
     main:
       - step:
           name: Build
+          size: 4x
           caches:
             - node
             - npm
@@ -79,6 +82,7 @@ pipelines:
     yourtrips:
       - step:
           name: Build
+          size: 4x
           caches:
             - node
             - npm
