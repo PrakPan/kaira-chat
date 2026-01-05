@@ -870,6 +870,7 @@ const starRating = (rating, length) => {
             mercury
             _setImagesHandler={_setImagesHandler}
             onHide={() => setOpenViewDetails(false)}
+            setImages={setImages}
             id={booking_id}
             currentBooking={currentBooking}
             check_in={dates.check_in}
@@ -945,13 +946,13 @@ const starRating = (rating, length) => {
           ></BookingModal>
         )}
 
-      {images ? (
+      {/* {images ? (
         <FullScreenGallery
           mercury
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGallery>
-      ) : null}
+      ) : null} */}
     </div>
   );
 };

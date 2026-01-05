@@ -580,6 +580,7 @@ export default function ThemePage(props) {
                                     one_liner_description={destination?.one_liner_description}
                                     reviewCount={destination.user_ratings_total}
                                     showImageText={false}
+                                    height="280px"
                                     tags={
                                       destination.tags ||
                                       (destination.continent ? [destination.continent] : [])
@@ -595,7 +596,7 @@ export default function ThemePage(props) {
                             <div
                               className="absolute left-3 sm:left-1 z-10"
                               style={{
-                                top: "calc(376px / 2)",
+                                top: "calc(280px / 2)",
                                 transform: "translateY(-50%)",
                               }}
                             >
@@ -613,7 +614,7 @@ export default function ThemePage(props) {
                             <div
                               className="absolute right-3 sm:right-1 z-10"
                               style={{
-                                top: "calc(376px / 2)",
+                                top: "calc(280px / 2)",
                                 transform: "translateY(-50%)",
                               }}
                             >
@@ -734,7 +735,7 @@ export default function ThemePage(props) {
                         />
                         <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
                       </>
-                    ) : component.carousel === "destination-5" ? (
+                    ) : component.carousel === "destination-5" || component.carousel === "poi-1" ? (
                       <>
                         {/* <Poi
                           elevation={component?.elevation}

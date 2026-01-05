@@ -110,17 +110,6 @@ export async function getStaticPaths() {
     paths:paths,
     fallback:false
   }
-  return {
-    paths: [
-      {
-        params: {
-          continent: "europe",
-          country: "portugal",
-        },
-      },
-    ],
-    fallback: false,
-  };
 }
 
 

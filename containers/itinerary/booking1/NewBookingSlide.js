@@ -1082,10 +1082,10 @@ const ItineraryInclusions = ({
       </span>
 
       {/* Tooltip */}
-      <div className="absolute z-[999] bottom-full -left-1 -translate-x-1/2 mb-2
+      <div className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
                        hidden group-hover:!block whitespace-nowrap overflow-visible
                       bg-black text-white text-xs px-2 py-1 rounded cursor-pointer">
-        Reprice Itinerary
+        Reprice itinerary to add/remove this booking
       </div>
     </div>
   ) : (

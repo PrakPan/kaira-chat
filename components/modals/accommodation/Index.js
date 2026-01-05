@@ -221,6 +221,7 @@ const POI = (props) => {
                 id={props?.id}
                 setShowLoginModal={props?.setShowLoginModal}
                 onHide={props?.onHide}
+                setImages={props?.setImages}
                 _setImagesHandler={props?._setImagesHandler}
               />
             </>
