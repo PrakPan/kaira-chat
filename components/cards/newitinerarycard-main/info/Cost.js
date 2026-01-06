@@ -114,7 +114,7 @@ const Cost = (props) => {
               (props.PW ? (
                 <StrikedCost>
                   {" "}
-                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ ") +
+                  {("₹ ") +
                     getIndianPrice(Math.round(props.discounted_cost))}
                 </StrikedCost>
               ) : (
@@ -132,7 +132,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className=""
                 >
-                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ " )+
+                  {("₹ ")+
                     getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </Text>
@@ -142,7 +142,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className=""
                 >
-                  {(currency?.currency ? currencySymbols?.[currency?.currency] :  "₹ ") +
+                  {("₹ ") +
                     getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </GITText>
