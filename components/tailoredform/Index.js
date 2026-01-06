@@ -468,9 +468,26 @@ const initiateItineraryCreate = async (slideOneData) => {
 
 const completeItineraryCreate = () => {
   const platform = getPlatform();
+
+  const finalItineraryId = itineraryInititateData?.itinerary_id || itineraryId;
+  
+  if (!finalItineraryId) {
+    console.error("❌ No itinerary ID available for completion");
+    setError("Unable to complete itinerary. Please start from the beginning.");
+    setIsSubmitting(false);
+    setIsLoading(false);
+    
+    router.push({
+      pathname: "/new-trip",
+      query: { slideIndex: 0 }
+    });
+    return;
+  }
+  
+
   const data = {
     source,
-    itinerary_id: itineraryId,
+    itinerary_id: finalItineraryId,
     group_type: slideThreeData.groupType || "Solo",
     number_of_adults: slideThreeData.numberOfAdults,
     number_of_children: slideThreeData.numberOfChildren,
@@ -506,6 +523,7 @@ const completeItineraryCreate = () => {
       setError(null);
       setSubmitted(true);
       trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
+      dispatch(setItineraryInitiateData(null));
       dispatch(setItineraryCreated(true));
       
       const isProduction = process.env.NODE_ENV === "production";
