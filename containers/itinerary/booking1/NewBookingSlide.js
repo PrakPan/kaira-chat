@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -66,6 +66,7 @@ import { TbClockExclamation } from "react-icons/tb";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
+import usePaymentGateway from "../../../hooks/usePaymentGateway";
 
 
 const GetInTouchContainer = styled.div`
@@ -1191,6 +1192,38 @@ const Details = (props) => {
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   const { resetSession } = useChatContext();
 
+ const {
+    currentGateway,
+    setCurrentGateway,
+    gatewayLoadError,
+    paymentLoading: gatewayLoading,
+    isInitialized,
+    initiatePayment,
+    setPaymentLoading: setGatewayPaymentLoading,
+  } = usePaymentGateway(props);
+
+
+  const handlePaymentSuccess = useCallback((data, paymentType) => {
+    if (paymentType === "full_payment") {
+      setSessionPaymentCompleted(true);
+      setPaymentCompleted(true);
+      trackPaymentBookingConfirmed(router?.query?.id, Cart);
+    } else if (paymentType === "lock_payment") {
+      setLockInCompleted(true);
+      setSelectedPaymentOption("full");
+    }
+
+    // Refresh payment data
+    props.getPaymentHandler?.();
+  }, [router?.query?.id, Cart, props]);
+
+
+
+
+useEffect(() => {
+    setPaymentLoading(gatewayLoading);
+  }, [gatewayLoading]);
+
   const {
     trackWhatsAppClicked,
     trackPaymentSelected,
@@ -1204,6 +1237,75 @@ const Details = (props) => {
       handleProceedToPayment();
     }
   }, [props?.openPaymentDrawer]);
+
+
+  const handlePaymentError = useCallback((error) => {
+    console.error("Payment error:", error);
+    props.getPaymentHandler?.();
+  }, [props]);
+
+  const handlePaymentCancel = useCallback(() => {
+    console.log("Payment cancelled by user");
+  }, []);
+
+  // Full payment handler
+  const handleFullPayment = useCallback(async () => {
+    if (!isInitialized) {
+      dispatch(
+        openNotification({
+          text: "Payment system is still initializing. Please wait...",
+          heading: "Please Wait",
+          type: "info",
+        })
+      );
+      return;
+    }
+
+    trackPaymentAttempted(router.query.id, Cart);
+
+    await initiatePayment("full_payment", Cart, {
+      onSuccess: handlePaymentSuccess,
+      onError: handlePaymentError,
+      onCancel: handlePaymentCancel,
+    });
+  }, [
+    isInitialized,
+    initiatePayment,
+    Cart,
+    router.query.id,
+    dispatch,
+    handlePaymentSuccess,
+    handlePaymentError,
+    handlePaymentCancel,
+  ]);
+
+  // Lock-in payment handler
+  const handleLockInPayment = useCallback(async () => {
+    if (!isInitialized) {
+      dispatch(
+        openNotification({
+          text: "Payment system is still initializing. Please wait...",
+          heading: "Please Wait",
+          type: "info",
+        })
+      );
+      return;
+    }
+
+    await initiatePayment("lock_payment", Cart, {
+      onSuccess: handlePaymentSuccess,
+      onError: handlePaymentError,
+      onCancel: handlePaymentCancel,
+    });
+  }, [
+    isInitialized,
+    initiatePayment,
+    Cart,
+    dispatch,
+    handlePaymentSuccess,
+    handlePaymentError,
+    handlePaymentCancel,
+  ]);
 
   useEffect(() => {
     if (Cart?.summary) {
@@ -1586,211 +1688,320 @@ const Details = (props) => {
     getURL();
 
   const _startRazorpayHandler = (data, paymentType) => {
-    let razorpayOptions = {
-      // key: "rzp_test_FEKg5ZWGWl9i7c",
-      key: "rzp_live_t1AzJZflHj0jWg",
-      amount: data.amount * 100 || data?.discounted_cost * 100,
-      name: "The Tarzan Way Payment Portal",
-      description: " data.data.description",
-      image:
-        "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
-      order_id: data?.sales[0]?.orders[0]?.order_id,
-      modal: {
-        ondismiss: function () {
-          setPaymentLoading(false);
-        },
+  let razorpayOptions = {
+    key: "rzp_live_t1AzJZflHj0jWg",
+    amount: data.amount * 100 || data?.discounted_cost * 100,
+    name: "The Tarzan Way Payment Portal",
+    description: "Payment for your itinerary",
+    image: "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
+    order_id: data?.sales[0]?.orders[0]?.order_id,
+    modal: {
+      ondismiss: function () {
+        setPaymentLoading(false);
       },
-      handler: function (response) {
-        setPaymentLoading(true);
+    },
+    handler: function (response) {
+      _handlePaymentVerification(response, "Razorpay", paymentType);
+    },
+    prefill: {
+      name: props.name,
+      email: props.email,
+      contact: props.phone,
+    },
+    theme: {
+      color: "#F7e700",
+    },
+  };
 
-        axios
-          .post(
-            "https://mercury.tarzanway.com/payment/verify/",
-            { ...response },
-            { headers: { Authorization: `Bearer ${props.token}` } }
-          )
-          .then((res) => {
-            setPaymentLoading(false);
+  try {
+    var rzp1 = new window.Razorpay(razorpayOptions);
+    rzp1.open();
+  } catch (error) {
+    console.error("Razorpay error:", error);
+    _tryAlternativeGateway(data, paymentType);
+  }
+};
 
-            // Set session completion based on payment type
-            if (paymentType === "full") {
-              setSessionPaymentCompleted(true);
-              setPaymentCompleted(true);
-              trackPaymentBookingConfirmed(router?.query?.id, Cart);
-            } else {
-              setLockInCompleted(true);
-              setSelectedPaymentOption("full");
-            }
+// New Revolut handler
+const _startRevolutHandler = async (data, paymentType) => {
 
-            props.getPaymentHandler();
-          })
-          .catch((err) => {
-            setPaymentLoading(false);
-          });
-      },
-      prefill: {
-        name: props.name,
-        email: props.email,
-        contact: props.phone,
-      },
-      theme: {
-        color: "#F7e700",
-      },
+  console.log("OORDERR",data)
+  try {
+    const orderData = {
+      revolut_token: data?.sales[0]?.orders[0]?.revolut_token,
+      public_id: data?.sales[0]?.orders[0]?.public_id,
+      customer_email: props.email,
     };
 
-    try {
-      var rzp1 = new window.Razorpay(razorpayOptions);
-      rzp1.open();
-    } catch (error) {}
-  };
-
-  const _fullPaymentHandler = async (id) => {
-    setPaymentLoading(true);
-
-    try {
-      const response = await paymentInitiate.post(
-        "",
-        {
-          payment_information_id: Cart?.id,
-          payment_type: "full_payment",
-        },
-        {
-          headers: { Authorization: `Bearer ${props.token}` },
-        }
-      );
-
-      if (response.data) {
-        dispatch(setCart(response.data));
-        props.fetchData(true);
-
-        const fullPaymentSale = response.data?.sales?.find(
-          (sale) =>
-            sale.payment_type === "full_payment" && sale.status === "Created"
-        );
-
-        trackPaymentAttempted(router.query.id, Cart);
-
-        if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
-          setPaymentLoading(false);
-          dispatch(
-            openNotification({
-              text: "Payment order not found. Please refresh and try again.",
-              heading: "Error!",
-              type: "error",
-            })
-          );
-          return;
-        }
-
-        const razorpayData = {
-          amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
-          sales: [fullPaymentSale],
-        };
-
-        // Update the Razorpay handler to set session completion
-        _startRazorpayHandler(razorpayData, "full");
-      }
-    } catch (error) {
-      console.error("Error initiating full payment:", error);
-
-      props.getPaymentHandler();
-      const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] ||
-        "Something went wrong"
-      dispatch(
-        openNotification({
-          text: errorMsg,
-          heading: "Error!",
-          type: "error",
-        })
-      );
-      setPaymentLoading(false);
-      return;
-    }
-  };
-
-  const _lockInPaymentHandler = async (id) => {
-    setPaymentLoading(true);
-
-    try {
-      const response = await paymentInitiate.post(
-        "",
-        {
-          payment_information_id: Cart?.id,
-          payment_type: "lock_payment",
-        },
-        {
-          headers: { Authorization: `Bearer ${props.token}` },
-        }
-      );
-
-      if (response.data) {
-        dispatch(setCart(response.data));
-        props.fetchData(true);
-
-        const lockPaymentSale = response.data?.sales?.find(
-          (sale) =>
-            sale.payment_type === "lock_payment" && sale.status === "Created"
-        );
-
-        if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
-          setPaymentLoading(false);
-          dispatch(
-            openNotification({
-              text: "Payment order not found. Please refresh and try again.",
-              heading: "Error!",
-              type: "error",
-            })
-          );
-          return;
-        }
-
-        const razorpayData = {
-          amount: lockPaymentSale.remaining_amount,
-          sales: [lockPaymentSale],
-        };
-
-        _startRazorpayHandler(razorpayData, "lockin");
-      }
-    } catch (error) {
-      console.error("Error initiating lock payment:", error);
-      dispatch(
-        openNotification({
-          text:
-            error?.response?.data?.errors?.[0]?.detail?.[0] ||
-            "Something went wrong",
-          heading: "Error!",
-          type: "error",
-        })
-      );
-      setPaymentLoading(false);
-      return;
-    }
-  };
-
-  const _saleCreateHandler = (id) => {
-    setPaymentLoading(true);
-    axiossalecreateinstance
-      .post(
-        "/",
-        {
-          itinerary_id: id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      )
-      .then((res) => {
+    await revolutPaymentHandler.openPaymentModal(orderData, {
+      onSuccess: (response) => {
+        _handlePaymentVerification(response, "Revolut", paymentType);
+      },
+      onError: (error) => {
+        console.error("Revolut payment error:", error);
         setPaymentLoading(false);
+        _tryAlternativeGateway(data, paymentType);
+      },
+      onCancel: () => {
+        setPaymentLoading(false);
+        dispatch(
+          openNotification({
+            text: "Payment was cancelled",
+            heading: "Payment Cancelled",
+            type: "warning",
+          })
+        );
+      },
+    });
+  } catch (error) {
+    console.error("Error starting Revolut payment:", error);
+    _tryAlternativeGateway(data, paymentType);
+  }
+};
 
-        _startRazorpayHandler(res.data);
+// Gateway router - decides which payment handler to use
+const _startPaymentHandler = (data, paymentType) => {
+  if (!currentGateway) {
+    dispatch(
+      openNotification({
+        text: "Payment gateway not initialized. Please refresh the page.",
+        heading: "Error!",
+        type: "error",
       })
-      .catch((err) => {
+    );
+    setPaymentLoading(false);
+    return;
+  }
+
+  if (currentGateway === "Razorpay") {
+    _startRazorpayHandler(data, paymentType);
+  } else if (currentGateway === "Revolut") {
+    _startRevolutHandler(data, paymentType);
+  }
+};
+
+// Try alternative gateway if current one fails
+const _tryAlternativeGateway = async (data, paymentType) => {
+  const availableGateways = paymentGatewayService.availableGateways;
+  const currentIndex = availableGateways.indexOf(currentGateway);
+  const nextGateway = availableGateways[(currentIndex + 1) % availableGateways.length];
+
+  if (nextGateway === currentGateway) {
+    dispatch(
+      openNotification({
+        text: "All payment gateways failed. Please try again later.",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+    return;
+  }
+
+  try {
+    dispatch(
+      openNotification({
+        text: `Switching to alternative payment method...`,
+        heading: "Please Wait",
+        type: "info",
+      })
+    );
+
+    await paymentGatewayService.loadGatewayScript(nextGateway);
+    
+    if (nextGateway === "Revolut") {
+      await revolutPaymentHandler.initialize(process.env.REVOLUT_PUBLIC_KEY);
+    }
+    
+    setCurrentGateway(nextGateway);
+    
+    // Retry payment with new gateway
+    if (nextGateway === "Razorpay") {
+      _startRazorpayHandler(data, paymentType);
+    } else if (nextGateway === "Revolut") {
+      _startRevolutHandler(data, paymentType);
+    }
+  } catch (error) {
+    console.error("Failed to switch gateway:", error);
+    dispatch(
+      openNotification({
+        text: "Failed to initialize alternative payment method.",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+  }
+};
+
+ const _handlePaymentVerification = async (response, gateway, paymentType) => {
+  setPaymentLoading(true);
+
+  try {
+    const verifyPayload = paymentGatewayService.prepareVerifyPayload(response, gateway);
+
+    const res = await axios.post(
+      "https://mercury.tarzanway.com/payment/verify/",
+      verifyPayload,
+      { headers: { Authorization: `Bearer ${props.token}` } }
+    );
+
+    setPaymentLoading(false);
+
+    // Set session completion based on payment type
+    if (paymentType === "full") {
+      setSessionPaymentCompleted(true);
+      setPaymentCompleted(true);
+      trackPaymentBookingConfirmed(router?.query?.id, Cart);
+    } else {
+      setLockInCompleted(true);
+      setSelectedPaymentOption("full");
+    }
+
+    dispatch(
+      openNotification({
+        text: "Payment successful!",
+        heading: "Success",
+        type: "success",
+      })
+    );
+
+    props.getPaymentHandler();
+  } catch (err) {
+    setPaymentLoading(false);
+    console.error("Payment verification error:", err);
+    
+    dispatch(
+      openNotification({
+        text: err?.response?.data?.message || "Payment verification failed",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+  }
+};
+
+// Updated full payment handler
+const _fullPaymentHandler = async (id) => {
+  setPaymentLoading(true);
+
+  try {
+    const payload = paymentGatewayService.prepareInitiatePayload(
+      { id: Cart?.id, type: "full_payment" },
+      currentGateway
+    );
+
+    const response = await paymentInitiate.post("", payload, {
+      headers: { Authorization: `Bearer ${props.token}` },
+    });
+
+    if (response.data) {
+      dispatch(setCart(response.data));
+      props.fetchData(true);
+
+      const fullPaymentSale = response.data?.sales?.find(
+        (sale) =>
+          sale.payment_type === "full_payment" && sale.status === "Created"
+      );
+
+      trackPaymentAttempted(router.query.id, Cart);
+
+      if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
         setPaymentLoading(false);
-      });
-  };
+        dispatch(
+          openNotification({
+            text: "Payment order not found. Please refresh and try again.",
+            heading: "Error!",
+            type: "error",
+          })
+        );
+        return;
+      }
+
+      const paymentData = {
+        amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
+        sales: [fullPaymentSale],
+        discounted_cost: calculateFilteredTotal(),
+      };
+
+      _startPaymentHandler(paymentData, "full");
+    }
+  } catch (error) {
+    console.error("Error initiating full payment:", error);
+    props.getPaymentHandler();
+    
+    const errorMsg =
+      error?.response?.data?.errors?.[0]?.message?.[0] ||
+      "Something went wrong";
+    
+    dispatch(
+      openNotification({
+        text: errorMsg,
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+  }
+};
+
+// Updated lock-in payment handler
+const _lockInPaymentHandler = async (id) => {
+  setPaymentLoading(true);
+
+  try {
+    const payload = paymentGatewayService.prepareInitiatePayload(
+      { id: Cart?.id, type: "lock_payment" },
+      currentGateway
+    );
+
+    const response = await paymentInitiate.post("", payload, {
+      headers: { Authorization: `Bearer ${props.token}` },
+    });
+
+    if (response.data) {
+      dispatch(setCart(response.data));
+      props.fetchData(true);
+
+      const lockPaymentSale = response.data?.sales?.find(
+        (sale) =>
+          sale.payment_type === "lock_payment" && sale.status === "Created"
+      );
+
+      if (!lockPaymentSale || !lockPaymentSale.orders?.[0]) {
+        setPaymentLoading(false);
+        dispatch(
+          openNotification({
+            text: "Payment order not found. Please refresh and try again.",
+            heading: "Error!",
+            type: "error",
+          })
+        );
+        return;
+      }
+
+      const paymentData = {
+        amount: lockPaymentSale.remaining_amount,
+        sales: [lockPaymentSale],
+      };
+
+      _startPaymentHandler(paymentData, "lockin");
+    }
+  } catch (error) {
+    console.error("Error initiating lock payment:", error);
+    dispatch(
+      openNotification({
+        text:
+          error?.response?.data?.errors?.[0]?.detail?.[0] ||
+          "Something went wrong",
+        heading: "Error!",
+        type: "error",
+      })
+    );
+    setPaymentLoading(false);
+  }
+};
+
 
   let optionsJSX = [];
   for (var i = props.number_of_adults; i <= 20; i++) {
@@ -1839,30 +2050,16 @@ const Details = (props) => {
     });
   };
 
-  const handlePayNow = (label) => {
-    if (label === "_saleCreateHandler") {
-      _saleCreateHandler(props.id);
-    } else if (label === "lockin") {
-      _lockInPaymentHandler(Cart?.id);
-    } else if (label === "full") {
-      _fullPaymentHandler(Cart?.id);
+  const handlePayNow = useCallback((type) => {
+    if (type === "full") {
+      handleFullPayment();
+    } else if (type === "lockin") {
+      handleLockInPayment();
     } else {
       setShowVerification(true);
     }
+  }, [handleFullPayment, handleLockInPayment]);
 
-    // logEvent({
-    //   action: "Button_Click",
-    //   params: {
-    //     page: "Itinerary Page",
-    //     event_category: "Button Click",
-    //     event_label:
-    //       selectedPaymentOption === "full"
-    //         ? "Pay Full Amount"
-    //         : "Lock-in Price",
-    //     event_action: "Booking Slide",
-    //   },
-    // });
-  };
 
   const handleTravellersDetails = () => {
     setShowRegistartion(true);
