@@ -5,32 +5,6 @@ definitions:
     npm: ~/.npm
 
 pipelines:
-  # Regular branch pushes - DO NOTHING (no build, no validation, no deployment)
-  branches:
-    development:
-      - step:
-          name: Code Pushed (No Actions)
-          script:
-            - echo "✅ Code pushed to development branch"
-            - echo "📝 No build or deployment triggered"
-            - echo "🏷️  To deploy, push a tag like 'dev-v1.0.0'"
-    
-    main:
-      - step:
-          name: Code Pushed (No Actions)
-          script:
-            - echo "✅ Code pushed to main branch"
-            - echo "📝 No build or deployment triggered"
-            - echo "🏷️  To deploy, push a tag like 'prod-v1.0.0'"
-    
-    yourtrips:
-      - step:
-          name: Code Pushed (No Actions)
-          script:
-            - echo "✅ Code pushed to yourtrips branch"
-            - echo "📝 No build or deployment triggered"
-            - echo "🏷️  To deploy, push a tag like 'yourtrips-v1.0.0'"
-
   # Tag-based deployments (FULLY AUTOMATIC)
   tags:
     # Development deployment: tags starting with 'dev-'
@@ -43,7 +17,7 @@ pipelines:
             - npm
           script:
             - echo "🚀 Tag-based deployment triggered"
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - echo "🔧 Building for Development environment..."
             - npm ci
             - apt-get update && apt-get install -y python3
@@ -58,25 +32,24 @@ pipelines:
       
       - step:
           name: Deploy to Development
-          deployment: development
           script:
             - echo "📦 Deploying to Development (S3 + CloudFront)..."
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_DEV
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_DEV
             - export AWS_DEFAULT_REGION=$AWS_REGION_DEV
-            - echo "⬆️  Uploading to S3 bucket: nextjs-dev-2"
+            - echo "⬆️  Uploading to S3 bucket nextjs-dev-2"
             - aws s3 sync out/ s3://nextjs-dev-2 --cache-control max-age=31536000,public
             - echo "🔄 Invalidating CloudFront cache..."
             - aws cloudfront create-invalidation --distribution-id E3T22L50EDEN1W --paths "/*"
             - echo "✅ Deployment to Development completed successfully!"
-            - echo "📌 Deployed Tag: $BITBUCKET_TAG"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
           after-script:
             - |
               if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
                 echo "❌ DEPLOYMENT FAILED!"
-                echo "📌 Failed Tag: $BITBUCKET_TAG"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
                 echo "⚠️  Previous version still running on server"
                 echo "💡 Check logs above for error details"
               fi
@@ -91,9 +64,8 @@ pipelines:
             - npm
           script:
             - echo "🚀 Production deployment triggered"
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - echo "🔧 Building for Production environment..."
-            # Ensure tag is from main branch
             - |
               BRANCH=$(git rev-parse --abbrev-ref HEAD)
               if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "HEAD" ]; then
@@ -117,27 +89,26 @@ pipelines:
       
       - step:
           name: Deploy to Production
-          deployment: production
           script:
             - echo "📦 Deploying to Production (S3 + CloudFront)..."
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - echo "⚠️  PRODUCTION DEPLOYMENT IN PROGRESS"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_PROD
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_PROD
             - export AWS_DEFAULT_REGION=$AWS_REGION_PROD
-            - echo "⬆️  Uploading to S3 bucket: ttw-nextjs"
+            - echo "⬆️  Uploading to S3 bucket ttw-nextjs"
             - aws s3 sync out/ s3://ttw-nextjs --cache-control max-age=31536000,public
             - echo "🔄 Invalidating CloudFront cache..."
             - aws cloudfront create-invalidation --distribution-id EW37HZUU6T8S9 --paths "/*"
             - echo "✅ PRODUCTION DEPLOYMENT COMPLETED SUCCESSFULLY!"
-            - echo "📌 Deployed Tag: $BITBUCKET_TAG"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
             - echo "🌐 Production is now live with this version"
           after-script:
             - |
               if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
                 echo "❌ PRODUCTION DEPLOYMENT FAILED!"
-                echo "📌 Failed Tag: $BITBUCKET_TAG"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
                 echo "⚠️  CRITICAL: Check production status immediately"
                 echo "💡 Previous version may still be running"
                 echo "🔙 Consider rollback to previous tag if needed"
@@ -153,7 +124,7 @@ pipelines:
             - npm
           script:
             - echo "🚀 YourTrips deployment triggered"
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - echo "🔧 Building for YourTrips environment..."
             - npm ci
             - apt-get update && apt-get install -y python3
@@ -168,25 +139,24 @@ pipelines:
       
       - step:
           name: Deploy to YourTrips
-          deployment: yourtrips
           script:
             - echo "📦 Deploying to YourTrips (S3 + CloudFront)..."
-            - echo "📌 Tag: $BITBUCKET_TAG"
+            - echo "📌 Tag $BITBUCKET_TAG"
             - apt-get update && apt-get install -y awscli
             - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID_YOURTRIPS
             - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY_YOURTRIPS
             - export AWS_DEFAULT_REGION=$AWS_REGION_YOURTRIPS
-            - echo "⬆️  Uploading to S3 bucket: yourtrips-nextjs"
+            - echo "⬆️  Uploading to S3 bucket yourtrips-nextjs"
             - aws s3 sync out/ s3://yourtrips-nextjs --delete --cache-control max-age=31536000,public
             - echo "🔄 Invalidating CloudFront cache..."
             - aws cloudfront create-invalidation --distribution-id E28HVCR7LF1VH2 --paths "/*"
             - echo "✅ Deployment to YourTrips completed successfully!"
-            - echo "📌 Deployed Tag: $BITBUCKET_TAG"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
           after-script:
             - |
               if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
                 echo "❌ YOURTRIPS DEPLOYMENT FAILED!"
-                echo "📌 Failed Tag: $BITBUCKET_TAG"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
                 echo "⚠️  Previous version still running"
                 echo "💡 Check logs for error details"
               fi
