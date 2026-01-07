@@ -81,14 +81,14 @@ export async function getStaticProps() {
     "6b518483-67a9-4d88-bbbf-2783aff3d691",
   ];
 
-  const weekend_excursions = [
-    "91cec15d-2499-4080-86f5-1e13a1fca14d",
-    "2ad32b42-f487-40b2-bd8c-8b048a133d98",
-    "f2fbbbea-3bc5-4b5c-abd6-9149fba8f368",
-    "3b59a1ca-c167-43e1-a1d7-e950563f8c9e",
-  ];
+  // const weekend_excursions = [
+  //   "91cec15d-2499-4080-86f5-1e13a1fca14d",
+  //   "2ad32b42-f487-40b2-bd8c-8b048a133d98",
+  //   "f2fbbbea-3bc5-4b5c-abd6-9149fba8f368",
+  //   "3b59a1ca-c167-43e1-a1d7-e950563f8c9e",
+  // ];
 
-  const add_on = ["0a62245b-7990-4f8d-897e-0df487939b6a", "f5471651-43d4-4d35-b7ff-359499420ba9"];
+  // const add_on = ["0a62245b-7990-4f8d-897e-0df487939b6a", "f5471651-43d4-4d35-b7ff-359499420ba9"];
 
   var locations = [];
 
@@ -158,27 +158,27 @@ export async function getStaticProps() {
     }
   }
 
-  for (let i = 0; i < weekend_excursions.length; i++) {
-    try {
-      const res = await activityDetail.get(`${weekend_excursions[i]}`);
-      if (res?.data?.data?.activity) {
-        weekend_excursions_activities.push(res?.data?.data?.activity);
-      }
-    } catch (err) {
-      console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
-    }
-  }
+  // for (let i = 0; i < weekend_excursions.length; i++) {
+  //   try {
+  //     const res = await activityDetail.get(`${weekend_excursions[i]}`);
+  //     if (res?.data?.data?.activity) {
+  //       weekend_excursions_activities.push(res?.data?.data?.activity);
+  //     }
+  //   } catch (err) {
+  //     console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
+  //   }
+  // }
 
-  for (let i = 0; i < add_on.length; i++) {
-    try {
-      const res = await activityDetail.get(`${add_on[i]}`);
-      if (res?.data?.data?.activity) {
-        add_on_activities.push(res?.data?.data?.activity);
-      }
-    } catch (err) {
-      console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
-    }
-  }
+  // for (let i = 0; i < add_on.length; i++) {
+  //   try {
+  //     const res = await activityDetail.get(`${add_on[i]}`);
+  //     if (res?.data?.data?.activity) {
+  //       add_on_activities.push(res?.data?.data?.activity);
+  //     }
+  //   } catch (err) {
+  //     console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
+  //   }
+  // }
 
   return {
     props: {
@@ -186,8 +186,8 @@ export async function getStaticProps() {
       in_office_activities,
       team_outing_activities,
       conference_activities,
-      weekend_excursions_activities,
-      add_on_activities,
+      // weekend_excursions_activities,
+      // add_on_activities,
       locations,
     },
   };

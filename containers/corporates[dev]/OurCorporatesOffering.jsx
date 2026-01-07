@@ -88,7 +88,7 @@ const OurCorporatesOffering = () => {
     {
       id: 2,
       icon: <HeartIcon />,
-      title: "Event/ Conference (Same city/ outstation)",
+      title: "Events & Conferences (Same city/ outstation)",
       description:
         "Effortless planning for corporate events, conferences, and offsites — from venues to logistics, we handle it all seamlessly.",
       iconBgColor: "#FAEBEA",
@@ -96,7 +96,7 @@ const OurCorporatesOffering = () => {
     {
       id: 3,
       icon: <DollarIcon />,
-      title: "Team Building Session/ In-office activations",
+      title: "Team Building Sessions and Activations",
       description:
         "Engaging, goal-driven activities that boost communication, trust, and leadership — tailored for your office or offsite experience.",
       iconBgColor: "#EBFFED",
