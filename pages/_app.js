@@ -23,6 +23,7 @@ import { changeUserLocation } from "../store/actions/userLocation";
 import Cookies from "js-cookie";
 import { setCurrencySymbols } from "../store/actions/currencyActions";
 import axios from "axios";
+import ClarityInit from "../components/ClarityInit";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -279,6 +280,7 @@ function MyApp({ Component, pageProps, store }) {
 
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <ClarityInit />
           <Theme>
             <JupyterAnalytics
               apiEndpoint="https://jupiter.tarzanway.com"
