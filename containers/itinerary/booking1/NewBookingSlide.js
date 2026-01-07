@@ -2082,7 +2082,7 @@ const Details = (props) => {
                       </div>
                     )}
 
-                  {Cart?.sales?.length > 0 && isItineraryInFuture() && 
+                  {/* {Cart?.sales?.length > 0 && isItineraryInFuture() && 
                     Cart?.sales[Cart?.sales?.length - 1]?.orders?.length > 0 &&
                     Cart?.sales[Cart?.sales?.length - 1]?.orders[
                       Cart?.sales[Cart?.sales?.length - 1]?.orders.length - 1
@@ -2093,7 +2093,7 @@ const Details = (props) => {
                           onClickButton={() => handlePayNow("full")}
                         />
                       </div>
-                    )}
+                    )} */}
 
                   {/* Rest of your conditional content */}
                   {Cart?.total_payable_amount == 0 &&
@@ -2269,7 +2269,7 @@ const Details = (props) => {
                   ) : (
                     <div>
                       <div className="text-md font-500 leading-lg mb-xs">
-                        {localStorage.getItem("name") || ""}
+                        {Itinerary?.customer_name || ""}
                       </div>
 
                       <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">
