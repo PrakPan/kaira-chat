@@ -1448,6 +1448,9 @@ export const DestinationPopUp = (props) => {
     !!cityData?.resource_id
   );
 
+  // Add ref for the search container
+  const searchContainerRef = useRef(null);
+
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
     return () => {
@@ -1475,6 +1478,7 @@ export const DestinationPopUp = (props) => {
       setValidDestination(false);
     }
   };
+
   useEffect(() => {
     if (!isSearched) handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
@@ -1552,7 +1556,6 @@ export const DestinationPopUp = (props) => {
       const curDestination = destinations[index];
 
       const match = destinations.find((d, i) => {
-        // if (i === index) return false;
         const cd = d.cityData;
         return (
           (cd?.resource_id === destination?.resource_id ||
@@ -1628,7 +1631,7 @@ export const DestinationPopUp = (props) => {
         index !== undefined
           ? `top-0 left-[10%] lg:left-[30%]`
           : "-bottom-[150px] left-[10%] lg:left-[15%]"
-      }  bg-gray-200 rounded-lg`}
+      } bg-gray-200 rounded-lg`}
     >
       <div className="relative flex flex-col gap-3 p-3">
         <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
@@ -1646,48 +1649,54 @@ export const DestinationPopUp = (props) => {
             : "What do you want to explore?"}
         </div>
 
-        <div className="relative flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
-          <IoLocationSharp
-            className={`text-xl`}
-            style={{ color: cityData?.color }}
-          />
-          <input
-            type="text"
-            autoFocus
-            value={search}
-            onChange={(e) => {
-              handleSearch(e);
-              setIsSearched(false);
-            }}
-            placeholder="Search Destination"
-            className="focus:outline-none w-full"
-          ></input>
-          <RxCrossCircled
-            onClick={() => {
-              setSearch("");
-              setValidDestination(false);
-            }}
-            className="text-2xl cursor-pointer"
-          />
+        {/* UPDATED: Changed this to relative positioning */}
+        <div 
+          ref={searchContainerRef}
+          className="relative w-full"
+        >
+          <div className="flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+            <IoLocationSharp
+              className={`text-xl`}
+              style={{ color: cityData?.color }}
+            />
+            <input
+              type="text"
+              autoFocus
+              value={search}
+              onChange={(e) => {
+                handleSearch(e);
+                setIsSearched(false);
+              }}
+              placeholder="Search Destination"
+              className="focus:outline-none w-full"
+            />
+            <RxCrossCircled
+              onClick={() => {
+                setSearch("");
+                setValidDestination(false);
+              }}
+              className="text-2xl cursor-pointer"
+            />
+          </div>
 
-          {searchResults && searchResults.length ? (
-            <div className="fixed top-[6rem] left-[5%] w-[90%] max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+          {/* UPDATED: Changed from fixed to absolute positioning */}
+          {searchResults && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3 shadow-lg z-[60]">
               {searchResults.map((res, ind) => (
                 <div
                   key={ind}
                   onClick={() => handleSetDestination(ind)}
-                  className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
+                  className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full p-2"
                 >
-                  <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center flex-shrink-0">
                     <IoLocationSharp className="text-lg text-black" />
                   </div>
-                  <div className="flex flex-col">
-                    <div className="text-sm">
+                  <div className="flex flex-col min-w-0">
+                    <div className="text-sm truncate">
                       {startingCity || endingCity ? res.text : res.name}
                     </div>
                     {!(startingCity || endingCity) && (
-                      <div className="text-sm text-gray-500">
-                        {/* {res.parent || res.name} */}
+                      <div className="text-sm text-gray-500 truncate">
                         {res.country}
                       </div>
                     )}
@@ -1695,14 +1704,13 @@ export const DestinationPopUp = (props) => {
                 </div>
               ))}
             </div>
-          ) : null}
+          )}
         </div>
 
         {!(startingCity || endingCity) && (
           <div className="flex flex-row items-center justify-between w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
             <div className="flex flex-row items-center gap-3">
               <FaCalendarDays className="" />
-
               <div className="text-sm">Number of nights</div>
             </div>
 
@@ -1738,7 +1746,7 @@ export const DestinationPopUp = (props) => {
               !destination?.resource_id ||
               !destination?.name)
           }
-          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
+          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Update
         </button>
