@@ -15,6 +15,7 @@ const usePaymentGateway = (props) => {
   const [gatewayLoadError, setGatewayLoadError] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [revolutInstance, setRevolutInstance] = useState(null);
   
   // Refs to prevent multiple initializations
   const initializationAttempted = useRef(false);
@@ -32,16 +33,6 @@ const usePaymentGateway = (props) => {
       const gateway = await paymentGatewayService.loadGatewayWithFallback();
       setCurrentGateway(gateway);
       console.log(`Payment gateway initialized: ${gateway}`);
-
-      // If Revolut is loaded, initialize it
-      if (gateway === "Revolut") {
-        const revolutKey = process.env.NEXT_PUBLIC_REVOLUT_PUBLIC_KEY;
-        if (revolutKey) {
-          await revolutPaymentHandler.initialize(revolutKey);
-        } else {
-          console.warn('Revolut public key not found in environment variables');
-        }
-      }
 
       setIsInitialized(true);
       setGatewayLoadError(null);
@@ -61,12 +52,17 @@ const usePaymentGateway = (props) => {
   }, [dispatch]);
 
   const getCreatedOrderId = (data) => {
-  return data?.sales
-    ?.flatMap(sale => sale.orders || [])
-    ?.find(order => order.status === "Created")
-    ?.order_id;
-};
+    return data?.sales
+      ?.flatMap(sale => sale.orders || [])
+      ?.find(order => order.status === "Created")
+      ?.order_id;
+  };
 
+  const getCreatedOrder = (data) => {
+    return data?.sales
+      ?.flatMap(sale => sale.orders || [])
+      ?.find(order => order.status === "Created");
+  };
 
   // Razorpay payment handler
   const startRazorpayHandler = useCallback((data, paymentType, callbacks = {}) => {
@@ -76,13 +72,13 @@ const usePaymentGateway = (props) => {
       return;
     }
 
-const createdOrderId = getCreatedOrderId(data);
+    const createdOrderId = getCreatedOrderId(data);
 
-  if (!createdOrderId) {
-    console.error("No order with status Created found");
-    callbacks.onError?.();
-    return;
-  }
+    if (!createdOrderId) {
+      console.error("No order with status Created found");
+      callbacks.onError?.();
+      return;
+    }
 
     const razorpayOptions = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
@@ -119,30 +115,45 @@ const createdOrderId = getCreatedOrderId(data);
     }
   }, [props?.name, props?.email, props?.phone]);
 
-  // Revolut payment handler
+  // Revolut payment handler - FIXED VERSION
   const startRevolutHandler = useCallback(async (data, paymentType, callbacks = {}) => {
     try {
-      if (!revolutPaymentHandler.isInitialized()) {
-        const revolutKey = process.env.NEXT_PUBLIC_REVOLUT_PUBLIC_KEY;
-        await revolutPaymentHandler.initialize(revolutKey);
+      const createdOrder = getCreatedOrder(data);
+
+      if (!createdOrder || !createdOrder.public_id) {
+        console.error("No order with public_id found");
+        callbacks.onError?.();
+        return;
       }
 
-      console.log("OOORD",data);
+      console.log("Revolut Order Data:", createdOrder);
 
-      const createdOrder = data?.sales
-  ?.flatMap(sale => sale.orders || [])
-  ?.find(order => order.status === "Created");
+      // Initialize Revolut with the public_id (this validates the token)
+      // For Revolut, public_id is used for initialization and payment
+      const revolutCheckout = await revolutPaymentHandler.initialize(createdOrder.public_id);
+      setRevolutInstance(revolutCheckout);
 
-
+      // Prepare order data - only pass what Revolut expects
       const orderData = {
-        // revolut_token: data?.sales[0]?.orders[0]?.revolut_token,
-        public_id: createdOrder?.public_id, 
+        public_id: createdOrder.public_id,  // This is the token Revolut needs
         customer_email: props?.email,
+        // Store your backend order_id separately for verification
+        metadata: {
+          order_id: createdOrder.order_id, // Your backend order ID
+          payment_type: paymentType
+        }
       };
 
       await revolutPaymentHandler.openPaymentModal(orderData, {
         onSuccess: (response) => {
-          handlePaymentVerification(response, "Revolut", paymentType, callbacks);
+          // Combine Revolut's response with your backend order ID
+          const verificationData = {
+            ...response,
+            order_id: createdOrder.order_id, // Include backend order ID
+            public_id: createdOrder.public_id,
+            payment_type: paymentType
+          };
+          handlePaymentVerification(verificationData, "Revolut", paymentType, callbacks);
         },
         onError: (error) => {
           console.error("Revolut payment error:", error);
@@ -182,6 +193,8 @@ const createdOrderId = getCreatedOrderId(data);
       return;
     }
 
+    setPaymentLoading(true);
+
     if (currentGateway === "Razorpay") {
       startRazorpayHandler(data, paymentType, callbacks);
     } else if (currentGateway === "Revolut") {
@@ -191,6 +204,16 @@ const createdOrderId = getCreatedOrderId(data);
 
   // Try alternative gateway if current fails
   const tryAlternativeGateway = useCallback(async (data, paymentType, callbacks = {}) => {
+    // Clean up current gateway first
+    if (currentGateway === "Revolut" && revolutInstance) {
+      try {
+        revolutPaymentHandler.destroy();
+        setRevolutInstance(null);
+      } catch (error) {
+        console.error("Error destroying Revolut instance:", error);
+      }
+    }
+
     const availableGateways = paymentGatewayService.getAvailableGateways();
     const currentIndex = availableGateways.indexOf(currentGateway);
     const nextGateway = availableGateways[(currentIndex + 1) % availableGateways.length];
@@ -217,14 +240,14 @@ const createdOrderId = getCreatedOrderId(data);
         })
       );
 
+      // Load the new gateway script
       await paymentGatewayService.loadGatewayScript(nextGateway);
       
-      if (nextGateway === "Revolut") {
-        const revolutKey = process.env.NEXT_PUBLIC_REVOLUT_PUBLIC_KEY;
-        await revolutPaymentHandler.initialize(revolutKey);
-      }
-      
+      // Set the new gateway
       setCurrentGateway(nextGateway);
+      
+      // Small delay to ensure SDK is fully loaded
+      await new Promise(resolve => setTimeout(resolve, 500));
       
       // Retry payment with new gateway
       if (nextGateway === "Razorpay") {
@@ -244,7 +267,7 @@ const createdOrderId = getCreatedOrderId(data);
       setPaymentLoading(false);
       callbacks.onError?.();
     }
-  }, [currentGateway, dispatch, startRazorpayHandler, startRevolutHandler]);
+  }, [currentGateway, revolutInstance, dispatch, startRazorpayHandler, startRevolutHandler]);
 
   // Unified payment verification handler
   const handlePaymentVerification = useCallback(async (
@@ -274,6 +297,12 @@ const createdOrderId = getCreatedOrderId(data);
         })
       );
 
+      // Clean up payment instance after successful payment
+      if (gateway === "Revolut" && revolutInstance) {
+        revolutPaymentHandler.destroy();
+        setRevolutInstance(null);
+      }
+
       callbacks.onSuccess?.(res.data, paymentType);
     } catch (err) {
       setPaymentLoading(false);
@@ -289,7 +318,7 @@ const createdOrderId = getCreatedOrderId(data);
 
       callbacks.onError?.(err);
     }
-  }, [dispatch, props?.token]);
+  }, [dispatch, props?.token, revolutInstance]);
 
   // Initiate payment (full or lock-in)
   const initiatePayment = useCallback(async (paymentType, Cart, callbacks = {}) => {
@@ -361,8 +390,12 @@ const createdOrderId = getCreatedOrderId(data);
     initializePaymentGateway();
 
     return () => {
-      if (!cleanupRef.current && currentGateway === "Revolut") {
-        revolutPaymentHandler.destroy();
+      if (!cleanupRef.current) {
+        // Clean up any payment instances
+        if (currentGateway === "Revolut") {
+          revolutPaymentHandler.destroy();
+          setRevolutInstance(null);
+        }
         cleanupRef.current = true;
       }
     };

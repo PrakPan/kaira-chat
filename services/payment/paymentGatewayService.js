@@ -112,21 +112,20 @@ const createPaymentGatewayService = () => {
   const prepareVerifyPayload = (response, gateway) => {
     if (gateway === "Razorpay") {
       return {
-        gateway: "Razorpay",
-        data: {
-          razorpay_order_id: response.razorpay_order_id,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature
-        }
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+        order_id: response.order_id
       };
     } else if (gateway === "Revolut") {
       return {
-        gateway: "Revolut",
-        data: {
-          order_id: response.order_id
-        }
+        revolut_order_id: response.revolut_order_id,
+        public_id: response.public_id,
+        order_id: response.order_id || response.metadata?.order_id,
+        payment_type: response.payment_type || response.metadata?.payment_type
       };
     }
+    return response;
   };
 
   return {

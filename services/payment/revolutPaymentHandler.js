@@ -1,11 +1,11 @@
 // services/payment/revolutPaymentHandler.js
 
-// Create a functional service using closures
 const createRevolutPaymentHandler = () => {
   let revolutCheckout = null;
+  let currentPublicId = null;
 
-  // Initialize Revolut Checkout
-  const initialize = async (publicKey) => {
+  // Initialize Revolut Checkout with public_id (for token validation)
+  const initialize = async (publicId) => {
     if (typeof window === 'undefined') {
       throw new Error('Window not available');
     }
@@ -15,8 +15,15 @@ const createRevolutPaymentHandler = () => {
     }
 
     try {
-      revolutCheckout = await window.RevolutCheckout(publicKey);
-      console.log('Revolut Checkout initialized successfully');
+      // Clean up any existing instance
+      if (revolutCheckout) {
+        destroy();
+      }
+
+      // Initialize with the public_id
+      revolutCheckout = await window.RevolutCheckout(publicId);
+      currentPublicId = publicId;
+      console.log('Revolut Checkout initialized successfully with public_id:', publicId);
       return revolutCheckout;
     } catch (error) {
       console.error('Failed to initialize Revolut:', error);
@@ -32,26 +39,34 @@ const createRevolutPaymentHandler = () => {
       onCancel = () => {}
     } = callbacks;
 
-    console.log("Order Data",orderData);
+    console.log("Order Data for Revolut:", orderData);
+
+    if (!revolutCheckout) {
+      throw new Error('Revolut checkout not initialized');
+    }
 
     try {
-      if (!revolutCheckout) {
-        throw new Error('Revolut Checkout not initialized');
+      // Check if we need to reinitialize with new public_id
+      if (currentPublicId !== orderData.public_id) {
+        console.log('Reinitializing Revolut with new public_id:', orderData.public_id);
+        await initialize(orderData.public_id);
       }
 
-      // Create payment with Revolut
-      const payment = await revolutCheckout.payWithPopup({
-        token: orderData.public_id,
+      const paymentOptions = {
         email: orderData.customer_email,
         savePaymentMethodFor: 'merchant',
-        
-        // Customization options
         locale: 'en',
         
         // Callbacks
-        onSuccess: (orderId) => {
-          console.log('Revolut payment successful:', orderId);
-          onSuccess({ order_id: orderId });
+        onSuccess: (revolutOrderId) => {
+          console.log('Revolut payment successful. Revolut Order ID:', revolutOrderId);
+          
+          // Return combined response
+          onSuccess({ 
+            revolut_order_id: revolutOrderId,
+            public_id: orderData.public_id,
+            metadata: orderData.metadata || {}
+          });
         },
         
         onError: (error) => {
@@ -63,8 +78,10 @@ const createRevolutPaymentHandler = () => {
           console.log('Revolut payment cancelled');
           onCancel();
         }
-      });
+      };
 
+      // Open the payment modal
+      const payment = await revolutCheckout.payWithPopup(paymentOptions);
       return payment;
     } catch (error) {
       console.error('Error opening Revolut payment modal:', error);
@@ -72,27 +89,20 @@ const createRevolutPaymentHandler = () => {
     }
   };
 
-  // Alternative: Redirect method (if popup doesn't work)
-  const redirectToPayment = (orderData) => {
-    if (!revolutCheckout) {
-      throw new Error('Revolut Checkout not initialized');
-    }
-
-    revolutCheckout.redirect({
-      token: orderData.public_id,
-      email: orderData.customer_email
-    });
-  };
-
   // Destroy instance
   const destroy = () => {
     if (revolutCheckout) {
       try {
-        revolutCheckout.destroy();
+        // Check if destroy method exists
+        if (typeof revolutCheckout.destroy === 'function') {
+          revolutCheckout.destroy();
+        }
       } catch (error) {
         console.error('Error destroying Revolut instance:', error);
       }
       revolutCheckout = null;
+      currentPublicId = null;
+      console.log('Revolut instance destroyed');
     }
   };
 
@@ -102,20 +112,12 @@ const createRevolutPaymentHandler = () => {
   return {
     initialize,
     openPaymentModal,
-    redirectToPayment,
     destroy,
     isInitialized
   };
 };
 
 // Create singleton instance
-let handlerInstance = null;
+const revolutPaymentHandler = createRevolutPaymentHandler();
 
-const getRevolutPaymentHandler = () => {
-  if (!handlerInstance) {
-    handlerInstance = createRevolutPaymentHandler();
-  }
-  return handlerInstance;
-};
-
-export default getRevolutPaymentHandler();
+export default revolutPaymentHandler;
