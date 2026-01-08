@@ -486,7 +486,7 @@ const completeItineraryCreate = () => {
   
 
   const data = {
-    source,
+    // source,
     itinerary_id: finalItineraryId,
     group_type: slideThreeData.groupType || "Solo",
     number_of_adults: slideThreeData.numberOfAdults,
