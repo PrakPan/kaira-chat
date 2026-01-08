@@ -136,13 +136,13 @@ const Index = (props) => {
   }, [props?.data?.components?.[0]?.itineraries]);
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(
+    // openTailoredModal(
     
-      router,
-      props.data.id,
-      convertDbNameToCapitalFirst(props.data.slug),
-      props.type
-    );
+    //   router,
+    //   props.data.id,
+    //   convertDbNameToCapitalFirst(props.data.slug),
+    //   props.type
+    // );
     router.push({
         pathname: "/new-trip",
         query: { source: props?.data?.slug || 'home' }

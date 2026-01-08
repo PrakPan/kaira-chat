@@ -22,6 +22,7 @@ import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SkeletonCard from "../../ui/SkeletonCard";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -88,6 +89,8 @@ const ItineraryCity = (props) => {
   const router = useRouter();
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const dispatch = useDispatch();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const [images, setImages] = useState(null);
 
@@ -160,6 +163,15 @@ const ItineraryCity = (props) => {
   }, [drawer, poi_id, dayByDay, itinerary_city_id, props.city.id]);
 
   const fetchDetails = async (hotelId = null) => {
+    if(!token){
+      props?.setShowLoginModal(true);
+      return;
+    }
+    // if(id != customer){
+    //     dispatch(setCloneItineraryDrawer(true));
+    //     return;
+    // } 
+    
     setShowDetails(true);
     setLoading(true);
 
@@ -187,6 +199,10 @@ const ItineraryCity = (props) => {
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
     if (token) {
+      // if(id != customer){
+      //   dispatch(setCloneItineraryDrawer(true));
+      //   return;
+      // }
       const index = multiHotelStays.findIndex(h => h?.id === hotelId);
       props?.handleClickAc(
         index !== -1 ? index : props?.index,

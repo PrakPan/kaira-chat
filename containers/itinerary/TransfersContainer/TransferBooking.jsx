@@ -14,6 +14,7 @@ import TransferEditDrawer, {
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { FaPlaneDeparture } from "react-icons/fa";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -80,6 +81,8 @@ const TransferBooking = ({
 }) => {
   // console.log("BKing",booking);
   const router = useRouter();
+  const {customer} = useSelector(state=>state.Itinerary)
+  const dispatch = useDispatch();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
@@ -128,6 +131,10 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     trackTransferCardClicked(
       router.query.id,
       book?.id || booking_id,
@@ -961,6 +968,9 @@ const FlightBooking = ({
   dCityData,
 }) => {
   const router = useRouter();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+  const dispatch = useDispatch();
   try {
     if (booking?.number_of_adults > 1) adult = " Adults";
     else adult = " Adult";
@@ -969,6 +979,10 @@ const FlightBooking = ({
   } catch {}
 
   const handleRoute = (book) => {
+    // if(id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

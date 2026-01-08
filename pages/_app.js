@@ -194,26 +194,6 @@ function MyApp({ Component, pageProps, store }) {
     return () => clearTimeout(initTimeout);
   }, [id, jupiterInitialized]);
 
-  // useEffect(() => {
-  //   const loadCurrencySymbols = async () => {
-  //     try {
-  //       const response = await axios.get('https://d31aoa0ehgvjdi.cloudfront.net/media/currency_symbols.json');
-  //       dispatch(setCurrencySymbols(response.data));
-  //     } catch (error) {
-  //       console.error('Error loading currency symbols:', error);
-  //       dispatch(setCurrencySymbols({
-  //         INR: '₹',
-  //         USD: '$',
-  //         EUR: '€',
-  //         GBP: '£',
-  //         AUD: 'A$',
-  //         CAD: 'C$',
-  //       }));
-  //     }
-  //   };
-
-  //   loadCurrencySymbols();
-  // }, [dispatch]);
 
   useEffect(() => {
     const userLocationCookie = Cookies.get('userLocation');
@@ -227,7 +207,7 @@ function MyApp({ Component, pageProps, store }) {
         fetchUserLocation();
       }
     }
-    // If no cookie and no Redux location, fetch from API
+
     else if (!userLocationCookie) {
       fetchUserLocation();
     }
@@ -261,6 +241,7 @@ function MyApp({ Component, pageProps, store }) {
       }
     }
   }, []);
+
 
 
   return (

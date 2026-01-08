@@ -35,6 +35,7 @@ import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
 import { MdOutlineDownhillSkiing } from "react-icons/md";
 import SkeletonCard from "../../ui/SkeletonCard";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 767px)");
@@ -51,10 +52,22 @@ const CityDay = (props) => {
   ).transferBookings;
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const dispatch = useDispatch();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const router = useRouter();
   const { drawer, idx, itinerary_city_id, date } = router?.query;
   const handleAddActivity = () => {
+    if(localStorage.getItem("access_token")){
+      // if(id != customer){
+      //   dispatch(setCloneItineraryDrawer(true));
+      //   return;
+      // }
+    } else {
+      props?.setShowLoginModal(true);
+      return;
+    }
     trackActivityBookingAdd(router.query.id, "day_by_day_collapse");
     router.push(
       {

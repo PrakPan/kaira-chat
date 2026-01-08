@@ -29,6 +29,7 @@ import Cart from "./Cart";
 import tailoredInfoReducer from "./tailoredInfo"
 import currencyReducer from "./currencyReducer";
 import currency from "./currency";
+import cloneItinerary from './cloneItinerary'
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -60,7 +61,8 @@ const rootReducer = combineReducers({
   Cart,
   tailoredInfoReducer:tailoredInfoReducer,
   currencyReducer,
-  currency
+  currency,
+  cloneItinerary
 });
 
 export default rootReducer;

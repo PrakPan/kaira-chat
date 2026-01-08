@@ -153,7 +153,7 @@ const handleUpdate = () => {
       console.log("error is:", err);
       dispatch(openNotification({
         type: "error",
-        text: err?.response?.data?.errors[0]?.message?.[0] || "Something went wrong",
+        text: err?.response?.data?.errors?.[0]?.detail?.[0] || err?.response?.data?.errors[0]?.message?.[0] || "Something went wrong",
         heading: "Error!",
       }));
     })
@@ -183,7 +183,7 @@ const handleUpdate = () => {
 
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="grid grid-cols-3 justify-between items-center">
+        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center">
 
            <label
             htmlFor="add-activities-transfers"

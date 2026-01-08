@@ -270,6 +270,7 @@ const ComboFlight = (props) => {
     };
   }, []);
 
+
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);
@@ -281,6 +282,27 @@ const ComboFlight = (props) => {
     props?.comboStartDate,
     props?.selectedBooking?.check_in,
   ]);
+
+   useEffect(() => {
+  // When user logs in (token becomes available) and we have the required data
+  if (
+    props.token && 
+    preferredDepartureTime && 
+    !loading && 
+    !isFetching &&
+    (sourceInput.code || props.source_code || props.selectedBooking?.origin_iata) &&
+    (destinationInput.code || props.destination_code || props.selectedBooking?.destination_iata)
+  ) {
+
+    if (!flights || flights.length === 0) {
+      const timeoutId = setTimeout(() => {
+        _FetchFlightsHandler();
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }
+}, [props.token]); 
 
   useEffect(() => {
     function roundToNext30Min(input) {
@@ -869,7 +891,7 @@ const handleViewMore = async () => {
     let errorMsg = "Warning check failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
-        errorMsg = error.response.data.errors[0].message[0];
+        errorMsg = error.response.data.errors[0].message?.[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
       } else if (typeof error.response.data === "string") {
@@ -1024,7 +1046,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     let errorMsg = "Booking failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
-        errorMsg = error.response.data.errors[0].message[0];
+        errorMsg = error.response.data.errors[0].message?.[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
       } else if (typeof error.response.data === "string") {

@@ -439,7 +439,7 @@ const HotelBookingDetails = (props) => {
   };
 
   useEffect(() => {
-    if (data?.hotel_details?.rating || data?.hotel_details?.rating_ext  > 0) {
+    if (data?.hotel_details?.rating_ext  > 0) {
       items?.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
       setItems(items);
     }
@@ -471,7 +471,7 @@ const HotelBookingDetails = (props) => {
   const viewAllGalleryLink = hotelImages && hotelImages.length && ImagesLoaded[0] ? (
     <div className="absolute top-0 left-0 right-0 bottom-0 flex align-items-center justify-center bg-trans-black_70"
     >
-      <span onClick={() => props?._setImagesHandler(images)} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
+      <span onClick={() => {props?._setImagesHandler(images);}} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
     </div>
   ) : null;
 
@@ -528,13 +528,13 @@ const HotelBookingDetails = (props) => {
                   <div className="flex gap-xs text-sm-md text-text-spacegrey font-[400]"> <span> {svgIcons.loaction} </span> <span> {data?.hotel_details?.city}{","} {data?.hotel_details?.country} </span></div>
                 }
 
-                {data?.hotel_details?.rating || data?.hotel_details?.rating_ext && (
+                {data?.hotel_details?.rating_ext && (
                   <div className="gap-1 flex flex-row  items-center text-sm-md text-text-spacegrey font-[400] pl-sm border-l-sm border-solid border-text-disabled">
                     <div className="flex flex-row text-[#FFD201]">
-                      {starRating(data?.hotel_details?.rating || data?.hotel_details?.rating_ext)}
+                      {starRating(data?.hotel_details?.rating_ext)}
                     </div>
                     <div>
-                      {data?.hotel_details?.rating || data?.hotel_details?.rating_ext}
+                      {data?.hotel_details?.rating_ext}
                     </div>
                     {data?.hotel_details?.user_ratings_total > 0 || data?.user_ratings_total > 0 && (
                       <div className="underline">
@@ -1306,17 +1306,17 @@ const HotelBookingDetails = (props) => {
 
                     <div id="section-3">
 
-                      {data?.hotel_details?.rating || data?.hotel_details?.rating_ext > 0 && (
+                      {data?.hotel_details?.rating_ext > 0 && (
                         <div>
                           <div className="text-md-lg font-600 leading-xl mb-lg">Reviews</div>
                           <div className="grid grid-cols-3 gap-y-2 gap-x-4">
                             <div className="flex flex-row gap-sm-md">
-                              <div className="text-2xl-md font-600 leading-2xl"> {data?.hotel_details?.rating || data?.hotel_details?.rating_ext}</div>
+                              <div className="text-2xl-md font-600 leading-2xl"> {data?.hotel_details?.rating_ext}</div>
                               <div>
-                                {data?.hotel_details?.rating || data?.hotel_details?.rating_ext && (
+                                {data?.hotel_details?.rating_ext && (
                                   <div className="gap-1 flex flex-column text-sm-md text-text-spacegrey font-[400]">
                                     <div className="flex flex-row text-[#FFD201]">
-                                      {starRating(data?.hotel_details?.rating || data?.hotel_details?.rating_ext)}
+                                      {starRating(data?.hotel_details?.rating_ext)}
                                     </div>
                                     {data?.hotel_details?.user_ratings_total > 0 || data?.user_ratings_total > 0 && (
                                       <div className="underline">

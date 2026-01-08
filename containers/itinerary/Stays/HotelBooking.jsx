@@ -19,7 +19,7 @@ import media from "../../../components/media";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format } from "date-fns";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -46,7 +46,7 @@ const svgIcons = {
 
 }
 import { useAnalytics } from "../../../hooks/useAnalytics";
-import SkeletonCard from "../../../components/ui/SkeletonCard";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -83,7 +83,9 @@ const HotelBooking = ({
   requireAuth
 }) => {
   const router = useRouter();
-
+  const { id } = useSelector(state => state.auth);
+  const { customer } = useSelector(state => state.Itinerary)
+  const dispatch = useDispatch();
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -165,6 +167,12 @@ const HotelBooking = ({
 
 
   const handleViewDetails = (value) => {
+
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
+
     const isAuthenticated = requireAuth('view', () => {
       router.push({
         pathname: `/itinerary/${router.query.id}`,
@@ -193,7 +201,13 @@ const HotelBooking = ({
   };
 
   const handleChangeHotel = (e, label, value, clickType) => {
+
     e.stopPropagation();
+
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
 
     // Use requireAuth instead of direct token check
     const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
@@ -443,61 +457,60 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
-  
       {hotels_status === "PENDING" ? (
-      <div>
-        <div className="pb-2">
-          <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
-        </div>
-        <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
-          <div className="relative flex lg:flex-row w-full flex-col gap-4">
-            <div>
-              <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />
-            </div>
-            <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-row justify-between items-center">
-                  <SkeletonCard width="200px" height="20px" borderRadius="8px" variant="default" />
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex flex-row gap-2 items-center">
-                    <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
-                    <SkeletonCard width="100px" height="16px" borderRadius="8px" variant="default" />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex flex-row gap-2 items-center">
-                    <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
-                    <SkeletonCard width="200px" height="16px" borderRadius="8px" variant="default" />
-                    <SkeletonCard width="80px" height="16px" borderRadius="8px" variant="default" />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex flex-row gap-2 items-center">
-                    <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
-                    <SkeletonCard width="250px" height="16px" borderRadius="8px" variant="default" />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <div className="flex flex-row gap-2 items-center">
-                    <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
-                    <SkeletonCard width="180px" height="16px" borderRadius="8px" variant="default" />
-                  </div>
-                </div>
+        <div>
+          <div className="pb-2">
+            <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
+          </div>
+          <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
+            <div className="relative flex lg:flex-row w-full flex-col gap-4">
+              <div>
+                <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />
               </div>
+              <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-row justify-between items-center">
+                    <SkeletonCard width="200px" height="20px" borderRadius="8px" variant="default" />
+                  </div>
 
-              <div className="flex flex-row gap-2 items-end justify-end w-full">
-                <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
-                <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="100px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="200px" height="16px" borderRadius="8px" variant="default" />
+                      <SkeletonCard width="80px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="250px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="180px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-2 items-end justify-end w-full">
+                  <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
+                  <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       ) : booking?.id ? (
         <>
           <div className="text-black text-md-lg font-600 leading-xl-sm pb-md">
@@ -853,6 +866,7 @@ const HotelBooking = ({
             mercury
             _setImagesHandler={_setImagesHandler}
             onHide={() => setOpenViewDetails(false)}
+            setImages={setImages}
             id={booking_id}
             currentBooking={currentBooking}
             check_in={dates.check_in}
@@ -928,13 +942,13 @@ const HotelBooking = ({
           ></BookingModal>
         )}
 
-      {images ? (
+      {/* {images ? (
         <FullScreenGallery
           mercury
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGallery>
-      ) : null}
+      ) : null} */}
     </div>
   );
 };
