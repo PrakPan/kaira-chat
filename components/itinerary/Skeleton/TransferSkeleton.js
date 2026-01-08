@@ -30,12 +30,24 @@ const MobileCard = Array(4).fill(
 
 const TransferSkeleton = (props) => {
   return (
-    <div className="flex flex-col space-y-4 animate-pulse mt-4 mb-4 p-2">
-    <div className="flex items-center space-x-4">
-      <div className="w-10 h-10 bg-gray-300 rounded-full"></div> {/* Icon circle */}
-      <div className="h-4 bg-gray-300 rounded w-[6rem]"></div> {/* Text block */}
+    <div className=" flex gap-1 mt-2">
+      <div className="flex items-start">
+        <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" />
+      </div>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2 group hover:cursor-pointer">
+          <div className="Body1M_16 group-hover:text-blue ">
+            <SkeletonCard width="200px" height="20px" borderRadius="8px" variant="default" />
+          </div>
+          <div className="">
+            <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" />
+          </div>
+        </div>
+        <div className="mt-xxs">
+          <SkeletonCard width="180px" height="12px" borderRadius="8px" variant="default" />
+        </div>
+      </div>
     </div>
-  </div>
   );
 };
 

@@ -21,6 +21,7 @@ import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import SkeletonCard from "../../ui/SkeletonCard";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -135,11 +136,11 @@ const ItineraryCity = (props) => {
 
   // Update dayByDayIndex when poi_id changes
   useEffect(() => {
-    if (drawer === "showPoiDetail" && 
-        poi_id && 
-        dayByDay && 
-        dayByDay.length > 0 &&
-        String(itinerary_city_id) === String(props.city.id)) {
+    if (drawer === "showPoiDetail" &&
+      poi_id &&
+      dayByDay &&
+      dayByDay.length > 0 &&
+      String(itinerary_city_id) === String(props.city.id)) {
       const foundIndex = dayByDay.findIndex((item) => {
         // For activities with bookings, match against booking.id
         if (item?.booking?.id) {
@@ -147,11 +148,11 @@ const ItineraryCity = (props) => {
         }
         // For POIs or activities without bookings, match against poi or activity id
         return (
-          String(item?.poi) === String(poi_id) || 
+          String(item?.poi) === String(poi_id) ||
           String(item?.activity) === String(poi_id)
         );
       });
-      
+
       if (foundIndex !== -1) {
         setDayByDayIndex(foundIndex);
       }
@@ -161,7 +162,7 @@ const ItineraryCity = (props) => {
   const fetchDetails = async (hotelId = null) => {
     setShowDetails(true);
     setLoading(true);
-    
+
     const targetHotelId = hotelId || (stay?.[props?.index]?.id || multiHotelStays?.[0]?.id);
 
     router.push(
@@ -179,7 +180,7 @@ const ItineraryCity = (props) => {
         scroll: false,
       }
     );
-    
+
     setLoading(false);
   };
 
@@ -188,7 +189,7 @@ const ItineraryCity = (props) => {
     if (token) {
       const index = multiHotelStays.findIndex(h => h?.id === hotelId);
       props?.handleClickAc(
-         index !== -1 ? index : props?.index,
+        index !== -1 ? index : props?.index,
         props?.city,
         props?.city?.city?.id,
         props?.city?.id,
@@ -237,10 +238,9 @@ const ItineraryCity = (props) => {
     try {
       setTaxiLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${
-          dataPassed?.booking_type?.includes(",")
-            ? `combo`
-            : dataPassed?.booking_type?.toLowerCase()
+        `${router?.query?.id}/bookings/${dataPassed?.booking_type?.includes(",")
+          ? `combo`
+          : dataPassed?.booking_type?.toLowerCase()
         }/${dataPassed?.id}/`,
         {
           headers: {
@@ -303,54 +303,56 @@ const ItineraryCity = (props) => {
             {multiHotelDuration > 1 ? "Nights" : "Night"}  {props?.city?.duration === 0 ? "(Transit City)" : ""}
           </div>
 
+
+
           {hotels_status === "PENDING" ? (
             <div className="flex flex-col animate-pulse">
-              <div className="flex flex-col gap-1 p-3">
+              <div className="flex flex-col gap-1 ">
                 <div className="flex items-center gap-2">
-                  <div className="bg-gray-300 h-5 w-5 rounded-full"></div>
-                  <div className="bg-gray-300 h-4 w-24 rounded"></div>
+                  <SkeletonCard width="100px" height="25px" borderRadius="8px" variant="default" />
+                  <SkeletonCard width="20px" height="15px" borderRadius="8px" variant="default" />
+                  <SkeletonCard width="100px" height="25px" borderRadius="8px" variant="default" />
                 </div>
                 <div className="flex flex-row items-center mt-2 gap-2">
-                  <div className="bg-gray-300 h-3 w-16 rounded"></div>
-                  <div className="bg-gray-300 h-3 w-12 rounded"></div>
-                  <div className="bg-gray-300 h-3 w-32 rounded"></div>
+                  <SkeletonCard width="30px" height="15px" borderRadius="50%" variant="default" />
+                  <SkeletonCard width="150px" height="15px" borderRadius="8px" variant="default" />
                 </div>
               </div>
             </div>
-          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" && multiHotelStays?.[0]?.id  ? (
+          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" && multiHotelStays?.[0]?.id ? (
             <div className="flex flex-col gap-2">
               {multiHotelStays?.map((hotel, hotelIndex) => {
                 return (
                   <div key={hotel.id} className="flex flex-col gap-1">
-                      <div className="flex flex-row">
-                        { hotel?.name &&<><div className="flex gap-2 pr-[8px] ">
-                         <Image
-                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
-                        height={22}
-                        width={22}
-                        className="object-contain"
-                        alt="Hotel Icon"
-                      />
+                    <div className="flex flex-row">
+                      {hotel?.name && <><div className="flex gap-2 pr-[8px] ">
+                        <Image
+                          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
+                          height={22}
+                          width={22}
+                          className="object-contain"
+                          alt="Hotel Icon"
+                        />
                         <div
                           className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue"
                           onClick={() => fetchDetails(hotel.id)}
                         >
-                          {hotel?.name} 
+                          {hotel?.name}
                         </div>
-                        </div>
+                      </div>
                         <div className="flex flex-row items-center border-l pl-[8px] ">
-                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
+                          <div className="text-[#000] text-[12px] ml-1 font-[500]">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
                           </div>
                           {hotel?.rating && hotel?.rating !== 0
                             ? <div className="flex items-center text-primary-stars">
-                                              <Image src="/star.svg" width={16} height={16} alt="star" />
-                              </div>
+                              <Image src="/star.svg" width={16} height={16} alt="star" />
+                            </div>
                             : null}{" "}
                         </div></>}
-                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -406,7 +408,7 @@ const ItineraryCity = (props) => {
           />
         )
       )}
-      
+
       {/* <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
        <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
             <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
@@ -415,61 +417,61 @@ const ItineraryCity = (props) => {
       </div> */}
 
       {/* POI Details Drawer - Only render for matching city */}
-      {drawer === "showPoiDetail" && 
-       String(itinerary_city_id) === String(props.city.id) &&
-       dayByDay && 
-       dayByDay.length > 0 &&
-       dayByDay[dayByDayIndex] && (
-        <POIDetailsDrawer
-          itineraryDrawer
-          show={true}
-          handleCloseDrawer={handleCloseDrawer}
-          slabIndex={dayByDayIndex}
-          iconId={
-            dayByDay[dayByDayIndex]?.booking?.id ||
-            dayByDay[dayByDayIndex]?.poi || 
-            dayByDay[dayByDayIndex]?.activity
-          }
-          name={dayByDay[dayByDayIndex]?.heading}
-          image={dayByDay[dayByDayIndex]?.icon}
-          text={dayByDay[dayByDayIndex]?.text}
-          Topheading={"Select Our Point Of Interest"}
-          activityData={activityData}
-          showBookingDetail={true}
-          setShowLoginModal={props?.setShowLoginModal}
-          dayIndex={dayIndex}
-          itinerary_city_id={props.city.id}
-          cityID={props.city.city.id}
-          cityName={props.city.city.name}
-          removeDelete={false}
-        />
-      )}
+      {drawer === "showPoiDetail" &&
+        String(itinerary_city_id) === String(props.city.id) &&
+        dayByDay &&
+        dayByDay.length > 0 &&
+        dayByDay[dayByDayIndex] && (
+          <POIDetailsDrawer
+            itineraryDrawer
+            show={true}
+            handleCloseDrawer={handleCloseDrawer}
+            slabIndex={dayByDayIndex}
+            iconId={
+              dayByDay[dayByDayIndex]?.booking?.id ||
+              dayByDay[dayByDayIndex]?.poi ||
+              dayByDay[dayByDayIndex]?.activity
+            }
+            name={dayByDay[dayByDayIndex]?.heading}
+            image={dayByDay[dayByDayIndex]?.icon}
+            text={dayByDay[dayByDayIndex]?.text}
+            Topheading={"Select Our Point Of Interest"}
+            activityData={activityData}
+            showBookingDetail={true}
+            setShowLoginModal={props?.setShowLoginModal}
+            dayIndex={dayIndex}
+            itinerary_city_id={props.city.id}
+            cityID={props.city.city.id}
+            cityName={props.city.city.name}
+            removeDelete={false}
+          />
+        )}
 
       {/* Sightseeing/Taxi Drawer - Only render for matching city */}
-      {drawer === "SightSeeing" && 
-       String(itinerary_city_id) === String(props.city.id) &&
-       bookingId && (
-        <TransferDrawer
-          show={true}
-          setHandleShow={setHandleShowTaxi}
-          bookingData={taxiData}
-          booking_type={"Taxi"}
-          booking_id={bookingId}
-          loading={taxiLoading}
-          handleDelete={handleDeleteTaxi}
-          origin_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          destination_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          setShowDrawer={setHandleShowTaxi}
-          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-          _updatePaymentHandler={props?._updatePaymentHandler}
-          getPaymentHandler={props?.getPaymentHandler}
-          setShowLoginModal={props?.setShowLoginModal}
-          setError={props?.setError}
-          isIntracity={true}
-          isSightseeing={true}
-        />
-      )}
+      {drawer === "SightSeeing" &&
+        String(itinerary_city_id) === String(props.city.id) &&
+        bookingId && (
+          <TransferDrawer
+            show={true}
+            setHandleShow={setHandleShowTaxi}
+            bookingData={taxiData}
+            booking_type={"Taxi"}
+            booking_id={bookingId}
+            loading={taxiLoading}
+            handleDelete={handleDeleteTaxi}
+            origin_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+            destination_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+            itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+            setShowDrawer={setHandleShowTaxi}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
+            setShowLoginModal={props?.setShowLoginModal}
+            setError={props?.setError}
+            isIntracity={true}
+            isSightseeing={true}
+          />
+        )}
     </div>
   );
 };

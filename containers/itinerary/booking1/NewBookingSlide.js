@@ -706,16 +706,16 @@ const PriceDetails = ({
         } */}
 
         {
-        couponDiscount >=0 ? (
-          <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
-            <span>Coupon Discount</span>
-            <span>
-              {couponDiscount
-                ? "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
-                : "₹0"}
-            </span>
-          </div>
-        ) : null}
+          couponDiscount >= 0 ? (
+            <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
+              <span>Coupon Discount</span>
+              <span>
+                {couponDiscount
+                  ? "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                  : "₹0"}
+              </span>
+            </div>
+          ) : null}
 
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
@@ -958,13 +958,13 @@ const ItineraryInclusions = ({
                                 (booking.detail?.pax?.number_of_children || 0) +
                                 (booking.detail?.pax?.number_of_infants ||
                                   0)) > 1 ? (booking.detail.pax.number_of_adults +
-                                (booking.detail?.pax?.number_of_children || 0) +
-                                (booking.detail?.pax?.number_of_infants ||
-                                  0)) + " Travelers" : (booking.detail.pax.number_of_adults +
-                                (booking.detail?.pax?.number_of_children || 0) +
-                                (booking.detail?.pax?.number_of_infants ||
-                                  0)) + " Traveler" }{" "}
-                              
+                                    (booking.detail?.pax?.number_of_children || 0) +
+                                    (booking.detail?.pax?.number_of_infants ||
+                                      0)) + " Travelers" : (booking.detail.pax.number_of_adults +
+                                        (booking.detail?.pax?.number_of_children || 0) +
+                                        (booking.detail?.pax?.number_of_infants ||
+                                          0)) + " Traveler"}{" "}
+
                             </span>
                           </div>
                         </>
@@ -1100,7 +1100,7 @@ const Details = (props) => {
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   const { resetSession } = useChatContext();
 
-  const { trackWhatsAppClicked,trackPaymentSelected,trackPaymentDeselected,trackPaymentAttempted, trackPaymentBookingConfirmed} = useAnalytics();
+  const { trackWhatsAppClicked, trackPaymentSelected, trackPaymentDeselected, trackPaymentAttempted, trackPaymentBookingConfirmed } = useAnalytics();
 
   useEffect(() => {
     if (props?.openPaymentDrawer && isDirectlyOpenPaymentDrawer) {
@@ -1223,10 +1223,10 @@ const Details = (props) => {
       if (response.data) {
         dispatch(setCart(response.data));
 
-        if(newSelections[bookingId]){
-          trackPaymentSelected(router?.query?.id,bookingType?.toLowerCase(),bookingId);
-        }else {
-          trackPaymentDeselected(router?.query?.id,bookingType?.toLowerCase(),bookingId);
+        if (newSelections[bookingId]) {
+          trackPaymentSelected(router?.query?.id, bookingType?.toLowerCase(), bookingId);
+        } else {
+          trackPaymentDeselected(router?.query?.id, bookingType?.toLowerCase(), bookingId);
         }
 
 
@@ -1513,7 +1513,7 @@ const Details = (props) => {
             if (paymentType === "full") {
               setSessionPaymentCompleted(true);
               setPaymentCompleted(true);
-              trackPaymentBookingConfirmed(router?.query?.id,Cart);
+              trackPaymentBookingConfirmed(router?.query?.id, Cart);
             } else {
               setLockInCompleted(true);
               setSelectedPaymentOption("full");
@@ -1565,7 +1565,7 @@ const Details = (props) => {
             sale.payment_type === "full_payment" && sale.status === "Created"
         );
 
-        trackPaymentAttempted(router.query.id,Cart);
+        trackPaymentAttempted(router.query.id, Cart);
 
         if (!fullPaymentSale || !fullPaymentSale.orders?.[0]) {
           setPaymentLoading(false);
@@ -1944,22 +1944,22 @@ const Details = (props) => {
                     </div>
                     </>}
 
-            {Cart?.total_payable_amount == 0 &&
-            areAllInclusionsPaid() &&
-            Cart?.discounted_cost > 0 ? (
-              <PaymentSuccess
-                amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
-                onDownloadInvoice={() => {}}
-              />
-            ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
-              // Show only update dates when itinerary is in past
-              <div>
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-                  <p className="text-amber-700 text-sm font-medium mb-2">
-                    Your itinerary dates are in the past. Please update the
-                    dates to view current pricing and continue with booking.
-                  </p>
-                </div>
+                  {Cart?.total_payable_amount == 0 &&
+                    areAllInclusionsPaid() &&
+                    Cart?.discounted_cost > 0 ? (
+                    <PaymentSuccess
+                      amount={getIndianPrice(Math.round(Cart?.discounted_cost))}
+                      onDownloadInvoice={() => { }}
+                    />
+                  ) : !isItineraryInFuture() && !areAnyInclusionsPaid() ? (
+                    // Show only update dates when itinerary is in past
+                    <div>
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                        <p className="text-amber-700 text-sm font-medium mb-2">
+                          Your itinerary dates are in the past. Please update the
+                          dates to view current pricing and continue with booking.
+                        </p>
+                      </div>
 
                       <div className="mb-4">
                         <h3 className="font-medium text-base mb-3">
@@ -2166,9 +2166,9 @@ const Details = (props) => {
                     </div>
                   ) : (
                     <div>
-                      {!(final_status == "Paid" || final_status == "Released") && (
+                      {!(final_status == "Paid" || final_status == "Released") && (<>
                         <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
-                      )}
+                      </>)}
                     </div>
                   )}
 

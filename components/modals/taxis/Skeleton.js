@@ -7,115 +7,58 @@ const Container = styled.div`
   overflow-x: hidden;
   position: relative;
   margin: auto;
-  width: 97%;
-  
-  @media screen and (min-width: 768px) {
-    width: 97%;
-  }
+  width: 100%;
 `;
 
-const SkeletonContainer = styled.div`
-  border-radius: 10px;
-  margin-bottom: 0.5rem;
-  display: grid;
-  grid-template-columns: 100%;
-  
-  @media screen and (min-width: 768px) {
-    grid-template-columns: 100%;
-  }
-`;
 
-const DetailsContainer = styled.div`
-  padding: 0.75rem 0.5rem;
-  width:100%;
-`;
 
 
 function Skeleton() {
   let isPageWide = media("(min-width: 768px)");
-  
-  
-  const SkeletonItem = (
-    <SkeletonContainer >
-      {isPageWide ? (
-        <DetailsContainer>
-          <div className="flex justify-between">
-          <SkeletonCard
-            height="15px"
-            borderRadius="0.25rem"
-            width="11rem"
-            mb="0.2rem"
-          />
-          <SkeletonCard
-            height="15px"
-            borderRadius="0.25rem"
-            width="5rem"
-            mb="0.2rem"
-          />
-          </div>
-          <SkeletonCard height="12px" borderRadius="0.25rem" width="7rem" />
-          
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "10px",
-              marginTop:"20px"
-            }}
-          >
-            <div className="flex gap-2">
-            <SkeletonCard height="20px" borderRadius="0.25rem" width="5rem" />
-            <SkeletonCard
-            height="20px"
-            borderRadius="0.25rem"
-            width="5rem"
-            />
+
+  const SkeletonItem = (
+    <div >
+      <div className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md relative mt-md">
+        <div className="flex justify-between max-ph:flex-col">
+          <div>
+            <div className="flex justify-between w-100">
+              <div className="text-md font-600 leading-xl ">
+                <SkeletonCard width="300px" height="25px" borderRadius="8px" variant="default"  />
+              </div>
             </div>
-            <SkeletonCard height="24px" borderRadius="0.25rem" width="24px" />
+            <div className="text-sm font-400 leading-lg-md text-text-spacegrey mt-xxs"> 
+              <SkeletonCard width="70px" height="12px" borderRadius="8px" variant="default"  />
+              </div>
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-col ">
+                <div className="font-600 text-md-lg leading-xl-sm mt-sm">
+                  <SkeletonCard width="150px" height="30px" borderRadius="8px" variant="default"  />
+                  </div>
+                <div className="mt-sm">
+                  <SkeletonCard width="120px" height="30px" borderRadius="8px" variant="default"  />
+                </div>
+              </div>
+            </div>
           </div>
-        </DetailsContainer>
-      ) : (
-        <DetailsContainer>
-          <div className="flex justify-between w-full">
-          <SkeletonCard
-            height="15px"
-            borderRadius="0.25rem"
-            width="6rem"
-            mb="0.2rem"
-          />
-          <SkeletonCard
-            height="15px"
-            borderRadius="0.25rem"
-            width="4rem"
-            mb="0.2rem"
-          />
+          <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+            <div>
+              <span className="text-lg font-700 2xl-md">
+                <SkeletonCard width="100px" height="30px" borderRadius="8px" variant="default"  />
+                </span>
+            </div>
+            <div className="flex items-end justify-center">
+              <div className="flex items-center gap-1 cursor-pointer">
+                     <SkeletonCard width="120px" height="40px" borderRadius="8px" variant="default"  />
+              </div>
+            </div>
           </div>
-          <SkeletonCard height="20px" borderRadius="0.25rem" width="8rem" />
-           <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div className="flex gap-2">
-          <SkeletonCard
-            height="20px"
-            borderRadius="0.25rem"
-            width="5rem"
-            mt="0.5rem"
-            mb="0.5rem"
-          />
-          <SkeletonCard height="20px"
-            borderRadius="0.25rem"
-            width="5rem"
-            mt="0.5rem"
-            mb="0.5rem"/>
-          </div>
-          <SkeletonCard height="24px" borderRadius="0.25rem" width="24px"  mb="0.5rem" />
-          </div>
-          
-            
-        </DetailsContainer>
-      )}
-    </SkeletonContainer>
+        </div>
+      </div>
+    
+    </div>
   );
-  
+
   return (
     <Container>
       {[SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem]}

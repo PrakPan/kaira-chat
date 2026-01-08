@@ -4,28 +4,15 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect,  useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
-import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
 import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail2";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import {
-  updateAirportTransferBooking,
-  updateTransferBookings,
-} from "../../../store/actions/transferBookingsStore";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
-import TransferDrawer from "../TransferDrawer";
-import PickupDropDrawer from "../PickupDropDrawer";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const LineContainer = styled.div`

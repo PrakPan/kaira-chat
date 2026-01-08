@@ -34,6 +34,7 @@ import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
 import { MdOutlineDownhillSkiing } from "react-icons/md";
+import SkeletonCard from "../../ui/SkeletonCard";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 767px)");
@@ -138,9 +139,8 @@ const CityDay = (props) => {
       className="flex flex-col md:flex-row bg-transparent mb-[8px] "
     >
       <div
-        className={`flex flex-col md:w-[100%] rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden ${
-          viewMore ? "bg-[#FFFAF5] " : "bg-white"
-        }`}
+        className={`flex flex-col md:w-[100%] rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden ${viewMore ? "bg-[#FFFAF5] " : "bg-white"
+          }`}
       >
         <div
           className={`flex items-center justify-between rounded-t-[8px] py-[12px] px-[16px] cursor-pointer`}
@@ -159,9 +159,8 @@ const CityDay = (props) => {
               alt="toggle"
               width={12}
               height={8}
-              className={`transition-transform duration-200 ${
-                viewMore ? "" : "rotate-180"
-              }`}
+              className={`transition-transform duration-200 ${viewMore ? "" : "rotate-180"
+                }`}
             />
           </button>
         </div>
@@ -193,9 +192,10 @@ const CityDay = (props) => {
                   </>
                 ))}
 
+
                 {/* Add Activity button */}
                 {finalized_status === "PENDING" ? (
-                  <div className="mt-3 ml-4 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+                 <div className="mt-3 ml-4 mb-2 rounded "> <SkeletonCard width="90px" height="32px" borderRadius="8px" variant="default"  /></div>
                 ) : (
                   <div className="flex justify-start pl-[16px] pb-[16px] pt-[8px] mt-2">
                     <button
@@ -225,9 +225,8 @@ const CityDay = (props) => {
                         This is your check out day in {props?.city?.name}, take
                         a{" "}
                         {transferBookings?.intercity?.[
-                          `${props?.city?.id}:${
-                            props?.nextCity?.id ||
-                            props?.nextCity?.gmaps_place_id
+                          `${props?.city?.id}:${props?.nextCity?.id ||
+                          props?.nextCity?.gmaps_place_id
                           }`
                         ]?.booking_type || "transfer"}{" "}
                         to{" "}
@@ -293,7 +292,7 @@ const CityDay = (props) => {
                         <div
                           key={item.id}
                           className="flex gap-3 items-center bg-white border-radius-10 p-2 border-1 w-100 mb-2"
-                          // onClick={() => handleTaxi(item.id)}
+                        // onClick={() => handleTaxi(item.id)}
                         >
                           <div className="hidden hover:block cursor-pointer">
                             <FaEdit />
@@ -317,7 +316,7 @@ const CityDay = (props) => {
                             />
                           </div>
 
-                          <div class="w-100">
+                          <div className="w-100">
                             <span className="font-semibold  text-[12px]">
                               {item.currentDayLabel}
                             </span>
@@ -332,7 +331,7 @@ const CityDay = (props) => {
                                 fill="currentColor"
                                 stroke-width="0"
                                 viewBox="0 0 24 24"
-                                class="mt-1"
+                                className="mt-1"
                                 height="1em"
                                 width="1em"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -350,11 +349,10 @@ const CityDay = (props) => {
                                     const pax =
                                       item?.pax ??
                                       item?.number_of_adults +
-                                        item?.number_of_children +
-                                        item?.number_of_infants;
-                                    return `${pax} Passenger${
-                                      pax > 1 ? "s" : ""
-                                    }`;
+                                      item?.number_of_children +
+                                      item?.number_of_infants;
+                                    return `${pax} Passenger${pax > 1 ? "s" : ""
+                                      }`;
                                   })()}
                                 </div>
                               </div>
