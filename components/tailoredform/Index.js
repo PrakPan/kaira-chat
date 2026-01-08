@@ -469,7 +469,7 @@ const initiateItineraryCreate = async (slideOneData) => {
 const completeItineraryCreate = () => {
   const platform = getPlatform();
   const data = {
-    source,
+    // source,
     itinerary_id: itineraryId,
     group_type: slideThreeData.groupType || "Solo",
     number_of_adults: slideThreeData.numberOfAdults,
