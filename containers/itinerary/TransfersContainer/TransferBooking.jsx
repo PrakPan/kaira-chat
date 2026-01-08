@@ -15,6 +15,7 @@ import TransferEditDrawer, {
 import { FaPlaneDeparture } from "react-icons/fa";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { useDispatch } from "react-redux";
 
 const LineContainer = styled.div`
   position: absolute;
