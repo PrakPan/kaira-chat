@@ -54,8 +54,9 @@ const createRevolutPaymentHandler = () => {
 
       const paymentOptions = {
         email: orderData.customer_email,
-        savePaymentMethodFor: 'merchant',
+        // savePaymentMethodFor: 'merchant',
         locale: 'en',
+        ...(orderData.order_id && { orderId: orderData.order_id }),
         
         // Callbacks
         onSuccess: (revolutOrderId) => {
@@ -65,12 +66,17 @@ const createRevolutPaymentHandler = () => {
           onSuccess({ 
             revolut_order_id: revolutOrderId,
             public_id: orderData.public_id,
+            order_id: orderData.order_id || revolutOrderId,
             metadata: orderData.metadata || {}
           });
         },
         
         onError: (error) => {
-          console.error('Revolut payment error:', error);
+          console.error('Revolut payment error details:', {
+    message: error.message,
+    code: error.code,
+    details: error.details
+  });
           onError(error);
         },
         

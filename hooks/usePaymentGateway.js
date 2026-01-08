@@ -15,7 +15,6 @@ const usePaymentGateway = (props) => {
   const [gatewayLoadError, setGatewayLoadError] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [revolutInstance, setRevolutInstance] = useState(null);
   
   // Refs to prevent multiple initializations
   const initializationAttempted = useRef(false);
@@ -115,7 +114,7 @@ const usePaymentGateway = (props) => {
     }
   }, [props?.name, props?.email, props?.phone]);
 
-  // Revolut payment handler - FIXED VERSION
+  // Revolut payment handler - CORRECTED VERSION
   const startRevolutHandler = useCallback(async (data, paymentType, callbacks = {}) => {
     try {
       const createdOrder = getCreatedOrder(data);
@@ -128,30 +127,33 @@ const usePaymentGateway = (props) => {
 
       console.log("Revolut Order Data:", createdOrder);
 
-      // Initialize Revolut with the public_id (this validates the token)
-      // For Revolut, public_id is used for initialization and payment
-      const revolutCheckout = await revolutPaymentHandler.initialize(createdOrder.public_id);
-      setRevolutInstance(revolutCheckout);
+      try {
+      revolutPaymentHandler.destroy();
+    } catch (error) {
+      console.log("No previous Revolut instance to destroy");
+    }
 
-      // Prepare order data - only pass what Revolut expects
+      // Initialize Revolut with the public_id (this validates the token)
+      // For Revolut, public_id is used for initialization
+      const revolutCheckout = await revolutPaymentHandler.initialize(createdOrder.public_id);
+
+      // Prepare order data - Revolut uses the initialized checkout instance
+      // The order_id is your backend order ID for verification
       const orderData = {
         public_id: createdOrder.public_id,  // This is the token Revolut needs
         customer_email: props?.email,
-        // Store your backend order_id separately for verification
-        metadata: {
-          order_id: createdOrder.order_id, // Your backend order ID
-          payment_type: paymentType
-        }
+        order_id: createdOrder.order_id,    // Your backend order ID for verification
+        payment_type: paymentType
       };
 
       await revolutPaymentHandler.openPaymentModal(orderData, {
         onSuccess: (response) => {
           // Combine Revolut's response with your backend order ID
           const verificationData = {
-            ...response,
-            order_id: createdOrder.order_id, // Include backend order ID
-            public_id: createdOrder.public_id,
-            payment_type: paymentType
+            revolut_order_id: response.revolut_order_id,
+            public_id: orderData.public_id,
+            order_id: orderData.order_id, // Include backend order ID
+            payment_type: orderData.payment_type
           };
           handlePaymentVerification(verificationData, "Revolut", paymentType, callbacks);
         },
@@ -205,10 +207,9 @@ const usePaymentGateway = (props) => {
   // Try alternative gateway if current fails
   const tryAlternativeGateway = useCallback(async (data, paymentType, callbacks = {}) => {
     // Clean up current gateway first
-    if (currentGateway === "Revolut" && revolutInstance) {
+    if (currentGateway === "Revolut") {
       try {
         revolutPaymentHandler.destroy();
-        setRevolutInstance(null);
       } catch (error) {
         console.error("Error destroying Revolut instance:", error);
       }
@@ -267,7 +268,7 @@ const usePaymentGateway = (props) => {
       setPaymentLoading(false);
       callbacks.onError?.();
     }
-  }, [currentGateway, revolutInstance, dispatch, startRazorpayHandler, startRevolutHandler]);
+  }, [currentGateway, dispatch, startRazorpayHandler, startRevolutHandler]);
 
   // Unified payment verification handler
   const handlePaymentVerification = useCallback(async (
@@ -282,7 +283,7 @@ const usePaymentGateway = (props) => {
       const verifyPayload = paymentGatewayService.prepareVerifyPayload(response, gateway);
 
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_MERCURY_API_URL}/payment/verify/`,
+        `https://dev.mercury.tarzanway.com/payment/verify/`,
         verifyPayload,
         { headers: { Authorization: `Bearer ${props?.token}` } }
       );
@@ -298,9 +299,8 @@ const usePaymentGateway = (props) => {
       );
 
       // Clean up payment instance after successful payment
-      if (gateway === "Revolut" && revolutInstance) {
+      if (gateway === "Revolut") {
         revolutPaymentHandler.destroy();
-        setRevolutInstance(null);
       }
 
       callbacks.onSuccess?.(res.data, paymentType);
@@ -318,7 +318,7 @@ const usePaymentGateway = (props) => {
 
       callbacks.onError?.(err);
     }
-  }, [dispatch, props?.token, revolutInstance]);
+  }, [dispatch, props?.token]);
 
   // Initiate payment (full or lock-in)
   const initiatePayment = useCallback(async (paymentType, Cart, callbacks = {}) => {
@@ -394,12 +394,11 @@ const usePaymentGateway = (props) => {
         // Clean up any payment instances
         if (currentGateway === "Revolut") {
           revolutPaymentHandler.destroy();
-          setRevolutInstance(null);
         }
         cleanupRef.current = true;
       }
     };
-  }, [initializePaymentGateway]);
+  }, [initializePaymentGateway, currentGateway]);
 
   return {
     currentGateway,

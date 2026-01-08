@@ -1841,7 +1841,7 @@ const _tryAlternativeGateway = async (data, paymentType) => {
     const verifyPayload = paymentGatewayService.prepareVerifyPayload(response, gateway);
 
     const res = await axios.post(
-      "https://mercury.tarzanway.com/payment/verify/",
+      "https://dev.mercury.tarzanway.com/payment/verify/",
       verifyPayload,
       { headers: { Authorization: `Bearer ${props.token}` } }
     );
@@ -2279,7 +2279,7 @@ const _lockInPaymentHandler = async (id) => {
                       </div>
                     )}
 
-                  {Cart?.sales?.length > 0 && isItineraryInFuture() && 
+                 {/* {Cart?.sales?.length > 0 && isItineraryInFuture() && 
                     Cart?.sales[Cart?.sales?.length - 1]?.orders?.length > 0 &&
                     Cart?.sales[Cart?.sales?.length - 1]?.orders[
                       Cart?.sales[Cart?.sales?.length - 1]?.orders.length - 1
@@ -2290,7 +2290,7 @@ const _lockInPaymentHandler = async (id) => {
                           onClickButton={() => handlePayNow("full")}
                         />
                       </div>
-                    )}
+                 )} */}
 
                   {/* Rest of your conditional content */}
                   {Cart?.total_payable_amount == 0 &&
