@@ -159,19 +159,19 @@ const SimpleTabsV2 = (props) => {
   }
 }, []);
 
-useEffect(() => {
-  if (!props.token && !props.itinerary?.customer) {
-    const loginReminderInterval = setInterval(() => {
-      if (!props.token && !props.itinerary?.customer) {
-        setLoginModalMessage('Login to view details');
-        setShowLoginModal(true);
-      }
-    }, 30000);
-    return () => {
-      clearInterval(loginReminderInterval);
-    };
-  }
-}, [props.token, props.itinerary?.customer]);
+// useEffect(() => {
+//   if (!props.token && !props.itinerary?.customer) {
+//     const loginReminderInterval = setInterval(() => {
+//       if (!props.token && !props.itinerary?.customer) {
+//         setLoginModalMessage('Login to view details');
+//         setShowLoginModal(true);
+//       }
+//     }, 30000);
+//     return () => {
+//       clearInterval(loginReminderInterval);
+//     };
+//   }
+// }, [props.token, props.itinerary?.customer]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
@@ -1334,7 +1334,7 @@ const attachUserToItinerary = async () => {
                   </GetInTouchContainer>
                 ) : null}
               </div>
-              {cart && props?.token && (
+              {cart && (
                 <div className="text-[12px] text-[#6E757A]">
                   {cart?.pay_only_for_one ||
                   cart?.show_per_person_cost
@@ -1346,7 +1346,7 @@ const attachUserToItinerary = async () => {
                     : "Total Cost"}
                 </div>
               )}
-              {props.payment && props?.token ? (
+              {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
@@ -1378,7 +1378,9 @@ const attachUserToItinerary = async () => {
                     {"/-"}
                   </span>
                 </div>
-              ) : <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>}
+             
+             ) : null}
+              {/* <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
             </div>
             {props?.token && props?.payment?.paid_user && (
               <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
@@ -1625,7 +1627,7 @@ const attachUserToItinerary = async () => {
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
-           message={loginModalMessage}
+          message={loginModalMessage}
   onSuccess={async () => {
     await attachUserToItinerary();
   }}
