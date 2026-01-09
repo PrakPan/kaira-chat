@@ -328,7 +328,7 @@ const TransferBooking = ({
                           }`}
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
-                            <div className="grid place-items-center md:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                            <div className="grid place-items-center md:min-w-[6rem] md:max-w-[6rem] min-w-[4rem] max-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                               {booking?.booking_type === "Taxi" ? (
                                 <>
                                   {booking?.transfer_details?.quote
@@ -674,7 +674,7 @@ const TransferBooking = ({
                         }`}
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">
-                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] max-w-[4rem]  lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                             {book?.booking_type === "Taxi" ? (
                               <ImageLoader
                                 className="object-contain border rounded-[11px]"
