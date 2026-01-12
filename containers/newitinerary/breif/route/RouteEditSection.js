@@ -48,6 +48,7 @@ import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
 import Button from "../../../../components/ui/button/Index";
 import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
 import { useChatContext } from "../../../../components/Chatbot/context/ChatContext";
+import { resetChatSession } from "../../../../store/actions/chatState";
 
 const Container = styled.div`
   position: relative;
@@ -219,7 +220,7 @@ const RouteEditSection = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
 
-  const { resetSession } = useChatContext();
+  // const { resetSession } = useChatContext();
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -475,9 +476,10 @@ const RouteEditSection = (props) => {
         await props.fetchData(true);
       }
 
-      if (resetSession) {
-        await resetSession();
-      }
+      // if (resetSession) {
+      //   await resetSession();
+      // }
+      dispatch(resetChatSession());
     } catch (error) {
       console.error("Error in fetchItinerary:", error);
     }
