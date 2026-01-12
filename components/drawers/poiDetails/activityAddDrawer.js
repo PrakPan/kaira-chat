@@ -682,7 +682,7 @@ const formattedDate =
                   onChange={(e) => setStartDate(e.target.value)}
                   defaultValue={formattedDate}
                 >
-                  {[...Array(props.duration)].map((_, i) => {
+                  {[...Array(props.duration + 1)].map((_, i) => {
                     const baseDateStr = props?.mercuryItinerary
                       ? props?.start_date
                       : convertToISODate(props?.start_date);

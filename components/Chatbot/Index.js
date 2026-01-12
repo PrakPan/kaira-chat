@@ -32,8 +32,11 @@ function ChatBot(props) {
   const itinearyId = router.query.id;
 
   return (
-  
+
+
+      <ChatProvider itinearyId={itinearyId}>
       <ChatBotContent ispopup={props.showAsPopup} hideDrawer={props?.hideDrawer} />
+      </ChatProvider>
       
   );
 }

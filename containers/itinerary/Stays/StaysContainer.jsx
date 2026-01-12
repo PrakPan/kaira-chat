@@ -48,8 +48,7 @@ const StaysContainer = (props) => {
           ))
         ) : (
           <>
-
-            <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
+            <div className={`${!isPageWide ? "w-full" : "max-w-[47vw]"}`}>
               {hotels_status === "PENDING" && (
                 <div>
                   <div className="pb-2">

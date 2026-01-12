@@ -124,6 +124,17 @@ const ActivityDetailsDrawer = (props) => {
       });
   };
 
+  const formatTime = (time24) => {
+  if (!time24) return null;
+
+  const [hours, minutes, seconds] = time24.split(":");
+  const hour = parseInt(hours, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour === 0 ? 12 : hour;
+
+  return `${hour12}:${minutes}`;
+};
+
   const updatedActivityBooking = async (data) => {
     try {
       const requestData = {
@@ -161,11 +172,14 @@ const ActivityDetailsDrawer = (props) => {
                 duration: res?.data?.duration,
               },
               element_type: "activity",
-              heading: res?.data?.activity?.name,
+              heading: res?.data?.activity_data?.display_name || res?.data?.activity?.name,
               icon: res?.data?.image,
               poi: null,
+              tags: res?.data?.activity_data?.tags || [],
               rating: res?.data?.activity?.rating,
               user_ratings_total: res?.data?.activity?.user_ratings_total,
+              start_time: formatTime(res?.data?.check_in?.split(" ")?.[1]) || null,
+              end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {

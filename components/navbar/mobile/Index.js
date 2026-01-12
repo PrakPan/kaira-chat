@@ -225,8 +225,9 @@ const Mobile = (props) => {
   });
 
   return (
-    <div key={props.notOpenCount} ref={dropdownRef} style={{ position: 'relative' }}>
-            <div onClick={() => setToggleMenu(!toggleMenu)}>
+    <div key={props.notOpenCount} ref={dropdownRef} style={{ position: 'relative' }} className="flex items-center"  >
+            <div onClick={() => setToggleMenu(!toggleMenu)} className="flex items-center justify-center cursor-pointer" 
+      style={{ maxWidth: '48px', maxHeight: '48px', minWidth: '48px', minHeight: '48px'}} >
 
       {!props.token?<Button
             className={styles.hamburger}

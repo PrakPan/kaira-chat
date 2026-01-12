@@ -62,6 +62,7 @@ import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 import axios from 'axios';
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
+import { setUnreadMessages } from "../../store/actions/chatState.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -117,7 +118,8 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
-  const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
+  const chatState = useSelector((state) => state.chatState);
+  const hasUnreadMessages = chatState?.hasUnreadMessages || false;
   const currency = useSelector(state=>state.currency);
    const [imagesGallery, setImagesGallery] = useState(null);
   const _setImagesHandler = (images) => {
@@ -137,6 +139,7 @@ const SimpleTabsV2 = (props) => {
   const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
+  const cart = useSelector(state=>state.Cart);
 
 
    
@@ -158,19 +161,19 @@ const SimpleTabsV2 = (props) => {
   }
 }, []);
 
-useEffect(() => {
-  if (!props.token && !props.itinerary?.customer) {
-    const loginReminderInterval = setInterval(() => {
-      if (!props.token && !props.itinerary?.customer) {
-        setLoginModalMessage('Login to view details');
-        setShowLoginModal(true);
-      }
-    }, 30000);
-    return () => {
-      clearInterval(loginReminderInterval);
-    };
-  }
-}, [props.token, props.itinerary?.customer]);
+// useEffect(() => {
+//   if (!props.token && !props.itinerary?.customer) {
+//     const loginReminderInterval = setInterval(() => {
+//       if (!props.token && !props.itinerary?.customer) {
+//         setLoginModalMessage('Login to view details');
+//         setShowLoginModal(true);
+//       }
+//     }, 30000);
+//     return () => {
+//       clearInterval(loginReminderInterval);
+//     };
+//   }
+// }, [props.token, props.itinerary?.customer]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
@@ -830,7 +833,7 @@ const attachUserToItinerary = async () => {
           undefined,
           { scroll: false }
         );
-        setHasUnreadMessages(false);
+        dispatch(setUnreadMessages(false));
       }}
     >
       <Image
@@ -1333,51 +1336,53 @@ const attachUserToItinerary = async () => {
                   </GetInTouchContainer>
                 ) : null}
               </div>
-              {props?.payment && props?.token && (
+              {cart && (
                 <div className="text-[12px] text-[#6E757A]">
-                  {props?.payment?.pay_only_for_one ||
-                  props?.payment?.show_per_person_cost
+                  {cart?.pay_only_for_one ||
+                  cart?.show_per_person_cost
                     ? "Per Person"
-                    : props.payment?.is_estimated_price
+                    : cart?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0 ? "" : "Estimated Price"
+                        cart?.total_cost == 0 ? "" : "Estimated Price"
                       }`
                     : "Total Cost"}
                 </div>
               )}
-              {props.payment && props?.token ? (
+              {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
                     {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
                     {!props?.mercuryItinerary
-                      ? props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      ? cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost
+                                cart?.per_person_discounted_cost
                               ) / 100
                             )
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
+                              Math.round(cart?.discounted_cost) / 100
                             )
                           )
-                      : props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      : cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                       ? getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.per_person_discounted_cost)
+                            Math.round(cart?.per_person_discounted_cost)
                           )
                         )
                       : getIndianPrice(
-                          Math.round(Math.round(props.payment.discounted_cost))
+                          Math.round(Math.round(cart?.discounted_cost))
                         )}
                     {"/-"}
                   </span>
                 </div>
-              ) : <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>}
+             
+             ) : null}
+              {/* <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
             </div>
             {props?.token && props?.payment?.paid_user && (
               <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
@@ -1624,7 +1629,7 @@ const attachUserToItinerary = async () => {
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
-           message={loginModalMessage}
+          message={loginModalMessage}
   onSuccess={async () => {
     await attachUserToItinerary();
   }}

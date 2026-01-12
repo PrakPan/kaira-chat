@@ -146,7 +146,7 @@ const AffiliatePage = (props) => {
 
   const [selectedCategory, setSelectedCategory] = useState("in_office");
 
-   const [activeDrawer, setActiveDrawer] = useState(null);
+  const [activeDrawer, setActiveDrawer] = useState(null);
 
   const handleOpenDrawer = (data, type) => {
     setActiveDrawer({ data, type });
@@ -275,7 +275,7 @@ const AffiliatePage = (props) => {
       title: "Corporate Getaways",
       description:
         "Escape the office and rejuvenate with inspiring retreats designed to recharge teams and fuel fresh ideas in scenic, peaceful locations.",
-      data: props.corporate_gateways_activities || [],
+      data: props.team_outing_activities || [],
     },
     {
       id: "team_outing",
@@ -283,7 +283,7 @@ const AffiliatePage = (props) => {
       title: "Team Outing Activities",
       description:
         "Strengthen bonds and inspire camaraderie with outdoor adventures and customized activities that make teamwork fun and unforgettable.",
-      data: props.team_outing_activities || [],
+      data: props.conference_activities || [],
     },
     {
       id: "conference",
@@ -291,27 +291,81 @@ const AffiliatePage = (props) => {
       title: "Conferences",
       description:
         "Elevate your corporate events with seamless planning and exceptional facilities for conferences that are as engaging as they are productive.",
-      data: props.conference_activities || [],
+      data: props.corporate_gateways_activities || [],
     },
-    {
-      id: "weekend_excursions",
-      label: "Weekend Excursions",
-      title: "Weekend Excursions",
-      description:
-        "Step away from the daily routine with weekend escapes that blend relaxation, adventure, and team connection in unique destinations.",
-      data: props.weekend_excursions_activities || [],
-    },
-    {
-      id: "add_on",
-      label: "Add On Activities",
-      title: "Add On Activities",
-      description:
-        "Enhance your event experience with curated add-ons, from wellness sessions to team-building games, tailored to enrich and energize your group.",
-      data: props.add_on_activities || [],
-    },
+    // {
+    //   id: "weekend_excursions",
+    //   label: "Weekend Excursions",
+    //   title: "Weekend Excursions",
+    //   description:
+    //     "Step away from the daily routine with weekend escapes that blend relaxation, adventure, and team connection in unique destinations.",
+    //   data: props.weekend_excursions_activities || [],
+    // },
+    // {
+    //   id: "add_on",
+    //   label: "Add On Activities",
+    //   title: "Add On Activities",
+    //   description:
+    //     "Enhance your event experience with curated add-ons, from wellness sessions to team-building games, tailored to enrich and energize your group.",
+    //   data: props.add_on_activities || [],
+    // },
   ];
 
   const activeCategory = categories.find((cat) => cat.id === selectedCategory);
+
+  const Faqs = [
+    {
+      question: "What kind of corporate events do you organise?",
+      answer:
+        "We organise corporate offsites, team building programs, incentive trips, conferences, in-office engagement activities, leadership retreats, and destination MICE events.",
+    },
+    {
+      question: "Do you handle MICE events?",
+      answer:
+        "Yes. We plan and execute MICE events including meetings, incentive travel, conferences, and exhibitions in India and international destinations.",
+    },
+    {
+      question: "Do you manage everything end-to-end?",
+      answer:
+        "Yes. We handle planning, locations, travel, stays, activities, vendors, logistics, and on-ground coordination.",
+    },
+    {
+      question: "Can you organise destination corporate offsites?",
+      answer:
+        "Yes. We design and execute destination offsites in India and abroad based on team size, objectives, and budget.",
+    },
+    {
+      question: "What team sizes do you work with?",
+      answer:
+        "We work with small leadership teams as well as large corporate groups with hundreds of participants.",
+    },
+    {
+      question: "Do you do in-office team building activities?",
+      answer:
+        "Yes. We organise in-office engagement activities, workshops, and team bonding sessions.",
+    },
+    {
+      question:
+        "How are your corporate events different from regular event planners?",
+      answer:
+        "Our events are designed around team goals and outcomes, not fixed templates or generic formats.",
+    },
+    {
+      question: "Who usually reaches out to you for corporate events?",
+      answer:
+        "HR teams, founders, CXOs, operations teams, and employee engagement teams.",
+    },
+    {
+      question: "Do you offer incentive travel programs?",
+      answer:
+        "Yes. We design incentive travel and reward trips for employee recognition and performance programs.",
+    },
+    {
+      question: "Do you support international corporate travel?",
+      answer:
+        "Yes. We handle international corporate offsites, incentive trips, and MICE events with full coordination and support.",
+    },
+  ];
 
   return (
     <div className="w-full">
@@ -323,7 +377,7 @@ const AffiliatePage = (props) => {
       />
       <OurCorporatesOffering />
 
-      <TravelerMadeItinerariesSection />
+      <TravelerMadeItinerariesSection corporates={true} />
 
       {/* <Logos></Logos> */}
 
@@ -338,7 +392,6 @@ const AffiliatePage = (props) => {
 
           {/* Tab Navigation */}
           <div className="flex justify-center items-center overflow-x-auto whitespace-nowrap gap-2 mb-8 border-b border-gray-200 no-scrollbar">
-
             {categories.map((category) => (
               <button
                 key={category.id}
@@ -393,7 +446,9 @@ const AffiliatePage = (props) => {
                         <DestinationCard
                           title={destination.title || destination.name}
                           description={
-                            destination.description || destination.tagline || destination.short_description
+                            destination.description ||
+                            destination.tagline ||
+                            destination.short_description
                           }
                           image={destination.image}
                           rating={destination.rating}
@@ -411,7 +466,7 @@ const AffiliatePage = (props) => {
                           }
                           gradientOverlay={destination.gradientOverlay}
                           onClick={() => {
-                            handleOpenDrawer(destination, "activity")
+                            handleOpenDrawer(destination, "activity");
                           }}
                         />
                       </div>
@@ -481,7 +536,7 @@ const AffiliatePage = (props) => {
 
       <Carousel3D className="lg:w-[190%]" />
       <TestimonialCarousel />
-      <FaqSection />
+      <FaqSection Faqs={Faqs} />
       <CtaBoardingSection />
       {/* </SetWidthContainer> */}
 
@@ -659,34 +714,34 @@ const AffiliatePage = (props) => {
       )}
 
       {activeDrawer?.type === "poi" && (
-          <POIDetailsDrawer
-            show={true}
-            iconId={activeDrawer.data.id}
-            handleCloseDrawer={handleCloseDrawer}
-            name={activeDrawer.data.name}
-            id={activeDrawer.data.id}
-            activityData={{
-              type: "poi",
-              id: activeDrawer.data.id,
-            }}
-            removeDelete={true}
-            removeChange={true}
-            showCallback={true}
-            setIsModalOpen={setIsModalOpen}
-          />
-        )}
+        <POIDetailsDrawer
+          show={true}
+          iconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          id={activeDrawer.data.id}
+          activityData={{
+            type: "poi",
+            id: activeDrawer.data.id,
+          }}
+          removeDelete={true}
+          removeChange={true}
+          showCallback={true}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
 
-        {activeDrawer?.type === "activity" && (
-          <POIDetailsDrawer
-            show={true}
-            ActivityiconId={activeDrawer.data.id}
-            handleCloseDrawer={handleCloseDrawer}
-            name={activeDrawer.data.name}
-            removeDelete={true}
-            showCallback={true}
-            setIsModalOpen={setIsModalOpen}
-          ></POIDetailsDrawer>
-        )}
+      {activeDrawer?.type === "activity" && (
+        <POIDetailsDrawer
+          show={true}
+          ActivityiconId={activeDrawer.data.id}
+          handleCloseDrawer={handleCloseDrawer}
+          name={activeDrawer.data.name}
+          removeDelete={true}
+          showCallback={true}
+          setIsModalOpen={setIsModalOpen}
+        ></POIDetailsDrawer>
+      )}
     </div>
   );
 };

@@ -302,7 +302,7 @@ const HotelBookingDetails = (props) => {
   }
 
   useEffect(() => {
-    if (props?.data?.rating || props?.data?.rating_ext > 0) {
+    if (props?.data?.rating || props?.data?.rating > 0) {
       items.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
       setItems(items);
     }
@@ -373,13 +373,13 @@ const HotelBookingDetails = (props) => {
             .join(", ")} </span></div>
         }
 
-        {props?.data?.rating || props?.data?.rating_ext && (
+        {props?.data?.rating  && (
           <div className="gap-1 flex flex-row  items-center text-sm-md text-text-spacegrey font-[400] pl-sm border-l-sm border-solid border-text-disabled">
             <div className="flex flex-row text-[#FFD201]">
-              {starRating(props?.data?.rating || props?.data?.rating_ext)}
+              {starRating(props?.data?.rating)}
             </div>
             <div>
-              {props?.data?.rating || props?.data?.rating_ext}
+              {props?.data?.rating}
             </div>
             {props?.data?.user_ratings_total > 0 || props?.data?.user_ratings_total > 0 && (
               <div className="underline">
@@ -1227,17 +1227,17 @@ const HotelBookingDetails = (props) => {
 
 
             <div id="section-3">
-              {props?.data?.rating || props?.data?.rating_ext > 0 && (
+              {props?.data?.rating > 0 && (
                 <div>
                   <div className="text-md-lg font-600 leading-xl mb-lg">Reviews</div>
                   <div className="grid grid-cols-3 gap-y-2 gap-x-4">
                     <div className="flex flex-row gap-sm-md">
-                      <div className="text-2xl-md font-600 leading-2xl"> {props?.data?.rating || props?.data?.rating_ext}</div>
+                      <div className="text-2xl-md font-600 leading-2xl"> {props?.data?.rating}</div>
                       <div>
-                        {props?.data?.rating || props?.data?.rating_ext && (
+                        {props?.data?.rating  && (
                           <div className="gap-1 flex flex-column text-sm-md text-text-spacegrey font-[400]">
                             <div className="flex flex-row text-[#FFD201]">
-                              {starRating(props?.data?.rating || props?.data?.rating_ext)}
+                              {starRating(props?.data?.rating)}
                             </div>
                             {props?.data?.user_ratings_total > 0 || props?.data?.user_ratings_total > 0 && (
                               <div className="underline">

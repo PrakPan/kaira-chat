@@ -15,7 +15,7 @@ import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import Button from "../common/components/button";
 import Link from "next/link";
 
-const TravelerMadeItinerariesSection = () => {
+const TravelerMadeItinerariesSection = (props) => {
   // Sample traveler-made itinerary data
   const itineraries = [
     {
@@ -3647,11 +3647,11 @@ const TravelerMadeItinerariesSection = () => {
         {/* Header Section */}
         <div className="text-center mb-12 lg:mb-16">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-[48px]">
-            Trips Travelers Can’t Stop Loving
+            {props?.corporates ? "Corporate Offsites, Incentives & MICE Travel" : "Trips Travelers Can’t Stop Loving"}
             {/* Our Most Loved Itineraries */}
           </h2>
           <p className="text-[#7d8590] text-base max-w-[55rem] mx-auto leading-6">
-            Created and loved by travellers like you. These itineraries are customised, bookable, and trending right now.
+            {props?.corporates ? "Thoughtfully curated corporate travel experiences across the globe. Planned, priced, and executed for corporate requirements" : "Created and loved by travellers like you. These itineraries are customised, bookable, and trending right now."}
 
             {/* <br />
             We would love to see what you can create now? */}

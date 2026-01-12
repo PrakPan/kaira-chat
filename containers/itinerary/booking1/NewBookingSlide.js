@@ -2279,7 +2279,7 @@ const _lockInPaymentHandler = async (id) => {
                       </div>
                     )}
 
-                 {/* {Cart?.sales?.length > 0 && isItineraryInFuture() && 
+                  {/* {Cart?.sales?.length > 0 && isItineraryInFuture() && 
                     Cart?.sales[Cart?.sales?.length - 1]?.orders?.length > 0 &&
                     Cart?.sales[Cart?.sales?.length - 1]?.orders[
                       Cart?.sales[Cart?.sales?.length - 1]?.orders.length - 1
@@ -2466,7 +2466,7 @@ const _lockInPaymentHandler = async (id) => {
                   ) : (
                     <div>
                       <div className="text-md font-500 leading-lg mb-xs">
-                        {localStorage.getItem("name") || ""}
+                        {Itinerary?.customer_name || ""}
                       </div>
 
                       <div className="flex flex-row gap-xs text-sm font-400 leading-md flex-wrap">

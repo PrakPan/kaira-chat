@@ -30,6 +30,7 @@ import tailoredInfoReducer from "./tailoredInfo"
 import currencyReducer from "./currencyReducer";
 import currency from "./currency";
 import cloneItinerary from './cloneItinerary'
+import chatStateReducer from "./chatState";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -62,7 +63,8 @@ const rootReducer = combineReducers({
   tailoredInfoReducer:tailoredInfoReducer,
   currencyReducer,
   currency,
-  cloneItinerary
+  cloneItinerary,
+  chatState: chatStateReducer
 });
 
 export default rootReducer;

@@ -135,27 +135,13 @@ const handleMoveElementCommonly = async (
     const newItinerary = JSON.parse(JSON.stringify(itinerary));
     let itineraryCities = [];
     if (res?.status === 200) {
-      itineraryCities = newItinerary.cities.map((city) => {
-        const cityTemp = { ...city };
-        if (city.id === itinerary_city_id) {
-          const day = cityTemp.day_by_day[dayIndex];
-          if (!day) return cityTemp;
-          const slabElements = [...day.slab_elements];
-          const fromIndex = slabIndex;
-          const toIndex = position;
-          if (
-            fromIndex >= 0 &&
-            fromIndex < slabElements.length &&
-            toIndex >= 0 &&
-            toIndex < slabElements.length
-          ) {
-            const [moved] = slabElements.splice(fromIndex, 1);
-            slabElements.splice(toIndex, 0, moved);
-          }
-          day.slab_elements = slabElements;
-        }
-        return cityTemp;
-      });
+     const updatedDayByDay = res.data;
+  
+  itineraryCities = newItinerary.cities.map((city) => 
+    city.id === itinerary_city_id 
+      ? { ...city, day_by_day: updatedDayByDay }
+      : city
+  );
     }
 
     newItinerary.cities = itineraryCities;
