@@ -137,6 +137,7 @@ const Home = (props) => {
         
         <HeroSection />
         testing
+        testing 2
         <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         
