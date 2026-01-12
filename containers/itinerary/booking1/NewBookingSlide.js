@@ -66,6 +66,7 @@ import { TbClockExclamation } from "react-icons/tb";
 import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { resetChatSession } from "../../../store/actions/chatState";
 
 
 const GetInTouchContainer = styled.div`
@@ -1189,7 +1190,7 @@ const Details = (props) => {
       Cart?.total_payable_amount !== 0
   );
   const [updatingInclusions, setUpdatingInclusions] = useState({});
-  const { resetSession } = useChatContext();
+  // const { resetSession } = useChatContext();
 
   const {
     trackWhatsAppClicked,
@@ -1458,9 +1459,10 @@ const Details = (props) => {
         // Refresh payment data
         if (props?.fetchData) await props.fetchData(true);
 
-        if (resetSession) {
-          await resetSession();
-        }
+        // if (resetSession) {
+        //   await resetSession();
+        // }
+        dispatch(resetChatSession());
       }
     } catch (error) {
       console.error("Error Repricing :", error);
