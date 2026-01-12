@@ -43,10 +43,10 @@ function FilterChips(props) {
         const allCleared =
             (isBudgetClear || (props.filters.budget.price_lower_range === props.defaultBudget.price_lower_range &&
                 props.filters.budget.price_upper_range === props.defaultBudget.price_upper_range)) &&
-            props.filters.star_category.length === 0 &&
-            props.filters.user_ratings.length === 0 &&
-            (props.filters.type.length === 0 || (props.filters.type.length === 1 && props.filters.type[0] === "All")) &&
-            props.filters.facilities.length === 0
+            props.filters.star_category?.length === 0 &&
+            props.filters.user_ratings?.length === 0 &&
+            (props.filters.type?.length === 0 || (props.filters.type?.length === 1 && props.filters.type[0] === "All")) &&
+            props.filters.facilities?.length === 0
 
         if (allCleared) {
             props?.setIsFilterChangesApplied(false);
@@ -61,7 +61,7 @@ function FilterChips(props) {
                 {/* Price */}
                 {(props?.filters?.budget?.price_lower_range != props.defaultBudget?.price_lower_range || props?.filters?.budget?.price_upper_range != props.defaultBudget?.price_upper_range) &&
                     <div className='border-sm rounded-5xl border-text-disabled px-md py-xs whitespace-nowrap flex items-center'>
-                       ₹<span className='text-sm-md font-400 leading-xl'>{props?.filters?.budget.price_lower_range} - ₹{props?.filters?.budget?.price_upper_range}</span>
+                       ₹<span className='text-sm-md font-400 leading-xl'>{props?.filters?.budget.price_lower_range} - ₹{props?.filters?.budget?.price_upper_range ? props?.filters?.budget?.price_upper_range : '10000+' }</span>
                         <button className='ml-xs' onClick={() => handleRemove("budget")}>{svgIcons.close}</button>
                     </div>
                 }
