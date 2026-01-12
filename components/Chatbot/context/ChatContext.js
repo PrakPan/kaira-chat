@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { CHATBOT_SOCKET_HOST, MERCURY_HOST } from "../../../services/constants";
-const ChatContext = createContext();
 import { useDispatch, useSelector } from "react-redux";
 import { updateSingleStayCityAndCheckInWise } from "../../../store/actions/StayBookings";
 import setItinerary, {
@@ -22,7 +21,11 @@ import { updateTransferBookings } from "../../../store/actions/transferBookingsS
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { openNotification } from "../../../store/actions/notification";
 import { useRouter } from "next/router";
+import { setUnreadMessages, setChatSessionId } from "../../../store/actions/chatState";
+
+const ChatContext = createContext();
 const localStorageKeyForSessionIds = "chatbotSessionIds";
+const localStorageKeyForceNewSession = "chatbotForceNewSession";
 
 export const ChatProvider = ({ itinearyId, children }) => {
   const [conversations, setConversations] = useState([]);
@@ -43,31 +46,45 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const [isloadingChatHistory, setIsLoadingOfChatHistory] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [forceNewSession, setForceNewSession] = useState(false);
   const { id } = useSelector((state) => state.auth);
   let reconnecting = false;
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const { trackTransferBookingDelete, trackChatOpened, trackChatMessageReceived } = useAnalytics();
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const token = useSelector((state) => state.auth.token);
-  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const router = useRouter();
+  
+  const chatState = useSelector((state) => state.chatState);
 
-  // Initialize chat session on mount
+  const setHasUnreadMessages = (value) => {
+    dispatch(setUnreadMessages(value));
+  };
+
+  useEffect(() => {
+    if (chatState?.shouldResetSession && chatState?.resetTimestamp) {
+      handleResetSession();
+    }
+  }, [chatState?.shouldResetSession, chatState?.resetTimestamp]);
+
+  const lastResetTimestamp = useRef(null);
+
+  useEffect(() => {
+    if (sessionId) {
+      dispatch(setChatSessionId(sessionId));
+    }
+  }, [sessionId, dispatch]);
+
   useEffect(() => {
     if (!itinearyId || !token || isInitialized) return;
     
     const initializeChat = async () => {
-      console.log("Initializing chat...");
       
-      // First, get all chat history
       const history = await getAllChatHistory(itinearyId);
       
       if (history && history.length > 0) {
-        // Get the latest session (first item in the sorted array)
         const latestSession = history[0];
-        console.log("Loading latest session:", latestSession.id);
         
-        // Update localStorage with latest session
         let oldSessionIds = JSON.parse(
           localStorage.getItem(localStorageKeyForSessionIds) || "{}"
         );
@@ -77,13 +94,9 @@ export const ChatProvider = ({ itinearyId, children }) => {
           JSON.stringify(oldSessionIds)
         );
         
-        // Load the latest session
         await showChatHistoryById(latestSession.id, true);
         trackChatOpened(router?.query?.id, latestSession.id);
-      } else {
-        // No history exists, wait for finalized status before creating new session
-        console.log("No chat history found, waiting for finalized status");
-      }
+      } 
       
       setIsInitialized(true);
     };
@@ -91,7 +104,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
     initializeChat();
   }, [itinearyId, token]);
 
-  // Only create new session if no history exists and itinerary is finalized
+
   useEffect(() => {
     if (!itinearyId || !token || !isInitialized) return;
     
@@ -101,13 +114,11 @@ export const ChatProvider = ({ itinearyId, children }) => {
     }
   }, [finalized_status, token, isInitialized, sessionId, chatHistoryList]);
 
-  // Handle visibility change for reconnection
   useEffect(() => {
     if (!itinearyId || !token) return;
     
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && sessionId && !isConnected) {
-        console.log("App returned to foreground, reconnecting...");
         connect(sessionId);
       }
     };
@@ -144,12 +155,6 @@ export const ChatProvider = ({ itinearyId, children }) => {
 
     socket.onopen = () => {
       reconnecting = false;
-      console.log(
-        "WebSocket connected with session:",
-        id || "new",
-        "Url:-",
-        wsUrl
-      );
       setIsConnected(true);
 
       if (!id) {
@@ -233,15 +238,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         break;
 
       case "session":
-        console.log(
-          data,
-          "Session established:",
-          data.session_id,
-          "Reconnected:",
-          data.reconnected,
-          "Last assing Id",
-          id
-        );
+        console.log(data, "Session established:", data.session_id);
         let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
         oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
         oldSessionIds[itinearyId] = data.session_id;
@@ -651,6 +648,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
     setConversations([]);
     setQuickReplies([]);
     setSessionId(null);
+    setIsInitialized(false);
+    setForceNewSession(true); 
+    let forceNewFlags = localStorage.getItem(localStorageKeyForceNewSession);
+    forceNewFlags = forceNewFlags ? JSON.parse(forceNewFlags) : {};
+    forceNewFlags[itinearyId] = true;
+    localStorage.setItem(localStorageKeyForceNewSession, JSON.stringify(forceNewFlags));
+    
     let oldSessionIds = localStorage.getItem(localStorageKeyForSessionIds);
     oldSessionIds = oldSessionIds ? JSON.parse(oldSessionIds) : {};
     delete oldSessionIds[itinearyId];
@@ -658,7 +662,45 @@ export const ChatProvider = ({ itinearyId, children }) => {
       localStorageKeyForSessionIds,
       JSON.stringify(oldSessionIds)
     );
-    connect(null);
+    
+    setChatHistoryList([]);
+    
+    if (socketRef?.current) {
+      socketRef.current.onopen = null;
+      socketRef.current.onmessage = null;
+      socketRef.current.onerror = null;
+      socketRef.current.onclose = null;
+      socketRef.current.close();
+      socketRef.current = null;
+    }
+    
+  };
+
+  const handleResetSession = async () => {
+    if (lastResetTimestamp.current === chatState?.resetTimestamp) {
+      return;
+    }
+    lastResetTimestamp.current = chatState?.resetTimestamp;
+    
+
+    const resetTime = Date.now();
+    let resetTimestamps = localStorage.getItem('chatbotResetTimestamps');
+    resetTimestamps = resetTimestamps ? JSON.parse(resetTimestamps) : {};
+    resetTimestamps[itinearyId] = resetTime;
+    localStorage.setItem('chatbotResetTimestamps', JSON.stringify(resetTimestamps));
+    
+    
+    resetSession();
+    
+    setTimeout(async () => {
+      console.log("🆕 Creating fresh session after itinerary update");
+      
+      if (finalized_status === "SUCCESS") {
+        connect(null);
+      }
+      
+      setIsInitialized(true);
+    }, 500);
   };
 
   return (
@@ -682,7 +724,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         isloadingChatHistory,
         getAllChatHistory,
         resetSession,
-        hasUnreadMessages,
+        hasUnreadMessages: chatState?.hasUnreadMessages || false,
         setHasUnreadMessages,
       }}
     >

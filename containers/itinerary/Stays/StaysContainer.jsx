@@ -47,7 +47,7 @@ const StaysContainer = (props) => {
           ))
         ) : (
           <>
-            <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
+            <div className={`${!isPageWide ? "w-full" : "max-w-[47vw]"}`}>
               {hotels_status === "PENDING" && (
                 <div className="animate-pulse">
                   <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">

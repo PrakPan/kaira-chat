@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useChatContext } from "../../../components/Chatbot/context/ChatContext";
+import { resetChatSession } from "../../../store/actions/chatState";
 
 const Container = styled.div`
   display: grid;
@@ -79,7 +80,6 @@ const Details = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [showEditDate, setShowEditDate] = useState(false);
-  const { resetSession } = useChatContext();
 
   function handleEditDates() {
     props.setEditRoute("editDates");
@@ -132,9 +132,7 @@ const Details = (props) => {
         await props.fetchData(true);
       }
 
-      if (resetSession) {
-        await resetSession();
-      }
+      dispatch(resetChatSession());
     } catch (error) {
       console.error("Error in fetchItinerary:", error);
     }

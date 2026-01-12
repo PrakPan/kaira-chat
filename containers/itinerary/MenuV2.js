@@ -62,6 +62,7 @@ import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 import axios from 'axios';
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
+import { setUnreadMessages } from "../../store/actions/chatState.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -117,7 +118,8 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
-  const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
+  const chatState = useSelector((state) => state.chatState);
+  const hasUnreadMessages = chatState?.hasUnreadMessages || false;
   const currency = useSelector(state=>state.currency);
    const [imagesGallery, setImagesGallery] = useState(null);
   const _setImagesHandler = (images) => {
@@ -831,7 +833,7 @@ const attachUserToItinerary = async () => {
           undefined,
           { scroll: false }
         );
-        setHasUnreadMessages(false);
+        dispatch(setUnreadMessages(false));
       }}
     >
       <Image

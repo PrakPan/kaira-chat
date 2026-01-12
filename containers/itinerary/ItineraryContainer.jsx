@@ -367,10 +367,17 @@ const ItineraryContainer = (props) => {
   };
 
   const resetRef = () => {
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
     itinerarySuccessRef.current = false;
     pricingSuccessRef.current = false;
     transfersSuccessRef.current = false;
     hotelsSuccessRef.current = false;
+    
   };
 
   useEffect(() => {
@@ -1529,7 +1536,6 @@ const ItineraryContainer = (props) => {
   }
 
   return (
-    <ChatProvider itinearyId={router.query.id}>
       <Container>
         <NotesPopup
           notes={notes}
@@ -1733,7 +1739,6 @@ const ItineraryContainer = (props) => {
         ) : null}
         <ToastContainer />
       </Container>
-    </ChatProvider>
   );
 };
 
