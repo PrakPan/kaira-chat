@@ -136,10 +136,11 @@ const Home = (props) => {
         <NavigationMenu />
         
         <HeroSection />
+        testing
         <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         
-        
+          
         <PlacesBragSection />
         <LuxuryEuropeDestinations />
         <TravelerMadeItinerariesSection />
