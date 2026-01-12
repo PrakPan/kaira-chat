@@ -381,12 +381,6 @@ const ItineraryContainer = (props) => {
   };
 
   useEffect(() => {
-    dispatch(setItineraryStatus("pricing_status", "PENDING"));
-    dispatch(setItineraryStatus("transfers_status", "PENDING"));
-    dispatch(setItineraryStatus("hotels_status", "PENDING"));
-    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
-    dispatch(setStays([]));
-    dispatch(setTransfersBookings(null));
     resetRef();
   }, []);
 

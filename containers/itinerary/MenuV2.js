@@ -62,7 +62,7 @@ import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 import axios from 'axios';
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
-import { setUnreadMessages } from "../../store/actions/chatState.js";
+import ChatButtonContainer from "./ChatButtonContainer.jsx";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -118,8 +118,6 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
-  const chatState = useSelector((state) => state.chatState);
-  const hasUnreadMessages = chatState?.hasUnreadMessages || false;
   const currency = useSelector(state=>state.currency);
    const [imagesGallery, setImagesGallery] = useState(null);
   const _setImagesHandler = (images) => {
@@ -817,42 +815,12 @@ const attachUserToItinerary = async () => {
   )}
   
   {/* Chat Button */}
-  <div className="relative">
-    <Button
-      borderWidth="0px"
-      onclick={() => {
-        handleChatBotOpen(true);
-        setShowChatBanner(false);
-        router.push(
-          {
-            pathname: `/itinerary/${router.query.id}/`,
-            query: {
-              drawer: "chat",
-            },
-          },
-          undefined,
-          { scroll: false }
-        );
-        dispatch(setUnreadMessages(false));
-      }}
-    >
-      <Image
-        src={"/assets/chatbot/chatbot-avaatar.svg"}
-        alt="ticket"
-        width={80}
-        height={80}
-      />
-    </Button>
-    {hasUnreadMessages && (
-      <NotificationDot>
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle opacity="0.2" cx="12" cy="12" r="11" fill="#FA3530" stroke="white" strokeWidth="2"/>
-          <circle opacity="0.4" cx="12" cy="12" r="8" fill="#FA3530"/>
-          <circle cx="12" cy="12" r="6" fill="#FA3530"/> 
-        </svg>
-      </NotificationDot>
-    )}
-  </div>
+    <ChatButtonContainer
+    onOpenChat={() => {
+      handleChatBotOpen(true);
+      setShowChatBanner(false);
+    }}
+  />
 </div>
           {isChatBotEnable ? (
             <Drawer
