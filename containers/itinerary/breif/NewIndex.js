@@ -155,14 +155,25 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
+   useEffect(() => {
+    if (props.autoOpenDrawer) {
+      router.push({
+        pathname: `/itinerary/${router?.query?.id}`,
+        query: {
+          drawer: "handleEditRoute",
+        },
+      }, undefined, { shallow: true });
+    }
+  }, [props.autoOpenDrawer]);
+
   return (
     <div id="brief" className="mb-3xl mt-lg max-ph:mt-xl max-ph:mb-xl">
       <DetailsContainer>
 
-        <RoutesRow className="flex w-full justify-between">
-          <div className="flex gap-[10px]">
+        {/* <RoutesRow className="flex w-full justify-between">
+          <div className="flex gap-[10px]"> */}
             {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
-            <span className="Body2M_14">Trip Summary</span></div>
+            {/* <span className="Body2M_14">Trip Summary</span></div>
           <button
             className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
            onClick={() => {
@@ -184,7 +195,7 @@ const Details = (props) => {
             View
           </button>
 
-        </RoutesRow>
+        </RoutesRow> */}
         {/* <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
           id="MapcontainerRoute"
@@ -244,7 +255,8 @@ const Details = (props) => {
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
-          editRoute={drawer == "handleEditRoute"}
+          editRoute={true}
+          // editRoute={drawer == "handleEditRoute"}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}
@@ -254,6 +266,7 @@ const Details = (props) => {
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
           resetRef={props?.resetRef}
+          setActiveTab={props?.setActiveTab}
         >
           {isDesktop ?<RoutesMap
             locations={locationsLatLong}

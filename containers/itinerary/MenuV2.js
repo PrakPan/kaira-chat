@@ -293,10 +293,11 @@ const SimpleTabsV2 = (props) => {
     setLoginModalMessage('Welcome to The Tarzan Way!');
   };
 
-  const items = [
-    { id: 1, label: "Itinerary", link: "Itenary" },
-    { id: 2, label: "Bookings", link: "Booking" },
-  ];
+ const items = [
+  { id: 1, label: "Route", link: "Route" },
+  { id: 2, label: "Itinerary", link: "Itenary" },
+  { id: 3, label: "Bookings", link: "Booking" },
+];
 
   const hasActivities =
     Array.isArray(props?.itinerary?.cities) &&
@@ -566,9 +567,11 @@ const attachUserToItinerary = async () => {
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
-          editRoute={props.editRoute}
+          editRoute={true}
           setEditRoute={props.setEditRoute}
           requireAuth={requireAuth}
+          autoOpenDrawer={true} 
+          setActiveTab={setActiveTab}
         ></Breif>
       ) : (
         citydatadone && (

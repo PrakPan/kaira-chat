@@ -851,6 +851,7 @@ const RouteEditSection = (props) => {
               handleSaveButton={handleSaveButton}
               itineraryLoading={itineraryLoading}
               handleClose={handleClose}
+              setActiveTab={props?.setActiveTab}
             />
           </div>
         )}
@@ -2682,7 +2683,7 @@ export const ActionPanel = (props) => {
       <button
         className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
         onClick={
-          editDestination ? () => handleClose() : () => setEditDestination(true)
+          editDestination ? () => {handleClose(); props?.setActiveTab("Itinerary") }: () => setEditDestination(true)
         }
       >
         {editDestination ? "Cancel" : "Back"}

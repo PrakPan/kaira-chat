@@ -45,6 +45,15 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSec
               }
               if(trackSectionViewed)
               trackSectionViewed(router.query.id,item.label);
+            if (item.label === "Route") {
+      router.push({
+        pathname: router.pathname,
+        query: {
+          ...router.query,
+          drawer: "handleEditRoute",
+        },
+      }, undefined, { shallow: true });
+    }
               setSelectedTab(`${item.id}`);
             }}
             isSelected={selectedTab === `${item.id}`}
