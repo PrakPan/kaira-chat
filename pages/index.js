@@ -1,11 +1,8 @@
 import Head from "next/head";
-// import HomepageContainer from "../containers/homepage/Index";
 import HeroSection from "../components/revamp/home/HeroSection";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
 import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
-import FullSlider from "../components/revamp/home/FullSlider";
-import MostLovedItinerariesSection from "../components/revamp/destination/MostLovedItinerariesSection";
 import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
@@ -14,9 +11,7 @@ import CurveImageGallery from "../components/theme/CurveImageGallery";
 import FaqSection from "../components/revamp/home/FaqSection";
 import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
-
-// import Layout from "../components/Layout";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
 import { useEffect } from "react";
@@ -29,7 +24,6 @@ import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
-import Login from "../components/modals/Login";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TestimonialCarousel from "../components/theme/TestimonialCarousel";
 import PartnersSection from "../components/theme/PartnersSection";
@@ -122,30 +116,15 @@ const Home = (props) => {
           }}
         />
       </Head>
-
-      {/* <HomepageContainer
-        asiaLocations={props.asiaLocations}
-        europeLocations={props.europeLocations}
-        token={props.token}
-        locations={props.locations}
-        ThemeData={props.ThemeData}
-        continetCarousel={props.continetCarousel}
-      ></HomepageContainer> */}
-
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
-        
+
         <HeroSection />
-        testing
-        testing 2
         <JourneySimplified />
-        {props.token && <MyTripsSection className={'max-w-7xl'} />} 
-        
-          
+        {props.token && <MyTripsSection className={'max-w-7xl'} />}
         <PlacesBragSection />
         <LuxuryEuropeDestinations />
         <TravelerMadeItinerariesSection />
-        {/* <FullSlider /> */}
         <TravelVibeSection />
         <PartnersSection />
         <WhereNextSection />
@@ -156,14 +135,6 @@ const Home = (props) => {
         <CtaBoardingSection />
       </div>
       <NewFooter page="Homepage" />
-      {/* <div id="login" className="width-[100%] z-[1650]">
-        <Login
-          show={props.showLogin}
-          onhide={props.authCloseLogin}
-          itinary_id={props?.itinary_id}
-          zIndex={"3300"}
-        />
-      </div> */}
     </>
   );
 };
