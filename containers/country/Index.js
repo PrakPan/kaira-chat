@@ -449,7 +449,7 @@ const Index = (props) => {
                     <SwiperSlide key={destination.id}>
                       <div className="w-full px-1">
                         <DestinationCard
-                          title={destination.title || destination.name}
+                          title={destination?.display_name || destination.title || destination.name}
                           description={
                             destination.description || destination.tagline
                           }
@@ -578,7 +578,7 @@ const Index = (props) => {
                     <SwiperSlide key={destination.id}>
                       <div className="w-full px-1">
                         <DestinationCard
-                          title={destination.title || destination.name}
+                          title={destination?.display_name || destination.title || destination.name}
                           description={
                             destination.description || destination.tagline
                           }

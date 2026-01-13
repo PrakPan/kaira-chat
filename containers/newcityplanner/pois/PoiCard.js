@@ -187,7 +187,7 @@ export default function PoiCard(props) {
       {props.data.name && (
        <Typography>
        <div className="text-wrap">
-         <p className="AnimateLeft">{props.data.name}</p>
+         <p className="AnimateLeft">{props?.data?.display_name || props.data.name}</p>
          {stars && (
            <div className="text-white flex flex-row items-center gap-1 text-xs AnimateLeft">
              <span className="flex flex-row gap-1 text-[#FFD201]">{stars}</span>

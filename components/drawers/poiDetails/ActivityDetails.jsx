@@ -364,8 +364,10 @@ const ActivityDetails = (props) => {
                           ? props.data.image
                           : "media/icons/bookings/notfounds/noroom.png"
                       }
-                      dimensionsMobile={{ width: 500, height: 295 }}
-                      dimensions={{ width: 468, height: 295 }}
+                      // dimensionsMobile={{ width: 500, height: 295 }}
+                      // dimensions={{ width: 468, height: 295 }}
+                      dimensionsMobile={{ width: 800, height: 472 }}
+                      dimensions={{ width: 936, height: 590 }}
                       onload={() => {
                         setTimeout(() => {
                           setImageLoaded(true);

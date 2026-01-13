@@ -573,7 +573,7 @@ export default function ThemePage(props) {
                               <SwiperSlide key={destination.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={destination.title || destination.name}
+                                    title={destination?.display_name || destination.title || destination.name}
                                     description={
                                       destination.description || destination.tagline
                                     }
@@ -779,10 +779,9 @@ export default function ThemePage(props) {
                               <SwiperSlide key={destination.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={destination.title || destination.name}
-                                    description={
-                                      destination.description || destination.tagline
-                                    }
+                                    title={destination?.display_name || destination.title || destination.name}
+                                    description={destination.description || destination.tagline}
+                                    one_liner_description={destination?.one_liner_description}
                                     image={destination.image}
                                     rating={destination.rating}
                                     reviewCount={destination.user_ratings_total}

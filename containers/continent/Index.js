@@ -739,7 +739,7 @@ const Index = (props) => {
                               <SwiperSlide key={activity.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={activity.title || activity.name}
+                                    title={activity?.display_name || activity.title || activity.name}
                                     description={
                                       activity.one_liner_description ||
                                       activity.tagline
@@ -885,7 +885,7 @@ const Index = (props) => {
                               <SwiperSlide key={activity.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={activity.title || activity.name}
+                                    title={activity?.display_name || activity.title || activity.name}
                                     description={
                                       activity.one_liner_description ||
                                       activity.tagline
@@ -1023,7 +1023,7 @@ const Index = (props) => {
                               <SwiperSlide key={poi.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={poi.title || poi.name}
+                                    title={poi?.display_name || poi.title || poi.name}
                                     description={
                                       poi.one_liner_description || poi.tagline
                                     }

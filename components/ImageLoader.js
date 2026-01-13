@@ -71,6 +71,13 @@ const ImageLoader = (props) => {
             height: props.dimensions.height,
             fit: props?.fit ?? "cover",
           },
+          jpeg: {
+      quality: 90,  
+      progressive: true 
+    },
+    webp: {
+      quality: 90  
+    }
         },
       });
     } else {
@@ -115,6 +122,13 @@ const ImageLoader = (props) => {
             height: props.dimensions.width,
             fit: "cover",
           },
+          jpeg: {
+      quality: 90,  
+      progressive: true  
+    },
+    webp: {
+      quality: 90  
+    }
         },
       });
     else
