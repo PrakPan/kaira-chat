@@ -7,6 +7,7 @@ import H8 from "../../../components/heading/H8";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { imgUrlEndPoint } from "../../../components/theme/ThemeConstants";
 import { PlanYourTripButton } from "../../travelplanner/ThemePage";
+import { DestinationCard } from "../../../components/revamp/common/components/card";
 
 const Text = styled.p`
   font-size: 14px;
@@ -75,53 +76,15 @@ export default function ElementCard(props) {
 
   return (
     <>
-      <div
-        onClick={handleCardClick}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        className="h-[300px] group relative cursor-pointer p-3 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300 transition-all duration-200"
-      >
-        <div
-          className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-800 text-white px-3 py-2 rounded-md drop-shadow-2xl text-sm ${
-            hover ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          {props?.data?.name}
-        </div>
-
-        <div className="h-[60%] overflow-hidden rounded-lg">
-          <ImageLoader
-            url={props?.data?.image || placeholderImage}
-            dimensions={{ width: 500, height: 500 }}
-            dimensionsMobile={{ width: 500, height: 200 }}
-            width="100%"
-            height="100%"
-            borderRadius="8px"
-            noLazy
-            hoverpointer
-          />
-        </div>
-
-        <div className="flex flex-col gap-2 h-[40%]">
-          <div>
-            <H8
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                fontSize: "16px",
-                fontWeight: "700",
-              }}
-            >
-              {props?.data?.name}
-            </H8>
-          </div>
-
-          <div className="text-[13px] font-[400] text-gray-600 line-clamp-2">
-            {props?.data?.text}
-          </div>
-        </div>
-      </div>
+      <DestinationCard
+        placesBragSection={false}
+        title={props?.data?.name}
+        description={props?.data?.text}
+        image={props?.data?.image}
+        onClick={() => {
+          handleCardClick();
+        }}
+      />
 
       <Drawer
         show={props.isOpen}
@@ -134,7 +97,7 @@ export default function ElementCard(props) {
       >
         <Container>
           <BackContainer>
-            <div 
+            <div
               onClick={handleCloseDrawer}
               className="cursor-pointer flex items-center gap-2"
             >
@@ -143,7 +106,7 @@ export default function ElementCard(props) {
             </div>
           </BackContainer>
 
-    
+
           {shouldShowImageSection && (
             <ImageContainer style={{ height: "200px", maxHeight: "200px" }}>
               <div style={{ height: "200px", overflow: "hidden" }}>
@@ -202,8 +165,8 @@ export default function ElementCard(props) {
             <div>
               <Heading>About</Heading>
               <Text
-    dangerouslySetInnerHTML={{ __html: props.data.description }}
-  />
+                dangerouslySetInnerHTML={{ __html: props.data.description }}
+              />
             </div>
           )}
 
@@ -214,7 +177,7 @@ export default function ElementCard(props) {
               </Text>
             </div>
           )}
-           <PlanYourTripButton className="bg-[#F7E700]"/>
+          <PlanYourTripButton className="bg-[#F7E700]" />
         </Container>
       </Drawer>
     </>

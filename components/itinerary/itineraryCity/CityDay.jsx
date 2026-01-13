@@ -14,23 +14,28 @@ import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
 import { getDate } from "../../../helper/ConvertDateFormat";
 
 const SectionHeading = styled.div`
-   font-weight: 500;
-   font-size: 14px;
-   line-height: 22px;
-`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+`;
 
 const DivideSlabElement = styled.div`
-    border-left: 1px dashed #A09E9E;
-    margin-left: 1rem;
-    padding: 10px 5px;
-    font-family: Montserrat;
-    font-weight: 500;
-    font-size: 12px;
-    color: #A09E9E;
-    min-height: 45px
-`
+  border-left: 1px dashed #a09e9e;
+  margin-left: 2.5rem;
+  padding: 10px 5px;
+  font-family: Montserrat;
+  font-weight: 500;
+  font-size: 12px;
+  color: #a09e9e;
+  min-height: 32px;
+  gap: 6px;
+`;
 import { getDatesInRange } from "../../../helper/DateUtils";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import useMediaQuery from "../../media";
+import { MdOutlineDownhillSkiing } from "react-icons/md";
+import SkeletonCard from "../../ui/SkeletonCard";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 767px)");
@@ -41,13 +46,29 @@ const CityDay = (props) => {
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const {trackActivityBookingAdd,trackActivityCardClicked} = useAnalytics();
+  const { trackActivityBookingAdd, trackActivityCardClicked } = useAnalytics();
+  const transferBookings = useSelector(
+    (state) => state.TransferBookings
+  ).transferBookings;
+  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
+  const isDesktop = useMediaQuery("(min-width:767px)");
+  const dispatch = useDispatch();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
-  const router = useRouter()
-  const { drawer, idx, itinerary_city_id, date } =
-    router?.query;
+  const router = useRouter();
+  const { drawer, idx, itinerary_city_id, date } = router?.query;
   const handleAddActivity = () => {
-    trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
+    if(localStorage.getItem("access_token")){
+      // if(id != customer){
+      //   dispatch(setCloneItineraryDrawer(true));
+      //   return;
+      // }
+    } else {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    trackActivityBookingAdd(router.query.id, "day_by_day_collapse");
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -55,7 +76,7 @@ const CityDay = (props) => {
           drawer: "showAddActivity",
           itinerary_city_id: props?.itinerary_city_id,
           idx: props?.index,
-          date: props?.day?.date
+          date: props?.day?.date,
         },
       },
       undefined,
@@ -79,16 +100,18 @@ const CityDay = (props) => {
     if (props?.index === 0) {
       setViewMore(true);
     }
-  }, [])
+  }, []);
 
-const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => {
-  const checkIn = booking?.check_in?.split(" ")[0];
-  const checkOut = booking?.check_out?.split(" ")[0];
-  const allDates = getDatesInRange(checkIn, checkOut);
+  const matchingIntracityBookings = props?.intracityBookings?.filter(
+    (booking) => {
+      const checkIn = booking?.check_in?.split(" ")[0];
+      const checkOut = booking?.check_out?.split(" ")[0];
+      const allDates = getDatesInRange(checkIn, checkOut);
 
-  const dayDate = new Date(props?.day?.date).toISOString().split("T")[0];
-  return allDates.includes(dayDate);
-});
+      const dayDate = new Date(props?.day?.date).toISOString().split("T")[0];
+      return allDates.includes(dayDate);
+    }
+  );
 
   const formattedTaxiDetails = matchingIntracityBookings?.map(
     (booking, index) => {
@@ -108,9 +131,9 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
         ...booking,
         id: booking.id,
         currentDayLabel: `Day ${props.index + 1}, ${getDate(props?.day?.date)}`,
-          // date: formattedCheckIn === formattedCheckOut
-          //   ? `Day ${index + 1}, ${formattedCheckIn}`
-          //   : `${formattedCheckIn} to ${formattedCheckOut}`,
+        // date: formattedCheckIn === formattedCheckOut
+        //   ? `Day ${index + 1}, ${formattedCheckIn}`
+        //   : `${formattedCheckIn} to ${formattedCheckOut}`,
         fromLocation:
           booking.transfer_details?.source?.name || "Unknown Source",
         toLocation:
@@ -124,70 +147,158 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
     }
   );
   return (
-    <div id="cityday" className="flex flex-col md:flex-row bg-[#FBFBFB]">
-      <div className={`flex flex-col  md:w-[100%]  ${isPageWide ? 'ml-4 mr-[7px]' : ''}`}>
-        <div className="flex items-center justify-between bg-white rounded-[8px] shadow-sm py-[8px] px-[16px] border-[#E5E5E5] border-[1px] mb-[8px]">
-          <div className={`Body2M_14`}> Day {props.index + 1} |  <span>  {getHumanDateWithYearv2(props?.day?.date)} {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}</span></div>
-          <button
-            onClick={() => setViewMore((prev) => !prev)}
-            className="flex items-center text-sm font-semibold"
-          >
-              <Image
-                src={'/assets/Itinerary/arrow-up.svg'}
-                alt="ticket"
-                width={12}
-                height={8}
-                className={`transition-200 ${viewMore ? '' : 'rotate-180'}`}
-              />
+    <div
+      id="cityday"
+      className="flex flex-col md:flex-row bg-transparent mb-[8px] "
+    >
+      <div
+        className={`flex flex-col md:w-[100%] rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden ${viewMore ? "bg-[#FFFAF5] " : "bg-white"
+          }`}
+      >
+        <div
+          className={`flex items-center justify-between rounded-t-[8px] py-[12px] px-[16px] cursor-pointer`}
+          onClick={() => setViewMore((prev) => !prev)}
+        >
+          <div className="text-[14px] font-medium text-[#333333]">
+            {isPageWide ? `Day ${props.index + 1} | ` : ""}
+            <span>
+              {getHumanDateWithYearv2(props?.day?.date)}
+              {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}
+            </span>
+          </div>
+          <button className="flex items-center">
+            <Image
+              src={"/assets/Itinerary/arrow-up.svg"}
+              alt="toggle"
+              width={12}
+              height={8}
+              className={`transition-transform duration-200 ${viewMore ? "" : "rotate-180"
+                }`}
+            />
           </button>
         </div>
 
-        {viewMore ? <>
-          {elements.map((element, index) => (
-            <>
-              <SlabElement
-                itinerary_city_id={props?.itinerary_city_id}
-                key={index}
-                element={element}
-                dayIndex={props?.index}
-                slabIndex={index}
-                setShowLoginModal={props?.setShowLoginModal}
-                date={props?.date}
-                cityID={props.city.id}
-                cityName={props.city.name}
-                totalElements={elements.length} 
-              />
+        {viewMore && (
+          <>
+            {elements.length > 0 ? (
+              <>
+                {elements.map((element, index) => (
+                  <>
+                    <SlabElement
+                      itinerary_city_id={props?.itinerary_city_id}
+                      element={element}
+                      key={props?.itinerary_city_id + index}
+                      dayIndex={props?.index}
+                      slabIndex={index}
+                      setShowLoginModal={props?.setShowLoginModal}
+                      date={props?.date}
+                      cityID={props.city.id}
+                      cityName={props.city.name}
+                      totalElements={elements.length}
+                    />
 
-              {index !== elements.length - 1  ? <DivideSlabElement>  {props?.city?.nextTime ? '2h' : '' } </DivideSlabElement> : null}
-            </>
-          ))}
+                    {index !== elements.length - 1 && (
+                      <DivideSlabElement>
+                        {props?.city?.nextTime ? "2h" : ""}
+                      </DivideSlabElement>
+                    )}
+                  </>
+                ))}
 
-          {finalized_status === "PENDING" ? (
-            <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
-          ) : (
-            <div className="flex justify-end">
-            <button
-              onClick={handleAddActivity}
-              className="mt-3  w-fit text-[14px] text-[#3A85FC;] underline font-medium font-montserrat"
-            >
-              + Add 
-            </button>
-            </div>
-          )}
-        </>
 
-          : null}
+                {/* Add Activity button */}
+                {finalized_status === "PENDING" ? (
+                 <div className="mt-3 ml-4 mb-2 rounded "> <SkeletonCard width="90px" height="32px" borderRadius="8px" variant="default"  /></div>
+                ) : (
+                  <div className="flex justify-start pl-[16px] pb-[16px] pt-[8px] mt-2">
+                    <button
+                      onClick={handleAddActivity}
+                      className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                    >
+                      + Activity
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : props?.isLastDay ? (
+              <>
+                <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                  <div className="flex gap-[16px]">
+                    <div className="flex-shrink-0">
+                      <img
+                        src="/checkout.png"
+                        alt="checkout"
+                        className="w-[71px] h-[47px] object-contain flex-shrink-0"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="Body2M_14">Check out day</div>
+                      <div className="Body3M_12 text-[#6E757A] mb-[16px]">
+                        This is your check out day in {props?.city?.name}, take
+                        a{" "}
+                        {transferBookings?.intercity?.[
+                          `${props?.city?.id}:${props?.nextCity?.id ||
+                          props?.nextCity?.gmaps_place_id
+                          }`
+                        ]?.booking_type || "transfer"}{" "}
+                        to{" "}
+                        {props?.nextCity?.city?.name ||
+                          itineraryDaybyDay?.end_city?.name}
+                        .
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-start pl-[16px] pb-[16px] pt-[4px] mt-2">
+                  <button
+                    onClick={handleAddActivity}
+                    className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                  >
+                    + Activity
+                  </button>
+                </div>
+              </>
+            ) : (
+              // No activities AND not last day - show rest day card
+              <div className="mx-[16px] my-[16px] p-[16px] bg-white rounded-[8px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+                <div className="flex gap-[16px]">
+                  <div className="flex-shrink-0">
+                    <MdOutlineDownhillSkiing color="#A09E9E" size={24} />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="Body2M_14">This is your rest day</div>
+                    <div className="Body3M_12 text-[#6E757A] mb-[16px] mt-1">
+                      No activities or attractions have been planned yet. Click
+                      on '+' to add one
+                    </div>
+
+                    <div className="flex gap-[12px]">
+                      <button
+                        onClick={handleAddActivity}
+                        className="py-[6px] px-[14px] bg-[#07213A] rounded-[8px] text-[13px] text-white"
+                      >
+                        + Activity
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {matchingIntracityBookings &&
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 && (
             <>
-              <hr />
+              {/* <hr /> */}
               <div className="">
                 <SectionHeading className="p-2">
                   {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
                 </SectionHeading>
-                <div className="flex flex-col gap-2 w-full font-montserrat">
+                <div className="flex flex-col gap-2 w-[95%] mx-auto font-inter">
                   <div className="flex flex-wrap gap-2">
                     {formattedTaxiDetails?.map((item) => (
                       <>
@@ -218,7 +329,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                             />
                           </div>
 
-                          <div class="w-100">
+                          <div className="w-100">
                             <span className="font-semibold  text-[12px]">
                               {item.currentDayLabel}
                             </span>
@@ -233,7 +344,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
                                 fill="currentColor"
                                 stroke-width="0"
                                 viewBox="0 0 24 24"
-                                class="mt-1"
+                                className="mt-1"
                                 height="1em"
                                 width="1em"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -292,27 +403,32 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           </button>
         </div> */}
       </div>
-      {drawer === "showAddActivity" && itinerary_city_id == props?.itinerary_city_id && idx == props?.index && (
-        <ActivityAddDrawer
-          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx == props?.index}
-          mercuryItinerary={props?.mercuryItinerary}
-          setShowDrawer={setShowAddDrawer}
-          cityName={props.city.name}
-          cityID={props.city.id}
-          date={date}
-          setItinerary={props?.setItinerary}
-          itinerary_city_id={props?.itinerary_city_id}
-          day={`Day ${idx + 1}`}
-          duration={props.duration}
-          start_date={props?.start_date}
-          day_slab_index={idx}
-          setShowLoginModal={props?.setShowLoginModal}
-          activityBookings={props?.activityBookings}
-          setActivityBookings={props?.setActivityBookings}
-        ></ActivityAddDrawer>
-      )}
+      {drawer === "showAddActivity" &&
+        itinerary_city_id == props?.itinerary_city_id &&
+        idx == props?.index && (
+          <ActivityAddDrawer
+            showDrawer={
+              itinerary_city_id == props?.itinerary_city_id &&
+              idx == props?.index
+            }
+            mercuryItinerary={props?.mercuryItinerary}
+            setShowDrawer={setShowAddDrawer}
+            cityName={props.city.name}
+            cityID={props.city.id}
+            date={date}
+            setItinerary={props?.setItinerary}
+            itinerary_city_id={props?.itinerary_city_id}
+            day={`Day ${idx + 1}`}
+            duration={props.duration}
+            start_date={props?.start_date}
+            day_slab_index={idx}
+            setShowLoginModal={props?.setShowLoginModal}
+            activityBookings={props?.activityBookings}
+            setActivityBookings={props?.setActivityBookings}
+          ></ActivityAddDrawer>
+        )}
 
-      {handleShowTaxi && (
+      {/* {handleShowTaxi && (
         <TransferDrawer
           show={handleShowTaxi}
           setHandleShow={setHandleShowTaxi}
@@ -338,7 +454,7 @@ const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => 
           isIntracity={true}
           isSightseeing={true}
         />
-      )}
+      )} */}
     </div>
   );
 };

@@ -65,6 +65,7 @@ const Overview = (props) => {
           number_of_children={props?.number_of_children}
           number_of_infants={props?.number_of_infants}
           setEditRoute={props.setEditRoute}
+          v1={props?.v1}
         ></Details>
         {isDesktop && props.tripsPage && <Ratings />}
         {(isDesktop && props?.images?.length > 0 ) && <SmallGallery maxShow={Math.min(3,props.images.length)} images={props.images} />}

@@ -12,6 +12,8 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import Drawer from "../../../ui/Drawer";
 import BackArrow from "../../../ui/BackArrow";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { currencySymbols } from "../../../../data/currencySymbols";
 
 const Container = styled.div`
   width: 100%;
@@ -52,6 +54,7 @@ const Flight = (props) => {
   const [showFareDrawer, setShowFareDrawer] = useState(false);
   const [selectedFareData, setSelectedFareData] = useState(null);
   const [selectedFareIndex, setSelectedFareIndex] = useState(null);
+  const currency = useSelector(state=>state.currency);
 
 
   const totalPax =
@@ -100,7 +103,7 @@ const Flight = (props) => {
           <div className="text-right">
             <div className="text-md md:text-md font-bold">
               {props.data?.final_fare
-                ? `₹${getIndianPrice(props.data?.final_fare)}`
+                ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
             <div className="text-xs text-gray-500">for {(props?.pax?.adults || 0) + (props?.pax?.children || 0) + (props?.pax?.infants || 0)} person</div>
@@ -150,7 +153,7 @@ const Flight = (props) => {
           <div className="text-left">
             <div className="text-md font-bold">
               {props.data?.final_fare
-                ? `₹${getIndianPrice(props.data?.final_fare)}`
+                ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(props.data?.final_fare)}`
                 : null}
             </div>
             <div className="text-sm text-gray-600">for {totalPax} person</div>
@@ -284,7 +287,7 @@ const Flight = (props) => {
                 <div className="text-right">
                   <div className="text-md md:text-md font-bold">
                     {selectedFareData?.final_fare || props.data?.final_fare
-                      ? `₹${getIndianPrice(
+                      ? `${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}${getIndianPrice(
                           selectedFareData?.final_fare || props.data?.final_fare
                         )}`
                       : null}
@@ -381,6 +384,7 @@ const FareOptionsTable = ({
   flightIndex,
 }) => {
   const router = useRouter();
+  const currency = useSelector(state=>state.currency);
   
   const getIndianPrice = (price) => {
     return new Intl.NumberFormat("en-IN").format(price);
@@ -477,7 +481,7 @@ const FareOptionsTable = ({
                 {result.is_refundable ? "Yes" : "No"}
               </div>
               <div className="text-base font-normal text-gray-900 text-left">
-                ₹{getIndianPrice(result.final_fare)}
+                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
               </div>
               <div className="flex items-start justify-start gap-1">
                 <button
@@ -593,7 +597,7 @@ const FareOptionsTable = ({
               <div className="flex items-center justify-between">
                 <span className="text-gray-500 text-sm">For {totalPax} person</span>
                 <span className="text-gray-900 text-md font-semibold">
-                  ₹{getIndianPrice(result.final_fare)}
+                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(result.final_fare)}
                 </span>
               </div>
             </div>

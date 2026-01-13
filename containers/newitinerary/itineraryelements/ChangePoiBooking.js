@@ -152,7 +152,7 @@ export default function ChangePoiBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-[20px] font-semibold">
-                    {props.data?.name ? props.data.name : null}
+                    { props.data?.name || props?.data?.display_name  ?  props.data.name || props?.data?.display_name: null}
                   </div>
                 </div>
                 {stars && (
@@ -224,10 +224,10 @@ export default function ChangePoiBooking(props) {
               )}
               <div>
                 <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-                  {props.data.short_description
-                    .split(" ")
+                  {props.data.short_description ? props.data.short_description
+                    ?.split(" ")
                     .slice(0, 40)
-                    .join(" ")}
+                    .join(" "): null}
                   {props?.data?.source !== "Gmaps" && (
                     <span className="font-bold text-gray-500"> ...more</span>
                   )}
@@ -365,7 +365,7 @@ export default function ChangePoiBooking(props) {
         </div>
 
         <div className="text-[20px] font-semibold">
-          {props.data?.name ? props.data.name : null}
+          { props.data?.name || props?.data?.display_name ?  props.data.name || props?.data?.display_name : null}
         </div>
 
         {stars && (
@@ -378,7 +378,7 @@ export default function ChangePoiBooking(props) {
 
         <div className="my-2">
           <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-            {props.data.short_description.split(" ").slice(0, 40).join(" ")}
+            {props.data.short_description ? props.data.short_description?.split(" ")?.slice(0, 40)?.join(" ") : null}
             <span className="font-bold text-gray-500"> ...more</span>
           </div>
         </div>

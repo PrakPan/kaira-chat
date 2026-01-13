@@ -74,18 +74,18 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
+# .env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.development
-.env.production
+# .env.development
+# .env.production
 
 # vercel
 .vercel
 
 
-bitbucket-pipelines.yml
+# bitbucket-pipelines.yml
 docker-compose.yml
 Dockerfile
 
@@ -103,8 +103,8 @@ ecosystem.config.js
 services/dump.rdb
 public/sitemap.xml
 pm2-deploy.sh
-s3-deploy.sh
-index_path.py
+# s3-deploy.sh
+# index_path.py
 
 package-lock.json
 vercel.json

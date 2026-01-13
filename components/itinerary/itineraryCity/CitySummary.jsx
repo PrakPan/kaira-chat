@@ -59,6 +59,7 @@ const CitySummary = (props) => {
             poi_id: poi,
             type: type,
             dayIndex: dayIndex,
+            itinerary_city_id:props?.itinerary_city_id
           },
         },
         undefined,
@@ -211,6 +212,7 @@ const CitySummary = (props) => {
         query: {
           drawer: "SightSeeing",
           bookingId: id,
+          itinerary_city_id: props?.city?.id,
         },
       },
       undefined,
@@ -316,7 +318,7 @@ const CitySummary = (props) => {
                     >
                       {poi.heading}
                     </span>
-                    {dayByDay && dayByDay.length ? (
+                    {/* {dayByDay && dayByDay.length ? (
                       <>
                         {drawer === "showPoiDetail" &&
                           String(poi_id) === String(poi?.poi) && (
@@ -345,7 +347,7 @@ const CitySummary = (props) => {
                             />
                           )}
                       </>
-                    ) : null}
+                    ) : null} */}
                   </>
                 )
               );
@@ -454,7 +456,7 @@ const CitySummary = (props) => {
                     </div>
                   </div>
                 </div>
-                {dayByDay && dayByDay.length ? (
+                {/* {dayByDay && dayByDay.length ? (
                   <>
                     {drawer === "showPoiDetail" &&
                       String(poi_id) === String(item.id) && (
@@ -483,7 +485,7 @@ const CitySummary = (props) => {
                         />
                       )}
                   </>
-                ) : null}
+                ) : null} */}
               </>
             ))}
           </div>

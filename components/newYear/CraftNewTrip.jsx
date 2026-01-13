@@ -16,7 +16,10 @@ export default function CraftNewTrip(props) {
         // } else {
         //     openTailoredModal(router, props.page_id, props.destination);
         // }
-        router.push("/new-trip");
+        router.push({
+        pathname: "/new-trip",
+        query: { source: props?.destination || 'home' }
+    });
     };
 
     return (

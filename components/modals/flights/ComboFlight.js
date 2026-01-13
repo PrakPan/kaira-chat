@@ -37,6 +37,7 @@ import ReactDOM from "react-dom";
 import { useGenericAPIModal } from "../warning/Index";
 import { PiAirplaneLanding, PiAirplaneTakeoff } from "react-icons/pi";
 import FlightFilters from "./new-flight-searched/FlightFilters";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -151,6 +152,7 @@ const ComboFlight = (props) => {
     props?.flightResults ? props?.flightResults?.length : 0
   );
   const [previousAirlineFilter, setPreviousAirlineFilter] = useState(null);
+    const currency = useSelector(state=>state.currency);
   
 
   const [pax, setPax] = useState({
@@ -194,7 +196,9 @@ const ComboFlight = (props) => {
   const cancelTokenSourceRef = useRef(null);
 
   const [currentRequestId, setCurrentRequestId] = useState(0);
-
+  const {trackTransferBookingChange,trackTransferBookingAdd} = useAnalytics();
+  const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
+ 
   //for flight search
   const [sourceInput, setSourceInput] = useState({
     id: props?.transferData?.source?.id || "",
@@ -266,6 +270,7 @@ const ComboFlight = (props) => {
     };
   }, []);
 
+
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);
@@ -277,6 +282,27 @@ const ComboFlight = (props) => {
     props?.comboStartDate,
     props?.selectedBooking?.check_in,
   ]);
+
+   useEffect(() => {
+  // When user logs in (token becomes available) and we have the required data
+  if (
+    props.token && 
+    preferredDepartureTime && 
+    !loading && 
+    !isFetching &&
+    (sourceInput.code || props.source_code || props.selectedBooking?.origin_iata) &&
+    (destinationInput.code || props.destination_code || props.selectedBooking?.destination_iata)
+  ) {
+
+    if (!flights || flights.length === 0) {
+      const timeoutId = setTimeout(() => {
+        _FetchFlightsHandler();
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }
+}, [props.token]); 
 
   useEffect(() => {
     function roundToNext30Min(input) {
@@ -435,6 +461,7 @@ useEffect(() => {
 
   useEffect(() => {
   if (
+    Array.isArray(props?.flightResults) &&
     props?.flightResults?.length &&
     props?.selectedData?.resultIndex !== undefined
   ) {
@@ -490,6 +517,7 @@ useEffect(() => {
   // ]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
+   
     setPreferredDepartureTime(newDateTime);
   };
 
@@ -539,7 +567,7 @@ const handleViewMore = async () => {
     };
 
     // Build URL with pagination and airline filter
-    let url = `?limit=${newLimit}&offset=${newOffset}`;
+    let url = `?currency=${currency?.currency || 'INR'}&limit=${newLimit}&offset=${newOffset}`;
     if (filtersState?.airlines) {
       url += `&airlines=${encodeURIComponent(filtersState.airlines)}`;
     }
@@ -666,12 +694,12 @@ const handleViewMore = async () => {
       };
 
       const selectedAirlines = filtersState?.airlines;
-
+      let curr = null;
       const url = selectedAirlines
-        ? `?airlines=${encodeURIComponent(
+        ? `?currency=${currency?.currency || 'INR'}&airlines=${encodeURIComponent(
             selectedAirlines
           )}&limit=${limit}&offset=0`
-        : `?limit=${limit}&offset=0`;
+        : `?currency=${currency?.currency || 'INR'}&limit=${limit}&offset=0`;
 
       axiosFlightSearch
         .post(url, requestData, {
@@ -689,6 +717,7 @@ const handleViewMore = async () => {
           setLoading(false);
           setMoreLoadingState(false);
           setIsFetching(false);
+           setIsTimeOnlyChange(false);
 
           if (cancelTokenSourceRef.current === currentCancelTokenSource) {
             cancelTokenSourceRef.current = null;
@@ -760,6 +789,12 @@ const handleViewMore = async () => {
               props.selectedBooking?.destination_iata
             } for given dates at the moment. Please contact us to complete this booking`,
           });
+
+          props.openNotification({
+      type: "error",
+      text: err?.response?.data?.errors?.[0]?.message?.[0] || err.message,
+      heading: "Error!",
+    });
         });
     } else {
       setLoading(false);
@@ -856,7 +891,7 @@ const handleViewMore = async () => {
     let errorMsg = "Warning check failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
-        errorMsg = error.response.data.errors[0].message[0];
+        errorMsg = error.response.data.errors[0].message?.[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
       } else if (typeof error.response.data === "string") {
@@ -892,6 +927,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
 
     // Success handling
     props._updateFlightBookingHandler([response.data]);
+   
     props.getPaymentHandler();
     setMoreLoadingState(false);
     setUpdateBookingState(false);
@@ -968,6 +1004,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
           response.data
         )
       );
+      trackTransferBookingAdd(itinerary_id,`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,intercity?.[`${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`],response.data,sourceInput?.city_name,destinationInput?.city_name)
       props?.getPaymentHandler();
       
       if (response?.data?.is_refresh_needed) {
@@ -1009,7 +1046,7 @@ const handleBookingConfirm = async (requestData, itinerary_id) => {
     let errorMsg = "Booking failed. Please try again.";
     if (error?.response?.data) {
       if (error.response.data.errors?.[0]?.message?.[0]) {
-        errorMsg = error.response.data.errors[0].message[0];
+        errorMsg = error.response.data.errors[0].message?.[0];
       } else if (error.response.data.message) {
         errorMsg = error.response.data.message;
       } else if (typeof error.response.data === "string") {
@@ -1279,7 +1316,7 @@ useEffect(() => {
     }
 
 
-    return (
+    return (   
       <OptionsContainer id="options">
         <div style={{ clear: "right" }}>
           {flights.map((flight, index) => (

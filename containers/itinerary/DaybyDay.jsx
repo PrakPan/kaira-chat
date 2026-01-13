@@ -145,7 +145,7 @@ const DaybyDay = ({
         <div className="flex flex-col">
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={startCity?.place_id}
+            key={startCity?.place_id || 1}
             city={startCity?.city_name}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
@@ -267,10 +267,7 @@ const DaybyDay = ({
               hotel?.itinerary_city_id === city?.id
             ) || [];
 
-            const totalDuration = cityHotels.reduce(
-              (total, hotel) => total + (hotel?.duration || 0),
-              0
-            ) || city?.duration;
+            const totalDuration = city?.duration;
 
             let sourceKey = city?.id;
             let airportBookings = [

@@ -177,7 +177,7 @@ const Navbar = (props) => {
                   width="55px"
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={"media/website/logo-only.svg"}
+                  url={"media/website/Christmas-Logo-06.png"}
                   noPlaceholder={true}
                 ></ImageLoader>
               ) : props.headerColor === "black" ? (
@@ -209,7 +209,7 @@ const Navbar = (props) => {
                     width="55px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/website/logo-only.svg"}
+                    url={"media/website/Christmas-Logo-06.png"}
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>

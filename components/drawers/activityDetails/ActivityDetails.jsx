@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
+import { currencySymbols } from "../../../data/currencySymbols";
 const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
@@ -27,20 +28,28 @@ export default function ActivityDetails(props) {
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const [boolDetails, setBoolDetail] = useState({
-    generalGuidelines: false,
-    thingsToBring: false,
-    notSuitableFor: false,
-    tipsTricks: false,
-    Amenities: false,
+    generalGuidelines: true,
+    thingsToBring: true,
+    notSuitableFor: true,
+    tipsTricks: true,
+    Amenities: true,
   });
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
-    if (props.data?.prices?.length > 0) {
-      setSelectedPackage(props.data.prices[0]);
-    }
-  }, [props.data?.prices]);
+  if (props.data?.prices?.length > 0) {
+    setSelectedPackage(props.data.prices[0]);
+  }
+}, [props.data?.prices]);
+
+
+  useEffect(() => {
+  if (props.data?.prices?.length > 0) {
+    setSelectedPackage(props.data.prices[0]);
+  }
+}, [props.data?.prices]);
 
   useEffect(() => {
     if (props.data?.amenities?.length) {
@@ -126,7 +135,7 @@ export default function ActivityDetails(props) {
                 width="100%"
                 height="100%"
                 url={
-                  props.data.image && !imageFail
+                  props.data?.image && !imageFail
                     ? props.data.image
                     : "media/icons/bookings/notfounds/noroom.png"
                 }
@@ -230,6 +239,35 @@ export default function ActivityDetails(props) {
                 </div>
               </div>
             )}
+
+            {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-green">Inclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.inclusions.map((inclusion, i) => (
+                    <li key={i} className="mb-1">- {inclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* Exclusions Section */}
+          {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
+            <div className="flex flex-col gap-2 mb-[30px]">
+              <div className="text-[20px] font-semibold text-red">Exclusions</div>
+              <div className="border-b-[1px]"></div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.exclusions.map((exclusion, i) => (
+                    <li key={i} className="mb-1">- {exclusion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
           </div>
           {props?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
@@ -456,55 +494,75 @@ export default function ActivityDetails(props) {
             </div>
           ) : null}
 
-          {props?.data?.prices && props?.data?.prices?.length && (
-            <div className="mb-4">
-              <h3 className="font-medium text-base mb-3">Package Options</h3>
 
-              <div className="flex flex-col gap-3">
-                {props.data.prices.map((packageItem, index) => (
-                  <div
-                    key={packageItem.result_index}
-                    className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${selectedPackage?.result_index === packageItem.result_index
-                        ? 'border-yellow-400 bg-yellow-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
-                      }`}
-                    onClick={() => setSelectedPackage(packageItem)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPackage?.result_index === packageItem.result_index
-                              ? 'border-yellow-400 bg-yellow-400'
-                              : 'border-gray-300'
-                            }`}
-                        >
-                          {selectedPackage?.result_index === packageItem.result_index && (
-                            <div className="w-2 h-2 rounded-full bg-white"></div>
-                          )}
-                        </div>
-                        <div className="flex flex-col">
-                          <div className="font-medium text-gray-900">
-                            {packageItem.description}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            For {packageItem.pax_details.adults + packageItem.pax_details.children} people
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-lg">
-                          ₹{getIndianPrice(Math.round(packageItem.total_price))}
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          per package
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          {/* Inclusions Section */}
+         
+
+       {props?.data?.prices && props?.data?.prices?.length && (
+  <div className="mb-4">
+    <h3 className="font-medium text-base mb-3">Package Options</h3>
+    
+    <div className="flex flex-col gap-3 w-full">
+      {props.data.prices.map((packageItem, index) => (
+        <div
+          key={packageItem.result_index}
+          className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
+            selectedPackage?.result_index === packageItem.result_index
+              ? 'border-yellow-400 bg-yellow-50'
+              : 'border-gray-200 bg-white hover:border-gray-300'
+          }`}
+          onClick={() => setSelectedPackage(packageItem)}
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex  flex-col gap-2 w-full">
+              <div className="flex justify-between w-full items-start">
+              <div className="flex items-center gap-3">
+              <div 
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedPackage?.result_index === packageItem.result_index
+                    ? 'border-yellow-400 bg-yellow-400'
+                    : 'border-gray-300'
+                }`}
+              >
+                {selectedPackage?.result_index === packageItem.result_index && (
+                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                )}
+              </div>
+              <div className="font-medium text-gray-900">
+                  {props.data?.is_package ? packageItem?.title ? packageItem.title : '' : ''}
+              </div>
+              {!(packageItem?.description) && !packageItem?.title &&  <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+              </div>}
+              </div>
+              <div className="text-right">
+              <div className="font-bold text-lg">
+                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(Math.round(packageItem.total_price))}
+              </div>
+              {/* <div className="text-sm text-gray-600">
+                per package
+              </div> */}
+              </div>
+
+              </div>
+
+              <div className="flex flex-col ">
+                
+                <div className="font-normal text-gray-900 text-sm">
+                  {props.data?.is_package ? packageItem?.description ? packageItem.description : '' : ''}
+                </div>
+                {(packageItem?.description || packageItem?.title) && <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+                </div>}
               </div>
             </div>
-          )}
+            
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
         </div>
         {props?.data?.cancellation_policies && (
           <>
@@ -540,7 +598,7 @@ export default function ActivityDetails(props) {
             {selectedPackage?.total_price && (
               <div className="font-bold">
                 <span className="text-[34px]">
-                  ₹
+                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}
                   {selectedPackage?.total_price && selectedPackage?.total_price > 0
                     ? getIndianPrice(Math.round(selectedPackage.total_price))
                     : selectedPackage.total_price}
@@ -572,6 +630,7 @@ export default function ActivityDetails(props) {
 export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
   const [isHovered, setIsHovered] = useState(false);
+  const currency = useSelector(state=>state.currency);
   const popupStyle = {
     display: isHovered ? "block" : "none",
     backgroundColor: "#2b2b2a",
@@ -630,7 +689,7 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
       ) : (
         <div className="flex items-center justify-between">
           <div className="font-semibold text-[24px]">
-            ₹{getIndianPrice(amenity.price)}{" "}
+            {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(amenity.price)}{" "}
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 

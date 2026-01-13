@@ -1,11 +1,11 @@
-// ================================================================
-// COMPLETE public/jupiter-analytics.js
-// Integrates with your specific API endpoints and includes IP detection
-// ================================================================
+
 
 (function() {
   'use strict';
   
+  
+  // Check if we're in Partytown worker context
+  const isPartytown = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
   
   // Analytics state
   let analyticsState = {
@@ -13,7 +13,7 @@
     userId: null,
     anonymousId: null,
     userIp: null,
-    apiEndpoint: 'https://dev.jupiter.tarzanway.com', // Will be configured
+    apiEndpoint: 'https://jupiter.tarzanway.com',
     apiKey: '',
     queue: [],
     failedQueue: [],
@@ -22,36 +22,66 @@
     flushInterval: 5000,
     maxRetries: 3,
     retryDelay: 2000,
-    heartbeatInterval: null,
     flushTimer: null,
     retryTimer: null,
-    visibilityStartTime: Date.now(),
     scrollThresholds: new Set(),
-    pageStartTime: Date.now(),
     isInitialized: false,
+    pendingFlush: false,
     stats: {
       eventsSent: 0,
       eventsRetried: 0,
       eventsFailed: 0,
       batchesSent: 0,
+      singleEventsSent: 0,
       lastFlushTime: null
     }
   };
 
-  // UUID generation for web workers
+  // UUID generation
   const generateUUID = () => {
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
-};
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    return Array.from(bytes, (byte, i) => {
+      const hex = byte.toString(16).padStart(2, '0');
+      return [4, 6, 8, 10].includes(i) ? '-' + hex : hex;
+    }).join('');
+  };
 
+  // LocalStorage compatibility layer
+  const storage = {
+    getItem: (key) => {
+      try {
+        if (isPartytown) {
+          // In Partytown, try to access through proxied localStorage
+          return localStorage.getItem(key);
+        }
+        return localStorage.getItem(key);
+      } catch (e) {
+        console.warn('localStorage access failed:', e);
+        return null;
+      }
+    },
+    setItem: (key, value) => {
+      try {
+        if (isPartytown) {
+          localStorage.setItem(key, value);
+        } else {
+          localStorage.setItem(key, value);
+        }
+      } catch (e) {
+        console.warn('localStorage write failed:', e);
+      }
+    }
+  };
 
   const getOrCreateAnonymousId = () => {
     try {
-      let anonymousId = localStorage.getItem('jupiter_anonymous_id');
+      let anonymousId = storage.getItem('jupiter_anonymous_id');
       if (!anonymousId) {
         anonymousId = generateUUID();
-        localStorage.setItem('jupiter_anonymous_id', anonymousId);
+        storage.setItem('jupiter_anonymous_id', anonymousId);
       }
       return anonymousId;
     } catch (e) {
@@ -60,16 +90,19 @@
   };
 
   const getCurrentItineraryId = () => {
-    const path = location.pathname;
-    const match = path.match(/\/itinerary\/([^\/]+)/);
-    return match ? match[1] : undefined;
+    try {
+      const path = location.pathname;
+      const match = path.match(/\/itinerary\/([^\/]+)/);
+      return match ? match[1] : undefined;
+    } catch (e) {
+      return undefined;
+    }
   };
 
   // Device detection
   const getDeviceInfo = () => {
     const ua = navigator.userAgent;
     
-    // Detect OS
     let os = 'Unknown';
     if (ua.includes('Windows')) os = 'Windows';
     else if (ua.includes('Mac OS X')) os = 'macOS';
@@ -77,7 +110,6 @@
     else if (ua.includes('Android')) os = 'Android';
     else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
 
-    // Detect Browser
     let browser = 'Unknown';
     if (ua.includes('Chrome') && !ua.includes('Edge')) browser = 'Chrome';
     else if (ua.includes('Firefox')) browser = 'Firefox';
@@ -85,14 +117,10 @@
     else if (ua.includes('Edge')) browser = 'Edge';
     else if (ua.includes('Opera')) browser = 'Opera';
 
-    return {
-      os,
-      browser,
-      ua: ua
-    };
+    return { os, browser, ua };
   };
 
-  // Get user IP using ipify
+  // Get user IP
   const getUserIP = async () => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
@@ -106,7 +134,7 @@
     }
   };
 
-  // Create event object in your API format
+  // Create event object
   const createEvent = (eventName, properties = {}) => {
     const now = new Date();
     return {
@@ -121,9 +149,8 @@
       device: getDeviceInfo(),
       properties: {
         ...properties,
-        // Additional context
         page_url: location.href,
-        referrer: document.referrer,
+        referrer: document.referrer || '',
         timestamp: now.getTime(),
         anonymous_id: analyticsState.anonymousId
       }
@@ -133,22 +160,21 @@
   // Main tracking function
   const track = (eventName, properties = {}) => {
     if (!analyticsState.isInitialized) {
-      console.warn('Jupiter Analytics not initialized yet');
-      return null;
+      console.warn('Jupiter Analytics not initialized yet, queueing event');
+      // Still queue it for when initialization completes
     }
 
     const event = createEvent(eventName, properties);
     analyticsState.queue.push(event);
     
     
-    // Immediate flush for critical events
+    // Critical events - send immediately
     const criticalEvents = ['payment_attempted', 'booking_confirmed', 'user_login', 'user_logout'];
-    const shouldFlushNow = criticalEvents.includes(eventName);
     
-    if (shouldFlushNow) {
-      flushEvents();
+    if (criticalEvents.includes(eventName)) {
+      const singleEvent = analyticsState.queue.pop();
+      sendSingleEventImmediate(singleEvent);
     } else if (analyticsState.queue.length >= analyticsState.batchSize) {
-     
       flushEvents();
     } else if (analyticsState.queue.length >= analyticsState.maxQueueSize) {
       flushEvents();
@@ -171,105 +197,113 @@
     }, analyticsState.flushInterval);
   };
 
-  // Enhanced flush with single/batch API logic
-  const flushEvents = async () => {
-    if (analyticsState.queue.length === 0) return;
-
-    // Clear flush timer
-    if (analyticsState.flushTimer) {
-      clearTimeout(analyticsState.flushTimer);
-      analyticsState.flushTimer = null;
-    }
-
-    // Take all events from queue
-    const events = [...analyticsState.queue];
-    analyticsState.queue = [];
-
-    if (events.length === 1) {
-      // Send single event
-      await sendSingleEvent(events[0]);
-    } else {
-      // Create batches and send
-      const batches = createBatches(events, analyticsState.batchSize);
-      batches.forEach((batch, index) => {
-        sendBatch(batch, index + 1);
-      });
-    }
-
-    analyticsState.stats.lastFlushTime = Date.now();
-  };
-
-  // Send single event to /v1/events
-  const sendSingleEvent = async (event) => {
+  // Send single event immediately
+  const sendSingleEventImmediate = async (event) => {
     try {
       
-      fetch(`${analyticsState.apiEndpoint}/v1/events`, {
+      const response = await fetch(`${analyticsState.apiEndpoint}/v1/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
         body: JSON.stringify(event)
-      }).then(response => {
-        if (response.ok) {
-        
-          analyticsState.stats.eventsSent++;
-        } else {
-         
-          handleFailedEvent(event, `HTTP ${response.status}`);
-        }
-      }).catch(error => {
-       
-        handleFailedEvent(event, error.message);
       });
 
+      if (response.ok) {
+        analyticsState.stats.singleEventsSent++;
+        analyticsState.stats.eventsSent++;
+      } else {
+        console.error(`❌ Critical event failed: ${response.status}`);
+        handleFailedEvent(event, `HTTP ${response.status}`);
+      }
     } catch (error) {
+      console.error(`❌ Critical event error:`, error);
       handleFailedEvent(event, error.message);
     }
   };
 
-  // Create batches from events
-  const createBatches = (events, batchSize) => {
-    const batches = [];
-    for (let i = 0; i < events.length; i += batchSize) {
-      batches.push(events.slice(i, i + batchSize));
+  // Flush events
+  const flushEvents = async () => {
+    if (analyticsState.queue.length === 0 || analyticsState.pendingFlush) return;
+
+    analyticsState.pendingFlush = true;
+
+    if (analyticsState.flushTimer) {
+      clearTimeout(analyticsState.flushTimer);
+      analyticsState.flushTimer = null;
     }
-    return batches;
+
+    const events = [...analyticsState.queue];
+    analyticsState.queue = [];
+
+    try {
+      if (events.length === 1) {
+        await sendSingleEvent(events[0]);
+      } else {
+        await sendBatch(events);
+      }
+    } finally {
+      analyticsState.pendingFlush = false;
+      analyticsState.stats.lastFlushTime = Date.now();
+    }
   };
 
-  // Send batch to /v1/events/batch
-  const sendBatch = async (batch, batchNumber) => {
+  // Send single event
+  const sendSingleEvent = async (event) => {
     try {
-     
       
-      fetch(`${analyticsState.apiEndpoint}/v1/events/batch`, {
+      const response = await fetch(`${analyticsState.apiEndpoint}/v1/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${analyticsState.apiKey}`
         },
-        body: JSON.stringify(batch)
-      }).then(response => {
-        if (response.ok) {
-         
-          analyticsState.stats.batchesSent++;
-          analyticsState.stats.eventsSent += batch.length;
-        } else {
-        
-          handleFailedBatch(batch, `HTTP ${response.status}`);
-        }
-      }).catch(error => {
-       
-        handleFailedBatch(batch, error.message);
+        body: JSON.stringify(event)
       });
 
+      if (response.ok) {
+        analyticsState.stats.singleEventsSent++;
+        analyticsState.stats.eventsSent++;
+      } else {
+        const errorText = await response.text();
+        console.error(`❌ Single event failed: ${response.status}`, errorText);
+        handleFailedEvent(event, `HTTP ${response.status}`);
+      }
     } catch (error) {
-     
-      handleFailedBatch(batch, error.message);
+      console.error(`❌ Single event error:`, error);
+      handleFailedEvent(event, error.message);
     }
   };
 
-  // Handle failed single event
+  // Send batch
+  const sendBatch = async (events) => {
+    try {
+      
+      const response = await fetch(`${analyticsState.apiEndpoint}/v1/events/batch`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${analyticsState.apiKey}`
+        },
+        body: JSON.stringify(events)
+      });
+
+      if (response.ok) {
+        analyticsState.stats.batchesSent++;
+        analyticsState.stats.eventsSent += events.length;
+      } else {
+        const errorText = await response.text();
+        console.error(`❌ Batch failed: ${response.status}`, errorText);
+        events.forEach(event => handleFailedEvent(event, `HTTP ${response.status}`));
+      }
+    } catch (error) {
+      console.error(`❌ Batch error:`, error);
+      events.forEach(event => handleFailedEvent(event, error.message));
+    }
+  };
+
+  // Handle failed event
   const handleFailedEvent = (event, errorMessage) => {
     event.retryCount = (event.retryCount || 0) + 1;
     event.lastError = errorMessage;
@@ -277,20 +311,14 @@
     if (event.retryCount <= analyticsState.maxRetries) {
       analyticsState.failedQueue.push(event);
       analyticsState.stats.eventsRetried++;
+      scheduleRetry();
     } else {
-     
+      console.error(`💀 Event ${event.event} permanently failed`);
       analyticsState.stats.eventsFailed++;
     }
-    
-    scheduleRetry();
   };
 
-  // Handle failed batch
-  const handleFailedBatch = (batch, errorMessage) => {
-    batch.forEach(event => handleFailedEvent(event, errorMessage));
-  };
-
-  // Schedule retry for failed events
+  // Schedule retry
   const scheduleRetry = () => {
     if (analyticsState.retryTimer || analyticsState.failedQueue.length === 0) return;
     
@@ -298,130 +326,47 @@
     
     analyticsState.retryTimer = setTimeout(async () => {
       
-      
       const retryEvents = [...analyticsState.failedQueue];
       analyticsState.failedQueue = [];
       
       if (retryEvents.length === 1) {
         await sendSingleEvent(retryEvents[0]);
       } else {
-        const retryBatches = createBatches(retryEvents, analyticsState.batchSize);
-        retryBatches.forEach((batch, index) => {
-          sendBatch(batch, `R${index + 1}`);
-        });
+        await sendBatch(retryEvents);
       }
       
       analyticsState.retryTimer = null;
+      
+      if (analyticsState.failedQueue.length > 0) {
+        scheduleRetry();
+      }
     }, retryDelay);
   };
 
-  // Initialize analytics
+  // Initialize
   const initializeAnalytics = async (config = {}) => {
-   
     
     analyticsState.sessionId = generateUUID();
     analyticsState.anonymousId = getOrCreateAnonymousId();
     
-    // Configure endpoints
     if (config.apiEndpoint) analyticsState.apiEndpoint = config.apiEndpoint;
     if (config.apiKey) analyticsState.apiKey = config.apiKey;
     if (config.userId) analyticsState.userId = config.userId;
     if (config.batchSize) analyticsState.batchSize = config.batchSize;
     if (config.flushInterval) analyticsState.flushInterval = config.flushInterval;
     
-    // Get user IP
     await getUserIP();
-    
-    // Initialize client-side tracking
-    initializeClientSideTracking();
     
     analyticsState.isInitialized = true;
     
+
+    // track('analytics_initialized', {
+    //   version: '1.0.2-partytown',
+    //   partytown: isPartytown
+    // });
   };
 
-  // Initialize client-side tracking
-  const initializeClientSideTracking = () => {
-    // Page view on load
-    track('page_view', {
-      page_title: document.title,
-      page_url: location.href,
-      referrer: document.referrer
-    });
-
-    // Visibility change
-    document.addEventListener('visibilitychange', () => {
-      track('visibility_change', {
-        visibility: document.hidden ? 'hidden' : 'visible'
-      });
-    });
-
-    // Session heartbeat
-    analyticsState.heartbeatInterval = setInterval(() => {
-      if (!document.hidden) {
-        const now = Date.now();
-        track('session_heartbeat', {
-          active_ms_since_last: now - analyticsState.visibilityStartTime,
-          focused: document.hasFocus(),
-          queue_size: analyticsState.queue.length
-        });
-        analyticsState.visibilityStartTime = now;
-      }
-    }, 15000);
-
-    // Scroll depth tracking
-    let ticking = false;
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollPercent = Math.round(
-            (scrollY / (document.body.scrollHeight - innerHeight)) * 100
-          );
-          
-          [25, 50, 75, 100].forEach(threshold => {
-            if (scrollPercent >= threshold && !analyticsState.scrollThresholds.has(threshold)) {
-              analyticsState.scrollThresholds.add(threshold);
-              track('scroll_depth', {
-                percent: threshold,
-                y_offset: scrollY
-              });
-            }
-          });
-          
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    
-    addEventListener('scroll', handleScroll, { passive: true });
-
-    // Page unload - use beacon for critical events
-    addEventListener('beforeunload', () => {
-      if (analyticsState.queue.length > 0) {
-        const criticalEvents = analyticsState.queue.filter(event => 
-          ['payment_attempted', 'booking_confirmed', 'user_login'].includes(event.event)
-        );
-        
-        if (criticalEvents.length > 0) {
-          try {
-            const payload = criticalEvents.length === 1 
-              ? criticalEvents[0]
-              : criticalEvents;
-            
-            const endpoint = criticalEvents.length === 1 
-              ? `${analyticsState.apiEndpoint}/v1/events`
-              : `${analyticsState.apiEndpoint}/v1/events/batch`;
-            
-            navigator.sendBeacon(endpoint, JSON.stringify(payload));
-          } catch (e) {
-            console.error('Failed to send beacon:', e);
-          }
-        }
-      }
-    });
-  };
-
-  // Specific tracking functions matching your event list
+  // Specific tracking functions
   const identifyUser = (userId, traits = {}) => {
     analyticsState.userId = userId;
     return track('user_identified', { user_id: userId, ...traits });
@@ -429,20 +374,15 @@
 
   const trackUserLogin = (userId) => {
     analyticsState.userId = userId;
-    return track('user_login', {
-      user_id: userId
-    });
+    return track('user_login', { user_id: userId });
   };
 
   const trackUserLogout = (userId) => {
-    return track('user_logout', {
-      user_id: userId
-    });
+    return track('user_logout', { user_id: userId });
   };
 
   const trackPageView = (page, title, itineraryId = null) => {
     analyticsState.scrollThresholds.clear();
-    
     return track('page_view', {
       page_title: title,
       itinerary_id: itineraryId
@@ -460,14 +400,6 @@
     return track('switch_itinerary', {
       from_itinerary_id: fromItineraryId,
       to_itinerary_id: toItineraryId
-    });
-  };
-
-  const trackHotelCardClicked = (itineraryId, hotelId, actionSource) => {
-    return track('hotel_card_clicked', {
-      itinerary_id: itineraryId,
-      hotel_id: hotelId,
-      action_source: actionSource
     });
   };
 
@@ -498,16 +430,13 @@
     });
   };
 
-  // Bulk tracking
   const trackBulk = (events) => {
-    
     const trackedEvents = events.map(({ eventName, properties }) => {
       const event = createEvent(eventName, properties);
       analyticsState.queue.push(event);
       return event;
     });
     
-    // Force flush for bulk operations
     if (analyticsState.queue.length >= analyticsState.batchSize) {
       flushEvents();
     }
@@ -515,7 +444,6 @@
     return trackedEvents;
   };
 
-  // Get current state
   const getState = () => ({
     isInitialized: analyticsState.isInitialized,
     sessionId: analyticsState.sessionId,
@@ -528,33 +456,22 @@
     config: {
       apiEndpoint: analyticsState.apiEndpoint,
       batchSize: analyticsState.batchSize,
-      flushInterval: analyticsState.flushInterval,
-      maxRetries: analyticsState.maxRetries
+      flushInterval: analyticsState.flushInterval
     }
   });
 
-  // Manual flush
   const forceFlush = () => {
     return flushEvents();
   };
 
-  // Cleanup
   const cleanup = () => {
-    if (analyticsState.heartbeatInterval) {
-      clearInterval(analyticsState.heartbeatInterval);
-    }
-    if (analyticsState.flushTimer) {
-      clearTimeout(analyticsState.flushTimer);
-    }
-    if (analyticsState.retryTimer) {
-      clearTimeout(analyticsState.retryTimer);
-    }
+    if (analyticsState.flushTimer) clearTimeout(analyticsState.flushTimer);
+    if (analyticsState.retryTimer) clearTimeout(analyticsState.retryTimer);
     forceFlush();
   };
 
-  // Expose all functions globally for Partytown
-  self.JupiterAnalytics = {
-    // Core functions
+  // Expose API
+  const JupiterAnalytics = {
     initializeAnalytics,
     track,
     trackBulk,
@@ -562,24 +479,29 @@
     identifyUser,
     getState,
     cleanup,
-    
-    // Specific tracking functions
     trackUserLogin,
     trackUserLogout,
     trackPageView,
     trackItineraryPageView,
     trackSwitchItinerary,
-    trackHotelCardClicked,
     trackPaymentAttempted,
     trackBookingConfirmed,
     trackCTAClicked
   };
 
-  // Auto-initialize if config is available
-  if (self.JUPITER_CONFIG) {
-    initializeAnalytics(self.JUPITER_CONFIG);
+  // Expose to global scope (works in both main thread and Partytown)
+  if (typeof window !== 'undefined') {
+    window.JupiterAnalytics = JupiterAnalytics;
+  } else if (typeof self !== 'undefined') {
+    self.JupiterAnalytics = JupiterAnalytics;
   }
 
 
-})();
+  // Auto-init if config available
+  if (typeof window !== 'undefined' && window.JUPITER_CONFIG) {
+    initializeAnalytics(window.JUPITER_CONFIG);
+  } else if (typeof self !== 'undefined' && self.JUPITER_CONFIG) {
+    initializeAnalytics(self.JUPITER_CONFIG);
+  }
 
+})();

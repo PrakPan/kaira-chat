@@ -40,7 +40,6 @@ const SearchFlights = () => {
 
   useEffect(() => {
     if (!router.isReady) return; // Wait until router is ready
-    console.log("query is",router.query)
     const FetchResults = async () => {
       try {
         const res = await axios.post(
@@ -95,7 +94,6 @@ const SearchFlights = () => {
         returnDate: returnDate
       };
     });
-    console.log(flightCabinClass);
 
     FetchResults();
   }, [router.isReady,router.query]);

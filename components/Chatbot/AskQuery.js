@@ -3,10 +3,25 @@ import styled from "styled-components";
 import useChat from "./hook/UseChat";
 import Dictate from "./Dictate";
 import Image from "next/image";
+import { useAnalytics } from "../../hooks/useAnalytics";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 const Container = styled.div`
-  background: #f7f5f5;
   border-radius: 12px;
   padding: 12px;
+  
+  @media screen and (max-width: 767px) {
+    margin-bottom: 0px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 25;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 12px 16px 16px 16px;
+  }
 `;
 
 const QueryContainer = styled.div`
@@ -88,10 +103,15 @@ function AskQuery() {
   const [trackUserTyping, setUserTyping] = useState("");
   const [isSubmitDisabled, setSubmitDisabled] = useState(true);
   const dictateRef = useRef();
+  const {trackChatMessageSent} = useAnalytics();
+  const router = useRouter();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const handleSubmitQuery = (input) => {
     const userMsg = { is_bot: false, message: input || query.trim() };
     sendMessage(userMsg);
+    trackChatMessageSent(router.query.id,userMsg);
     setQuery("");
     setSubmitDisabled(true);
     dictateRef.current.stop();
@@ -155,6 +175,7 @@ function AskQuery() {
               rows={1}
               placeholder="Ask anything..."
               value={query}
+              // disabled={ id != customer}
               onChange={handleInput}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -170,11 +191,11 @@ function AskQuery() {
               }}
             />
           </form>
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex items-center justify-end">
+            {/* <div>
               {" "}
               <img src="/assets/chatbot/add-icon.png" />{" "}
-            </div>
+            </div> */}
             <div className="flex items-center gap-2">
               <div>
                 {" "}
@@ -182,6 +203,7 @@ function AskQuery() {
                   ref={dictateRef}
                   stopDictation={stopDictation}
                   onTranscriptChange={handleTranscriptChange}
+                  // disabled={id != customer}
                 />{" "}
               </div>
               <div className="flex">
@@ -192,12 +214,9 @@ function AskQuery() {
                     handleSubmitQuery();
                   }}
                 >
-                  <Image
-                    src="/send.svg"
-                    width={16}
-                    height={16}
-                    className="px-[]"
-                  />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <path d="M6.91792 9.06916L3.08847 7.5179C2.95685 7.46661 2.86198 7.38837 2.80386 7.2832C2.74574 7.17801 2.71667 7.07031 2.71667 6.96011C2.71667 6.84992 2.74851 6.74184 2.81219 6.63585C2.87587 6.52987 2.97352 6.45124 3.10514 6.39995L12.2318 2.98261C12.3507 2.93266 12.466 2.92289 12.5775 2.9533C12.689 2.98372 12.7854 3.03949 12.8665 3.12061C12.9476 3.20172 13.0034 3.29805 13.0338 3.4096C13.0642 3.52113 13.0543 3.63633 13.0042 3.7552L9.57349 12.8777C9.52334 13.0065 9.44559 13.103 9.34026 13.1674C9.23494 13.2318 9.1271 13.264 9.01676 13.264C8.90641 13.264 8.79809 13.2337 8.69177 13.1732C8.58546 13.1127 8.507 13.0169 8.45638 12.8858L6.91792 9.06916Z" fill="black"/>
+</svg>
                 </SubmitButton>
               </div>
             </div>

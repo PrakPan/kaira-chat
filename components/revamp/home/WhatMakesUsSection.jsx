@@ -190,7 +190,7 @@ export default function WhatMakesUsSection() {
           <div className="space-y-12">
             {featuresLeft.map((f) => (
               <div key={f.title} className="max-w-sm">
-                <h3 className="font-semibold text-sm md:text-base tracking-wide text-primary-indigo whitespace-pre-line">
+                <h3 className="font-semibold text-[14px] md:text-base tracking-wide text-primary-indigo whitespace-pre-line ">
                   {f.title}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-text-default">
@@ -265,7 +265,7 @@ export default function WhatMakesUsSection() {
           <div className="space-y-12">
             {featuresRight.map((f) => (
               <div key={f.title} className="max-w-sm">
-                <h3 className="font-semibold text-sm md:text-base tracking-wide text-primary-indigo">
+                <h3 className="font-semibold text-[14px] md:text-base tracking-wide text-primary-indigo">
                   {f.title}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-text-default">

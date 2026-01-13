@@ -10,6 +10,8 @@ import RoutesMap from "./RoutesMap.js";
 import { useParams, useSearchParams } from "next/navigation.js";
 import Image from "next/image.js";
 import useMediaQuery from "../../../components/media.js";
+import { useDispatch, useSelector } from "react-redux";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -48,12 +50,16 @@ line-height: 22px;
 
 const Details = (props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
   const [routeView, setRouteView] = useState(false)
   const { drawer } = router?.query
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+
 
   const CITY_COLOR_CODES = [
     "#359EBF", //  # shade of blue
@@ -159,14 +165,21 @@ const Details = (props) => {
             <span className="Body2M_14">Trip Summary</span></div>
           <button
             className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
-            onClick={() =>
-              router.push({
+           onClick={() => {
+              props?.requireAuth('view',()=>{
+                // if(id != customer){
+                //   dispatch(setCloneItineraryDrawer(true));
+                //   return;
+                // }
+
+                router.push({
                 pathname: `/itinerary/${router?.query?.id}`,
                 query: {
                   drawer: "handleEditRoute",
                 },
               })
-            }
+            })  
+            }}
           >
             View
           </button>

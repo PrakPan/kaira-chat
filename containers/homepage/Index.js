@@ -23,6 +23,7 @@ import ExperienceCard from "../../components/cards/newitinerarycard-main/Experie
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import SwiperCarousel from "../../components/SwiperCarousel";
+import ThemeHeadline from "../travelplanner/ThemeHeadines";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -95,6 +96,19 @@ const Homepage = (props) => {
     }
   }, [props.token]);
 
+  const handlePlan = () => {
+    router.push("/dashboard");
+    logEvent({
+      action: "View_All_Trips",
+      params: {
+        page: "Home Page",
+        event_category: "Button Click",
+        event_label: "View All",
+        event_action: "My Trips Section",
+      },
+    });
+  };
+
   const handleButtonClick = (location) => {
     logEvent({
       action: "View_Destination",
@@ -155,23 +169,30 @@ const Homepage = (props) => {
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
+      <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Nov 30`} />
       <HeroBanner
         image={
           isPageWide
-           ? "media/website/HomeBanner.png"
-           : "media/website/HomeBanner.png"
+            ? "media/website/new_year1.jpg"
+           : "media/website/new_year1.jpg"
+          //  ? "media/website/home_banner.png"
+          //  : "media/website/home_banner.png"
             // ? "media/website/banners/ocean.jpg"
             // : "media/website/banners/ocean.jpg"
         }
         destinationType={"city-planner"}
         title={
-          <p style={!isPageWide ? { fontSize: "22px" } : {}}>
-            Every Journey, One of a Kind – 
-            <br />
-            Crafted with AI + Expert Care.
+          <p style={!isPageWide ? { fontSize: "20px" } : {fontSize: "40px"}}>
+            {/* Every Journey, One of a Kind – 
+            {isPageWide ? <br />: ""}
+            Crafted with AI + Expert Care. */}
+            Countdown to New Year,
+            {isPageWide ? <br/> : ""} From Anywhere You Dream.
           </p>
         }
-        subheading={"No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates."}
+        subheading={<p style={!isPageWide ? {fontSize: "16px"} : {fontSize: "20px", marginRight: "0.2rem"}}>
+          {/* No generic plans. Just AI + Experts crafting journeys around your vibe, budget & dates. */}
+          </p>}
         _startPlanningFunction={() => openTailoredModal(router)}
         resizeMode={"fill"}
         page={"Home Page"}
@@ -273,7 +294,7 @@ const Homepage = (props) => {
             margin="2.5rem auto"
             padding="0.5rem 2rem"
             borderWidth="1px"
-            onclick={() => fetchTrips(true)}
+            onclick={handlePlan}
           >
             {"View all plans"}
           </Button>

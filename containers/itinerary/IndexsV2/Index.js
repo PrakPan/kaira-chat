@@ -24,6 +24,7 @@ import setBreif from "../../../store/actions/breif";
 import axiosPaymentInstance from "../../../services/itinerary/payment";
 import axiosBookingsInstance from "../../../services/itinerary/bookings";
 import axiosPlanInstance from "../../../services/itinerary/plan";
+import { ChatProvider } from "../../../components/Chatbot/context/ChatContext";
 
 const Container = styled.div`
   width: 90%;
@@ -668,6 +669,7 @@ const Itinerary = (props) => {
 
   if (props.breif && !itineraryLoading)
     return (
+      <ChatProvider itinearyId={router.query.id}>
       <Container>
         <Overview
           title={props.itinerary.name}
@@ -690,6 +692,7 @@ const Itinerary = (props) => {
           }
           number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
           setEditRoute={setEditRoute}
+          v1={true}
         ></Overview>
 
         <div id="itinerary-anchor">
@@ -753,6 +756,7 @@ const Itinerary = (props) => {
           ></Menu>
         </div>
       </Container>
+      </ChatProvider>
     );
   else if (isPastTravelerItinerary)
     return (

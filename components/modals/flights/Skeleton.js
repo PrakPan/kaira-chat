@@ -20,189 +20,102 @@ const POIDetailsSkeleton = (props) => {
   `;
 
   const SkeletonContainer = styled.div`
-    border-bottom: 1px solid #e5e5e5;
-    padding: 0.5rem;
     overflow-x: hidden;
     width: 100%;
-  `;
-
-  const HeaderSection = styled.div`
-    display: flex;
-    flex-direction: row;
-    gap: 0.25rem;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    
-    @media screen and (min-width: 768px) {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  `;
-
-  const AirlineSection = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-  `;
-
-  // Flight details section
-  const FlightDetailsSection = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 0.25rem;
-    
-    @media screen and (min-width: 768px) {
-      width: 100%;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  `;
-
-  const FlightDetailsContainer = styled.div`
-    width: 70%;
-    display: grid;
-    grid-template-columns: 40px 120px 40px;
-    grid-column-gap: 0.5rem;
-    grid-row-gap: 0.25rem;
-    line-height: 1;
-    height: 65px;
-    
-    @media screen and (min-width: 768px) {
-      grid-template-columns: 60px 200px 60px;
-    }
-  `;
-
-  const DottedLine = styled.div`
-    position: relative;
-    height: 2px;
-    width: 100%;
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: linear-gradient(to right, #7a7a7a 5px, transparent 5px);
-      background-size: 9px 100%;
-    }
-  `;
-
-  const Plan = styled.div`
-    position: absolute;
-    left: 50%;
-    top: 0%;
-    transform: translate(-50%, -45%);
-  `;
-
-  const Circle = styled.div`
-    border: 1px solid #7a7a7a;
-    height: 10px;
-    width: 10px;
-    border-radius: 100%;
-    background: white;
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    transform: translateY(-38%);
-  `;
-
-  const PriceContainer = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    min-width: 120px;
   `;
 
   const SkeletonComponent = (
     <Container>
       <SkeletonContainer>
-        <HeaderSection>
-          <AirlineSection>
-            <SkeletonCard
-              width="32px"
-              height="32px"
-              borderRadius="4px"
-            />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <SkeletonCard
-                width={isPageWide ? "180px" : "120px"}
-                height="14px"
-                borderRadius="3px"
-              />
-              {isPageWide && (
-                <SkeletonCard
-                  width="80px"
-                  height="12px"
-                  borderRadius="3px"
-                />
-              )}
-            </div>
-          </AirlineSection>
 
-          <SkeletonCard
-            width="80px"
-            height="24px"
-            borderRadius="3px"
-          />
-        </HeaderSection>
 
-        <FlightDetailsSection>
-          <FlightDetailsContainer>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <SkeletonCard borderRadius="3px" height="20px" width="100%" />
-              <SkeletonCard borderRadius="3px" height="14px" width="70%" />
-            </div>
-
-            <div style={{ height: "20px", position: "relative" }}>
-              <div
-                style={{
-                  margin: "0",
-                  position: "relative",
-                  height: "0px",
-                  top: "50%",
-                }}
-              >
-                <Circle style={{ left: 0 }} />
-                <DottedLine />
-                <Circle style={{ right: 0 }} />
-                <Plan>
-                  <FaPlane style={{ fontSize: "1.25rem", color: "#7a7a7a" }} />
-                </Plan>
+        <div className="  relative border-sm rounded-lg p-2 space-y-3 overflow-visible">
+          <div className="flex flex-row gap-2 justify-between md:items-start items-center">
+            <div className="flex flex-row items-center gap-3">
+              <div className="rounded-full overflow-hidden flex-shrink-0" >
+                <SkeletonCard width="50px" height="50px" borderRadius="50%" variant="default" />
               </div>
-              <div style={{ 
-                position: "absolute", 
-                top: "25px", 
-                left: "50%", 
-                transform: "translateX(-50%)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "2px"
-              }}>
-                <SkeletonCard borderRadius="3px" width="60px" height="12px" />
-                <SkeletonCard borderRadius="3px" width="45px" height="10px" />
+
+              <div className="flex flex-col gap-1">
+                <div className="text-sm md:text-md font-semibold flex items-center gap-2 flex-wrap">
+                  <SkeletonCard width="100px" height="20px" borderRadius="8px" variant="default" />
+                  <SkeletonCard width="120px" height="20px" borderRadius="8px" variant="default" />
+                </div>
+
+                <div className="text-xs md:text-sm text-gray-600">
+                  <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <SkeletonCard borderRadius="3px" height="20px" width="100%" />
-              <SkeletonCard borderRadius="3px" height="14px" width="70%" />
-            </div>
-          </FlightDetailsContainer>
+            <div className="text-right">
+              <div className="text-md md:text-md font-bold">
+                <SkeletonCard width="70px" height="20px" borderRadius="8px" variant="default" />
+              </div>
 
-          <PriceContainer>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
-              <SkeletonCard borderRadius="3px" width="20px" height="20px" />
+              <div className="text-xs text-gray-500 mt-xxs">
+                <SkeletonCard width="70px" height="10px" borderRadius="8px" variant="default" />
+              </div>
             </div>
-          </PriceContainer>
-        </FlightDetailsSection>
+          </div>
+
+          <div className="flex flex-row w-full justify-between items-center">
+            <div className="w-full md:w-[75%] flex flex-col gap-2.5">
+              <div className="flex justify-between items-center text-sm text-gray-600">
+                <span>
+                  <SkeletonCard width="50px" height="12px" borderRadius="8px" variant="default" />
+                </span>
+                <span className="text-center">
+                  <SkeletonCard width="50px" height="12px" borderRadius="8px" variant="default" />
+                </span>
+                <span className="flex items-start gap-1">
+                  <SkeletonCard width="50px" height="12px" borderRadius="8px" variant="default" />
+                </span>
+              </div>
+
+              <div className="flex justify-center items-center">
+                <div className="text-md font-medium text-gray-900">
+                  <SkeletonCard width="80px" height="18px" borderRadius="8px" variant="default" />
+                </div>
+
+                <div className="flex-1 mx-2 flex items-center">
+                  <div className="relative w-full h-2 flex items-center">
+                    <div className="FlightDetails__DottedLine-sc-f878005f-0 khLhca"></div>
+                    <div className="FlightDetails__PlaneIconWrapper-sc-f878005f-2 bXrnSR">
+                      <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-md font-medium text-gray-900 flex items-start gap-1">
+                  <SkeletonCard width="80px" height="18px" borderRadius="8px" variant="default" />
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center text-sm text-gray-700">
+                <div className="flex items-center gap-1.5">
+                  <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
+                </div>
+
+                <div className="flex-1 flex justify-center">
+                  <div className="text-xs text-gray-500">
+                    <SkeletonCard width="70px" height="12px" borderRadius="8px" variant="default" />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-right">
+                  <SkeletonCard width="100px" height="12px" borderRadius="8px" variant="default" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex ">
+              <div className="text-blue underline text-sm font-medium cursor-pointer flex items-end">
+                <SkeletonCard width="100px" height="18px" borderRadius="8px" variant="default" />
+              </div>
+            </div>
+          </div>
+        </div>
       </SkeletonContainer>
     </Container>
   );

@@ -4,6 +4,7 @@ import { AgeInput, ApplyButton, ClearButton, CounterBox, CounterButton, CounterV
 import Image from "next/image";
 import useMediaQuery from "../../../media";
 import BottomModal from "../../../ui/LowerModal";
+import { MdDelete } from "react-icons/md";
 
 const Pax = (props) => {
   const containerRef = useRef(null);
@@ -261,7 +262,8 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         <div className="Body2M_14">Room {index + 1}</div>
         {index + 1 > 1 && (
           <button onClick={removeRoom} className="text-blue-600 font-medium">
-            <Image src="/delete.svg" width={20} height={20} />
+            {/* <Image src="/delete.svg" width={20} height={20} alt={"delete"} /> */}
+            <MdDelete size={20} color="red"/>
           </button>
         )}
       </div>

@@ -10,6 +10,8 @@ import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import Button from "../../../components/ui/button/Index";
 import Image from "next/image";
 import useMediaQuery from "../../../components/media";
+import { currencySymbols } from "../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 
 const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
@@ -21,6 +23,7 @@ export default function NewActivityBooking(props) {
     data: {},
   });
   const isDesktop = useMediaQuery("(min-width: 583px)");
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -49,6 +52,8 @@ export default function NewActivityBooking(props) {
       data: "", //res?.data?.data?.activity,
     });
   };
+
+
 
   return (
     <div className="rounded-3xl border-sm border-solid border-text-disabled p-md cursor-pointer hover:bg-text-smoothwhite relative mt-md w-full">
@@ -235,7 +240,7 @@ export default function NewActivityBooking(props) {
                       className="!font-[lexend]"
                       style={{ fontFamily: "Lexend" }}
                     >
-                      ₹
+                      {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
@@ -486,7 +491,7 @@ export default function NewActivityBooking(props) {
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
                 <div className="text-text-charcolblack text-lg font-700 leading-2xl-md max-ph:mb-sm">
-                  <span>₹</span>
+                  <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
                 <div className="text-[14px] mt-[10px]">

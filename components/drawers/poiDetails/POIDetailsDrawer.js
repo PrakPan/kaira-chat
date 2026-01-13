@@ -13,6 +13,7 @@ import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton"
 import useMediaQuery from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
 
 const OptionsContainer = styled.div`
   min-height: 40vh;
@@ -49,6 +50,7 @@ const POIDetailsDrawer = (props) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const currency = useSelector(state=>state.currency);
 
   useEffect(() => {
     if (props.show) fetchData();
@@ -71,12 +73,13 @@ const POIDetailsDrawer = (props) => {
       if (props?.activityData?.type == "activity") {
         if (props?.showBookingDetail) {
           const res = await axios.get(
-            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/?currency=${currency?.currency || 'INR'}`
           );
           setData(res?.data?.activity);
           setData((prev) => ({
             ...prev,
             id: res?.data?.id,
+            hotel_pickup_included: res?.data?.hotel_pickup_included,
             cancellation_policies: res?.data?.cancellation_policies,
           }));
           setActivityData(res?.data?.activity_data);
@@ -219,6 +222,8 @@ const POIDetailsDrawer = (props) => {
                   getPaymentHandler={props?.getPaymentHandler}
                   removeDelete={props?.removeDelete}
                   activityData={activityData}
+                  showCallback={props?.showCallback}
+                  setIsModalOpen={props?.setIsModalOpen}
                   
                 >
                   {props?.children}

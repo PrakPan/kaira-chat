@@ -42,13 +42,13 @@ const Section = (props) => {
   return (
     <Container className="">
       <div className="flex flex-row gap-2 w-full">
-        <div className="flex items-center gap-2 font-normal text-lg p-[0.4rem] w-fit">
+        <div className="flex items-center gap-2 font-normal text-sm md:text-lg p-[0.4rem] w-fit">
           <GiCarSeat fontWeight={500}/>
           {props.data?.taxi_category?.seating_capacity + `${props.data?.taxi_category?.seating_capacity==1?" seat":" seats"}`}
         </div>
         {bagCapacity && (
           <div
-            className="flex items-center justify-center font-normal text-lg p-[0.4rem] w-fit"
+            className="flex items-center justify-center font-normal text-sm md:text-lg p-[0.4rem] w-fit"
           >
             <MdLuggage fontWeight={500}/>
             

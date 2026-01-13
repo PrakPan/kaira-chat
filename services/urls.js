@@ -2,7 +2,7 @@ export default {
   ERROR404: "/404/",
   ERROR500: "/500/",
   ABOUT_US: "/about-us/",
-  CONTACT: "/contact/",
+  CONTACT: "https://wa.me/918448687703",
   CORPORATES: "/corporates/",
   COVID_19_SAFE_TRAVEL_INDIA: "/covid-19-safe-travel-india/",
 

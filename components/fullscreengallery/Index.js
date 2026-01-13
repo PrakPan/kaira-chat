@@ -31,8 +31,6 @@ const FullScreenGallery = (props) => {
           </span>
         </span>
 
-
-
         <SwiperGallery
           images={props.images}
           mercury={props.mercury}

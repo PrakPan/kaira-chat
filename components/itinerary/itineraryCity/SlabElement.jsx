@@ -8,9 +8,9 @@ import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FaEllipsis } from "react-icons/fa6";
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,9 +19,9 @@ import { openNotification } from "../../../store/actions/notification";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 export const getStars = (rating) => {
-
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
     stars.push(<FaStar key={i} />);
@@ -34,24 +34,30 @@ export const getStars = (rating) => {
   // return stars;
 };
 
-// 
+//
 const formatTime = (time24) => {
-  if (!time24) return '';
-  
-  const [hours, minutes] = time24.split(':');
+  if (!time24) return "";
+
+  const [hours, minutes] = time24.split(":");
   const hour = parseInt(hours, 10);
-  const period = hour >= 12 ? 'PM' : 'AM';
+  const period = hour >= 12 ? "PM" : "AM";
   const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  
+
   return `${hour12}:${minutes} ${period}`;
 };
 
 const SlabElement = (props) => {
-  const { trackActivityBookingAdd, trackActivityCardClicked, trackPoiCardClicked } = useAnalytics();
+  const {
+    trackActivityBookingAdd,
+    trackActivityCardClicked,
+    trackPoiCardClicked,
+  } = useAnalytics();
 
-  
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+
   return (
-    <div className="">
+    <div className="w-[95%] mx-auto">
       {props.element.element_type === "activity" ? (
         <Activity
           element={props.element}
@@ -83,8 +89,33 @@ const SlabElement = (props) => {
 
 export default SlabElement;
 
+const handleMoveElementCommonly = async (
+  dispatch,
+  itinerary,
+  router,
+  itinerary_city_id,
+  dayIndex,
+  slabIndex,
+  position,
+  heading,
+  setShowLoginModal,
+  id,
+  customer
+) => {
+  const token = localStorage.getItem("access_token");
+  
 
-const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_city_id, dayIndex, slabIndex, position, heading) => {
+  if (!token) {
+    if (setShowLoginModal) {
+      setShowLoginModal(true);
+      return;
+    }
+  }
+
+  // if( id != customer){
+  //   dispatch(setCloneItineraryDrawer(true));
+  //   return;
+  // }
   try {
     const res = await axios.post(
       `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/element/move/`,
@@ -92,7 +123,7 @@ const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_
         itinerary_city_id: itinerary_city_id,
         day_by_day_index: dayIndex,
         element_index: slabIndex,
-        position: position
+        position: position,
       },
       {
         headers: {
@@ -104,27 +135,13 @@ const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_
     const newItinerary = JSON.parse(JSON.stringify(itinerary));
     let itineraryCities = [];
     if (res?.status === 200) {
-      itineraryCities = newItinerary.cities.map((city) => {
-        const cityTemp = { ...city };
-        if (city.id === itinerary_city_id) {
-          const day = cityTemp.day_by_day[dayIndex];
-          if (!day) return cityTemp;
-          const slabElements = [...day.slab_elements];
-          const fromIndex = slabIndex;
-          const toIndex = position;
-          if (
-            fromIndex >= 0 &&
-            fromIndex < slabElements.length &&
-            toIndex >= 0 &&
-            toIndex < slabElements.length
-          ) {
-            const [moved] = slabElements.splice(fromIndex, 1);
-            slabElements.splice(toIndex, 0, moved);
-          }
-          day.slab_elements = slabElements;
-        }
-        return cityTemp;
-      });
+     const updatedDayByDay = res.data;
+  
+  itineraryCities = newItinerary.cities.map((city) => 
+    city.id === itinerary_city_id 
+      ? { ...city, day_by_day: updatedDayByDay }
+      : city
+  );
     }
 
     newItinerary.cities = itineraryCities;
@@ -152,7 +169,7 @@ const handleMoveElementCommonly = async (dispatch, itinerary, router, itinerary_
       })
     );
   }
-}
+};
 
 const Activity = (props) => {
   let isPageWide = media("(min-width: 769px)");
@@ -162,6 +179,8 @@ const Activity = (props) => {
   const open = Boolean(anchorEl);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
@@ -192,10 +211,23 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type, dayIndex) => {
-    if (type === 'activity') {
-      props?.trackActivityCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
-    } if (type === 'poi') {
-      props?.trackPoiCardClicked(router.query.id, poi?.booking?.id || poi?.poi, 'day_by_day_ellapse');
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
+    if (type === "activity") {
+      props?.trackActivityCardClicked(
+        router.query.id,
+        poi?.booking?.id || poi?.poi,
+        "day_by_day_ellapse"
+      );
+    }
+    if (type === "poi") {
+      props?.trackPoiCardClicked(
+        router.query.id,
+        poi?.booking?.id || poi?.poi,
+        "day_by_day_ellapse"
+      );
     }
     router.push(
       {
@@ -224,8 +256,14 @@ const Activity = (props) => {
     });
   };
 
-
   const handleDelete = async (e) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      if (props?.setShowLoginModal) {
+        props?.setShowLoginModal(true);
+        return;
+      }
+    }
     try {
       let res;
       if (props?.element?.poi != null) {
@@ -257,7 +295,10 @@ const Activity = (props) => {
       const newItinerary = JSON.parse(JSON.stringify(itinerary));
       let itineraryCities = [];
 
-      if ((props?.element?.poi != null && res?.status === 200) || (props?.element?.booking?.id && res?.status === 204)) {
+      if (
+        (props?.element?.poi != null && res?.status === 200) ||
+        (props?.element?.booking?.id && res?.status === 204)
+      ) {
         if (props?.element?.poi != null) {
           itineraryCities = newItinerary.cities.map((city) => {
             const cityTemp = city;
@@ -269,8 +310,7 @@ const Activity = (props) => {
             }
             return cityTemp;
           });
-        }
-        else {
+        } else {
           itineraryCities = newItinerary.cities.map((city) => {
             if (city.id === props?.itinerary_city_id) {
               city.day_by_day.forEach((day, index) => {
@@ -319,10 +359,21 @@ const Activity = (props) => {
   };
 
   const handleMoveElement = async (position) => {
-    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
-    handleCloseMenue()
-  }
-
+    await handleMoveElementCommonly(
+      dispatch,
+      itinerary,
+      router,
+      props.itinerary_city_id,
+      props.dayIndex,
+      props.slabIndex,
+      position,
+      props.element.heading,
+      props?.setShowLoginModal,
+      id,
+      customer
+    );
+    handleCloseMenue();
+  };
 
   return (
     <>
@@ -364,59 +415,129 @@ const Activity = (props) => {
               {props.element.heading}
             </div>
 
-            <div className="flex  flex-wrap items-center text-sm ">
-              <div className="pr-[8px] flex gap-[8px]">
-                {props?.element?.poi ?<Image
-                  src={props?.element?.poi ? '/assets/Itinerary/global.svg' : ''}
-                  alt="ticket"
-                  width={18}
-                  height={18}
-                /> : null}
-                <div className="text-[#6E757A] Body3R_12">{props?.element?.poi ? "Self Exploration" : ""}</div>
-                {!props?.element?.poi ? <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] rounded-sm">
+            <div className="flex flex-wrap items-center text-sm ">
+              <div className="pr-[8px] flex gap-[8px] items-center justify-center -ml-[2px]">
+                {props?.element?.poi ? (
+                  <Image
+                    src={
+                      props?.element?.poi ? "/assets/Itinerary/global.svg" : ""
+                    }
+                    alt="ticket"
+                    width={18}
+                    height={18}
+                  />
+                ) : null}
+                <div className="text-[#6E757A] Body3R_12">
+                  {props?.element?.poi ? "Self Exploration" : ""}
+                </div>
+                {!props?.element?.poi ? (
+                  <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
                     Activity
-                </div> : ""}
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
 
-              {(props.element?.start_time || props.element?.end_time) && (
-  <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]">
-    {props.element?.start_time && formatTime(props.element.start_time)}
-    {props.element?.start_time && props.element?.end_time && ' - '}
-    {props.element?.end_time && formatTime(props.element.end_time)}
-  </div>
-)}
-
-              {/* <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] "> 12:30 - 1:30 PM</div> */}
-
-              {props.element?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-
-                <div className="Body3M_12">
-                  {props.element?.rating}&nbsp;
+              {/* For POIs (Self Exploration) - timings and ratings on new line */}
+              {props?.element?.poi ? (
+                <div className="w-full flex  mt-2 gap-2 sm:gap-3">
+                  {(props.element?.start_time || props.element?.end_time) && (
+                    <div className="Body3M_12 text-[#6E757A]">
+                      {props.element?.start_time &&
+                        formatTime(props.element.start_time)}
+                      {props.element?.start_time &&
+                        props.element?.end_time &&
+                        " - "}
+                      {props.element?.end_time &&
+                        formatTime(props.element.end_time)}
+                    </div>
+                  )}
+                  {props.element?.rating && (
+                    <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                      <div className="Body3M_12">
+                        {props.element?.rating}&nbsp;
+                      </div>
+                      <div className="flex items-center text-primary-stars">
+                        <Image
+                          src="/star.svg"
+                          width={16}
+                          height={16}
+                          alt="star"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center text-primary-stars">
-                  <Image src="/star.svg" width={16} height={16} alt="star" />
-                </div>
+              ) : (
+                // For Activities - timings and ratings inline
+                <>
+                  {(props.element?.start_time || props.element?.end_time) && (
+                    <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] justify-center items-center">
+                      {props.element?.start_time &&
+                        formatTime(props.element.start_time)}
+                      {props.element?.start_time &&
+                        props.element?.end_time &&
+                        " - "}
+                      {props.element?.end_time &&
+                        formatTime(props.element.end_time)}
+                    </div>
+                  )}
+                  {props.element?.rating ? (
+                    <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                      <div className="Body3M_12">
+                        {props.element?.rating}&nbsp;
+                      </div>
+                      <div className="flex items-center text-primary-stars">
+                        <Image
+                          src="/star.svg"
+                          width={16}
+                          height={16}
+                          alt="star"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                </>
+              )}
+            </div>
 
+            {!props?.element?.poi ? (
+              <div className="flex flex-row gap-xs flex-wrap ">
+                {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
+                <div
+                  className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white ${"bg-[#5CBA66]"}`}
+                >
+                  ✓ Included
+                </div>
+                {/* ))} */}
               </div>
-                : null}
-            </div>
-
-            <div className="flex flex-row gap-xs flex-wrap ">
-              {props?.element?.tags && props.element.tags.map((item, i) => (
-                <div className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-[#07213A] ${!i % 2 ? 'bg-lightGreen' : 'bg-lightPink'}`} key={i}>{item}</div>
-              ))}
-
-            </div>
+            ) : null}
           </div>
         </div>
 
-        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
-          <div> <IconButton size="small" id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            className="-mt-sm"
-            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+        <div
+          className={`flex gap-3 flex-col  ${
+            !isPageWide
+              ? "flex-row-reverse justify-end "
+              : " items-end justify-between"
+          }`}
+        >
+          <div>
+            {" "}
+            <IconButton
+              size="small"
+              id="basic-button"
+              aria-controls={open ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              className="-mt-sm"
+              onClick={handleClick}
+              color="#000"
+              fontSize="small"
+            >
+              <FaEllipsis color="#000" />{" "}
+            </IconButton>
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}
@@ -425,23 +546,31 @@ const Activity = (props) => {
               disableScrollLock
               slotProps={{
                 list: {
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 },
               }}
-              anchorOrigin={
-                isPageWide
-                  ? { horizontal: "right", }
-                  : undefined
-              }
-              transformOrigin={
-                isPageWide
-                  ? { horizontal: "right" }
-                  : undefined
-              }
+              anchorOrigin={isPageWide ? { horizontal: "right" } : undefined}
+              transformOrigin={isPageWide ? { horizontal: "right" } : undefined}
             >
-              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
-              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
-              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
+              <MenuItem className="list-menu-item" onClick={handleDelete}>
+                Remove
+              </MenuItem>
+              {props.slabIndex != 0 && (
+                <MenuItem
+                  onClick={() => handleMoveElement(props.slabIndex - 1)}
+                  className="list-menu-item"
+                >
+                  Move Up
+                </MenuItem>
+              )}
+              {props.slabIndex != props.totalElements - 1 && (
+                <MenuItem
+                  onClick={() => handleMoveElement(props.slabIndex + 1)}
+                  className="list-menu-item"
+                >
+                  Move Down
+                </MenuItem>
+              )}
             </Menu>
           </div>
           <div className="max-ph:hidden">
@@ -451,23 +580,23 @@ const Activity = (props) => {
                 handleActivity(
                   props?.element,
                   props?.element?.poi != null ? "poi" : "activity"
-                )
+                );
               }}
-              className="IndigoOutlinedButton !w-[78px] Body2M_14">
+              className="IndigoOutlinedButton !w-[78px] Body2M_14"
+            >
               Details
             </button>
           </div>
         </div>
-      </div >
+      </div>
 
-      {
-        drawer === "showPoiDetail" &&
+      {drawer === "showPoiDetail" &&
         String(poi_id) ===
-        String(
-          props?.element?.booking?.id ||
-          props.element?.poi ||
-          props.element?.activity
-        ) && (
+          String(
+            props?.element?.booking?.id ||
+              props.element?.poi ||
+              props.element?.activity
+          ) && (
           <POIDetailsDrawer
             itineraryDrawer
             show={true}
@@ -490,8 +619,7 @@ const Activity = (props) => {
             cityName={props?.cityName}
             removeDelete={false}
           />
-        )
-      }
+        )}
     </>
   );
 };
@@ -509,6 +637,9 @@ const Recommendation = (props) => {
   });
 
   const [anchorEl, setAnchorEl] = useState(null);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
@@ -520,13 +651,16 @@ const Recommendation = (props) => {
     document.documentElement.style.overflow = "auto";
   };
 
-
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDrawer(false);
   };
 
   const handleActivity = async (poi, type) => {
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -545,6 +679,14 @@ const Recommendation = (props) => {
   };
 
   const handleDelete = async (e) => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      if (props?.setShowLoginModal) {
+        props?.setShowLoginModal(true);
+        return;
+      }
+    }
+
     try {
       let res;
       res = await axios.delete(
@@ -553,7 +695,7 @@ const Recommendation = (props) => {
           data: {
             itinerary_city_id: props?.itinerary_city_id,
             day_by_day_index: props?.dayIndex,
-            restaurant_index: props?.slabIndex
+            restaurant_index: props?.slabIndex,
           },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -608,11 +750,22 @@ const Recommendation = (props) => {
     // setLoading(false);
   };
 
-
   const handleMoveElement = async (position) => {
-    await handleMoveElementCommonly(dispatch, itinerary, router, props.itinerary_city_id, props.dayIndex, props.slabIndex, position, props.element.heading);
-    handleCloseMenue()
-  }
+    await handleMoveElementCommonly(
+      dispatch,
+      itinerary,
+      router,
+      props.itinerary_city_id,
+      props.dayIndex,
+      props.slabIndex,
+      position,
+      props.element.heading,
+      props?.setShowLoginModal,
+      id,
+      customer
+    );
+    handleCloseMenue();
+  };
 
   if (props.element.type === "Meal Recommendation") {
     return <MealRecommendation element={props.element} />;
@@ -653,11 +806,10 @@ const Recommendation = (props) => {
               {props.element.heading}
             </div>
 
-
-            <div className="flex flex-row items-center text-sm">
-              <div className="pr-[8px] flex gap-[8px]">
+            <div className="flex flex-wrap items-center text-sm">
+              <div className="pr-[8px] flex gap-[8px] justify-center items-center">
                 <Image
-                  src={'/assets/Itinerary/restaurant.svg'}
+                  src={"/assets/Itinerary/restaurant.svg"}
                   alt="ticket"
                   width={18}
                   height={18}
@@ -665,43 +817,67 @@ const Recommendation = (props) => {
                 <div className="text-[#6E757A] Body3R_12">Restaurant</div>
               </div>
 
-              {/* <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]"> 12:30 - 1:30 PM</div> */}
-              {(props.element?.restaurants?.[0]?.start_time || props.element?.restaurants?.[0]?.end_time) && (
-  <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A]">
-    {props.element?.restaurants?.[0]?.start_time && formatTime(props.element.restaurants?.[0]?.start_time)}
-    {props.element?.restaurants?.[0]?.start_time && props.element?.restaurants?.[0]?.end_time && ' - '}
-    {props.element?.restaurants?.[0]?.end_time && formatTime(props.element.restaurants?.[0]?.end_time)}
-  </div>
-)}
-
-              {props.element?.restaurants?.[0]?.rating ? <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
-                <div className="Body3M_12">
-                  {props.element?.restaurants?.[0]?.rating}&nbsp;
-                </div>
-                <div className="flex items-center text-primary-stars">
-                  <Image src="/star.svg" width={16} height={16} alt="star" />
-                </div>
+              {/* For Restaurants - timings and ratings on new line */}
+              <div className="w-full flex gap-2 sm:gap-3  mt-2">
+                {(props.element?.start_time || props.element?.end_time) && (
+                  <div className="Body3M_12 text-[#6E757A]">
+                    {props.element?.start_time &&
+                      formatTime(props.element?.start_time)}
+                    {props.element?.start_time &&
+                      props.element?.end_time &&
+                      " - "}
+                    {props.element?.end_time &&
+                      formatTime(props.element?.end_time)}
+                  </div>
+                )}
+                {props.element?.restaurants?.[0]?.rating && (
+                  <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
+                    <div className="Body3M_12">
+                      {props.element?.restaurants?.[0]?.rating}&nbsp;
+                    </div>
+                    <div className="flex items-center text-primary-stars">
+                      <Image
+                        src="/star.svg"
+                        width={16}
+                        height={16}
+                        alt="star"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-                : null}
             </div>
 
             <div className="flex flex-row gap-xs flex-wrap ">
-              {props?.element?.tags && props.element.tags.map((item, i) => (
+              {/* {props?.element?.tags && props.element.tags.map((item, i) => (
                 <div className={`rounded-9xl text-sm font-400 leading-md px-sm py-xxs text-white ${i % 2 ? 'bg-tag-sky' : 'bg-tag-grass'}`} key={i}>{item}</div>
-              ))}
-
+              ))} */}
             </div>
           </div>
         </div>
 
-
-        <div className={`flex gap-3 flex-col  ${!isPageWide ? 'flex-row-reverse justify-end ' : ' items-end justify-between'}`}>
-          <div> <IconButton size="small" id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            className="-mt-sm"
-            onClick={handleClick} color="#000" fontSize="small"><FaEllipsis color="#000" /> </IconButton>
+        <div
+          className={`flex gap-3 flex-col  ${
+            !isPageWide
+              ? "flex-row-reverse justify-end "
+              : " items-end justify-between"
+          }`}
+        >
+          <div>
+            {" "}
+            <IconButton
+              size="small"
+              id="basic-button"
+              aria-controls={open ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+              className="-mt-sm"
+              onClick={handleClick}
+              color="#000"
+              fontSize="small"
+            >
+              <FaEllipsis color="#000" />{" "}
+            </IconButton>
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}
@@ -710,30 +886,41 @@ const Recommendation = (props) => {
               disableScrollLock
               slotProps={{
                 list: {
-                  'aria-labelledby': 'basic-button',
+                  "aria-labelledby": "basic-button",
                 },
               }}
-              anchorOrigin={
-                isPageWide
-                  ? { horizontal: "right", }
-                  : undefined
-              }
-              transformOrigin={
-                isPageWide
-                  ? { horizontal: "right" }
-                  : undefined
-              }
+              anchorOrigin={isPageWide ? { horizontal: "right" } : undefined}
+              transformOrigin={isPageWide ? { horizontal: "right" } : undefined}
             >
-              <MenuItem className="list-menu-item" onClick={handleDelete}>Remove</MenuItem>
-              {props.slabIndex != 0 && <MenuItem onClick={() => handleMoveElement(props.slabIndex - 1)} className="list-menu-item" >Move Up</MenuItem>}
-              {props.slabIndex != (props.totalElements - 1) && <MenuItem onClick={() => handleMoveElement(props.slabIndex + 1)} className="list-menu-item">Move Down</MenuItem>}
+              <MenuItem className="list-menu-item" onClick={handleDelete}>
+                Remove
+              </MenuItem>
+              {props.slabIndex != 0 && (
+                <MenuItem
+                  onClick={() => handleMoveElement(props.slabIndex - 1)}
+                  className="list-menu-item"
+                >
+                  Move Up
+                </MenuItem>
+              )}
+              {props.slabIndex != props.totalElements - 1 && (
+                <MenuItem
+                  onClick={() => handleMoveElement(props.slabIndex + 1)}
+                  className="list-menu-item"
+                >
+                  Move Down
+                </MenuItem>
+              )}
             </Menu>
           </div>
           <div className="max-ph:hidden">
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
+                handleActivity(
+                  props?.element?.restaurants?.[0]?.id,
+                  "restaurant"
+                );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
             >

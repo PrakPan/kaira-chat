@@ -60,10 +60,10 @@ const ReadMore = styled.p`
 `;
 
 const ReviewBack = styled.p`
-  font-weight: 200;
-  letter-spacing: 1px;
-  line-height: 1.5;
-  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 24px;
+  font-size: 16px;
   overflow: hidden;
   @media screen and (min-width: 768px) {
     height: auto;
@@ -78,10 +78,10 @@ const ReviewContainer = styled.div`
 `;
 
 const ReviewFront = styled.p`
-  font-weight: 200;
-  letter-spacing: 1px;
-  line-height: 1.5;
-  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0px;
+  line-height: 24px;
+  font-size: 16px;
   height: 9rem;
   overflow: hidden;
   @media screen and (min-width: 768px) {
@@ -92,9 +92,9 @@ const ReviewFront = styled.p`
     font-family: "Font Awesome 5 Free";
     font-size: 2.5rem;
     /* font-size: ${(props) =>
-      props.theme.fontsizes.mobile.headings.one
-        ? props.theme.fontsizes.mobile.headings.one
-        : props.theme.fontsizes.mobile.headings.one}; */
+    props.theme.fontsizes.mobile.headings.one
+      ? props.theme.fontsizes.mobile.headings.one
+      : props.theme.fontsizes.mobile.headings.one}; */
     padding: 0;
     display: inline-block;
 
@@ -105,9 +105,9 @@ const ReviewFront = styled.p`
     font-family: "Font Awesome 5 Free";
     font-size: 2.5rem;
     /* font-size: ${(props) =>
-      props.theme.fontsizes.mobile.headings.one
-        ? props.theme.fontsizes.mobile.headings.one
-        : props.theme.fontsizes.mobile.headings.one}; */
+    props.theme.fontsizes.mobile.headings.one
+      ? props.theme.fontsizes.mobile.headings.one
+      : props.theme.fontsizes.mobile.headings.one}; */
     padding: 0;
     visibility: hidden;
     line-height: 1;
@@ -167,16 +167,20 @@ const TestimonialCard = (props) => {
         onMouseEnter={(event) => _flipHandler(event, true)}
         className="font-nunito text-center center-div"
       >
-        <ImageLoader
-          widthmobile="60%"
-          widthtab="40%"
-          fit="cover"
-          url={props.url}
-          dimensions={{ width: 400, height: 400 }}
-          dimensionsMobile={{ width: 400, height: 400 }}
-          borderRadius="50%"
-          width="50%"
-        />
+        {(typeof props?.imgUrlEndPoint) === 'boolean' ? <>
+          <img src={props.url} className="rounded-circle w-[14vw] h-[14vw] max-ph:!w-[50vw] max-ph:!h-[50vw]" />
+        </> :
+          <ImageLoader
+            widthmobile="60%"
+            widthtab="40%"
+            fit="cover"
+            url={props.url}
+            dimensions={{ width: 400, height: 400 }}
+            dimensionsMobile={{ width: 400, height: 400 }}
+            borderRadius="50%"
+            width="50%"
+          />
+        }
 
         <Name className="">{props.name}</Name>
 

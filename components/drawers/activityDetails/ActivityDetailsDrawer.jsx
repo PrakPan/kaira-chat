@@ -58,6 +58,7 @@ const ActivityDetailsDrawer = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const [hotelPickupIncluded,setHotelPickupIncluded] = useState(false);
+  const currency = useSelector(state=>state.currency);
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
@@ -102,7 +103,7 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/`, requestData, {
+      .post(`/${props.activityId}/?currency=${currency.currency || 'INR'}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -111,7 +112,7 @@ const ActivityDetailsDrawer = (props) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {
           setData(res.data?.data?.activity);
-          setHotelPickupIncluded(res?.data?.data?.hotel_pickup_included);
+          setHotelPickupIncluded(res?.data?.data?.activity?.hotel_pickup_included);
         } else throw new Error(res.data?.message);
         setLoading(false);
         setUpdateAmenities(false);
@@ -122,6 +123,17 @@ const ActivityDetailsDrawer = (props) => {
         setUpdateAmenities(false);
       });
   };
+
+  const formatTime = (time24) => {
+  if (!time24) return null;
+
+  const [hours, minutes, seconds] = time24.split(":");
+  const hour = parseInt(hours, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour === 0 ? 12 : hour;
+
+  return `${hour12}:${minutes}`;
+};
 
   const updatedActivityBooking = async (data) => {
     try {
@@ -160,11 +172,14 @@ const ActivityDetailsDrawer = (props) => {
                 duration: res?.data?.duration,
               },
               element_type: "activity",
-              heading: res?.data?.activity?.name,
+              heading: res?.data?.activity_data?.display_name || res?.data?.activity?.name,
               icon: res?.data?.image,
               poi: null,
+              tags: res?.data?.activity_data?.tags || [],
               rating: res?.data?.activity?.rating,
               user_ratings_total: res?.data?.activity?.user_ratings_total,
+              start_time: formatTime(res?.data?.check_in?.split(" ")?.[1]) || null,
+              end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {
@@ -231,7 +246,7 @@ const ActivityDetailsDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className=" overflow-y-hidden"
+      className="font-lexend overflow-y-hidden pb-[40px]"
       onHide={props.handleCloseDrawer}
     >
       {error == null ? (
@@ -250,6 +265,7 @@ const ActivityDetailsDrawer = (props) => {
               setShowLoginModal={props?.setShowLoginModal}
               itinerary_city_id={props?.itinerary_city_id}
               hotel_pickup_included={hotelPickupIncluded}
+              isBotQuery={props?.isBotQuery}
             />
           ) : (
             <ActivityDetailsSkeleton

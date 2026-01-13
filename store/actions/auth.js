@@ -39,6 +39,14 @@ export const authStartLoading = () => {
   };
 };
 
+export const authStopLoading = () => {
+  return {
+    type: actionTypes.AUTH_STOPLOADING,
+  };
+};
+
+
+
 //Show spinner for social login
 export const authStartLoadingSocial = () => {
   return {
@@ -260,7 +268,7 @@ export const auth = (
 ) => {
   //name and email null incase of old user
    
-
+ console.log("OnSuccess",onSuccess)
   const authData = {
     grant_type: "password",
     username: mobile,

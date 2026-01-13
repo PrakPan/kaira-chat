@@ -25,16 +25,53 @@ import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 
-
 const svgIcons = {
-    "delete": <svg xmlns="http://www.w3.org/2000/svg" width="15" height="14" viewBox="0 0 15 14" fill="none">
-    <path d="M12.75 3.48827C10.8075 3.29577 8.85333 3.1966 6.905 3.1966C5.75 3.1966 4.595 3.25494 3.44 3.3716L2.25 3.48827" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M5.45801 2.89897L5.58634 2.13481C5.67967 1.58064 5.74967 1.16647 6.73551 1.16647H8.26384C9.24968 1.16647 9.32551 1.60397 9.41301 2.14064L9.54134 2.89897" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M11.4956 5.33183L11.1164 11.206C11.0522 12.1218 10.9997 12.8335 9.37224 12.8335H5.62724C3.99974 12.8335 3.94724 12.1218 3.88307 11.206L3.50391 5.33183" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M6.52539 9.625H8.46789" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M6.04199 7.29147H8.95866" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-}
+  delete: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="14"
+      viewBox="0 0 15 14"
+      fill="none"
+    >
+      <path
+        d="M12.75 3.48827C10.8075 3.29577 8.85333 3.1966 6.905 3.1966C5.75 3.1966 4.595 3.25494 3.44 3.3716L2.25 3.48827"
+        stroke="white"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M5.45801 2.89897L5.58634 2.13481C5.67967 1.58064 5.74967 1.16647 6.73551 1.16647H8.26384C9.24968 1.16647 9.32551 1.60397 9.41301 2.14064L9.54134 2.89897"
+        stroke="white"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M11.4956 5.33183L11.1164 11.206C11.0522 12.1218 10.9997 12.8335 9.37224 12.8335H5.62724C3.99974 12.8335 3.94724 12.1218 3.88307 11.206L3.50391 5.33183"
+        stroke="white"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6.52539 9.625H8.46789"
+        stroke="white"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6.04199 7.29147H8.95866"
+        stroke="white"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  ),
+};
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -127,8 +164,6 @@ const ScrollContainer = styled.div`
 //   margin-block: 1rem 1rem;
 // `;
 
-
-
 const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
@@ -201,10 +236,13 @@ const ActivityDetails = (props) => {
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
-
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        trackActivityBookingDelete(router.query.id, props?.data?.id, "ActivityDetailsDrawer");
+        trackActivityBookingDelete(
+          router.query.id,
+          props?.data?.id,
+          "ActivityDetailsDrawer"
+        );
 
         const itineraryCities = newItinerary.cities.map((city) => {
           if (city.id === props?.itinerary_city_id) {
@@ -295,10 +333,18 @@ const ActivityDetails = (props) => {
   return (
     <>
       {props?.data ? (
-        <Container className="px-lg max-ph:px-sm gap-xl" itineraryDrawer={props.itineraryDrawer}>
-
+        <Container
+          className="px-lg max-ph:px-sm gap-xl"
+          itineraryDrawer={props.itineraryDrawer}
+        >
           <div className="mt-[1rem]">
-            <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
+            <Image
+              src="/backarrow.svg"
+              className="cursor-pointer"
+              width={22}
+              height={2}
+              onClick={(e) => props.handleCloseDrawer(e)}
+            />
           </div>
 
           <>
@@ -391,9 +437,7 @@ const ActivityDetails = (props) => {
           </>
           <div className="">
             <Title>{props?.data?.display_name || props.data.name}</Title>
-            {props.data?.tags && (
-              <Text>{tags}</Text>
-            )}
+            {props.data?.tags && <Text>{tags}</Text>}
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text
@@ -408,34 +452,44 @@ const ActivityDetails = (props) => {
               </div>
             )}
 
-             {props.activityData?.inclusions && props.activityData?.inclusions?.length > 0 && (
-            <div className="flex flex-col gap-2 mb-[30px]">
-              <div className="text-[20px] font-semibold text-green">Inclusions</div>
-              <div className="border-b-[1px]"></div>
-              <div className="text-[14px]">
-                <ul style={{ paddingLeft: "0.5rem" }}>
-                  {props.activityData.inclusions.map((inclusion, i) => (
-                    <li key={i} className="mb-1">- {inclusion}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+            {props.activityData?.inclusions &&
+              props.activityData?.inclusions?.length > 0 && (
+                <div className="flex flex-col gap-2 mb-[30px]">
+                  <div className="text-[20px] font-semibold text-green">
+                    Inclusions
+                  </div>
+                  <div className="border-b-[1px]"></div>
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.activityData.inclusions.map((inclusion, i) => (
+                        <li key={i} className="mb-1">
+                          - {inclusion}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
 
-          {/* Exclusions Section */}
-          {props.activityData?.exclusions && props.activityData?.exclusions?.length > 0 && (
-            <div className="flex flex-col gap-2 mb-[30px]">
-              <div className="text-[20px] font-semibold text-red">Exclusions</div>
-              <div className="border-b-[1px]"></div>
-              <div className="text-[14px]">
-                <ul style={{ paddingLeft: "0.5rem" }}>
-                  {props.activityData.exclusions.map((exclusion, i) => (
-                    <li key={i} className="mb-1">- {exclusion}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
+            {/* Exclusions Section */}
+            {props.activityData?.exclusions &&
+              props.activityData?.exclusions?.length > 0 && (
+                <div className="flex flex-col gap-2 mb-[30px]">
+                  <div className="text-[20px] font-semibold text-red">
+                    Exclusions
+                  </div>
+                  <div className="border-b-[1px]"></div>
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.activityData.exclusions.map((exclusion, i) => (
+                        <li key={i} className="mb-1">
+                          - {exclusion}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
             {props.data?.address && (
               <div>
                 <span className="font-bold pr-1">Address:</span>{" "}
@@ -663,20 +717,32 @@ const ActivityDetails = (props) => {
               </div>
             )}
 
-          {props.activityData?.prices && props.activityData?.prices.length && (props.activityData?.prices[0]?.title || props.activityData?.prices[0]?.description) && <div className="flex flex-col">
+          {props.activityData?.prices &&
+            props.activityData?.prices.length &&
+            (props.activityData?.prices[0]?.title ||
+              props.activityData?.prices[0]?.description) && (
+              <div className="flex flex-col">
                 <div className="text-[20px] font-semibold mb-2">
-                Package Details
+                  Package Details
                 </div>
                 <div className="font-medium text-gray-900">
-                  {props.activityData?.prices[0]?.title ? props.activityData?.prices[0]?.title : null}
+                  {props.activityData?.prices[0]?.title
+                    ? props.activityData?.prices[0]?.title
+                    : null}
                 </div>
                 <div className="font-normal text-gray-900">
-                  {props.activityData?.prices[0]?.description ? props.activityData?.prices[0]?.description : null}
+                  {props.activityData?.prices[0]?.description
+                    ? props.activityData?.prices[0]?.description
+                    : null}
                 </div>
                 <div className="text-sm text-gray-600">
-                  For {props.activityData?.prices[0]?.pax_details.adults + props.activityData?.prices[0]?.pax_details.children} people
+                  For{" "}
+                  {props.activityData?.prices[0]?.pax_details.adults +
+                    props.activityData?.prices[0]?.pax_details.children}{" "}
+                  people
                 </div>
-              </div>}
+              </div>
+            )}
 
           {props?.data?.cancellation_policies && (
             <>
@@ -807,6 +873,19 @@ const ActivityDetails = (props) => {
                   View on Google Maps
                 </a>
               </div> */}
+
+              {props?.showCallback ? (
+                <>
+                  <button
+                    onClick={() => {
+                      if (props?.setIsModalOpen) props?.setIsModalOpen(true);
+                    }}
+                    className="rounded-lg px-5 py-2 mx-auto text-black bg-[#f7e700] transition-all"
+                  >
+                    Schedule a Callback Now!
+                  </button>
+                </>
+              ) : null}
 
               {
                 // props?.version != "v1" ? (

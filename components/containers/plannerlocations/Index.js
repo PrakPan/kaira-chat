@@ -70,7 +70,7 @@ const LocationsBlog = (props) => {
         {cards.length ? (
           <SwiperCarousel
             navigationButtons={true}
-            slidesPerView={6}
+            slidesPerView={4}
             cards={cards}
           ></SwiperCarousel>
         ) : null}

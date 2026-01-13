@@ -1,0 +1,162 @@
+image: node:18
+
+definitions:
+  caches:
+    npm: ~/.npm
+
+pipelines:
+  # Tag-based deployments (FULLY AUTOMATIC)
+  tags:
+    # Development deployment: tags starting with 'dev-'
+    dev-*:
+      - step:
+          name: Build for Development
+          size: 4x
+          caches:
+            - node
+            - npm
+          script:
+            - echo "🚀 Tag-based deployment triggered"
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - echo "🔧 Building for Development environment..."
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - export NODE_OPTIONS="--max-old-space-size=8192"
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - cp .env.development .env.local
+            - npm run build
+            - python3 index_path.py
+            - echo "✅ Build completed successfully"
+          artifacts:
+            - out/**
+      
+      - step:
+          name: Deploy to Development
+          script:
+            - echo "📦 Deploying to Development (S3 + CloudFront)..."
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - apt-get update && apt-get install -y awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - echo "⬆️  Uploading to S3 bucket nextjs-dev-2"
+            - aws s3 sync out/ s3://nextjs-dev-2 --cache-control max-age=31536000,public
+            - echo "🔄 Invalidating CloudFront cache..."
+            - aws cloudfront create-invalidation --distribution-id E3T22L50EDEN1W --paths "/*"
+            - echo "✅ Deployment to Development completed successfully!"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
+          after-script:
+            - |
+              if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
+                echo "❌ DEPLOYMENT FAILED!"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
+                echo "⚠️  Previous version still running on server"
+                echo "💡 Check logs above for error details"
+              fi
+    
+    # Production deployment: tags starting with 'prod-' (FULLY AUTOMATIC - NO MANUAL APPROVAL)
+    prod-*:
+      - step:
+          name: Build for Production
+          size: 4x
+          caches:
+            - node
+            - npm
+          script:
+            - echo "🚀 Production deployment triggered"
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - echo "🔧 Building for Production environment..."
+            - |
+              BRANCH=$(git rev-parse --abbrev-ref HEAD)
+              if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "HEAD" ]; then
+                echo "❌ ERROR: Production tags MUST be pushed from 'main' branch"
+                echo "Current branch detected: $BRANCH"
+                echo "Please checkout main branch and push tag from there"
+                exit 1
+              fi
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - export NODE_OPTIONS="--max-old-space-size=8192"
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - cp .env.production .env.local
+            - node scripts/removeTripsPage.js prebuild || exit 0
+            - npm run build
+            - node scripts/removeTripsPage.js postbuild || exit 0
+            - python3 index_path.py
+            - echo "✅ Build completed successfully"
+          artifacts:
+            - out/**
+      
+      - step:
+          name: Deploy to Production
+          script:
+            - echo "📦 Deploying to Production (S3 + CloudFront)..."
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - echo "⚠️  PRODUCTION DEPLOYMENT IN PROGRESS"
+            - apt-get update && apt-get install -y awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - echo "⬆️  Uploading to S3 bucket ttw-nextjs"
+            - aws s3 sync out/ s3://ttw-nextjs --cache-control max-age=31536000,public
+            - echo "🔄 Invalidating CloudFront cache..."
+            - aws cloudfront create-invalidation --distribution-id EW37HZUU6T8S9 --paths "/*"
+            - echo "✅ PRODUCTION DEPLOYMENT COMPLETED SUCCESSFULLY!"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
+            - echo "🌐 Production is now live with this version"
+          after-script:
+            - |
+              if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
+                echo "❌ PRODUCTION DEPLOYMENT FAILED!"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
+                echo "⚠️  CRITICAL: Check production status immediately"
+                echo "💡 Previous version may still be running"
+                echo "🔙 Consider rollback to previous tag if needed"
+              fi
+    
+    # YourTrips deployment: tags starting with 'yourtrips-'
+    yourtrips-*:
+      - step:
+          name: Build for YourTrips
+          size: 4x
+          caches:
+            - node
+            - npm
+          script:
+            - echo "🚀 YourTrips deployment triggered"
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - echo "🔧 Building for YourTrips environment..."
+            - npm ci
+            - apt-get update && apt-get install -y python3
+            - export NODE_OPTIONS="--max-old-space-size=8192"
+            - export BUILD_NUMBER=$BITBUCKET_BUILD_NUMBER
+            - cp .env.production .env.local
+            - npm run build
+            - python3 index_path.py
+            - echo "✅ Build completed successfully"
+          artifacts:
+            - out/**
+      
+      - step:
+          name: Deploy to YourTrips
+          script:
+            - echo "📦 Deploying to YourTrips (S3 + CloudFront)..."
+            - echo "📌 Tag $BITBUCKET_TAG"
+            - apt-get update && apt-get install -y awscli
+            - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+            - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+            - export AWS_DEFAULT_REGION=$AWS_REGION
+            - echo "⬆️  Uploading to S3 bucket yourtrips-nextjs"
+            - aws s3 sync out/ s3://yourtrips-nextjs --delete --cache-control max-age=31536000,public
+            - echo "🔄 Invalidating CloudFront cache..."
+            - aws cloudfront create-invalidation --distribution-id E28HVCR7LF1VH2 --paths "/*"
+            - echo "✅ Deployment to YourTrips completed successfully!"
+            - echo "📌 Deployed Tag $BITBUCKET_TAG"
+          after-script:
+            - |
+              if [ $BITBUCKET_EXIT_CODE -ne 0 ]; then
+                echo "❌ YOURTRIPS DEPLOYMENT FAILED!"
+                echo "📌 Failed Tag $BITBUCKET_TAG"
+                echo "⚠️  Previous version still running"
+                echo "💡 Check logs for error details"
+              fi

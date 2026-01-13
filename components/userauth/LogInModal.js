@@ -21,6 +21,7 @@ import { getCountryCodes } from "../../store/actions/countryCodes";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import { RxCross2 } from "react-icons/rx";
+import { FaEdit, FaPen } from "react-icons/fa";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -95,6 +96,8 @@ const LogIn = React.memo((props) => {
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
   const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
 
+  console.log("Message",props?.message)
+
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -105,10 +108,12 @@ const LogIn = React.memo((props) => {
 
   useEffect(() => {
     if (props.otpSent) {
+      setCounter(30);
+
       const timer = setInterval(() => {
         setCounter((prev) => {
           if (prev <= 1) {
-            clearInterval(timer); // stop at 0
+            clearInterval(timer);
             return 0;
           }
           return prev - 1;
@@ -117,7 +122,7 @@ const LogIn = React.memo((props) => {
 
       return () => clearInterval(timer);
     }
-  }, [props.otpSent]);
+  }, [props.otpSent, otpResent]);
 
   const minutes = String(Math.floor(counter / 60)).padStart(2, "0");
   const seconds = String(counter % 60).padStart(2, "0");
@@ -136,6 +141,13 @@ const LogIn = React.memo((props) => {
     )
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
+
+  useEffect(() => { 
+  props.onResetLogin();
+  if (mobileRef.current) {
+    mobileRef.current.focus();
+  }
+}, []);
 
   useEffect(() => {
     if (otp.length > 3) {
@@ -198,10 +210,13 @@ const LogIn = React.memo((props) => {
       return;
     }
 
+     console.log("OnSuccess",props?.onSuccess);
+
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
 
       if (!userDetails.userName) return setUserNameError(true);
+
 
       if (newUserValidity)
         props.onAuth(
@@ -306,7 +321,8 @@ const LogIn = React.memo((props) => {
       whatsapp: whatsapp,
     };
     props.onOtp(data);
-    setOtpResent(true);
+    setOtpResent((prev) => !prev);
+    setCounter(30);
     recaptchaRef.current.reset();
   };
 
@@ -340,18 +356,42 @@ const LogIn = React.memo((props) => {
   };
 
   const verifyRecaptchaHandler = () => {
+    if (props.mobileFail) {
+      props.onResetLogin();
+    }
+
+    if (!props.otpSent) {
+      props.onStartLoading();
+    } else {
+      props.onStartLoading();
+    }
+
     const recaptchaValue = recaptchaRef.current.getValue();
     if (recaptchaValue) {
       if (!props.otpSent) otpHandler(recaptchaValue);
       else resetOtpHandler(recaptchaValue);
     } else {
-      recaptchaRef.current.execute(); // Trigger the invisible ReCAPTCHA
+      recaptchaRef.current.execute();
     }
   };
 
-  //Mobile, name, email, password, JSX
+
+  const handleEditPhone = () => {
+  setOtp("");
+  setUserDetailsRequired(false);
+  setCounter(30);
+  props.onResetLogin();
+  
+  setTimeout(() => {
+    if (mobileRef.current) {
+      mobileRef.current.focus();
+    }
+  }, 100);
+};
+
+
   mobileInput = (
-    <div>
+    <div className="w-full">
       <input
         required
         error={props.mobileFail ? true : false}
@@ -370,7 +410,7 @@ const LogIn = React.memo((props) => {
         value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
-        className=" !border-[0px] h-[22px] focus:outline-none"
+        className=" !border-[0px] h-[22px] focus:outline-none w-full"
         ref={mobileRef}
         height={"22px"}
       />
@@ -432,18 +472,26 @@ const LogIn = React.memo((props) => {
     );
 
   return (
-    <div className={`${isPageWide ? "pt-[36px] px-[32px]" : "pt-[19px] pb-[13px] px-[16px] h-full"} h-max`}>
-      <div className="flex flex-col gap-[24px] h-full">
-        {!isPageWide && <div className="flex justify-end">
-        <RxCross2
-          style={{
-            fontSize: "1.5rem",
-            cursor: "pointer",
-            zIndex: 999,
-          }}
-            onClick={props.onhide}
-          />
-        </div>}
+    <div
+      className={`${
+        isPageWide
+          ? "pt-[36px] px-[32px]"
+          : "pt-[12px] pb-[13px] px-[16px] h-full"
+      } h-max`}
+    >
+      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full">
+        {!isPageWide && (
+          <div className="flex justify-end">
+            <RxCross2
+              style={{
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                zIndex: 999,
+              }}
+              onClick={props.onhide}
+            />
+          </div>
+        )}
         {!props?.otpSent ? (
           <div>
             {!props.noheading && (
@@ -453,16 +501,16 @@ const LogIn = React.memo((props) => {
                   textAlign: isPageWide ? "left" : "center",
                   margin: isPageWide
                     ? "0 0rem 32px 0rem"
-                    : "0rem 0rem 1rem 0.5rem",
+                    : "0rem 0rem 1rem 0rem",
                   fontWeight: "700",
                 }}
               >
                 {!props?.onSuccess ? (
                   <>
-                    <h1 className="text-bold font-700">
+                    <h1 className="text-bold font-700 text-left ">
                       {props.loginmessage ? props.loginmessage : "Welcome to"}
                     </h1>
-                    <h1 className="text-bold font-700">
+                    <h1 className="text-bold font-700 text-left">
                       {props.loginmessage
                         ? props.loginmessage
                         : "The Tarzan Way!"}
@@ -473,7 +521,7 @@ const LogIn = React.memo((props) => {
                     <h1 className="text-bold font-700">
                       {props.loginmessage
                         ? props.loginmessage
-                        : "Sign in to access your plan"}
+                        : props?.message || "Please login to view details"}
                     </h1>
                   </>
                 )}
@@ -495,23 +543,28 @@ const LogIn = React.memo((props) => {
             (props.token && props.phone == "null") ? (
               <form noValidate>
                 <div className="Body2R_14 mb-[6px]">Phone Number</div>
-                <MobileNumberContainer className="relative border-[1px] border-[#d0d5dd] rounded-lg">
+                <MobileNumberContainer className="border-[1px] border-[#d0d5dd] rounded-lg p-[10px]">
                   <div
-                    className="w-fit px-2 flex flex-row gap-3 items-center border-r-2 border-black"
+                    className="w-fit flex flex-row gap-3 px-2 items-center cursor-pointer border-r-2 border-black"
                     onClick={() => setOpenCountryCodeOption(true)}
                   >
-                    <CountryImg
-                      height="30"
-                      width="30"
-                      objectFit="cover"
-                      src={
-                        props.CountryCodes
-                          ? props.CountryCodes[extension].img
-                          : ""
-                      }
-                    ></CountryImg>
-                    {/* <FiChevronDown /> */}
+                    <div className="flex gap-3">
+                      <CountryImg
+                        height="30"
+                        width="30"
+                        objectFit="cover"
+                        src={
+                          props.CountryCodes
+                            ? props.CountryCodes[extension].img
+                            : ""
+                        }
+                      ></CountryImg>
+                      <div className="Body2R_14">
+                        {props?.CountryCodes[extension].label || +91}
+                      </div>
+                    </div>
                   </div>
+
                   {openCountryCodeOption && (
                     <CountryCodeDropdown
                       onClose={() => setOpenCountryCodeOption(false)}
@@ -520,8 +573,18 @@ const LogIn = React.memo((props) => {
                       setOpenCountryCodeOption={setOpenCountryCodeOption}
                     />
                   )}
-                  {mobileInput}
+                  <div className="Body2R_14">{mobileInput}</div>
                 </MobileNumberContainer>
+
+                {/* ADD THIS ERROR DISPLAY RIGHT AFTER MobileNumberContainer */}
+                {props.mobileFail && props.mobilefailmessage && (
+                  <ErrorText>
+                    <BiError style={{ fontSize: "1rem" }} />
+                    <span style={{ marginLeft: "2px", marginTop: "2px" }}>
+                      {props.mobilefailmessage}
+                    </span>
+                  </ErrorText>
+                )}
 
                 <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
                   {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}{" "}
@@ -582,6 +645,16 @@ const LogIn = React.memo((props) => {
                   )}
                   <div className="Body2R_14">{mobileInput}</div>
                 </MobileNumberContainer>
+
+                {/* ADD THIS ERROR DISPLAY RIGHT AFTER MobileNumberContainer */}
+                {props.mobileFail && props.mobilefailmessage && (
+                  <ErrorText>
+                    <BiError style={{ fontSize: "1rem" }} />
+                    <span style={{ marginLeft: "2px", marginTop: "2px" }}>
+                      {props.mobilefailmessage}
+                    </span>
+                  </ErrorText>
+                )}
 
                 <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
                   {whatsapp ? (
@@ -646,7 +719,7 @@ const LogIn = React.memo((props) => {
               <div
                 style={{
                   fontSize: "32px",
-                  textAlign: isPageWide ? "left" : "center",
+                  textAlign: isPageWide ? "left" : "left",
                   fontWeight: "700",
                 }}
               >
@@ -655,18 +728,31 @@ const LogIn = React.memo((props) => {
             )}
 
             <div className="flex flex-col gap-[24px]">
-              <div className={`Body1R_16 text-[#6E757A] ${isPageWide ? "text-left" : "text-center"}`}>
-                We’ve sent a 4-digit OTP to your registered phone number.
-              </div>
+              <div
+  className={`Body1R_16 text-[#6E757A] ${
+    isPageWide ? "text-left" : "text-left"
+  }`}
+>
+  <div className="flex flex-wrap items-center">
+    <span className="">We've sent a 4-digit OTP to your registered phone number</span>
+    <span className="whitespace-nowrap font-medium mt-2">
+      {phone} 
+      <span className="text-blue underline cursor-pointer ml-1" onClick={handleEditPhone}>
+        Change
+      </span>
+    </span>
+  </div>
+</div>
 
               {props.otpSent ? password : null}
-              <div className="Body1R_16 text-[#6E757A;]">
-                {" "}
-                You can resend OTP in{" "}
-                <span className="text-black Body1M_16">
-                  {minutes}:{seconds}
-                </span>
-              </div>
+              {counter > 0 && (
+                <div className="Body1R_16 text-[#6E757A;] text-center sm:text-left">
+                  You can resend OTP in{" "}
+                  <span className="text-black Body1M_16">
+                    {minutes}:{seconds}
+                  </span>
+                </div>
+              )}
             </div>
 
             <ReCAPTCHA
@@ -704,23 +790,33 @@ const LogIn = React.memo((props) => {
               !userDetailsRequired
                 ? `${
                     counter == 0 && !userDetailsRequired
-                      ? "mt-[80px]"
-                      : "mt-[120px]"
+                      ? "mt-[30px] sm:mt-[40px]"
+                      : "mt-[20px] sm:mt-[40px]" 
                   }`
                 : "mt-[46px]"
             }`}
           >
-            {counter == 0 && !userDetailsRequired && (
+            {!userDetailsRequired && (
               <div className="flex gap-[16px] justify-center">
                 <div className="Body1R_16 text-[#6E757A;]">
                   Didn't receive OTP?
                 </div>
-                <div
-                  className="Body1R_16 text-[#3A85FC] cursor-pointer"
-                  onClick={verifyRecaptchaHandler}
-                >
-                  Resend OTP
-                </div>
+                {counter === 0 ? (
+                  <div
+                    className={`Body1R_16 cursor-pointer ${
+                      props.loading
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-[#3A85FC]"
+                    }`}
+                    onClick={
+                      !props.loading ? verifyRecaptchaHandler : undefined
+                    }
+                  >
+                    {props.loading ? "Sending..." : "Resend OTP"}
+                  </div>
+                ) : <div className="Body1R_16 text-gray-400">
+        Resend OTP
+      </div>}
               </div>
             )}
             <Button
@@ -743,7 +839,11 @@ const LogIn = React.memo((props) => {
           </div>
         )}
         <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
-          <div className={`Body2R_14 text-[#6E757A] ${isPageWide ? "text-left" : "text-center"}`}>
+          <div
+            className={`Body2R_14 text-[#6E757A] ${
+              isPageWide ? "text-center" : "text-center"
+            }`}
+          >
             By continuing, you agree to our{" "}
             <Link
               href="/terms-conditions"
@@ -833,6 +933,7 @@ const mapDispatchToProps = (dispatch) => {
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
     onResetLogin: () => dispatch(authaction.authResetLogin()),
+    onStartLoading: () => dispatch(authaction.authStartLoading()),
     onGoogleAuth: (response) => dispatch(authaction.googleAuth(response)),
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
     onUpdate: (response, trackUserAccountUpdate) =>

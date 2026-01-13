@@ -9,11 +9,21 @@ import useChat from './hook/UseChat';
 
 
 const Container = styled.div`
-  padding: ${(props) => (props.ispopup ? '0px 20px' : '20px')};
+  padding: ${(props) => (props.ispopup ? '0px 16px' : '20px')};
   box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
   position: relative;
-  height: ${(props) => (props.ispopup ? '93vh' : '96vh')};
+  height: ${(props) => (props.ispopup ? '100vh' : '96vh')};
   border-radius: 16px;
+  overflow-y: hidden;
+  
+  @media screen and (max-width: 767px) {
+    height: 100vh;
+    padding: 8px;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 `;
 
 // Outer wrapper
@@ -22,20 +32,23 @@ function ChatBot(props) {
   const itinearyId = router.query.id;
 
   return (
-  
-      <ChatBotContent ispopup={props.showAsPopup} />
+
+
+      <ChatProvider itinearyId={itinearyId}>
+      <ChatBotContent ispopup={props.showAsPopup} hideDrawer={props?.hideDrawer} />
+      </ChatProvider>
       
   );
 }
 
 
 // Inner wrapper 
-function ChatBotContent({ ispopup }) {
+function ChatBotContent({ ispopup, hideDrawer }) {
   const { chatBotContainerRef } = useChat();
 
   return (
     <Container ref={chatBotContainerRef} ispopup={ispopup}>
-      <Header />
+      <Header hideDrawer={hideDrawer}/>
       <ChatSection />
       <AskQuery />
       <HistoryList />
