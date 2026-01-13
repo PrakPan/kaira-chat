@@ -26,17 +26,6 @@ const DestinationCard = ({
 
   const [imageQuality, setImageQuality] = useState(100);
 
-  useEffect(() => {
-    const img = new Image();
-    img.src = image;
-    img.onload = () => {
-      if (img.width > 400 || img.height > 500) { // very large images
-        setImageQuality(75);
-      } else {
-        setImageQuality(100);
-      }
-    };
-  }, [image]);
   // console.log("tags in destination card:",one_liner_description,showImageText)
   return (
     <div onClick={() => {
