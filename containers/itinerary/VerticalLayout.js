@@ -901,6 +901,7 @@ useEffect(() => {
   const handleEdit = async (combo, book) => {
      if(!localStorage.getItem("access_token")){
       setShowLoginModal(true);
+      return;
      }
     //  if( auth?.id != customer){
     //   dispatch(setCloneItineraryDrawer(true));
@@ -935,7 +936,6 @@ useEffect(() => {
   };
 
   const handlePickupDropDrawer = (drawerType) => {
-    console.log("Drawer Clicked", drawerType);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

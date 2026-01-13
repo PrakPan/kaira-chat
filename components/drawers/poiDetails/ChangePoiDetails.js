@@ -121,10 +121,10 @@ export default function ChangePoiDetails(props) {
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
   const [boolDetails, setBoolDetail] = useState({
-    generalGuidelines: false,
-    thingsToBring: false,
-    notSuitableFor: false,
-    tipsTricks: false,
+    generalGuidelines: true,
+    thingsToBring: true,
+    notSuitableFor: true,
+    tipsTricks: true,
   });
 
   const [loading, setLoading] = useState(false);
@@ -407,7 +407,7 @@ export default function ChangePoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>General guidelines</div>
-                  {!boolDetails?.generalGuidelines ? (
+                  {/* {!boolDetails?.generalGuidelines ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -427,7 +427,7 @@ export default function ChangePoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
                   <div className="text-[14px]">
@@ -448,7 +448,7 @@ export default function ChangePoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Things to bring</div>
-                  {!boolDetails?.thingsToBring ? (
+                  {/* {!boolDetails?.thingsToBring ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -468,7 +468,7 @@ export default function ChangePoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {!boolDetails?.thingsToBring && (
                   <div className="text-[14px]">
@@ -489,7 +489,7 @@ export default function ChangePoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Not suitable for</div>
-                  {!boolDetails?.notSuitableFor ? (
+                  {/* {!boolDetails?.notSuitableFor ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -509,7 +509,7 @@ export default function ChangePoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
                   <div className="text-[14px]">
@@ -529,7 +529,7 @@ export default function ChangePoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Tips, Tricks and Cautions</div>
-                  {!boolDetails?.tipsTricks ? (
+                  {/* {!boolDetails?.tipsTricks ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -549,7 +549,7 @@ export default function ChangePoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
                   <div className="text-[14px]">

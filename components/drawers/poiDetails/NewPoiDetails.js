@@ -570,7 +570,7 @@ export default function PoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>General guidelines</div>
-                  {!boolDetails?.generalGuidelines ? (
+                  {/* {!boolDetails?.generalGuidelines ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -590,7 +590,7 @@ export default function PoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
                   <div className="text-[14px]">
@@ -611,7 +611,7 @@ export default function PoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Things to bring</div>
-                  {!boolDetails?.thingsToBring ? (
+                  {/* {!boolDetails?.thingsToBring ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -631,7 +631,7 @@ export default function PoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {!boolDetails?.thingsToBring && (
                   <div className="text-[14px]">
@@ -652,7 +652,7 @@ export default function PoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Not suitable for</div>
-                  {!boolDetails?.notSuitableFor ? (
+                  {/* {!boolDetails?.notSuitableFor ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -672,7 +672,7 @@ export default function PoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
                   <div className="text-[14px]">
@@ -692,7 +692,7 @@ export default function PoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Tips, Tricks and Cautions</div>
-                  {!boolDetails?.tipsTricks ? (
+                  {/* {!boolDetails?.tipsTricks ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
@@ -712,7 +712,7 @@ export default function PoiDetails(props) {
                         }))
                       }
                     />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
                   <div className="text-[14px]">

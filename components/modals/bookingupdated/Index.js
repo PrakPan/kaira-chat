@@ -145,8 +145,8 @@ const Booking = (props) => {
     free_breakfast: false,
     is_refundable: false,
     budget: {
-      price_lower_range: 0,
-      price_upper_range: 9000,
+      price_lower_range: null,
+      price_upper_range: null,
     },
     star_category: null,
     sort: null,
@@ -414,8 +414,8 @@ const Booking = (props) => {
       city_id: currentBooking?.city_id || props?.selectedBooking?.city_id,
       hotel_id: selectedHotelId,
       filter_by: {
-        price_lower_range: filters.budget.price_lower_range,
-        price_upper_range: filters.budget.price_upper_range,
+        ...(filters.budget.price_lower_range && {price_lower_range: filters.budget.price_lower_range}),
+        ...(filters.budget.price_upper_range && {price_upper_range: filters.budget.price_upper_range}),
         hotel_name: selectSearch ? selectSearch : null,
         sub_location_ids: null,
         free_breakfast: filters.free_breakfast,
@@ -649,8 +649,8 @@ const Booking = (props) => {
         city_id: currentBooking?.city_id,
         hotel_id: selectedHotelId,
         filter_by: {
-          price_lower_range: filters.budget.price_lower_range,
-          price_upper_range: filters.budget.price_upper_range,
+          ...(filters.budget.price_lower_range && {price_lower_range: filters.budget.price_lower_range}),
+          ...(filters.budget.price_upper_range && {price_upper_range: filters.budget.price_upper_range}),
           hotel_name: selectSearch ? selectSearch : null,
           sub_location_ids: null,
           free_breakfast: filters.free_breakfast,

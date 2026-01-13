@@ -257,6 +257,7 @@ const NavigationMenu = (props) => {
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}
           zIndex={"3300"}
+          message={props?.message}
           onSuccess={async ()=>{
             if(props?.isItinerary && router.query.id){
               await attachUserToItinerary();
