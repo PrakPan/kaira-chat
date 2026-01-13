@@ -16,24 +16,13 @@ import Script from "next/script";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import Loading from "./loading";
-import { usePathname } from "next/navigation";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupiterAnalytics from "../components/JupyterAnalytics";
 
-function MyApp({ Component, pageProps, store }) {
+function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-  const [currentPath, setCurrentPath] = useState('');
-  const newPath=usePathname()
-
-
-  const [jupiterInitialized, setJupiterInitialized] = useState(false);
-  const initializationAttempts = useRef(0);
-  const maxAttempts = 10;
   const { id } = useSelector(state => state.auth);
-
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -45,50 +34,17 @@ function MyApp({ Component, pageProps, store }) {
     cleanExpiredLocalStorage();
   }, []);
 
-  // useEffect(() => {
-  //   if(currentPath=="") {
-  //     setCurrentPath(newPath)
-  //     return
-  //   }
-  //   const handleStart = (url) => {
-  //     const isSameItineraryPage = currentPath===newPath
-      
-  //     if (isSameItineraryPage) {
-  //       return;
-  //     }
-  //     setCurrentPath(newPath)
-      
-  //     setLoading(true);
-  //   };
-    
-  //   const handleComplete = (url) => {
-  //     setCurrentPath(newPath);
-  //     setLoading(false);
-  //   };
-
-  //   router.events.on("routeChangeStart", handleStart);
-  //   router.events.on("routeChangeComplete", handleComplete);
-  //   router.events.on("routeChangeError", handleComplete);
-
-  //   return () => {
-  //     router.events.off("routeChangeStart", handleStart);
-  //     router.events.off("routeChangeComplete", handleComplete);
-  //     router.events.off("routeChangeError", handleComplete);
-  //   };
-  // }, [router, currentPath]);
-
   function setupTokenExpiryWatcher() {
     if (typeof window === 'undefined') return;
-    
+
     const expiry = localStorage.getItem('expirationDate');
     if (!expiry) return;
 
     const timeLeft = new Date(expiry).getTime() - Date.now();
-    
+
     if (timeLeft <= 0) {
       dispatch(authLogout());
       localStorage.clear();
-      // restartBot();
     } else {
       setTimeout(() => {
         dispatch(authLogout());
@@ -111,84 +67,22 @@ function MyApp({ Component, pageProps, store }) {
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
-      
-      // Track with Jupiter Analytics if available
-      if (window.JupiterAnalytics?.trackPageView) {
-        window.JupiterAnalytics.trackPageView(url);
+
+      if (window.fbq) {
+        window.fbq('track', 'PageView');
       }
 
-      // Facebook Pixel - only on client side
-      if (typeof window !== 'undefined' && window.fbq) {
-        window.fbq('track', 'PageView');
+      if (window.JupiterAnalytics?.trackPageView) {
+        window.JupiterAnalytics.trackPageView(url);
       }
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
 
-    // Initialize Facebook Pixel - ONLY on client side
-    if (typeof window !== 'undefined') {
-      import("react-facebook-pixel")
-        .then((x) => x.default)
-        .then((ReactPixel) => {
-          ReactPixel.init(FACEBOOK_PIXEL_ID);
-          ReactPixel.pageView();
-        })
-        .catch(err => console.error('Facebook Pixel load error:', err));
-    }
-
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-
-  // Jupiter Analytics initialization
-  useEffect(() => {
-    if (typeof window === 'undefined' || jupiterInitialized) return;
-
-    const tryInitialize = () => {
-      initializationAttempts.current += 1;
-
-      if (window.JupiterAnalytics) {
-        const analytics = window.JupiterAnalytics;
-        
-        // Try different initialization methods
-        const initMethods = [
-          'initializeAnalytics',
-          'init',
-          'initialize'
-        ];
-
-        for (const method of initMethods) {
-          if (typeof analytics[method] === 'function') {
-            try {
-              analytics[method]({
-                userId: id || null,
-                siteId: 'tarzanway-web',
-                apiHost: 'https://dev.jupiter.tarzanway.com',
-                anonymousId: "abc",
-              });
-              setJupiterInitialized(true);
-              
-              return;
-            } catch (error) {
-              
-            }
-          }
-        }
-      }
-
-      // Retry if not successful and under max attempts
-      if (initializationAttempts.current < maxAttempts) {
-        setTimeout(tryInitialize, 1000);
-      } else {
-        
-        setJupiterInitialized(true);
-      }
-    };
-
-    const initTimeout = setTimeout(tryInitialize, 1000);
-    return () => clearTimeout(initTimeout);
-  }, [id, jupiterInitialized]);
 
   return (
     <>
@@ -203,36 +97,67 @@ function MyApp({ Component, pageProps, store }) {
         />
       </Head>
 
-      <div id="modal-root"></div>
-      {loading && <Loading />}
-
-      {/* CRMOne bot - load after page is interactive */}
+      {/* Google Analytics */}
       <Script
-        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-        strategy="afterInteractive"
-        onLoad={() => {
-          console.log("CRMOne bot script loaded");
-          if (typeof restartBot === 'function') {
-            // restartBot();
-          }
-        }}
+        src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
+        strategy="lazyOnload"
       />
+      <Script strategy="lazyOnload">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-EV1KHKN8VV');
+        `}
+      </Script>
+
+      {/* Facebook Pixel (lighter, no React SDK) */}
+      <Script strategy="lazyOnload">
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}
+          (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${FACEBOOK_PIXEL_ID}');
+          fbq('track', 'PageView');
+        `}
+      </Script>
+
+      {/* Jupiter Analytics (single init, no retry loop) */}
+      <Script
+        src="https://dev.jupiter.tarzanway.com/jupiter.js"
+        strategy="lazyOnload"
+      />
+      <Script strategy="lazyOnload">
+        {`
+          if (window.JupiterAnalytics) {
+            window.JupiterAnalytics.init({
+              siteId: 'tarzanway-web',
+              apiHost: 'https://dev.jupiter.tarzanway.com'
+            });
+          }
+        `}
+      </Script>
+
+      <div id="modal-root"></div>
 
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>
-            {/* <JupiterAnalytics
-              apiEndpoint="https://dev.jupiter.tarzanway.com"
-              userId={id || null}
-              batchSize={10}
-              flushInterval={3000}
-              siteId="tarzanway-web"
-              anonymousId="abc"
-            /> */}
             <Component {...pageProps} />
           </Theme>
         </GoogleOAuthProvider>
       </div>
+
+      {/* CRMOne bot */}
+      <Script
+        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+        strategy="afterInteractive"
+      />
     </>
   );
 }
@@ -247,6 +172,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   };
 };
 
-export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
-  ssr: false,
-});
+export default dynamic(
+  () => Promise.resolve(store.withRedux(MyApp)),
+  { ssr: false }
+);
