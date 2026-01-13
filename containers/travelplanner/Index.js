@@ -253,7 +253,7 @@ const Homepage = (props) => {
     // );
      router.push({
         pathname: "/new-trip",
-        query: { source: props?.experienceData?.slug || 'home' }
+        query: { ...router.query, source: props?.experienceData?.slug || 'home' }
     });
 
     logEvent({

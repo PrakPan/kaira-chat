@@ -18,7 +18,7 @@ export default function CraftNewTrip(props) {
         // }
         router.push({
         pathname: "/new-trip",
-        query: { source: props?.destination || 'home' }
+        query: { ...router.query,source: props?.destination || 'home' }
     });
     };
 

@@ -479,7 +479,7 @@ const completeItineraryCreate = () => {
     
     router.push({
       pathname: "/new-trip",
-      query: { slideIndex: 0 }
+      query: { ...router.query,slideIndex: 0 }
     });
     return;
   }
@@ -1050,7 +1050,7 @@ const completeItineraryCreate = () => {
                     trackItineraryRoute(itineraryId, locationsLatLong);
                     router.push({
                       pathname: "/new-trip",
-                      query: { slideIndex: slideIndex + 1 },
+                      query: { ...router.query,slideIndex: slideIndex + 1 },
                     })
                   }
                 }

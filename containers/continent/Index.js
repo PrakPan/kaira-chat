@@ -145,7 +145,7 @@ const Index = (props) => {
     // );
     router.push({
         pathname: "/new-trip",
-        query: { source: props?.data?.slug || 'home' }
+        query: { ...router.query,source: props?.data?.slug || 'home' }
     });
 
     logEvent({
@@ -184,7 +184,7 @@ const Index = (props) => {
             onclick={() =>
               {router.push({
         pathname: "/new-trip",
-        query: { source: props?.data?.slug || 'home' }
+        query: { ...router.query,source: props?.data?.slug || 'home' }
     });}
               // openTailoredModal(
               //   router,

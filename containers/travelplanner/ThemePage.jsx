@@ -116,7 +116,9 @@ export default function ThemePage(props) {
   const handlePlanButton = (pageId, destination, type) => {
     router.push({
       pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
+      query: { 
+        ...router.query,
+        source: props?.slug || 'home' }
     });
     // if (isPageWide) {
     //   setShowTailoredModal(true);
@@ -1050,7 +1052,7 @@ export const PlanYourTripButton = (props) => {
 
     router.push({
       pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
+      query: { ...router.query, source: props?.slug || 'home' }
     });
 
     logEvent({
@@ -1100,7 +1102,7 @@ export const PlanYourTripLadakhButton = (props) => {
     // openTailoredModal(router, props.page_id, props.destination, props.type);
     router.push({
       pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
+      query: { ...router.query, source: props?.slug || 'home' }
     });
 
     logEvent({

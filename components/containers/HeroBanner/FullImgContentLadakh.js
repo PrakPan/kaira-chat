@@ -49,7 +49,9 @@ const FullImgContentLadakh = (props) => {
 
     router.push({
         pathname: "/new-trip",
-        query: { source: 'ladakh' }
+        query: { 
+          ...router.query,
+          source: 'ladakh' }
     });
 
     logEvent({

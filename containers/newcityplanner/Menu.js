@@ -115,7 +115,7 @@ const Menu = (props) => {
     // openTailoredModal(router, props.data.id, props.data.name, props.type);
     router.push({
       pathname: "/new-trip",
-      query: { source: props?.data?.slug || "home" },
+      query: { ...router.query, source: props?.data?.slug || "home" },
     });
 
     logEvent({
@@ -137,7 +137,7 @@ const Menu = (props) => {
           () => {
             router.push({
               pathname: "/new-trip",
-              query: { source: props?.data?.slug || "home" },
+              query: { ...router.query, source: props?.data?.slug || "home" },
             });
           }
           // openTailoredModal(
