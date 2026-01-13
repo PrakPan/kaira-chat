@@ -14,8 +14,8 @@ import ScrollRestoration from "../../../components/ScrollRestoration";
 
 const Itinerary = (props) => {
  const router = useRouter();
-  const { drawer, city_id: cityId } = router.query;
-  const itineraryId = useSelector((state) => state.ItineraryId);
+ const { drawer, city_id: cityId } = router.query;
+ const itineraryId = useSelector((state) => state.ItineraryId);
 
   useEffect(() => {
   const id = router.query.id;
@@ -28,6 +28,7 @@ useEffect(() => {
   getHotLocationsSearch();
   props.checkAuthState();
 }, []); 
+
 
   const getHotLocationsSearch = async () => {
     try {
@@ -57,8 +58,10 @@ useEffect(() => {
     }
   };
 
+  
+
   return (
-    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
+    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"} isItinerary={true}>
       <ScrollRestoration />
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>

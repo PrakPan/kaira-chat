@@ -70,7 +70,10 @@ const Card = (props) => {
     // } else {
     //   openTailoredModal(router, props.pageId, props.destination);
     // }
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.destination || 'home' }
+    });
   };
 
   return (

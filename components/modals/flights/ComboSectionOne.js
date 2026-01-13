@@ -174,6 +174,7 @@ const ComboSection = (props) => {
 
     const timer = setTimeout(() => {
       if (updatePreferredDepartureTime) {
+         setIsTimeOnlyChange(true);
         updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
       }
       setIsLoading(false);
@@ -255,14 +256,18 @@ const ComboSection = (props) => {
     };
   }, [showTimeDropdown, showSortDropdown, showCalendar]);
 
-  const handleCalendarChange = (dateData) => {
+ const handleCalendarChange = (dateData) => {
   if (dateData.start) {
     setIsLoading(true);
+    
     const selectedDateTime = dayjs(dateData.start);
     const formattedDate = selectedDateTime.format("DD MMM, YYYY");
     setSelectedDate(formattedDate);
     
+   
     const currentTime = dayjs(preferred_departure_time);
+    
+    
     const newDateTime = selectedDateTime
       .hour(currentTime.hour())
       .minute(currentTime.minute())
@@ -272,11 +277,12 @@ const ComboSection = (props) => {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
     
-    // Add debounce timer
+   
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
     
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 300);

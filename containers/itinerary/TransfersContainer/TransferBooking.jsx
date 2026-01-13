@@ -4,29 +4,18 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect,  useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
-import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
 import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail2";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import {
-  updateAirportTransferBooking,
-  updateTransferBookings,
-} from "../../../store/actions/transferBookingsStore";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
-import TransferDrawer from "../TransferDrawer";
-import PickupDropDrawer from "../PickupDropDrawer";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { useDispatch } from "react-redux";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -93,6 +82,8 @@ const TransferBooking = ({
 }) => {
   // console.log("BKing",booking);
   const router = useRouter();
+  const {customer} = useSelector(state=>state.Itinerary)
+  const dispatch = useDispatch();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
@@ -141,6 +132,10 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     trackTransferCardClicked(
       router.query.id,
       book?.id || booking_id,
@@ -159,6 +154,7 @@ const TransferBooking = ({
           drawer:
             book?.transfer_type == "sightseeing" ? "SightSeeing" : "Intracity",
           bookingId: book?.id || booking_id,
+          itinerary_city_id: dItineraryCityId || dCityData?.id || dCityData?.gmaps_place_id,
           transferType: book?.booking_type || booking_type,
           oItineraryCity:
             oItineraryCityId || oCityData?.id || oCityData?.gmaps_place_id,
@@ -320,7 +316,7 @@ const TransferBooking = ({
                           }`}
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
-                            <div className="grid place-items-center md:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                            <div className="grid place-items-center md:min-w-[6rem] md:max-w-[6rem] min-w-[4rem] max-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                               {booking?.booking_type === "Taxi" ? (
                                 <>
                                   {booking?.transfer_details?.quote
@@ -666,7 +662,7 @@ const TransferBooking = ({
                         }`}
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">
-                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                          <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] max-w-[4rem]  lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                             {book?.booking_type === "Taxi" ? (
                               <ImageLoader
                                 className="object-contain border rounded-[11px]"
@@ -973,6 +969,9 @@ const FlightBooking = ({
   dCityData,
 }) => {
   const router = useRouter();
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+  const dispatch = useDispatch();
   try {
     if (booking?.number_of_adults > 1) adult = " Adults";
     else adult = " Adult";
@@ -981,6 +980,10 @@ const FlightBooking = ({
   } catch {}
 
   const handleRoute = (book) => {
+    // if(id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,

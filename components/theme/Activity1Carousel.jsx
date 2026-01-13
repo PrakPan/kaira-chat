@@ -9,6 +9,7 @@ import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx
 import TertiaryHeading from "../heading/Tertiary.jsx";
 import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPoiDetailsDrawer.js";
 import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer.js";
+import ActivityDetailsDrawer from "../drawers/activityDetails/ActivityDetailsDrawer.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -33,6 +34,8 @@ export default function Activity1Carousel(props) {
 }
 
 const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
+
+  console.log("ActivityCard data", data);
   
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);

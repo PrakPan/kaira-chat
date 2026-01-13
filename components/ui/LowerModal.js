@@ -13,6 +13,7 @@ const BottomModal = ({
   children,
   paddingX = "0px",
   paddingY = "0px",
+  isMobile= false
 }) => {
   if (!show) return null;
 
@@ -44,8 +45,8 @@ const BottomModal = ({
             onClick={onHide}
             style={{
               position: 'absolute',
-              top: paddingY,
-              right: paddingX,
+              top: isMobile ? "4px" : paddingY,
+              right: isMobile ? "2px" : paddingX,
             }}
           >
             <RxCross2

@@ -31,7 +31,7 @@
     max-width: 1440px;
     //  height: 848px;
     aspect-ratio: 2;
-    border-radius: 1.5rem;
+    // border-radius: 1.5rem;
     overflow: hidden;
   }
 
@@ -55,42 +55,34 @@
   }
 }
 
-// Features Section Styles - Desktop Only
+// Features Section Styles
 .featuresSection {
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  top: 111%;
+  top: 111.5%;
   background: #0A2540;
   padding: 1rem 3rem;
   z-index: 1;
-  overflow: hidden;
-  display: none;
+  // overflow: hidden;
+  display: block;
   height: 60px;
 
-  @media (min-width: 1024px) {
-    display: block;
+  @media (max-width: 840px) {
+    // height: auto;
+    padding: 1rem 1.5rem;
+    overflow: visible;
+  }
+
+  @media (max-width: 778px) {
+    top: 88.5%;
+    // padding: 0.8rem 0.8rem;
+    overflow: visible;
   }
 }
 
-.featuresContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4rem;
-  position: relative;
-  z-index: 2;
-  height: 100%;
-}
 
-.featureItem {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
-}
 
 .featureIcon {
   display: flex;
@@ -103,6 +95,66 @@
     height: 24px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   }
+
+  @media (max-width: 480px) {
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+
+.featuresContainer {
+  width:100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  position: relative;
+  z-index: 2;
+  height: 100%;
+   background: #0A2540;
+  padding: 1rem;
+
+  @media (max-width: 840px) {
+    flex-wrap: nowrap;  
+    gap: 2rem;  
+    justify-content: flex-start;  
+    overflow-x: auto; 
+    overflow-y: hidden;
+    padding: 0.5rem 0.5rem;
+    -webkit-overflow-scrolling: touch; 
+    
+   
+    scrollbar-width: none;  
+    &::-webkit-scrollbar {
+      display: none;  
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 1.5rem; 
+    padding: 0.5rem;
+  }
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+
+  @media (max-width: 840px) {
+    flex: 0 0 auto;  
+    min-width: fit-content;  
+  }
+
+  @media (max-width: 480px) {
+    flex: 0 0 auto;  
+    gap: 0.4rem;
+  }
 }
 
 .featureText {
@@ -110,7 +162,18 @@
   font-weight: 300;
   white-space: nowrap;
   letter-spacing: 0.01em;
+
+  @media (max-width: 840px) {
+    font-size: 0.8125rem;  
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;  
+    white-space: nowrap;  
+    // line-height: 1.2;
+  }
 }
+
 
 // Background Decorative Curved Lines
 .featuresBg {

@@ -286,10 +286,10 @@ const HotelBookingDetails = (props) => {
     3: false,
   });
 
-  const [imagesGallery, setImagesGallery] = useState(null);
-  const _setImagesHandler = (images) => {
-    setImagesGallery(images);
-  };
+  // const [imagesGallery, setImagesGallery] = useState(null);
+  // const _setImagesHandler = (images) => {
+  //   setImagesGallery(images);
+  // };
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -338,10 +338,11 @@ const HotelBookingDetails = (props) => {
           dispatch(
             openNotification({
               type: "error",
-              text: "unable to get detail",
+              text: err?.response?.data?.errors[0]?.message[0] || "unable to get detail",
               heading: "Error!",
             })
           );
+          console.error(err,"Error")
         });
       setLoadingDetails(false);
     };
@@ -438,8 +439,8 @@ const HotelBookingDetails = (props) => {
   };
 
   useEffect(() => {
-    if (data?.hotel_details?.rating || data?.hotel_details?.rating_ext  > 0) {
-      items.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
+    if (data?.rating  > 0) {
+      items?.splice(2, 0, { id: 'section-3', label: "Reviews", link: "Reviews" });
       setItems(items);
     }
   }, [data])
@@ -461,7 +462,7 @@ const HotelBookingDetails = (props) => {
 
 
   const calculateVisibleFacilites = (items, flag) => {
-    let result = flag ? [...items] : [...items].splice(0, 6);
+    let result = flag ? items?.length > 0 ? [...items] : [...items]?.splice(0, 6) : [];
     setViewMoreFacilites(flag);
     setActiveFacilites(result);
   }
@@ -470,7 +471,7 @@ const HotelBookingDetails = (props) => {
   const viewAllGalleryLink = hotelImages && hotelImages.length && ImagesLoaded[0] ? (
     <div className="absolute top-0 left-0 right-0 bottom-0 flex align-items-center justify-center bg-trans-black_70"
     >
-      <span onClick={() => _setImagesHandler(images)} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
+      <span onClick={() => {props?._setImagesHandler(images);}} className="font-600 text-sm-md leading-sm-md  border-solid border-b-sm border-text-white text-white cursor-pointer"> Show all photos</span>
     </div>
   ) : null;
 
@@ -494,12 +495,12 @@ const HotelBookingDetails = (props) => {
             <POIDetailsSkeleton />
           ) : (
             <div>
-              {data?.hotel_details?.star_category &&
+              {data?.star_category && data?.star_category!="0" ?
                 <>
                   <span className="bg-text-smokywhite rounded-67br text-sm font-500 leading-lg px-md py-xs mb-md inline-block">
-                    {data?.hotel_details?.star_category} Star Hotel
+                    {data?.star_category} Star Hotel
                   </span>
-                </>
+                </> : null
               }
               <FlexBox>
                 <div className="text-xl text-black font-600 leading-2xl">
@@ -527,13 +528,13 @@ const HotelBookingDetails = (props) => {
                   <div className="flex gap-xs text-sm-md text-text-spacegrey font-[400]"> <span> {svgIcons.loaction} </span> <span> {data?.hotel_details?.city}{","} {data?.hotel_details?.country} </span></div>
                 }
 
-                {data?.hotel_details?.rating || data?.hotel_details?.rating_ext && (
+                {data?.rating && (
                   <div className="gap-1 flex flex-row  items-center text-sm-md text-text-spacegrey font-[400] pl-sm border-l-sm border-solid border-text-disabled">
                     <div className="flex flex-row text-[#FFD201]">
-                      {starRating(data?.hotel_details?.rating || data?.hotel_details?.rating_ext)}
+                      {starRating(data?.rating)}
                     </div>
                     <div>
-                      {data?.hotel_details?.rating || data?.hotel_details?.rating_ext}
+                      {data?.rating}
                     </div>
                     {data?.hotel_details?.user_ratings_total > 0 || data?.user_ratings_total > 0 && (
                       <div className="underline">
@@ -1275,8 +1276,8 @@ const HotelBookingDetails = (props) => {
                               </>
                             ))}
                           </ul>
-                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities, true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
-                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities, false)}> Show Less</div>}
+                          {!viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], true)}> + {data?.hotel_details?.facilities?.length - activeFacilities?.length}  more</div>}
+                          {viewMoreFacilites && <div className="text-sm underline font-500 leading-lg cursor-pointer" onClick={() => calculateVisibleFacilites(data?.hotel_details?.facilities || [], false)}> Show Less</div>}
                         </div>
                       </>}
 
@@ -1305,17 +1306,17 @@ const HotelBookingDetails = (props) => {
 
                     <div id="section-3">
 
-                      {data?.hotel_details?.rating || data?.hotel_details?.rating_ext > 0 && (
+                      {data?.rating > 0 && (
                         <div>
                           <div className="text-md-lg font-600 leading-xl mb-lg">Reviews</div>
                           <div className="grid grid-cols-3 gap-y-2 gap-x-4">
                             <div className="flex flex-row gap-sm-md">
-                              <div className="text-2xl-md font-600 leading-2xl"> {data?.hotel_details?.rating || data?.hotel_details?.rating_ext}</div>
+                              <div className="text-2xl-md font-600 leading-2xl"> {data?.rating}</div>
                               <div>
-                                {data?.hotel_details?.rating || data?.hotel_details?.rating_ext && (
+                                {data?.rating && (
                                   <div className="gap-1 flex flex-column text-sm-md text-text-spacegrey font-[400]">
                                     <div className="flex flex-row text-[#FFD201]">
-                                      {starRating(data?.hotel_details?.rating || data?.hotel_details?.rating_ext)}
+                                      {starRating(data?.rating)}
                                     </div>
                                     {data?.hotel_details?.user_ratings_total > 0 || data?.user_ratings_total > 0 && (
                                       <div className="underline">
@@ -1466,14 +1467,15 @@ const HotelBookingDetails = (props) => {
             </div>
           )}
         </Container>
+        
       </Drawer>
-      {imagesGallery && imagesGallery?.length > 0 ? (
+      {/* {imagesGallery && imagesGallery?.length > 0 ? (
         <FullScreenGallery
           mercury={false}
           closeGalleryHandler={() => setImagesGallery(null)}
           images={imagesGallery}
         ></FullScreenGallery>
-      ) : null}
+      ) : null} */}
     </>
   );
 };

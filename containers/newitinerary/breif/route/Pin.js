@@ -27,7 +27,6 @@ const InnerContainer = styled.div`
 //       : "white"};
 
 const Pin = (props) => {
-  // console.log("props1 are:",props)
   return (
     <Container
       className="center-div "

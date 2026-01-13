@@ -57,6 +57,8 @@ const SwiperGallery = (props) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(1); // start from 1
 
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+
   return (
     <Container>
       <div className="hidden max-ph:!flex justify-between items-baseline px-xl mb-lg"> <span className="text-black leading-xl-sm text-md-lg font-600">Photo Gallery</span> <span className="text-sm font-400 text-text-spacegrey">{currentIndex}/{props.images.length}</span> </div>
@@ -79,7 +81,7 @@ const SwiperGallery = (props) => {
           {props.images.map((image, index) => (
             <>
               <SwiperSlide className="relative min-w-[50vw] max-w-[50vw] max-h-[60vh] max-ph:!min-h-[350px] max-ph:!max-h-[400px]  max-ph:!min-w-[100%] max-ph:!max-w-[100%]" key={index}>
-                <img className="w-full rounded-6xl max-ph:!rounded-none" src={props?.imgUrlEndPoint ? props.imgUrlEndPoint + image.image : image.image || image}
+                <img className="w-full rounded-6xl max-ph:!rounded-none" src={image?.image ? (image?.image?.includes('https') ? image.image : imgUrlEndPoint + image.image) : image && image?.includes('https') ? image : imgUrlEndPoint + image}
                   onError={(e) => {
                     e.currentTarget.src = "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"
                   }} />
@@ -109,7 +111,7 @@ const SwiperGallery = (props) => {
         {props.images.map((image, index) => (
           <SwiperSlide key={index}>
             <img
-              src={props?.imgUrlEndPoint ? props.imgUrlEndPoint + image.image : image.image || image}
+              src={image?.image ? (image?.image?.includes('https') ? image.image : imgUrlEndPoint + image.image) : image && image?.includes('https') ? image : imgUrlEndPoint + image}
               alt="hotel"
               onError={(e) => {
                 console.log(e)

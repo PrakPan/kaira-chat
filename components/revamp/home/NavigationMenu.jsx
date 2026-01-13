@@ -22,6 +22,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import Login from "../../modals/Login";
+
 const NavigationMenu = (props) => {
   const {
     isMobileMenuOpen,
@@ -39,6 +40,7 @@ const NavigationMenu = (props) => {
   const [Height, setHeight] = useState(false);
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
   const [hideNav, setHideNav] = useState(false);
+  const itinerary = useSelector(state=>state.Itinerary);
   const dispatch = useDispatch();
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
@@ -91,12 +93,35 @@ const NavigationMenu = (props) => {
     });
   }, [props]);
 
+  const attachUserToItinerary = async () => {
+  if (itinerary?.customer) {
+    return; 
+  }
+  
+  try {
+    const response = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+      
+  
+  } catch (error) {
+    console.error('Error attaching user to itinerary:', error);
+  }
+};
+
 
   return (
     <>
+    <div className="w-100 bg-text-white"> 
       <nav className={styles.navigationMenu + " " + props.className + " max-ph:!p-md max-ph:shadow-soft"} role="navigation">
         <div className="hover-pointer" onClick={() => router.push("/")}>
-          <Image src={TTW} alt="TTW Logo" priority />
+          <Image src={TTW} alt="TTW Logo" priority  />
         </div>
         {isMidScreen &&pathname!="/new-trip"&& <SearchInput />}
         {/* Desktop Menu */}
@@ -133,10 +158,10 @@ const NavigationMenu = (props) => {
         </ul>
 
         {/* Hamburger Menu Button */}
-        <div className="flex  gap-4 md:hidden">
-        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/dashboard")}>
+        <div className="flex gap-2 md:hidden">
+        {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
                   My Trips
-        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2" onClick={()=>router.push("/new-trip")}>
+        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px]" onClick={()=>router.push("/new-trip")}>
                   Create a trip
         </button>}</>}
           <MobileMenu 
@@ -177,6 +202,7 @@ const NavigationMenu = (props) => {
           } */}
         </div>
       </nav>
+      </div>
 
       {/* Mobile Sidebar Overlay */}
       <div
@@ -198,7 +224,7 @@ const NavigationMenu = (props) => {
         aria-label="Mobile navigation menu"
       >
         <div className={styles.sidebarHeader}>
-          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo} />
+          <Image src={TTW} alt="TTW Logo" className={styles.sidebarLogo}  />
           <button
             className={styles.closeButton}
             onClick={toggleMobileMenu}
@@ -231,6 +257,11 @@ const NavigationMenu = (props) => {
           onhide={props.authCloseLogin}
           itinary_id={props?.itinary_id}
           zIndex={"3300"}
+          onSuccess={async ()=>{
+            if(props?.isItinerary && router.query.id){
+              await attachUserToItinerary();
+            }
+          }}
         />
       </div>}
       </div>

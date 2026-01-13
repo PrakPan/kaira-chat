@@ -34,7 +34,7 @@ const LuxuryEuropeDestinations = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/france",
-      image: `${imgUrlEndPoint}/media/countries/173131953880670285224914550781.webp`,
+      image: `${imgUrlEndPoint}/media/website/france.jpg`,
     },
     {
       id: 2,
@@ -200,10 +200,10 @@ const LuxuryEuropeDestinations = () => {
           {/* Custom Prev Button */}
           <div className="fullslider-p" aria-hidden>
             <div className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className="text-white  text-md transition-colors duration-300 transform "
+                  className="text-white  text-md transition-colors duration-300 transform w-full "
                 />
               </div>
             </div>
@@ -212,10 +212,10 @@ const LuxuryEuropeDestinations = () => {
           {/* Custom Next Button */}
           <div className="fullslider-n" aria-hidden>
             <div className="absolute -right-3  sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}
-                  className="text-white text-md transition-colors duration-300 transform "
+                  className="text-white transition-colors duration-300 transform"
                 />
               </div>
             </div>

@@ -11,6 +11,7 @@ import useMediaQuery from '../../../hooks/useMedia'
 const SlideFive = (props) => {
   const dispatch = useDispatch();
   const isPageWide = useMediaQuery("(min-width:767px)");
+  const router = useRouter();
   const handleLogin = () => {
     dispatch(authShowLogin());
   }
@@ -22,7 +23,7 @@ const SlideFive = (props) => {
       <div className='flex gap-md flex-col items-center justify-center text-center'>
         <div className='text-lg font-600'> Your trip is being planned </div>
         <div className='text-md font-400 leading-xl text-spacegrey'>Our AI is crafting the perfect itinerary based on your preferences. You will receive that soon.</div>
-        <Button
+        {!localStorage.getItem("access_token") ? <Button
           fontSize="1rem"
           fontWeight="500"
           margin="30px 0"
@@ -36,7 +37,21 @@ const SlideFive = (props) => {
           width={`300px`}
         >
           Proceed to Login
-        </Button>
+        </Button> : <Button
+          fontSize="1rem"
+          fontWeight="500"
+          margin="30px 0"
+          borderRadius="8px"
+          bgColor="#07213A"
+          onclick={()=>router.push("/")}
+          loading={props.isloading}
+          disabled={props.isloading}
+          height="50px"
+          color="white"
+          width={`300px`}
+        >
+          Back to Home 
+        </Button>}
       </div>
     </div>
   )

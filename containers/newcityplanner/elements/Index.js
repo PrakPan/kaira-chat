@@ -23,7 +23,6 @@ const Button = styled.button`
 
 const Element = (props) => {
   const router = useRouter();
-  
   const [openDrawerId, setOpenDrawerId] = useState(null);
 
   const _handleOpen = (index) => {
@@ -37,7 +36,7 @@ const Element = (props) => {
 
   const cards = props.elements?.map((element, i) => (
     <ElementCard
-      key={i} 
+      key={i}
       data={element}
       index={i}
       isOpen={openDrawerId === i}
@@ -53,18 +52,16 @@ const Element = (props) => {
       <div className="hidden-mobile">
         <SwiperCarousel
           navigationButtons={true}
-          slidesPerView={4}
+          slidesPerView={3}
           cards={cards}
           navButtonsTop={"50%"}
           spaceBetween={10}
         />
-
-      
       </div>
 
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
-    
+
       </div>
     </div>
   );

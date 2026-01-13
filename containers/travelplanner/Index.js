@@ -251,7 +251,10 @@ const Homepage = (props) => {
     //   props.experienceData.id,
     //   convertDbNameToCapitalFirst(props.experienceData.slug)
     // );
-    router.push("/new-trip");
+     router.push({
+        pathname: "/new-trip",
+        query: { source: props?.experienceData?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -301,9 +304,16 @@ const Homepage = (props) => {
       /> */}
 
           <HeroSection
-            title={props.experienceData.banner_heading}
+            title={validateTextSize(
+              `Your ${props.experienceData.name} Trip, Designed Around You`,
+            // `Craft a personalized itinerary to ${props.experienceData.name} now!`,
+            9,
+            `Craft a trip to ${props.experienceData.name} now!`
+          )}
+            // title={props.experienceData.banner_heading}
             subtitle={props.experienceData.banner_text}
             image={`${imgUrlEndPoint}${props.experienceData.image}`}
+            slug={props.experienceData?.slug}
           />
 
           <SetWidthContainer>
@@ -424,7 +434,7 @@ const Homepage = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}>
                   <button
                     variant="filled"
                     size="medium"
@@ -756,7 +766,7 @@ const Homepage = (props) => {
                 </div>
 
                 <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}>
                   <button
                     variant="filled"
                     size="medium"

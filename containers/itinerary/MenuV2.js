@@ -29,6 +29,7 @@ import Modal from "../../components/ui/Modal";
 import {
   CONTENT_SERVER_HOST,
   ITINERARY_STATUSES,
+  MERCURY_HOST,
 } from "../../services/constants";
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
@@ -53,19 +54,27 @@ import { useAnalytics } from "../../hooks/useAnalytics.js";
 import ChatBot from "../../components/Chatbot/Index.js";
 import Drawer from "../../components/ui/Drawer.js";
 import Image from "next/image";
-import { ChatProvider, useChatContext } from "../../components/Chatbot/context/ChatContext.js";
+import {
+  ChatProvider,
+  useChatContext,
+} from "../../components/Chatbot/context/ChatContext.js";
+import { currencySymbols } from "../../data/currencySymbols.js";
+import FullScreenGallery from "../../components/fullscreengallery/Index.js";
+import axios from 'axios';
+import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
+import ChatButtonContainer from "./ChatButtonContainer.jsx";
 
 const NotificationDot = styled.div`
   position: absolute;
-  top: 14px;
-  right: 15px;
-  width: 14px;
-  height: 14px;
-  background-color: #ff4444;
-  border-radius: 50%;
-  border: 2px solid white;
+  top: 7px;
+  right: 19px;
+  width: 16px;
+  // height: 16px;
+  // background-color: #fd6d6c;
+  // border-radius: 50%;
+  // border: 2px solid white;
   // animation: pulse 2s infinite;
-  
+
   // @keyframes pulse {
   //   0% {
   //     box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
@@ -96,6 +105,7 @@ const SimpleTabsV2 = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
   const classes = useStyles;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
@@ -108,7 +118,12 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
-  const { hasUnreadMessages, setHasUnreadMessages } = useChatContext();
+  const currency = useSelector(state=>state.currency);
+   const [imagesGallery, setImagesGallery] = useState(null);
+  const _setImagesHandler = (images) => {
+    setImagesGallery(images);
+  };
+
 
   const transferBooking = useSelector(
     (state) => state.TransferBookings
@@ -116,26 +131,55 @@ const SimpleTabsV2 = (props) => {
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const { trackGetInTouchClicked } = useAnalytics();
+  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
+  const [showChatBanner, setShowChatBanner] = useState(false);
+  const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
+  const cart = useSelector(state=>state.Cart);
 
+
+   
   const [isHovered, setIsHovered] = useState(false);
- const popupStyle = {
-  display: isHovered ? "block": "none",
-  backgroundColor: "#2b2b2a",
-  border: "1px solid #e5e7eb",
-  borderRadius: "0.45rem",
-  padding: "5px 10px",
-  marginBottom: "5px", 
-};
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginBottom: "5px",
+  };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      scrollToElement("Itenary");
-    }, 300);
+  const hasSeenBanner = localStorage.getItem('hasSeenChatBanner');
+  if (!hasSeenBanner) {
+    setShowChatBanner(true);
+    localStorage.setItem('hasSeenChatBanner', 'true');
+  }
+}, []);
 
-    return () => clearTimeout(timeout);
-  }, []);
+// useEffect(() => {
+//   if (!props.token && !props.itinerary?.customer) {
+//     const loginReminderInterval = setInterval(() => {
+//       if (!props.token && !props.itinerary?.customer) {
+//         setLoginModalMessage('Login to view details');
+//         setShowLoginModal(true);
+//       }
+//     }, 30000);
+//     return () => {
+//       clearInterval(loginReminderInterval);
+//     };
+//   }
+// }, [props.token, props.itinerary?.customer]);
+
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     scrollToElement("Itenary");
+  //   }, 300);
+
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   useEffect(() => {
     if (
@@ -246,6 +290,7 @@ const SimpleTabsV2 = (props) => {
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
+    setLoginModalMessage('Welcome to The Tarzan Way!');
   };
 
   const items = [
@@ -330,7 +375,12 @@ const SimpleTabsV2 = (props) => {
   };
 
   const handleFooterBannerMobile = (label) => {
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
     setShowFooterBannerMobile(!showFooterBannerMobile);
+    trackPaymentPageViewed(router?.query?.id)
 
     logEvent({
       action: "Button_Click",
@@ -382,35 +432,88 @@ const SimpleTabsV2 = (props) => {
     description: "",
   });
 
+  const requireAuth = (action, callback) => {
+  if (!props.token) {
+    let message = 'Please login to continue';
+    
+    switch(action) {
+      case 'edit':
+        message = 'Please login to edit this booking';
+        break;
+      case 'delete':
+        message = 'Login to delete this booking';
+        break;
+      case 'view':
+        message = 'Please login to view details';
+        break;
+      case 'change':
+        message = 'Login to change this booking';
+        break;
+      case 'add':
+        message = 'Login to add a booking';
+        break;
+      default:
+        message = 'Please login to continue';
+    }
+    
+    setLoginModalMessage(message);
+    setShowLoginModal(true);
+    return false;
+  }
+  
+  if (callback) callback();
+  return true;
+};
+
+
+
+const attachUserToItinerary = async () => {
+  if (props.itinerary?.customer) {
+    return; 
+  }
+  
+  try {
+    const response = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+      if(response.status === 200)
+      props.fetchData();
+  
+  } catch (error) {
+    console.error('Error attaching user to itinerary:', error);
+  }
+};
 
   const trustFactors = [
     {
-      icon: 
-      "/assets/trustfactor/trust-factor-1.svg",
+      icon: "/assets/trustfactor/trust-factor-1.svg",
       text: "Trusted by 10,000+ Travelers",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
     },
     {
-      icon: 
-      "/assets/trustfactor/trust-factor-2.svg",
+      icon: "/assets/trustfactor/trust-factor-2.svg",
       text: "24/7 Support",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
     },
     {
-      icon:
-      "/assets/trustfactor/trust-factor-3.svg",
+      icon: "/assets/trustfactor/trust-factor-3.svg",
       text: "GST Invoice Provided",
       popupTitle: "No Hidden Charges",
       popupDescription:
         "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
     },
     {
-      icon:
-      "/assets/trustfactor/trust-factor-4.svg",
+      icon: "/assets/trustfactor/trust-factor-4.svg",
       text: "Secure Payments",
       popupTitle: "No Hidden Charges",
       popupDescription:
@@ -427,10 +530,16 @@ const SimpleTabsV2 = (props) => {
   };
   const itinearyId = router.query.id;
 
-
   return (
-    
     <div className={classes.root}>
+
+       {imagesGallery && imagesGallery?.length > 0 ? (
+        <FullScreenGallery
+          mercury={false}
+          closeGalleryHandler={() => setImagesGallery(null)}
+          images={imagesGallery}
+        ></FullScreenGallery>
+      ) : null}
       {/* <div id={"Brief"}> */}
       {props?.mercuryItinerary && citydatadone ? (
         <Breif
@@ -459,6 +568,7 @@ const SimpleTabsV2 = (props) => {
           travellerType={props.travellerType}
           editRoute={props.editRoute}
           setEditRoute={props.setEditRoute}
+          requireAuth={requireAuth}
         ></Breif>
       ) : (
         citydatadone && (
@@ -484,243 +594,7 @@ const SimpleTabsV2 = (props) => {
           ></OldBreif>
         )
       )}
-      {/* </div> */}
-
-      {/* <div className={`z-10 sticky z-2 md:top-[0px] top-[1px] ${isPageWide ? 'mb-[40px]' : ''}`}>
-        {isPageWide ? (
-          <Navigation
-            items={items}
-            BarName="TabsName"
-            ClickHandler={_handleMenuTabsChange}
-          />
-        ) : (
-          <ScrollableMenuTabs
-            icons={false}
-            offset={isDesktop ? "0px" : "0px"}
-            items={items}
-            BarName="TabsName"
-            scrollOffSet={-50}
-          />
-        )}
-      </div> */}
-
-      {/* {isPageWide && (
-
-
-        <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
-          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
-            {props?.displayText ? <ItineraryStatusLoader
-              displayText={props?.displayText}
-              isVisible={props?.shouldShowLoader()}
-            /> :
-              <div className="flex flex-row justify-between ">
-
-                {pricing_status === "PENDING" ? (
-                  <div className="flex flex-col animate-pulse w-full max-w-[120px]">
-                    <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
-                    <div className="h-5 w-24 bg-gray-400 rounded"></div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                     <div className="text-[0.725rem]">
-                      {props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
-                        ? "Per Person"
-                        : props.payment?.is_estimated_price
-                          ? `${props.payment.total_cost === 0
-                            ? "No Bookings"
-                            : "Estimated Price"
-                          }`
-                          : "Total Cost"}
-                    </div> 
-                    {props.payment ? (
-                      <div>
-                        <span className="font-bold">
-                          ₹{" "}
-                          {!props?.mercuryItinerary
-                            ? props?.payment?.pay_only_for_one ||
-                              props?.payment?.show_per_person_cost
-                              ? getIndianPrice(
-                                Math.round(
-                                  Math.round(
-                                    props.payment.per_person_discounted_cost
-                                  ) / 100
-                                )
-                              )
-                              : getIndianPrice(
-                                Math.round(
-                                  Math.round(props.payment.discounted_cost)
-                                )
-                              )
-                            : props?.payment?.pay_only_for_one ||
-                              props?.payment?.show_per_person_cost
-                              ? getIndianPrice(
-                                Math.round(
-                                  Math.round(
-                                    props.payment.per_person_discounted_cost
-                                  )
-                                )
-                              )
-                              : getIndianPrice(
-                                Math.round(
-                                  Math.round(props.payment.discounted_cost)
-                                )
-                              )}
-                          {"/-"}
-                        </span>
-                      </div>
-                    ) : null}
-                  </div>
-                )}
-
-                {props?.token && props?.payment?.paid_user && (
-                  <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
-                    PAID
-                  </div>
-                )}
-
-                {props.tripsPage ? (
-                  <Button
-                    color="#111"
-                    fontWeight="400"
-                    fontSize="0.45rem"
-                    borderWidth="1px"
-                    width="12rem"
-                    borderRadius="10px"
-                    bgColor="#F7E700"
-                    onclick={handleCreateTripButton}
-                  >
-                    Craft a new trip!
-                  </Button>
-                ) : (
-                  <>
-                    {!props.token ? (
-                      <div>
-                        <Button
-                          color="#111"
-                          fontWeight="400"
-                          fontSize="0.45rem"
-                          borderWidth="1px"
-                          width="12rem"
-                          borderRadius="10px"
-                          bgColor="#F7E700"
-                          onclick={handleLoginButton}
-                        >
-                          Log in to proceed
-                        </Button>
-                      </div>
-                    ) : null}
-
-                    {props.payment && props.token ? (
-                      props.payment.itinerary_status ===
-                        ITINERARY_STATUSES.itinerary_finalized &&
-                        !props.payment.paid_user &&
-                        props.payment.user_allowed_to_pay ? (
-                        props.payment.total_cost > 0 ? (
-                          <div>
-                            <Button
-                              color="#111"
-                              fontWeight="400"
-                              fontSize="0.45rem"
-                              borderWidth="1px"
-                              width="13rem"
-                              borderRadius="10px"
-                              bgColor="#F7E700"
-                              onclick={() => handleButtonClick("View Inclusions")}
-                              onclickparams={null}
-                            >
-                              View Inclusions
-                            </Button>
-                          </div>
-                        ) : (
-                          <div>
-                            <Button
-                              color="#111"
-                              fontWeight="400"
-                              fontSize="0.45rem"
-                              borderWidth="1px"
-                              width="9rem"
-                              borderRadius="10px"
-                              bgColor="#F7E700"
-                              onclick={() => handleButtonClick("Add Hotels")}
-                            >
-                              Add Hotels
-                            </Button>
-                          </div>
-                        )
-                      ) : !props.payment.paid_user ? (
-                        props.payment.is_registration_needed ? (
-                          <div className="">
-                            <Button
-                              color="#111"
-                              fontWeight="600"
-                              fontSize="0.85rem"
-                              borderWidth="1px"
-                              width="11rem"
-                              borderRadius="8px"
-                              bgColor="#f8e000"
-                              onclick={() => handleButtonClick("View Inclusions")}
-                            >
-                              View Inclusions
-                            </Button>
-                          </div>
-                        ) : (
-                          <GetInTouchContainer>
-                            <Button
-                              color="#111"
-                              fontWeight="400"
-                              fontSize="0.45rem"
-                              borderWidth="1px"
-                              width="12rem"
-                              borderRadius="10px"
-                              bgColor="#F7E700"
-                              onclick={handleGetInTouch}
-                              loading={loading}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  gap: "0.5rem",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <ImageLoader
-                                  dimensions={{ height: 50, width: 50 }}
-                                  dimensionsMobile={{ height: 50, width: 50 }}
-                                  height={"20px"}
-                                  width={"20px"}
-                                  leftalign
-                                  url={
-                                    "media/icons/login/customer-service-black.png"
-                                  }
-                                />{" "}
-                                <span>Get in touch!</span>
-                              </div>
-                            </Button>
-                          </GetInTouchContainer>
-                        )
-                      ) : (
-                        <Button
-                          color="#111"
-                          fontWeight="400"
-                          fontSize="0.45rem"
-                          borderWidth="1px"
-                          width="9rem"
-                          borderRadius="10px"
-                          bgColor="#F7E700"
-                          onclick={() => handleButtonClick("View Bookings")}
-                        >
-                          View Bookings
-                        </Button>
-                      )
-                    ) : null}
-                  </>
-                )}
-              </div>}
-          </div>
-        </div>
-      )} */}
+     
 
       {isPageWide ? null : (
         <>
@@ -788,6 +662,7 @@ const SimpleTabsV2 = (props) => {
               {props.mercuryItinerary ? (
                 <StaysContainer
                   payment={props.payment}
+                  _setImagesHandler={_setImagesHandler}
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
@@ -801,6 +676,7 @@ const SimpleTabsV2 = (props) => {
                   setStayBookings={props.setStayBookings}
                   CityData={CityData}
                   cities={props?.cities}
+                  requireAuth={requireAuth}
                 />
               ) : (
                 <HotelsBooking
@@ -920,30 +796,46 @@ const SimpleTabsV2 = (props) => {
             </div>
           </div>
 
-          <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] ">
-            <Button borderWidth="0px" onclick={() => {handleChatBotOpen(true); setHasUnreadMessages(false);}}>
-              <Image
-                src={"/assets/chatbot/chatbot-avaatar.svg"}
-                alt="ticket"
-                width={80}
-                height={80}
-              />
-            </Button>
-            {hasUnreadMessages && <NotificationDot />}
-          </div>
+          <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] flex flex-col items-end gap-2">
+  {/* Chat Banner */}
+  {showChatBanner && !isPageWide && (
+    <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+      <button
+        onClick={() => setShowChatBanner(false)}
+        className="absolute top-2 right-2 text-black hover:text-gray-700"
+      >
+        <RxCross2 size={18} />
+      </button>
+      <p className="text-[14px] pr-6 mb-0 ">
+        Hi, I am Kiara Your travel partner
+      </p>
+      {/* Speech bubble arrow */}
+      <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]"></div>
+    </div>
+  )}
+  
+  {/* Chat Button */}
+    <ChatButtonContainer 
+    onOpenChat={() => {
+      handleChatBotOpen(true);
+      setShowChatBanner(false);
+    }}
+  />
+</div>
           {isChatBotEnable ? (
             <Drawer
               show={isChatBotEnable}
               anchor={"right"}
               backdrop
               width={"50%"}
+              height={"100vh"}
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-              className=" pb-[20px]"
-              isCloseButtonEnable={true}
-              onHide={() => handleChatBotOpen(false)}
+              // isCloseButtonEnable={true}
+              onHide={() => {handleChatBotOpen(false)}}
+              className="overflow-y-hidden"
             >
-              <ChatBot showAsPopup={true} />
+              <ChatBot showAsPopup={true} hideDrawer={() => {handleChatBotOpen(false)}}/>
             </Drawer>
           ) : null}
         </>
@@ -956,6 +848,7 @@ const SimpleTabsV2 = (props) => {
               items={items}
               BarName="TabsName"
               ClickHandler={_handleMenuTabsChange}
+              trackSectionViewed={trackSectionViewed}
             />
             <div
               id={"Itenary"}
@@ -1035,6 +928,7 @@ const SimpleTabsV2 = (props) => {
                   {props.mercuryItinerary ? (
                     <StaysContainer
                       payment={props.payment}
+                      _setImagesHandler={_setImagesHandler}
                       _updateBookingHandler={props._updateBookingHandler}
                       _updateStayBookingHandler={
                         props._updateStayBookingHandler
@@ -1052,6 +946,7 @@ const SimpleTabsV2 = (props) => {
                       setStayBookings={props.setStayBookings}
                       CityData={CityData}
                       cities={props?.cities}
+                      requireAuth={requireAuth}
                     />
                   ) : (
                     <HotelsBooking
@@ -1081,6 +976,7 @@ const SimpleTabsV2 = (props) => {
                       payment={props.payment}
                       booking={props.booking}
                       _GetInTouch={_GetInTouch}
+                      requireAuth={requireAuth}
                     ></HotelsBooking>
                   )}
                 </div>
@@ -1241,7 +1137,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : props?.mercuryItinerary ? (
             <>
-              <div className="sticky top-[1rem] ml-5">
+              <div className="sticky top-[0rem] ml-5">
                 <ChatBot />
               </div>
             </>
@@ -1302,6 +1198,7 @@ const SimpleTabsV2 = (props) => {
                     setShowFooterBannerMobile={() =>
                       setShowFooterBannerMobile(false)
                     }
+                    trip_name={props?.itinerary?.name}
                     openPaymentDrawer={true}
                     blur={props.blur}
                     loading={loading}
@@ -1407,14 +1304,14 @@ const SimpleTabsV2 = (props) => {
                   </GetInTouchContainer>
                 ) : null}
               </div>
-              {props?.payment && (
+              {cart && (
                 <div className="text-[12px] text-[#6E757A]">
-                  {props?.payment?.pay_only_for_one ||
-                  props?.payment?.show_per_person_cost
+                  {cart?.pay_only_for_one ||
+                  cart?.show_per_person_cost
                     ? "Per Person"
-                    : props.payment?.is_estimated_price
+                    : cart?.is_estimated_price
                     ? `${
-                        props.payment.total_cost == 0 ? "" : "Estimated Price"
+                        cart?.total_cost == 0 ? "" : "Estimated Price"
                       }`
                     : "Total Cost"}
                 </div>
@@ -1422,36 +1319,38 @@ const SimpleTabsV2 = (props) => {
               {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
-                    ₹{" "}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
                     {!props?.mercuryItinerary
-                      ? props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      ? cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost
+                                cart?.per_person_discounted_cost
                               ) / 100
                             )
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
+                              Math.round(cart?.discounted_cost) / 100
                             )
                           )
-                      : props?.payment?.pay_only_for_one ||
-                        props?.payment?.show_per_person_cost
+                      : cart?.pay_only_for_one ||
+                        cart?.show_per_person_cost
                       ? getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.per_person_discounted_cost)
+                            Math.round(cart?.per_person_discounted_cost)
                           )
                         )
                       : getIndianPrice(
-                          Math.round(Math.round(props.payment.discounted_cost))
+                          Math.round(Math.round(cart?.discounted_cost))
                         )}
                     {"/-"}
                   </span>
                 </div>
-              ) : null}
+             
+             ) : null}
+              {/* <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
             </div>
             {props?.token && props?.payment?.paid_user && (
               <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
@@ -1474,7 +1373,7 @@ const SimpleTabsV2 = (props) => {
               </Button>
             ) : (
               <>
-                {props.payment ? (
+                {props.payment  ? (
                   (props.payment?.itinerary_status ===
                     ITINERARY_STATUSES?.itinerary_finalized ||
                     pricing_status === "SUCCESS") &&
@@ -1484,14 +1383,14 @@ const SimpleTabsV2 = (props) => {
                     props?.payment?.discounted_cost > 0) ? (
                     <div className="flex flex-row gap-4 items-center">
                       <svg
-  xmlns="http://www.w3.org/2000/svg"
-  width="23"
-  height="30"
-  viewBox="0 0 23 30"
-  fill="none"
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
->
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="23"
+                        height="30"
+                        viewBox="0 0 23 30"
+                        fill="none"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                      >
                         <path
                           d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
                           fill="#AD5BE7"
@@ -1502,24 +1401,27 @@ const SimpleTabsV2 = (props) => {
                       </svg>
                       <button
                         className="ttw-btn-secondary-fill"
-                        onClick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
+                        onClick={() => {
+                          if(!props?.itinerary?.customer){
+                          requireAuth('view',()=>
+                          handleFooterBannerMobile("View Inclusions"));
+                        } else handleFooterBannerMobile("View Inclusions");
+                      }}
                       >
-                        View Inclusions{" "}
+                        View Cart{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
                         </span>
                       </button>
-
+                      
                       <div
-  style={popupStyle}
-  className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
->
+                        style={popupStyle}
+                        className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
+                      >
                         <div className="relative">
                           <span className="absolute top-2 -left-5 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
-                         {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
+                          {/* <span className="absolute -bottom-2 left-1/4 w-0 h-0 border-[10px] border-solid border-transparent border-t-[#2b2b2a]"></span> */}
 
                           <div className="text-nowrap font-normal text-black text-sm">
                             No Hidden Charges,
@@ -1533,11 +1435,15 @@ const SimpleTabsV2 = (props) => {
                     <div className="">
                       <button
                         className="ttw-btn-secondary-fill"
-                        onClick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
+                        onClick={() => {
+                          if(!props?.itinerary?.customer){
+                          requireAuth('view',()=>
+                          handleFooterBannerMobile("View Inclusions"));
+                        } else handleFooterBannerMobile("View Inclusions");
+                        
+                      }}
                       >
-                        View Inclusions{" "}
+                        View Cart{" "}
                         <span className="ttw-btn-count-white">
                           {" "}
                           {countCartItems}{" "}
@@ -1613,7 +1519,11 @@ const SimpleTabsV2 = (props) => {
                     fill="#ACACAC"
                   />
                 </svg> */}
-                <img src={factor.icon} alt={factor.title} className="w-[20px] h-[20px]" />
+                <img
+                  src={factor.icon}
+                  alt={factor.title}
+                  className="w-[20px] h-[20px]"
+                />
                 <span className="text-xs md:text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px] md:max-w-none">
                   {factor.text}
                 </span>
@@ -1687,6 +1597,10 @@ const SimpleTabsV2 = (props) => {
           onhide={_handleLoginClose}
           itinary_id={props.id}
           zIndex={"3300"}
+          message={loginModalMessage}
+  onSuccess={async () => {
+    await attachUserToItinerary();
+  }}
         ></LogInModal>
       </div>
     </div>

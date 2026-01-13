@@ -19,6 +19,7 @@ import Itinerary2Carousel from "../../theme/Itinerary2Carousel";
 import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import { useRouter } from "next/router";
 import Button from "../../Button";
+import { useSelector } from "react-redux";
 
 
 
@@ -33,10 +34,11 @@ const MyTripsSection = ({ apiItineraries, className }) => {
       fetchTrips(false);
     }
   }, [token]);
+  const currency = useSelector(state=>state.UserLocation)?.location;
  
       const fetchTrips = async (allPlans) => {
         try {
-          const query = allPlans ? "" : "?limit=3&offset=0";
+          const query = allPlans ? `?currency=${currency?.currency || 'INR'}` : `?currency=${currency?.currency || 'INR'}&limit=3&offset=0`;
           const tripsResponse = await axios.get(
             `${MERCURY_HOST}/api/v1/itinerary/my-plans/${query}`,
             {

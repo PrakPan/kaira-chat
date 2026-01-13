@@ -19,13 +19,14 @@ const TextContainer = styled.div`
 
 const Heading = styled.h1`
   width: 100%;
-  font-size: 3.5rem;
-  font-weight: 650;
+  font-size: 3rem;
+  font-weight: 600;
   margin: 2rem auto;
   text-align: center;
   @media screen and (min-width: 768px) {
-    font-size: 6rem;
+    font-size: 72px;
     text-align: left;
+    font-weight: 600
   }
 `;
 
@@ -38,7 +39,7 @@ const Text = styled.p`
   @media screen and (min-width: 768px) {
     width: 70%;
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 20px;
     text-align: left;
   }
   @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {

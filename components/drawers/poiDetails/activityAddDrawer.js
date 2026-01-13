@@ -106,6 +106,7 @@ const ActivityAddDrawer = (props) => {
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
 
+
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -135,6 +136,7 @@ const ActivityAddDrawer = (props) => {
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   const [error, setError] = useState(null);
+  const currency = useSelector(state=>state.currency);
 
   const dateObj = new Date(props.date);
 
@@ -277,7 +279,7 @@ const formattedDate =
           });
         } else {
           props.openNotification({
-            text: "There seems to be a problem, please try again!",
+            text:  err?.response?.data?.errors?.[0]?.message?.[0] || "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -340,7 +342,7 @@ const formattedDate =
           load_nearby: nearby
         };
         activtySearch
-          .post(`/?limit=30&offset=${offSet}`, requestData)
+          .post(`/?limit=30&offset=${offSet}&currency=${currency?.currency || 'INR'}`, requestData)
           .then((res) => {
             if (res.data?.data?.activities?.length) {
               setTotalResults(res.data.results);
@@ -680,7 +682,7 @@ const formattedDate =
                   onChange={(e) => setStartDate(e.target.value)}
                   defaultValue={formattedDate}
                 >
-                  {[...Array(props.duration)].map((_, i) => {
+                  {[...Array(props.duration + 1)].map((_, i) => {
                     const baseDateStr = props?.mercuryItinerary
                       ? props?.start_date
                       : convertToISODate(props?.start_date);
@@ -755,6 +757,15 @@ const formattedDate =
                   <CheckboxFormComponent checked={recommended} />
                   Top Recommended
                 </button> */}
+                
+                  <button
+                    onClick={handleNearby}
+                    className="flex flex-row items-center gap-1 cursor-pointer"
+                  >
+                    <CheckboxFormComponent checked={nearby} />
+                    Nearby Activities
+                  </button>
+               
                 <div className="flex gap-4">
                   <div
                     className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
@@ -787,7 +798,7 @@ const formattedDate =
               <div className="flex flex-row items-center justify-between w-full mb-[20px]">
                 <div>
                   Showing {options.length}
-                  {elementType === "POI" ? " attractions" : " activities"}
+                  {elementType === "POI" ? " attractions" : nearby ? " nearby activities" : " activities"}
                   {totalResults ? ` out of ${totalResults}` : null}
                   {props?.cityName ? ` in ${props?.cityName}` : null}
                 </div>

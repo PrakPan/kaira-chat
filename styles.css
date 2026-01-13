@@ -1802,3 +1802,24 @@ a {
   line-height: 26px;
   font-weight: 500;
 }
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-loaded="false"] {
+  opacity: 0;
+  transform: scale(1.1);
+}
+
+[data-loaded="true"] {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}

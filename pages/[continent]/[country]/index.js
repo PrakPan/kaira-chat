@@ -54,22 +54,18 @@ const TravelPlanner = (props) => {
           href="/vendor/panorama-slider.css"
         ></link>
       </Head>
-      <Layout
-        destination={props?.Data?.name}
-        id={props?.Data?.id}
-        page={"Country Page"}
-      >
-        <CountryPageWrapper
-          continetCarousel={props?.continetCarousel}
-          data={props?.Data}
-          locations={props?.locations}
-          page_id={props.page_id || ""}
-          type={props?.Type}
-          pageData={props.pageData}
-          hotLocationSearch={props.hotLocationSearch}
-        />
-      </Layout>
-    </>
+
+      {props.pageData && props.Data?.page_data?.slug != "india" ? (
+          <ThemePage themePage experienceData={props.Data?.page_data} slug={props.Data?.page_data?.slug}/>
+        ) : (
+      <CountryPage
+        continetCarousel={props?.continetCarousel}
+        data={props?.Data}
+        locations={props?.locations}
+        page_id={props.page_id || ""}
+        type={props?.Type}
+      ></CountryPage>)}
+    </Layout>
   );
 };
 
@@ -95,21 +91,10 @@ export async function getStaticPaths() {
     console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
-  // return {
-  //   paths:paths,
-  //   fallback:false
-  // }
   return {
-    paths: [
-      {
-        params: {
-          continent: "europe",
-          country: "portugal",
-        },
-      },
-    ],
-    fallback: false,
-  };
+    paths:paths,
+    fallback:false
+  }
 }
 
 export async function getStaticProps(context) {

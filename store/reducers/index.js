@@ -27,6 +27,11 @@ import CallPaymentInfo from "./callPaymentInfo"
 import uiReducer from "./ui";
 import Cart from "./Cart";
 import tailoredInfoReducer from "./tailoredInfo"
+import currencyReducer from "./currencyReducer";
+import currency from "./currency";
+import cloneItinerary from './cloneItinerary'
+import chatStateReducer from "./chatState";
+
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -56,6 +61,10 @@ const rootReducer = combineReducers({
   UIState: uiReducer,
   Cart,
   tailoredInfoReducer:tailoredInfoReducer,
+  currencyReducer,
+  currency,
+  cloneItinerary,
+  chatState: chatStateReducer
 });
 
 export default rootReducer;

@@ -36,19 +36,20 @@ const Designation = styled.p`
 `;
 
 const Description = styled.p`
-  font-weight: 200;
-  letter-spacing: 1px;
+  font-weight: 400;
   color: #323232;
   margin: 1rem 0;
   text-align: center;
 
   @media screen and (min-width: 768px) {
-    text-align: center;
-    font-size: 1rem;
+    text-align: justify;
+    font-size: 16px;
     color: black;
-    font-weight: 200;
+    font-weight: 400;
     margin: 1rem auto;
-    width: 80%;
+    width: 90%;
+    line-height: 24px;
+    letter-spacing:0px
   }
 `;
 
@@ -66,7 +67,7 @@ const Card = (props) => {
         <Name className="">{props.name}</Name>
         <Designation className="">{props.tagline}</Designation>
         <Designation className="">{props.designation}</Designation>
-        <Description className="font-nunito">{props.text}</Description>
+        <Description className="">{props.text}</Description>
       </Container>
     );
   else

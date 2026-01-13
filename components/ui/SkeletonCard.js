@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 
 
 const shimmer = keyframes`
@@ -70,12 +70,15 @@ const LoadingBoxWave = styled.div`
     left: 0;
     width: 50%;
     height: 100%;
-    background: linear-gradient(
+    background: ${(props) => props.isNotAnimate ? '' : `linear-gradient(
       90deg,
       transparent 0%,
       rgba(255, 255, 255, 0.8) 100%
-    );
-    animation: ${wave} 1.8s ease-in-out infinite;
+    )`};
+    animation: ${(props) =>
+    props.$isNotAnimate
+      ? ""
+      : css`${wave} 1.8s ease-in-out infinite`};
   }
 `;
 
@@ -99,7 +102,7 @@ const LoadingBoxGradient = styled.div`
   animation: ${shimmer} 2s ease-in-out infinite;
 `;
 
-export default function  SkeletonCard({
+export default function SkeletonCard({
   width,
   height,
   mt,
@@ -108,12 +111,13 @@ export default function  SkeletonCard({
   mr,
   margin,
   borderRadius,
-  variant = "default", 
+  variant = "default",
+  isNotAnimate = false
 }) {
-  
-  const Component = variant === "wave" ? LoadingBoxWave : 
-                   variant === "gradient" ? LoadingBoxGradient : 
-                   LoadingBox;
+
+  const Component = variant === "wave" ? LoadingBoxWave :
+    variant === "gradient" ? LoadingBoxGradient :
+      LoadingBox;
 
   return (
     <Component
@@ -125,6 +129,7 @@ export default function  SkeletonCard({
       margin={margin}
       mb={mb}
       borderRadius={borderRadius}
+      isNotAnimate={isNotAnimate}
     />
   );
 }

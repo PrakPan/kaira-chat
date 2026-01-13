@@ -162,7 +162,7 @@ const Booking = (props) => {
         setError(true);
         props.openNotification({
           type: "error",
-          text: "There seems to be a problem, please try again later!",
+          text: err?.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again later!",
           heading: "Error!",
         });
       });

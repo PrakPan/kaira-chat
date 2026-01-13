@@ -324,7 +324,6 @@ const Flight = () => {
 
 export const Pax = ({ setShowPax, pax, setPax }) => {
   const ref = useRef(null);
-  console.log(pax);
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
   const [children, setChildren] = useState(pax.children ? pax.children : 0);
   const [infants, setInfants] = useState(pax.infants ? pax.infants : 0);
@@ -391,7 +390,6 @@ export const Pax = ({ setShowPax, pax, setPax }) => {
       infants,
       flightCabinClass: cabinClass,
     }));
-    console.log(cabinClass);
 
     setShowPax(false);
   };

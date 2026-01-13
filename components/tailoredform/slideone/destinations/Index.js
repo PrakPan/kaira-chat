@@ -28,81 +28,34 @@ const Destinations = (props) => {
     input_id: null,
     data: null,
   });
-  const [destinations, setDestinations] = useState([]);
   const selectedCities = useSelector((state) => state.tailoredInfoReducer.slideOne.selectedCities);
+
+  // Remove the destinations state - render directly from selectedCities
+  // const [destinations, setDestinations] = useState([]);
 
   useEffect(() => {
     var country_id = selectedCities?.some((e) => e.type === "Country");
     setIsCountryId(country_id);
     if (router.query.country && !router.query.state && !router.query.city)
       setIsCountryId(true);
+
+
   }, [selectedCities]);
 
-  useEffect(() => {
-    const des = [];
-    for (let i = 0; i < selectedCities?.length; i++) {
-      des.push(
-        <div className="flex flex-col gap-[4px]">
-          {i == 0 && <Body2R_14>Destination</Body2R_14>}
-          <EndDestination
-            autofocus={i == 0 && selectedCities[0].name && true}
-            _updateDestinationHandler={_updateDestinationHandler}
-            key={selectedCities[i].input_id}
-            setDeletedId={
-           selectedCities.length!=1 && setDeletedId
-            }
-            inbox_id={selectedCities[i].input_id}
-            selectedCities={selectedCities}
-            destination={selectedCities[i].name}
-            CITIES={props.CITIES}
-            openCities={() => props.setShowCities(true)}
-            setDestination={props.setDestination}
-            eventDates={props.eventDates}
-            updatedData={updatedData}
-            tailoredFormModal={props.tailoredFormModal}
-            selectedCity={selectedCities[i]}
-            index={i}
-            size={selectedCities.length}
-            hotlocations={props.hotlocations}
-          ></EndDestination>
-        </div>
-      );
-    }
-    setDestinations(des);
-  }, [JSON.stringify(selectedCities)]);
+
+  console.log("selected cities",selectedCities);
+
+  // Remove this useEffect that builds destinations array
+  // useEffect(() => { ... }, [JSON.stringify(selectedCities)]);
 
   const _addDestinationHandler = () => {
-    let dest = destinations.slice();
     const id = Date.now();
-    dest.push(
-      <>
-        <SelectedDestination
-          autofocus
-          _updateDestinationHandler={_updateDestinationHandler}
-          setDeletedId={setDeletedId}
-          key={id}
-          inbox_id={id}
-          selectedCities={selectedCities}
-          CITIES={props.CITIES}
-          openCities={() => props.setShowCities(true)}
-          setDestination={props.setDestination}
-          eventDates={props.eventDates}
-          tailoredFormModal={props.tailoredFormModal}
-          selectedCity={selectedCities[selectedCities.length - 1]}
-          index={selectedCities.length - 1}
-          setDestinations={setDestinations}
-          destinations={destinations}
-        ></SelectedDestination>
-      </>
-    );
-    setDestinations(dest.slice());
     dispatch(setSelectedCities(null, id, null));
   };
+
   function _updateDestinationHandler(id, input_id, data) {
     dispatch(setSelectedCities(id, input_id, data));
   }
-
-
 
   useEffect(() => {
     if (updatedData.id) {
@@ -113,9 +66,6 @@ const Destinations = (props) => {
   useEffect(() => {
     if (deletedId) {
       dispatch(deleteSelectedCity(deletedId));
-      setDestinations((prev) =>
-        prev.filter((e) => e.props.inbox_id !== deletedId)
-      );
     }
   }, [deletedId]);
 
@@ -135,21 +85,45 @@ const Destinations = (props) => {
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
         ></SelectedDestination>
-        {props.errors.startLocation !== null && <p className="mt-1 text-sm text-red-600 font-medium">
-          {props.errors.startLocation}
-        </p>}
+        {props.errors.startLocation !== null && (
+          <p className="mt-1 text-sm text-red-600 font-medium">
+            {props.errors.startLocation}
+          </p>
+        )}
       </div>
+
       <Container className=" !gap-[4px]">
-      {destinations.map((e, i) => (
-        <div key={i}>
-          <>{e}</>
-          {i == 0 && props.errors.destination1 &&
-            props.errors.destination1 !== null && <p className="mt-1 text-sm text-red-600 font-medium">
-              {props.errors.destination1}
-            </p>
-          }
-        </div>
-      ))}
+        {/* Render directly from selectedCities instead of destinations state */}
+        {selectedCities?.map((selectedCity, i) => (
+          <div key={selectedCity.input_id || i}>
+            <div className="flex flex-col gap-[4px]">
+              {i === 0 && <Body2R_14>Destination</Body2R_14>}
+              <EndDestination
+                autofocus={i === 0 && selectedCity.name && true}
+                _updateDestinationHandler={_updateDestinationHandler}
+                setDeletedId={selectedCities.length !== 1 && setDeletedId}
+                inbox_id={selectedCity.input_id}
+                selectedCities={selectedCities}
+                destination={selectedCity.name}
+                CITIES={props.CITIES}
+                openCities={() => props.setShowCities(true)}
+                setDestination={props.setDestination}
+                eventDates={props.eventDates}
+                updatedData={updatedData}
+                tailoredFormModal={props.tailoredFormModal}
+                selectedCity={selectedCity}
+                index={i}
+                size={selectedCities.length}
+                hotlocations={props.hotlocations}
+              />
+            </div>
+            {i === 0 && props.errors.destination1 && props.errors.destination1 !== null && (
+              <p className="mt-1 text-sm text-red-600 font-medium">
+                {props.errors.destination1}
+              </p>
+            )}
+          </div>
+        ))}
       </Container>
 
       <div
@@ -159,14 +133,18 @@ const Destinations = (props) => {
           justifyContent: "end",
           marginLeft: "33%",
           marginRight: "10px",
-          marginTop: "-30px"
+          marginTop: "-30px",
         }}
       >
         {!selectedCities?.some((e) => !e.name) && (
           <p
             onClick={_addDestinationHandler}
-            className="text-center  hover-pointer"
-            style={{ color: "#1360D3", margin: "0.5rem -9px 0 0", fontSize: "0.85rem" }}
+            className="text-center hover-pointer"
+            style={{
+              color: "#1360D3",
+              margin: "0.5rem -9px 0 0",
+              fontSize: "0.85rem",
+            }}
           >
             + Add Destination
           </p>

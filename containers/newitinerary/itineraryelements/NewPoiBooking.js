@@ -16,6 +16,8 @@ import Image from "next/image";
 import useMediaQuery from "../../../components/media";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { useRouter } from "next/router";
+import { currencySymbols } from "../../../data/currencySymbols";
+import { useSelector } from "react-redux";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -37,6 +39,7 @@ export default function NewPoiBooking(props) {
 
 
   const { trackPoiBookingAdded, trackPoiCardClicked } = useAnalytics();
+  const currency = useSelector(state=>state.currency);
   const router = useRouter();
 
   useEffect(() => {
@@ -59,7 +62,6 @@ export default function NewPoiBooking(props) {
   };
 
   const handleClick = async (id) => {
-    console.log(id)
     trackPoiCardClicked(router.query.id, id, "itinerary_poi_list");
     setActivityData({
       type: "poi",
@@ -172,7 +174,7 @@ export default function NewPoiBooking(props) {
               <div className="flex flex-col justify-between">
                 <div className="flex flex-row justify-between">
                   <div className="text-md-lg leading-xl-sm font-600 mb-0 max-ph:mt-sm">
-                    {props.data?.display_name || props.data?.name ? props.data?.display_name || props.data.name : null}
+                    {props.data?.name || props.data?.display_name ? props.data.name || props.data?.display_name : null}
                   </div>
                 </div>
                 {stars && (
@@ -243,7 +245,7 @@ export default function NewPoiBooking(props) {
                 </div>
               )}
               <div>
-                <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
+                <div className=" text-sm text-[#6E757A] line-clamp-3 text-[14px] py-2">
                   {props.data?.one_liner_description}
                   {/* {props.data.short_description
                     .split(" ")
@@ -264,7 +266,7 @@ export default function NewPoiBooking(props) {
                       className="!font-[lexend]"
                       style={{ fontFamily: "Lexend" }}
                     >
-                      ₹
+                      {currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}
                     </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
@@ -405,7 +407,7 @@ export default function NewPoiBooking(props) {
 
           <div className="my-2">
             <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-              {props.data.short_description.split(" ").slice(0, 40).join(" ")}
+              {props?.data?.short_description?.split(" ").slice(0, 40).join(" ")}
               <span className="font-bold text-gray-500"> ...more</span>
             </div>
           </div>
@@ -413,7 +415,7 @@ export default function NewPoiBooking(props) {
             {props.data?.pricing?.total_price ? (
               <div className="flex gap-1">
                 <div className="text-[24px] font-bold">
-                  <span>₹</span>
+                  <span>{currency?.currency ? currencySymbols?.[currency?.currency] : `₹`}</span>
                   {getIndianPrice(Math.round(props.data.pricing.total_price))}
                 </div>
                 <div className="text-[14px] mt-[10px]">

@@ -2,7 +2,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
 import Script from "next/script";
-import { Partytown } from '@builder.io/partytown/react';
+import { Partytown } from "@builder.io/partytown/react";
 
 const Container = styled.div`
   margin-right: -0.6rem;
@@ -21,146 +21,119 @@ export default class MyDocument extends Document {
     );
 
     const styleTags = sheet.getStyleElement();
+
     return { ...page, styleTags };
   }
 
   render() {
-    const isProduction = process.env.NODE_ENV === "production" && !CONTENT_SERVER_HOST.includes("dev");
-    const isDevelopment = process.env.NODE_ENV === "development";
-    
+    const isProduction =
+      process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev");
+    const cleanGTMId = GOOGLE_ANALTICS_ID?.replace(/['"]/g, "");
+
     return (
       <Html id="html" lang="en">
         <Head>
+          <title>Trip Planner & Itinerary | The Tarzan Way</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
           />
-          
-          {/* Partytown Configuration */}
-          <Partytown 
-            debug={isDevelopment}
-            forward={[
-              'gtag', 
-              // 'dataLayer.push', 
-              'mixpanel',
-              // 'JupiterAnalytics', 
-              // 'JUPITER_CONFIG'
-            ]}
-            resolveUrl={(url) => {
-              // Proxy problematic URLs through your own server to avoid CORS
-              const proxyUrls = [
-                'snap.licdn.com',
-                'freshchat.com',
-                'fw-cdn.com',
-                'clarity.ms'
-              ];
-              
-              if (proxyUrls.some(domain => url.href.includes(domain))) {
-                const proxiedUrl = new URL('/api/proxy', url.origin);
-                proxiedUrl.searchParams.append('url', url.href);
-                return proxiedUrl;
-              }
-              
-              return url;
-            }}
+
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
           />
 
-          {/* Jupiter Analytics - Load with Partytown */}
-          {/* <script
-            type="text/partytown"
-            dangerouslySetInnerHTML={{
-              __html: `
-               
-                if (typeof importScripts === 'function') {
-                  try {
-                    importScripts('/jupyter-partytown.js');
-                   
-                  } catch (e) {
-                    console.error('❌ ImportScripts failed:', e);
-                  }
-                } else {
-                  const script = document.createElement('script');
-                  script.src = '/jupyter-partytown.js';
-                  script.onload = () => console.log('✅ Jupiter script loaded');
-                  script.onerror = (e) => console.error('❌ Script load failed:', e);
-                  document.head.appendChild(script);
-                }
-              `
-            }}
-          /> */}
+          {/* Partytown Configuration */}
+          <Partytown debug={isProduction} forward={["gtag", "mixpanel", "clarity"]} />
 
           {/* Google Tag Manager */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
+          {isProduction && cleanGTMId && (
+            <>
+              {/* Google Tag Manager - Head */}
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${cleanGTMId}');`,
+                }}
+              />
+            </>
+          )}
+
+          {/* Google Ads Global Tag (gtag.js) - For Conversion Tracking */}
+          {
+            isProduction && (
               <>
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${GOOGLE_ANALTICS_ID}');`,
-                  }}
-                />
-
-                <script
-                  async
-                  src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALTICS_ID}`}
-                />
-
+                {/* Initialize dataLayer FIRST */}
                 <script
                   dangerouslySetInnerHTML={{
                     __html: `
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GOOGLE_ANALTICS_ID}', {
-                page_path: window.location.pathname,
-                });
-                `,
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+        `,
                   }}
                 />
-              </>
-            )}
-          {/*  End Google Tag Manager */}
 
-          {/* Partytown */}
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
-              <>
+                {/* Then load gtag script */}
                 <script
-                  type="text/partytown"
-                  src="//in.fw-cdn.com/30401267/225580.js"
-                  chat="false"
-                ></script>
+                  async
+                  src={`https://www.googletagmanager.com/gtag/js?id=AW-738037519`}
+                />
 
+                {/* Finally configure gtag */}
                 <script
-                  type="text/partytown"
                   dangerouslySetInnerHTML={{
-                    __html: ` (function(c,l,a,r,i,t,y){
-                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "dxk3hzpt0s");`,
+                    __html: `
+          gtag('js', new Date());
+          gtag('config', 'AW-738037519');
+        `,
                   }}
                 />
               </>
-            )}
+            )
+          }
 
+          {/* Partytown Scripts */}
+          {isProduction && (
+            <>
+              <script
+                type="text/partytown"
+                src="//in.fw-cdn.com/30401267/225580.js"
+                chat="false"
+              ></script>
+
+              <script
+                type="text/partytown"
+                dangerouslySetInnerHTML={{
+                  __html: ` (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "dxk3hzpt0s");`,
+                }}
+              />
+            </>
+          )}
+
+          {/* Mixpanel */}
           <script
             type="text/javascript"
             dangerouslySetInnerHTML={{
               __html: `
                 (function(f,b){if(!b.__SV){var e,g,i,h;window.mixpanel=b;b._i=[];b.init=function(e,f,c){function g(a,d){var b=d.split(".");2==b.length&&(a=a[b[0]],d=b[1]);a[d]=function(){a.push([d].concat(Array.prototype.slice.call(arguments,0)))}}var a=b;"undefined"!==typeof c?a=b[c]=[]:c="mixpanel";a.people=a.people||[];a.toString=function(a){var d="mixpanel";"mixpanel"!==c&&(d+="."+c);a||(d+=" (stub)");return d};a.people.toString=function(){return a.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
                 for(h=0;h<i.length;h++)g(a,i[h]);var j="set set_once union unset remove delete".split(" ");a.get_group=function(){function b(c){d[c]=function(){call2_args=arguments;call2=[c].concat(Array.prototype.slice.call(call2_args,0));a.push([e,call2])}}for(var d={},e=["get_group"].concat(Array.prototype.slice.call(arguments,0)),c=0;c<j.length;c++)b(j[c]);return d};b._i.push([e,f,c])};b.__SV=1.2;e=f.createElement("script");e.type="text/javascript";e.async=!0;e.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?
-                MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
+                MIXPANEL_CUSTOM_LIB_URL:"file:"===f.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";g=f.getElementsByTagName("script")[0];g.parentNode.insertBefore(e,g)}})(document,window.mixpanel||[]);
                 mixpanel.init('a87174a5773c86d78b1c1b8d51015a16', {debug: true});
                 mixpanel.track('Sign up');
               `,
             }}
           ></script>
 
-         <link
+          <link
             rel="icon"
             href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
           />
@@ -178,19 +151,10 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           />
 
-          {/* Step 5: Output the styles in the head  */}
           {this.props.styleTags}
         </Head>
 
         <body>
-          {/* <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-              createBot({ botId: "680b71a4a47fab68f44972ab" });
-            `,
-            }}
-          /> */}
           <style>
             {`
             #chatbot-iframe-container {
@@ -207,34 +171,28 @@ export default class MyDocument extends Document {
               border: none;
             }
 
-
-          @media (max-width: 765px) {
-            #chatbot-iframe-container {
-              margin-bottom: 60px;
-              margin-right: 16px;
-              height: calc(100% - 60px) !important;
-              min-height: auto !important;
-              width: calc(100% - 20px) !important;
+            @media (max-width: 765px) {
+              #chatbot-iframe-container {
+                margin-bottom: 60px;
+                margin-right: 16px;
+                height: calc(100% - 60px) !important;
+                min-height: auto !important;
+                width: calc(100% - 20px) !important;
+              }
             }
-        
-          }
-        `}
-        </style>
+          `}
+          </style>
 
-          {process.env.NODE_ENV === "production" &&
-            !CONTENT_SERVER_HOST.includes("dev") && (
-              <noscript>
-                <iframe
-                  src={
-                    "https://www.googletagmanager.com/ns.html?id=" +
-                    GOOGLE_ANALTICS_ID
-                  }
-                  height="0"
-                  width="0"
-                  style={{ display: "none", visibility: "hidden" }}
-                ></iframe>
-              </noscript>
-            )}
+          {isProduction && (
+            <noscript>
+              <iframe
+                src={`https://www.googletagmanager.com/ns.html?id=${cleanGTMId}`}
+                height="0"
+                width="0"
+                style={{ display: "none", visibility: "hidden" }}
+              ></iframe>
+            </noscript>
+          )}
 
           <Main />
           <div id="modal-portal" />

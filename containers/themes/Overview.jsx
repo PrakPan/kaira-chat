@@ -11,7 +11,6 @@ import PrimaryHeading from "../../components/heading/PrimaryHeading";
 import SecondaryHeading from "../../components/heading/Secondary";
 
 export default function Overview(props) {
-  console.log("overview data is:",props)
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
@@ -89,7 +88,7 @@ export default function Overview(props) {
               >
                 {props.slug === "honeymoon-2025"
                   ? "Plan Your Honeymoon!" 
-                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "Plan Your Trip Now!"}
+                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "+ Plan Your Trip Now!"}
               </Button>
             </div>
 

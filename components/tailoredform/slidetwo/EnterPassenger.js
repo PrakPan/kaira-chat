@@ -5,9 +5,9 @@ import BottomModal from "../../ui/LowerModal";
 import ModalWithBackdrop from "../../ui/ModalWithBackdrop";
 
 export const StyledText = styled.div`
-  font-family: "Inter", sans-serif;
-  font-weight: 400;
-  font-size: 14px;
+  // font-family: "Inter", sans-serif;
+  // font-weight: 400;
+  // font-size: 14px;
 `;
 
 export const Section = styled.div`
@@ -211,7 +211,7 @@ const EnterPassenger = (props) => {
 
   return (
     <div>
-      <StyledText className="mb-[4px]">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
+      <StyledText className="mb-[4px] Body1M_16">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
         {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers
       </StyledBox>
@@ -249,7 +249,7 @@ const EnterPassenger = (props) => {
               <CounterBox>
                 <CounterButton onClick={() => setAdults((p) => p - 1)} disabled={adults <= 1}>−</CounterButton>
                 <CounterValue>{adults}</CounterValue>
-                <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={adults >= 14}>+</CounterButton>
+                <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={props?.isTailored == true ? false : adults >= 14}>+</CounterButton>
               </CounterBox>
             </PassengerRow>
 
@@ -263,7 +263,7 @@ const EnterPassenger = (props) => {
                 <CounterBox>
                   <CounterButton onClick={() => handleChildrenChange(children - 1)} disabled={children <= 0}>−</CounterButton>
                   <CounterValue>{children}</CounterValue>
-                  <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={children > 12}>+</CounterButton>
+                  <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={props?.isTailored == true ? false : children > 12}>+</CounterButton>
                 </CounterBox>
               </div>
 
@@ -278,7 +278,7 @@ const EnterPassenger = (props) => {
               <CounterBox>
                 <CounterButton onClick={() => setInfants((p) => p - 1)} disabled={infants <= 0}>−</CounterButton>
                 <CounterValue>{infants}</CounterValue>
-                <CounterButton onClick={() => setInfants((p) => p + 1)} disabled={infants > 4}>+</CounterButton>
+                <CounterButton onClick={() => setInfants((p) => p + 1)} disabled={props?.isTailored == true ? false : infants > 4}>+</CounterButton>
               </CounterBox>
             </PassengerRow>
           </Section>
@@ -318,7 +318,7 @@ const EnterPassenger = (props) => {
                 <CounterBox>
                   <CounterButton onClick={() => setAdults((p) => p - 1)} disabled={adults <= 1}>−</CounterButton>
                   <CounterValue>{adults}</CounterValue>
-                  <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={adults >= 14}>+</CounterButton>
+                  <CounterButton onClick={() => setAdults((p) => p + 1)} disabled={props?.isTailored == true ? false : adults >= 14}>+</CounterButton>
                 </CounterBox>
               </PassengerRow>
 
@@ -332,7 +332,7 @@ const EnterPassenger = (props) => {
                   <CounterBox>
                     <CounterButton onClick={() => handleChildrenChange(children - 1)} disabled={children <= 0}>−</CounterButton>
                     <CounterValue>{children}</CounterValue>
-                    <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={children > 12}>+</CounterButton>
+                    <CounterButton onClick={() => handleChildrenChange(children + 1)} disabled={props?.isTailored == true ? false : children > 12}>+</CounterButton>
                   </CounterBox>
                 </div>
 
@@ -347,7 +347,7 @@ const EnterPassenger = (props) => {
                 <CounterBox>
                   <CounterButton onClick={() => setInfants((p) => p - 1)} disabled={infants <= 0}>−</CounterButton>
                   <CounterValue>{infants}</CounterValue>
-                  <CounterButton onClick={() => setInfants((p) => p + 1)} disabled={infants > 4}>+</CounterButton>
+                  <CounterButton onClick={() => setInfants((p) => p + 1)} disabled={props?.isTailored == true ? false : infants > 4}>+</CounterButton>
                 </CounterBox>
               </PassengerRow>
             </Section>

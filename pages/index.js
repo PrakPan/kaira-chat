@@ -34,6 +34,8 @@ import MyTripsSection from "../components/revamp/destination/mytrips";
 import TestimonialCarousel from "../components/theme/TestimonialCarousel";
 import PartnersSection from "../components/theme/PartnersSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+import TrustFactors from "../components/revamp/home/TrustFactors";
+import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 
 
 
@@ -88,7 +90,7 @@ const Home = (props) => {
               "image": "https://thetarzanway.com/logoblack.svg",
               "@id": "",
               "url": "https://thetarzanway.com/",
-              "telephone": "+91 95821 25476",
+              "telephone": "+91 8448687703",
               "address": {
                 "@type": "PostalAddress",
                 "streetAddress": "",
@@ -134,8 +136,9 @@ const Home = (props) => {
 
       <div className={styles.ttwRevamp}>
         <NavigationMenu />
-        
-        <HeroSection />
+        {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
+        <HeroSection slug={'home'} />
+        <TrustFactors/>
         <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
         

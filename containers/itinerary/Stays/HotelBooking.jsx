@@ -19,7 +19,7 @@ import media from "../../../components/media";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format } from "date-fns";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import { useRouter } from "next/router";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -46,6 +46,7 @@ const svgIcons = {
 
 }
 import { useAnalytics } from "../../../hooks/useAnalytics";
+import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -78,9 +79,13 @@ const HotelBooking = ({
   start_date,
   setStayBookings,
   itinerary_city_id,
+  _setImagesHandler,
+  requireAuth
 }) => {
   const router = useRouter();
-
+  const { id } = useSelector(state => state.auth);
+  const { customer } = useSelector(state => state.Itinerary)
+  const dispatch = useDispatch();
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -100,12 +105,12 @@ const HotelBooking = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
-  
-
-  const { trackHotelCardClicked, trackHotelListClicked,trackHotelBookingAdd,trackHotelBookingDelete,trackHotelCardDetails } = useAnalytics();
 
 
-  
+  const { trackHotelCardClicked, trackHotelListClicked, trackHotelBookingAdd, trackHotelBookingDelete, trackHotelCardDetails } = useAnalytics();
+
+
+
 
   const {
     drawer = null,
@@ -134,14 +139,14 @@ const HotelBooking = ({
     setBookingFunData({ index: i, booking: data, city_id: city_id });
   }
 
-const starRating = (rating, length) => {
-  var stars = [];
-  for (let i = 0; i < Math.floor(rating); i++) {
-    stars.push(<FaStar />);
-  }
-  if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
-  return stars;
-};
+  const starRating = (rating, length) => {
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar />);
+    }
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+    return stars;
+  };
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -162,9 +167,14 @@ const starRating = (rating, length) => {
 
 
   const handleViewDetails = (value) => {
-    // trackHotelCardDetails(router.query.id, booking.id, 'Itinerary Page')
-    router.push(
-      {
+
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
+
+    const isAuthenticated = requireAuth('view', () => {
+      router.push({
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: "showHotelDetail",
@@ -172,13 +182,12 @@ const starRating = (rating, length) => {
           booking_id: booking.id,
           city_id: booking.city_id,
         },
-      },
-      undefined,
-      {
-        scroll: false,
-      }
-    );
-    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
+      }, undefined, { scroll: false });
+      handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id);
+    });
+
+    if (!isAuthenticated) return;
+
     logEvent({
       action: "Hotel_Details",
       params: {
@@ -192,32 +201,37 @@ const starRating = (rating, length) => {
   };
 
   const handleChangeHotel = (e, label, value, clickType) => {
+
     e.stopPropagation();
-    // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
-    if (token) {
-      router.push(
-        {
-          pathname: `/itinerary/${router.query.id}`,
-          query: {
-            drawer: "changeHotelBooking",
-            clickType: clickType,
-            itineraryCityId: itinerary_city_id,
-            booking_id: booking.id,
-            check_in: stayBookings[index]["check_in"],
-            check_out: stayBookings[index]["check_out"],
-            duration: booking?.duration,
-            city_id: booking.city_id,
-            city_name: stayBookings[index]["city_name"],
-          },
+
+    // if( id != customer){
+    //   dispatch(setCloneItineraryDrawer(true));
+    //   return;
+    // }
+
+    // Use requireAuth instead of direct token check
+    const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
+      // This callback executes only if user is authenticated
+      router.push({
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "changeHotelBooking",
+          clickType: clickType,
+          itineraryCityId: itinerary_city_id,
+          booking_id: booking.id,
+          check_in: stayBookings[index]["check_in"],
+          check_out: stayBookings[index]["check_out"],
+          duration: booking?.duration,
+          city_id: booking.city_id,
+          city_name: stayBookings[index]["city_name"],
         },
-        undefined,
-        {
-          scroll: false,
-        }
-      );
-    }
-    if (token) handleClickAc(index, booking, booking.city_id, clickType);
-    else setShowLoginModal(true);
+      }, undefined, { scroll: false });
+
+      handleClickAc(index, booking, booking.city_id, clickType);
+    });
+
+    if (!isAuthenticated) return;
+
     setBookingId(key);
 
     logEvent({
@@ -231,6 +245,47 @@ const starRating = (rating, length) => {
       },
     });
   };
+
+  // const handleChangeHotel = (e, label, value, clickType) => {
+  //   e.stopPropagation();
+  //   // trackHotelListClicked(router.query.id, booking.id || `City ${stayBookings[index]["city_name"]}`, 'Itinerary Page');
+  //   if (token) {
+  //     router.push(
+  //       {
+  //         pathname: `/itinerary/${router.query.id}`,
+  //         query: {
+  //           drawer: "changeHotelBooking",
+  //           clickType: clickType,
+  //           itineraryCityId: itinerary_city_id,
+  //           booking_id: booking.id,
+  //           check_in: stayBookings[index]["check_in"],
+  //           check_out: stayBookings[index]["check_out"],
+  //           duration: booking?.duration,
+  //           city_id: booking.city_id,
+  //           city_name: stayBookings[index]["city_name"],
+  //         },
+  //       },
+  //       undefined,
+  //       {
+  //         scroll: false,
+  //       }
+  //     );
+  //   }
+  //   if (token) handleClickAc(index, booking, booking.city_id, clickType);
+  //   else setShowLoginModal(true);
+  //   setBookingId(key);
+
+  //   logEvent({
+  //     action: "Hotel_Add_Change",
+  //     params: {
+  //       page: "Itinerary Page",
+  //       event_category: "Button Click",
+  //       event_label: label,
+  //       event_value: value,
+  //       event_action: "Stays",
+  //     },
+  //   });
+  // };
 
   let hotel_image = "";
   if (booking && booking?.images && booking?.images.length) {
@@ -341,9 +396,7 @@ const starRating = (rating, length) => {
     );
   }
 
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
+
 
   const _changeBookingHandler = (
     name,
@@ -405,58 +458,54 @@ const starRating = (rating, length) => {
   return (
     <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
       {hotels_status === "PENDING" ? (
-        <div className="animate-pulse">
-          {/* Skeleton loader for city name */}
-          <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-            <div className="bg-gray-300 h-6 w-1/2 mb-2"></div>
-            <span className="ml-1 bg-gray-200 h-4 w-12 inline-block"></span>
+        <div>
+          <div className="pb-2">
+            <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
           </div>
-
-          {/* Skeleton loader for hotel image */}
-          <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+          <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
             <div className="relative flex lg:flex-row w-full flex-col gap-4">
-              <div className="relative lg:h-[12rem] lg:w-[30%] w-full h-[12rem]">
-                <div className="h-full w-full bg-gray-300 rounded-2xl"></div>
+              <div>
+                <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />
               </div>
-
-              {/* Skeleton loader for hotel details */}
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
-                    <div className="bg-gray-300 h-6 w-2/3"></div>
-                    <div className="bg-gray-300 h-4 w-16"></div>
+                    <SkeletonCard width="200px" height="20px" borderRadius="8px" variant="default" />
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <div className="bg-gray-300 h-4 w-32 mb-1"></div>
                     <div className="flex flex-row gap-2 items-center">
-                      <div className="bg-gray-300 h-5 w-1/2"></div>
-                      <div className="bg-gray-300 h-3 w-16"></div>
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="100px" height="16px" borderRadius="8px" variant="default" />
                     </div>
                   </div>
 
-                  {/* Skeleton loader for trip info */}
-                  {tripsPage && (
+                  <div className="flex flex-col gap-1">
                     <div className="flex flex-row gap-2 items-center">
-                      <div className="bg-gray-300 h-3 w-10"></div>
-                      <div className="bg-gray-300 h-3 w-20"></div>
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="200px" height="16px" borderRadius="8px" variant="default" />
+                      <SkeletonCard width="80px" height="16px" borderRadius="8px" variant="default" />
                     </div>
-                  )}
-
-                  {/* Skeleton loader for room and bed */}
-                  <div className="flex flex-row gap-2 items-center my-0">
-                    <div className="bg-gray-300 h-3 w-20"></div>
                   </div>
 
-                  {/* Skeleton loader for meals and wifi */}
-                  <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                    <div className="bg-gray-300 h-3 w-24"></div>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="250px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    <div className="flex flex-row gap-2 items-center">
+                      <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                      <SkeletonCard width="180px" height="16px" borderRadius="8px" variant="default" />
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex flex-row gap-2 items-end justify-end w-full">
-                  <div className="bg-gray-300 h-8 w-24 rounded"></div>
-                  <div className="bg-gray-300 h-8 w-24 rounded"></div>
+                  <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
+                  <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
                 </div>
               </div>
             </div>
@@ -569,12 +618,12 @@ const starRating = (rating, length) => {
                         <div className="text-sm-md text-text-spacegrey font-[400]">
                           {booking.rating}
                         </div>
-                        {booking?.user_ratings_total ? (<> 
-                             {" . "}
+                        {booking?.user_ratings_total ? (<>
+                          {" . "}
                           <div className="text-sm-md text-text-spacegrey font-[400] underline">
                             {booking.user_ratings_total} reviews
                           </div>
-                       </> ) : null}
+                        </>) : null}
                       </div>
                     ) : null}
                   </div>
@@ -694,7 +743,7 @@ const starRating = (rating, length) => {
                       className="ttw-btn-secondary"
                       onClick={() => handleViewDetails(booking.name)}
                     >
-                       Details
+                      Details
                     </button>
                   )}
 
@@ -703,8 +752,8 @@ const starRating = (rating, length) => {
                     // || !payment?.user_allowed_to_pay ? null
                     // :
                     <div>
-                      <button className="ttw-btn-fill-yellow " 
-                        onClick={(e) => handleChangeHotel(e, "Change", booking?.name) }
+                      <button className="ttw-btn-fill-yellow "
+                        onClick={(e) => handleChangeHotel(e, "Change", booking?.name)}
                       >
                         Change
                       </button>
@@ -724,58 +773,58 @@ const starRating = (rating, length) => {
           </div>
         </>
       ) : (
-        (booking?.duration || cities[index]?.duration) ? 
-        <div>
-          <div className="flex lg:flex-row flex-col justify-between lg:items-center rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer">
-            <div className="flex flex-col">
-              <div className="font-medium  inline">
-                <div className="text-black text-md-lg font-600 leading-xl-sm pb-xs">
-                  <div>
-                    {booking?.city_name ||
-                      booking?.city ||
-                      cities[index]?.city?.name}{" "}
-                    <span>
-                      ({booking?.duration || cities[index]?.duration}N)
-                    </span>
-                  </div>
-                </div>
-              </div>
-              {booking?.check_in && (
+        (booking?.duration || cities[index]?.duration) ?
+          <div>
+            <div className="flex lg:flex-row flex-col justify-between lg:items-center rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite cursor-pointer">
+              <div className="flex flex-col">
                 <div className="font-medium  inline">
-                  <div className="flex flex-row gap-2 items-center max-ph:pb-sm">
-                    {svgIcons.calender}
+                  <div className="text-black text-md-lg font-600 leading-xl-sm pb-xs">
                     <div>
-                      <div className="text-sm-md text-text-spacegrey font-[400]">
-                        {booking?.check_in && formatDate(booking?.check_in)} -{" "}
-                        {booking?.check_out && formatDate(booking?.check_out)}
-                      </div>
+                      {booking?.city_name ||
+                        booking?.city ||
+                        cities[index]?.city?.name}{" "}
+                      <span>
+                        ({booking?.duration || cities[index]?.duration}N)
+                      </span>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-            <div
-            >
-              <button
-                className="ttw-btn-fill-yellow max-ph:w-full"
-                onClick={(e) =>
-                  handleChangeHotel(
-                    e,
-                    "Change",
-                    booking?.city_name ||
+                {booking?.check_in && (
+                  <div className="font-medium  inline">
+                    <div className="flex flex-row gap-2 items-center max-ph:pb-sm">
+                      {svgIcons.calender}
+                      <div>
+                        <div className="text-sm-md text-text-spacegrey font-[400]">
+                          {booking?.check_in && formatDate(booking?.check_in)} -{" "}
+                          {booking?.check_out && formatDate(booking?.check_out)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div
+              >
+                <button
+                  className="ttw-btn-fill-yellow max-ph:w-full"
+                  onClick={(e) =>
+                    handleChangeHotel(
+                      e,
+                      "Change",
+                      booking?.city_name ||
+                      booking?.city ||
+                      cities[index]?.city?.name,
+                      "Add"
+                    )
+                  }>
+                  Add Stay in{" "}
+                  {booking?.city_name ||
                     booking?.city ||
-                    cities[index]?.city?.name,
-                    "Add"
-                  )
-                }>
-                Add Stay in{" "}
-                {booking?.city_name ||
-                  booking?.city ||
-                  cities[index]?.city?.name}
-              </button>
+                    cities[index]?.city?.name}
+                </button>
+              </div>
             </div>
-          </div>
-        </div> : null
+          </div> : null
       )}
 
       <ViewHotelDetails
@@ -817,6 +866,7 @@ const starRating = (rating, length) => {
             mercury
             _setImagesHandler={_setImagesHandler}
             onHide={() => setOpenViewDetails(false)}
+            setImages={setImages}
             id={booking_id}
             currentBooking={currentBooking}
             check_in={dates.check_in}
@@ -892,13 +942,13 @@ const starRating = (rating, length) => {
           ></BookingModal>
         )}
 
-      {images ? (
+      {/* {images ? (
         <FullScreenGallery
           mercury
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGallery>
-      ) : null}
+      ) : null} */}
     </div>
   );
 };

@@ -13,7 +13,6 @@ import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 import ThemePage from "../../../../../containers/travelplanner/ThemePage";
 import { useAnalytics } from "../../../../../hooks/useAnalytics";
 const Experience = (props) => {
-  console.log("experience props are:",props)
   const router = useRouter();
   const { trackPageView } = useAnalytics();
   if (router.isFallback) {
@@ -122,7 +121,7 @@ export async function getStaticPaths() {
         paths.push({
           params: {
             continent: continentSlug,
-            country: countrySlug,
+            country:countrySlug!="None"? countrySlug.toLowerCase().replace(/ /g, "_"):countrySlug,
             state: stateSlug,
             city: citySlug,
           }
@@ -188,18 +187,18 @@ if (data.page_data && Object.keys(data.page_data).length > 0) {
   .then((res) => {
     const reccoData = res.data?.data ?? [];
 
-    reccomendedCitiesData = Array.isArray(reccoData)
+   reccomendedCitiesData = Array.isArray(reccoData)
   ? reccoData
       .filter(e => e && typeof e === "object")
       .map(e => ({
         id: e.id ?? null,
-        image: e.image ?? "",
-        lat: e.latitude ?? 0,
-        long: e.longitude ?? 0,
-        most_popular_for: Array.isArray(e.most_popular_for) ? e.most_popular_for : [],
-        name: e.name ?? "",
-        path: e.path ?? "",
-        budget: e.budget ?? 0,
+        image: e.image ?? null,
+        lat: e.latitude ?? null,
+        long: e.longitude ?? null,
+        most_popular_for: Array.isArray(e.most_popular_for) ? e.most_popular_for : null,
+        name: e.name ?? null,
+        path: e.path ?? null,
+        budget: typeof e.budget !== "undefined" ? e.budget : null,
       }))
   : [];
   })
@@ -229,13 +228,13 @@ if (data.page_data && Object.keys(data.page_data).length > 0) {
   })
 
   if (!data) {
-    console.log("here")
+   
     return {
       notFound: true,
     };
   }
 
-  console.log("data :",data.name)
+
   return {
     props: {
       cityData: data,

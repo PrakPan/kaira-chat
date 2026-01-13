@@ -79,6 +79,7 @@ const ImagesMobile = (props) => {
         >
           <ImageLoader
             borderRadius="12px"
+            resizeMode="fill"
             dimensions={{ width: 1500, height: 600 }}
             url={props.images[0]}
             height="400px"
@@ -108,6 +109,7 @@ const ImagesMobile = (props) => {
           >
             <ImageLoader
               borderRadius="12px"
+              resizeMode="fill"
               url={props.images[1]}
               dimensions={{ width: 436, height: 150 }}
               height="100%"
@@ -135,6 +137,7 @@ const ImagesMobile = (props) => {
           >
             <ImageLoader
               borderRadius="12px"
+              resizeMode="fill"
               url={props.images[2]}
               dimensions={{ width: 436, height: 150 }}
               height="100%"
@@ -166,6 +169,7 @@ const ImagesMobile = (props) => {
       >
         <ImageLoader
           borderRadius="12px"
+          resizeMode="fill"
           dimensions={{ width: 1071, height: 400 }}
           url={props.images[0]}
           height={isPageWide ? "400px" : "190px"}
@@ -191,6 +195,7 @@ const ImagesMobile = (props) => {
       >
         <ImageLoader
           borderRadius="12px"
+          resizeMode="fill"
           url={props.images[1]}
           dimensions={{ width: 436, height: 150 }}
           height={isPageWide ? "400px" : "190px"}
@@ -220,6 +225,7 @@ const ImagesMobile = (props) => {
       >
         <ImageLoader
           borderRadius="12px"
+          resizeMode="fill"
           dimensions={{ width: 1071, height: 400 }}
           url={props?.images?.[0]}
           height="400px"
