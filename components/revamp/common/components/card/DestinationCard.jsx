@@ -24,8 +24,6 @@ const DestinationCard = ({
 }) => {
   const router = useRouter();
 
-  const [imageQuality, setImageQuality] = useState(100);
-
   // console.log("tags in destination card:",one_liner_description,showImageText)
   return (
     <div onClick={() => {
