@@ -4,6 +4,7 @@ import { fadeIn } from "react-animations";
 import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
 import getPlatform from "../../../utils/getPlatform";
+import { useRouter } from "next/router";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
@@ -142,25 +143,11 @@ export function buildItineraryPayload({
 }
 
 export const useSourceParams = () => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const params = useParams();
+  const router = useRouter();
   const platform = getPlatform();
 
   const source = React.useMemo(() => {
-    const queryObj = {};
-
-    for (const [key, value] of searchParams.entries()) {
-      if (value === "true") queryObj[key] = true;
-      else if (value === "false") queryObj[key] = false;
-      else if (!isNaN(Number(value))) queryObj[key] = Number(value);
-      else queryObj[key] = value;
-    }
-
-    let resolvedPath = pathname;
-    for (const [key, val] of Object.entries(params || {})) {
-      resolvedPath = resolvedPath.replace(`[${key}]`, val);
-    }
+    const queryObj = { ...router.query };
 
     const resolvedSource =
       queryObj.utm_source ||
@@ -168,12 +155,12 @@ export const useSourceParams = () => {
       "new-trip";
 
     return {
-      path: resolvedPath,
+      path: router.asPath,
       platform,
       ...queryObj,
       source: resolvedSource,
     };
-  }, [pathname, searchParams, params, platform]);
+  }, [router.query, router.asPath, platform]);
 
   return source;
 };
