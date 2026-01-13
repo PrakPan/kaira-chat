@@ -11,7 +11,7 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
-    domains:[''],
+    domains:["images.thetarzanway.com", "d31aoa0ehgvjdi.cloudfront.net"],
     remotePatterns: [
       {
         protocol: "https",
