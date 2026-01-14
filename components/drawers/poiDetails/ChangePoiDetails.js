@@ -405,8 +405,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.general_guidelines &&
             props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div className="text-[20px] font-semibold">
                   <div>General guidelines</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.generalGuidelines ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -446,8 +447,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.things_to_bring &&
             props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div className="text-[20px] font-semibold">
                   <div>Things to bring</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.thingsToBring ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -487,8 +489,9 @@ export default function ChangePoiDetails(props) {
             {props.data?.not_suitable_for &&
             props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div className="text-[20px] font-semibold">
                   <div>Not suitable for</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.notSuitableFor ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
@@ -527,8 +530,9 @@ export default function ChangePoiDetails(props) {
 
             {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div className="text-[20px] font-semibold">
                   <div>Tips, Tricks and Cautions</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {!boolDetails?.tipsTricks ? (
                     <IoIosArrowDown
                       className="cursor-pointer"

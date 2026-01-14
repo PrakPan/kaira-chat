@@ -124,7 +124,9 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
           >
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-              <span>{slug && slug != 'thank-you' ? `Create My ${capitalizeFirstLetter(slug)} Trip` : "Get your Customised Itinerary"}</span>
+              <span>Plan & Book My Trip with AI
+                {/* {slug && slug != 'thank-you' ? `Create My ${capitalizeFirstLetter(slug)} Trip` : "Get your Customised Itinerary"} */}
+                </span>
             </div>
           </Button>
         </Link>
