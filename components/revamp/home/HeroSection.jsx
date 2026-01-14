@@ -75,8 +75,8 @@ const HeroSection = ({ title, subtitle }) => {
                 alt={`Hero Image ${index + 1}`}
                 onLoad={handleImageLoad}
                 sizes="(max-width: 768px) 90vw, 600px"
-                priority={index === 0}
-                loading={index === 0 ? "eager" : "lazy"}
+                priority
+                loading={"lazy"}
               />
             </div>
           ))}
