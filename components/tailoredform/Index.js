@@ -43,8 +43,9 @@ import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
 
-
-{/* <Login/> to see this itinerary's cost */}
+{
+  /* <Login/> to see this itinerary's cost */
+}
 const ScrollContainer = styled.div`
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -94,7 +95,7 @@ const Enquiry = (props) => {
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [startingLocation, setStartingLocation] = useState(false);
-  const [selectedRoutes,setSelectedRoutes] = useState();
+  const [selectedRoutes, setSelectedRoutes] = useState();
   const isPageLoaded = usePageLoaded();
   const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
@@ -118,15 +119,23 @@ const Enquiry = (props) => {
   });
 
   const slideIndex = Number(router.query.slideIndex) || 0;
-  const { trackItineraryInitiated, trackItineraryCompleted, trackItineraryCreation, trackItineraryInclusion, trackItineraryPreference, trackItineraryRoute} = useAnalytics();
+  const {
+    trackItineraryInitiated,
+    trackItineraryCompleted,
+    trackItineraryCreation,
+    trackItineraryInclusion,
+    trackItineraryPreference,
+    trackItineraryRoute,
+  } = useAnalytics();
   const { sessionId, isReady } = useAnalyticsSession();
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
 
-  useEffect(()=>{{
-   trackItineraryCreation();
-  }},[]);
-
+  useEffect(() => {
+    {
+      trackItineraryCreation();
+    }
+  }, []);
 
   useEffect(() => {
     if (props.tailoredFormModal) {
@@ -140,17 +149,17 @@ const Enquiry = (props) => {
 
   useEffect(() => {
     if (!router.isReady) return;
-    
+
     const { page_id, destination, type } = router.query;
-    if (page_id && destination && (slideOneData?.selectedCities?.length === 0)) {
+    if (page_id && destination && slideOneData?.selectedCities?.length === 0) {
       const initialInputId = Date.now();
-      let data ={
+      let data = {
         id: page_id,
         name: destination,
         input_id: initialInputId,
-        type: type || 'City',
-      }
-      dispatch(setSelectedCities(page_id,initialInputId, data));
+        type: type || "City",
+      };
+      dispatch(setSelectedCities(page_id, initialInputId, data));
     }
   }, [router.isReady, router.query.page_id, router.query.destination]);
 
@@ -213,7 +222,6 @@ const Enquiry = (props) => {
     selectedCities.length,
     slideIndex,
   ]);
-
 
   const _SlideOneSubmitHandler = () => {
     if (!slideOneData.selectedCities[0].id) {
@@ -295,62 +303,27 @@ const Enquiry = (props) => {
     }
   };
 
-const initiateItineraryCreate = async (slideOneData) => {
-  const data = buildItineraryPayload({
-    source,
-    selectedPreferences: slideOneData.selectedPreferences,
-    EXPERIENCE_FILTERS_BOX,
-    selectedCities,
-    startingLocation,
-    dateData: slideOneData.date,
-    ...(isReady && sessionId && { session_id: sessionId }),
-  });
+  const initiateItineraryCreate = async (slideOneData) => {
+    const data = buildItineraryPayload({
+      source,
+      selectedPreferences: slideOneData.selectedPreferences,
+      EXPERIENCE_FILTERS_BOX,
+      selectedCities,
+      startingLocation,
+      dateData: slideOneData.date,
+      ...(isReady && sessionId && { session_id: sessionId }),
+    });
 
-  let newEndDate = null;
-  let totalDuration = null;
-  let shouldUpdateDates = false;
-  let routeToTrack = null;
+    let newEndDate = null;
+    let totalDuration = null;
+    let shouldUpdateDates = false;
+    let routeToTrack = null;
 
-  const isFixedDate = slideOneData.date.type === "fixed";
-  
-  if (locationsLatLong.length > 0 && slideIndex == 1) {
-    if (isFixedDate && slideOneData.date.start_date) {
-      const startDate = new Date(slideOneData.date.start_date);
-      let currentDate = new Date(startDate);
+    const isFixedDate = slideOneData.date.type === "fixed";
 
-      const updatedRoute = locationsLatLong.map((location) => {
-        const nights = location.duration || location.nights || 1;
-        const start = new Date(currentDate);
-        currentDate.setDate(currentDate.getDate() + nights);
-        const end = new Date(currentDate);
-
-        return {
-          ...location,
-          duration: nights,
-          nights: nights,
-          start_date: start.toISOString().split("T")[0],
-          end_date: end.toISOString().split("T")[0],
-        };
-      });
-
-      newEndDate = new Date(currentDate);
-      totalDuration = Math.ceil(
-        (newEndDate - startDate) / (1000 * 60 * 60 * 24)
-      );
-      shouldUpdateDates = true;
-
-      data["basic_route"] = updatedRoute;
-      routeToTrack = updatedRoute;
-      data["dates"] = {
-        ...data["dates"],
-        end_date: newEndDate.toISOString().split("T")[0],
-        duration: totalDuration,
-      };
-    } else {
-      const hasResponseDates = locationsLatLong.some(loc => loc.start_date && loc.end_date);
-      
-      if (hasResponseDates && itineraryInititateData?.start_date) {
-        const startDate = new Date(itineraryInititateData.start_date);
+    if (locationsLatLong.length > 0 && slideIndex == 1) {
+      if (isFixedDate && slideOneData.date.start_date) {
+        const startDate = new Date(slideOneData.date.start_date);
         let currentDate = new Date(startDate);
 
         const updatedRoute = locationsLatLong.map((location) => {
@@ -368,250 +341,278 @@ const initiateItineraryCreate = async (slideOneData) => {
           };
         });
 
-        data["basic_route"] = updatedRoute;
-        routeToTrack = updatedRoute;
-      } else {
-        const updatedRoute = locationsLatLong.map((location) => {
-          const { start_date, end_date, ...locationWithoutDates } = location;
-          const nights = location.duration || location.nights || 1;
-          
-          return {
-            ...locationWithoutDates,
-            duration: nights,
-            nights: nights,
-          };
-        });
+        newEndDate = new Date(currentDate);
+        totalDuration = Math.ceil(
+          (newEndDate - startDate) / (1000 * 60 * 60 * 24)
+        );
+        shouldUpdateDates = true;
 
         data["basic_route"] = updatedRoute;
         routeToTrack = updatedRoute;
-      }
-      
-      totalDuration = data["basic_route"].reduce((sum, loc) => sum + (loc.duration || 1), 0);
-  
-      if (data["dates"]) {
-        const { start_date, end_date, ...datesWithoutFixed } = data["dates"];
         data["dates"] = {
-          ...datesWithoutFixed,
+          ...data["dates"],
+          end_date: newEndDate.toISOString().split("T")[0],
           duration: totalDuration,
         };
+      } else {
+        const hasResponseDates = locationsLatLong.some(
+          (loc) => loc.start_date && loc.end_date
+        );
+
+        if (hasResponseDates && itineraryInititateData?.start_date) {
+          const startDate = new Date(itineraryInititateData.start_date);
+          let currentDate = new Date(startDate);
+
+          const updatedRoute = locationsLatLong.map((location) => {
+            const nights = location.duration || location.nights || 1;
+            const start = new Date(currentDate);
+            currentDate.setDate(currentDate.getDate() + nights);
+            const end = new Date(currentDate);
+
+            return {
+              ...location,
+              duration: nights,
+              nights: nights,
+              start_date: start.toISOString().split("T")[0],
+              end_date: end.toISOString().split("T")[0],
+            };
+          });
+
+          data["basic_route"] = updatedRoute;
+          routeToTrack = updatedRoute;
+        } else {
+          const updatedRoute = locationsLatLong.map((location) => {
+            const { start_date, end_date, ...locationWithoutDates } = location;
+            const nights = location.duration || location.nights || 1;
+
+            return {
+              ...locationWithoutDates,
+              duration: nights,
+              nights: nights,
+            };
+          });
+
+          data["basic_route"] = updatedRoute;
+          routeToTrack = updatedRoute;
+        }
+
+        totalDuration = data["basic_route"].reduce(
+          (sum, loc) => sum + (loc.duration || 1),
+          0
+        );
+
+        if (data["dates"]) {
+          const { start_date, end_date, ...datesWithoutFixed } = data["dates"];
+          data["dates"] = {
+            ...datesWithoutFixed,
+            duration: totalDuration,
+          };
+        }
       }
     }
-  }
 
-  // Add itinerary_id to payload if it exists (for subsequent calls)
-  if (itineraryId) {
-    data.itinerary_id = itineraryId;
-  }
-
-  const token = localStorage.getItem("access_token");
-
-  try {
-    setIsLoading(true);
-    const res = await itineraryInitiate.post("", data, {
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-    const resData = res.data;
-
-    
-    trackItineraryInitiated("itinerary_initiated");
-    trackItineraryPreference(itineraryId,slideOneData?.selectedPreferences);
-    if (routeToTrack) {
-      trackItineraryRoute(itineraryId, routeToTrack);
-    } else if (resData.basic_route) {
-      trackItineraryRoute(itineraryId, resData.basic_route);
+    // Add itinerary_id to payload if it exists (for subsequent calls)
+    if (itineraryId) {
+      data.itinerary_id = itineraryId;
     }
 
-    setError(null);
-    
-    if (!itineraryId) {
-      setItineraryId(resData.itinerary_id);
-    }
-    
-    setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+    const token = localStorage.getItem("access_token");
 
-    setLocationsLatLong(resData.basic_route || []);
+    try {
+      setIsLoading(true);
+      const res = await itineraryInitiate.post("", data, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      const resData = res.data;
 
-    dispatch(setItineraryInitiateData(resData));
+      trackItineraryInitiated("itinerary_initiated");
+      trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
+      if (routeToTrack) {
+        trackItineraryRoute(itineraryId, routeToTrack);
+      } else if (resData.basic_route) {
+        trackItineraryRoute(itineraryId, resData.basic_route);
+      }
 
-    if (shouldUpdateDates && newEndDate && isFixedDate) {
-      dispatch(
-        setFixedDate(
-          slideOneData.date.start_date,
-          newEndDate.toISOString().split("T")[0]
-        )
+      setError(null);
+
+      if (!itineraryId) {
+        setItineraryId(resData.itinerary_id);
+      }
+
+      setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
+
+      setLocationsLatLong(resData.basic_route || []);
+
+      dispatch(setItineraryInitiateData(resData));
+
+      if (shouldUpdateDates && newEndDate && isFixedDate) {
+        dispatch(
+          setFixedDate(
+            slideOneData.date.start_date,
+            newEndDate.toISOString().split("T")[0]
+          )
+        );
+      }
+
+      setIsRouteChanged(false);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const currentSlideIndex = Number(router.query.slideIndex) || 0;
+      const nextSlideIndex = currentSlideIndex + 1;
+
+      router.push(
+        {
+          pathname: "/new-trip",
+          query: {
+            slideIndex: nextSlideIndex,
+          },
+        },
+        undefined,
+        { shallow: true }
       );
+    } catch (err) {
+      console.log("ERROR: ", err.message);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsRouteChanged(false);
-
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const currentSlideIndex = Number(router.query.slideIndex) || 0;
-    const nextSlideIndex = currentSlideIndex + 1;
-    
-    router.push({
-      pathname: "/new-trip",
-      query: {
-        slideIndex: nextSlideIndex,
-      },
-    }, undefined, { shallow: true });
-
-  } catch (err) {
-    console.log("ERROR: ", err.message);
-    setError(err.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-
-const completeItineraryCreate = () => {
-  const platform = getPlatform();
-
-  const finalItineraryId = itineraryInititateData?.itinerary_id || itineraryId;
-  
-  if (!finalItineraryId) {
-    console.error("❌ No itinerary ID available for completion");
-    setError("Unable to complete itinerary. Please start from the beginning.");
-    setIsSubmitting(false);
-    setIsLoading(false);
-    
-    router.push({
-      pathname: "/new-trip",
-      query: { ...router.query,slideIndex: 0 }
-    });
-    return;
-  }
-  
-
-  const data = {
-    // source,
-    itinerary_id: finalItineraryId,
-    group_type: slideThreeData.groupType || "Solo",
-    number_of_adults: slideThreeData.numberOfAdults,
-    number_of_children: slideThreeData.numberOfChildren,
-    number_of_infants: slideThreeData.numberOfInfants,
-    room_configuration: slideThreeData.roomConfiguration,
-    add_flights: slideThreeData.addFlights,
-    currency: currency?.currency || "INR",
-    add_hotels: slideThreeData.addHotels,
-    add_transfers_and_activities: slideThreeData.addInclusions,
-    hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
-    meal_preferences: slideFourData.mealPreferences,
-    special_request: slideFourData.specialRequests,
   };
 
-  trackItineraryInclusion(itineraryId, {
-    add_flights: slideThreeData.addFlights,
-    add_hotels: slideThreeData.addHotels,
-    add_transfers_and_activities: slideThreeData.addInclusions,
-  });
+  const completeItineraryCreate = () => {
+    const platform = getPlatform();
 
-  setIsSubmitting(true);
-  setIsLoading(true);
-  localStorage.removeItem("MyPlans");
-  let token = localStorage.getItem("access_token");
-  
-  itineraryComplete
-    .post("", data, {
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    })
-    .then((response) => {
-      setError(null);
-      setSubmitted(true);
-      trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
-      dispatch(setItineraryInitiateData(null));
-      dispatch(setItineraryCreated(true));
-      
-      const isProduction = process.env.NODE_ENV === "production";
-      const hasGtag = typeof window.gtag === "function";
-      const hasDataLayer = Array.isArray(window.dataLayer);
-      
+    const finalItineraryId =
+      itineraryInititateData?.itinerary_id || itineraryId;
 
-      let hasNavigated = false;
-      
-      const navigateToItinerary = () => {
-        if (hasNavigated) {
-  
-          return;
-        }
-        hasNavigated = true;
-        router.push(`/itinerary/${itineraryId}`);
-      };
-
-     
-      if (hasGtag) {
-        try {
-          window.gtag('event', 'conversion', {
-            'send_to': 'AW-738037519/IF5rCMyxhL8ZEI-e9t8C',
-            'transaction_id': itineraryId,
-            'value': 1.0,
-            'currency': currency?.currency || 'INR',
-            'event_callback': function() {
-            
-              navigateToItinerary();
-            },
-            'event_timeout': 2000 
-          });
-          
-         
-          
-          
-          setTimeout(() => {
-            if (!hasNavigated) {
-            
-              navigateToItinerary();
-            }
-          }, 2500);
-          
-        } catch (error) {
-          console.error("✗ Error firing Google Ads conversion:", error);
-         
-          navigateToItinerary();
-        }
-      } else {
-        navigateToItinerary();
-      }
-
-     
-      if (hasDataLayer) {
-        try {
-          window.dataLayer.push({
-            event: 'itinerary_completed',
-            itinerary_id: itineraryId,
-            platform: platform,
-            currency: currency?.currency || 'INR',
-            group_type: slideThreeData.groupType || "Solo",
-            number_of_travelers: slideThreeData.numberOfAdults + slideThreeData.numberOfChildren,
-            add_flights: slideThreeData.addFlights,
-            add_hotels: slideThreeData.addHotels,
-            timestamp: new Date().toISOString()
-          });
-         
-        } catch (error) {
-          console.error("✗ Error pushing to dataLayer:", error);
-        }
-      }
-
-     
-      setTimeout(() => {
-        if (!hasNavigated) {
-         
-        }
-      }, 1000);
-      
-    })
-    .catch((err) => {
-     
+    if (!finalItineraryId) {
+      console.error("❌ No itinerary ID available for completion");
+      setError(
+        "Unable to complete itinerary. Please start from the beginning."
+      );
       setIsSubmitting(false);
       setIsLoading(false);
-      setError(err.response.data?.errors?.[0]?.message?.[0]);
-    });
-};
 
+      router.push({
+        pathname: "/new-trip",
+        query: { ...router.query, slideIndex: 0 },
+      });
+      return;
+    }
+
+    const data = {
+      // source,
+      itinerary_id: finalItineraryId,
+      group_type: slideThreeData.groupType || "Solo",
+      number_of_adults: slideThreeData.numberOfAdults,
+      number_of_children: slideThreeData.numberOfChildren,
+      number_of_infants: slideThreeData.numberOfInfants,
+      room_configuration: slideThreeData.roomConfiguration,
+      add_flights: slideThreeData.addFlights,
+      currency: currency?.currency || "INR",
+      add_hotels: slideThreeData.addHotels,
+      add_transfers_and_activities: slideThreeData.addInclusions,
+      hotel_types: slideFourData.hotelType.map((s) => parseInt(s)),
+      meal_preferences: slideFourData.mealPreferences,
+      special_request: slideFourData.specialRequests,
+    };
+
+    trackItineraryInclusion(itineraryId, {
+      add_flights: slideThreeData.addFlights,
+      add_hotels: slideThreeData.addHotels,
+      add_transfers_and_activities: slideThreeData.addInclusions,
+    });
+
+    setIsSubmitting(true);
+    setIsLoading(true);
+    localStorage.removeItem("MyPlans");
+    let token = localStorage.getItem("access_token");
+
+    itineraryComplete
+      .post("", data, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
+      .then((response) => {
+        setError(null);
+        setSubmitted(true);
+        trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
+        dispatch(setItineraryInitiateData(null));
+        dispatch(setItineraryCreated(true));
+
+        const isProduction = process.env.NODE_ENV === "production";
+        const hasGtag = typeof window.gtag === "function";
+        const hasDataLayer = Array.isArray(window.dataLayer);
+
+        let hasNavigated = false;
+
+        const navigateToItinerary = () => {
+          if (hasNavigated) {
+            return;
+          }
+          hasNavigated = true;
+          router.push(`/itinerary/${itineraryId}`);
+        };
+
+        if (hasGtag) {
+          try {
+            window.gtag("event", "conversion", {
+              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+              transaction_id: itineraryId,
+              value: 1.0,
+              currency: currency?.currency || "INR",
+              event_callback: function () {
+                navigateToItinerary();
+              },
+              event_timeout: 2000,
+            });
+
+            setTimeout(() => {
+              if (!hasNavigated) {
+                navigateToItinerary();
+              }
+            }, 2500);
+          } catch (error) {
+            console.error("✗ Error firing Google Ads conversion:", error);
+
+            navigateToItinerary();
+          }
+        } else {
+          navigateToItinerary();
+        }
+
+        if (hasDataLayer) {
+          try {
+            window.dataLayer.push({
+              event: "itinerary_completed",
+              itinerary_id: itineraryId,
+              platform: platform,
+              currency: currency?.currency || "INR",
+              group_type: slideThreeData.groupType || "Solo",
+              number_of_travelers:
+                slideThreeData.numberOfAdults + slideThreeData.numberOfChildren,
+              add_flights: slideThreeData.addFlights,
+              add_hotels: slideThreeData.addHotels,
+              timestamp: new Date().toISOString(),
+            });
+          } catch (error) {
+            console.error("✗ Error pushing to dataLayer:", error);
+          }
+        }
+
+        setTimeout(() => {
+          if (!hasNavigated) {
+          }
+        }, 1000);
+      })
+      .catch((err) => {
+        setIsSubmitting(false);
+        setIsLoading(false);
+        setError(err.response.data?.errors?.[0]?.message?.[0]);
+      });
+  };
 
   const totalSlides = localStorage.getItem("access_token")
     ? slideThreeData.addHotels
@@ -638,15 +639,11 @@ const completeItineraryCreate = () => {
         (step) => step !== "Stay Preferences" && step !== "Login"
       );
 
+      if (slideThreeData?.addHotels) updatedSteps.push("Stay Preferences");
 
-
-      if (slideThreeData?.addHotels) 
-        updatedSteps.push("Stay Preferences");
-
-      if(!isLoggedIn){
+      if (!isLoggedIn) {
         updatedSteps.push("Login");
       }
-
 
       return updatedSteps;
     });
@@ -879,6 +876,11 @@ const completeItineraryCreate = () => {
                       onSuccess={() => {
                         completeItineraryCreate();
                       }}
+                      isTailored={true}
+                      onSkipLogin={() => {
+                        completeItineraryCreate();
+                      }}
+                      message={"Welcome to The Tarzan Way!"}
                     />
                   </div>
                   <div
@@ -979,7 +981,7 @@ const completeItineraryCreate = () => {
               <div className="flex justify-between">
                 <button
                   className={`LargeIndigoOutlinedButton `}
-                  onClick={() => router.back()}
+                  onClick={() => router.push("/")}
                 >
                   Cancel
                 </button>
@@ -1037,7 +1039,9 @@ const completeItineraryCreate = () => {
                   height="50px"
                   loading={isLoading}
                   disabled={isLoading}
-                  onclick={() => {initiateItineraryCreate(slideOneData)}}
+                  onclick={() => {
+                    initiateItineraryCreate(slideOneData);
+                  }}
                 >
                   Continue
                 </Button>
@@ -1046,14 +1050,13 @@ const completeItineraryCreate = () => {
                   className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
                     isDesktop && "w-[300px]"
                   } `}
-                  onClick={() =>{
+                  onClick={() => {
                     trackItineraryRoute(itineraryId, locationsLatLong);
                     router.push({
                       pathname: "/new-trip",
-                      query: { ...router.query,slideIndex: slideIndex + 1 },
-                    })
-                  }
-                }
+                      query: { ...router.query, slideIndex: slideIndex + 1 },
+                    });
+                  }}
                 >
                   Continue
                 </button>
@@ -1151,16 +1154,16 @@ const completeItineraryCreate = () => {
                 color="white"
                 loading={isSubmitting}
                 disabled={isSubmitting}
-                onClick={()=>{ totalSlides == 5
-                      ?
-                       _submitDataHandler()
-                      : router.push({
-                          pathname: "/new-trip",
-                          query: {
-                            slideIndex: slideIndex + 1,
-                          },
-                        });
-                      }}
+                onClick={() => {
+                  totalSlides == 5
+                    ? _submitDataHandler()
+                    : router.push({
+                        pathname: "/new-trip",
+                        query: {
+                          slideIndex: slideIndex + 1,
+                        },
+                      });
+                }}
                 height="50px"
                 width={`${isPageWide ? "300px" : ""}`}
               >
@@ -1168,7 +1171,6 @@ const completeItineraryCreate = () => {
               </Button>
             </div>
           ) : null}
-
         </div>
       </div>
     </>

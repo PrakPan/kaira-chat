@@ -147,7 +147,26 @@ export const useSourceParams = () => {
   const platform = getPlatform();
 
   const source = React.useMemo(() => {
-    const queryObj = { ...router.query };
+    // Read directly from browser URL (most reliable)
+    const queryObj = {};
+    
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      for (const [key, value] of urlParams.entries()) {
+        if (value === "true") queryObj[key] = true;
+        else if (value === "false") queryObj[key] = false;
+        else if (!isNaN(Number(value)) && value !== '') queryObj[key] = Number(value);
+        else queryObj[key] = value;
+      }
+      
+    }
+    
+    // Fallback to router.query if window.location gave nothing
+    if (Object.keys(queryObj).length === 0) {
+      Object.assign(queryObj, router.query);
+      
+    }
 
     const resolvedSource =
       queryObj.utm_source ||
