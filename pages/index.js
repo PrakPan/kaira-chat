@@ -7,9 +7,9 @@ import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMa
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
-import CurveImageGallery from "../components/theme/CurveImageGallery";
-import FaqSection from "../components/revamp/home/FaqSection";
-import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
+// import CurveImageGallery from "../components/theme/CurveImageGallery";
+// import FaqSection from "../components/revamp/home/FaqSection";
+// import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -18,16 +18,43 @@ import { useEffect } from "react";
 import styles from "../styles/pages/revamp/home.module.scss";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
-import axiosCountInstance from "../services/itinerary/count";
 import axioslocationsinstance from "../services/search/search";
 import axios from "axios";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
 import MyTripsSection from "../components/revamp/destination/mytrips";
-import TestimonialCarousel from "../components/theme/TestimonialCarousel";
-import PartnersSection from "../components/theme/PartnersSection";
+// import TestimonialCarousel from "../components/theme/TestimonialCarousel";
+// import PartnersSection from "../components/theme/PartnersSection";
 import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+import Script from "next/script";
+import dynamic from "next/dynamic";
+
+
+const CurveImageGallery = dynamic(
+  () => import("../components/theme/CurveImageGallery"),
+  { ssr: false }
+);
+
+const TestimonialCarousel = dynamic(
+  () => import("../components/theme/TestimonialCarousel"),
+  { ssr: false }
+);
+
+const PartnersSection = dynamic(
+  () => import("../components/theme/PartnersSection"),
+  { ssr: false }
+);
+
+const FaqSection = dynamic(
+  () => import("../components/revamp/home/FaqSection"),
+  { ssr: false }
+);
+
+const CtaBoardingSection = dynamic(
+  () => import("../components/revamp/home/CtaBoardingSection"),
+  { ssr: false }
+);
 
 
 
@@ -60,11 +87,11 @@ const Home = (props) => {
         ></meta>
 
         <link rel="canonical" href={`https://thetarzanway.com`}></link>
-        <script
+        {/* <script
           type="module"
           crossorigin
           src="/vendor/panorama-slider.js"
-        ></script>
+        ></script> */}
         <link
           rel="stylesheet"
           crossorigin
@@ -135,6 +162,11 @@ const Home = (props) => {
         <CtaBoardingSection />
       </div>
       <NewFooter page="Homepage" />
+      <Script
+        src="/vendor/panorama-slider.js"
+        strategy="lazyOnload"
+      />
+
     </>
   );
 };
