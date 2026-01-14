@@ -134,7 +134,7 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
-  const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
+  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
   const cart = useSelector(state=>state.Cart);
@@ -290,7 +290,7 @@ const SimpleTabsV2 = (props) => {
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
-    setLoginModalMessage('Welcome to The Tarzan Way!');
+    setLoginModalMessage('Please login to view details');
   };
 
   const items = [
