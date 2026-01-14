@@ -18,7 +18,6 @@ const CtaBoardingSection = () => {
               alt="Travel destination with water and buildings at sunset"
               fill
               className="object-cover"
-              priority
             />
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/10 via-black/15 to-black/5" />

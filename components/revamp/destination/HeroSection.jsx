@@ -118,7 +118,7 @@ useGSAP(
               alt={`Hero image ${index + 1}`}
               onLoad={handleImageLoad}
               fill
-              priority={index === 0}
+              priority
               style={{ objectFit: 'cover' }}
             />
           </div>
