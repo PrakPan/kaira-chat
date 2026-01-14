@@ -355,7 +355,7 @@ export default function ActivityDetails(props) {
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  className="text-[20px] font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -364,6 +364,7 @@ export default function ActivityDetails(props) {
                   // }
                 >
                   <div>General guidelines</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {boolDetails?.generalGuidelines ? (
                     <IoIosArrowUp />
                   ) : (
@@ -385,7 +386,7 @@ export default function ActivityDetails(props) {
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  className="text-[20px] font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -394,6 +395,7 @@ export default function ActivityDetails(props) {
                   // }
                 >
                   <div>Things to bring</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {boolDetails?.thingsToBring ? (
                     <IoIosArrowUp />
                   ) : (
@@ -415,7 +417,7 @@ export default function ActivityDetails(props) {
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  className="text-[20px] font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -424,6 +426,7 @@ export default function ActivityDetails(props) {
                   // }
                 >
                   <div>Not suitable for</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {boolDetails?.notSuitableFor ? (
                     <IoIosArrowUp />
                   ) : (
@@ -445,7 +448,7 @@ export default function ActivityDetails(props) {
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  className="text-[20px] font-semibold"
                   // onClick={() =>
                   //   setBoolDetail((prev) => ({
                   //     ...prev,
@@ -454,6 +457,7 @@ export default function ActivityDetails(props) {
                   // }
                 >
                   <div>Tips, Tricks and Cautions</div>
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
                   {/* {boolDetails?.tipsTricks ? (
                     <IoIosArrowUp />
                   ) : (

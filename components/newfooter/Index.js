@@ -292,8 +292,7 @@ const NewFooter = (props) => {
             )}
 
             <CompanyText>
-              The Tarzan Way is a travel based startup with the vision to
-              simplify travel and build immersive travel programs across India.
+              The Tarzan Way designs personalised travel experiences powered by Kaira, our AI travel planner. From discovery to bookings, Kaira helps craft seamless, immersive journeys tailored to you.
             </CompanyText>
             <Socials></Socials>
 
