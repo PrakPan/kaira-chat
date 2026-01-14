@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import Loading from "./loading";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
+import ClarityInit from "../components/ClarityInit";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();

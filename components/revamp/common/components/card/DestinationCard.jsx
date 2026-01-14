@@ -45,9 +45,9 @@ const DestinationCard = ({
         fill
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
         style={{ borderRadius: "14px", opacity:0 }}
-        priority
         onLoad={() => setImgLoaded(true)}
         onLoadingComplete={() => setImgLoaded(true)}
+        loading="lazy"
       />
 
       {/* SKELETON VERSION */}

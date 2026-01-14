@@ -126,6 +126,7 @@ const Carousel3D = () => {
                       className="slide-image block w-full h-full object-cover"
                       src={`https://images.thetarzanway.com/${item.image}`}
                       alt={item.title}
+                      loading="lazy"
                     />
                     {/* Gradient Overlay */}
                     <div

@@ -7,9 +7,6 @@ import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMa
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
-// import CurveImageGallery from "../components/theme/CurveImageGallery";
-// import FaqSection from "../components/revamp/home/FaqSection";
-// import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 import NewFooter from "../components/newfooter/Index";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
@@ -24,11 +21,6 @@ import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import { useRouter } from "next/router";
 import MyTripsSection from "../components/revamp/destination/mytrips";
-// import TestimonialCarousel from "../components/theme/TestimonialCarousel";
-// import PartnersSection from "../components/theme/PartnersSection";
-import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
-import TrustFactors from "../components/revamp/home/TrustFactors";
-import ThemeHeadline from "../containers/travelplanner/ThemeHeadines";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 
@@ -58,6 +50,15 @@ const CtaBoardingSection = dynamic(
   { ssr: false }
 );
 
+const TrustFactors = dynamic(
+  () => import("../components/revamp/home/TrustFactors"),
+  { ssr: false }
+);
+
+const LuxuryEuropeDestinations =  dynamic(
+  () => import("../components/revamp/home/LuxuryEuropeDestinations"),
+  { ssr: false }
+);
 
 
 const Home = (props) => {
