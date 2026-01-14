@@ -7,6 +7,7 @@ import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
 import { useRouter } from "next/router";
 import SlideFive from "./slideFive/SlideFive";
+import { useSelector } from "react-redux";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Card = styled.div`
@@ -16,10 +17,18 @@ const Card = styled.div`
   @media screen and (max-width: 768px) {
     margin-bottom:100px;
   }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const FlickityComp = (props) => {
   const router=useRouter()
     const slideIndex = Number(router.query.slideIndex) || 0;
+    const selectedPreferences = useSelector(
+  (state) => state.tailoredInfoReducer.slideOne.selectedPreferences
+);
   return (
     <div style={{ width: "100%" }} className="font-inter h-full">
       {(!slideIndex || slideIndex==0) ? (
@@ -38,8 +47,7 @@ const FlickityComp = (props) => {
             setDestination={props.setDestination}
             selectedCities={props.selectedCities}
             eventDates={props.eventDates}
-            selectedPreferences={props.selectedPreferences}
-            setSelectedPreferences={props.setSelectedPreferences}
+            selectedPreferences={selectedPreferences}
             errors={props.errors}
           ></SlideOne>
         </Card>

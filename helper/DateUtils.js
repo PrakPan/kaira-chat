@@ -70,7 +70,6 @@ export const getCustomDateString = (date, offset) => {
 };
 
 export  const addDaysToDate = (dateString, numberOfDays) => {
-   console.log("props?.",dateString, numberOfDays);
     const newDate = dayjs(dateString).add(numberOfDays, "day");
     return newDate.format("YYYY-MM-DD");
   };
@@ -89,8 +88,7 @@ export function getDatesInRange(startDate, endDate) {
 }
 
 export function getDateDifferenceInDays(checkIn, checkOut) {
-  // Get only the date part: "2025-09-30"
-  console.log("checkIn, checkOut", checkIn, checkOut);
+
   const checkInDate = new Date(checkIn.split(" ")[0]);
   const checkOutDate = new Date(checkOut.split(" ")[0]);
 

@@ -67,6 +67,8 @@ const ComboTaxi = (props) => {
     props?.taxiResults ? props?.taxiResults : []
   );
   const dispatch = useDispatch();
+  const currency = useSelector(state=>state.currency);
+  
 
   const [showDateDropdown, setShowDateDropdown] = useState(false);
   const calendarRef = useRef(null);
@@ -349,7 +351,7 @@ const ComboTaxi = (props) => {
 
     propsToUse?.comboStartDate &&
       axiosTaxiSearch
-        .post("", requestData)
+        .post(`/?currency=${currency?.currency || 'INR'}`, requestData)
         .then((res) => {
           if (res.data.success) {
             setNoResults(false);
@@ -403,11 +405,15 @@ const ComboTaxi = (props) => {
           });
           setLoading(false);
           setError(true);
+          const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] ||
+            err.message ||
+            "There seems to be a problem, please try again later!";
 
           dispatch(
             openNotification({
               type: "error",
-              text: "There seems to be a problem, please try again later!",
+              text: errorMsg,
               heading: "Error!",
             })
           );

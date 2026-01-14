@@ -1,8 +1,23 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import ThankyouPage from "../../containers/corporates[dev]/ThankyouPage";
+import { useEffect } from "react";
 
 export default function ThankYou() {
+  useEffect(() => {
+    const isProduction = process.env.NODE_ENV === "production";
+    const hasGtag = typeof window.gtag === "function";
+
+    if (isProduction && hasGtag) {
+      try {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-738037519/N28QCITrwd0bEI-e9t8C'
+        });
+      } catch (error) {
+        console.error("✗ Error firing corporate conversion event:", error);
+      }
+    }
+  }, []); 
   return (
     <Layout>
       <Head>

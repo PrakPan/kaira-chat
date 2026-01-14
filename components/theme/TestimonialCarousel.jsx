@@ -1,247 +1,302 @@
-import React, { useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import React, { useState } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-const TestimonialCarousel = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-const testimonials = [
+const defaultTestimonials = [
   {
     id: 0,
     name: "Riya & Karan, Delhi",
-    title: "An unforgettable honeymoon in Bali!",
-    review: "TarzanWay made our Bali trip so personal — from a private villa setup to a surprise candlelight dinner by the beach. Everything felt curated just for us. Couldn’t have asked for a better start to our marriage!",
-    image: "/01R.jpg"
+    heading: "An unforgettable honeymoon in Bali!",
+    text: "TarzanWay made our Bali trip so personal — from a private villa setup to a surprise candlelight dinner by the beach. Everything felt curated just for us. Couldn’t have asked for a better start to our marriage!",
+    image: "/01R.jpg",
   },
   {
     id: 1,
     name: "Tanya, Bangalore",
-    title: "Perfect winter escape to Europe",
-    review: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas — it truly felt like a fairytale with all the markets and lights.",
-    image: "/02R.jpg"
+    heading: "Perfect winter escape to Europe",
+    text: "I was worried about the visa process, but their team handled it so smoothly! We explored Germany and Austria during Christmas — it truly felt like a fairytale with all the markets and lights.",
+    image: "/winterr.jpg",
   },
   {
     id: 2,
     name: "Rahul Mehta, Mumbai",
-    title: "Incredible service and constant support",
-    review: "From the first call to landing back home, the TarzanWay team was just a message away. They even rebooked one of our activities in Vietnam last-minute with zero hassle. That kind of support is rare.",
-    image: "/03R.jpg"
+    heading: "Incredible service and constant support",
+    text: "From the first call to landing back home, the TarzanWay team was just a message away. They even rebooked one of our activities in Vietnam last-minute with zero hassle. That kind of support is rare.",
+    image: "/03R.jpg",
   },
   {
     id: 3,
     name: "Isha, Madhya Pradesh",
-    title: "Solo trip turned life-changing!",
-    review: "I booked a solo trip to Japan — the AI itinerary suggested such offbeat places I’d never have found myself. Met amazing people, had local food tours, and even joined a pottery workshop!",
-    image: "/04R.jpg"
+    heading: "Solo trip turned life-changing!",
+    text: "I booked a solo trip to Japan — the AI itinerary suggested such offbeat places I’d never have found myself. Met amazing people, had local food tours, and even joined a pottery workshop!",
+    image: "/04R.jpg",
   },
   {
     id: 4,
     name: "The Shah Family, Delhi",
-    title: "Best family vacation ever",
-    review: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail — from hotel selection to kid-friendly activities — was spot-on. It felt like traveling with a planner who knows your family personally.",
-    image: "/05R.jpg"
+    heading: "Best family vacation ever",
+    text: "We did a 10-day trip to Dubai and Singapore with our kids. Every detail — from hotel selection to kid-friendly activities — was spot-on. It felt like traveling with a planner who knows your family personally.",
+    image: "/05R.jpg",
   },
   {
     id: 5,
     name: "Oliver & Grace, Manchester",
-    title: "Truly personalized experience",
-    review: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style — ours was food + culture, and the itinerary delivered exactly that.",
-    image: "/06R.jpg"
+    heading: "Truly personalized experience",
+    text: "I’ve used a few travel platforms before, but TarzanWay’s customisation tool is next-level. They really get your travel style — ours was food + culture, and the itinerary delivered exactly that.",
+    image: "/truly.jpg",
   },
   {
     id: 6,
     name: "Priya Menon, Bangalore",
-    title: "Kerala was a dream!",
-    review: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable — it felt like exploring with a friend rather than a tour.",
-    image: "/07R.jpg"
+    heading: "Kerala was a dream!",
+    text: "The houseboat experience was straight out of a movie. The local guide they arranged was so warm and knowledgeable — it felt like exploring with a friend rather than a tour.",
+    image: "/kerala.jpg",
   },
   {
     id: 7,
     name: "Daniel C, Goa",
-    title: "Exceeded expectations — and then some!",
-    review: "I planned a last-minute New Year trip through them. The itinerary came together in hours, and everything went perfectly. This is my third trip with TarzanWay, and they keep raising the bar.",
-    image: "/08R.jpg"
-  }
+    heading: "Exceeded expectations — and then some!",
+    text: "I planned a last-minute New Year trip through them. The itinerary came together in hours, and everything went perfectly. This is my third trip with TarzanWay, and they keep raising the bar.",
+    image: "/08R.jpg",
+  },
 ];
 
+const generateSidePositions = (count, side = "left") => {
+  const positions = [];
+  const spacing = 70;
+  const startTop = -140;
+
+  for (let i = 0; i < count; i++) {
+    const top = startTop + i * spacing;
+    const size = i % 2 === 1 ? 90 : 80;
+    if (side === "left") {
+      const left = 40 + (i % 2) * 100;
+      positions.push({ top: `${top}px`, left: `${left}px`, size });
+    } else {
+      const right = 40 + (i % 2) * 100;
+      positions.push({ top: `${top}px`, right: `${right}px`, size });
+    }
+  }
+
+  return positions;
+};
+
+const TestimonialCarousel = (props) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState(
+    props?.reviews ? props.reviews : defaultTestimonials
+  );
+  const [imageErrors, setImageErrors] = useState({});
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setActiveIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length
+    );
   };
 
   const handleImageClick = (index) => {
     setActiveIndex(index);
   };
 
-  // Get images excluding the active one for side display
-  const getDisplayImages = () => {
-    return testimonials
-      .map((item, index) => ({ ...item, originalIndex: index }))
-      .filter((_, index) => index !== activeIndex);
+  // Helper functions
+  const getInitials = (name) => {
+    if (!name) return "?";
+    const names = name.split(",")[0].trim().split(" ");
+    if (names.length >= 2) {
+      return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+    }
+    return names[0][0].toUpperCase();
   };
 
-  const displayImages = getDisplayImages();
+  const getAvatarColor = (name) => {
+    const colors = [
+      "bg-blue-500",
+      "bg-green-500",
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-indigo-500",
+      "bg-red-500",
+      "bg-yellow-500",
+      "bg-teal-500",
+    ];
+    const index = name ? name.length % colors.length : 0;
+    return colors[index];
+  };
+
+  const handleImageError = (imageId) => {
+    setImageErrors((prev) => ({ ...prev, [imageId]: true }));
+  };
+
+  // ImageWithFallback component
+  const ImageWithFallback = ({
+    src,
+    alt,
+    className,
+    style,
+    onClick,
+    imageId,
+  }) => {
+    const hasError = imageErrors[imageId];
+    const hasValidSrc = src && src !== "null" && !src.includes("null");
+
+    return (
+      <>
+        {!hasError && hasValidSrc ? (
+          <img
+            src={src}
+            alt={alt}
+            className={className}
+            style={style}
+            onClick={onClick}
+            onError={() => handleImageError(imageId)}
+          />
+        ) : (
+          <div
+            className={`${className} ${getAvatarColor(
+              alt
+            )} flex items-center justify-center text-white font-bold cursor-pointer`}
+            style={style}
+            onClick={onClick}
+          >
+            <span
+              style={{
+                fontSize: style?.width
+                  ? `${parseInt(style.width) * 0.4}px`
+                  : "24px",
+              }}
+            >
+              {getInitials(alt)}
+            </span>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  const sideImages = testimonials
+    .map((item, index) => ({ ...item, originalIndex: index }))
+    .filter((_, index) => index !== activeIndex);
+
+  const leftImages = sideImages.filter((_, i) => i % 2 === 0);
+  const rightImages = sideImages.filter((_, i) => i % 2 === 1);
+
+  const leftPositions = generateSidePositions(leftImages.length, "left");
+  const rightPositions = generateSidePositions(rightImages.length, "right");
+
   const activeTestimonial = testimonials[activeIndex];
 
-  // Split images: 4 left, 4 right
-  const leftImages = displayImages.slice(0, 4);
-  const rightImages = displayImages.slice(4, 8);
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   return (
-    <div className="min-h-screen bg-white py-8 px-4 sm:px-2 lg:px-8">
+    <div className="min-h-[80vh] bg-white py-8 px-4 sm:px-2 lg:px-8 max-ph:!p-0 max-ph:min-h-[70vh]">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <h1 className="text-3xl max-sm:text-xl  font-bold text-center mb-12 lg:mb-20 text-gray-900">
-          What Our Happy Travelers Say
-        </h1>
+        {!props?.headingNotVisible && (
+          <h1 className="text-3xl max-sm:text-xl font-bold text-center mb-12 lg:mb-20 text-gray-900">
+            What Our Happy Travelers Say
+          </h1>
+        )}
 
         <div className="max-ph:hidden">
           <div className="max-w-7xl mx-auto">
             {/* Image arrangement container */}
             <div className="relative flex items-center justify-center mb-16 min-h-[400px] px-8">
               {/* Left side images */}
-              <div className="absolute left-8 xl:left-20 top-1/2 -translate-y-1/2">
-                {/* Top left */}
-                <div
-                  onClick={() => handleImageClick(leftImages[0].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '-140px', left: '40px' }}
-                >
-                  <img
-                    src={leftImages[0].image}
-                    alt={leftImages[0].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Upper middle left */}
-                <div
-                  onClick={() => handleImageClick(leftImages[1].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '-70px', left: '140px' }}
-                >
-                  <img
-                    src={leftImages[1].image}
-                    alt={leftImages[1].name}
-                    className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Lower middle left */}
-                <div
-                  onClick={() => handleImageClick(leftImages[2].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '50px', left: '0px' }}
-                >
-                  <img
-                    src={leftImages[2].image}
-                    alt={leftImages[2].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Bottom left */}
-                <div
-                  onClick={() => handleImageClick(leftImages[3].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '130px', left: '100px' }}
-                >
-                  <img
-                    src={leftImages[3].image}
-                    alt={leftImages[3].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
+              <div className="absolute left-8 xl:left-20 top-1/2 -translate-y-1/2 w-full">
+                {leftImages.map((img, i) => {
+                  const pos = leftPositions[i];
+                  return (
+                    <div
+                      key={img.id}
+                      className="absolute cursor-pointer transition-all duration-300 hover:scale-110"
+                      style={pos}
+                    >
+                      <ImageWithFallback
+                        src={
+                          props.reviews
+                            ? `${imgUrlEndPoint}${img.image}`
+                            : img.image
+                        }
+                        alt={img.name}
+                        style={{
+                          width: `${pos.size}px`,
+                          height: `${pos.size}px`,
+                        }}
+                        className="object-cover rounded-full border-4 border-white shadow-lg"
+                        onClick={() => handleImageClick(img.originalIndex)}
+                        imageId={`left-${img.id}`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Center - Active large image */}
-              <div className="flex items-center justify-center flex-shrink-0 w-64 h-64 object-cover rounded-full  shadow-2xl z-10 border-[#8DC046] border-[4px]">
-                <div>
-                <img
-                  src={activeTestimonial.image}
+              <div className="flex items-center justify-center flex-shrink-0 w-64 h-64 rounded-full shadow-2xl z-10 border-[#8DC046] border-[4px]">
+                <ImageWithFallback
+                  src={
+                    props.reviews
+                      ? `${imgUrlEndPoint}${activeTestimonial.image}`
+                      : activeTestimonial.image
+                  }
                   alt={activeTestimonial.name}
                   className="flex-shrink-0 w-60 h-60 object-cover rounded-full border-8 shadow-2xl z-10 border-[#fff]"
+                  imageId={`center-${activeTestimonial.id}`}
                 />
-                </div>
               </div>
 
               {/* Right side images */}
-              <div className="absolute right-8 xl:right-20 top-1/2 -translate-y-1/2">
-                {/* Top right */}
-                <div
-                  onClick={() => handleImageClick(rightImages[0].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '-140px', right: '40px' }}
-                >
-                  <img
-                    src={rightImages[0].image}
-                    alt={rightImages[0].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Upper middle right */}
-                <div
-                  onClick={() => handleImageClick(rightImages[1].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '-70px', right: '140px' }}
-                >
-                  <img
-                    src={rightImages[1].image}
-                    alt={rightImages[1].name}
-                    className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Lower middle right */}
-                <div
-                  onClick={() => handleImageClick(rightImages[2].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110 min-w-max"
-                  style={{ top: '50px', right: '0px' }}
-                >
-                  <img
-                    src={rightImages[2].image}
-                    alt={rightImages[2].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div>
-
-                {/* Bottom right */}
-                {/* <div
-                  onClick={() => handleImageClick(rightImages[3].originalIndex)}
-                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110"
-                  style={{ top: '130px', right: '100px' }}
-                >
-                  <img
-                    src={rightImages[3].image}
-                    alt={rightImages[3].name}
-                    className="w-20 h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                  />
-                </div> */}
+              <div className="absolute right-8 xl:right-20 top-1/2 -translate-y-1/2 w-full">
+                {rightImages.map((img, i) => {
+                  const pos = rightPositions[i];
+                  return (
+                    <div
+                      key={img.id}
+                      className="absolute cursor-pointer transition-all duration-300 hover:scale-110"
+                      style={pos}
+                    >
+                      <ImageWithFallback
+                        src={
+                          props.reviews
+                            ? `${imgUrlEndPoint}${img.image}`
+                            : img.image
+                        }
+                        alt={img.name}
+                        style={{
+                          width: `${pos.size}px`,
+                          height: `${pos.size}px`,
+                        }}
+                        className="object-cover rounded-full border-4 border-white shadow-lg"
+                        onClick={() => handleImageClick(img.originalIndex)}
+                        imageId={`right-${img.id}`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             {/* Review section - Desktop */}
             <div className="text-center max-w-3xl mx-auto px-4">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {activeTestimonial.title}
+                {activeTestimonial.heading}
               </h3>
-              <div className='flex gap-5'>
-                 <button
+              <div className="flex gap-5">
+                <button
                   onClick={handlePrev}
                   className="text-black"
-                  aria-label="Next review"
+                  aria-label="Previous review"
                 >
                   <FiChevronLeft size={24} />
                 </button>
 
-              <p className="text-gray-600 text-base leading-relaxed mb-4">
-                "{activeTestimonial.review}"
-              </p>
-               <button
+                <p className="text-gray-600 text-base leading-relaxed mb-4">
+                  "{activeTestimonial.text}"
+                </p>
+                <button
                   onClick={handleNext}
                   className="text-black"
                   aria-label="Next review"
@@ -249,155 +304,98 @@ const testimonials = [
                   <FiChevronRight size={24} />
                 </button>
               </div>
-              <p className="text-lg font-bold text-gray-900 mb-6">
+              <p className="text-base font-bold text-gray-900 mb-6">
                 - {activeTestimonial.name}
               </p>
-
-
-              {/* Navigation Buttons */}
-              <div className="flex justify-center items-center gap-4">
-                
-
-               
-              </div>
             </div>
           </div>
         </div>
 
         {/* Mobile/Tablet Layout */}
-       <div className="block md:hidden">
+        <div className="block md:hidden">
+          {/* Container for circular image arrangement */}
+          <div className="relative flex justify-center items-center min-h-[300px] mb-8">
+            {/* Side images arranged in a circle around center */}
+            {sideImages.map((img, i) => {
+              const angle = (i / sideImages.length) * 2 * Math.PI;
+              const radius = 128;
+              const x = radius * Math.cos(angle);
+              const y = radius * Math.sin(angle);
 
-          <div className="flex flex-col items-center">
-            {/* Top row of small images */}
-            <div className="flex justify-center gap-4 mb-6">
-              {displayImages.slice(0, 2).map((testimonial) => (
+              return (
                 <div
-                  key={testimonial.id}
-                  onClick={() => handleImageClick(testimonial.originalIndex)}
-                  className="cursor-pointer transition-all duration-300 hover:scale-110"
+                  key={img.id}
+                  onClick={() => handleImageClick(img.originalIndex)}
+                  className="absolute cursor-pointer transition-all duration-300 hover:scale-110"
+                  style={{
+                    top: `calc(50% + ${y}px)`,
+                    left: `calc(50% + ${x}px)`,
+                    transform: "translate(-50%, -50%)",
+                    width: "56px", // Fixed width
+                    height: "56px", // Fixed height
+                  }}
                 >
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full border-4 border-white shadow-lg"
+                  <ImageWithFallback
+                    src={
+                      props.reviews
+                        ? `${imgUrlEndPoint}${img.image}`
+                        : img.image
+                    }
+                    alt={img.name}
+                    style={{ width: "56px", height: "56px" }} // Explicit size
+                    className="object-cover rounded-full border-4 border-white shadow-lg"
+                    imageId={`mobile-side-${img.id}`}
                   />
                 </div>
-              ))}
+              );
+            })}
+
+            {/* Center active image */}
+            <div className="z-10" style={{ width: "128px", height: "128px" }}>
+              <ImageWithFallback
+                src={
+                  props.reviews
+                    ? `${imgUrlEndPoint}${activeTestimonial.image}`
+                    : activeTestimonial.image
+                }
+                alt={activeTestimonial.name}
+                style={{ width: "128px", height: "128px" }} // Explicit size
+                className="object-cover rounded-full border-4 border-[#8DC046] shadow-2xl"
+                imageId={`mobile-center-${activeTestimonial.id}`}
+              />
             </div>
+          </div>
 
-            {/* Center large image with side images */}
-            <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6 w-full px-4">
-              {/* Left side images */}
-              <div className="flex flex-col gap-4">
-                {displayImages.slice(2, 4).map((testimonial) => (
-                  <div
-                    key={testimonial.id}
-                    onClick={() => handleImageClick(testimonial.originalIndex)}
-                    className="cursor-pointer transition-all duration-300 hover:scale-110"
-                  >
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-full border-4 border-white shadow-lg"
-                    />
-                  </div>
-                ))}
-              </div>
+          {/* Review text and navigation - Now separate from image container */}
+          <div className="flex flex-col items-center px-4 text-center w-full mt-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              {activeTestimonial.heading}
+            </h3>
 
-              {/* Center active image */}
-              <div className="flex-shrink-0">
-                <img
-                  src={activeTestimonial.image}
-                  alt={activeTestimonial.name}
-                  className="w-44 h-44 sm:w-56 sm:h-56 object-cover rounded-full border-4 border-green-400 shadow-2xl"
-                />
-              </div>
+            <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4">
+              "{activeTestimonial.text}"
+            </p>
 
-              {/* Right side images */}
-              <div className="flex flex-col gap-4">
-                {displayImages.slice(4, 6).map((testimonial) => (
-                  <div
-                    key={testimonial.id}
-                    onClick={() => handleImageClick(testimonial.originalIndex)}
-                    className="cursor-pointer transition-all duration-300 hover:scale-110"
-                  >
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-full border-4 border-white shadow-lg"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="flex gap-3 items-center justify-center">
+              <button
+                onClick={handlePrev}
+                className="text-black p-2"
+                aria-label="Previous review"
+              >
+                <FiChevronLeft size={20} />
+              </button>
 
-            {/* Bottom row */}
-            {displayImages.length > 6 && (
-              <div className="flex justify-center gap-4 mb-8 text-md">
-                {displayImages.slice(6).map((testimonial) => (
-                  <div
-                    key={testimonial.id}
-                    onClick={() => handleImageClick(testimonial.originalIndex)}
-                    className="cursor-pointer transition-all duration-300 hover:scale-110"
-                  >
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-full border-4 border-white shadow-lg"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Review section - Mobile */}
-            <div className="text-center px-4 max-w-2xl">
-              
-              <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-4">
-                "{activeTestimonial.review}"
-              </p>
-             
-              <div className='flex gap-3 items-center justify-center'>
-                <button
-                  onClick={handlePrev}
-                  className="text-black"
-                  aria-label="Next review"
-                >
-                  <FiChevronLeft size={20} />
-                </button>
-              <p className="text-lg sm:text-md font-bold text-gray-900 items-center justify-center">
+              <p className="text-base sm:text-lg font-bold text-gray-900">
                 {activeTestimonial.name}
               </p>
-               <button
-                  onClick={handleNext}
-                  className="text-black"
-                  aria-label="Next review"
-                >
-                  <FiChevronRight size={20} />
-                </button>
-              </div>
 
-              {/* Navigation */}
-              {/* <div className="flex justify-center items-center gap-4"> */}
-                
-
-                {/* <div className="flex gap-1.5">
-                  {testimonials.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveIndex(index)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        activeIndex === index
-                          ? 'bg-green-500 w-6'
-                          : 'bg-gray-300 w-2'
-                      }`}
-                      aria-label={`Go to review ${index + 1}`}
-                    />
-                  ))}
-                </div> */}
-
-                
-              {/* </div> */}
+              <button
+                onClick={handleNext}
+                className="text-black p-2"
+                aria-label="Next review"
+              >
+                <FiChevronRight size={20} />
+              </button>
             </div>
           </div>
         </div>

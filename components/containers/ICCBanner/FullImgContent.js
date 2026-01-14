@@ -76,7 +76,10 @@ const FullImgContent = (props) => {
     // } else {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.destination || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -156,7 +159,7 @@ const FullImgContent = (props) => {
         >
           {props.slug === "icc-champions-trophy-2025"
             ? "Book Now!"
-            : "Plan Your Trip Now!"}
+            : "+ Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 

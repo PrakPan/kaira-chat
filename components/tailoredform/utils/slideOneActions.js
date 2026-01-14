@@ -1,8 +1,9 @@
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { fadeIn } from "react-animations";
 import { useSelector } from "react-redux";
 import styled, { keyframes } from "styled-components";
+import getPlatform from "../../../utils/getPlatform";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 
@@ -103,7 +104,8 @@ export function buildItineraryPayload({
   EXPERIENCE_FILTERS_BOX,
   selectedCities,
   startingLocation,
-  dateData
+  dateData,
+  session_id = null,
 }) {
   const preferences = buildPreferences(selectedPreferences, EXPERIENCE_FILTERS_BOX);
   const { cityids, stateIds, countryIds, continentIds, pageIds } =
@@ -134,6 +136,8 @@ export function buildItineraryPayload({
     pages: pageIds,
     end_location: {},
     dates: datesPayload,
+    ...(session_id != null && { session_id })
+
   };
 }
 
@@ -141,29 +145,39 @@ export const useSourceParams = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const params = useParams();
+  const platform = getPlatform();
 
-  const source = useMemo(() => {
+  const source = React.useMemo(() => {
     const queryObj = {};
+
     for (const [key, value] of searchParams.entries()) {
       if (value === "true") queryObj[key] = true;
       else if (value === "false") queryObj[key] = false;
-      else if (!isNaN(value)) queryObj[key] = Number(value);
+      else if (!isNaN(Number(value))) queryObj[key] = Number(value);
       else queryObj[key] = value;
     }
 
     let resolvedPath = pathname;
-    for (const [key, val] of Object?.entries(params)) {
-      resolvedPath = resolvedPath?.replace(`[${key}]`, val);
+    for (const [key, val] of Object.entries(params || {})) {
+      resolvedPath = resolvedPath.replace(`[${key}]`, val);
     }
+
+    const resolvedSource =
+      queryObj.utm_source ||
+      queryObj.source ||
+      "new-trip";
 
     return {
       path: resolvedPath,
+      platform,
       ...queryObj,
+      source: resolvedSource,
     };
-  }, [pathname, searchParams, params]);
+  }, [pathname, searchParams, params, platform]);
 
   return source;
 };
+
 
 export const Container = styled.div`
   height: max-content;
@@ -196,7 +210,7 @@ export const BlackContainer = styled.div`
 export const headings = [
   "Select Your Travel Destinations and Dates",
   "Customize Your Journey from Start to Finish",
-  "Tell Us Who’s In and What You Need to Make It Perfect",
-  "Let Us Know Your Stay Preferences and Get Your Itinerary",
+  "Select your Group Type & Inclusions",
+  "Select Your Hotel Preferences",
   // "Awesome! We've Got Your Details",
 ];

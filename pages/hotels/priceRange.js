@@ -11,7 +11,6 @@ const SelectWithSearch = ({ input,setOpen, options, setInput, name }) => {
 
 
   const handleSelect = (option) => {
-    console.log("price range selected",option)
     setInput((prev) => ({
       ...prev,
       price_lower_range:option?.value?.price_lower_range,

@@ -31,7 +31,7 @@ const Layout = React.memo((props) => {
     async function getUserLocation(ip) {
       try {
         const res = await axios.get(
-          `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
+          `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ip}`
         );
 
         const data = res.data;
@@ -86,12 +86,15 @@ const Layout = React.memo((props) => {
     };
   }, [props.token]);
 
+
   return (
-    <div className="layout">
-      <NavigationMenu/>
+    <div className={`layout ${props?.isItinerary == true || props?.isTerms == true ?  '' : 'overflow-x-hidden'}`}>
+      <NavigationMenu isItinerary={props?.isItinerary}/>
 
       <div
-        style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
+        style={{ marginTop: props.isItinerary === true
+        ? (isPageWide ? "72px" : "0px")
+        : "0px" }}
       >
         {props.children}
       </div>

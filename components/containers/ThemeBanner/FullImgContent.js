@@ -77,7 +77,10 @@ const FullImgContent = (props) => {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.destination || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -159,7 +162,7 @@ const FullImgContent = (props) => {
         >
           {props.slug === "honeymoon-2025"
             ? "Plan Your Honeymoon!"
-            : "Plan Your Trip Now!"}
+            : "+ Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 

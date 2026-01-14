@@ -112,12 +112,13 @@ const MidSectionV2 = (props) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const {id} = useSelector((state) => state.auth);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
-  const {trackTransferBookingAdd,trackTransferBookingChange} =  useAnalytics();
+  const {trackTransferBookingAdd,trackTransferBookingChange,trackTransferCardClicked} =  useAnalytics();
 
   const handleAddTransfer = () => {
-    
-      trackTransferBookingChange(router.query.id,props?.transferId,props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
-   
+    if(props.cityTransferBookings?.id){
+      trackTransferBookingChange(router.query.id,props?.transferId,id,props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
+    }else 
+    trackTransferCardClicked(router.query.id,props?.transferId,'route_section',props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
@@ -216,8 +217,7 @@ const MidSectionV2 = (props) => {
           <>
             {props.version == "v2" ? (
               <Text>
-                {props.cityTransferBookings &&
-                props.cityTransferBookings?.id ? (
+                {props.cityTransferBookings && props.cityTransferBookings?.id ? (
                   <></>
                 ) : (
                   <button
@@ -228,8 +228,7 @@ const MidSectionV2 = (props) => {
                   </button>
                 )}
 
-                {props.cityTransferBookings && props.cityTransferBookings?.id
-                 ? (
+                {props.cityTransferBookings && props.cityTransferBookings?.id ? (
                   <div
                     className={`inline-flex items-center gap-2 ${
                       !isPageWide ? "w-max" : ""
@@ -237,13 +236,14 @@ const MidSectionV2 = (props) => {
                   >
                     <div className="text-base text-[#01202B]">
                       {" "}
-                      {props.modes} {props.cityTransferBookings?.duration ? ": " + props.cityTransferBookings?.duration : ''}
+                      {props.modes} {props.cityTransferBookings?.duration ? ": " + props.cityTransferBookings?.duration : null}
                     </div>
                   </div>
                 ) : (
                   <></>
                 )}
 
+               
                 {props.cityTransferBookings && props.cityTransferBookings?.id && (
                     <div
                       id="transferEdit"
@@ -274,7 +274,7 @@ const MidSectionV2 = (props) => {
               </Text>
             ) : (
               <div className="font-normal text-base text-[#01202B]">
-                {props.modes ? `${props.modes} :` : null} {props.duration}
+                {props.modes ? `${props.modes} :` : null} {props?.duration}
               </div>
             )}
           </>

@@ -143,7 +143,10 @@ const Index = (props) => {
     //   convertDbNameToCapitalFirst(props.data.slug),
     //   props.type
     // );
-    router.push("/new-trip");
+    router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -161,13 +164,17 @@ const Index = (props) => {
       <div>
         <HeroSection
           title={validateTextSize(
-            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
+            `Your ${convertDbNameToCapitalFirst(
               props.data.slug
-            )} now!`,
+            )} Trip, Designed Around You`,
+            // `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
+            //   props.data.slug
+            // )} now!`,
             9,
             `Craft a trip to ${props.data.destination} now!`
           )}
           image={`${imgUrlEndPoint}${props.data.image}`}
+          slug={props?.data?.slug}
         />
 
         <SetWidthContainer>
@@ -175,7 +182,10 @@ const Index = (props) => {
              <DesktopBanner
             loading={desktopBannerLoading}
             onclick={() =>
-              {router.push("/new-trip");}
+              {router.push({
+        pathname: "/new-trip",
+        query: { source: props?.data?.slug || 'home' }
+    });}
               // openTailoredModal(
               //   router,
               //   props.data.id,
@@ -325,7 +335,7 @@ const Index = (props) => {
           ) : null}
 
           {/* <MapGridContainer> */}
-          <Overview
+          {props?.data?.slug != 'europe-continent' && <Overview
             heading={props.data.overview_heading}
             text={props.data.overview_text}
             image={props.data.overview_image}
@@ -333,7 +343,7 @@ const Index = (props) => {
             page_id={props.data.id}
             type={props.type}
             destination={convertDbNameToCapitalFirst(props.data.slug)}
-          ></Overview>
+          ></Overview>}
 
           {/* <MapContainer>
               {props.data.cities && props.data.cities.length ? (
@@ -346,7 +356,7 @@ const Index = (props) => {
             </MapContainer> */}
           {/* </MapGridContainer> */}
 
-          <Button
+          {/* <Button
             onclick={() =>
               handlePlanButtonClick(
                 `A little about ${props?.data?.destination}`
@@ -361,7 +371,7 @@ const Index = (props) => {
             color="white"
           >
             Create your travel plan now!
-          </Button>
+          </Button> */}
 
           {props?.data?.components?.length > 0 &&
             props?.data?.components?.map((component) => {
@@ -414,7 +424,7 @@ const Index = (props) => {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "destination-3" ? (
                       <>
@@ -791,7 +801,7 @@ const Index = (props) => {
                             </div>
                           </div>
                         </div>
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>

@@ -294,7 +294,7 @@ export const trackBookingConfirmed = (itineraryId, bookingIds, amount, currency)
 };
 
 // Communication Events
-export const trackWhatsAppClicked = (itineraryId, amount, currency) => {
+export const trackWhatsAppClicked = (itineraryId, amount = null, currency = null) => {
   track('whatsapp_clicked', {
     itinerary_id: itineraryId,
     amount,

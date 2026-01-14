@@ -66,6 +66,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -78,7 +79,7 @@ const SetWidthContainer = styled.div`
 `;
 
 export default function ThemePage(props) {
-  console.log("ladakh props are: ", props);
+
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -86,12 +87,12 @@ export default function ThemePage(props) {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
-   const [activeDrawer, setActiveDrawer] = useState(null);
-  
-    const handleOpenDrawer = (data, type) => {
-      setActiveDrawer({ data, type });
-    };
-     const handleCloseDrawer = () => {
+  const [activeDrawer, setActiveDrawer] = useState(null);
+
+  const handleOpenDrawer = (data, type) => {
+    setActiveDrawer({ data, type });
+  };
+  const handleCloseDrawer = () => {
     setActiveDrawer(null);
   };
 
@@ -113,7 +114,10 @@ export default function ThemePage(props) {
   }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
-    router.push("/new-trip");
+    router.push({
+      pathname: "/new-trip",
+      query: { source: props?.slug || 'home' }
+    });
     // if (isPageWide) {
     //   setShowTailoredModal(true);
     // } else {
@@ -171,8 +175,8 @@ export default function ThemePage(props) {
               props?.slug === "ladakh"
                 ? "state"
                 : props?.slug === "thailand"
-                ? "country"
-                : "country"
+                  ? "country"
+                  : "country"
             }
             destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
             cities={props.experienceData.locations}
@@ -196,9 +200,9 @@ export default function ThemePage(props) {
         //   page={"State Page"}
         //   slug={props.slug}
         // />
-         <HeroSection title={props.experienceData.banner_heading}
-         subtitle={props.experienceData.banner_text}
-          image={`${imgUrlEndPoint}${props.experienceData.image}`}/>
+        <HeroSection title={props.experienceData.banner_heading}
+          subtitle={props.experienceData.banner_text}
+          image={`${imgUrlEndPoint}${props.experienceData.image}`} slug={props?.slug} />
       )}
       {props.slug === "ladakh" && <LadakhLogo />}
 
@@ -253,9 +257,9 @@ export default function ThemePage(props) {
           <PathNavigation path={"asia/japan"} />
         )}
         {props.experienceData.overview_heading &&
-        props.experienceData.overview_text &&
-        props?.slug !== "ladakh" &&
-        props?.slug !== "thailand" ? (
+          props.experienceData.overview_text &&
+          props?.slug !== "ladakh" &&
+          props?.slug !== "thailand" && props?.slug !== "dubai" && props?.slug !== "japan" && props?.slug !== "singapore" && props?.slug !== "bali" && props?.slug != 'europe-continent' ? (
           <Overview
             heading={props.experienceData.overview_heading}
             text={props.experienceData.overview_text}
@@ -275,12 +279,13 @@ export default function ThemePage(props) {
               className={
                 "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
               }
-              text={"Plan Your Trip Now!"}
+              text={"+ Plan Your Trip Now!"}
               page_id={props.country?.id}
               type={"country"}
               destination={convertDbNameToCapitalFirst(
                 props.experienceData.slug
               )}
+              slug={props?.slug}
             />
           </>
         )}
@@ -308,7 +313,7 @@ export default function ThemePage(props) {
 
                     <CarouselNavigation slug={props?.slug} components={navComponents} />
 
-                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
                   </div>
                 ) : null;
               }
@@ -320,31 +325,28 @@ export default function ThemePage(props) {
                       {(props?.slug === "perfect-proposals-2025" &&
                         (component?.priority == 13 ||
                           component?.priority == 9)) ||
-                      component.heading == "The Gallery Section" ? (
+                        component.heading == "The Gallery Section" ? (
                         ""
                       ) : (
                         <PrimaryHeading
-                          className={` ${
-                            props?.slug != "japan-cherry-blossom"
-                              ? "mx-auto text-center"
-                              : "mt-7"
-                          }
-                          ${
-                            props?.slug == "ladakh" &&
+                          className={` ${props?.slug != "japan-cherry-blossom"
+                            ? "mx-auto text-center"
+                            : "mt-7"
+                            }
+                          ${props?.slug == "ladakh" &&
                             component.carousel == "destination-7" &&
                             "max-w-[600px]"
-                          }
+                            }
                           `}
                         >
                           {component.heading}
                         </PrimaryHeading>
                       )}
                       <SecondaryHeading
-                        className={`mx-auto text-center ${
-                          props?.slug == "ladakh" &&
+                        className={`mx-auto text-center ${props?.slug == "ladakh" &&
                           component.carousel == "destination-7" &&
                           "max-w-[800px] text-[#7C7C7C]"
-                        }`}
+                          }`}
                       >
                         {component.text}
                       </SecondaryHeading>
@@ -419,7 +421,7 @@ export default function ThemePage(props) {
 
                     {component.type === "Generic" &&
                       component?.heading ===
-                        "How We Keep It Budget-Friendly?" && (
+                      "How We Keep It Budget-Friendly?" && (
                         <div>
                           <BudgetFriendly
                             page_id={props.experienceData?.id}
@@ -427,6 +429,18 @@ export default function ThemePage(props) {
                           ></BudgetFriendly>
                         </div>
                       )}
+
+                    {component.type === "Why Choose Us?" &&
+                      // component?.heading ===
+                      //   "How We Keep It Budget-Friendly?" && (
+                      <div>
+                        <BudgetFriendly
+                          page_id={props.experienceData?.id}
+                          destination={props.experienceData?.destination}
+                        ></BudgetFriendly>
+                      </div>
+                      // )
+                    }
 
                     {component.type === "How it works?" && (
                       <div>
@@ -463,28 +477,29 @@ export default function ThemePage(props) {
                             })),
                           ]}
                         />
-                        <PlanYourTripButton text={"Start your journey now!"} />
+                        <PlanYourTripButton text={"Start your journey now!"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
                         <Itinerary1Carousel
                           itineraries={component.itineraries}
                         />
-                         {/* < MostLovedItinerariesSection apiItineraries={component.itineraries} /> */}
+                        {/* < MostLovedItinerariesSection apiItineraries={component.itineraries} /> */}
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
                             className={
                               "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                             }
-                            text={"Plan Your Trip Now!"}
+                            text={"+ Plan Your Trip Now!"}
                             page_id={props.state?.id}
                             type={"state"}
                             destination={convertDbNameToCapitalFirst(
                               props.experienceData.slug
                             )}
+                            slug={props?.slug}
                           />
                         ) : (
-                          <PlanYourTripButton />
+                          <PlanYourTripButton slug={props?.slug} />
                         )}
                       </>
                     ) : component.carousel === "itinerary-2" ? (
@@ -524,95 +539,97 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                         />{" "} */}
                         <div className="relative px-2 sm:px-0">
-            <Swiper
-              style={{ height: "auto" }}
-              modules={[Navigation]}
-              spaceBetween={16}
-              slidesPerView={1}
-              navigation={{
-                nextEl: ".PlacesBragSection-next",
-                prevEl: ".PlacesBragSection-prev",
-                clickable: true,
-              }}
-              breakpoints={{
-                // when window width is >= 640px
-                640: {
-                  slidesPerView: 1.5,
-                  spaceBetween: 16,
-                },
-                // when window width is >= 768px
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
-                  slidesPerView: 4,
-                  spaceBetween: 24,
-                },
-              }}
-            >
-              {component.activities.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      image={destination.image}
-                      rating={destination.rating}
-                      one_liner_description={destination?.one_liner_description}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
-                      gradientOverlay={destination.gradientOverlay}
-                       onClick={() => handleOpenDrawer(destination, "activity")}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-            <div className="PlacesBragSection-prev" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
-            </div>
+                          <Swiper
+                            style={{ height: "auto" }}
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            navigation={{
+                              nextEl: ".PlacesBragSection-next",
+                              prevEl: ".PlacesBragSection-prev",
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              // when window width is >= 640px
+                              640: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                              },
+                              // when window width is >= 768px
+                              768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                              },
+                              // when window width is >= 1024px
+                              1024: {
+                                slidesPerView: 4,
+                                spaceBetween: 24,
+                              },
+                            }}
+                          >
+                            {component.activities.map((destination) => (
+                              <SwiperSlide key={destination.id}>
+                                <div className="w-full px-1">
+                                  <DestinationCard
+                                    title={destination.title || destination.name}
+                                    description={
+                                      destination.description || destination.tagline
+                                    }
+                                    image={destination.image}
+                                    rating={destination.rating}
+                                    one_liner_description={destination?.one_liner_description}
+                                    reviewCount={destination.user_ratings_total}
+                                    showImageText={false}
+                                    height="280px"
+                                    tags={
+                                      destination.tags ||
+                                      (destination.continent ? [destination.continent] : [])
+                                    }
+                                    gradientOverlay={destination.gradientOverlay}
+                                    onClick={() => handleOpenDrawer(destination, "activity")}
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div className="PlacesBragSection-prev" aria-hidden>
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(280px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronLeft}
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
-            {/* Custom Next Button - centered to image height (376px) */}
-            <div className="PlacesBragSection-next" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+                          {/* Custom Next Button - centered to image height (376px) */}
+                          <div className="PlacesBragSection-next" aria-hidden>
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(280px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronRight}
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <PlanYourTripButton
                           text={"Create your free itinerary"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "review-1" ? (
@@ -630,7 +647,9 @@ export default function ThemePage(props) {
                           </div>
                         )}
 
-                        <Reviews1Carousel reviews={component.reviews} />
+
+                        <TestimonialCarousel headingNotVisible={true} reviews={component.reviews} />
+
                         {props?.slug == "ladakh" ? (
                           <PlanYourTripLadakhButton
                             page_id={props.state?.id}
@@ -641,13 +660,14 @@ export default function ThemePage(props) {
                             className={
                               "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                             }
-                            text={"Plan Your Trip Now!"}
+                            text={"+ Plan Your Trip Now!"}
+                            slug={props?.slug}
                           />
                         ) : (
-                          <PlanYourTripButton />
+                          <PlanYourTripButton slug={props?.slug} />
                         )}
                       </div>
-                    ) : component.carousel === "destination-3" ? (
+                    ) : component.carousel === "destination-3" || component.carousel === "country-1" ? (
                       <>
                         <SwiperLocations
                           locations={component?.countries}
@@ -660,6 +680,7 @@ export default function ThemePage(props) {
                         ></SwiperLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "state-1" ? (
@@ -675,6 +696,7 @@ export default function ThemePage(props) {
                         ></OldLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "destination-4" ? (
@@ -698,7 +720,7 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <>
@@ -711,9 +733,9 @@ export default function ThemePage(props) {
                           slug={props?.slug}
                           page={"Country Page"}
                         />
-                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                        <PlanYourTripButton text={"+ Plan Itinerary For Free"} slug={props?.slug} />
                       </>
-                    ) : component.carousel === "destination-5" ? (
+                    ) : component.carousel === "destination-5" || component.carousel === "poi-1" ? (
                       <>
                         {/* <Poi
                           elevation={component?.elevation}
@@ -722,93 +744,94 @@ export default function ThemePage(props) {
                           pois={component?.pois}
                           city={component?.name}
                         /> */}
-                         <div className="relative px-2 sm:px-0">
-            <Swiper
-              style={{ height: "auto" }}
-              modules={[Navigation]}
-              spaceBetween={16}
-              slidesPerView={1}
-              navigation={{
-                nextEl: ".PlacesBragSection-n",
-                prevEl: ".PlacesBragSection-p",
-                clickable: true,
-              }}
-              breakpoints={{
-                // when window width is >= 640px
-                640: {
-                  slidesPerView: 1.5,
-                  spaceBetween: 16,
-                },
-                // when window width is >= 768px
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                // when window width is >= 1024px
-                1024: {
-                  slidesPerView: 4,
-                  spaceBetween: 24,
-                },
-              }}
-            >
-              {component?.pois.map((destination) => (
-                <SwiperSlide key={destination.id}>
-                  <div className="w-full px-1">
-                    <DestinationCard
-                      title={destination.title || destination.name}
-                      description={
-                        destination.description || destination.tagline
-                      }
-                      image={destination.image}
-                      rating={destination.rating}
-                      reviewCount={destination.user_ratings_total}
-                      showImageText={false}
-                      tags={
-                        destination.tags ||
-                        (destination.continent ? [destination.continent] : [])
-                      }
-                      onClick={() => handleOpenDrawer(destination, "poi")}
-                      gradientOverlay={destination.gradientOverlay}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-            <div className="PlacesBragSection-p" aria-hidden>
-              <div
-                className="absolute left-3 sm:left-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronLeft}
-                    className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
-            </div>
+                        <div className="relative px-2 sm:px-0">
+                          <Swiper
+                            style={{ height: "auto" }}
+                            modules={[Navigation]}
+                            spaceBetween={16}
+                            slidesPerView={1}
+                            navigation={{
+                              nextEl: ".PlacesBragSection-n",
+                              prevEl: ".PlacesBragSection-p",
+                              clickable: true,
+                            }}
+                            breakpoints={{
+                              // when window width is >= 640px
+                              640: {
+                                slidesPerView: 1.5,
+                                spaceBetween: 16,
+                              },
+                              // when window width is >= 768px
+                              768: {
+                                slidesPerView: 2,
+                                spaceBetween: 20,
+                              },
+                              // when window width is >= 1024px
+                              1024: {
+                                slidesPerView: 4,
+                                spaceBetween: 24,
+                              },
+                            }}
+                          >
+                            {component?.pois.map((destination) => (
+                              <SwiperSlide key={destination.id}>
+                                <div className="w-full px-1">
+                                  <DestinationCard
+                                    title={destination.title || destination.name}
+                                    description={
+                                      destination.description || destination.tagline
+                                    }
+                                    image={destination.image}
+                                    rating={destination.rating}
+                                    reviewCount={destination.user_ratings_total}
+                                    showImageText={false}
+                                    height="280px"
+                                    tags={
+                                      destination.tags ||
+                                      (destination.continent ? [destination.continent] : [])
+                                    }
+                                    onClick={() => handleOpenDrawer(destination, "poi")}
+                                    gradientOverlay={destination.gradientOverlay}
+                                  />
+                                </div>
+                              </SwiperSlide>
+                            ))}
+                          </Swiper>
+                          <div className="PlacesBragSection-p" aria-hidden>
+                            <div
+                              className="absolute left-3 sm:left-1 z-10"
+                              style={{
+                                top: "calc(280px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronLeft}
+                                  className="text-white group-hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
 
-            {/* Custom Next Button - centered to image height (376px) */}
-             <div className="PlacesBragSection-n" aria-hidden>
-              <div
-                className="absolute right-3 sm:right-1 z-10"
-                style={{
-                  top: "calc(376px / 2)",
-                  transform: "translateY(-50%)",
-                }}
-              >
-                <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
-                  <FontAwesomeIcon
-                    icon={faChevronRight}
-                    className="text-white hover:text-white text-md transition-colors duration-300 transform"
-                  />
-                </div>
-              </div>
-            </div>
-          </div> 
+                          {/* Custom Next Button - centered to image height (376px) */}
+                          <div className="PlacesBragSection-n" aria-hidden>
+                            <div
+                              className="absolute right-3 sm:right-1 z-10"
+                              style={{
+                                top: "calc(280px / 2)",
+                                transform: "translateY(-50%)",
+                              }}
+                            >
+                              <div className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+                                <FontAwesomeIcon
+                                  icon={faChevronRight}
+                                  className="text-white hover:text-white text-md transition-colors duration-300 transform"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </>
                     ) : component.carousel === "destination-6" ? (
                       <>
@@ -817,6 +840,7 @@ export default function ThemePage(props) {
                           page={"Country Page"}
                         ></Continentcarousel>
                         <PlanYourTripButton
+                          slug={props?.slug}
                           text={"Create your travel plan now!"}
                         />
                       </>
@@ -824,6 +848,7 @@ export default function ThemePage(props) {
                       <>
                         <ImageCarousel slug={props?.slug} />
                         <PlanYourTripButton
+                          slug={props?.slug}
                           text={"Create your travel plan now!"}
                         />
                       </>
@@ -844,6 +869,7 @@ export default function ThemePage(props) {
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[176px] !h-[56px] !px-0 !py-0"
                           }
                           text={"Plan a Trip Now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "Activity-3" ? (
@@ -862,6 +888,7 @@ export default function ThemePage(props) {
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
                           text={"Create your free itinerary"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel === "destination-8" ? (
@@ -884,7 +911,8 @@ export default function ThemePage(props) {
                           className={
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
-                          text={"Plan Your Trip Now!"}
+                          text={"+ Plan Your Trip Now!"}
+                          slug={props?.slug}
                         />
                       </>
                     ) : component.carousel == "images-1" ? (
@@ -894,12 +922,13 @@ export default function ThemePage(props) {
                           className={
                             "bg-[#F7E700] text-[16px] font-semibold !border-[1px] rounded-[16px]! w-[240px] !h-[56px] !px-0 !py-0"
                           }
-                          text={"Plan Your Trip Now!"}
+                          text={"+ Plan Your Trip Now!"}
                           page_id={props.state?.id}
                           type={"state"}
                           destination={convertDbNameToCapitalFirst(
                             props.experienceData.slug
                           )}
+                          slug={props?.slug}
                         />
                       </div>
                     ) : component.carousel == "journey-1" ? (
@@ -978,7 +1007,7 @@ export default function ThemePage(props) {
       />
 
 
-        {activeDrawer?.type === "poi" && (
+      {activeDrawer?.type === "poi" && (
         <POIDetailsDrawer
           show={true}
           iconId={activeDrawer.data.id}
@@ -1019,7 +1048,10 @@ export const PlanYourTripButton = (props) => {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push("/new-trip");
+    router.push({
+      pathname: "/new-trip",
+      query: { source: props?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -1033,14 +1065,14 @@ export const PlanYourTripButton = (props) => {
   };
 
   return (
-    
+
     <div className="flex items-center justify-center mt-5 text-white bg-[#07213A] rounded-md  w-fit mx-auto hover:opacity-90 cursor-pointer">
       <SecondaryButton onClick={handlePlanButton} className={props?.className}>
         {props.text
           ? props.text
           : props.slug === "honeymoon-2025"
-          ? "Plan Your Honeymoon!"
-          : "Plan Your Trip Now!"}
+            ? "Plan Your Honeymoon!"
+            : "+ Plan Your Trip Now!"}
       </SecondaryButton>
 
       <TailoredFormMobileModal
@@ -1066,7 +1098,10 @@ export const PlanYourTripLadakhButton = (props) => {
 
   const handlePlanButton = () => {
     // openTailoredModal(router, props.page_id, props.destination, props.type);
-    router.push("/new-trip");
+    router.push({
+      pathname: "/new-trip",
+      query: { source: props?.slug || 'home' }
+    });
 
     logEvent({
       action: "Plan_Itinerary",

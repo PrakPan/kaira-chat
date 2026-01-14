@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 const Container = styled.div`
    height: calc(100% - 270px);
    margin-top: 10px;
-   padding: 10px 0px;
+   padding: 0px;
    overflow-y: auto;
    display: flex;
    flex-direction: column;
@@ -22,6 +22,21 @@ const Container = styled.div`
    scroll-behavior: smooth;
    font-family: Montserrat;
    box-sizing: border-box;
+   
+   @media screen and (max-width: 767px) {
+     flex: 1;
+     height: auto;
+     margin-top: 0;
+     padding: 16px 16px 180px 16px;
+     overflow-y: auto;
+     overflow-x: hidden;
+   }
+   
+   -ms-overflow-style: none;
+   scrollbar-width: none;
+   &::-webkit-scrollbar {
+     display: none;
+   }
 `;
 
 const MessageWrapper = styled.div`
@@ -40,7 +55,11 @@ const Message = styled.div`
     font-size: 14px;
     word-break: break-word;
     max-width: 80%;
-    margin-bottom:15px
+    margin-bottom:15px;
+    @media screen and (max-width: 768px) {
+    margin-bottom:0px;
+  }
+
 `;
 
 const LoginButton = styled.button`
@@ -58,8 +77,10 @@ const ChatMessage = React.memo(({ item, cachedAvatar }) => {
     const { finalized_status } = useSelector((state) => state.ItineraryStatus);
     return (
         <MessageWrapper isUser={isUser}>
+
+
             
-            {!isUser && cachedAvatar &&
+            {!isUser && cachedAvatar && item.message &&
                 <Image
                     src={cachedAvatar}
                     alt="ticket"
@@ -123,6 +144,30 @@ function ChatSection(props) {
     return (
         <Container ref={scrollRef} className={styles.chatWrapper}>
             <div className="chat-section" >
+
+                {!isPageWide && (
+                    <div className="flex gap-[10px] items-start mb-4 pb-4 border-b border-gray-200">
+                        {cachedAvatar && (
+                            <Image
+                                src={cachedAvatar}
+                                alt="ticket"
+                                width={48}
+                                height={48}
+                                className="mt-[6px]"
+                            />
+                        )}
+                        <div>
+                            <p className="text-[20px] font-semibold mb-0">
+                                Hey, I'm Kaira — Your AI Travel Buddy.
+                            </p>
+                            <p className="text-[14px] font-normal opacity-50 mb-0">
+                                Ready to plan your perfect trip? Let's customize your itinerary together!
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+
                 {!localStorage.getItem("access_token")?<div className='flex items-start gap-2 '>
                     {cachedAvatar &&
                         <Image

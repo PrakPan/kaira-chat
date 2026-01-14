@@ -168,9 +168,7 @@ export default function Book() {
     }
   };
 
-  useEffect(() => {
-    console.log(priceDetails);
-  }, [priceDetails]);
+
 
   return (
     <Layout page="Book Flights">

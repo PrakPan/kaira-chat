@@ -12,6 +12,7 @@ const Accommodation = (props) => {
     (sum, room) => sum + (room.childAges?.length || 0),
     0
   );
+  
 
   return (
     <div>

@@ -9,6 +9,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import Team from "../containers/aboutus/Ourteam/Index";
 import usePageLoaded from "../components/custom hooks/usePageLoaded";
+import CtaBoardingSection from "../components/revamp/home/CtaBoardingSection";
 
 const AboutUsContainer = () => {
   const isPageLoaded = usePageLoaded();
@@ -51,10 +52,13 @@ const AboutUsContainer = () => {
         <StartJourney
           heading="Start your travel journey with us!"
           text=" "
-          button="Personalise Now"
+          button="Plan a Trip now!"
+          buttonLink="/new-trip"
           margin="1.5rem auto"
           img={"media/website/getstarted.svg"}
         />
+        <CtaBoardingSection />
+
       </Layout>
     );
   else return <div></div>;

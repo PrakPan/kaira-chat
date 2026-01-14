@@ -33,7 +33,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/thailand",
-      image: `${imgUrlEndPoint}/media/countries/168442180095400023460388183594.jpg`,
+      image: `${imgUrlEndPoint}/media/website/thailand.jpg`,
     },
     {
       id: 2,
@@ -70,7 +70,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/malaysia",
-      image: `${imgUrlEndPoint}/media/countries/168442089471308898925781250000.jpg`,
+      image: `${imgUrlEndPoint}/media/website/Malaysia.jpg`,
     },
     {
       id: 4,
@@ -216,9 +216,9 @@ const PlacesBragSection = () => {
 
           {/* Custom Prev Button */}
           {/* Custom Prev Button */}
-          <div className="fullslider-prev absolute -left-1 sm:left-1 top-[188px] z-20 cursor-pointer">
+          <div className="fullslider-prev absolute -left-1 sm:left-1 top-[184px] z-20 cursor-pointer">
             <div
-              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+              className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
             >
               <FontAwesomeIcon
@@ -229,9 +229,9 @@ const PlacesBragSection = () => {
           </div>
 
           {/* Custom Next Button */}
-          <div className="fullslider-next absolute -right-1 sm:right-1 top-[188px] z-20 cursor-pointer">
+          <div className="fullslider-next absolute -right-1 sm:right-1 top-[184px] z-20 cursor-pointer">
             <div
-              className="w-8 sm:w-10 h-8 sm:h-10 bg-black/80 backdrop-blur-sm rounded-full flex
+              className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
             >
               <FontAwesomeIcon

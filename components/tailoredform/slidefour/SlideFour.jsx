@@ -76,7 +76,7 @@ export default function SlideThree(props) {
 
         </div>
         <div>
-          <div className="text-lg font-600 leading-xl-md mb-md">Travels and Rooms</div>
+          <div className="text-lg font-600 leading-xl-md mb-md">Travellers and Rooms</div>
           <Pax
             numberOfAdults={numberOfAdults}
             setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}

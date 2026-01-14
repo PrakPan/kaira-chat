@@ -4,7 +4,7 @@ import TermsContainer from "../containers/terms-conditions/index";
 
 const Terms = () => {
   return (
-    <Layout>
+    <Layout isTerms={true}>
       <Head>
         <title>Terms-Conditions | The Tarzan Way | Travel India</title>
         <meta name="robots" content="noindex"></meta>

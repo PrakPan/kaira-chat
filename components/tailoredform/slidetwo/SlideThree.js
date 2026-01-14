@@ -87,6 +87,7 @@ const SlideThree = (props) => {
           setNumberOfAdults={(val) => dispatch(setNumberOfAdults(val))}
           setNumberOfChildren={(val) => dispatch(setNumberOfChildren(val))}
           setNumberOfInfants={(val) => dispatch(setNumberOfInfants(val))}
+          isTailored={true}
         />
       }
       <div>

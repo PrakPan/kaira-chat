@@ -64,7 +64,6 @@ export const NavigationLink = ({
       onMouseEnter,
       onMouseLeave,
     });
-    console.log(children, isSelected)
 
   return (
     <Link
@@ -78,7 +77,7 @@ export const NavigationLink = ({
       onSetActive={() => setSelectedTab(`${item.id}`)}
       {...restProps}
       {...variants}
-      onAnimationComplete={handleSelect}
+      // onAnimationComplete={handleSelect}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

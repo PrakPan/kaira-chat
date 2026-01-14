@@ -134,7 +134,7 @@ const ChatWithUs = (props) => {
             borderWidth="1px"
             hoverBgColor="black"
             hoverBorderColor="black"
-            link={urls.CONTACT}
+            link={props?.buttonLink ? props.buttonLink : urls.CONTACT}
           >
             {props.button ? props.button : "Contact Us"}
           </Button>

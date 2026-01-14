@@ -242,7 +242,6 @@ export const SearchComponent = ({ input, setInput, handleChange, small }) => {
 
   const today = new Date();
 
-  console.log("checkin date is",input?.checkIn)
 
   const [focused, setFocused] = useState(false);
 
@@ -334,7 +333,7 @@ export const SearchComponent = ({ input, setInput, handleChange, small }) => {
               <SingleDatePicker
                 date={date}
                 onDateChange={(newDate) => {
-                  console.log("new date is", newDate.format("YYYY-MM-DD"));
+                
                   if (newDate) {
                     setDate(newDate);
                     setInput((prev) => ({

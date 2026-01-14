@@ -13,12 +13,12 @@ export const clearTransferBookings = () => ({
 });
 
 export const updateTransferBookings = (bookingIdToDelete) => {
-  console.log("Inside Redux", bookingIdToDelete);
+
   return (dispatch, getState) => {
     const state = getState();
-    const updatedData = { ...state.TransferBookings?.transferBookings };
-    console.log("Updated Data", updatedData);
-
+    const updatedData = { ...state.TransferBookings?.transferBookings }; 
+    
+    
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
 
@@ -43,8 +43,8 @@ export const updateTransferBookings = (bookingIdToDelete) => {
         }
       }
     });
-
-    console.log("Updated Data ", updatedData);
+    
+   
 
     dispatch({
       type: actionTypes.UPDATE_TRANSFER_BOOKINGS,
@@ -59,7 +59,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
-    console.log("Redux DBD", keyPath, data)
+  
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
@@ -68,17 +68,17 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
 
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
-      try {
-        updatedData.intercity[keyPath] = data;
-        console.log("Redux DBD", updatedData);
-
-        dispatch({
-          type: actionTypes.UPDATE_SINGLE_TRANSFER,
-          payload: updatedData,
-        });
-      } catch (err) {
-        console.log("Redux DBD", err.message);
-      }
+      try{
+      updatedData.intercity[keyPath] = data;
+      
+      
+      dispatch({
+        type: actionTypes.UPDATE_SINGLE_TRANSFER,
+        payload: updatedData,
+      });
+    }catch(err){
+      
+    }
     } else {
       console.error(`Key path ${keyPath} not found in intercity bookings`);
     }
@@ -107,7 +107,6 @@ export const updateAirportTransferBooking = (keyPath, data) => {
       updatedData.airport[keyPath] = [data];
     }
 
-    console.log("Redux DBD - updatedData:", updatedData);
 
     dispatch({
       type: actionTypes.UPDATE_AIRPORT_TRANSFER,

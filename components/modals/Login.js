@@ -8,7 +8,7 @@ import media from "../media";
 import Image from "next/image";
 
 const ImgContainer = styled.div`
-  height: 100%;
+min-height: 100%;
   position: relative;
 `;
 
@@ -17,6 +17,16 @@ const ImgTagsContainer = styled.div`
   bottom: -30px;
   transform: translateY(-43%);
   left: 10%;
+`;
+
+const ImgTagsMobContainer = styled.div`
+  position: absolute;
+  bottom: -30px;
+  text-align:center;
+  transform: translateY(-43%);
+  display:flex;
+  flex-direction:column;
+  justify-content: center;
 `;
 
 const tags = [
@@ -48,6 +58,7 @@ const Enquiry = (props) => {
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
 
+  console.log("Message",props.message)
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
@@ -100,14 +111,14 @@ const Enquiry = (props) => {
             <ImageLoader
               noLazy
               url={"media/themes/auth.png"}
-              height="560px"
+              height="100%" 
               width="100%"
               onload={() => setShowImage(true)}
               borderRadius="20px"
             ></ImageLoader>
 
             <ImgTagsContainer>
-              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide ? "max-w-[334px]" : "max-w-[100%]"}`}>
+              <div className={`text-[24px] sm:text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide ? "max-w-[334px]" : "max-w-[100%]"}`}>
                 Your Personalized Travel Journey Starts with a Tap
               </div>
               <div className="flex gap-4">
@@ -133,6 +144,7 @@ const Enquiry = (props) => {
               onhide={props.onhide}
               itinary_id={props.itinary_id}
               onSuccess={props?.onSuccess}
+              message={props.message}
             ></Login>
           </div>
         </div>
@@ -151,12 +163,13 @@ const Enquiry = (props) => {
         token={props.token}
         itinary_id={props.itinary_id}
         zIndex={props?.zIndex}
-        className="overflow-y-hidden"
+        // className="overflow-y-auto"
         overflow="hidden"
+        style={{ overflowY: "scroll" }}
       >
           <ImgContainer style={{
             display: showImage ? "block" : "none",
-            height: "calc(100vh - 570px)",
+            height: "calc(100vh - 502px)",
             overflow: "hidden"
           }}>
             <ImageLoader
@@ -168,11 +181,11 @@ const Enquiry = (props) => {
               onload={() => setShowImage(true)}
             ></ImageLoader>
 
-            <ImgTagsContainer>
-              <div className={`text-[32px] font-[700] leading-[40px] text-white mb-4 ${isPageWide? "max-w-[334px]" : "max-w-[100%]"}`}>
+            <ImgTagsMobContainer>
+              <div className={`text-[24px] sm:text-[32px] font-[700] leading-[40px] text-white text-center mb-4 ${isPageWide? "max-w-[334px]" : "max-w-[100%]"}`}>
                 Your Personalized Travel Journey Starts with a Tap
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center justify-center">
                 {tags?.map((item, index) => (
                   <a
                     key={index}
@@ -185,11 +198,11 @@ const Enquiry = (props) => {
                   </a>
                 ))}
               </div>
-            </ImgTagsContainer>
+            </ImgTagsMobContainer>
 
           </ImgContainer>
         <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
-          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess}></Login>
+          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message}></Login>
         </div>
       </Modal>
     );

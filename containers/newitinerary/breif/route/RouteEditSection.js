@@ -48,6 +48,7 @@ import { getDaysDifference } from "../../../../services/isDateDDMMYYY";
 import Button from "../../../../components/ui/button/Index";
 import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
 import { useChatContext } from "../../../../components/Chatbot/context/ChatContext";
+import { resetChatSession } from "../../../../store/actions/chatState";
 
 const Container = styled.div`
   position: relative;
@@ -219,7 +220,7 @@ const RouteEditSection = (props) => {
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
 
-  const {resetSession} = useChatContext();
+  // const { resetSession } = useChatContext();
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -232,7 +233,6 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  // console.log("Route Edittt",props.routes)
 
   useEffect(() => {
     const cities = [];
@@ -420,13 +420,6 @@ const RouteEditSection = (props) => {
       ].every((status) => status === "SUCCESS" || status === "FAILURE");
 
       if (allStatusesCompleted) {
-        console.log(
-          "Status update complete",
-          itinerary_status,
-          transfers_status,
-          pricing_status,
-          hotels_status
-        );
         dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
         setItineraryLoading(false);
         setWaitingForStatusUpdate(false);
@@ -483,9 +476,10 @@ const RouteEditSection = (props) => {
         await props.fetchData(true);
       }
 
-      if (resetSession) {
-        await resetSession();
-      }
+      // if (resetSession) {
+      //   await resetSession();
+      // }
+      dispatch(resetChatSession());
     } catch (error) {
       console.error("Error in fetchItinerary:", error);
     }
@@ -500,7 +494,6 @@ const RouteEditSection = (props) => {
 
   const validateDates = () => {
     const today = new Date();
-    console.log("Valid D", destinations);
     if (
       !new Date(startDate) ||
       isNaN(Date.parse(startDate)) ||
@@ -605,8 +598,6 @@ const RouteEditSection = (props) => {
         place_id: destinations[destinations.length - 1].cityData.place_id,
       },
     };
-
-    console.log("New Request Data", data, destinations);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1361,7 +1352,7 @@ export const Destination = (props) => {
       <div className="w-full flex flex-row font-inter items-center justify-between gap-4 mt-3 relative z-10">
         <div
           onClick={handleEditDestination}
-          className="w-[70%] flex flex-row items-center gap-3"
+          className="w-[70%] flex flex-row items-center gap-1 sm:gap-3"
         >
           {!(startingCity || endingCity) && (
             <div className="text-gray-400 cursor-grab active:cursor-grabbing">
@@ -1423,7 +1414,7 @@ export const Destination = (props) => {
       {index < props?.totalDestinations - 1 && (
         <div
           className={`absolute z-0
-                         left-[51px] top-[45px]
+                         left-[39px] top-[45px]
                     `}
         >
           <DottedLine />
@@ -1454,6 +1445,13 @@ export const DestinationPopUp = (props) => {
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 0);
   const [searchResults, setSearchResults] = useState(null);
+  const [isSearched, setIsSearched] = useState(false);
+  const [validDestination, setValidDestination] = useState(
+    !!cityData?.resource_id
+  );
+
+  // Add ref for the search container
+  const searchContainerRef = useRef(null);
 
   useEffect(() => {
     destinationRef.current.setPopUp = () => setPopUp(false);
@@ -1476,9 +1474,15 @@ export const DestinationPopUp = (props) => {
       });
     }
     setSearch(e.target.value);
+    const currentDestinationName =
+      destination?.name || destination?.city_name || destination?.text;
+    if (e.target.value !== currentDestinationName) {
+      setValidDestination(false);
+    }
   };
+
   useEffect(() => {
-    handleDestinationSeach(debouncedSearch);
+    if (!isSearched) handleDestinationSeach(debouncedSearch);
   }, [debouncedSearch]);
 
   const handleDestinationSeach = (value) => {
@@ -1525,6 +1529,8 @@ export const DestinationPopUp = (props) => {
     });
 
     setSearchResults(null);
+    setIsSearched(true);
+    setValidDestination(true);
   };
 
   const handleSetNights = (minus = false) => {
@@ -1546,14 +1552,12 @@ export const DestinationPopUp = (props) => {
 
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
-    console.log("New Desti", destination);
 
     setDestinations((prev) => {
       let destinations = [...prev];
       const curDestination = destinations[index];
 
       const match = destinations.find((d, i) => {
-        // if (i === index) return false;
         const cd = d.cityData;
         return (
           (cd?.resource_id === destination?.resource_id ||
@@ -1629,7 +1633,7 @@ export const DestinationPopUp = (props) => {
         index !== undefined
           ? `top-0 left-[10%] lg:left-[30%]`
           : "-bottom-[150px] left-[10%] lg:left-[15%]"
-      }  bg-gray-200 rounded-lg`}
+      } bg-gray-200 rounded-lg`}
     >
       <div className="relative flex flex-col gap-3 p-3">
         <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
@@ -1647,42 +1651,54 @@ export const DestinationPopUp = (props) => {
             : "What do you want to explore?"}
         </div>
 
-        <div className="relative flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
-          <IoLocationSharp
-            className={`text-xl`}
-            style={{ color: cityData?.color }}
-          />
-          <input
-            type="text"
-            autoFocus
-            value={search}
-            onChange={(e) => handleSearch(e)}
-            placeholder="Search Destination"
-            className="focus:outline-none w-full"
-          ></input>
-          <RxCrossCircled
-            onClick={() => setSearch("")}
-            className="text-2xl cursor-pointer"
-          />
+        {/* UPDATED: Changed this to relative positioning */}
+        <div 
+          ref={searchContainerRef}
+          className="relative w-full"
+        >
+          <div className="flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+            <IoLocationSharp
+              className={`text-xl`}
+              style={{ color: cityData?.color }}
+            />
+            <input
+              type="text"
+              autoFocus
+              value={search}
+              onChange={(e) => {
+                handleSearch(e);
+                setIsSearched(false);
+              }}
+              placeholder="Search Destination"
+              className="focus:outline-none w-full"
+            />
+            <RxCrossCircled
+              onClick={() => {
+                setSearch("");
+                setValidDestination(false);
+              }}
+              className="text-2xl cursor-pointer"
+            />
+          </div>
 
-          {searchResults && searchResults.length ? (
-            <div className="fixed top-[6rem] left-[5%] w-[90%] max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+          {/* UPDATED: Changed from fixed to absolute positioning */}
+          {searchResults && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3 shadow-lg z-[60]">
               {searchResults.map((res, ind) => (
                 <div
                   key={ind}
                   onClick={() => handleSetDestination(ind)}
-                  className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
+                  className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full p-2"
                 >
-                  <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center flex-shrink-0">
                     <IoLocationSharp className="text-lg text-black" />
                   </div>
-                  <div className="flex flex-col">
-                    <div className="text-sm">
+                  <div className="flex flex-col min-w-0">
+                    <div className="text-sm truncate">
                       {startingCity || endingCity ? res.text : res.name}
                     </div>
                     {!(startingCity || endingCity) && (
-                      <div className="text-sm text-gray-500">
-                        {/* {res.parent || res.name} */}
+                      <div className="text-sm text-gray-500 truncate">
                         {res.country}
                       </div>
                     )}
@@ -1690,14 +1706,13 @@ export const DestinationPopUp = (props) => {
                 </div>
               ))}
             </div>
-          ) : null}
+          )}
         </div>
 
         {!(startingCity || endingCity) && (
           <div className="flex flex-row items-center justify-between w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
             <div className="flex flex-row items-center gap-3">
               <FaCalendarDays className="" />
-
               <div className="text-sm">Number of nights</div>
             </div>
 
@@ -1715,9 +1730,25 @@ export const DestinationPopUp = (props) => {
           </div>
         )}
 
+        {!destination?.place_id &&
+          (!validDestination ||
+            !destination?.resource_id ||
+            !destination?.name) &&
+          search && (
+            <div className="text-xs text-red-600 px-2">
+              Please select a destination from the dropdown
+            </div>
+          )}
+
         <button
           onClick={handleUpdateDestination}
-          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
+          disabled={
+            !destination?.place_id &&
+            (!validDestination ||
+              !destination?.resource_id ||
+              !destination?.name)
+          }
+          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Update
         </button>
@@ -2438,9 +2469,9 @@ export const DatePicker = (props) => {
 .SingleDatePicker_picker,
 .SingleDatePicker_picker__portal {
   z-index: 15 !important;
-  transform: none !important;
-  top: 100% !important;
-  left: 0 !important;
+  // transform: none !important;
+  // top: 100% !important;
+  // left: 0 !important;
   right: auto !important;
   bottom: auto !important;
 }
@@ -2536,9 +2567,9 @@ export const DatePicker = (props) => {
     }
 
 /* Remove any full screen overlay */
-body > div[data-react-portal] {
-  display: none !important;
-}
+// body > div[data-react-portal] {
+//   display: none !important;
+// }
 
 /* Target the portal container specifically */
 div[data-react-portal] .SingleDatePicker_picker {
@@ -2573,20 +2604,7 @@ body.react-dates__block-scroll {
           })
         }
         focused={focusedInput}
-        onFocusChange={({ focused }) => {
-          setFocusedInput(false);
-          if (focused) {
-            logEvent({
-              action: "Route Edit",
-              params: {
-                page: "Itinerary Page",
-                event_category: "Edit Dates",
-                event_label: "Edit Date",
-                event_action: "Focus on Date Input",
-              },
-            });
-          }
-        }}
+        onFocusChange={({ focused }) => setFocusedInput(focused)}
         id={props.id}
         noBorder={true}
         placeholder={"DD/MM/YYYY"}

@@ -12,7 +12,7 @@ const ImageLoader = (props) => {
   const [fullLoaded, setFullLoaded] = useState(false);
   const [isTransparent, setIsTransparent] = useState(false);
 
-  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const imgUrlEndPoint = props?.imgUrlEndPoint ? (typeof props?.imgUrlEndPoint) === 'boolean' ? '' : props?.imgUrlEndPoint   : "https://d31aoa0ehgvjdi.cloudfront.net/";
   const transparentImageUrl =
     "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
 
@@ -307,7 +307,7 @@ const ImageLoader = (props) => {
               is_url
                 ? props.url
                 : isPageLoaded
-                ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
+                ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                 : transparentImageUrl
             }
             transparent={isTransparent}
@@ -544,7 +544,7 @@ export default ImageLoader;
 const SmallImage = (props) => {
   return (
     <Image
-      alt=""
+      alt="Img"
       src={props.src}
       width={145}
       height={145}

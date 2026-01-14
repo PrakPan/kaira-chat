@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   useEffect(() => {
-    cleanExpiredLocalStorage();
+    cleanExpiredLocalStorage(); 
   }, []);
 
   function setupTokenExpiryWatcher() {
@@ -95,6 +95,11 @@ function MyApp({ Component, pageProps }) {
           name="google-site-verification"
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
         />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        {/* <title>Plan your trip with The Tarzan Way</title> */}
       </Head>
 
       {/* Google Analytics */}
@@ -147,6 +152,7 @@ function MyApp({ Component, pageProps }) {
 
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <ClarityInit />
           <Theme>
             <Component {...pageProps} />
           </Theme>

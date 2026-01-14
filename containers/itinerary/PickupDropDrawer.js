@@ -91,6 +91,7 @@ const PickupDropDrawer = ({
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const hasAutoFilledRef = useRef({ source: false, destination: false });
+  const currency = useSelector(state=>state.currency);
 
   // Replace the initial form state calculation
   const initialFormState = {
@@ -255,6 +256,8 @@ const PickupDropDrawer = ({
   };
 
   const [formData, setFormData] = useState(initialFormState);
+
+
 
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return "";
@@ -887,7 +890,7 @@ const PickupDropDrawer = ({
     };
 
     axiosTaxiSearch
-      .post("", requestBody)
+      .post(`?currency=${currency?.currency || 'INR'}`, requestBody)
       .then((res) => {
         if (res.data.data && res.data.data?.quotes) {
           setSource(res?.data.data?.source);

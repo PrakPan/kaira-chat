@@ -4,7 +4,7 @@ const CityDaybyDay = (props) => {
 
 
   return (
-    <div id="citydaybyday" className="flex flex-col gap-[8px] pt-[16px] pb-[16px] pl-[10px] pr-[10px] bg-[#FBFBFB]">
+    <div id="citydaybyday" className="flex flex-col gap-[8px] pt-[16px] pb-[16px] pl-[10px] pr-[10px] bg-[#FBFBFB] ">
       {props.city?.day_by_day.map((day, index) => (
         <>
           <CityDay
@@ -21,6 +21,9 @@ const CityDaybyDay = (props) => {
             activityBookings={props?.activityBookings}
             setActivityBookings={props?.setActivityBookings}
             intracityBookings={props?.intracityBookings}
+            getPaymentHandler={props?.getPaymentHandler}
+            nextCity={props?.nextCity}
+            isLastDay={index === props.city?.day_by_day.length - 1}
           />
         </>
       ))}
