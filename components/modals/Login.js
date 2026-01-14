@@ -145,6 +145,8 @@ const Enquiry = (props) => {
               itinary_id={props.itinary_id}
               onSuccess={props?.onSuccess}
               message={props.message}
+              isTailored={props?.isTailored}
+              onSkipLogin={props?.onSkipLogin}
             ></Login>
           </div>
         </div>
@@ -202,7 +204,7 @@ const Enquiry = (props) => {
 
           </ImgContainer>
         <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
-          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message}></Login>
+          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message} isTailored={props?.isTailored} onSkipLogin={props?.onSkipLogin}></Login>
         </div>
       </Modal>
     );
