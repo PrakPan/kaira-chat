@@ -17,7 +17,11 @@ const TravelPlanner = (props) => {
   }, []);
 
   return (
-    <>
+      <Layout
+      destination={props?.Data?.name}
+      id={props?.Data?.id}
+      page={"Country Page"}
+    >
       <Head>
         <title>{pageTitle}</title>
         <meta
