@@ -52,7 +52,7 @@ const TravelVibeSection = () => {
       id: 5,
       title: "Europe Under 1 Lakh",
       description: "BIG TRIPS, SMALL BUDGET",
-      image: `${imgUrlEndPoint}/media/page/174236505833778285980224609375/.jpg`, // Replace with actual Europe image
+      image: `${imgUrlEndPoint}/media/website/compressedImage%20(7).jpeg`, // Replace with actual Europe image
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",

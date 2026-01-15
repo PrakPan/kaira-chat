@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
-import { Japan } from "../assets";
+import { useRef } from "react";
 import { DestinationCard } from "../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -91,7 +89,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
-      image: `${imgUrlEndPoint}/media/cities/175731712356781172752380371094.jpg`,
+      image :`${imgUrlEndPoint}/media/website/compressedImage%20(8).jpeg`
     },
     {
       id: 5,
@@ -126,24 +124,12 @@ const PlacesBragSection = () => {
     },
   ];
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [slideCount, setSlideCount] = useState(0);
   const swiperRef = useRef(null);
 
   const handleSwiper = (swiper) => {
     swiperRef.current = swiper;
-    setActiveIndex(swiper.activeIndex);
-    // For non-loop mode, slideCount = slides.length
-    // For loop mode, Swiper duplicates slides, so subtract loopedSlides*2
-    const count = swiper.loopedSlides
-      ? swiper.slides.length - swiper.loopedSlides * 2
-      : swiper.slides.length;
-    setSlideCount(count);
   };
 
-  const handleSlideChange = (swiper) => {
-    setActiveIndex(swiper.activeIndex);
-  };
 
   return (
     <section className="py-12 sm:py-16 lg:py-17 px-0 sm:px-4 lg:px-8 bg-white">
@@ -170,7 +156,7 @@ const PlacesBragSection = () => {
             spaceBetween={16}
             slidesPerView={1}
             onSwiper={handleSwiper}
-            onSlideChange={handleSlideChange}
+
             navigation={{
               nextEl: ".fullslider-next",
               prevEl: ".fullslider-prev",
@@ -216,7 +202,7 @@ const PlacesBragSection = () => {
 
           {/* Custom Prev Button */}
           {/* Custom Prev Button */}
-          <div className="fullslider-prev absolute -left-1 sm:left-1 top-[184px] z-20 cursor-pointer">
+          <div aria-label="Previous destinations" className="fullslider-prev absolute -left-1 sm:left-1 top-[184px] z-20 cursor-pointer">
             <div
               className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
@@ -229,7 +215,7 @@ const PlacesBragSection = () => {
           </div>
 
           {/* Custom Next Button */}
-          <div className="fullslider-next absolute -right-1 sm:right-1 top-[184px] z-20 cursor-pointer">
+          <div aria-label="Next destinations" className="fullslider-next absolute -right-1 sm:right-1 top-[184px] z-20 cursor-pointer">
             <div
               className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"

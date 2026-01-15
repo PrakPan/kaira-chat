@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
-import { Japan } from "../assets";
+import { useState, useRef } from "react";
 import { DestinationCard } from "../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import {  Navigation } from "swiper";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +14,6 @@ import Button from "../common/components/button";
 import Link from "next/link";
 
 const LuxuryEuropeDestinations = () => {
-  // Sample destination data - replace with your actual data
   const destinations = [
     {
       id: 1,
@@ -109,23 +106,10 @@ const LuxuryEuropeDestinations = () => {
     },
   ];
 
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [slideCount, setSlideCount] = useState(0);
   const swiperRef = useRef(null);
 
   const handleSwiper = (swiper) => {
     swiperRef.current = swiper;
-    setActiveIndex(swiper.activeIndex);
-    // For non-loop mode, slideCount = slides.length
-    // For loop mode, Swiper duplicates slides, so subtract loopedSlides*2
-    const count = swiper.loopedSlides
-      ? swiper.slides.length - swiper.loopedSlides * 2
-      : swiper.slides.length;
-    setSlideCount(count);
-  };
-
-  const handleSlideChange = (swiper) => {
-    setActiveIndex(swiper.activeIndex);
   };
 
   return (
@@ -153,7 +137,6 @@ const LuxuryEuropeDestinations = () => {
             spaceBetween={16}
             slidesPerView={1}
             onSwiper={handleSwiper}
-            onSlideChange={handleSlideChange}
             navigation={{
               nextEl: ".fullslider-n",
               prevEl: ".fullslider-p",
@@ -199,7 +182,7 @@ const LuxuryEuropeDestinations = () => {
 
           {/* Custom Prev Button */}
           <div className="fullslider-p" aria-hidden>
-            <div className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1">
+            <div aria-label="Previous destinations" className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1">
               <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
@@ -211,7 +194,7 @@ const LuxuryEuropeDestinations = () => {
 
           {/* Custom Next Button */}
           <div className="fullslider-n" aria-hidden>
-            <div className="absolute -right-3  sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1">
+            <div aria-label="Next destinations" className="absolute -right-3  sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1">
               <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}

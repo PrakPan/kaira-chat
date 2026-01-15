@@ -6,76 +6,80 @@ import { Pagination } from "swiper";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { imgUrlEndPoint } from "./ThemeConstants";
+
+const tarzanWayEndPoint = `https://images.thetarzanway.com/`;
+
 
 const Carousel3D = () => {
   const baseImages = [
     {
-      image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
+      image: `${tarzanWayEndPoint}media/ladakh-carousel/pexels-yogendras31-14090506.jpg`,
       title: "Leh Palace",
       description: "Ancient royal palace overlooking the Indus Valley",
       tags: ["Historic"],
     },
     {
-      image: "media/ladakh-carousel/pexels-jay-baid-1420324-15560333.jpg",
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(3).jpeg`,
       title: "Pangong Lake",
       description: "Crystal clear high-altitude lake in the Himalayas",
       tags: ["Nature"],
     },
     {
-      image: "media/ladakh-carousel/pexels-itismowgli-1202975.jpg",
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(4).jpeg`,
       title: "Nubra Valley",
       description: "Desert landscapes with double-humped camels",
       tags: ["Desert"],
     },
     {
-      image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
+      image: `${tarzanWayEndPoint}media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg`,
       title: "Magnetic Hill",
       description: "Mysterious hill with gravitational anomaly",
       tags: ["Mystery"],
     },
     {
-      image: "media/ladakh-carousel/Group-1000002319.png",
+      image: `${tarzanWayEndPoint}media/ladakh-carousel/Group-1000002319.png`,
       title: "Shanti Stupa",
       description: "Buddhist white-domed stupa offering panoramic views",
       tags: ["Buddhist"],
     },
     {
-      image: "media/ladakh-carousel/pexels-imdad-sayyed-1274214-32630752.jpg",
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(5).jpeg`,
       title: "Tso Moriri",
       description: "High altitude wetland conservation reserve",
       tags: ["Wildlife"],
     },
     {
       image:
-        "media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg",
+        `${tarzanWayEndPoint}media/ladakh-carousel/pexels-shashwat-basutkar-2154409035-33207999.jpg`,
       title: "Khardung La",
       description: "World's highest motorable road pass",
       tags: ["Adventure"],
     },
     {
-      image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(6).jpeg`,
       title: "Hemis Monastery",
       description: "Largest monastic institution in Ladakh",
       tags: ["Monastery"],
     },
-   {
-  image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
-  title: "Stok Kangri Viewpoint",
-  description: "A breathtaking viewpoint offering panoramic vistas of the Stok Range.",
-  tags: ["Mountains"],
-},
-{
-  image: "media/ladakh-carousel/pexels-jay-baid-1420324-15844517.jpg",
-  title: "Thiksey Monastery",
-  description: "A majestic hilltop monastery known for its stunning architecture and morning prayers.",
-  tags: ["Monastery"],
-},
-{
-  image: "media/ladakh-carousel/pexels-avinashpatel-3392154.jpg",
-  title: "Khardung La Pass",
-  description: "One of the world’s highest motorable roads surrounded by dramatic snow-capped peaks.",
-  tags: ["Mountain Pass"],
-},
+    {
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(1).jpeg`,
+      title: "Stok Kangri Viewpoint",
+      description: "A breathtaking viewpoint offering panoramic vistas of the Stok Range.",
+      tags: ["Mountains"],
+    },
+    {
+      image: `${imgUrlEndPoint}media/website/compressedImage%20(2).jpeg`,
+      title: "Thiksey Monastery",
+      description: "A majestic hilltop monastery known for its stunning architecture and morning prayers.",
+      tags: ["Monastery"],
+    },
+    {
+      image: `${tarzanWayEndPoint}media/website/compressedImage%20(10).jpeg`,
+      title: "Khardung La Pass",
+      description: "One of the world’s highest motorable roads surrounded by dramatic snow-capped peaks.",
+      tags: ["Mountain Pass"],
+    },
   ];
 
   return (
@@ -124,7 +128,7 @@ const Carousel3D = () => {
                   >
                     <img
                       className="slide-image block w-full h-full object-cover"
-                      src={`https://images.thetarzanway.com/${item.image}`}
+                      src={`${item.image}`}
                       alt={item.title}
                       loading="lazy"
                     />
