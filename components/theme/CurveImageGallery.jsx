@@ -75,7 +75,7 @@ const Carousel3D = () => {
       tags: ["Monastery"],
     },
     {
-      image: `${imgUrlEndPoint}media/website/compressedImage%20(10).jpeg`,
+      image: `${imgUrlEndPoint}media/website/compressedImage.jpeg`,
       title: "Khardung La Pass",
       description: "One of the world’s highest motorable roads surrounded by dramatic snow-capped peaks.",
       tags: ["Mountain Pass"],
