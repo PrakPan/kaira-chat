@@ -40,7 +40,15 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: Lexend !important;
+     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+* {
+  font-family: inherit;
+}
+
+.fa, .glyphicon {
+  font-family: initial !important;
 }
 
 /* . {
