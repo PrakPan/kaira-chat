@@ -10,6 +10,7 @@ import {
 import useFieldOfView from "../hooks/useFieldOfView";
 import { connect, useSelector } from "react-redux";
 import { logEvent } from "../services/ga/Index";
+import { useRouter } from "next/router";
 
 const Navbar = styled.div`
   font-family: lexend;
@@ -68,26 +69,42 @@ const ScrollableMenuTabs = ({
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");
+  const router = useRouter();
   let manuallyClick = false
 
   const handleSelect = (index, itemId) => {
-    manuallyClick = true;
-    setActiveItem(itemId);
-    if (handleActiveTab) {
-      handleActiveTab(itemId)
-    } else {
-      logEvent({
-        action: "Navigation",
-        params: {
-          page: "Itinerary Page ",
-          event_category: "Button Click",
-          event_label: items[index]?.label,
-          event_action: "Navigation Bar",
-        },
-      });
-    }
-    manuallyClick = false
-  };
+  manuallyClick = true;
+  setActiveItem(itemId);
+  
+  const selectedItem = items[index];
+  
+  if (handleActiveTab) {
+    handleActiveTab(itemId);
+  } else {
+    logEvent({
+      action: "Navigation",
+      params: {
+        page: "Itinerary Page ",
+        event_category: "Button Click",
+        event_label: selectedItem?.label,
+        event_action: "Navigation Bar",
+      },
+    });
+  }
+  
+  // Handle Trip Routes navigation
+  if (selectedItem?.label === "Trip Routes") {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        ...router.query,
+        drawer: "handleEditRoute",
+      },
+    }, undefined, { shallow: true });
+  }
+  
+  manuallyClick = false;
+};
 
   function isActive(link) {
     return link.classList.contains("active");

@@ -49,6 +49,9 @@ import Button from "../../../../components/ui/button/Index";
 import { CustomMapPin } from "../../../../components/tailoredform/utils/slideTwoActions";
 import { useChatContext } from "../../../../components/Chatbot/context/ChatContext";
 import { resetChatSession } from "../../../../store/actions/chatState";
+import { Navigation } from "../../../../components/NewNavigation";
+import { useAnalytics } from "../../../../hooks/useAnalytics";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   position: relative;
@@ -197,6 +200,7 @@ const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
   const handleClose = useHandleClose();
+  const router = useRouter();
   const [startDate, setStartDate] = useState(
     getDate(props?.plan ? props?.plan.start_date : props?.itinerary?.start_date)
   );
@@ -219,6 +223,17 @@ const RouteEditSection = (props) => {
   const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
+  const [activeRouteTab, setActiveRouteTab] = useState("Trip Routes");
+  const {
+      trackSectionViewed,
+    } = useAnalytics();
+
+  const items = [
+  { id: 1, label: "Trip Routes", link: "Route" },
+  { id: 2, label: "Itinerary", link: "Itenary" },
+  { id: 3, label: "Bookings", link: "Booking" },
+];
+
 
   // const { resetSession } = useChatContext();
 
@@ -721,6 +736,34 @@ const RouteEditSection = (props) => {
     }
   };
 
+
+const handleRouteTabClick = (label) => {
+  setActiveRouteTab(label);
+  
+  if (label === "Itinerary" || label === "Bookings") {
+    // Remove drawer query parameter
+    const { drawer, ...restQuery } = router.query;
+    router.push({
+      pathname: router.pathname,
+      query: restQuery,
+    }, undefined, { shallow: true }).then(() => {
+      // Switch tab in parent after navigation completes
+      if (props?.setActiveTab) {
+        props.setActiveTab(label);
+      }
+    });
+  }
+  
+  logEvent({
+    action: "Route Edit Navigation",
+    params: {
+      page: "Itinerary Page",
+      event_category: "Button Click",
+      event_label: label,
+      event_action: "Route Edit Navigation Bar",
+    },
+  });
+};
   return (
     <>
       <div
@@ -765,6 +808,17 @@ const RouteEditSection = (props) => {
           }
           setEditDestination={setEditDestination}
         />
+
+        <div className="w-full md:w-[85%] lg:w-[85%]">
+        <Navigation
+          items={items}
+          BarName="RouteEditTabs"
+          ClickHandler={handleRouteTabClick}
+          selectedItem={activeRouteTab}
+          trackSectionViewed={trackSectionViewed}
+        />
+      </div>
+
 
         {itineraryLoading && <Spinner isEdit={true} />}
         {!isDesktop && (
@@ -2668,8 +2722,10 @@ export const ActionPanel = (props) => {
     handleSaveButton,
     itineraryLoading,
     handleClose,
+    setActiveTab
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const router = useRouter();
   return (
     <div
       style={{
@@ -2680,14 +2736,28 @@ export const ActionPanel = (props) => {
       }}
       className={`${!isDesktop && "gap-2"}`}
     >
-      <button
-        className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
-        onClick={
-          editDestination ? () => {handleClose(); props?.setActiveTab("Itinerary") }: () => setEditDestination(true)
-        }
-      >
-        {editDestination ? "Cancel" : "Back"}
-      </button>
+   
+<button
+  className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
+  onClick={() => {
+    if (editDestination) {
+      const { drawer, ...restQuery } = router.query;
+      router.push({
+        pathname: router.pathname,
+        query: restQuery,
+      }, undefined, { shallow: true });
+      
+      
+      if (setActiveTab) {
+        setActiveTab("Itinerary");
+      }
+    } else {
+      setEditDestination(true);
+    }
+  }}
+>
+  {editDestination ? "Cancel" : "Back"}
+</button>
       <Button
         fontSize="1rem"
         padding="0.5rem 2rem"

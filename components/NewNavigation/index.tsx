@@ -26,12 +26,62 @@ const InnerContainer = styled.div`
   height: 100%;
 `;
 
-export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSectionViewed }) => {
+export const Navigation = ({
+  items,
+  BarName,
+  ClickHandler,
+  selectedItem,
+  trackSectionViewed,
+}) => {
   const [selectedTab, setSelectedTab] = useState(
     selectedItem ? selectedItem : `${items[0].id}`
   );
   const router = useRouter();
   const { markerPos, ...markerHandlers } = useNavigationMarker();
+
+  // Update handleNavClick to only set drawer when explicitly clicking Trip Routes
+  const handleNavClick = (item) => {
+    if (ClickHandler) {
+      ClickHandler(item.label);
+    }
+
+    if (trackSectionViewed) {
+      trackSectionViewed(router.query.id, item.label);
+    }
+
+    setSelectedTab(`${item.id}`);
+
+    // ONLY handle Route navigation when Trip Routes is clicked
+    if (item.label === "Trip Routes") {
+      // Check if drawer is already open to avoid unnecessary navigation
+      if (router.query.drawer !== "handleEditRoute") {
+        router.push(
+          {
+            pathname: router.pathname,
+            query: {
+              ...router.query,
+              drawer: "handleEditRoute",
+            },
+          },
+          undefined,
+          { shallow: true }
+        );
+      }
+    } else {
+      // Remove drawer for other tabs
+      const { drawer, ...restQuery } = router.query;
+      if (drawer === "handleEditRoute") {
+        router.push(
+          {
+            pathname: router.pathname,
+            query: restQuery,
+          },
+          undefined,
+          { shallow: true }
+        );
+      }
+    }
+  };
 
   return (
     <Container>
@@ -39,23 +89,7 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSec
         {items.map((item, index) => (
           <NavigationLink
             {...markerHandlers}
-            onClick={() => {
-              if (ClickHandler) {
-                ClickHandler(item.label);
-              }
-              if(trackSectionViewed)
-              trackSectionViewed(router.query.id,item.label);
-            if (item.label === "Route") {
-      router.push({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          drawer: "handleEditRoute",
-        },
-      }, undefined, { shallow: true });
-    }
-              setSelectedTab(`${item.id}`);
-            }}
+            onClick={() => handleNavClick(item)}
             isSelected={selectedTab === `${item.id}`}
             item={item}
             BarName={BarName}
@@ -67,11 +101,7 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem,trackSec
           </NavigationLink>
         ))}
 
-        <NavigationMarker
-          x={markerPos.x}
-          height={2}
-          width={markerPos.width}
-        />
+        <NavigationMarker x={markerPos.x} height={2} width={markerPos.width} />
       </InnerContainer>
     </Container>
   );
