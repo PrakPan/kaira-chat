@@ -34,7 +34,7 @@ const LocationsBlog = (props) => {
 
     if (props.locations[i].image)
       cardsarr.push(
-        <Link href={"/" + path} style={{ textDecoration: "none" }}>
+        // <Link href={"/" + path} style={{ textDecoration: "none" }}>
           <LocationCard
             key={i}
             location={props.locations[i]}
@@ -43,9 +43,12 @@ const LocationsBlog = (props) => {
               props.locations[i].tagline ? props.locations[i].tagline : ""
             }
             img={props.locations[i].image}
-            onclick={() => _handleRedirect(props.locations[i])}
+            onclick={() => {
+              if (props?.setShowTailoredModal) props?.setShowTailoredModal(true);
+            
+            }}
           ></LocationCard>
-        </Link>
+        // </Link>
       );
   }
 
