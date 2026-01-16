@@ -35,11 +35,11 @@ export default function Navigation({ components, slug }) {
 
   const handlePlanButton = (pageId, destination, type) => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+      setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
   };
 
   return (

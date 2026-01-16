@@ -169,9 +169,8 @@ export const useSourceParams = () => {
     }
 
     const resolvedSource =
-      queryObj.utm_source ||
-      queryObj.source ||
-      "new-trip";
+      queryObj.source || router?.asPath || queryObj.utm_source;
+      
 
     return {
       path: router.asPath,

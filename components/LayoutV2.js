@@ -54,7 +54,6 @@ const LayoutV2 = (props) => {
         destinationType={"city-planner"}
         onHide={() => {
           setShowMobilePlanner(false);
-          closeTailoredModal(router);
         }}
         show={showMoiblePlanner}
       />

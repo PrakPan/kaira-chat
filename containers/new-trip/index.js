@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import useMediaQuery from '../../components/media';
 
-const NewTrip = () => {
+const NewTrip = (props) => {
   const dispatch = useDispatch();
   const isDesktop = useMediaQuery("(min-width:767px)");
 
@@ -27,7 +27,7 @@ const NewTrip = () => {
       {/* <NavigationMenu /> */}
       <div>
         <div>
-          <TailoredForm />
+          <TailoredForm onHide={props?.onHide}/>
         </div>
         {isDesktop ? (
           <div className='fixed bottom-0 w-100 z-[1] bg-primary-cornsilk'>

@@ -167,9 +167,17 @@ const Enquiry = (props) => {
     if ((slideIndex && slideIndex != 0) || isItineraryCreated) {
       dispatch(setItineraryCreated(false));
       if (!itineraryInititateData)
-        router.push({
-          pathname: "/new-trip",
-        });
+        router.push(
+          {
+            // pathname: "/new-trip",
+            query: {
+              ...router.query,
+              slideIndex: 0,
+            },
+          },
+          undefined,
+          { shallow: true }
+        );
     }
   }, [router.isReady, slideIndex]);
 
@@ -199,12 +207,17 @@ const Enquiry = (props) => {
       if (slideIndex == 1) {
         setIsRouteChanged(false);
       }
-      router.push({
-        pathname: "/new-trip",
-        query: {
-          slideIndex: slideIndex - 1,
+      router.push(
+        {
+          // pathname: "/new-trip",
+          query: {
+            ...router.query,
+            slideIndex: slideIndex - 1,
+          },
         },
-      });
+        undefined,
+        { shallow: true }
+      );
     }
   };
 
@@ -282,22 +295,34 @@ const Enquiry = (props) => {
       _submitDataHandler();
       return;
     }
-    router.push({
-      pathname: "/new-trip",
-      query: {
-        slideIndex: slideThreeData.addHotels ? slideIndex + 1 : slideIndex + 2,
+    router.push(
+      {
+        // pathname: "/new-trip",
+        query: {
+          ...router.query,
+          slideIndex: slideThreeData.addHotels
+            ? slideIndex + 1
+            : slideIndex + 2,
+        },
       },
-    });
+      undefined,
+      { shallow: true }
+    );
   };
 
   const _slideTwoSkip = () => {
     try {
-      router.push({
-        pathname: "/new-trip",
-        query: {
-          slideIndex: slideIndex + 1,
+      router.push(
+        {
+          // pathname: "/new-trip",
+          query: {
+            ...router.query,
+            slideIndex: slideIndex + 1,
+          },
         },
-      });
+        undefined,
+        { shallow: true }
+      );
     } catch (error) {
       console.log("new slide index is: ", error);
     }
@@ -464,8 +489,9 @@ const Enquiry = (props) => {
 
       router.push(
         {
-          pathname: "/new-trip",
+          // pathname: "/new-trip",
           query: {
+            ...router.query,
             slideIndex: nextSlideIndex,
           },
         },
@@ -494,10 +520,14 @@ const Enquiry = (props) => {
       setIsSubmitting(false);
       setIsLoading(false);
 
-      router.push({
-        pathname: "/new-trip",
-        query: { ...router.query, slideIndex: 0 },
-      });
+      router.push(
+        {
+          // pathname: "/new-trip",
+          query: { ...router.query, slideIndex: 0 },
+        },
+        undefined,
+        { shallow: true }
+      );
       return;
     }
 
@@ -981,7 +1011,11 @@ const Enquiry = (props) => {
               <div className="flex justify-between">
                 <button
                   className={`LargeIndigoOutlinedButton `}
-                  onClick={() => router.push("/")}
+                  onClick={() => {
+                    if (props?.onHide) {
+                      props.onHide();
+                    } else router.push("/");
+                  }}
                 >
                   Cancel
                 </button>
@@ -1052,10 +1086,14 @@ const Enquiry = (props) => {
                   } `}
                   onClick={() => {
                     trackItineraryRoute(itineraryId, locationsLatLong);
-                    router.push({
-                      pathname: "/new-trip",
-                      query: { ...router.query, slideIndex: slideIndex + 1 },
-                    });
+                    router.push(
+                      {
+                        // pathname: "/new-trip",
+                        query: { ...router.query, slideIndex: slideIndex + 1 },
+                      },
+                      undefined,
+                      { shallow: true }
+                    );
                   }}
                 >
                   Continue
@@ -1118,12 +1156,17 @@ const Enquiry = (props) => {
                   onclick={() => {
                     totalSlides == 4
                       ? _submitDataHandler()
-                      : router.push({
-                          pathname: "/new-trip",
-                          query: {
-                            slideIndex: slideIndex + 1,
+                      : router.push(
+                          {
+                            // pathname: "/new-trip",
+                            query: {
+                              ...router.query,
+                              slideIndex: slideIndex + 1,
+                            },
                           },
-                        });
+                          undefined,
+                          { shallow: true }
+                        );
                   }}
                 >
                   {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
@@ -1157,12 +1200,17 @@ const Enquiry = (props) => {
                 onClick={() => {
                   totalSlides == 5
                     ? _submitDataHandler()
-                    : router.push({
-                        pathname: "/new-trip",
-                        query: {
-                          slideIndex: slideIndex + 1,
+                    : router.push(
+                        {
+                          // pathname: "/new-trip",
+                          query: {
+                            ...router.query,
+                            slideIndex: slideIndex + 1,
+                          },
                         },
-                      });
+                        undefined,
+                        { shallow: true }
+                      );
                 }}
                 height="50px"
                 width={`${isPageWide ? "300px" : ""}`}

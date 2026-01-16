@@ -52,6 +52,7 @@ import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx"
 import Link from "next/link.js";
 import DesktopBanner from "../../components/containers/Banner.js"
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -96,6 +97,7 @@ const Index = (props) => {
   const [userItineraries, setUserItineraries] = useState([]);
   const [hotLocations, setHotLocations] = useState([]);
   const [desktopBannerLoading,setDesktopBannerLoading] = useState(false);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
 
@@ -135,10 +137,12 @@ const Index = (props) => {
 
   const handlePlanButtonClick = (location) => {
     // openTailoredModal(router, props.data.id, props.data.name);
-    router.push({
-        pathname: "/new-trip",
-        query: { ...router.query,source: props?.data?.slug || 'home' }
-    });
+    // router.push({
+    //     pathname: "/new-trip",
+    //     query: { ...router.query,source: props?.data?.slug || 'home' }
+    // });
+
+    setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -185,6 +189,7 @@ const Index = (props) => {
           )}
           image={`${imgUrlEndPoint}${props?.data?.image}`}
           slug={props?.data?.slug}
+          setShowTailoredModal={setShowTailoredModal}
         />
         {/* <HeroBanner
           image={props?.data?.image}
@@ -198,17 +203,13 @@ const Index = (props) => {
         <SetWidthContainer>
            <DesktopBanner
             loading={desktopBannerLoading}
-            onclick={() =>
-              {router.push({
-        pathname: "/new-trip",
-        query: { ...router.query, source: props?.data?.slug || 'home' }
-    });}
+            onclick={() => setShowTailoredModal(true)}
               // openTailoredModal(
               //   router,
               //   props.data.id,
               //   convertDbNameToCapitalFirst(props.data.slug)
               // )
-            }
+            
             text={`Craft a personalized itinerary${
               props.data?.slug
                 ? " to " +
@@ -334,18 +335,19 @@ const Index = (props) => {
                 </div>
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
+                {/* <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}> */}
                   <button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </>
           ) : null}
@@ -510,18 +512,19 @@ const Index = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
+                {/* <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}> */}
                   <button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </div>
           ) : null}
@@ -637,18 +640,19 @@ const Index = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}>
+                {/* <Link href={`/new-trip/?source=${props?.data?.slug || 'home'}`}> */}
                   <button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </MenuItem>
           ) : null}
@@ -1036,6 +1040,19 @@ const Index = (props) => {
           removeDelete={true}
         ></POIDetailsDrawer>
       )}
+
+      <TailoredFormMobileModal
+            destinationType={"city-planner"}
+            page_id={props.page_id}
+            children_cities={props.children_cities}
+            destination={props.destination}
+            cities={props.cities}
+            onHide={() => {
+              setShowTailoredModal(false);
+            }}
+            show={showTailoredModal}
+            eventDates={props.eventDates}
+          />
     </div>
   );
 };

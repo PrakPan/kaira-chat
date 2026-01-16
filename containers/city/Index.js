@@ -11,11 +11,13 @@ import openTailoredModal from "../../services/openTailoredModal";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
 import HeroSection from "../../components/revamp/destination/HeroSection";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
   const router = useRouter();
+  const [showTailoredModal,setShowTailoredModal] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
   const closeGalleryHandler = () => {
@@ -78,13 +80,27 @@ const Experience = (props) => {
           )} x
             image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
             slug={props?.cityData?.name}
+            setShowTailoredModal={setShowTailoredModal}
           />
 
           <NewMenu
             data={props.cityData}
-            destination={props.cityData.name}
+            destination={props?.cityData?.name}
             nearbyCities={props.reccomendedCitiesData}
             removeDelete={true}
+          />
+
+           <TailoredFormMobileModal
+            destinationType={"city-planner"}
+            page_id={props.page_id}
+            children_cities={props.children_cities}
+            destination={props.destination}
+            cities={props.cities}
+            onHide={() => {
+              setShowTailoredModal(false);
+            }}
+            show={showTailoredModal}
+            eventDates={props.eventDates}
           />
         </div>
       </div>

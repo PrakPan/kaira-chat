@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { capitalizeFirstLetter } from "../../../utils/tailoredform";
 
-const HeadingContent = ({ title, subtitle, slug=null }) => {
+const HeadingContent = ({ title, subtitle, slug=null,setShowTailoredModal }) => {
   const headingRef = useRef(null);
   const containerRef = useRef(null);
   const contentWrapperRef = useRef(null);
@@ -81,19 +81,20 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
     {/* Combined container for button and subheading */}
     <div className="absolute bottom-[4%] sm:bottom-[8%] md:bottom-[10%] left-1/2 -translate-x-1/2 w-[90%] sm:w-auto flex flex-col items-center gap-3 sm:gap-4">
       <div ref={buttonRef}>
-        <Link href={`/new-trip/?source=${slug || 'home'}`}>
+        {/* <Link href={`/new-trip/?source=${slug || 'home'}`}> */}
           <Button
             variant="filled"
             color="default"
             size="medium"
             className="!bg-red-500 text-sm sm:text-base px-4 sm:px-6 whitespace-nowrap"
+            onClick={()=>{if(setShowTailoredModal) setShowTailoredModal(true)}}
           >
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faPlus} className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{slug && slug != 'thank-you' ? `Create My Stranger Things Trip` : "Get your Customised Itinerary"}</span>
             </div>
           </Button>
-        </Link>
+        {/* </Link> */}
       </div>
       
       <div ref={contentWrapperRef} className="text-center invisible">
@@ -115,12 +116,13 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
         </p>
       </div>
       <div ref={buttonRef}>
-        <Link href={`/new-trip/?source=${slug || 'home'}`}>
+        {/* <Link href={`/new-trip/?source=${slug || 'home'}`}> */}
           <Button
             variant="filled"
             color="default"
             size="medium"
             className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
+            onClick={()=>{if(setShowTailoredModal) setShowTailoredModal(true);}}
           >
             <div className="flex items-center space-x-2">
               <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
@@ -129,7 +131,7 @@ const HeadingContent = ({ title, subtitle, slug=null }) => {
                 </span>
             </div>
           </Button>
-        </Link>
+        {/* </Link> */}
       </div>
     </div> 
   );

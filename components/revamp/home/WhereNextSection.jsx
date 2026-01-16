@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Button from "../common/components/button";
 import { Pinned, Japan } from "../assets";
 import Link from "next/link";
 import useMediaQuery from "../../media";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 const WhereNextSection = () => {
   // Statistics data
@@ -22,6 +23,8 @@ const WhereNextSection = () => {
     },
   ];
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const [showMoiblePlanner,setShowMobilePlanner] = useState(false);
+  
   return (
     <section
       className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8"
@@ -53,18 +56,19 @@ const WhereNextSection = () => {
 
               {/* CTA Button */}
               <div className="mb-8 lg:mb-10">
-                <Link href="/new-trip">
+                {/* <Link href="/new-trip"> */}
                   <Button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowMobilePlanner(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </Button>
-                </Link>
+                {/* </Link> */}
               </div>
 
               {/* Statistics Section */}
@@ -100,6 +104,15 @@ const WhereNextSection = () => {
           </div>
         </div>
       </div>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          // closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
     </section>
   );
 };

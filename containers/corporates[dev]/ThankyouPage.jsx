@@ -13,12 +13,12 @@ export default function ThankyouPage(props) {
 
   const handlePlanButton = () => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+      setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push("/new-trip");
+    // router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",

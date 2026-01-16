@@ -55,7 +55,8 @@ export default function HoneymoonPackages(props) {
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
+    setShowTailoredModal(true)
   };
   
   const matchingComponent = props?.data?.find(

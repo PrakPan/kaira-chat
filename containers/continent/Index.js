@@ -143,10 +143,7 @@ const Index = (props) => {
     //   convertDbNameToCapitalFirst(props.data.slug),
     //   props.type
     // );
-    router.push({
-        pathname: "/new-trip",
-        query: { ...router.query,source: props?.data?.slug || 'home' }
-    });
+    setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -175,23 +172,14 @@ const Index = (props) => {
           )}
           image={`${imgUrlEndPoint}${props.data.image}`}
           slug={props?.data?.slug}
+          setShowTailoredModal={setShowTailoredModal}
         />
 
         <SetWidthContainer>
 
              <DesktopBanner
             loading={desktopBannerLoading}
-            onclick={() =>
-              {router.push({
-        pathname: "/new-trip",
-        query: { ...router.query,source: props?.data?.slug || 'home' }
-    });}
-              // openTailoredModal(
-              //   router,
-              //   props.data.id,
-              //   convertDbNameToCapitalFirst(props.data.slug)
-              // )
-            }
+            onclick={() =>setShowTailoredModal(true)}
             text={`Craft a personalized itinerary${
               props.data.slug
                 ? " to " +
@@ -275,6 +263,7 @@ const Index = (props) => {
                             );
                             window.location.replace("/" + destination.path);
                           }}
+                          setShowTailoredModal={setShowTailoredModal}
                         />
                       </div>
                     </SwiperSlide>
@@ -1194,6 +1183,7 @@ const Index = (props) => {
         onHide={() => {
           setShowTailoredModal(false);
         }}
+
         show={showTailoredModal}
       />
 

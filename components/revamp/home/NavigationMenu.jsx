@@ -22,6 +22,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import Login from "../../modals/Login";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 const NavigationMenu = (props) => {
   const {
@@ -41,6 +42,7 @@ const NavigationMenu = (props) => {
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
   const [hideNav, setHideNav] = useState(false);
   const itinerary = useSelector(state=>state.Itinerary);
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const dispatch = useDispatch();
   // Memoized active path checker to prevent unnecessary re-renders
   const isActive = useCallback(
@@ -133,7 +135,7 @@ const NavigationMenu = (props) => {
                   My Trips
           </button>}</>: null}
           
-          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton" onClick={()=>router.push("/new-trip")}>
+          {(pathname!="/new-trip")&& (!pathname?.includes("/itinerary")) && pathname=="/dashboard"&& <button className="MediumIndigoButton" onClick={()=>setShowMobilePlanner(true)}>
                   Create a trip
           </button>}
           
@@ -161,7 +163,7 @@ const NavigationMenu = (props) => {
         <div className="flex gap-2 md:hidden">
         {props.token?<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px] " onClick={()=>router.push("/dashboard")}>
                   My Trips
-        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px]" onClick={()=>router.push("/new-trip")}>
+        </button>}</>:<>{(pathname!="/dashboard"&&pathname!="/new-trip")&&<button className="MediumIndigoButton mt-2 max-sm:text-[12px]" onClick={()=>setShowMobilePlanner(true)}>
                   Create a trip
         </button>}</>}
           <MobileMenu 
@@ -266,6 +268,16 @@ const NavigationMenu = (props) => {
         />
       </div>}
       </div>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          // closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
+
     </>
   );
 };

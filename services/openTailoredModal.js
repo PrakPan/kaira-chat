@@ -2,7 +2,7 @@ export default function openTailoredModal(router, page_id, destination, type) {
   if (page_id && destination && type) {
     router.replace(
       {
-        pathname: "/new-trip",
+        // pathname: "/new-trip",
         query: {
           ...router.query,
           "tailored-travel": true,
@@ -17,7 +17,7 @@ export default function openTailoredModal(router, page_id, destination, type) {
   } else if (page_id && destination) {
     router.replace(
       {
-        pathname: "/new-trip",
+        // pathname: "/new-trip",
         query: {
           
           ...router.query,
@@ -32,7 +32,7 @@ export default function openTailoredModal(router, page_id, destination, type) {
   } else {
     router.replace(
       {
-        pathname: "/new-trip",
+        // pathname: "/new-trip",
         query: { ...router.query, "tailored-travel": true },
       },
       undefined,

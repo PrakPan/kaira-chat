@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   ANIMATION_CONFIG,
   createEntranceAnimation,
@@ -12,12 +12,18 @@ import Link from "next/link";
 import Button from "../common/components/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import openTailoredModal from "../../../services/openTailoredModal";
+import { closeTailoredModal } from "../../../services/openTailoredModalV2";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import { useRouter } from "next/router";
 
 const HeadingContent = ({ title, subtitle }) => {
   const headingRef = useRef(null);
   const containerRef = useRef(null);
   const contentWrapperRef = useRef(null);
   const buttonRef = useRef(null);
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+  const router = useRouter();
 
   useGSAP(
     () => {
@@ -77,20 +83,43 @@ const HeadingContent = ({ title, subtitle }) => {
         </p>
       </div>
       <div ref={buttonRef}>
-        <Link href="/new-trip">
-          <Button
-            variant="filled"
-            color="default"
-            size="medium"
-            className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
-          >
-            <div className="flex items-center space-x-2">
-              <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-              <span>Plan & Book My Trip with AI</span>
-            </div>
-          </Button>
-        </Link>
+        {/* <Link href="/new-trip"> */}
+        <Button
+          variant="filled"
+          color="default"
+          size="medium"
+          className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
+          onClick={() => {
+            router.push(
+              {
+                pathname: router.pathname,
+                query: {
+                  ...router.query,
+                  "tailored-travel": "true",
+                },
+              },
+              undefined,
+              { shallow: true }
+            );
+            setShowMobilePlanner(true);
+          }}
+        >
+          <div className="flex items-center space-x-2">
+            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
+            <span>Plan & Book My Trip with AI</span>
+          </div>
+        </Button>
+        {/* </Link> */}
       </div>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          // closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
     </div>
   );
 };
