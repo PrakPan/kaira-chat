@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TravelerItineraryCard from "./TravelerItineraryCard";
 import { Japan, backgroundImage } from "../assets";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -14,6 +14,7 @@ import {
 import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import Button from "../common/components/button";
 import Link from "next/link";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 const TravelerMadeItinerariesSection = (props) => {
   // Sample traveler-made itinerary data
@@ -3641,6 +3642,8 @@ const TravelerMadeItinerariesSection = (props) => {
     },
   ];
 
+  const [showMoiblePlanner,setShowMobilePlanner] = useState(false);
+
   return (
     <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full max-w-7xl mx-auto">
@@ -3732,20 +3735,30 @@ const TravelerMadeItinerariesSection = (props) => {
         </div>
 
            <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                {/* <Link href="/new-trip"> */}
                   <Button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowMobilePlanner(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </Button>
-                </Link>
+                {/* </Link> */}
               </div>
       </div>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          // closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
     </section>
   );
 };

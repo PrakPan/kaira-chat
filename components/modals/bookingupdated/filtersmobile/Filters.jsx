@@ -26,12 +26,12 @@ export default function Filters(props) {
       ...prev,
       budget: {
         price_lower_range: budget[0],
-        price_upper_range: budget[1]
+        price_upper_range: budget[1] === 10000 ? null : budget[1]
       },
     }));
     props.setshowFilter(false);
     props?.setIsFilterChangesApplied(true);
-  };
+};
 
   const removeAllFilter = () => {
     props._removeFilterHandler();
@@ -87,14 +87,14 @@ export default function Filters(props) {
               setSelectedStarCategory={setSelectedStarCategory}
             />
 
-            <hr className="m-zero" />
+            {/* <hr className="m-zero" /> */}
             
-            <UserRatings
+            {/* <UserRatings
               userRatings={props.FILTERS?.user_ratings}
               userRatingsLabel={props.FILTERS?.user_ratings_label}
               selectedUserStar={selectedUserStar}
               setSelectedUserStar={setSelectedUserStar}
-            />
+            /> */}
 
             {props.FILTERS?.type.length ? (
               <>

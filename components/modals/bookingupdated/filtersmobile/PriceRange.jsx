@@ -5,26 +5,32 @@ export default function PriceRange(props) {
     const [minPrice, setMinPrice] = useState(props.budget[0])
     const [maxPrice, setMaxPrice] = useState(props.budget[1])
     
-    const handleBudgetChange = (value) => {
-        props.setBudget(value);
-        setMinPrice(value[0]);
-        setMaxPrice(value[1]);
-        if(props?.handleBudgetChange){
+const handleBudgetChange = (value) => {
+    const newMinPrice = value[0];
+    const newMaxPrice = value[1];
+    
+    props.setBudget([newMinPrice, newMaxPrice]);
+    setMinPrice(newMinPrice);
+    setMaxPrice(newMaxPrice);
+    
+    if(props?.handleBudgetChange){
         props?.handleBudgetChange()
-        }
-        props.setFilters((prev)=>({
-      ...prev,
-      budget:{
-        price_lower_range:value[0],
-        price_upper_range:value[1] === 10000 ? null: value[1]
-      },
-    }))
     }
+    
+   
+    props.setFilters((prev)=>({
+        ...prev,
+        budget:{
+            price_lower_range: newMinPrice,
+            price_upper_range: newMaxPrice === 10000 ? null : newMaxPrice
+        },
+    }))
+}
 
     const handleBudgetFocusChange = () => {
         if (!isNaN(parseInt(minPrice)) && !isNaN(parseInt(maxPrice))) {
             const min_price = parseInt(minPrice) < 700 ? 700 : parseInt(minPrice);
-            const max_price = parseInt(maxPrice) > 10000 ? 10000 : parseInt(maxPrice);
+            const max_price = parseInt(maxPrice) > 50000 ? 10000 : parseInt(maxPrice);
 
             props.setBudget([min_price,max_price])
             setMinPrice(min_price);

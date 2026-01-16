@@ -26,7 +26,7 @@ const TravelVibeSection = () => {
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/road-trips-2025"
+      link:"theme/roadtrips-2025"
     },
     {
       id: 3,

@@ -89,7 +89,7 @@ const Layout = React.memo((props) => {
 
   return (
     <div className={`layout ${props?.isItinerary == true || props?.isTerms == true ?  '' : 'overflow-x-hidden'}`}>
-      <NavigationMenu isItinerary={props?.isItinerary}/>
+      <NavigationMenu isItinerary={props?.isItinerary} message={"Welcome to The Tarzan Way!"}/>
 
       <div
         style={{ marginTop: props.isItinerary === true

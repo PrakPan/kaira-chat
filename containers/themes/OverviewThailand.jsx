@@ -26,7 +26,7 @@ export default function OverviewThailand(props) {
 
   const handlePlanButton = () => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+     setShowTailoredModal(true);
     // } else {
     //   if (props?.type) {
     //     openTailoredModal(router, props.page_id, props.destination, props.type);
@@ -34,7 +34,7 @@ export default function OverviewThailand(props) {
     //     openTailoredModal(router, props.page_id, props.destination, props.type);
     //   }
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",

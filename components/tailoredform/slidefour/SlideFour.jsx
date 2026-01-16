@@ -75,7 +75,7 @@ export default function SlideThree(props) {
           </div>
 
         </div>
-        <div>
+        <div className="max-ph:pb-[70px]">
           <div className="text-lg font-600 leading-xl-md mb-md">Travellers and Rooms</div>
           <Pax
             numberOfAdults={numberOfAdults}

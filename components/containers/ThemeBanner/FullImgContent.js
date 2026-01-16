@@ -77,11 +77,12 @@ const FullImgContent = (props) => {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push({
-        pathname: "/new-trip",
-        query: { source: props?.destination || 'home' }
-    });
-
+    // router.push({
+    //     pathname: "/new-trip",
+    //     query: { ...router.query,source: props?.destination || 'home' }
+    // });
+    setShowTailoredModal(true);
+    
     logEvent({
       action: "Plan_Itinerary",
       params: {

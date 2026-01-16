@@ -134,11 +134,11 @@ const SimpleTabsV2 = (props) => {
   const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
-  const [loginModalMessage, setLoginModalMessage] = useState('Sign in to access your plan');
+  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
   const cart = useSelector(state=>state.Cart);
-
+  const {finalized_status} = useSelector(state=>state.ItineraryStatus)
 
    
   const [isHovered, setIsHovered] = useState(false);
@@ -159,19 +159,12 @@ const SimpleTabsV2 = (props) => {
   }
 }, []);
 
-// useEffect(() => {
-//   if (!props.token && !props.itinerary?.customer) {
-//     const loginReminderInterval = setInterval(() => {
-//       if (!props.token && !props.itinerary?.customer) {
-//         setLoginModalMessage('Login to view details');
-//         setShowLoginModal(true);
-//       }
-//     }, 30000);
-//     return () => {
-//       clearInterval(loginReminderInterval);
-//     };
-//   }
-// }, [props.token, props.itinerary?.customer]);
+useEffect(() => {
+  if (!props.token && props.itinerary && (finalized_status == "SUCCESS")) {
+    setLoginModalMessage('Login to view details');
+    setShowLoginModal(true);
+  }
+}, [props.itinerary?.id]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
@@ -290,7 +283,7 @@ const SimpleTabsV2 = (props) => {
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
-    setLoginModalMessage('Welcome to The Tarzan Way!');
+    setLoginModalMessage('Please login to view details');
   };
 
  const items = [
@@ -469,7 +462,7 @@ const SimpleTabsV2 = (props) => {
 
 
 const attachUserToItinerary = async () => {
-  if (props.itinerary?.customer) {
+  if (props.itinerary?.customer_name) {
     return; 
   }
   

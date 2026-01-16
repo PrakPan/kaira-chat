@@ -14,8 +14,9 @@ import {
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import Button from "../common/components/button";
 import Link from "next/link";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
-const LuxuryEuropeDestinations = () => {
+const LuxuryEuropeDestinations = (props) => {
   // Sample destination data - replace with your actual data
   const destinations = [
     {
@@ -111,6 +112,7 @@ const LuxuryEuropeDestinations = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
+  const [showMoiblePlanner,setShowMobilePlanner] = useState(false)
   const swiperRef = useRef(null);
 
   const handleSwiper = (swiper) => {
@@ -223,20 +225,28 @@ const LuxuryEuropeDestinations = () => {
         </div>
 
        <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href="/new-trip">
+                {/* <Link href="/new-trip"> */}
                   <Button
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      console.log("Create a Trip Now! clicked");
+                      setShowMobilePlanner(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </Button>
-                </Link>
+                {/* </Link> */}
               </div>
       </div>
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        onHide={() => {
+          setShowMobilePlanner(false);
+          // closeTailoredModal(router);
+        }}
+        show={showMoiblePlanner}
+      />
 
     </section>
   );

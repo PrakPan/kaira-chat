@@ -2,6 +2,7 @@ import React from "react";
 import Modal from "../ui/Modal";
 import media from "../media";
 import TailoredForm from "../tailoredform/Index";
+import NewTrip from "../../containers/new-trip";
 
 const TailoredFormMobileModal = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -20,7 +21,8 @@ const TailoredFormMobileModal = (props) => {
     >
       <div className="flex justify-center items-center h-full">
       <div className="w-full h-full">
-        <TailoredForm
+        <NewTrip onHide={props?.onHide}/>
+        {/* <TailoredForm
           tailoredFormModal
           destinationType={props.destinationType}
           page_id={props.page_id}
@@ -30,7 +32,7 @@ const TailoredFormMobileModal = (props) => {
           cities={props.cities}
           onHide={props.onHide}
           eventDates={props.eventDates}
-        ></TailoredForm>
+        ></TailoredForm> */}
       </div>
       </div>
     </Modal>

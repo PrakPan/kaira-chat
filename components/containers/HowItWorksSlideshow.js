@@ -46,7 +46,10 @@ const HowItWorksSlideshow = (props) => {
   let isTablet = media("(min-width: 500px)");
 
   const handlePlanButtonClick = () => {
-    openTailoredModal(router, props.page_id, props.destination);
+    // openTailoredModal(router, props.page_id, props.destination);
+    if(props?.setShowTailoredModal){
+      props?.setShowTailoredModal(true);
+    }
 
     logEvent({
       action: "Plan_Itinerary",

@@ -38,6 +38,7 @@ import DesktopBanner from "../../components/containers/Banner.js";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 import Link from "next/link.js";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer.js";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -104,6 +105,7 @@ const Menu = (props) => {
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
 
   const [activeDrawer, setActiveDrawer] = useState(null);
+  const [showTailoredModal,setShowTailoredModal] = useState(false);
 
   const handleOpenDrawer = (data, type) => {
     setActiveDrawer({ data, type });
@@ -113,10 +115,10 @@ const Menu = (props) => {
   };
   const handlePlanButtonClick = () => {
     // openTailoredModal(router, props.data.id, props.data.name, props.type);
-    router.push({
-      pathname: "/new-trip",
-      query: { source: props?.data?.slug || "home" },
-    });
+    // router.push({
+    //   pathname: "/new-trip",
+    //   query: { ...router.query, source: props?.data?.slug || "home" },
+    // });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -134,11 +136,11 @@ const Menu = (props) => {
       <DesktopBanner
         loading={desktopBannerLoading}
         onclick={
-          () => {
-            router.push({
-              pathname: "/new-trip",
-              query: { source: props?.data?.slug || "home" },
-            });
+          () => { setShowTailoredModal(true);
+            // router.push({
+            //   pathname: "/new-trip",
+            //   query: { ...router.query, source: props?.data?.slug || "home" },
+            // });
           }
           // openTailoredModal(
           //   router,
@@ -240,7 +242,7 @@ const Menu = (props) => {
                 <SwiperSlide key={destination.id}>
                   <div className="w-full px-1">
                     <DestinationCard
-                      title={destination.title || destination.name}
+                      title={destination?.display_name || destination.title || destination.name}
                       description={
                         destination.description || destination.tagline
                       }
@@ -297,18 +299,19 @@ const Menu = (props) => {
           </div>
 
           <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}>
+            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
               <button
                 variant="filled"
                 size="medium"
                 onClick={() => {
                   console.log("Create a Trip Now! clicked");
+                  setShowTailoredModal(true);
                 }}
                 className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
               >
                 + Create a Trip Now!
               </button>
-            </Link>
+            {/* </Link> */}
           </div>
         </MenuItem>
       ) : null}
@@ -365,10 +368,11 @@ const Menu = (props) => {
                 <SwiperSlide key={destination.id}>
                   <div className="w-full px-1">
                     <DestinationCard
-                      title={destination.title || destination.name}
+                      title={destination?.display_name || destination.title || destination.name}
                       description={
                         destination.description || destination.tagline
                       }
+                      one_liner_description={destination?.one_liner_description}
                       image={destination.image}
                       rating={destination.rating}
                       reviewCount={destination.user_ratings_total}
@@ -421,18 +425,19 @@ const Menu = (props) => {
           </div>
 
           <div className=" flex items-center justify-center mt-8 lg:mt-10">
-            <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}>
+            {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
               <button
                 variant="filled"
                 size="medium"
                 onClick={() => {
                   console.log("Create a Trip Now! clicked");
+                  setShowTailoredModal(true);
                 }}
                 className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
               >
                 + Create a Trip Now!
               </button>
-            </Link>
+            {/* </Link> */}
           </div>
         </MenuItem>
       )}
@@ -541,18 +546,19 @@ const Menu = (props) => {
         </div>
 
         <div className=" flex items-center justify-center mt-8 lg:mt-10">
-          <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}>
+          {/* <Link href={`/new-trip/?source=${props?.data?.slug || "home"}`}> */}
             <button
               variant="filled"
               size="medium"
               onClick={() => {
                 console.log("Create a Trip Now! clicked");
+                setShowTailoredModal(true);
               }}
               className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
             >
               + Create a Trip Now!
             </button>
-          </Link>
+          {/* </Link> */}
         </div>
       </MenuItem>
 
@@ -687,7 +693,22 @@ const Menu = (props) => {
             removeDelete={true}
           ></POIDetailsDrawer>
         )}
+
+        <TailoredFormMobileModal
+            destinationType={"city-planner"}
+            page_id={props.page_id}
+            children_cities={props.children_cities}
+            destination={props.destination}
+            cities={props.cities}
+            onHide={() => {
+              setShowTailoredModal(false);
+            }}
+            show={showTailoredModal}
+            eventDates={props.eventDates}
+          />
       </MenuItem>
+
+
     </MenuContainer>
   );
 };

@@ -44,7 +44,7 @@ const Card = (props) => {
 
   const handleClick = () => {
 
-    router.push("/new-trip");
+    // router.push("/new-trip");
     // if (props.data.trip_planner) {
     //   const { destination, id, value } = getParams(props.data.cta_path);
 
@@ -59,6 +59,8 @@ const Card = (props) => {
     // } else {
     //   router.push(props.data.cta_path);
     // }
+
+    setShowTailoredModal(true);
   };
 
   const getParams = (params) => {

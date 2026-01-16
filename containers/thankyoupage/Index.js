@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants";
 import HeroSection from "../../components/revamp/destination/HeroSection";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -63,6 +64,7 @@ const Index = (props) => {
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansCount, setPlansCount] = useState(null);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
 
   let isPageWide = media("(min-width: 768px)");
 
@@ -157,9 +159,10 @@ const Index = (props) => {
        
         }
         subtitle={`It takes one step to begin the journey of a thousand miles. We will get in touch with you within 12 hours. :)`}
-        _startPlanningFunction={() => openTailoredModal(router)}
+        // _startPlanningFunction={() => openTailoredModal(router)}
         page={"Thank you Page"}
         slug={'thank-you'}
+        setShowTailoredModal={setShowTailoredModal}
         />
       {/* <HeroBanner
         image={
@@ -191,7 +194,7 @@ const Index = (props) => {
       >
         <DesktopBanner
           loading={desktopBannerLoading}
-          onclick={() => openTailoredModal(router)}
+          onclick={() => setShowTailoredModal(true)}
           text="Want to personalize your own experience?"
         ></DesktopBanner>
 
@@ -213,6 +216,7 @@ const Index = (props) => {
               content={HowitWorksContentsArr}
               headings={HowitWorksHeadingsArr}
               page={"Thank you Page"}
+              setShowTailoredModal={setShowTailoredModal}
             ></HowItWorks>
           </HowItWorksContainer>
 
@@ -441,7 +445,23 @@ const Index = (props) => {
             ></Banner>
           </div>
         )}
+
+
       </div>
+
+
+      <TailoredFormMobileModal
+            destinationType={"city-planner"}
+            page_id={props.page_id}
+            children_cities={props.children_cities}
+            destination={props.destination}
+            cities={props.cities}
+            onHide={() => {
+              setShowTailoredModal(false);
+            }}
+            show={showTailoredModal}
+            eventDates={props.eventDates}
+          />
     </div>
   );
 };

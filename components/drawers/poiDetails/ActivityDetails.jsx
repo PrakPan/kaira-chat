@@ -200,11 +200,11 @@ const ActivityDetails = (props) => {
   });
 
   const [boolDetails, setBoolDetail] = useState({
-    generalGuidelines: false,
-    thingsToBring: false,
-    notSuitableFor: false,
-    tipsTricks: false,
-    Amenities: false,
+    generalGuidelines: true,
+    thingsToBring: true,
+    notSuitableFor: true,
+    tipsTricks: true,
+    Amenities: true,
   });
 
   function OnImageLoad(i) {
@@ -364,8 +364,10 @@ const ActivityDetails = (props) => {
                           ? props.data.image
                           : "media/icons/bookings/notfounds/noroom.png"
                       }
-                      dimensionsMobile={{ width: 500, height: 295 }}
-                      dimensions={{ width: 468, height: 295 }}
+                      // dimensionsMobile={{ width: 500, height: 295 }}
+                      // dimensions={{ width: 468, height: 295 }}
+                      dimensionsMobile={{ width: 800, height: 472 }}
+                      dimensions={{ width: 936, height: 590 }}
                       onload={() => {
                         setTimeout(() => {
                           setImageLoaded(true);
@@ -584,25 +586,26 @@ const ActivityDetails = (props) => {
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
-                  onClick={() =>
-                    setBoolDetail((prev) => ({
-                      ...prev,
-                      generalGuidelines: !prev.generalGuidelines,
-                    }))
-                  }
+                  className="text-[20px] font-semibold"
+                  // onClick={() =>
+                  //   setBoolDetail((prev) => ({
+                  //     ...prev,
+                  //     generalGuidelines: !prev.generalGuidelines,
+                  //   }))
+                  // }
                 >
                   <div>General guidelines</div>
-                  {boolDetails?.generalGuidelines ? (
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  {/* {boolDetails?.generalGuidelines ? (
                     <IoIosArrowUp />
                   ) : (
                     <IoIosArrowDown />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
                   <div className="text-[14px]">
                     <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.general_guidelines.map((e, i) => (
+                      {props.data.general_guidelines?.map((e, i) => (
                         <li key={i}>- {e}</li>
                       ))}
                     </ul>
@@ -614,20 +617,21 @@ const ActivityDetails = (props) => {
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
-                  onClick={() =>
-                    setBoolDetail((prev) => ({
-                      ...prev,
-                      thingsToBring: !prev.thingsToBring,
-                    }))
-                  }
+                  className="text-[20px] font-semibold"
+                  // onClick={() =>
+                  //   setBoolDetail((prev) => ({
+                  //     ...prev,
+                  //     thingsToBring: !prev.thingsToBring,
+                  //   }))
+                  // }
                 >
                   <div>Things to bring</div>
-                  {boolDetails?.thingsToBring ? (
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  {/* {boolDetails?.thingsToBring ? (
                     <IoIosArrowUp />
                   ) : (
                     <IoIosArrowDown />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.thingsToBring && (
                   <div className="text-[14px]">
@@ -644,20 +648,21 @@ const ActivityDetails = (props) => {
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
-                  onClick={() =>
-                    setBoolDetail((prev) => ({
-                      ...prev,
-                      notSuitableFor: !prev.notSuitableFor,
-                    }))
-                  }
+                  className="text-[20px] font-semibold"
+                  // onClick={() =>
+                  //   setBoolDetail((prev) => ({
+                  //     ...prev,
+                  //     notSuitableFor: !prev.notSuitableFor,
+                  //   }))
+                  // }
                 >
                   <div>Not suitable for</div>
-                  {boolDetails?.notSuitableFor ? (
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  {/* {boolDetails?.notSuitableFor ? (
                     <IoIosArrowUp />
                   ) : (
                     <IoIosArrowDown />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
                   <div className="text-[14px]">
@@ -674,20 +679,21 @@ const ActivityDetails = (props) => {
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
                 <div
-                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
-                  onClick={() =>
-                    setBoolDetail((prev) => ({
-                      ...prev,
-                      tipsTricks: !prev.tipsTricks,
-                    }))
-                  }
+                  className="text-[20px] font-semibold"
+                  // onClick={() =>
+                  //   setBoolDetail((prev) => ({
+                  //     ...prev,
+                  //     tipsTricks: !prev.tipsTricks,
+                  //   }))
+                  // }
                 >
                   <div>Tips, Tricks and Cautions</div>
-                  {boolDetails?.tipsTricks ? (
+                  <div className="border-b-[1px] mt-2 mb-2"></div>
+                  {/* {boolDetails?.tipsTricks ? (
                     <IoIosArrowUp />
                   ) : (
                     <IoIosArrowDown />
-                  )}
+                  )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
                   <div className="text-[14px]">

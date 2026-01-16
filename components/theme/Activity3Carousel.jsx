@@ -117,7 +117,7 @@ const ActivityCard = ({
         </div>
 
         <div className="">
-          <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
+          <h3 className="text-[16px] leading-[28px] font-[700]">{data?.display_name || name}</h3>
         </div>
       </div>
 
@@ -126,7 +126,7 @@ const ActivityCard = ({
         show={show}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
-        name={name}
+        name={data?.display_name || name}
         data={data}
         removeDelete={true}
         removeChange

@@ -26,7 +26,7 @@ function ChatButtonContainer({ onOpenChat }) {
     router.push(
       {
         pathname: `/itinerary/${router.query.id}/`,
-        query: { drawer: "chat" },
+        query: { ...router.query, drawer: "chat" },
       },
       undefined,
       { scroll: false }

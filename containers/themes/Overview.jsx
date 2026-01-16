@@ -17,7 +17,7 @@ export default function Overview(props) {
 
   const handlePlanButton = () => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+      setShowTailoredModal(true);
     // } else {
     //   if(props?.type){
     //     openTailoredModal(router, props.page_id, props.destination,props.type);
@@ -28,7 +28,7 @@ export default function Overview(props) {
 
     // }
 
-    router.push("/new-trip");
+    // router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",

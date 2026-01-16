@@ -36,7 +36,8 @@ export default function Navigation({ components }) {
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
+    setShowTailoredModal(true);
   };
 
   return (
