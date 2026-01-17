@@ -6,6 +6,7 @@ import { imgUrlEndPoint } from "../../../../theme/ThemeConstants";
 import { AiFillStar } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
+import ImageLoader from "../../../../ImageLoader";
 const DestinationCard = ({
   title,
   one_liner_description,
@@ -40,14 +41,29 @@ const DestinationCard = ({
     >
       {/* Background Image with Next.js Image */}
       <div className="absolute inset-0">
-        <Image
-          src={placesBragSection ? image : `${imgUrlEndPoint}${image}` || image}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          priority
-        />
+        {placesBragSection ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority
+          />
+        ) : (
+          <ImageLoader
+            url={image}
+            dimensions={{ width: 936, height: 590 }}
+            width="100%"
+            height="100%"
+            style={{ 
+              position: 'absolute',
+              inset: 0,
+              objectFit: 'cover'
+            }}
+          />
+        )}
+        
         {/* Gradient Overlay */}
         {showImageText && (
             <div
