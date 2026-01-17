@@ -52,6 +52,7 @@ import { resetChatSession } from "../../../../store/actions/chatState";
 import { Navigation } from "../../../../components/NewNavigation";
 import { useAnalytics } from "../../../../hooks/useAnalytics";
 import { useRouter } from "next/router";
+import NavigationMenu from "../../../../components/revamp/home/NavigationMenu";
 
 const Container = styled.div`
   position: relative;
@@ -771,6 +772,7 @@ const handleRouteTabClick = (label) => {
         className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
       >
         {/* {loading && <Loader />} */}
+        <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
         <Header
           setEdit={props.setEdit}
           title={props?.itinerary.name}
