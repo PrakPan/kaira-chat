@@ -65,45 +65,41 @@ const ScrollableMenuTabs = ({
   scrollContainerRef,
   handleActiveTab
 }) => {
-  const [activeItem, setActiveItem] = useState(items[0].id);
+  const [activeItem, setActiveItem] = useState(items[1].id);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
   const { ref, isSticky } = useSticky(90);
   const isInView = useFieldOfView("Stays-Head");
   const router = useRouter();
-  let manuallyClick = false
+  let manuallyClick = false;
+  
 
   const handleSelect = (index, itemId) => {
   manuallyClick = true;
   setActiveItem(itemId);
-  
-  const selectedItem = items[index];
+
+  if (itemId === 1) {
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: 'handleEditRoute'
+      }
+    });
+  }
   
   if (handleActiveTab) {
-    handleActiveTab(itemId);
+    handleActiveTab(itemId)
   } else {
     logEvent({
       action: "Navigation",
       params: {
         page: "Itinerary Page ",
         event_category: "Button Click",
-        event_label: selectedItem?.label,
+        event_label: items[index]?.label,
         event_action: "Navigation Bar",
       },
     });
   }
-  
-  // Handle Trip Routes navigation
-  if (selectedItem?.label === "Trip Routes") {
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...router.query,
-        drawer: "handleEditRoute",
-      },
-    }, undefined, { shallow: true });
-  }
-  
-  manuallyClick = false;
+  manuallyClick = false
 };
 
   function isActive(link) {

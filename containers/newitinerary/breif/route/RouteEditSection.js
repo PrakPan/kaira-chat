@@ -742,7 +742,6 @@ const handleRouteTabClick = (label) => {
   setActiveRouteTab(label);
   
   if (label === "Itinerary" || label === "Bookings") {
-    // Remove drawer query parameter
     const { drawer, ...restQuery } = router.query;
     router.push({
       pathname: router.pathname,
@@ -811,7 +810,7 @@ const handleRouteTabClick = (label) => {
           setEditDestination={setEditDestination}
         />
 
-        <div className="w-full md:w-[85%] lg:w-[85%]">
+        <div className="max-ph:hidden w-full md:w-[85%] lg:w-[85%]">
         <Navigation
           items={items}
           BarName="RouteEditTabs"
@@ -962,7 +961,7 @@ const Header = (props) => {
 
   return (
     <div className="w-full md:w-[85%] p-3 border-b-2 border-b-gray-200 space-y-5">
-      <h1 className="text-2xl md:text-3xl lg:text-3xl font-semibold">
+      <h1 className="text-xl md:text-3xl lg:text-3xl font-semibold">
         {props?.title}
       </h1>
       <div className="flex flex-row pb-3 gap-5 text-sm items-center justify-start overflow-x-auto text-nowrap">

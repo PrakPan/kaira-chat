@@ -125,7 +125,7 @@ const SimpleTabsV2 = (props) => {
   };
 
   const transferBooking = useSelector(
-    (state) => state.TransferBookings
+    (state) => state.TransferBookings,
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
@@ -136,10 +136,10 @@ const SimpleTabsV2 = (props) => {
     trackChatOpened,
     trackSectionViewed,
   } = useAnalytics();
-  const [activeTab, setActiveTab] = useState("Trip Routes");
+  const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
   const [loginModalMessage, setLoginModalMessage] = useState(
-    "Please login to view details"
+    "Please login to view details",
   );
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
@@ -186,7 +186,7 @@ const SimpleTabsV2 = (props) => {
     ) {
       const totalCount = Object.values(props.payment.summary).reduce(
         (sum, item) => sum + item.count,
-        0
+        0,
       );
       setCountCartItems(totalCount);
     }
@@ -231,7 +231,7 @@ const SimpleTabsV2 = (props) => {
       setCityData,
       CityData,
       RoutesData,
-      TransfersData
+      TransfersData,
     );
     // console.log(totalcityslabs, "total city slabs");
   }, [props.breif, props.routes, props.cities]);
@@ -266,7 +266,7 @@ const SimpleTabsV2 = (props) => {
           trackGetInTouchClicked(
             itneraryId,
             props?.payment?.discounted_cost,
-            "Rupees"
+            "Rupees",
           );
           setLoading(false);
         })
@@ -308,7 +308,7 @@ useEffect(() => {
   const hasActivities =
     Array.isArray(props?.itinerary?.cities) &&
     props.itinerary.cities.some(
-      (city) => Array.isArray(city?.activities) && city.activities.length > 0
+      (city) => Array.isArray(city?.activities) && city.activities.length > 0,
     );
 
   const _handlePoiEditModalOpen = (poi) => {
@@ -341,18 +341,19 @@ useEffect(() => {
     props.setShowFlightModal(false);
   };
 
-const _handleMenuTabsChange = (tabName) => {
-  if (
-    process.env.NODE_ENV === "production" &&
-    !CONTENT_SERVER_HOST.includes("dev")
-  ) {
-    ga.event({
-      action: "Itinerary-tabs-" + tabName.toLowerCase(),
-    });
-  }
-  setActiveTab(tabName);
-
-};
+  const _handleMenuTabsChange = (tabName) => {
+    if (
+      process.env.NODE_ENV === "production" &&
+      !CONTENT_SERVER_HOST.includes("dev")
+    ) {
+      ga.event({
+        action: "Itinerary-tabs-" + tabName.toLowerCase(),
+      });
+    }
+    if (tabName === "Itinerary" || tabName === "Bookings") {
+      setActiveTab(tabName);
+    }
+  };
 
   const handleLoginButton = () => {
     setShowLoginModal(true);
@@ -486,7 +487,7 @@ const _handleMenuTabsChange = (tabName) => {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       if (response.status === 200) props.fetchData();
     } catch (error) {
@@ -570,6 +571,8 @@ const _handleMenuTabsChange = (tabName) => {
           duration_time={props.duration_time}
           travellerType={props.travellerType}
           editRoute={true}
+          autoOpenDrawer={true}
+          setActiveTab={setActiveTab}
           setEditRoute={props.setEditRoute}
           requireAuth={requireAuth}
           autoOpenDrawer={true}
@@ -859,7 +862,14 @@ const _handleMenuTabsChange = (tabName) => {
               items={items}
               BarName="TabsName"
               ClickHandler={(label) => {
-                
+                if (label == "Trip Routes") {
+                  router.push({
+                    pathname: `/itinerary/${router.query.id}`,
+                    query: {
+                      drawer: "handleEditRoute",
+                    },
+                  });
+                }
                 _handleMenuTabsChange(label);
               }}
               selectedItem={activeTab}
@@ -1324,37 +1334,34 @@ const _handleMenuTabsChange = (tabName) => {
                   {cart?.pay_only_for_one || cart?.show_per_person_cost
                     ? "Per Person"
                     : cart?.is_estimated_price
-                    ? `${cart?.total_cost == 0 ? "" : "Estimated Price"}`
-                    : "Total Cost"}
+                      ? `${cart?.total_cost == 0 ? "" : "Estimated Price"}`
+                      : "Total Cost"}
                 </div>
               )}
               {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
-                    {`${
-                      currency?.currency
-                        ? currencySymbols?.[currency?.currency]
-                        : "₹"
-                    }`}{" "}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}{" "}
                     {!props?.mercuryItinerary
                       ? cart?.pay_only_for_one || cart?.show_per_person_cost
                         ? getIndianPrice(
                             Math.round(
-                              Math.round(cart?.per_person_discounted_cost) / 100
-                            )
+                              Math.round(cart?.per_person_discounted_cost) /
+                                100,
+                            ),
                           )
                         : getIndianPrice(
-                            Math.round(Math.round(cart?.discounted_cost) / 100)
+                            Math.round(Math.round(cart?.discounted_cost) / 100),
                           )
                       : cart?.pay_only_for_one || cart?.show_per_person_cost
-                      ? getIndianPrice(
-                          Math.round(
-                            Math.round(cart?.per_person_discounted_cost)
+                        ? getIndianPrice(
+                            Math.round(
+                              Math.round(cart?.per_person_discounted_cost),
+                            ),
                           )
-                        )
-                      : getIndianPrice(
-                          Math.round(Math.round(cart?.discounted_cost))
-                        )}
+                        : getIndianPrice(
+                            Math.round(Math.round(cart?.discounted_cost)),
+                          )}
                     {"/-"}
                   </span>
                 </div>
@@ -1413,7 +1420,7 @@ const _handleMenuTabsChange = (tabName) => {
                         onClick={() => {
                           if (!props?.itinerary?.customer) {
                             requireAuth("view", () =>
-                              handleFooterBannerMobile("View Inclusions")
+                              handleFooterBannerMobile("View Inclusions"),
                             );
                           } else handleFooterBannerMobile("View Inclusions");
                         }}
@@ -1448,7 +1455,7 @@ const _handleMenuTabsChange = (tabName) => {
                         onClick={() => {
                           if (!props?.itinerary?.customer) {
                             requireAuth("view", () =>
-                              handleFooterBannerMobile("View Inclusions")
+                              handleFooterBannerMobile("View Inclusions"),
                             );
                           } else handleFooterBannerMobile("View Inclusions");
                         }}
@@ -1648,7 +1655,7 @@ function newFunction(
   setCityData,
   CityData,
   RoutesData,
-  TransfersData
+  TransfersData,
 ) {
   function replaceLatLong(source, destination) {
     return {
@@ -1699,11 +1706,11 @@ function newFunction(
           ) {
             try {
               const data = await getCityDetails(
-                props.breif.city_slabs[i].city_id
+                props.breif.city_slabs[i].city_id,
               );
               const updatedRoutes = replaceLatLong(
                 props.breif.city_slabs[i],
-                data
+                data,
               );
               CityDataTemp.push(updatedRoutes);
               RoutesData.push(updatedRoutes);

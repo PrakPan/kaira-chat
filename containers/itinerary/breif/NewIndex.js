@@ -153,28 +153,27 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
-  // UPDATE this useEffect to prevent re-opening
   useEffect(() => {
-    const { drawer } = router.query;
+  const { drawer } = router.query;
 
-    // Only open if autoOpenDrawer is true AND drawer is not already set AND it hasn't been opened before
-    if (props.autoOpenDrawer && !drawer) {
-      const hasOpenedDrawer = sessionStorage.getItem("routeDrawerOpened");
-      if (!hasOpenedDrawer) {
+  if (props.autoOpenDrawer && !drawer) {
+    const hasOpenedDrawer = sessionStorage.getItem("routeDrawerOpened");
+    
+    if (!hasOpenedDrawer && props.routes && props.routes.length > 0) {
+      setTimeout(() => {
         router.push(
           {
-            pathname: `/itinerary/${router?.query?.id}`,
-            query: {
-              drawer: "handleEditRoute",
-            },
+            pathname: router.pathname,
+            query: { ...router.query, drawer: "handleEditRoute" },
           },
           undefined,
           { shallow: true }
         );
         sessionStorage.setItem("routeDrawerOpened", "true");
-      }
+      }, 300);
     }
-  }, [props.autoOpenDrawer]);
+  }
+}, [props.autoOpenDrawer, props.routes]);
 
   useEffect(() => {
     return () => {

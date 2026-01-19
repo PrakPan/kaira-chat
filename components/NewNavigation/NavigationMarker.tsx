@@ -29,8 +29,6 @@ export const HOVER_MARKER_HEIGHT_PX = 5;
 
 export const useNavigationMarker = () => {
   const [markerPos, setMarkerPos] = useState<MarkerPos>({
-    // Initial height is not 0 because
-    // we don't want the height to animate in.
     height: ACTIVE_MARKER_HEIGHT_PX,
     x: 0,
     prevX: 0,
@@ -40,28 +38,37 @@ export const useNavigationMarker = () => {
 
   const onSelect = useCallback(({ isSelected, ref }: OnSelectProps) => {
     if (!isSelected || !ref?.current) return;
-    const x = ref.current.offsetLeft;
-    const { width } = ref.current.getBoundingClientRect();
-    setMarkerPos({
-      height: ACTIVE_MARKER_HEIGHT_PX,
-      prevWidth: width,
-      prevX: x,
-      width,
-      x,
+    
+
+    requestAnimationFrame(() => {
+      const x = ref.current?.offsetLeft || 0;
+      const { width } = ref.current?.getBoundingClientRect() || { width: 0 };
+      
+      setMarkerPos({
+        height: ACTIVE_MARKER_HEIGHT_PX,
+        prevWidth: width,
+        prevX: x,
+        width,
+        x,
+      });
     });
   }, []);
 
   const onMouseEnter = useCallback(
     ({ isSelected, ref }: OnSelectProps) => {
       if (isSelected || !ref?.current) return;
-      const x = ref.current.offsetLeft;
-      const { width } = ref.current.getBoundingClientRect();
-      setMarkerPos((prev) => ({
-        ...prev,
-        height: HOVER_MARKER_HEIGHT_PX,
-        width,
-        x,
-      }));
+      
+      requestAnimationFrame(() => {
+        const x = ref.current?.offsetLeft || 0;
+        const { width } = ref.current?.getBoundingClientRect() || { width: 0 };
+        
+        setMarkerPos((prev) => ({
+          ...prev,
+          height: HOVER_MARKER_HEIGHT_PX,
+          width,
+          x,
+        }));
+      });
     },
     [setMarkerPos]
   );
@@ -69,6 +76,7 @@ export const useNavigationMarker = () => {
   const onMouseLeave = useCallback(
     ({ isSelected }: OnSelectProps) => {
       if (isSelected) return;
+      
       setMarkerPos((prev) => ({
         ...prev,
         height: ACTIVE_MARKER_HEIGHT_PX,
@@ -117,14 +125,14 @@ export const useLinkWithMarker = <RefType extends HTMLElement>({
   return { ref, handleSelect, handleMouseEnter, handleMouseLeave };
 };
 
-export const NavigationMarker = styled.div`
+export const NavigationMarker = styled.div<Props>`
   position: absolute;
-  /* 1px border negative margin */
   bottom: -1px;
   height: ${({ height }) => height || ACTIVE_MARKER_HEIGHT_PX}px;
   width: ${({ width }) => width || 0}px;
   margin-left: ${({ x }) => x || 0}px;
   background: #f7e700;
-  transition: all ease 0.3s;
+  transition: all cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
   pointer-events: none;
+  border-radius: 2px 2px 0 0;
 `;
