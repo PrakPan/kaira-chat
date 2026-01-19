@@ -60,7 +60,7 @@ import {
 } from "../../components/Chatbot/context/ChatContext.js";
 import { currencySymbols } from "../../data/currencySymbols.js";
 import FullScreenGallery from "../../components/fullscreengallery/Index.js";
-import axios from 'axios';
+import axios from "axios";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
 import ChatButtonContainer from "./ChatButtonContainer.jsx";
 
@@ -118,29 +118,34 @@ const SimpleTabsV2 = (props) => {
   const [isChatBotEnable, handleChatBotOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [countCartItems, setCountCartItems] = useState(0);
-  const currency = useSelector(state=>state.currency);
-   const [imagesGallery, setImagesGallery] = useState(null);
+  const currency = useSelector((state) => state.currency);
+  const [imagesGallery, setImagesGallery] = useState(null);
   const _setImagesHandler = (images) => {
     setImagesGallery(images);
   };
 
-
   const transferBooking = useSelector(
-    (state) => state.TransferBookings
+    (state) => state.TransferBookings,
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
   const itneraryId = useSelector((state) => state.ItineraryId);
-  const { trackGetInTouchClicked, trackPaymentPageViewed,trackChatOpened,trackSectionViewed} = useAnalytics();
+  const {
+    trackGetInTouchClicked,
+    trackPaymentPageViewed,
+    trackChatOpened,
+    trackSectionViewed,
+  } = useAnalytics();
   const [activeTab, setActiveTab] = useState("Itinerary");
   const [showChatBanner, setShowChatBanner] = useState(false);
-  const [loginModalMessage, setLoginModalMessage] = useState('Please login to view details');
-  const {id} = useSelector(state=>state.auth);
-  const {customer} = useSelector(state=>state.Itinerary)
-  const cart = useSelector(state=>state.Cart);
-  const {finalized_status} = useSelector(state=>state.ItineraryStatus)
+  const [loginModalMessage, setLoginModalMessage] = useState(
+    "Please login to view details",
+  );
+  const { id } = useSelector((state) => state.auth);
+  const { customer } = useSelector((state) => state.Itinerary);
+  const cart = useSelector((state) => state.Cart);
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
 
-   
   const [isHovered, setIsHovered] = useState(false);
   const popupStyle = {
     display: isHovered ? "block" : "none",
@@ -152,19 +157,19 @@ const SimpleTabsV2 = (props) => {
   };
 
   useEffect(() => {
-  const hasSeenBanner = localStorage.getItem('hasSeenChatBanner');
-  if (!hasSeenBanner) {
-    setShowChatBanner(true);
-    localStorage.setItem('hasSeenChatBanner', 'true');
-  }
-}, []);
+    const hasSeenBanner = localStorage.getItem("hasSeenChatBanner");
+    if (!hasSeenBanner) {
+      setShowChatBanner(true);
+      localStorage.setItem("hasSeenChatBanner", "true");
+    }
+  }, []);
 
-useEffect(() => {
-  if (!props.token && props.itinerary && (finalized_status == "SUCCESS")) {
-    setLoginModalMessage('Login to view details');
-    setShowLoginModal(true);
-  }
-}, [props.itinerary?.id]);
+  useEffect(() => {
+    if (!props.token && props.itinerary && finalized_status == "SUCCESS") {
+      setLoginModalMessage("Login to view details");
+      setShowLoginModal(true);
+    }
+  }, [props.itinerary?.id]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
@@ -181,7 +186,7 @@ useEffect(() => {
     ) {
       const totalCount = Object.values(props.payment.summary).reduce(
         (sum, item) => sum + item.count,
-        0
+        0,
       );
       setCountCartItems(totalCount);
     }
@@ -226,7 +231,7 @@ useEffect(() => {
       setCityData,
       CityData,
       RoutesData,
-      TransfersData
+      TransfersData,
     );
     // console.log(totalcityslabs, "total city slabs");
   }, [props.breif, props.routes, props.cities]);
@@ -261,7 +266,7 @@ useEffect(() => {
           trackGetInTouchClicked(
             itneraryId,
             props?.payment?.discounted_cost,
-            "Rupees"
+            "Rupees",
           );
           setLoading(false);
         })
@@ -283,18 +288,19 @@ useEffect(() => {
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
-    setLoginModalMessage('Please login to view details');
+    setLoginModalMessage("Please login to view details");
   };
 
   const items = [
-    { id: 1, label: "Itinerary", link: "Itenary" },
-    { id: 2, label: "Bookings", link: "Booking" },
+    { id: 1, label: "Trip Routes", link: "Route" },
+    { id: 2, label: "Itinerary", link: "Itenary" },
+    { id: 3, label: "Bookings", link: "Booking" },
   ];
 
   const hasActivities =
     Array.isArray(props?.itinerary?.cities) &&
     props.itinerary.cities.some(
-      (city) => Array.isArray(city?.activities) && city.activities.length > 0
+      (city) => Array.isArray(city?.activities) && city.activities.length > 0,
     );
 
   const _handlePoiEditModalOpen = (poi) => {
@@ -336,7 +342,9 @@ useEffect(() => {
         action: "Itinerary-tabs-" + tabName.toLowerCase(),
       });
     }
-    setActiveTab(tabName);
+    if (tabName === "Itinerary" || tabName === "Bookings") {
+      setActiveTab(tabName);
+    }
   };
 
   const handleLoginButton = () => {
@@ -373,7 +381,7 @@ useEffect(() => {
     //   return;
     // }
     setShowFooterBannerMobile(!showFooterBannerMobile);
-    trackPaymentPageViewed(router?.query?.id)
+    trackPaymentPageViewed(router?.query?.id);
 
     logEvent({
       action: "Button_Click",
@@ -426,62 +434,58 @@ useEffect(() => {
   });
 
   const requireAuth = (action, callback) => {
-  if (!props.token) {
-    let message = 'Please login to continue';
-    
-    switch(action) {
-      case 'edit':
-        message = 'Please login to edit this booking';
-        break;
-      case 'delete':
-        message = 'Login to delete this booking';
-        break;
-      case 'view':
-        message = 'Please login to view details';
-        break;
-      case 'change':
-        message = 'Login to change this booking';
-        break;
-      case 'add':
-        message = 'Login to add a booking';
-        break;
-      default:
-        message = 'Please login to continue';
-    }
-    
-    setLoginModalMessage(message);
-    setShowLoginModal(true);
-    return false;
-  }
-  
-  if (callback) callback();
-  return true;
-};
+    if (!props.token) {
+      let message = "Please login to continue";
 
-
-
-const attachUserToItinerary = async () => {
-  if (props.itinerary?.customer_name) {
-    return; 
-  }
-  
-  try {
-    const response = await axios.get(
-      `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
-      {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'application/json',
-        },
+      switch (action) {
+        case "edit":
+          message = "Please login to edit this booking";
+          break;
+        case "delete":
+          message = "Login to delete this booking";
+          break;
+        case "view":
+          message = "Please login to view details";
+          break;
+        case "change":
+          message = "Login to change this booking";
+          break;
+        case "add":
+          message = "Login to add a booking";
+          break;
+        default:
+          message = "Please login to continue";
       }
-    );
-      if(response.status === 200)
-      props.fetchData();
-  
-  } catch (error) {
-    console.error('Error attaching user to itinerary:', error);
-  }
-};
+
+      setLoginModalMessage(message);
+      setShowLoginModal(true);
+      return false;
+    }
+
+    if (callback) callback();
+    return true;
+  };
+
+  const attachUserToItinerary = async () => {
+    if (props.itinerary?.customer_name) {
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/attach-user/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      if (response.status === 200) props.fetchData();
+    } catch (error) {
+      console.error("Error attaching user to itinerary:", error);
+    }
+  };
 
   const trustFactors = [
     {
@@ -525,8 +529,7 @@ const attachUserToItinerary = async () => {
 
   return (
     <div className={classes.root}>
-
-       {imagesGallery && imagesGallery?.length > 0 ? (
+      {imagesGallery && imagesGallery?.length > 0 ? (
         <FullScreenGallery
           mercury={false}
           closeGalleryHandler={() => setImagesGallery(null)}
@@ -559,7 +562,9 @@ const attachUserToItinerary = async () => {
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
-          editRoute={props.editRoute}
+          editRoute={true}
+          autoOpenDrawer={true}
+          setActiveTab={setActiveTab}
           setEditRoute={props.setEditRoute}
           requireAuth={requireAuth}
         ></Breif>
@@ -587,7 +592,6 @@ const attachUserToItinerary = async () => {
           ></OldBreif>
         )
       )}
-     
 
       {isPageWide ? null : (
         <>
@@ -790,31 +794,31 @@ const attachUserToItinerary = async () => {
           </div>
 
           <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] flex flex-col items-end gap-2">
-  {/* Chat Banner */}
-  {showChatBanner && !isPageWide && (
-    <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
-      <button
-        onClick={() => setShowChatBanner(false)}
-        className="absolute top-2 right-2 text-black hover:text-gray-700"
-      >
-        <RxCross2 size={18} />
-      </button>
-      <p className="text-[14px] pr-6 mb-0 ">
-        Hi, I am Kiara Your travel partner
-      </p>
-      {/* Speech bubble arrow */}
-      <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]"></div>
-    </div>
-  )}
-  
-  {/* Chat Button */}
-    <ChatButtonContainer
-    onOpenChat={() => {
-      handleChatBotOpen(true);
-      setShowChatBanner(false);
-    }}
-  />
-</div>
+            {/* Chat Banner */}
+            {showChatBanner && !isPageWide && (
+              <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+                <button
+                  onClick={() => setShowChatBanner(false)}
+                  className="absolute top-2 right-2 text-black hover:text-gray-700"
+                >
+                  <RxCross2 size={18} />
+                </button>
+                <p className="text-[14px] pr-6 mb-0 ">
+                  Hi, I am Kiara Your travel partner
+                </p>
+                {/* Speech bubble arrow */}
+                <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]"></div>
+              </div>
+            )}
+
+            {/* Chat Button */}
+            <ChatButtonContainer
+              onOpenChat={() => {
+                handleChatBotOpen(true);
+                setShowChatBanner(false);
+              }}
+            />
+          </div>
           {isChatBotEnable ? (
             <Drawer
               show={isChatBotEnable}
@@ -825,10 +829,17 @@ const attachUserToItinerary = async () => {
               mobileWidth={"100%"}
               style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
               // isCloseButtonEnable={true}
-              onHide={() => {handleChatBotOpen(false)}}
+              onHide={() => {
+                handleChatBotOpen(false);
+              }}
               className="overflow-y-hidden"
             >
-              <ChatBot showAsPopup={true} hideDrawer={() => {handleChatBotOpen(false)}}/>
+              <ChatBot
+                showAsPopup={true}
+                hideDrawer={() => {
+                  handleChatBotOpen(false);
+                }}
+              />
             </Drawer>
           ) : null}
         </>
@@ -840,7 +851,18 @@ const attachUserToItinerary = async () => {
             <Navigation
               items={items}
               BarName="TabsName"
-              ClickHandler={_handleMenuTabsChange}
+              ClickHandler={(label) => {
+                if (label == "Trip Routes") {
+                  router.push({
+                    pathname: `/itinerary/${router.query.id}`,
+                    query: {
+                      drawer: "handleEditRoute",
+                    },
+                  });
+                }
+                _handleMenuTabsChange(label);
+              }}
+              selectedItem={activeTab}
               trackSectionViewed={trackSectionViewed}
             />
             <div
@@ -1299,50 +1321,41 @@ const attachUserToItinerary = async () => {
               </div>
               {cart && (
                 <div className="text-[12px] text-[#6E757A]">
-                  {cart?.pay_only_for_one ||
-                  cart?.show_per_person_cost
+                  {cart?.pay_only_for_one || cart?.show_per_person_cost
                     ? "Per Person"
                     : cart?.is_estimated_price
-                    ? `${
-                        cart?.total_cost == 0 ? "" : "Estimated Price"
-                      }`
-                    : "Total Cost"}
+                      ? `${cart?.total_cost == 0 ? "" : "Estimated Price"}`
+                      : "Total Cost"}
                 </div>
               )}
               {props.payment ? (
                 <div>
                   <span className="font-bold font-[20px] ">
-                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{" "}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}{" "}
                     {!props?.mercuryItinerary
-                      ? cart?.pay_only_for_one ||
-                        cart?.show_per_person_cost
+                      ? cart?.pay_only_for_one || cart?.show_per_person_cost
                         ? getIndianPrice(
                             Math.round(
-                              Math.round(
-                                cart?.per_person_discounted_cost
-                              ) / 100
-                            )
+                              Math.round(cart?.per_person_discounted_cost) /
+                                100,
+                            ),
                           )
                         : getIndianPrice(
+                            Math.round(Math.round(cart?.discounted_cost) / 100),
+                          )
+                      : cart?.pay_only_for_one || cart?.show_per_person_cost
+                        ? getIndianPrice(
                             Math.round(
-                              Math.round(cart?.discounted_cost) / 100
-                            )
+                              Math.round(cart?.per_person_discounted_cost),
+                            ),
                           )
-                      : cart?.pay_only_for_one ||
-                        cart?.show_per_person_cost
-                      ? getIndianPrice(
-                          Math.round(
-                            Math.round(cart?.per_person_discounted_cost)
-                          )
-                        )
-                      : getIndianPrice(
-                          Math.round(Math.round(cart?.discounted_cost))
-                        )}
+                        : getIndianPrice(
+                            Math.round(Math.round(cart?.discounted_cost)),
+                          )}
                     {"/-"}
                   </span>
                 </div>
-             
-             ) : null}
+              ) : null}
               {/* <span className="text-blue cursor-pointer text-sm sm:text-[14px] underline" onClick={()=>setShowLoginModal(true)}>{isDesktop ? "Login to view total cost" : "Login to view cost"}</span>} */}
             </div>
             {props?.token && props?.payment?.paid_user && (
@@ -1366,7 +1379,7 @@ const attachUserToItinerary = async () => {
               </Button>
             ) : (
               <>
-                {props.payment  ? (
+                {props.payment ? (
                   (props.payment?.itinerary_status ===
                     ITINERARY_STATUSES?.itinerary_finalized ||
                     pricing_status === "SUCCESS") &&
@@ -1395,11 +1408,12 @@ const attachUserToItinerary = async () => {
                       <button
                         className="ttw-btn-secondary-fill"
                         onClick={() => {
-                          if(!props?.itinerary?.customer){
-                          requireAuth('view',()=>
-                          handleFooterBannerMobile("View Inclusions"));
-                        } else handleFooterBannerMobile("View Inclusions");
-                      }}
+                          if (!props?.itinerary?.customer) {
+                            requireAuth("view", () =>
+                              handleFooterBannerMobile("View Inclusions"),
+                            );
+                          } else handleFooterBannerMobile("View Inclusions");
+                        }}
                       >
                         View Cart{" "}
                         <span className="ttw-btn-count-white">
@@ -1407,7 +1421,7 @@ const attachUserToItinerary = async () => {
                           {countCartItems}{" "}
                         </span>
                       </button>
-                      
+
                       <div
                         style={popupStyle}
                         className="z-50 absolute -top-11  text-sm text-center flex flex-col gap-2 bg-white"
@@ -1429,12 +1443,12 @@ const attachUserToItinerary = async () => {
                       <button
                         className="ttw-btn-secondary-fill"
                         onClick={() => {
-                          if(!props?.itinerary?.customer){
-                          requireAuth('view',()=>
-                          handleFooterBannerMobile("View Inclusions"));
-                        } else handleFooterBannerMobile("View Inclusions");
-                        
-                      }}
+                          if (!props?.itinerary?.customer) {
+                            requireAuth("view", () =>
+                              handleFooterBannerMobile("View Inclusions"),
+                            );
+                          } else handleFooterBannerMobile("View Inclusions");
+                        }}
                       >
                         View Cart{" "}
                         <span className="ttw-btn-count-white">
@@ -1591,9 +1605,9 @@ const attachUserToItinerary = async () => {
           itinary_id={props.id}
           zIndex={"3300"}
           message={loginModalMessage}
-  onSuccess={async () => {
-    await attachUserToItinerary();
-  }}
+          onSuccess={async () => {
+            await attachUserToItinerary();
+          }}
         ></LogInModal>
       </div>
     </div>
@@ -1631,7 +1645,7 @@ function newFunction(
   setCityData,
   CityData,
   RoutesData,
-  TransfersData
+  TransfersData,
 ) {
   function replaceLatLong(source, destination) {
     return {
@@ -1682,11 +1696,11 @@ function newFunction(
           ) {
             try {
               const data = await getCityDetails(
-                props.breif.city_slabs[i].city_id
+                props.breif.city_slabs[i].city_id,
               );
               const updatedRoutes = replaceLatLong(
                 props.breif.city_slabs[i],
-                data
+                data,
               );
               CityDataTemp.push(updatedRoutes);
               RoutesData.push(updatedRoutes);

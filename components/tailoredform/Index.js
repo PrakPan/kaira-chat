@@ -704,7 +704,7 @@ const Enquiry = (props) => {
 
       if (hasDestination && duration) {
         const cityName = slideOneData.selectedCities[0]?.name;
-        const stepTitle = `Introduction: ${duration} Days Trip in ${cityName}`;
+        const stepTitle = `Introduction: ${duration} Days, ${cityName}`;
 
         setSteps((prev) =>
           prev.map((title, index) => (index === 0 ? stepTitle : title))
