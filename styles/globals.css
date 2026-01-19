@@ -421,7 +421,7 @@ a.termsnavunderlinelink {
 }
 
 .desktop-view-cart-fixed {
-    width: 43%;
+    width: 47vw;
     border-radius: var(--border-radius-md);
     border: 1px solid var(--color-spanish-grey);
     background: var(--color-pure-white);

@@ -912,7 +912,7 @@ const TransferBookings = (props) => {
   return (
     <div
       id="transfers"
-      className={`mt-16 ${!isPageWide ? "w-full" : "max-w-[54vw]"} pb-[20px]`}
+      className={`mt-16 ${!isPageWide ? "w-full" : "max-w-[47vw]"} pb-[20px]`}
     >
       <div
         id="Transfer_Container"

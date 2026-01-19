@@ -456,7 +456,7 @@ const starRating = (rating, length) => {
   };
 
   return (
-    <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
+    <div className={`${!isPageWide ? "w-full" : "max-w-[47vw]"}`}>
       {hotels_status === "PENDING" ? (
         <div className="animate-pulse">
           {/* Skeleton loader for city name */}

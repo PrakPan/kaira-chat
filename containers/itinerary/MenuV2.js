@@ -853,7 +853,7 @@ const _handleMenuTabsChange = (tabName) => {
       )}
 
       {isPageWide ? (
-        <SplitScreen isPageWide leftWidth={5} rightWidth={5}>
+        <SplitScreen isPageWide leftWidth={5.1} rightWidth={4.9}>
           <div className="mb-4">
             <Navigation
               items={items}
@@ -1265,8 +1265,8 @@ const _handleMenuTabsChange = (tabName) => {
       <div
         className={
           isPageWide
-            ? "z-10  fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed"
-            : "z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
+            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed w-[47vw]"
+            : "z-10  fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
         }
       >
         {props?.displayText ? (
