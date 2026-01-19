@@ -466,6 +466,7 @@ export default function ThemePage(props) {
                         <Destination1Carousel
                           handlePlanButton={handlePlanButton}
                           setDestination={setDestination}
+                          setShowTailoredModal={setShowTailoredModal}
                           packages={[
                             ...component.cities.map((item) => ({
                               ...item,
@@ -480,6 +481,7 @@ export default function ThemePage(props) {
                               type: "Country",
                             })),
                           ]}
+
                         />
                         <PlanYourTripButton text={"Start your journey now!"} slug={props?.slug} />
                       </>
@@ -681,6 +683,7 @@ export default function ThemePage(props) {
                           country
                           page={"Country Page"}
                           continent={component?.countries}
+                          setShowTailoredModal={setShowTailoredModal}
                         ></SwiperLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}

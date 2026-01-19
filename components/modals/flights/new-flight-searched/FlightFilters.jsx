@@ -10,7 +10,7 @@ export default function FlightFilters(props) {
     props.filters?.price_range?.[1] || 80000
   ]);
   const [tripType, setTripType] = useState(props.filters?.trip_type || "one_way");
-  const [stops, setStops] = useState(['multiple_stops']);
+  const [stops, setStops] = useState(props.filters?.stops || ['multiple_stops']);
   const [departureTime, setDepartureTime] = useState(() => {
   if (props.filters?.preferred_departure_time) {
     return dayjs(props.filters.preferred_departure_time).format("HH:mm");
