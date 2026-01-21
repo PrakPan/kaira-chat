@@ -130,7 +130,7 @@ const Section = (props) => {
               setSelectedUserStar={setSelectedUserStar}
             />
 
-            <div className="flex flex-row gap-5">
+            <div className="flex flex-row gap-5 ">
               <button onClick={() => setRefundable(prev => !prev)} className="flex flex-row items-center gap-1 cursor-pointer">
                 <CheckboxFormComponent checked={refundable} />
                 Refundable

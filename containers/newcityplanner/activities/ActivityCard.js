@@ -51,10 +51,9 @@ export default function ActivityCard(props) {
     <div
     >
       <DestinationCard
-        title={props?.data?.name}
-        description={
-          props?.data?.short_description || props?.data?.one_liner_description
-        }
+        title={props?.data?.display_name || props?.data?.name}
+        description={props?.data?.short_description}
+        one_liner_description={props?.data?.one_liner_description}
         height="280px"
         image={props?.data?.image}
         rating={props.data?.rating}

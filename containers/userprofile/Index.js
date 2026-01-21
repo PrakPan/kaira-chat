@@ -14,6 +14,7 @@ import Button from "../../components/ui/button/Index";
 import { logEvent } from "../../services/ga/Index";
 import H2 from "../../components/heading/H2";
 import { useSearchParams } from "next/navigation";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 
 const Container = styled.div`
   width: 100%;
@@ -56,6 +57,7 @@ const UserDashboard = (props) => {
   const [totalPlans, setTotalPlans] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
   const [showMoreLoading, setShowMoreLoading] = useState(false);
+  const [showTailoredModal,setShowTailoredModal] = useState(false);
   const [offSet, setOffSet] = useState(0);
   let isPageWide = media("(min-width: 768px)");
   let router = useRouter();
@@ -107,7 +109,8 @@ const UserDashboard = (props) => {
   };
 
   const handleButtonClick = () => {
-    openTailoredModal(router);
+    // openTailoredModal(router);
+    setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -150,7 +153,7 @@ const UserDashboard = (props) => {
           <NoPlans className="">
             You don't have any plans yet.{" "}
             <a
-              onClick={() => openTailoredModal(router)}
+              onClick={() => setShowTailoredModal(true)}
               style={{ color: "black", textDecoration: "none !important" }}
             >
               Start Planning
@@ -164,7 +167,7 @@ const UserDashboard = (props) => {
               You don't have any plans yet.{" "}
             </NoPlans>
             <a
-              onClick={() => openTailoredModal(router)}
+              onClick={() => setShowTailoredModal(true)}
               className="font-nunito"
               style={{
                 color: "black",
@@ -268,6 +271,19 @@ const UserDashboard = (props) => {
           ></ImageLoader>
         )}
       </ContentContainer>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
     </CheckAuthRedirect>
   );
 };

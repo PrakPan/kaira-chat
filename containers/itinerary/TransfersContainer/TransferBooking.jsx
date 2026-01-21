@@ -312,7 +312,7 @@ const TransferBooking = ({
                         <div
                           id={booking?.id}
                           className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                            !isPageWide ? "w-full" : "max-w-[54vw]"
+                            !isPageWide ? "w-full" : "max-w-[51vw]"
                           }`}
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
@@ -658,7 +658,7 @@ const TransferBooking = ({
                       <div
                         id={book?.id}
                         className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                          !isPageWide ? "w-full" : "max-w-[54vw]"
+                          !isPageWide ? "w-full" : "max-w-[51vw]"
                         }`}
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">

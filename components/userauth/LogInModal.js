@@ -95,8 +95,7 @@ const LogIn = React.memo((props) => {
   let mobileInput = null; //JSX for mobile input field
   const [userDetailsRequired, setUserDetailsRequired] = useState(false);
   const { trackUserLogin, trackUserAccountUpdate } = useAnalytics();
-
-  console.log("Message",props?.message)
+  const [skipLogin, setSkipLogin] = useState(false);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -142,12 +141,12 @@ const LogIn = React.memo((props) => {
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
 
-  useEffect(() => { 
-  props.onResetLogin();
-  if (mobileRef.current) {
-    mobileRef.current.focus();
-  }
-}, []);
+  useEffect(() => {
+    props.onResetLogin();
+    if (mobileRef.current) {
+      mobileRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (otp.length > 3) {
@@ -210,13 +209,12 @@ const LogIn = React.memo((props) => {
       return;
     }
 
-     console.log("OnSuccess",props?.onSuccess);
+    console.log("OnSuccess", props?.onSuccess);
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
 
       if (!userDetails.userName) return setUserNameError(true);
-
 
       if (newUserValidity)
         props.onAuth(
@@ -375,20 +373,18 @@ const LogIn = React.memo((props) => {
     }
   };
 
-
   const handleEditPhone = () => {
-  setOtp("");
-  setUserDetailsRequired(false);
-  setCounter(30);
-  props.onResetLogin();
-  
-  setTimeout(() => {
-    if (mobileRef.current) {
-      mobileRef.current.focus();
-    }
-  }, 100);
-};
+    setOtp("");
+    setUserDetailsRequired(false);
+    setCounter(30);
+    props.onResetLogin();
 
+    setTimeout(() => {
+      if (mobileRef.current) {
+        mobileRef.current.focus();
+      }
+    }, 100);
+  };
 
   mobileInput = (
     <div className="w-full">
@@ -729,20 +725,25 @@ const LogIn = React.memo((props) => {
 
             <div className="flex flex-col gap-[24px]">
               <div
-  className={`Body1R_16 text-[#6E757A] ${
-    isPageWide ? "text-left" : "text-left"
-  }`}
->
-  <div className="flex flex-wrap items-center">
-    <span className="">We've sent a 4-digit OTP to your registered phone number</span>
-    <span className="whitespace-nowrap font-medium mt-2">
-      {phone} 
-      <span className="text-blue underline cursor-pointer ml-1" onClick={handleEditPhone}>
-        Change
-      </span>
-    </span>
-  </div>
-</div>
+                className={`Body1R_16 text-[#6E757A] ${
+                  isPageWide ? "text-left" : "text-left"
+                }`}
+              >
+                <div className="flex flex-wrap items-center">
+                  <span className="">
+                    We've sent a 4-digit OTP to your registered phone number
+                  </span>
+                  <span className="whitespace-nowrap font-medium mt-2">
+                    {phone}
+                    <span
+                      className="text-blue underline cursor-pointer ml-1"
+                      onClick={handleEditPhone}
+                    >
+                      Change
+                    </span>
+                  </span>
+                </div>
+              </div>
 
               {props.otpSent ? password : null}
               {counter > 0 && (
@@ -766,24 +767,39 @@ const LogIn = React.memo((props) => {
         )}
 
         {!props.otpSent ? (
-          <Button
-            onclick={verifyRecaptchaHandler}
-            margin={props.nospacing ? "0" : "40px 0 0 0"}
-            width="100%"
-            bgColor="#07213A"
-            fontWeight="500"
-            fontSize="16px"
-            borderWidth="1px"
-            hoverColor="white"
-            hoverBgColor="black"
-            boxShadow="0px 2px 0px #ECEAEA"
-            borderRadius="8px"
-            height="50px"
-            color="white"
-            loading={props.loading}
-          >
-            Continue
-          </Button>
+          <>
+            <Button
+              onclick={verifyRecaptchaHandler}
+              margin={props.nospacing ? "0" : "40px 0 0 0"}
+              width="100%"
+              bgColor="#07213A"
+              fontWeight="500"
+              fontSize="16px"
+              borderWidth="1px"
+              hoverColor="white"
+              hoverBgColor="black"
+              boxShadow="0px 2px 0px #ECEAEA"
+              borderRadius="8px"
+              height="50px"
+              color="white"
+              loading={props.loading}
+            >
+              Continue
+            </Button>
+            {props.isTailored && (
+              <div
+                className="text-center text-[#3A85FC] cursor-pointer Body1R_16"
+                onClick={() => {
+                  props.onhide();
+                  if (props.onSkipLogin) {
+                    props.onSkipLogin();
+                  }
+                }}
+              >
+                Continue without logging in?
+              </div>
+            )}
+          </>
         ) : (
           <div
             className={`flex flex-col gap-[16px] ${
@@ -791,7 +807,7 @@ const LogIn = React.memo((props) => {
                 ? `${
                     counter == 0 && !userDetailsRequired
                       ? "mt-[30px] sm:mt-[40px]"
-                      : "mt-[20px] sm:mt-[40px]" 
+                      : "mt-[20px] sm:mt-[40px]"
                   }`
                 : "mt-[46px]"
             }`}
@@ -814,9 +830,9 @@ const LogIn = React.memo((props) => {
                   >
                     {props.loading ? "Sending..." : "Resend OTP"}
                   </div>
-                ) : <div className="Body1R_16 text-gray-400">
-        Resend OTP
-      </div>}
+                ) : (
+                  <div className="Body1R_16 text-gray-400">Resend OTP</div>
+                )}
               </div>
             )}
             <Button
@@ -839,6 +855,57 @@ const LogIn = React.memo((props) => {
           </div>
         )}
         <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
+          {props.isTailored ? (
+            <>
+              <div className="Body2R_14 text-[#6E757A] text-center mb-3">
+                To unlock all the features in the itinerary, we recommend
+                logging in. It's free!
+              </div>
+              <div className="flex justify-center gap-3 items-center Body2R_14 mb-2">
+                <Link
+                  href="/terms-conditions"
+                  style={{ textDecoration: "none" }}
+                  target="_blank"
+                  className="text-[#3A85FC]"
+                >
+                  Terms of Service
+                </Link>
+                <Link
+                  href="/privacy-policy"
+                  style={{ textDecoration: "none" }}
+                  target="_blank"
+                  className="text-[#3A85FC]"
+                >
+                  Privacy Policy
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div
+              className={`Body2R_14 text-[#6E757A] ${
+                isPageWide ? "text-center" : "text-center"
+              }`}
+            >
+              By continuing, you agree to our{" "}
+              <Link
+                href="/terms-conditions"
+                style={{ textDecoration: "none" }}
+                target="_blank"
+              >
+                Terms of Service
+              </Link>{" "}
+              and acknowlege you've read our{" "}
+              <Link
+                href="/privacy-policy"
+                style={{ textDecoration: "none" }}
+                target="_blank"
+              >
+                Privacy Policy.
+              </Link>
+            </div>
+          )}
+        </div>
+        {/* <div className={`${props.otpSent ? "mt-0" : "mt-12"}`}>
           <div
             className={`Body2R_14 text-[#6E757A] ${
               isPageWide ? "text-center" : "text-center"
@@ -861,7 +928,7 @@ const LogIn = React.memo((props) => {
               Privacy Policy.
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {props.loadingsocial ? (

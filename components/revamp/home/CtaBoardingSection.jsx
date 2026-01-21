@@ -2,8 +2,11 @@ import Image from "next/image";
 import { cta } from "../assets";
 import Button from "../common/components/button";
 import Link from "next/link";
+import { useState } from "react";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
-const CtaBoardingSection = () => {
+const CtaBoardingSection = (props) => {
+  const [showTailoredModal,setShowTailoredModal] = useState(false);
   return (
     <section className="w-full py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white font-inter">
       <div className="max-w-7xl mx-auto">
@@ -36,21 +39,33 @@ const CtaBoardingSection = () => {
               adventure. All you have to do is show up, grinning like Tarzan!
             </p>
 
-            <Link href="/new-trip">
+            {/* <Link href="/new-trip"> */}
               <Button
                 variant="filled"
                 size="medium"
                 onClick={() => {
                   console.log("Get Free Travel Consultation clicked");
+                  setShowTailoredModal(true);
                 }}
                 className="!bg-primary-yellow !border-primary-yellow !text-primary-indigo hover:!bg-primary-yellow/90 hover:!text-primary-indigo"
               >
                 Plan a Trip Now!
               </Button>
-            </Link>
+            {/* </Link> */}
           </div>
         </div>
       </div>
+       <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+      />
     </section>
   );
 };

@@ -23,12 +23,13 @@ import { TbArrowBack } from "react-icons/tb";
 import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 import { useRouter } from "next/router";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
-import axios from 'axios';
+import axios from "axios";
 import Travelers from "./filtersmobile/Travelers";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Filters from "./filtersmobile/Filters";
 import FilterChips from "./filtersmobile/FilterChips";
 import { IconButton } from "@mui/material";
+import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -82,7 +83,7 @@ const GetInTouchContainer = styled.div`
 
 const SortContainer = styled.div`
   position: absolute;
-  z-index:20;
+  z-index: 20;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background: white;
   border-radius: 0.5rem;
@@ -98,8 +99,8 @@ const SortItem = styled.div`
   cursor: pointer;
   :hover {
     background: #f7f3f3;
-  };
-  color:#000
+  }
+  color: #000;
 `;
 
 const Booking = (props) => {
@@ -121,7 +122,7 @@ const Booking = (props) => {
 
   const router = useRouter();
   const cancelTokenRef = useRef(null);
-  const autocompleteCancelTokenRef = useRef(null);  
+  const autocompleteCancelTokenRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -133,8 +134,13 @@ const Booking = (props) => {
   const filtersState = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const [hasUserSearched, setHasUserSearched] = useState(false);
-  const [defaultBudget, setDefaultBudget] = useState({ price_lower_range: 0, price_upper_range: 10000, });
+  const [defaultBudget, setDefaultBudget] = useState({
+    price_lower_range: 0,
+    price_upper_range: 9000,
+  });
   const [isFilterChangesApplied, setIsFilterChangesApplied] = useState(false);
+  const [refundable, setRefundable] = useState(false);
+  const [freeBreakfast, setFreeBreakfast] = useState(false);
   const [filters, setFilters] = useState({
     free_breakfast: false,
     is_refundable: false,
@@ -160,7 +166,13 @@ const Booking = (props) => {
     type: [],
     star_category: [1, 2, 3, 4, 5],
     user_ratings: [1, 2, 3, 4, 5],
-    user_ratings_label: { 1: 'Poor', 2: 'Fair', 3: 'Average', 4: 'Good', 5: 'Excellent' },
+    user_ratings_label: {
+      1: "Poor",
+      2: "Fair",
+      3: "Average",
+      4: "Good",
+      5: "Excellent",
+    },
     sort: ["Price: Low to High", "Price: High to Low"],
     facilities: [],
     tags: [],
@@ -172,11 +184,10 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const dispatch = useDispatch();
-  const [autocompleteLoading, setAutocompleteLoading] = useState(false); 
-  const [selectedHotelId, setSelectedHotelId] = useState(null); 
+  const [autocompleteLoading, setAutocompleteLoading] = useState(false);
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
   const debouncedSearch = useDebounce(selectSearch);
- const currency = useSelector(state=>state.currency);
- 
+  const currency = useSelector((state) => state.currency);
 
   const currentBooking = {
     check_in: props?.check_in || props?.currentBooking?.check_in,
@@ -187,20 +198,16 @@ const Booking = (props) => {
     booking_id: props?.booking_id,
   };
   useEffect(() => {
-    if (
-      props?.showBookingModal &&
-      currentBooking?.check_in
-    ) {
-    
+    if (props?.showBookingModal && currentBooking?.check_in) {
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
-  }, [filters.applyFilter]);
+  }, [filters.applyFilter, filters.free_breakfast, filters.is_refundable]);
 
   useEffect(() => {
     return () => {
       if (cancelTokenRef.current) {
-        cancelTokenRef.current.cancel('Component unmounted');
+        cancelTokenRef.current.cancel("Component unmounted");
       }
     };
   }, []);
@@ -333,7 +340,7 @@ const Booking = (props) => {
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
 
-    const handleSuggestionSelect = (suggestion) => {
+  const handleSuggestionSelect = (suggestion) => {
     setSelectedSearch(suggestion.name);
     setSearchResults([]);
     setSelectedHotelId([suggestion.id.toString()]);
@@ -383,8 +390,6 @@ const Booking = (props) => {
     });
   };
 
-  
-
   const fetchHotelsFilter = () => {
     if (props?.itinerary_city_id != router?.query?.itineraryCityId) return;
     setFetchingIsError({
@@ -392,7 +397,7 @@ const Booking = (props) => {
       errorMsg: "",
     });
     if (cancelTokenRef.current) {
-      cancelTokenRef.current.cancel('New request initiated');
+      cancelTokenRef.current.cancel("New request initiated");
     }
     setCloneFilter(JSON.parse(JSON.stringify(filters)));
     cancelTokenRef.current = axios.CancelToken.source();
@@ -409,8 +414,8 @@ const Booking = (props) => {
       city_id: currentBooking?.city_id || props?.selectedBooking?.city_id,
       hotel_id: selectedHotelId,
       filter_by: {
-        price_lower_range: filters.budget.price_lower_range,
-        price_upper_range: filters.budget.price_upper_range,
+        ...(filters.budget.price_lower_range && {price_lower_range: filters.budget.price_lower_range}),
+        ...(filters.budget.price_upper_range && {price_upper_range: filters.budget.price_upper_range}),
         hotel_name: selectSearch ? selectSearch : null,
         sub_location_ids: null,
         free_breakfast: filters.free_breakfast,
@@ -418,7 +423,9 @@ const Booking = (props) => {
         facilities: filters.facilities,
         tags: filters.tags,
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
-        star_category: filters.star_category ? filters.star_category?.toString() : filters.star_category,
+        star_category: filters.star_category
+          ? filters.star_category?.toString()
+          : filters.star_category,
         user_ratings: filters.user_ratings,
         page: 1,
       },
@@ -431,21 +438,21 @@ const Booking = (props) => {
       trace_id: null,
     };
 
+    const priceOrderValue =
+      filters.sort === "price: high to low"
+        ? "desc"
+        : filters.sort === "price: low to high"
+        ? "asc"
+        : null;
 
-    const priceOrderValue = filters.sort === "price: high to low"
-  ? "desc"
-  : filters.sort === "price: low to high"
-  ? "asc"
-  : null;
-
-if (priceOrderValue && filters.sort) {
-  requestData.sort_by = {
-    price_order: priceOrderValue,
-  };
-}
+    if (priceOrderValue && filters.sort) {
+      requestData.sort_by = {
+        price_order: priceOrderValue,
+      };
+    }
 
     hotelSearch
-      .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
+      .post(`?currency=${currency?.currency || "INR"}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -463,64 +470,57 @@ if (priceOrderValue && filters.sort) {
           if (res.data?.count) setTotalCount(res.data.count);
           setNoResults(false);
 
-
-
           let options = [];
           for (var i = 0; i < res.data.data.length; i++) {
             // if (
             //   res.data.data[i]?.images &&
-            //   res.data.data[i]?.images?.length 
+            //   res.data.data[i]?.images?.length
             // ) {
-              let img = false;
-              for (let j = 0; j < res.data.data[i]?.images.length; j++) {
-                if (res.data.data[i].images[j]?.image) {
-                  img = res.data.data[i].images[j].image;
-                  break;
-                }
+            let img = false;
+            for (let j = 0; j < res.data.data[i]?.images.length; j++) {
+              if (res.data.data[i].images[j]?.image) {
+                img = res.data.data[i].images[j].image;
+                break;
               }
-            
-              
+            }
 
-              if (img || res?.data?.data)
-                options.push(
-                  <AccommodationSearched
-                    mercury
-                    source={res?.data?.data?.[i]?.source}
-                    handleClick={props?.handleClick}
-                    payment={props.payment}
-                    plan={props.plan}
-                    currentBooking={currentBooking}
-                    _setImagesHandler={props._setImagesHandler}
-                    itinerary_id={props.itinerary_id}
-                    tailored_id={props.tailored_id}
-                    accommodation={res.data.data[i]}
-                    key={i}
-                    images={res.data.data[i]?.images}
-                    banner_image={img}
-                    bookings={props.bookings}
-                    num_adults={(filters?.occupancies).reduce(
-                      (sum, room) => sum + (room.adults || 0),
-                      0
-                    )}
-                    occupancies={filters.occupancies}
-                    traceId={
-                      res.data?.trace_details?.id
-                        ? res.data.trace_details.id
-                        : ""
-                    }
-                    provider={res.data?.data?.[0]?.source}
-                    setUpdateBookingState={setUpdateBookingState}
-                    setUnauthorized={setUnauthorized}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setStayBookings={props.setStayBookings}
-                    setShowLoginModal={props?.setShowLoginModal}
-                    handleClose={handleClose}
-                    itinerary_city_id={props.itinerary_city_id}
-                    city_id={currentBooking?.city_id}
-                  ></AccommodationSearched>
-                );
-            
+            if (img || res?.data?.data)
+              options.push(
+                <AccommodationSearched
+                  mercury
+                  source={res?.data?.data?.[i]?.source}
+                  handleClick={props?.handleClick}
+                  payment={props.payment}
+                  plan={props.plan}
+                  currentBooking={currentBooking}
+                  _setImagesHandler={props._setImagesHandler}
+                  itinerary_id={props.itinerary_id}
+                  tailored_id={props.tailored_id}
+                  accommodation={res.data.data[i]}
+                  key={i}
+                  images={res.data.data[i]?.images}
+                  banner_image={img}
+                  bookings={props.bookings}
+                  num_adults={(filters?.occupancies).reduce(
+                    (sum, room) => sum + (room.adults || 0),
+                    0
+                  )}
+                  occupancies={filters.occupancies}
+                  traceId={
+                    res.data?.trace_details?.id ? res.data.trace_details.id : ""
+                  }
+                  provider={res.data?.data?.[0]?.source}
+                  setUpdateBookingState={setUpdateBookingState}
+                  setUnauthorized={setUnauthorized}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setStayBookings={props.setStayBookings}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  handleClose={handleClose}
+                  itinerary_city_id={props.itinerary_city_id}
+                  city_id={currentBooking?.city_id}
+                ></AccommodationSearched>
+              );
           }
           if (
             filtersObj?.type?.length == 0 &&
@@ -556,7 +556,7 @@ if (priceOrderValue && filters.sort) {
       })
       .catch((err) => {
         if (axios.isCancel(err)) {
-          console.log('Request cancelled:', err.message);
+          console.log("Request cancelled:", err.message);
 
           return;
         }
@@ -564,16 +564,14 @@ if (priceOrderValue && filters.sort) {
         setUpdateLoadingState(false);
         setMoreOptionsJSX([]);
 
-
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-
   };
 
-   const fetchHotelsAutocomplete = () => {
+  const fetchHotelsAutocomplete = () => {
     if (cancelTokenRef.current) {
       cancelTokenRef.current.cancel("New request initiated");
     }
@@ -585,25 +583,30 @@ if (priceOrderValue && filters.sort) {
         return;
       }
 
-      setAutocompleteLoading(true); 
+      setAutocompleteLoading(true);
 
       hotelSearchAutocomplete
-        .get(`?q=${selectSearch}&city_id=${currentBooking?.city_id}&currency=${currency?.currency || 'INR'}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          cancelToken: cancelTokenRef.current.token,
-        })
+        .get(
+          `?q=${selectSearch}&city_id=${currentBooking?.city_id}&currency=${
+            currency?.currency || "INR"
+          }`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+            cancelToken: cancelTokenRef.current.token,
+          }
+        )
         .then((res) => {
           setSearchResults(res.data || []);
-          setAutocompleteLoading(false); 
+          setAutocompleteLoading(false);
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
             console.log("Request cancelled:", err.message);
             return;
           }
-          setAutocompleteLoading(false); 
+          setAutocompleteLoading(false);
           setSearchResults([]);
 
           if (err?.response.status == 400) {
@@ -615,7 +618,7 @@ if (priceOrderValue && filters.sort) {
           }
         });
     } catch (error) {
-      setAutocompleteLoading(false); 
+      setAutocompleteLoading(false);
     }
   };
 
@@ -629,9 +632,8 @@ if (priceOrderValue && filters.sort) {
       });
 
       if (cancelTokenRef.current) {
-        cancelTokenRef.current.cancel('New request initiated');
+        cancelTokenRef.current.cancel("New request initiated");
       }
-
 
       cancelTokenRef.current = axios.CancelToken.source();
       setLoading(true);
@@ -647,8 +649,8 @@ if (priceOrderValue && filters.sort) {
         city_id: currentBooking?.city_id,
         hotel_id: selectedHotelId,
         filter_by: {
-          price_lower_range: filters.budget.price_lower_range,
-          price_upper_range: filters.budget.price_upper_range,
+          ...(filters.budget.price_lower_range && {price_lower_range: filters.budget.price_lower_range}),
+          ...(filters.budget.price_upper_range && {price_upper_range: filters.budget.price_upper_range}),
           hotel_name: selectSearch ? selectSearch : null,
           sub_location_ids: null,
           free_breakfast: filters.free_breakfast,
@@ -672,20 +674,21 @@ if (priceOrderValue && filters.sort) {
         trace_id: paginationStatus?.traceId,
       };
 
-      const priceOrderValue = filters.sort === "price: high to low"
-  ? "desc"
-  : filters.sort === "price: low to high"
-  ? "asc"
-  : null;
+      const priceOrderValue =
+        filters.sort === "price: high to low"
+          ? "desc"
+          : filters.sort === "price: low to high"
+          ? "asc"
+          : null;
 
-if (priceOrderValue) {
-  requestData.sort_by = {
-    price_order: priceOrderValue,
-  };
-}
+      if (priceOrderValue) {
+        requestData.sort_by = {
+          price_order: priceOrderValue,
+        };
+      }
 
       hotelSearch
-        .post(`?currency=${currency?.currency || 'INR'}`, requestData, {
+        .post(`?currency=${currency?.currency || "INR"}`, requestData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -706,9 +709,8 @@ if (priceOrderValue) {
             let options = [];
             for (var i = 0; i < res.data.data.length; i++) {
               if (
-                res.data.data[i]?.images 
-                &&
-                res.data.data[i]?.images?.length 
+                res.data.data[i]?.images &&
+                res.data.data[i]?.images?.length
                 // && res.data.data[i]?.price
               ) {
                 let img = false;
@@ -761,7 +763,6 @@ if (priceOrderValue) {
                       city_id={currentBooking?.city_id}
                     ></AccommodationSearched>
                   );
-                
               }
             }
             if (
@@ -798,7 +799,7 @@ if (priceOrderValue) {
         })
         .catch((err) => {
           if (axios.isCancel(err)) {
-            console.log('Request cancelled:', err.message);
+            console.log("Request cancelled:", err.message);
 
             return;
           }
@@ -822,7 +823,6 @@ if (priceOrderValue) {
             error: true,
             errorMsg: `Sorry, we could not find any hotels in ${currentBooking?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
-
         });
     } catch (error) {
       console.log("error in accommodation search:", error);
@@ -832,10 +832,7 @@ if (priceOrderValue) {
   const resetSort = () => {
     setSelectedSort("Sort");
     _addFilterHandler("price: low to high", "sort");
-  }
-
-
- 
+  };
 
   if (props?.token)
     return (
@@ -906,14 +903,46 @@ if (priceOrderValue) {
                 <Travelers filters={filters} setFilters={setFilters} />
               </div>
 
+              <div className="flex flex-row gap-5 py-3">
+                <button
+                  onClick={() => {
+                    setRefundable((prev) => !prev);
+                    setFilters((prev) => ({
+                      ...prev,
+                      is_refundable: !prev.is_refundable,
+                      applyFilter: !prev.applyFilter,
+                    }));
+                  }}
+                  className="flex flex-row items-center gap-1 cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={refundable} />
+                  Refundable
+                </button>
+
+                <button
+                  onClick={() => {
+                    setFreeBreakfast((prev) => !prev);
+                    setFilters((prev) => ({
+                      ...prev,
+                      free_breakfast: !prev.free_breakfast,
+                      applyFilter: !prev.applyFilter,
+                    }));
+                  }}
+                  className="flex flex-row items-center gap-1 cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={freeBreakfast} />
+                  Free Breakfast
+                </button>
+              </div>
 
               {totalCount ? (
                 <div className="flex flex-row items-center justify-between mt-lg">
                   <div className="font-400 text-sm-md leading-xl text-text-spacegrey">
                     Showing {totalCount ? `${totalCount} ` : null}
-                    stays in {currentBooking?.city_name || props?.selectedBooking?.city_name}
+                    stays in{" "}
+                    {currentBooking?.city_name ||
+                      props?.selectedBooking?.city_name}
                   </div>
-
 
                   <div>
                     <div className="text-sm font-normal w-[95%] md:w-fit relative">
@@ -923,21 +952,33 @@ if (priceOrderValue) {
                           setSortShow(!sortShow);
                         }}
                       >
-
-                        <img className="inline mr-xs" src="/assets/stays/sort-icon.svg" />
-                        <b className="inline max-ph:hidden">
-                          {SelectedSort}
-                        </b>
-                        {SelectedSort != "Sort" &&
-                          <IconButton onClick={(e) => {
-                            resetSort();
-                            e.stopPropagation();
-                          }} className="!ml-xxs">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-                              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="black" />
+                        <img
+                          className="inline mr-xs"
+                          src="/assets/stays/sort-icon.svg"
+                        />
+                        <b className="inline max-ph:hidden">{SelectedSort}</b>
+                        {SelectedSort != "Sort" && (
+                          <IconButton
+                            onClick={(e) => {
+                              resetSort();
+                              e.stopPropagation();
+                            }}
+                            className="!ml-xxs"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+                                fill="black"
+                              />
                             </svg>
                           </IconButton>
-                        }
+                        )}
                         {sortShow ? (
                           <SortContainer>
                             {filtersObj["sort"].map((e, i) => (
@@ -962,9 +1003,7 @@ if (priceOrderValue) {
                 </div>
               ) : null}
 
-
-
-              {isFilterChangesApplied &&
+              {isFilterChangesApplied && (
                 <>
                   <hr className="mt-md" />
                   <FilterChips
@@ -979,11 +1018,10 @@ if (priceOrderValue) {
                     setIsFilterChangesApplied={setIsFilterChangesApplied}
                   />
                 </>
-              }
+              )}
 
               {showFilters && (
-                <div
-                >
+                <div>
                   <Filters
                     showFilter={showFilters}
                     filtersState={filtersState}
@@ -1050,8 +1088,8 @@ if (priceOrderValue) {
                   ) : null}
 
                   {!loading &&
-                    isFetchingError.error &&
-                    moreOptionsJSX?.length == 0 ? (
+                  isFetchingError.error &&
+                  moreOptionsJSX?.length == 0 ? (
                     <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
                       <div className="flex flex-row items-center justify-center text-center px-lg">
                         {isFetchingError.errorMsg}
@@ -1106,20 +1144,20 @@ if (priceOrderValue) {
 
                         {paginationStatus.page <
                           paginationStatus.totalPages && (
-                            <div className="mt-3">
-                              {/* {viewMoreStatus ? ( */}
-                              <Button
-                                boxShadow
-                                onclickparam={null}
-                                onclick={fetchHotels}
-                                margin="0.25rem auto"
-                                borderWidth="1px"
-                                borderRadius="2rem"
-                                padding="0.25rem 1rem"
-                              >
-                                View More
-                              </Button>
-                              {/* // ) : selectSearch !== "" ? (
+                          <div className="mt-3">
+                            {/* {viewMoreStatus ? ( */}
+                            <Button
+                              boxShadow
+                              onclickparam={null}
+                              onclick={fetchHotels}
+                              margin="0.25rem auto"
+                              borderWidth="1px"
+                              borderRadius="2rem"
+                              padding="0.25rem 1rem"
+                            >
+                              View More
+                            </Button>
+                            {/* // ) : selectSearch !== "" ? (
                               //   <Button
                               //     boxShadow
                               //     onclickparam={null}
@@ -1132,8 +1170,8 @@ if (priceOrderValue) {
                               //     Show All
                               //   </Button>
                               // ) : null} */}
-                            </div>
-                          )}
+                          </div>
+                        )}
                       </div>
                     </OptionsContainer>
                   ) : null}

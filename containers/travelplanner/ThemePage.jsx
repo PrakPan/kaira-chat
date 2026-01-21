@@ -114,12 +114,14 @@ export default function ThemePage(props) {
   }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
-    router.push({
-      pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
-    });
+    // router.push({
+    //   pathname: "/new-trip",
+    //   query: { 
+    //     ...router.query,
+    //     source: props?.slug || 'home' }
+    // });
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+      setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
@@ -186,6 +188,7 @@ export default function ThemePage(props) {
             page={"State Page"}
             eventDates={props.eventDates}
             url={props?.experienceData?.image}
+            setShowTailoredModal={setShowTailoredModal}
           />
         </>
       ) : (
@@ -202,7 +205,8 @@ export default function ThemePage(props) {
         // />
         <HeroSection title={props.experienceData.banner_heading}
           subtitle={props.experienceData.banner_text}
-          image={`${imgUrlEndPoint}${props.experienceData.image}`} slug={props?.slug} />
+          image={`${imgUrlEndPoint}${props.experienceData.image}`} slug={props?.slug} 
+          setShowTailoredModal={setShowTailoredModal}/>
       )}
       {props.slug === "ladakh" && <LadakhLogo />}
 
@@ -462,6 +466,7 @@ export default function ThemePage(props) {
                         <Destination1Carousel
                           handlePlanButton={handlePlanButton}
                           setDestination={setDestination}
+                          setShowTailoredModal={setShowTailoredModal}
                           packages={[
                             ...component.cities.map((item) => ({
                               ...item,
@@ -476,6 +481,7 @@ export default function ThemePage(props) {
                               type: "Country",
                             })),
                           ]}
+
                         />
                         <PlanYourTripButton text={"Start your journey now!"} slug={props?.slug} />
                       </>
@@ -571,7 +577,7 @@ export default function ThemePage(props) {
                               <SwiperSlide key={destination.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={destination.title || destination.name}
+                                    title={destination?.display_name || destination.title || destination.name}
                                     description={
                                       destination.description || destination.tagline
                                     }
@@ -677,6 +683,7 @@ export default function ThemePage(props) {
                           country
                           page={"Country Page"}
                           continent={component?.countries}
+                          setShowTailoredModal={setShowTailoredModal}
                         ></SwiperLocations>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
@@ -777,10 +784,9 @@ export default function ThemePage(props) {
                               <SwiperSlide key={destination.id}>
                                 <div className="w-full px-1">
                                   <DestinationCard
-                                    title={destination.title || destination.name}
-                                    description={
-                                      destination.description || destination.tagline
-                                    }
+                                    title={destination?.display_name || destination.title || destination.name}
+                                    description={destination.description || destination.tagline}
+                                    one_liner_description={destination?.one_liner_description}
                                     image={destination.image}
                                     rating={destination.rating}
                                     reviewCount={destination.user_ratings_total}
@@ -1043,15 +1049,15 @@ export const PlanYourTripButton = (props) => {
 
   const handlePlanButton = () => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+      setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
 
-    router.push({
-      pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
-    });
+    // router.push({
+    //   pathname: "/new-trip",
+    //   query: { ...router.query, source: props?.slug || 'home' }
+    // });
 
     logEvent({
       action: "Plan_Itinerary",
@@ -1098,10 +1104,11 @@ export const PlanYourTripLadakhButton = (props) => {
 
   const handlePlanButton = () => {
     // openTailoredModal(router, props.page_id, props.destination, props.type);
-    router.push({
-      pathname: "/new-trip",
-      query: { source: props?.slug || 'home' }
-    });
+    // router.push({
+    //   pathname: "/new-trip",
+    //   query: { ...router.query, source: props?.slug || 'home' }
+    // });
+    setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -1125,7 +1132,7 @@ export const PlanYourTripLadakhButton = (props) => {
         {props.text}
       </button>
 
-      {/* <TailoredFormMobileModal
+      <TailoredFormMobileModal
         destinationType={"city-planner"}
         page_id={props.page_id}
         children_cities={props.children_cities}
@@ -1136,7 +1143,7 @@ export const PlanYourTripLadakhButton = (props) => {
         }}
         show={showTailoredModal}
         eventDates={props.eventDates}
-      /> */}
+      />
     </div>
   );
 };

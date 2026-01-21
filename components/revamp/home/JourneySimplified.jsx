@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Button from "../common/components/button";
 import {
   ANIMATION_CONFIG,
@@ -8,12 +8,14 @@ import {
 } from "../common/gsapConfig";
 import Link from "next/link";
 import useMediaQuery from "../../media";
+import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
-const JourneySimplified = () => {
+const JourneySimplified = (props) => {
   // Refs for GSAP animations
   const containerRef = useRef(null);
   const headingRef = useRef(null);
   const stepsRef = useRef(null);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
   // Custom SVG icons
   const StarIcon = () => (
     <svg
@@ -282,20 +284,33 @@ const JourneySimplified = () => {
 
         {/* CTA Button */}
         <div className="text-center">
-                <Link href="/new-trip">
+                {/* <Link href="/new-trip"> */}
                   <Button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     Explore how Kaira plans trips →
                   </Button>
-                </Link>
+                {/* </Link> */}
               </div>
       </div>
+
+       <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+      />
     </section>
   );
 };

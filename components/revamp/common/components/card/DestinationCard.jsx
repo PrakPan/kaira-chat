@@ -7,7 +7,7 @@ import { imgUrlEndPoint } from "../../../../theme/ThemeConstants";
 import { AiFillStar } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
-
+import ImageLoader from "../../../../ImageLoader";
 const DestinationCard = ({
   title,
   one_liner_description,

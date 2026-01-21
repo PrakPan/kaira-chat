@@ -53,7 +53,7 @@ const AboutUsContainer = () => {
           heading="Start your travel journey with us!"
           text=" "
           button="Plan a Trip now!"
-          buttonLink="/new-trip"
+          buttonLink="/"
           margin="1.5rem auto"
           img={"media/website/getstarted.svg"}
         />

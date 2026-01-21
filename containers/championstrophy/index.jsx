@@ -67,11 +67,11 @@ export default function ChampionsTrophy(props) {
 
   const handlePlanButton = (pageId, destination, type) => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+     setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",
@@ -128,7 +128,7 @@ export default function ChampionsTrophy(props) {
 
       {isPageWide ? <DesktopBanner
         newYear
-        onclick={() => openTailoredModal(router)}
+        onclick={() => setShowTailoredModal(true)}
         text="Want to personalize your own experience?"
       ></DesktopBanner> : <BannerMobile onclick={() => openTailoredModal(router)}/>}
 
@@ -309,11 +309,11 @@ export const PlanYourTripButton = (props) => {
 
   const handlePlanButton = () => {
     // if (isPageWide) {
-    //   setShowTailoredModal(true);
+     setShowTailoredModal(true);
     // } else {
     //   openTailoredModal(router, props.page_id, props.destination);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
 
     logEvent({
       action: "Plan_Itinerary",

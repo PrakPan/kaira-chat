@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RiArrowDropDownLine, RiDeleteBin6Line } from "react-icons/ri";
 import Pax from "../../../tailoredform/slidetwo/pax/Pax";
+import useMediaQuery from "../../../media";
 
 const svgIcons = {
   'user': <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -28,6 +29,7 @@ export default function Travelers(props) {
   const [rooms, setRooms] = useState(props.filters.occupancies || []);
   const [open, setOpen] = useState(false);
   const [showError, setShowError] = useState(false);
+   const isDesktop = useMediaQuery("(min-width:400px)");
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -103,13 +105,15 @@ export default function Travelers(props) {
     >
       {svgIcons.user}
       <div className="flex flex-row text-sm-md text-text-charcolblack leading-lg-md font-400 align-items-center w-full items-center">
-        <span>Room Configuration | </span> &nbsp;
+        <span>{isDesktop ? "Room Configuration" : "Rooms"} | </span> &nbsp;
         <span>
           {travelers} {travelers > 1 ? "travelers" : "traveler"}, {props.filters.occupancies.length}{" "}
           {props.filters.occupancies.length > 1 ? "rooms" : "room"}
         </span>
+
+        <span className="ml-3 cursor-pointer" onClick={() => setOpen((prev) => !prev)} >{svgIcons.edit}</span>
       </div>
-      <span className="ml-auto cursor-pointer" onClick={() => setOpen((prev) => !prev)} >{svgIcons.edit}</span>
+     
 
 
       {open && <Pax

@@ -127,6 +127,7 @@ const ComboFlight = (props) => {
  const [filtersState, setFiltersState] = useState({
   order: "asc",
   non_stop_flights: false, 
+  stops: [],
   departure_time_period: "",
   arrival_time_period: "",
   airline_name: "",
@@ -668,7 +669,7 @@ const handleViewMore = async () => {
         adult_count: pax.adults,
         child_count: pax.children,
         infant_count: pax.infants || 0,
-        direct_flight: filtersState.non_stop_flights ? "true" : "false",
+        direct_flight: filtersState?.stops.includes("non_stop") ? "true" : "false",
         journey_type: "1",
         origin:
           sourceInput.code ||

@@ -135,7 +135,7 @@ const Home = (props) => {
       ></HomepageContainer> */}
 
       <div className={styles.ttwRevamp}>
-        <NavigationMenu />
+        <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
         {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
         <HeroSection slug={'home'} />
         <TrustFactors/>

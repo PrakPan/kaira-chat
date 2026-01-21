@@ -46,6 +46,7 @@ import WhatMakesUsSection from "../../components/revamp/home/WhatMakesUsSection.
 import PartnersSection from "../../components/theme/PartnersSection.jsx";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
 import Link from "next/link.js";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -90,6 +91,8 @@ const Homepage = (props) => {
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
   const [headings, setHeadings] = useState([]);
+  const [showTailoredModal,setShowTailoredModal] = useState(false);
+
 
   useEffect(() => {
     let iti_exclusive = [];
@@ -251,11 +254,13 @@ const Homepage = (props) => {
     //   props.experienceData.id,
     //   convertDbNameToCapitalFirst(props.experienceData.slug)
     // );
-     router.push({
-        pathname: "/new-trip",
-        query: { source: props?.experienceData?.slug || 'home' }
-    });
+    //  router.push({
+    //     pathname: "/new-trip",
+    //     query: { ...router.query, source: props?.experienceData?.slug || 'home' }
+    // });
 
+    setShowTailoredModal(true); 
+     
     logEvent({
       action: "Plan_Itinerary",
       params: {
@@ -286,6 +291,7 @@ const Homepage = (props) => {
             subheading={props.experienceData.banner_text}
             page={"State Page"}
             eventDates={props.eventDates}
+            setShowTailoredModal={setShowTailoredModal}
           />
         </>
       ) : (
@@ -314,6 +320,7 @@ const Homepage = (props) => {
             subtitle={props.experienceData.banner_text}
             image={`${imgUrlEndPoint}${props.experienceData.image}`}
             slug={props.experienceData?.slug}
+            setShowTailoredModal={setShowTailoredModal}
           />
 
           <SetWidthContainer>
@@ -434,18 +441,19 @@ const Homepage = (props) => {
 
               </div>
               <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}>
+                {/* <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}> */}
                   <button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
             </>
 
@@ -623,11 +631,7 @@ const Homepage = (props) => {
           <DesktopBanner
             loading={desktopBannerLoading}
             onclick={() =>
-              openTailoredModal(
-                router,
-                props.experienceData.id,
-                convertDbNameToCapitalFirst(props.experienceData.slug)
-              )
+              setShowTailoredModal(true)
             }
             text={`Craft a personalized itinerary${
               props.experienceData.slug
@@ -766,18 +770,19 @@ const Homepage = (props) => {
                 </div>
 
                 <div className=" flex items-center justify-center mt-8 lg:mt-10">
-                <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}>
+                {/* <Link href={`/new-trip/?source=${props?.experienceData?.slug || 'home'}`}> */}
                   <button
                     variant="filled"
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      setShowTailoredModal(true);
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >
                     + Create a Trip Now!
                   </button>
-                </Link>
+                {/* </Link> */}
               </div>
               </>
             ) : null}
@@ -824,6 +829,19 @@ const Homepage = (props) => {
             <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
 
             <CtaBoardingSection />
+
+            <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
           </SetWidthContainer>
         </>
       )}

@@ -47,10 +47,13 @@ const FullImgContentLadakh = (props) => {
     //   openTailoredModal(router, props.page_id, props.destination,props.type);
     // }
 
-    router.push({
-        pathname: "/new-trip",
-        query: { source: 'ladakh' }
-    });
+    // router.push({
+    //     pathname: "/new-trip",
+    //     query: { 
+    //       ...router.query,
+    //       source: 'ladakh' }
+    // });
+    setShowTailoredModal(true);
 
     logEvent({
       action: "Plan_Itinerary",

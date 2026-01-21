@@ -57,8 +57,6 @@ const Enquiry = (props) => {
   const [modalWidth, setModalWidth] = useState(isPageWide ? "848px" : "100%");
   const [showImage, setShowImage] = useState(false);
   let myref = useRef(null);
-
-  console.log("Message",props.message)
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
@@ -145,6 +143,8 @@ const Enquiry = (props) => {
               itinary_id={props.itinary_id}
               onSuccess={props?.onSuccess}
               message={props.message}
+              isTailored={props?.isTailored}
+              onSkipLogin={props?.onSkipLogin}
             ></Login>
           </div>
         </div>
@@ -202,7 +202,7 @@ const Enquiry = (props) => {
 
           </ImgContainer>
         <div className={`${isPageWide?"p-[20px]":"h-[570px]"}`} >
-          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message}></Login>
+          <Login onhide={props.onhide} itinary_id={props.itinary_id} onSuccess={props?.onSuccess} isMobile={true} message={props.message} isTailored={props?.isTailored} onSkipLogin={props?.onSkipLogin}></Login>
         </div>
       </Modal>
     );

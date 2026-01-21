@@ -48,7 +48,8 @@ export default function NewYearUnique(props) {
     // } else {
     //   openTailoredModal(router, pageId, destination, type);
     // }
-    router.push("/new-trip");
+    // router.push("/new-trip");
+    setShowTailoredModal(true);
   };
 
   return (

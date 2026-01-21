@@ -337,7 +337,7 @@ const CloneItinerary = ({ isHotelsPresent }) => {
         />
       ) : (
         <div>
-          <div className="Body1M_16 mb-[8px]">Travellers and Rooms</div>
+          <div className="Body1M_16 mb-[8px] text-black">Travellers and Rooms</div>
           <Pax
             numberOfAdults={numberOfAdults}
             setNumberOfAdults={setNumberOfAdults}

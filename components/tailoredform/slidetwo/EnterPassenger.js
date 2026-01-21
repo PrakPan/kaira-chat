@@ -14,17 +14,19 @@ export const Section = styled.div`
   margin-bottom: 1.5rem;
 `;
 
+
 export const StyledBox = styled.div`
   height: 46px;
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 4px;
-  border: 1px solid #acacac;
+  border-radius: 12px;
   padding: 0 16px;
-  color: #acacac;
+  color: black;
   cursor: pointer;
   background: #fff;
+  justify-content: space-between;
+  border: 1px solid #f7e700
 `;
 
 export const PassengerRow = styled.div`
@@ -213,7 +215,7 @@ const EnterPassenger = (props) => {
     <div>
       <StyledText className="mb-[4px] Body1M_16">{props.settings ? 'Number of Travellers' : "Who's Going"}</StyledText>
       <StyledBox onClick={() => setShowPassenger(true)}>
-        {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers
+        {props.numberOfAdults + props.numberOfChildren + props.numberOfInfants} Travelers <span className="text-blue">Change</span>
       </StyledBox>
 
       {isPageWide ? 

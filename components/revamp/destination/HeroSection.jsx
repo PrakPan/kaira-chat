@@ -13,7 +13,7 @@ import HeadingContent from "./HeadingContent";
 import styles from "./HeroSection.module.scss";
 import TrustFactors from "./TrustFactors";
 
-const HeroSection = ({ title, subtitle, image, slug=null }) => {
+const HeroSection = ({ title, subtitle, image, slug=null,setShowTailoredModal}) => {
   const imageRefs = useRef([]);
   const containerRef = useRef(null);
   const sectionRef = useRef(null);
@@ -103,7 +103,7 @@ useGSAP(
   return (
     <>
     <section ref={sectionRef} className={styles.heroSection}>
-      <HeadingContent title={title} subtitle={subtitle} slug={slug ? slug : 'home'}/>
+      <HeadingContent title={title} subtitle={subtitle} slug={slug ? slug : 'home'} setShowTailoredModal={setShowTailoredModal}/>
       <div ref={containerRef} className={styles.backgroundWrapper}>
         {imagesToUse.map((img, index) => (
           <div 
