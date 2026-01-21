@@ -63,6 +63,7 @@ import FullScreenGallery from "../../components/fullscreengallery/Index.js";
 import axios from "axios";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
 import ChatButtonContainer from "./ChatButtonContainer.jsx";
+import CityDrawerView, { ItineraryCityWithDrawer } from "../../components/itinerary/CityDrawer.jsx";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -145,8 +146,13 @@ const SimpleTabsV2 = (props) => {
   const { customer } = useSelector((state) => state.Itinerary);
   const cart = useSelector((state) => state.Cart);
   const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+  const [showCityDrawer, setShowCityDrawer] = useState(false);
+  const [selectedCityId, setSelectedCityId] = useState(null);
 
   const [isHovered, setIsHovered] = useState(false);
+
+  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
+
   const popupStyle = {
     display: isHovered ? "block" : "none",
     backgroundColor: "#2b2b2a",
@@ -191,6 +197,8 @@ const SimpleTabsV2 = (props) => {
       setCountCartItems(totalCount);
     }
   }, [props?.payment]);
+
+  
 
   const scrollToElement = (elementId) => {
     scroller?.scrollTo(elementId, {
@@ -286,13 +294,13 @@ const SimpleTabsV2 = (props) => {
     }
   };
 
-useEffect(() => {
-  const { drawer } = router.query;
-  if (drawer === "handleEditRoute") {
-    setActiveTab("Trip Routes");
-  }
-  // Don't automatically set to Itinerary when drawer is removed
-}, [router.query.drawer]);
+  useEffect(() => {
+    const { drawer } = router.query;
+    if (drawer === "handleEditRoute") {
+      setActiveTab("Trip Routes");
+    }
+    // Don't automatically set to Itinerary when drawer is removed
+  }, [router.query.drawer]);
 
   const _handleLoginClose = () => {
     setShowLoginModal(false);
@@ -435,6 +443,12 @@ useEffect(() => {
     });
   };
 
+  const handleShowCityDrawer = (cityId) => {
+  setSelectedCityId(cityId);
+  setShowCityDrawer(true);
+};
+
+
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState({
     title: "",
@@ -575,8 +589,6 @@ useEffect(() => {
           setActiveTab={setActiveTab}
           setEditRoute={props.setEditRoute}
           requireAuth={requireAuth}
-          autoOpenDrawer={true}
-          setActiveTab={setActiveTab}
         ></Breif>
       ) : (
         citydatadone && (
@@ -605,178 +617,123 @@ useEffect(() => {
 
       {isPageWide ? null : (
         <>
-          <div className={`z-10 sticky z-2 md:top-[0px] top-[1px]`}>
-            <ScrollableMenuTabs
-              icons={false}
-              offset={isDesktop ? "0px" : "0px"}
-              items={items}
-              BarName="TabsName"
-              scrollOffSet={-50}
+        {/* City Day Drawer */}
+
+          {showCityDrawer && selectedCityId ? (
+            <CityDrawerView
+              mercuryItinerary={props?.mercuryItinerary}
+              key={itineraryDaybyDay?.cities?.[0]}
+              nextCity={itineraryDaybyDay?.cities?.[1]}
+              show={showCityDrawer}
+              onClose={() => {
+                setShowCityDrawer(false);
+                setSelectedCityId(null);
+              }}
+              cityId={selectedCityId}
+              itineraryDaybyDay={itineraryDaybyDay}
+              // cityRefs={cityRefs}
+              // setItinerary={setItinerary}
+              activityBookings={props?.activityBookings}
+              setActivityBookings={props?.setActivityBookings}
+              // idMapping={transferBookings?.intercity?.[idMapping]?.id}
+              setShowLoginModal={setShowLoginModal}
+              // handleClickAc={handleClickAc}
+              index={0}
+              cityHotels={stays[0]}
+              totalDuration={2}
+              itinerary_city_id={itineraryDaybyDay?.cities?.[0]?.id}
+              // intracityBookings={intracityBookings}
+              _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+              _updatePaymentHandler={props?._updatePaymentHandler}
+              getPaymentHandler={props?.getPaymentHandler}
+              setShowCityDrawer={setShowCityDrawer}
+              isInDrawer={true} 
             />
-          </div>
-          <div id={"Itenary"}>
-            {props.mercuryItinerary ? (
-              props?.itineraryDaybyDay && (
-                <DaybyDay
-                  mercuryItinerary={props?.mercuryItinerary}
-                  activityBookings={props?.activityBookings}
-                  setActivityBookings={props?.setActivityBookings}
-                  itinerary={props.itinerary}
-                  transferBookings={transferBooking}
-                  setTransferBookings={props?.setTransferBookings}
-                  setItinerary={props?.setItinerary}
-                  payment={props.payment}
-                  stayBookings={stays}
-                  setStayBookings={props.setStayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={props.setShowBookingModal}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  setShowLoginModal={setShowLoginModal}
-                  _GetInTouch={_GetInTouch}
-                />
-              )
-            ) : (
-              <NewItenaryDBDMob
-                plan={props.plan}
-                payment={props.payment}
-                token={props.token}
-                setShowLoginModal={setShowLoginModal}
-                city_slabs={props?.breif?.city_slabs}
+          ) : <><div className={`z-10 sticky z-2 md:top-[0px] top-[1px]`}>
+          <ScrollableMenuTabs
+            icons={false}
+            offset={isDesktop ? "0px" : "0px"}
+            items={items}
+            BarName="TabsName"
+            scrollOffSet={-50}
+          />
+        </div>
+        <div id={"Itenary"}>
+          {props.mercuryItinerary ? (
+            props?.itineraryDaybyDay && (
+              <DaybyDay
+                mercuryItinerary={props?.mercuryItinerary}
+                activityBookings={props?.activityBookings}
+                setActivityBookings={props?.setActivityBookings}
                 itinerary={props.itinerary}
-                setItinerary={props.setItinerary}
-                getPaymentHandler={props.getPaymentHandler}
-                transferBookings={props.transferBookings}
-                stayBookings={props.stayBookings}
-                activityBookings={props.activityBookings}
-                getAccommodationAndActivitiesHandler={
-                  props.getAccommodationAndActivitiesHandler
+                transferBookings={transferBooking}
+                setTransferBookings={props?.setTransferBookings}
+                setItinerary={props?.setItinerary}
+                payment={props.payment}
+                stayBookings={stays}
+                setStayBookings={props.setStayBookings}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updateFlightBookingHandler={
+                  props._updateFlightBookingHandler
                 }
-                setShowBookingModal={() => props.setShowBookingModal(true)}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={props.setShowBookingModal}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                setShowLoginModal={setShowLoginModal}
                 _GetInTouch={_GetInTouch}
-              ></NewItenaryDBDMob>
-            )}
-          </div>
+                setShowCityDrawer={handleShowCityDrawer}
+              />
+            )
+          ) : (
+            <NewItenaryDBDMob
+              plan={props.plan}
+              payment={props.payment}
+              token={props.token}
+              setShowLoginModal={setShowLoginModal}
+              city_slabs={props?.breif?.city_slabs}
+              itinerary={props.itinerary}
+              setItinerary={props.setItinerary}
+              getPaymentHandler={props.getPaymentHandler}
+              transferBookings={props.transferBookings}
+              stayBookings={props.stayBookings}
+              activityBookings={props.activityBookings}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
+              setShowBookingModal={() => props.setShowBookingModal(true)}
+              _GetInTouch={_GetInTouch}
+            ></NewItenaryDBDMob>
+          )}
+        </div>
 
-          <div id={"Booking"}>
-            <div id={"Stays"}>
-              {props.mercuryItinerary ? (
-                <StaysContainer
-                  payment={props.payment}
-                  _setImagesHandler={_setImagesHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  setShowLoginModal={setShowLoginModal}
-                  _GetInTouch={_GetInTouch}
-                  stayBookings={stays}
-                  setStayBookings={props.setStayBookings}
-                  CityData={CityData}
-                  cities={props?.cities}
-                  requireAuth={requireAuth}
-                />
-              ) : (
-                <HotelsBooking
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
-                        : false
-                      : false
-                  }
-                  budget={props.budget}
-                  breif={props.breif}
-                  stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  booking={props.booking}
-                ></HotelsBooking>
-              )}
-            </div>
-
-            <div id={"Transfers"}>
-              {props?.transferBookings && !props?.mercuryItinerary ? (
-                <TransfersContainer
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  dayslab={props?.itinerary?.day_slabs}
-                  breif={props?.breif}
-                  routesData={RoutesData}
-                  transfers={TransfersData}
-                  routes={props.routes}
-                  showTaxiModal={props.showTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  transferBookings={props?.transferBookings}
-                  itinerary_id={props.itinerary_id}
-                  fetchData={props.fetchData}
-                  _GetInTouch={_GetInTouch}
-                />
-              ) : (
-                <>
-                  {props.transferBookings && (
-                    <TransferBookings
-                      mercuryItinerary={props?.mercuryItinerary}
-                      setShowLoginModal={setShowLoginModal}
-                      showTaxiModal={props.showTaxiModal}
-                      _updateFlightBookingHandler={
-                        props._updateFlightBookingHandler
-                      }
-                      setShowTaxiModal={props.setShowTaxiModal}
-                      getPaymentHandler={props.getPaymentHandler}
-                      _updateTaxiBookingHandler={
-                        props._updateTaxiBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      showFlightModal={props.showFlightModal}
-                      setShowFlightModal={_handleFlighModalShow}
-                      setHideFlightModal={_handleFlightModalClose}
-                      setShowBookingModal={() =>
-                        props.setShowBookingModal(true)
-                      }
-                      setHideBookingModal={props.setHideBookingModal}
-                      payment={props.payment}
-                      fetchData={props.fetchData}
-                      _GetInTouch={_GetInTouch}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-
-            <div id={"Activities"}>
-              <ActivityBookings
+        <div id={"Booking"}>
+          <div id={"Stays"}>
+            {props.mercuryItinerary ? (
+              <StaysContainer
+                payment={props.payment}
+                _setImagesHandler={_setImagesHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                setShowLoginModal={setShowLoginModal}
+                _GetInTouch={_GetInTouch}
+                stayBookings={stays}
+                setStayBookings={props.setStayBookings}
+                CityData={CityData}
+                cities={props?.cities}
+                requireAuth={requireAuth}
+              />
+            ) : (
+              <HotelsBooking
+                setShowLoginModal={setShowLoginModal}
                 plan={props.plan}
                 hasUserPaid={
                   props.payment
@@ -786,22 +743,111 @@ useEffect(() => {
                     : false
                 }
                 budget={props.budget}
+                breif={props.breif}
                 stayBookings={props.stayBookings}
                 _updateBookingHandler={props._updateBookingHandler}
                 _updateStayBookingHandler={props._updateStayBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
-                flightBookings={props.flightBookings}
                 getPaymentHandler={props.getPaymentHandler}
                 setShowBookingModal={() => props.setShowBookingModal(true)}
                 showBookingModal={props.showBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
-                activityBookings={props.activityBookings}
                 payment={props.payment}
                 booking={props.booking}
-                setShowLoginModal={setShowLoginModal}
-              />
-            </div>
+              ></HotelsBooking>
+            )}
           </div>
+
+          <div id={"Transfers"}>
+            {props?.transferBookings && !props?.mercuryItinerary ? (
+              <TransfersContainer
+                setShowLoginModal={setShowLoginModal}
+                plan={props.plan}
+                dayslab={props?.itinerary?.day_slabs}
+                breif={props?.breif}
+                routesData={RoutesData}
+                transfers={TransfersData}
+                routes={props.routes}
+                showTaxiModal={props.showTaxiModal}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateFlightBookingHandler={
+                  props._updateFlightBookingHandler
+                }
+                setShowTaxiModal={props.setShowTaxiModal}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                showFlightModal={props.showFlightModal}
+                setShowFlightModal={_handleFlighModalShow}
+                setHideFlightModal={_handleFlightModalClose}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                setHideBookingModal={props.setHideBookingModal}
+                payment={props.payment}
+                transferBookings={props?.transferBookings}
+                itinerary_id={props.itinerary_id}
+                fetchData={props.fetchData}
+                _GetInTouch={_GetInTouch}
+              />
+            ) : (
+              <>
+                {props.transferBookings && (
+                  <TransferBookings
+                    mercuryItinerary={props?.mercuryItinerary}
+                    setShowLoginModal={setShowLoginModal}
+                    showTaxiModal={props.showTaxiModal}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={
+                      props._updateTaxiBookingHandler
+                    }
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    showFlightModal={props.showFlightModal}
+                    setShowFlightModal={_handleFlighModalShow}
+                    setHideFlightModal={_handleFlightModalClose}
+                    setShowBookingModal={() =>
+                      props.setShowBookingModal(true)
+                    }
+                    setHideBookingModal={props.setHideBookingModal}
+                    payment={props.payment}
+                    fetchData={props.fetchData}
+                    _GetInTouch={_GetInTouch}
+                  />
+                )}
+              </>
+            )}
+          </div>
+
+          <div id={"Activities"}>
+            <ActivityBookings
+              plan={props.plan}
+              hasUserPaid={
+                props.payment
+                  ? props.payment.paid_user
+                    ? true
+                    : false
+                  : false
+              }
+              budget={props.budget}
+              stayBookings={props.stayBookings}
+              _updateBookingHandler={props._updateBookingHandler}
+              _updateStayBookingHandler={props._updateStayBookingHandler}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              flightBookings={props.flightBookings}
+              getPaymentHandler={props.getPaymentHandler}
+              setShowBookingModal={() => props.setShowBookingModal(true)}
+              showBookingModal={props.showBookingModal}
+              setHideBookingModal={props.setHideBookingModal}
+              activityBookings={props.activityBookings}
+              payment={props.payment}
+              booking={props.booking}
+              setShowLoginModal={setShowLoginModal}
+            />
+          </div>
+        </div> </>}
 
           <div className="fixed z-[9] bottom-[70px] max-sm:bottom-[97px] right-[10px] flex flex-col items-end gap-2">
             {/* Chat Banner */}
@@ -852,169 +898,236 @@ useEffect(() => {
               />
             </Drawer>
           ) : null}
+
+          
         </>
       )}
 
       {isPageWide ? (
-        <SplitScreen isPageWide leftWidth={5.1} rightWidth={4.9}>
-          <div className="mb-4">
-            <Navigation
-              items={items}
-              BarName="TabsName"
-              ClickHandler={(label) => {
-                if (label == "Trip Routes") {
-                  router.push({
-                    pathname: `/itinerary/${router.query.id}`,
-                    query: {
-                      drawer: "handleEditRoute",
-                    },
-                  });
-                }
-                _handleMenuTabsChange(label);
+        <SplitScreen isPageWide leftWidth={5.5} rightWidth={4.5}>
+          {showCityDrawer && selectedCityId ? (
+            <CityDrawerView
+              mercuryItinerary={props?.mercuryItinerary}
+              key={itineraryDaybyDay?.cities?.[0]}
+              nextCity={itineraryDaybyDay?.cities?.[1]}
+              show={showCityDrawer}
+              onClose={() => {
+                setShowCityDrawer(false);
+                setSelectedCityId(null);
               }}
-              selectedItem={activeTab}
-              trackSectionViewed={trackSectionViewed}
+              cityId={selectedCityId}
+              itineraryDaybyDay={itineraryDaybyDay}
+              // cityRefs={cityRefs}
+              // setItinerary={setItinerary}
+              activityBookings={props?.activityBookings}
+              setActivityBookings={props?.setActivityBookings}
+              // idMapping={transferBookings?.intercity?.[idMapping]?.id}
+              setShowLoginModal={setShowLoginModal}
+              // handleClickAc={handleClickAc}
+              index={0}
+              cityHotels={stays[0]}
+              totalDuration={2}
+              itinerary_city_id={itineraryDaybyDay?.cities?.[0]?.id}
+              // intracityBookings={intracityBookings}
+              _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+              _updatePaymentHandler={props?._updatePaymentHandler}
+              getPaymentHandler={props?.getPaymentHandler}
+              setShowCityDrawer={setShowCityDrawer}
+              isInDrawer={true} 
             />
-            <div
-              id={"Itenary"}
-              className={activeTab === "Itinerary" ? "block" : "hidden"}
-            >
-              {props.mercuryItinerary
-                ? props?.itineraryDaybyDay && (
-                    <DaybyDay
-                      mercuryItinerary={props?.mercuryItinerary}
-                      activityBookings={props?.activityBookings}
-                      setActivityBookings={props?.setActivityBookings}
-                      transferBookings={props?.transferBookings}
-                      setTransferBookings={props?.setTransferBookings}
-                      setItinerary={props?.setItinerary}
-                      itinerary={props?.itinerary}
-                      loadbookings={props?.loadbookings}
-                      payment={props.payment}
-                      stayBookings={stays}
-                      setStayBookings={props.setStayBookings}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      getPaymentHandler={props.getPaymentHandler}
-                      _updateFlightBookingHandler={
-                        props._updateFlightBookingHandler
-                      }
-                      _updateTaxiBookingHandler={
-                        props._updateTaxiBookingHandler
-                      }
-                      setShowBookingModal={(val) =>
-                        props.setShowStayBookingModal(val)
-                      }
-                      showBookingModal={props.showStayBookingModal}
-                      setHideBookingModal={props.setHideBookingModal}
-                      setShowLoginModal={setShowLoginModal}
-                      _GetInTouch={_GetInTouch}
-                    />
-                  )
-                : props?.itinerary && (
-                    <NewItenaryMain
-                      setShowLoginModal={setShowLoginModal}
-                      plan={props.plan}
-                      payment={props.payment}
-                      city_slabs={props?.breif?.city_slabs}
-                      itinerary={props?.itinerary}
-                      setItinerary={props.setItinerary}
-                      getPaymentHandler={props.getPaymentHandler}
-                      token={props.token}
-                      transferBookings={props.transferBookings}
-                      stayBookings={props.stayBookings}
-                      activityBookings={props.activityBookings}
-                      getAccommodationAndActivitiesHandler={
-                        props.getAccommodationAndActivitiesHandler
-                      }
-                      setShowBookingModal={() =>
-                        props.setShowBookingModal(true)
-                      }
-                      _GetInTouch={_GetInTouch}
-                    ></NewItenaryMain>
-                  )}
-            </div>
+          ) : (
+            <div className="mb-4">
+              <Navigation
+                items={items}
+                BarName="TabsName"
+                ClickHandler={(label) => {
+                  if (label == "Trip Routes") {
+                    router.push({
+                      pathname: `/itinerary/${router.query.id}`,
+                      query: {
+                        drawer: "handleEditRoute",
+                      },
+                    });
+                  }
+                  _handleMenuTabsChange(label);
+                }}
+                selectedItem={activeTab}
+                trackSectionViewed={trackSectionViewed}
+              />
+              <div
+                id={"Itenary"}
+                className={activeTab === "Itinerary" ? "block" : "hidden"}
+              >
+                {props.mercuryItinerary
+                  ? props?.itineraryDaybyDay && (
+                      <DaybyDay
+                        mercuryItinerary={props?.mercuryItinerary}
+                        activityBookings={props?.activityBookings}
+                        setActivityBookings={props?.setActivityBookings}
+                        transferBookings={props?.transferBookings}
+                        setTransferBookings={props?.setTransferBookings}
+                        setItinerary={props?.setItinerary}
+                        itinerary={props?.itinerary}
+                        loadbookings={props?.loadbookings}
+                        payment={props.payment}
+                        stayBookings={stays}
+                        setStayBookings={props.setStayBookings}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        _updateStayBookingHandler={
+                          props._updateStayBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateFlightBookingHandler={
+                          props._updateFlightBookingHandler
+                        }
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        setShowBookingModal={(val) =>
+                          props.setShowStayBookingModal(val)
+                        }
+                        showBookingModal={props.showStayBookingModal}
+                        setHideBookingModal={props.setHideBookingModal}
+                        setShowLoginModal={setShowLoginModal}
+                        _GetInTouch={_GetInTouch}
+                        setShowCityDrawer={handleShowCityDrawer}
+                      />
+                    )
+                  : props?.itinerary && (
+                      <NewItenaryMain
+                        setShowLoginModal={setShowLoginModal}
+                        plan={props.plan}
+                        payment={props.payment}
+                        city_slabs={props?.breif?.city_slabs}
+                        itinerary={props?.itinerary}
+                        setItinerary={props.setItinerary}
+                        getPaymentHandler={props.getPaymentHandler}
+                        token={props.token}
+                        transferBookings={props.transferBookings}
+                        stayBookings={props.stayBookings}
+                        activityBookings={props.activityBookings}
+                        getAccommodationAndActivitiesHandler={
+                          props.getAccommodationAndActivitiesHandler
+                        }
+                        setShowBookingModal={() =>
+                          props.setShowBookingModal(true)
+                        }
+                        _GetInTouch={_GetInTouch}
+                      ></NewItenaryMain>
+                    )}
+              </div>
 
-            <div
-              id={"Booking"}
-              className={
-                activeTab === "Bookings" ? "block mb-[100px]" : "hidden"
-              }
-            >
-              {isGroup ? (
-                <div id={"Stays"}>
-                  <Register></Register>
-                </div>
-              ) : (
-                <div id={"Stays"}>
-                  {props.mercuryItinerary ? (
-                    <StaysContainer
-                      payment={props.payment}
-                      _setImagesHandler={_setImagesHandler}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      getPaymentHandler={props.getPaymentHandler}
-                      setShowBookingModal={(value) =>
-                        props.setShowBookingModal(value)
-                      }
-                      showBookingModal={props.showBookingModal}
-                      setHideBookingModal={props.setHideBookingModal}
-                      setShowLoginModal={setShowLoginModal}
-                      _GetInTouch={_GetInTouch}
-                      stayBookings={stays}
-                      setStayBookings={props.setStayBookings}
-                      CityData={CityData}
-                      cities={props?.cities}
-                      requireAuth={requireAuth}
-                    />
-                  ) : (
-                    <HotelsBooking
-                      setShowLoginModal={setShowLoginModal}
-                      plan={props.plan}
-                      hasUserPaid={
-                        props.payment
-                          ? props.payment.paid_user
-                            ? true
+              <div
+                id={"Booking"}
+                className={
+                  activeTab === "Bookings" ? "block mb-[100px]" : "hidden"
+                }
+              >
+                {isGroup ? (
+                  <div id={"Stays"}>
+                    <Register></Register>
+                  </div>
+                ) : (
+                  <div id={"Stays"}>
+                    {props.mercuryItinerary ? (
+                      <StaysContainer
+                        payment={props.payment}
+                        _setImagesHandler={_setImagesHandler}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        _updateStayBookingHandler={
+                          props._updateStayBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        getPaymentHandler={props.getPaymentHandler}
+                        setShowBookingModal={(value) =>
+                          props.setShowBookingModal(value)
+                        }
+                        showBookingModal={props.showBookingModal}
+                        setHideBookingModal={props.setHideBookingModal}
+                        setShowLoginModal={setShowLoginModal}
+                        _GetInTouch={_GetInTouch}
+                        stayBookings={stays}
+                        setStayBookings={props.setStayBookings}
+                        CityData={CityData}
+                        cities={props?.cities}
+                        requireAuth={requireAuth}
+                      />
+                    ) : (
+                      <HotelsBooking
+                        setShowLoginModal={setShowLoginModal}
+                        plan={props.plan}
+                        hasUserPaid={
+                          props.payment
+                            ? props.payment.paid_user
+                              ? true
+                              : false
                             : false
-                          : false
-                      }
-                      breif={props.breif}
-                      budget={props.budget}
-                      stayBookings={props.stayBookings}
-                      _updateBookingHandler={props._updateBookingHandler}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      _updatePaymentHandler={props._updatePaymentHandler}
-                      getPaymentHandler={props.getPaymentHandler}
-                      setShowBookingModal={() =>
-                        props.setShowBookingModal(true)
-                      }
-                      showBookingModal={props.showBookingModal}
-                      setHideBookingModal={props.setHideBookingModal}
-                      payment={props.payment}
-                      booking={props.booking}
-                      _GetInTouch={_GetInTouch}
-                      requireAuth={requireAuth}
-                    ></HotelsBooking>
-                  )}
-                </div>
-              )}
+                        }
+                        breif={props.breif}
+                        budget={props.budget}
+                        stayBookings={props.stayBookings}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        _updateStayBookingHandler={
+                          props._updateStayBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        getPaymentHandler={props.getPaymentHandler}
+                        setShowBookingModal={() =>
+                          props.setShowBookingModal(true)
+                        }
+                        showBookingModal={props.showBookingModal}
+                        setHideBookingModal={props.setHideBookingModal}
+                        payment={props.payment}
+                        booking={props.booking}
+                        _GetInTouch={_GetInTouch}
+                        requireAuth={requireAuth}
+                      ></HotelsBooking>
+                    )}
+                  </div>
+                )}
 
-              <div id={"Transfers"}>
-                {props.mercuryItinerary ? (
-                  <>
-                    <TransferBookings
-                      mercuryItinerary={props?.mercuryItinerary}
-                      loadbookings={props?.loadbookings}
+                <div id={"Transfers"}>
+                  {props.mercuryItinerary ? (
+                    <>
+                      <TransferBookings
+                        mercuryItinerary={props?.mercuryItinerary}
+                        loadbookings={props?.loadbookings}
+                        setShowLoginModal={setShowLoginModal}
+                        showTaxiModal={props.showTaxiModal}
+                        _updateFlightBookingHandler={
+                          props._updateFlightBookingHandler
+                        }
+                        setShowTaxiModal={props.setShowTaxiModal}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        showFlightModal={props.showFlightModal}
+                        setShowFlightModal={_handleFlighModalShow}
+                        setHideFlightModal={_handleFlightModalClose}
+                        setShowBookingModal={() =>
+                          props.setShowBookingModal(true)
+                        }
+                        setHideBookingModal={props.setHideBookingModal}
+                        payment={props.payment}
+                        fetchData={props.fetchData}
+                        _GetInTouch={_GetInTouch}
+                      />
+                    </>
+                  ) : (
+                    <TransfersContainer
                       setShowLoginModal={setShowLoginModal}
+                      plan={props.plan}
+                      dayslab={props?.itinerary?.day_slabs}
+                      breif={props?.breif}
                       showTaxiModal={props.showTaxiModal}
+                      routesData={RoutesData}
+                      transfers={TransfersData}
+                      routes={props.routes}
                       _updateFlightBookingHandler={
                         props._updateFlightBookingHandler
                       }
@@ -1033,75 +1146,19 @@ useEffect(() => {
                       }
                       setHideBookingModal={props.setHideBookingModal}
                       payment={props.payment}
+                      transferBookings={props.transferBookings}
+                      itinerary_id={props.itinerary_id}
                       fetchData={props.fetchData}
+                      CityData={CityData}
                       _GetInTouch={_GetInTouch}
                     />
-                  </>
-                ) : (
-                  <TransfersContainer
-                    setShowLoginModal={setShowLoginModal}
-                    plan={props.plan}
-                    dayslab={props?.itinerary?.day_slabs}
-                    breif={props?.breif}
-                    showTaxiModal={props.showTaxiModal}
-                    routesData={RoutesData}
-                    transfers={TransfersData}
-                    routes={props.routes}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    setShowTaxiModal={props.setShowTaxiModal}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    showFlightModal={props.showFlightModal}
-                    setShowFlightModal={_handleFlighModalShow}
-                    setHideFlightModal={_handleFlightModalClose}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    setHideBookingModal={props.setHideBookingModal}
-                    payment={props.payment}
-                    transferBookings={props.transferBookings}
-                    itinerary_id={props.itinerary_id}
-                    fetchData={props.fetchData}
-                    CityData={CityData}
-                    _GetInTouch={_GetInTouch}
-                  />
-                )}
-              </div>
-
-              {props?.mercuryItinerary ? (
-                <div id={"Activities"} className="w-full">
-                  <ActivityBookings
-                    mercuryItinerary={props?.mercuryItinerary}
-                    plan={props.plan}
-                    hasUserPaid={
-                      props.payment
-                        ? props.payment.paid_user
-                          ? true
-                          : false
-                        : false
-                    }
-                    budget={props.budget}
-                    stayBookings={props.stayBookings}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    flightBookings={props.flightBookings}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    activityBookings={props.activityBookings}
-                    payment={props.payment}
-                    booking={props.booking}
-                    setShowLoginModal={setShowLoginModal}
-                  />
+                  )}
                 </div>
-              ) : (
-                props.activityBookings && (
-                  <div id={"Activities"}>
-                    <OldActivityBookings
+
+                {props?.mercuryItinerary ? (
+                  <div id={"Activities"} className="w-full">
+                    <ActivityBookings
+                      mercuryItinerary={props?.mercuryItinerary}
                       plan={props.plan}
                       hasUserPaid={
                         props.payment
@@ -1127,12 +1184,45 @@ useEffect(() => {
                       activityBookings={props.activityBookings}
                       payment={props.payment}
                       booking={props.booking}
+                      setShowLoginModal={setShowLoginModal}
                     />
                   </div>
-                )
-              )}
+                ) : (
+                  props.activityBookings && (
+                    <div id={"Activities"}>
+                      <OldActivityBookings
+                        plan={props.plan}
+                        hasUserPaid={
+                          props.payment
+                            ? props.payment.paid_user
+                              ? true
+                              : false
+                            : false
+                        }
+                        budget={props.budget}
+                        stayBookings={props.stayBookings}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        _updateStayBookingHandler={
+                          props._updateStayBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        flightBookings={props.flightBookings}
+                        getPaymentHandler={props.getPaymentHandler}
+                        setShowBookingModal={() =>
+                          props.setShowBookingModal(true)
+                        }
+                        showBookingModal={props.showBookingModal}
+                        setHideBookingModal={props.setHideBookingModal}
+                        activityBookings={props.activityBookings}
+                        payment={props.payment}
+                        booking={props.booking}
+                      />
+                    </div>
+                  )
+                )}
+              </div>
             </div>
-          </div>
+          )}
           {!props?.mercuryItinerary ? (
             <div
               id="Booking_container"
@@ -1275,7 +1365,7 @@ useEffect(() => {
       <div
         className={
           isPageWide
-            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed w-[47vw]"
+            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed w-[51vw]"
             : "z-10  fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
         }
       >

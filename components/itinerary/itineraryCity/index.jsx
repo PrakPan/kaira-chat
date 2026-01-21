@@ -68,7 +68,7 @@ const ItineraryCity = (props) => {
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const { itinerary_status, hotels_status } = useSelector(
-    (state) => state.ItineraryStatus
+    (state) => state.ItineraryStatus,
   );
 
   // State for POI drawer data
@@ -81,15 +81,15 @@ const ItineraryCity = (props) => {
   const [taxiLoading, setTaxiLoading] = useState(false);
 
   const transferBookings = useSelector(
-    (state) => state.TransferBookings
+    (state) => state.TransferBookings,
   ).transferBookings;
 
   const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const dispatch = useDispatch();
-  const {id} = useSelector(state=>state.auth);
-  const {customer} = useSelector(state=>state.Itinerary)
+  const { id } = useSelector((state) => state.auth);
+  const { customer } = useSelector((state) => state.Itinerary);
 
   const [images, setImages] = useState(null);
 
@@ -107,14 +107,19 @@ const ItineraryCity = (props) => {
   } = router?.query;
 
   // Use cityHotels and totalDuration from props instead of calculating locally
-  const multiHotelStays = props.cityHotels || stay?.filter(hotel => {
-    return hotel?.itinerary_city_id === props?.itinerary_city_id;
-  });
+  const multiHotelStays =
+    props.cityHotels ||
+    stay?.filter((hotel) => {
+      return hotel?.itinerary_city_id === props?.itinerary_city_id;
+    });
 
-  const multiHotelDuration = props.totalDuration || multiHotelStays?.reduce(
-    (accumulator, currentValue) => accumulator + currentValue?.duration,
-    0,
-  ) || 0;
+  const multiHotelDuration =
+    props.totalDuration ||
+    multiHotelStays?.reduce(
+      (accumulator, currentValue) => accumulator + currentValue?.duration,
+      0,
+    ) ||
+    0;
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -138,11 +143,13 @@ const ItineraryCity = (props) => {
 
   // Update dayByDayIndex when poi_id changes
   useEffect(() => {
-    if (drawer === "showPoiDetail" && 
-        poi_id && 
-        dayByDay && 
-        dayByDay.length > 0 &&
-        String(itinerary_city_id) === String(props.city.id)) {
+    if (
+      drawer === "showPoiDetail" &&
+      poi_id &&
+      dayByDay &&
+      dayByDay.length > 0 &&
+      String(itinerary_city_id) === String(props.city.id)
+    ) {
       const foundIndex = dayByDay.findIndex((item) => {
         // For activities with bookings, match against booking.id
         if (item?.booking?.id) {
@@ -150,11 +157,11 @@ const ItineraryCity = (props) => {
         }
         // For POIs or activities without bookings, match against poi or activity id
         return (
-          String(item?.poi) === String(poi_id) || 
+          String(item?.poi) === String(poi_id) ||
           String(item?.activity) === String(poi_id)
         );
       });
-      
+
       if (foundIndex !== -1) {
         setDayByDayIndex(foundIndex);
       }
@@ -162,19 +169,20 @@ const ItineraryCity = (props) => {
   }, [drawer, poi_id, dayByDay, itinerary_city_id, props.city.id]);
 
   const fetchDetails = async (hotelId = null) => {
-    if(!token){
+    if (!token) {
       props?.setShowLoginModal(true);
       return;
     }
     // if(id != customer){
     //     dispatch(setCloneItineraryDrawer(true));
     //     return;
-    // } 
-    
+    // }
+
     setShowDetails(true);
     setLoading(true);
-    
-    const targetHotelId = hotelId || (stay?.[props?.index]?.id || multiHotelStays?.[0]?.id);
+
+    const targetHotelId =
+      hotelId || stay?.[props?.index]?.id || multiHotelStays?.[0]?.id;
 
     router.push(
       {
@@ -189,9 +197,9 @@ const ItineraryCity = (props) => {
       undefined,
       {
         scroll: false,
-      }
+      },
     );
-    
+
     setLoading(false);
   };
 
@@ -202,16 +210,15 @@ const ItineraryCity = (props) => {
       //   dispatch(setCloneItineraryDrawer(true));
       //   return;
       // }
-      const index = multiHotelStays.findIndex(h => h?.id === hotelId);
+      const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
       props?.handleClickAc(
-         index !== -1 ? index : props?.index,
+        index !== -1 ? index : props?.index,
         props?.city,
         props?.city?.city?.id,
         props?.city?.id,
-        clickType
+        clickType,
       );
-    }
-    else props?.setShowLoginModal(true);
+    } else props?.setShowLoginModal(true);
 
     logEvent({
       action: "Hotel_Add_Change",
@@ -233,7 +240,7 @@ const ItineraryCity = (props) => {
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false }
+      { scroll: false },
     );
   };
 
@@ -262,7 +269,7 @@ const ItineraryCity = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       if (response.status === 204) {
@@ -277,7 +284,7 @@ const ItineraryCity = (props) => {
             type: "success",
             text: `Taxi deleted successfully`,
             heading: "Success!",
-          })
+          }),
         );
       }
     } catch (err) {
@@ -290,7 +297,7 @@ const ItineraryCity = (props) => {
           type: "error",
           text: errorMsg,
           heading: "Error!",
-        })
+        }),
       );
       setTaxiLoading(false);
     }
@@ -308,12 +315,10 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 rounded-t-lg flex flex-col w-full border-color-light-grey bg-[#FFF5EF]"
+      className="border-1 rounded-t-lg flex flex-col w-full  bg-[#FFF5EF]"
     >
       <div className="flex items-start justify-between p-3 rounded-t-lg w-full border-1 border-[#FBEAC7]">
         <div className="space-y-1 font-inter w-full">
-          
-
           {hotels_status === "PENDING" ? (
             <div className="flex flex-col animate-pulse">
               <div className="flex flex-col gap-1 p-3">
@@ -328,21 +333,39 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : multiHotelStays && multiHotelStays.length > 0 && hotels_status === "SUCCESS" && multiHotelStays?.[0]?.id  ? (
+          ) : multiHotelStays &&
+            multiHotelStays.length > 0 &&
+            hotels_status === "SUCCESS" &&
+            multiHotelStays?.[0]?.id ? (
             <div className="flex justify-between">
-            
-            <div className={`md:text-[18px] font-semibold leading-0`}>
-            {props?.city?.city?.name}
-            {" - "}
-            {multiHotelDuration}{" "}
-            {multiHotelDuration > 1 ? "Nights" : "Night"}  {props?.city?.duration === 0 ? "(Transit City)" : ""}
-          </div>
-            
-            <div className="flex  py-1 px-2 justify-center items-center gap-1 shrink-0 bg-[#07213A] rounded-[4px]">
-              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
-  <path d="M7.08348 7.49969C6.83348 7.49969 6.66691 7.33312 6.66691 7.08312V3.91656L3.20848 7.375C3.04191 7.54156 2.79191 7.54156 2.62504 7.375C2.45816 7.20844 2.45848 6.95844 2.62504 6.79156L6.08348 3.33312H2.91691C2.66691 3.33312 2.50035 3.16656 2.50035 2.91656C2.50035 2.66656 2.66691 2.5 2.91691 2.5H7.08348C7.12504 2.5 7.20848 2.5 7.25004 2.54156C7.2916 2.54156 7.33348 2.58312 7.37504 2.625C7.4166 2.66687 7.45848 2.70844 7.45848 2.75C7.50004 2.79156 7.50004 2.875 7.50004 2.91656V7.08312C7.50004 7.33312 7.33348 7.49969 7.08348 7.49969Z" fill="white"/>
-</svg>
-            </div>
+              <div className={`md:text-[18px] font-semibold leading-0`}>
+                {props?.city?.city?.name}
+                {" - "}
+                {multiHotelDuration}{" "}
+                {multiHotelDuration > 1 ? "Nights" : "Night"}{" "}
+                {props?.city?.duration === 0 ? "(Transit City)" : ""}
+              </div>
+
+              <div
+                className="flex  py-1 px-2 justify-center items-center gap-1 shrink-0 bg-[#07213A] rounded-[4px] cursor-pointer"
+                onClick={() => {
+                  if (props?.setShowCityDrawer)
+                    props?.setShowCityDrawer(props?.city?.id);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                >
+                  <path
+                    d="M7.08348 7.49969C6.83348 7.49969 6.66691 7.33312 6.66691 7.08312V3.91656L3.20848 7.375C3.04191 7.54156 2.79191 7.54156 2.62504 7.375C2.45816 7.20844 2.45848 6.95844 2.62504 6.79156L6.08348 3.33312H2.91691C2.66691 3.33312 2.50035 3.16656 2.50035 2.91656C2.50035 2.66656 2.66691 2.5 2.91691 2.5H7.08348C7.12504 2.5 7.20848 2.5 7.25004 2.54156C7.2916 2.54156 7.33348 2.58312 7.37504 2.625C7.4166 2.66687 7.45848 2.70844 7.45848 2.75C7.50004 2.79156 7.50004 2.875 7.50004 2.91656V7.08312C7.50004 7.33312 7.33348 7.49969 7.08348 7.49969Z"
+                    fill="white"
+                  />
+                </svg>
+              </div>
             </div>
           ) : (
             <button
@@ -355,86 +378,103 @@ const ItineraryCity = (props) => {
             </button>
           )}
           <div className="flex flex-col gap-2">
-              {multiHotelStays?.map((hotel, hotelIndex) => {
-                return (
-                  <div key={hotel.id} className="flex flex-col gap-1">
-                      <div className="flex flex-row">
-                        { hotel?.name &&<><div className="flex gap-2 pr-[8px] ">
-                         {/* <Image
+            {multiHotelStays?.map((hotel, hotelIndex) => {
+              return (
+                <div key={hotel.id} className="flex flex-col gap-1">
+                  <div className="flex flex-row">
+                    {hotel?.name && (
+                      <>
+                        <div className="flex gap-2 pr-[8px] ">
+                          {/* <Image
                         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
                         height={22}
                         width={22}
                         className="object-contain"
                         alt="Hotel Icon"
                       /> */}
-                      
-                        <div
-                          className="text-[14px] font-400 leading-0  cursor-pointer"
-                          onClick={() => fetchDetails(hotel.id)}
-                        >
-                          {hotel?.name} 
+
+                          <div
+                            className="text-[14px] font-400 leading-0  cursor-pointer"
+                            onClick={() => fetchDetails(hotel.id)}
+                          >
+                            {hotel?.name}
+                          </div>
                         </div>
-                        </div>
-                        <div className="flex flex-row items-center border-l pl-[8px] ">
-                            <div className="text-[#000] text-[12px] ml-1 font-[500]">
+                        <div className="flex flex-row items-center pl-[8px] ">
+                          <div className="text-[#000] text-[12px] ml-1 mr-1 font-[500]">
                             {hotel?.rating && hotel?.rating !== 0
                               ? hotel?.rating
                               : null}{" "}
                           </div>
-                          {hotel?.rating && hotel?.rating !== 0
-                            ? <div className="flex items-center text-primary-stars">
-                                              <Image src="/star.svg" width={16} height={16} alt="star" />
-                              </div>
-                            : null}{" "}
-                        </div></>}
-                      </div>
+                          {hotel?.rating && hotel?.rating !== 0 ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                            >
+                              <g clip-path="url(#clip0_7525_2497)">
+                                <path
+                                  d="M9.944 6.4L8 0L6.056 6.4H0L4.944 9.928L3.064 16L8 12.248L12.944 16L11.064 9.928L16 6.4H9.944Z"
+                                  fill="#F7E700"
+                                />
+                              </g>
+                              <defs>
+                                <clipPath id="clip0_7525_2497">
+                                  <rect width="16" height="16" fill="white" />
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          ) : null}{" "}
+                        </div>
+                      </>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <button
           onClick={() => setViewMore((prev) => !prev)}
           className="flex items-center text-sm font-semibold"
-        >
-        </button>
+        ></button>
       </div>
 
-      {(
-        viewMore ? (
-          <>
-            <CityDaybyDay
-              mercuryItinerary={props?.mercuryItinerary}
-              city={props.city}
-              setItinerary={props?.setItinerary}
-              setShowLoginModal={props?.setShowLoginModal}
-              activityBookings={props?.activityBookings}
-              setActivityBookings={props?.setActivityBookings}
-              intracityBookings={props?.intracityBookings}
-              nextCity={props?.nextCity}
-            />
-          </>
-        ) : (
-          <CitySummary
+      {viewMore ? (
+        <>
+          <CityDaybyDay
+            mercuryItinerary={props?.mercuryItinerary}
             city={props.city}
-            setViewMore={setViewMore}
-            activityBookings={props?.activityBookings}
-            setActivityBookings={props?.setActivityBookings}
             setItinerary={props?.setItinerary}
             setShowLoginModal={props?.setShowLoginModal}
-            index={props?.index}
+            activityBookings={props?.activityBookings}
+            setActivityBookings={props?.setActivityBookings}
             intracityBookings={props?.intracityBookings}
-            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-            _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-            _updatePaymentHandler={props?._updatePaymentHandler}
-            getPaymentHandler={props?.getPaymentHandler}
             nextCity={props?.nextCity}
+            setShowCityDrawer={props?.setShowCityDrawer}
           />
-        )
+        </>
+      ) : (
+        <CitySummary
+          city={props.city}
+          setViewMore={setViewMore}
+          activityBookings={props?.activityBookings}
+          setActivityBookings={props?.setActivityBookings}
+          setItinerary={props?.setItinerary}
+          setShowLoginModal={props?.setShowLoginModal}
+          index={props?.index}
+          intracityBookings={props?.intracityBookings}
+          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+          _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+          _updatePaymentHandler={props?._updatePaymentHandler}
+          getPaymentHandler={props?.getPaymentHandler}
+          nextCity={props?.nextCity}
+        />
       )}
-      
+
       {/* <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
        <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
             <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
@@ -443,61 +483,65 @@ const ItineraryCity = (props) => {
       </div> */}
 
       {/* POI Details Drawer - Only render for matching city */}
-      {drawer === "showPoiDetail" && 
-       String(itinerary_city_id) === String(props.city.id) &&
-       dayByDay && 
-       dayByDay.length > 0 &&
-       dayByDay[dayByDayIndex] && (
-        <POIDetailsDrawer
-          itineraryDrawer
-          show={true}
-          handleCloseDrawer={handleCloseDrawer}
-          slabIndex={dayByDayIndex}
-          iconId={
-            dayByDay[dayByDayIndex]?.booking?.id ||
-            dayByDay[dayByDayIndex]?.poi || 
-            dayByDay[dayByDayIndex]?.activity
-          }
-          name={dayByDay[dayByDayIndex]?.heading}
-          image={dayByDay[dayByDayIndex]?.icon}
-          text={dayByDay[dayByDayIndex]?.text}
-          Topheading={"Select Our Point Of Interest"}
-          activityData={activityData}
-          showBookingDetail={true}
-          setShowLoginModal={props?.setShowLoginModal}
-          dayIndex={dayIndex}
-          itinerary_city_id={props.city.id}
-          cityID={props.city.city.id}
-          cityName={props.city.city.name}
-          removeDelete={false}
-        />
-      )}
+      {drawer === "showPoiDetail" &&
+        String(itinerary_city_id) === String(props.city.id) &&
+        dayByDay &&
+        dayByDay.length > 0 &&
+        dayByDay[dayByDayIndex] && (
+          <POIDetailsDrawer
+            itineraryDrawer
+            show={true}
+            handleCloseDrawer={handleCloseDrawer}
+            slabIndex={dayByDayIndex}
+            iconId={
+              dayByDay[dayByDayIndex]?.booking?.id ||
+              dayByDay[dayByDayIndex]?.poi ||
+              dayByDay[dayByDayIndex]?.activity
+            }
+            name={dayByDay[dayByDayIndex]?.heading}
+            image={dayByDay[dayByDayIndex]?.icon}
+            text={dayByDay[dayByDayIndex]?.text}
+            Topheading={"Select Our Point Of Interest"}
+            activityData={activityData}
+            showBookingDetail={true}
+            setShowLoginModal={props?.setShowLoginModal}
+            dayIndex={dayIndex}
+            itinerary_city_id={props.city.id}
+            cityID={props.city.city.id}
+            cityName={props.city.city.name}
+            removeDelete={false}
+          />
+        )}
 
       {/* Sightseeing/Taxi Drawer - Only render for matching city */}
-      {drawer === "SightSeeing" && 
-       String(itinerary_city_id) === String(props.city.id) &&
-       bookingId && (
-        <TransferDrawer
-          show={true}
-          setHandleShow={setHandleShowTaxi}
-          bookingData={taxiData}
-          booking_type={"Taxi"}
-          booking_id={bookingId}
-          loading={taxiLoading}
-          handleDelete={handleDeleteTaxi}
-          origin_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          destination_itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
-          setShowDrawer={setHandleShowTaxi}
-          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-          _updatePaymentHandler={props?._updatePaymentHandler}
-          getPaymentHandler={props?.getPaymentHandler}
-          setShowLoginModal={props?.setShowLoginModal}
-          setError={props?.setError}
-          isIntracity={true}
-          isSightseeing={true}
-        />
-      )}
+      {drawer === "SightSeeing" &&
+        String(itinerary_city_id) === String(props.city.id) &&
+        bookingId && (
+          <TransferDrawer
+            show={true}
+            setHandleShow={setHandleShowTaxi}
+            bookingData={taxiData}
+            booking_type={"Taxi"}
+            booking_id={bookingId}
+            loading={taxiLoading}
+            handleDelete={handleDeleteTaxi}
+            origin_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              props?.city?.id || props?.city?.gmaps_place_id
+            }
+            itinerary_city_id={props?.city?.id || props?.city?.gmaps_place_id}
+            setShowDrawer={setHandleShowTaxi}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
+            setShowLoginModal={props?.setShowLoginModal}
+            setError={props?.setError}
+            isIntracity={true}
+            isSightseeing={true}
+          />
+        )}
     </div>
   );
 };

@@ -6,14 +6,14 @@ const CityDaybyDay = (props) => {
       {/* Table Card */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {/* Table Header */}
-        <div className="flex border-b border-[#E8E8E8]">
+        {/* <div className="flex border-b border-[#E8E8E8]">
           <div className="w-24 px-2 py-1 bg-[#F8F8F8] border-r border-[#E8E8E8]">
             <span className="text-[10px] font-medium">DAYS</span>
           </div>
           <div className="flex-1 px-2 py-1  bg-[#F8F8F8]">
             <span className="text-[10px] font-medium ">ACTIVITIES</span>
           </div>
-        </div>
+        </div> */}
 
         {/* Table Body - Days */}
         {props.city?.day_by_day.map((day, index) => (
@@ -22,6 +22,7 @@ const CityDaybyDay = (props) => {
             key={day.slab_id}
             index={index}
             day={day}
+            cityId={props.city.city.id}
             city={props.city.city}
             setItinerary={props?.setItinerary}
             itinerary_city_id={props?.city?.id}
@@ -34,6 +35,8 @@ const CityDaybyDay = (props) => {
             getPaymentHandler={props?.getPaymentHandler}
             nextCity={props?.nextCity}
             isLastDay={index === props.city?.day_by_day.length - 1}
+            setShowCityDrawer={props?.setShowCityDrawer}
+            isInDrawer={true}
           />
         ))}
 

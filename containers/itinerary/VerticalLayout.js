@@ -226,7 +226,7 @@ const AirportBookingItem = ({
       supportsTransfers(bookingMode)
     ) {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center text-sm gap-1">
           <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
         </div>
       );
