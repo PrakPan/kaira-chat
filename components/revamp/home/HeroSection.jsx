@@ -63,7 +63,7 @@ const HeroSection = ({ title, subtitle }) => {
       <HeadingContent title={title} subtitle={subtitle} />
 
       <div ref={containerRef} className={styles.backgroundWrapper}>
-        {heroImages.map((image, index) => (
+        {/* {heroImages.map((image, index) => (
           <div
             key={index}
             ref={(el) => (imageRefs.current[index] = el)}
@@ -79,7 +79,7 @@ const HeroSection = ({ title, subtitle }) => {
               loading={index === 0 ? "eager" : "lazy"}
             />
           </div>
-        ))}
+        ))} */}
       </div>
     </section>
   );
