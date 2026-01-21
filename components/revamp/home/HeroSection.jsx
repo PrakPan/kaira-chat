@@ -1,22 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { heroImages } from "../assets";
 import {
-  ANIMATION_CONFIG,
-  createEntranceAnimation,
   createFloatingSequence,
   gsap,
-  useGSAP,
 } from "../common/gsapConfig";
 import HeadingContent from "./HeadingContent";
+import bg from "../assets/bg.png";
 import styles from "./HeroSection.module.scss";
 
-const HeroSection = ({ title, subtitle }) => {
+export default function HeroSection({ title, subtitle }) {
   const imageRefs = useRef([]);
   const containerRef = useRef(null);
-  const sectionRef = useRef(null);
   const [loadedImages, setLoadedImages] = useState(0);
   const [animationStarted, setAnimationStarted] = useState(false);
 
@@ -26,22 +23,19 @@ const HeroSection = ({ title, subtitle }) => {
 
   const allImagesLoaded = loadedImages >= heroImages.length;
 
-  useGSAP(
-    () => {
-      if (!allImagesLoaded || animationStarted) return;
+  // Start GSAP only after first paint + images loaded
+  useEffect(() => {
+    if (!allImagesLoaded || animationStarted) return;
 
-      // IMPORTANT:
-      // Images are visible on first paint → LCP-safe
+    requestAnimationFrame(() => {
       gsap.set(imageRefs.current, {
         y: 0,
         opacity: 1,
         willChange: "transform",
-        transformOrigin: "center bottom",
       });
 
       const tl = gsap.timeline();
 
-      // Animate transform only (no opacity)
       tl.from(imageRefs.current, {
         y: 80,
         stagger: 0.15,
@@ -49,21 +43,29 @@ const HeroSection = ({ title, subtitle }) => {
         duration: 1,
       });
 
-      // Floating animation (unchanged)
       createFloatingSequence(tl, imageRefs.current);
-
       tl.repeat(-1);
       setAnimationStarted(true);
-    },
-    { scope: containerRef, dependencies: [allImagesLoaded, animationStarted] }
-  );
+    });
+  }, [allImagesLoaded, animationStarted]);
 
   return (
-    <section ref={sectionRef} className={styles.heroSection}>
+    <section className={styles.heroSection}>
+      {/* Background — LCP safe */}
+      <Image
+        src={bg}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className={styles.bgImage}
+      />
+
+      {/* Text renders immediately */}
       <HeadingContent title={title} subtitle={subtitle} />
 
       <div ref={containerRef} className={styles.backgroundWrapper}>
-        {/* {heroImages.map((image, index) => (
+        {heroImages.map((image, index) => (
           <div
             key={index}
             ref={(el) => (imageRefs.current[index] = el)}
@@ -71,18 +73,16 @@ const HeroSection = ({ title, subtitle }) => {
           >
             <Image
               src={image}
-              alt={`Hero Image ${index + 1}`}
+              alt=""
               onLoad={handleImageLoad}
               sizes="(max-width: 768px) 90vw, 600px"
               priority={index === 0}
-              fetchPriority={"high"}
+              fetchPriority={index === 0 ? "high" : "auto"}
               loading={index === 0 ? "eager" : "lazy"}
             />
           </div>
-        ))} */}
+        ))}
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}
