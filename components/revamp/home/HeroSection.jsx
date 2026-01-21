@@ -8,7 +8,7 @@ import {
   gsap,
 } from "../common/gsapConfig";
 import HeadingContent from "./HeadingContent";
-import bg from "../assets/bg.png";
+import bg from "../assets/bg.webp";
 import styles from "./HeroSection.module.scss";
 
 export default function HeroSection({ title, subtitle }) {
