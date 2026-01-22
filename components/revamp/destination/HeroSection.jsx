@@ -12,6 +12,8 @@ import {
 import HeadingContent from "./HeadingContent";
 import styles from "./HeroSection.module.scss";
 import TrustFactors from "./TrustFactors";
+import media from "../../media";
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 
 const HeroSection = ({ title, subtitle, image, slug=null,setShowTailoredModal}) => {
   const imageRefs = useRef([]);
@@ -19,6 +21,7 @@ const HeroSection = ({ title, subtitle, image, slug=null,setShowTailoredModal}) 
   const sectionRef = useRef(null);
   const [loadedImages, setLoadedImages] = useState(0);
   const [animationStarted, setAnimationStarted] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
 
 
   // Use prop image if provided (single or array), otherwise use default heroImages
@@ -114,12 +117,12 @@ useGSAP(
             className={styles.imageContainer}
           >
             <Image
-              src={img}
+              src={slug == 'AI-generic' ?  isPageWide ? img : `${imgUrlEndPoint}/media/website/mob-2.png` :img}
               alt={`Hero image ${index + 1}`}
               onLoad={handleImageLoad}
               fill
               priority={index === 0}
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'cover'}}
             />
           </div>
         ))}
