@@ -4,7 +4,7 @@ import { TravelVibeCard } from "../common/components/card";
 import { useRouter } from "next/router";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 
-const TravelVibeSection = () => {
+const TravelVibeSection = (props) => {
   // Sample travel vibe data - replace with your actual data
   const router = useRouter();
   const travelVibes = [
@@ -32,18 +32,17 @@ const TravelVibeSection = () => {
       id: 3,
       title: "Perfect Proposals",
       description: "SAY YES SPOTS",
-      image: `${imgUrlEndPoint}/media/page/174120792530050110816955566406/.png`, // Replace with actual proposal image
+      image: `${imgUrlEndPoint}/media/page/174120792530050110816955566406/.png`, 
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/perfect-proposals-2025"
+      link:"theme/perfect-proposals-2026"
     },
     {
       id: 4,
       title: "Japan In Autumn",
       description: "GOLDEN GATEWAYS",
-      image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`, // Replace with actual Japan autumn image
-      tags: [],
+      image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`,
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link:"theme/japan-cherry-blossom"
@@ -59,6 +58,13 @@ const TravelVibeSection = () => {
       link:"theme/europe-under-1-lakh-2025"
     },
   ];
+
+  const getLink = (link) => {
+  if (props?.isTheme) {
+    return link.replace(/^theme\//, "");
+  }
+  return link;
+};
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
@@ -89,9 +95,7 @@ const TravelVibeSection = () => {
               tags={travelVibes[0].tags}
               gradientOverlay={travelVibes[0].gradientOverlay}
               height="376px"
-              onClick={() => {
-                router.push(travelVibes[0].link);
-              }}
+              onClick={() => router.push(getLink(travelVibes[0].link))}
             />
           </div>
 
@@ -104,9 +108,7 @@ const TravelVibeSection = () => {
               tags={travelVibes[1].tags}
               gradientOverlay={travelVibes[1].gradientOverlay}
               height="376px"
-              onClick={() => {
-                router.push(travelVibes[1].link);
-              }}
+              onClick={() => router.push(getLink(travelVibes[1].link))}
             />
           </div>
 
@@ -120,9 +122,7 @@ const TravelVibeSection = () => {
               tags={travelVibes[2].tags}
               gradientOverlay={travelVibes[2].gradientOverlay}
               height="376px"
-              onClick={() => {
-                router.push(travelVibes[2].link);
-              }}
+              onClick={() => router.push(getLink(travelVibes[2].link))}
             />
           </div>
 
@@ -135,9 +135,7 @@ const TravelVibeSection = () => {
               tags={travelVibes[3].tags}
               gradientOverlay={travelVibes[3].gradientOverlay}
               height="376px"
-              onClick={() => {
-                router.push(travelVibes[3].link);
-              }}
+              onClick={() => router.push(getLink(travelVibes[3].link))}
             />
           </div>
 
@@ -150,9 +148,7 @@ const TravelVibeSection = () => {
               tags={travelVibes[4].tags}
               gradientOverlay={travelVibes[4].gradientOverlay}
               height="376px"
-              onClick={() => {
-                router.push(travelVibes[4].link);
-              }}
+              onClick={() => router.push(getLink(travelVibes[4].link))}
             />
           </div>
         </div>
