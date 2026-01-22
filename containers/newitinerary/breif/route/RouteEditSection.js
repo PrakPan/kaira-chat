@@ -224,13 +224,13 @@ const RouteEditSection = (props) => {
   const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
-  const [activeRouteTab, setActiveRouteTab] = useState("Trip Routes");
+  const [activeRouteTab, setActiveRouteTab] = useState("Route");
   const {
       trackSectionViewed,
     } = useAnalytics();
 
   const items = [
-  { id: 1, label: "Trip Routes", link: "Route" },
+  { id: 1, label: "Route", link: "Route" },
   { id: 2, label: "Itinerary", link: "Itenary" },
   { id: 3, label: "Bookings", link: "Booking" },
 ];
