@@ -297,7 +297,7 @@ const SimpleTabsV2 = (props) => {
   useEffect(() => {
     const { drawer } = router.query;
     if (drawer === "handleEditRoute") {
-      setActiveTab("Trip Routes");
+      setActiveTab("Route");
     }
     // Don't automatically set to Itinerary when drawer is removed
   }, [router.query.drawer]);
@@ -308,7 +308,7 @@ const SimpleTabsV2 = (props) => {
   };
 
   const items = [
-    { id: 1, label: "Trip Routes", link: "Route" },
+    { id: 1, label: "Route", link: "Route" },
     { id: 2, label: "Itinerary", link: "Itenary" },
     { id: 3, label: "Bookings", link: "Booking" },
   ];
@@ -942,7 +942,7 @@ const SimpleTabsV2 = (props) => {
                 items={items}
                 BarName="TabsName"
                 ClickHandler={(label) => {
-                  if (label == "Trip Routes") {
+                  if (label == "Route") {
                     router.push({
                       pathname: `/itinerary/${router.query.id}`,
                       query: {

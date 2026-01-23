@@ -13,6 +13,22 @@ import Image from "next/image";
 import ActivityAddDrawer from "../drawers/poiDetails/activityAddDrawer";
 import setItinerary from "../../store/actions/itinerary";
 import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer";
+import styled from 'styled-components';
+
+
+const Container = styled.div`
+  min-width: 100%;
+  width: fit-content;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  background-color: white !important;
+  border-bottom: 1px solid #e5e3de;
+  box-sizing: border-box;
+`;
 
 const CityDrawerView = ({
   show,
@@ -246,6 +262,7 @@ export const ItineraryCityWithDrawer = (props) => {
 
   return (
     <div className="flex flex-col w-full h-full bg-white pb-[120px] md:pb-[50px]">
+      <Container>
       {/* Back Button */}
       <div className="md:px-4 py-2  bg-white">
         <button
@@ -264,6 +281,7 @@ export const ItineraryCityWithDrawer = (props) => {
           <span className="text-base font-medium">Back</span>
         </button>
       </div>
+      </Container>
 
       {/* City Header */}
       <div className="md:px-6 py-4  bg-white">

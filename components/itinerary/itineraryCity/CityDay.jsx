@@ -14,6 +14,7 @@ import { getHumanDateWithYearv2 } from "../../../services/getHumanDateV2";
 import { getDate } from "../../../helper/ConvertDateFormat";
 import { IoBagCheckOutline } from "react-icons/io5";
 
+
 const SectionHeading = styled.div`
   font-weight: 500;
   font-size: 14px;
@@ -413,7 +414,7 @@ const CityDay = (props) => {
             <div className="flex items-center gap-2">
               <MdOutlineDownhillSkiing
                 size={16}
-                className="md:w-[18px] md:h-[18px] flex-shrink-0 text-black"
+                className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]"
               />
               <span className="text-xs md:text-sm">No activity is added.</span>
             </div>
