@@ -318,8 +318,8 @@ export const DragDrop = (props) => {
                                 if (index !== 0 && index !== destinations.length - 1) {
                                     return (
                                         <Draggable
-                                            key={item.cityData.city_id || index}
-                                            draggableId={String(item.cityData.city_id || index)}
+                                            key={item.cityData.city_id+index}
+                                            draggableId={String(item.cityData.city_id+index)}
                                             index={index}
                                         >
                                             {(provided, snapshot) => (
