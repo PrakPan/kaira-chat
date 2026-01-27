@@ -12,6 +12,27 @@ import {
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import Button from "../common/components/button";
 import Link from "next/link";
+
+const getImageUrl = (key, width, height) => {
+  let payload = {
+    bucket: "thetarzanway-web",
+    key,
+    edits: {
+      resize: {
+        width,
+        fit: "cover",
+      },
+    },
+  };
+  if (height) {
+    payload.edits.resize['height'] = height
+  }
+
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+};
+const getSrcSet = (src) =>
+  [360, 400, 800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+
 const PlacesBragSection = () => {
   // Sample destination data - replace with your actual data
   const destinations = [
@@ -31,7 +52,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/thailand",
-      image: `${imgUrlEndPoint}/media/website/thailand.jpg`,
+      image: `media/website/thailand.jpg`,
     },
     {
       id: 2,
@@ -47,7 +68,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/vietnam",
-      image: `${imgUrlEndPoint}/media/countries/175871326394452381134033203125.png`,
+      image: `media/countries/175871326394452381134033203125.png`,
     },
     {
       id: 3,
@@ -68,7 +89,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/malaysia",
-      image: `${imgUrlEndPoint}/media/website/Malaysia.jpg`,
+      image: `media/website/Malaysia.jpg`,
     },
     {
       id: 4,
@@ -89,7 +110,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
-      image :`${imgUrlEndPoint}/media/website/compressedImage%20(8).jpeg`
+      image: `media/website/compressedImage%20(8).jpeg`
     },
     {
       id: 5,
@@ -100,7 +121,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/singapore",
-      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
+      image: `media/cities/170359716563205981254577636719.jpg`,
     },
     {
       id: 6,
@@ -120,7 +141,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/indonesia/bali",
-      image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
+      image: `media/states/168449479198298645019531250000.jpeg`,
     },
   ];
 
@@ -188,6 +209,9 @@ const PlacesBragSection = () => {
                     title={destination.title}
                     description={destination.description}
                     image={destination.image}
+                    imageSrcSet={getSrcSet(destination.image)}
+                    imageSizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 33vw"
+                    imageFallback={getImageUrl(destination.image, 410, 376)}
                     tags={destination.tags}
                     link={destination.link}
                     gradientOverlay={destination.gradientOverlay}

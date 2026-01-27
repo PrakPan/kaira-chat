@@ -26,10 +26,10 @@ const getImageUrl = (key, width, height) => {
     payload.edits.resize['height'] = height
   }
 
-  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`; 
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
 };
 const getSrcSet = (src) =>
-  [400, 800, 1200].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+  [360,400,800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
 
 const LuxuryEuropeDestinations = () => {
   const destinations = [
@@ -176,7 +176,7 @@ const LuxuryEuropeDestinations = () => {
             {destinations.map((destination) => (
               <SwiperSlide key={destination.id}>
                 <DestinationCard
-                  placesBragSection
+                  placesBragSection={true}
                   title={destination.title}
                   description={destination.description}
                   image={destination.image}

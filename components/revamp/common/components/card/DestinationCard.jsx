@@ -44,8 +44,8 @@ const DestinationCard = ({
       {/* dummy load  */}
       <Image
         src={imageFallback || imgSrc || image}
-        srcSet={imageSrcSet}        // NEW
-        sizes={imageSizes}          // NEW
+        srcSet={imageSrcSet}        
+        sizes={imageSizes}         
         fill
         alt={title}
         className="object-cover"
@@ -54,6 +54,7 @@ const DestinationCard = ({
         loading="lazy"
         fetchPriority="low"
         style={{ opacity: 0 }}
+        quality={0}
       />
 
 
@@ -117,7 +118,19 @@ const DestinationCard = ({
           {...props}
         >
           <div className="absolute inset-0">
-            <Image
+            <picture>
+              <source
+                srcSet={imageSrcSet}
+                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 33vw"
+              />
+              <img
+                src={ imgSrc || image} 
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+            </picture>
+            {/* <Image
               src={imageFallback || imgSrc || image}
               srcSet={imageSrcSet}        // NEW
               alt={title}
@@ -127,7 +140,7 @@ const DestinationCard = ({
               onLoad={() => setImgLoaded(true)}
               onLoadingComplete={() => setImgLoaded(true)}
               fetchPriority="low"
-            />
+            /> */}
 
 
             {showImageText && (
