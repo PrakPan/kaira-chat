@@ -63,7 +63,7 @@ export default function HeroSection({ title, subtitle }) {
 
       {/* Text renders immediately */}
       <HeadingContent title={title} subtitle={subtitle} />
-
+{/* 
       <div ref={containerRef} className={styles.backgroundWrapper}>
         {heroImages.map((image, index) => (
           <div
@@ -82,7 +82,7 @@ export default function HeroSection({ title, subtitle }) {
             />
           </div>
         ))}
-      </div>
+      </div> */}
     </section>
   );
 }
