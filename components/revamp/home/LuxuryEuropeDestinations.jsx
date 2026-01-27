@@ -26,7 +26,7 @@ const getImageUrl = (key, width, height) => {
     payload.edits.resize['height'] = height
   }
 
-  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`; 
 };
 const getSrcSet = (src) =>
   [400, 800, 1200].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
