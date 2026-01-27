@@ -184,6 +184,8 @@ const handleMoveElementCommonly = async (
 ) => {
   const token = localStorage.getItem("access_token");
 
+  console.log("Moving element:", dayIndex, slabIndex, "to position:", position);
+
   if (!token) {
     if (setShowLoginModal) {
       setShowLoginModal(true);
@@ -287,7 +289,7 @@ export const ItineraryCityWithDrawer = (props) => {
       <div className="md:px-6 py-4  bg-white">
         <h2 className="text-[20px] font-medium mb-3">
           {props.city?.city?.name} - {props.city?.duration}{" "}
-          {props.city?.duration === 1 ? "Day" : "Days"}, {props.city?.duration}{" "}
+          {/* {props.city?.duration === 1 ? "Day" : "Days"}, {props.city?.duration}{" "} */}
           {props.city?.duration === 1 ? "Night" : "Nights"}
         </h2>
 
@@ -575,12 +577,13 @@ const ActivityCardExpanded = ({
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMoveElement = async (position) => {
+  const handleMoveElement = async (position) => { 
+    console.log("Moving element to position:", position);
     await handleMoveElementCommonly(
       dispatch,
       itinerary,
       router,
-      itinerary_city_id,
+      itinerary_city_id || props?.city.id,
       dayIndex,
       slabIndex,
       position,
@@ -655,7 +658,7 @@ const ActivityCardExpanded = ({
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
           {
             data: {
-              itinerary_city_id: itinerary_city_id,
+              itinerary_city_id: itinerary_city_id || props?.city.id,
               day_by_day_index: dayIndex,
               poi_index: slabIndex,
             },
@@ -684,7 +687,7 @@ const ActivityCardExpanded = ({
         if (element?.poi != null) {
           // For POI deletion - remove from day_by_day
           const itineraryCities = newItinerary.cities.map((city) => {
-            if (city.id === itinerary_city_id) {
+            if (city.id === (itinerary_city_id || props?.city.id)) {
               const updatedCity = { ...city };
               updatedCity.day_by_day = [...city.day_by_day];
               updatedCity.day_by_day[dayIndex] = {
