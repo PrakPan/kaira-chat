@@ -219,7 +219,6 @@ const Carousel3D = () => {
           {baseImages.map((item, index) => (
             <SwiperSlide key={index}>
               <div className="relative w-[352px] h-[416px] rounded-[16px] overflow-hidden group cursor-pointer">
-                {/* 🔥 ONLY THIS IMG TAG CHANGED */}
                 <img
                   src={getImageUrl(item.image, 360, 416)}
                   srcSet={getSrcSet(item.image, 416)}
