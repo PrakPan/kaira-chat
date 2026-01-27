@@ -52,14 +52,14 @@ export default function HeroSection({ title, subtitle }) {
   return (
     <section className={styles.heroSection}>
       {/* Background — LCP safe */}
-      <Image
+      {/* <Image
         src={bg}
         alt=""
         fill
         priority
         sizes="100vw"
         className={styles.bgImage}
-      />
+      /> */}
 
       {/* Text renders immediately */}
       <HeadingContent title={title} subtitle={subtitle} />
