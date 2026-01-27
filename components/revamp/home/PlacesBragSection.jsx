@@ -31,7 +31,7 @@ const getImageUrl = (key, width, height) => {
   return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
 };
 const getSrcSet = (src) =>
-  [360, 400, 800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+  [360, 400, 600, 800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
 
 const PlacesBragSection = () => {
   // Sample destination data - replace with your actual data
