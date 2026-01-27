@@ -77,6 +77,7 @@ export default function HeroSection({ title, subtitle }) {
               onLoad={handleImageLoad}
               sizes="(max-width: 768px) 90vw, 600px"
               priority={index === 0}
+              fetchPriority={index === 0 ? "high" : "auto"}
               loading={index === 0 ? "eager" : "lazy"}
             />
           </div>
