@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import HeroSection from "../components/revamp/home/HeroSection";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
-import PlacesBragSection from "../components/revamp/home/PlacesBragSection";
 import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
@@ -28,7 +27,7 @@ import axioslocationsinstance from "../services/search/search";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 import FaqSection from "../components/revamp/home/FaqSection";
-import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
+
 
 
 /* ---------------- Lazy-loaded below-the-fold sections ---------------- */
@@ -37,6 +36,8 @@ const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGa
 const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"));
 const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"));
 const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"));
+const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"));
+const LuxuryEuropeDestinations = dynamic(() => import("../components/revamp/home/LuxuryEuropeDestinations"));
 
 /* -------------------------------------------------------------------- */
 
