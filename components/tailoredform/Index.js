@@ -487,11 +487,31 @@ const Enquiry = (props) => {
       }
 
       setIsRouteChanged(false);
+
+      //will be removed later
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const currentSlideIndex = Number(router.query.slideIndex) || 0;
+      const nextSlideIndex = currentSlideIndex + 1;
+
+      router.push(
+        {
+          // pathname: "/new-trip",
+          query: {
+            ...router.query,
+            slideIndex: nextSlideIndex,
+          },
+        },
+        undefined,
+        { shallow: true }
+      );
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.message);
       setIsLoading(false);
       setLoadingItineraryId(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -730,29 +750,29 @@ const Enquiry = (props) => {
     setLoadingItineraryId(null);
   };
 
-  if (isLoading  && slideIndex === 0) {
-  return (
-    <div className="container">
-      <div className="py-2xl">
-        <div className="text-md-lg font-600 leading-xl-sm mb-md">
-          Plan Your Trip
-        </div>
-        <StepsProgress
-          slideIndex={slideIndex}
-          totalSlides={totalSlides}
-          steps={steps}
-        />
-      </div>
+//   if (isLoading  && slideIndex === 0) {
+//   return (
+//     <div className="container">
+//       <div className="py-2xl">
+//         <div className="text-md-lg font-600 leading-xl-sm mb-md">
+//           Plan Your Trip
+//         </div>
+//         <StepsProgress
+//           slideIndex={slideIndex}
+//           totalSlides={totalSlides}
+//           steps={steps}
+//         />
+//       </div>
       
-      <RoutePreparationLoader
-        itineraryId={loadingItineraryId}
-        onComplete={handleLoadingComplete}
-        onError={handleLoadingError}
-        handleCompletion={handleLoadingComplete}
-      />
-    </div>
-  );
-}
+//       <RoutePreparationLoader
+//         itineraryId={loadingItineraryId}
+//         onComplete={handleLoadingComplete}
+//         onError={handleLoadingError}
+//         handleCompletion={handleLoadingComplete}
+//       />
+//     </div>
+//   );
+// }
 
   return (
     <>
