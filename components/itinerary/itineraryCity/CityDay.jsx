@@ -145,6 +145,30 @@ const CityDay = (props) => {
       };
     }
   );
+
+  const formatDateLabel = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleDateString("en-US", { month: "short" });
+
+    // Add ordinal suffix (st, nd, rd, th)
+    const getOrdinalSuffix = (day) => {
+      if (day > 3 && day < 21) return "th";
+      switch (day % 10) {
+        case 1:
+          return "st";
+        case 2:
+          return "nd";
+        case 3:
+          return "rd";
+        default:
+          return "th";
+      }
+    };
+
+    return `${day}${getOrdinalSuffix(day)} ${month}`;
+  };
+
   return (
     <div
       id="cityday"
@@ -160,7 +184,6 @@ const CityDay = (props) => {
           onClick={() => setViewMore((prev) => !prev)}
         >
           <div className="text-[14px] font-medium text-[#333333]">
-            {isPageWide ? `Day ${props.index + 1} | ` : ""}
             <span>
               {getHumanDateWithYearv2(props?.day?.date)}
               {props?.day?.day_summary ? " - " + props?.day?.day_summary : null}

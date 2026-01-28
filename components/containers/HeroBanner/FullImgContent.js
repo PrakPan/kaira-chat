@@ -2,11 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import Button from "../../ui/button/Index";
 import media from "../../media";
-import TailoredForm from "../../tailoredform/Index";
+import TailoredForm from "../../tailoredform/OldForm";
 import ImageLoader from "../../ImageLoader";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
-import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import TailoredFomrMobileModal from "../../modals/OldFormTailoredFomrMobile";
 import { useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import H1 from "../../heading/H1";
@@ -67,27 +67,25 @@ const FullImgContent = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
-    // if (isPageWide) {
-    //   setShowTailoredModal(true);
-    // } else {
-    //   openTailoredModal(router, props.page_id, props.destination,props.type);
-    // }
+    
+      openTailoredModal(router, props.page_id, props.destination,props.type);
+    
     // router.push({
     //     pathname: "/new-trip",
     //     query: { 
     //       ...router.query,
     //       source: props?.destination || 'home' }
     // });
-    setShowTailoredModal(true);
-    logEvent({
-      action: "Plan_Itinerary",
-      params: {
-        page: props.page ? props.page : "",
-        event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
-        event_action: "Banner",
-      },
-    });
+    // setShowTailoredModal(true);
+    // logEvent({
+    //   action: "Plan_Itinerary",
+    //   params: {
+    //     page: props.page ? props.page : "",
+    //     event_category: "Button Click",
+    //     event_label: "Plan Itinerary For Free!",
+    //     event_action: "Banner",
+    //   },
+    // });
   };
 
   return (
@@ -220,7 +218,7 @@ const FullImgContent = (props) => {
         </div>
       </IconsContainer>
 
-      <TailoredFormMobileModal
+      <TailoredFomrMobileModal
         destinationType={"city-planner"}
         page_id={props?.slug == 'europe-continent' ? 15 : props.page_id}
         type={props?.type}

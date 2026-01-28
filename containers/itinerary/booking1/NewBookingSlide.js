@@ -1047,7 +1047,7 @@ const ItineraryInclusions = ({
                         )}
 
                         {/* Show individual booking cost */}
-                        {
+                        {/* {
                           !arePricesHidden &&
                           booking.booking_cost > 0 && (
                             <div className="flex items-center gap-1">
@@ -1059,7 +1059,7 @@ const ItineraryInclusions = ({
                               </span>
                             </div>
                           )
-                        }
+                        } */}
                       </div>
                     </div>
 

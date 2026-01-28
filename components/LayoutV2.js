@@ -4,7 +4,7 @@ import Footer from "./newfooter/Index";
 import LoginModal from "../components/modals/Login";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
-import TailoredFormMobileModal from "./modals/TailoredFomrMobile";
+import TailoredFormMobileModal from "./modals/OldFormTailoredFomrMobile";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { closeTailoredModal } from "../services/openTailoredModalV2";

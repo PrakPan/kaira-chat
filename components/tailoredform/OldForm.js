@@ -1,0 +1,723 @@
+import React, { useState, useEffect } from "react";
+import styled, { keyframes } from "styled-components";
+import Button from "../ui/button/Index";
+import { format } from "date-fns";
+import media from "../media";
+import axiostailoredinstance from "../../services/leads/tailored";
+import { itineraryInitiate, itineraryComplete } from "../../services/leads/tailored";
+import LoadingLottie from "../ui/LoadingLottie";
+import { useRouter } from "next/router";
+import { connect } from "react-redux";
+import { BiArrowBack } from "react-icons/bi";
+import Flickity from "./OldFormFlickity";
+import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
+import { fadeIn } from "react-animations";
+import Popup from "../ErrorPopup";
+import { RxCross2 } from "react-icons/rx";
+import usePageLoaded from "../custom hooks/usePageLoaded";
+import { logEvent } from "../../services/ga/Index";
+
+const fadeInAnimation = keyframes`${fadeIn}`;
+
+const Container = styled.div`
+  height: max-content;
+  color: black;
+  z-index: ${(props) => (props.showBlack ? "1006" : "2")};
+  position: relative;
+  background-color: ${(props) =>
+    props.slideIndex || props.tailoredFormModal
+      ? "white"
+      : "rgba(255,255,255,0.9)"};
+  width: 100%;
+  border: none !important;
+  border-radius: ${(props) =>
+    props.tailoredFormModal ? "12px !important" : "8px !important"};
+  @media screen and (min-width: 768px) {
+    ${(props) => props.tailoredFormModal && "height : 100%"};
+    margin: auto 0;
+
+    min-height: 400px;
+  }
+`;
+
+const CloseIcon = styled.div`
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+  border-bottom: 1px solid #0000004a;
+  padding-block: 1rem;
+`;
+
+const Heading = styled.p`
+  font-size: 1.35rem;
+  margin: 0.5rem 0 0.5rem 0;
+  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+  text-align: left;
+  font-weight: 600;
+  color: black;
+  line-height: normal;
+
+  @media screen and (min-width: 815px) {
+    font-size: 1.4rem;
+    margin: 0.25rem 0 0.25rem 0;
+    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
+  }
+`;
+
+const BlackContainer = styled.div`
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1005;
+  width: 100vw;
+  display: none;
+  height: 100vh;
+  animation: 0.5s ${fadeInAnimation};
+  @media screen and (min-width: 768px) {
+    display: initial;
+  }
+`;
+
+const LoadingText = styled.div`
+  font-size: 1.2rem;
+  position: absolute;
+  bottom: 30%;
+  opacity: 0.8;
+`;
+
+const divideTravellers = (groupType, numberOfAdults, numberOfChildren, numberOfInfants) => {
+    if (groupType === "Solo") {
+      return [{ adults: 1, children: 0, infants: 0, childAges: [] }];
+    } else if (groupType === "Couple") {
+      return [{ adults: 2, children: 0, infants: 0, childAges: [] }];
+    } else {
+      // For custom groups, distribute travelers across rooms
+      return [{
+        adults: numberOfAdults,
+        children: numberOfChildren,
+        infants: numberOfInfants,
+        childAges: Array(numberOfChildren).fill(10) // Default age 10
+      }];
+    }
+  };
+
+const Enquiry = (props) => {
+  const router = useRouter();
+  const routerquery = router.query;
+  const initialInputId = Date.now();
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [flexible, setFlexible] = useState(false);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [valueStart, setValueStart] = useState(null);
+  const [valueEnd, setValueEnd] = useState(null);
+  const [numberOfAdults, setNumberOfAdults] = useState(2);
+  const [numberOfChildren, setNumberOfChildren] = useState(0);
+  const [numberOfInfants, setNumberOfInfants] = useState(0);
+  const [budget, setBudget] = useState("Affordable");
+  const [selectedPreferences, setSelectedPreferences] = useState([]);
+  const [showCities, setShowCities] = useState(false);
+  const [showSearchStarting, setShowSearchStarting] = useState(false);
+  const [focusedDate, setFocusedDate] = useState(null);
+  const [groupType, setGroupType] = useState(null);
+  const [startingLocation, setStartingLocation] = useState(false);
+  const isPageLoaded = usePageLoaded();
+  const [destination, setDestination] = useState(
+    routerquery.destination || props.destination
+  );
+  const popupObj = {
+    dateStart: false,
+    dateEnd: false,
+    group: false,
+    InputOne: false,
+  };
+  const [showPopup, setShowPopup] = useState(popupObj);
+  const [showBlack, setShowBlack] = useState(false);
+  const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
+
+  useEffect(() => {
+    if (slideIndex === 2 && props.token && props.phone !== "null") {
+      _submitDataHandler();
+    }
+    setShowPopup(popupObj);
+  }, [slideIndex, props.token, props.phone]);
+
+  useEffect(() => {
+    if (props.userLocation) {
+      const userLocation = props.userLocation;
+      if (userLocation.text && userLocation.place_id)
+        setStartingLocation({
+          name: userLocation.text,
+          place_id: userLocation.place_id,
+        });
+    }
+  }, [props.userLocation]);
+
+  var selectedObj;
+
+  if (routerquery.state && !routerquery.city) {
+    selectedObj = [
+      {
+        destination_id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+      },
+    ];
+  } else if (routerquery.country && !routerquery.city) {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Country",
+      },
+    ];
+  }else if(routerquery.city){
+      selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  }
+   else {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: routerquery?.type ? routerquery.type : props?.destinationType,
+      },
+    ];
+  }
+
+  const _handleHideBlack = () => {
+    setShowBlack(false);
+    setShowCities(false);
+    setShowSearchStarting(false);
+  };
+
+  // MODIFIED: Now calls the new API flow (initiate -> complete)
+  const _submitDataHandler = async () => {
+    const value_start = new Date(valueStart);
+    const value_end = new Date(valueEnd);
+
+    setLoading(true);
+
+    let cityids = [];
+    let locations = [];
+    let stateIds = [];
+    let countryIds = [];
+    let continentIds = [];
+    let preferences = [];
+
+    // Process preferences
+    for (var i = 0; i < selectedPreferences.length; i++) {
+      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
+        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
+            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
+          }
+          break;
+        }
+      }
+    }
+
+    // Process cities
+    try {
+      for (var i = 0; i < selectedCities.length; i++) {
+        if (
+          cityids.indexOf(selectedCities[i].id) == -1 &&
+          selectedCities[i].id
+        ) {
+          if (selectedCities[i].type == "State")
+            stateIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Country")
+            countryIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Continent")
+            continentIds.push(selectedCities[i].id);
+          else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
+            cityids.push(selectedCities[i].id);
+          }
+          else {
+            continentIds.push(selectedCities[i].id);
+          }
+          locations.push(selectedCities[i].name);
+        }
+      }
+    } catch {}
+
+    const start_date = format(value_start, "yyyy-MM-dd");
+    const end_date = format(value_end, "yyyy-MM-dd");
+
+    let number_of_adults = 2,
+      number_of_children = 0,
+      number_of_infants = 0;
+
+    if (groupType === "Solo") {
+      number_of_adults = 1;
+    } else if (groupType === "Couple") {
+      number_of_adults = 2;
+    } else {
+      number_of_adults = numberOfAdults;
+      number_of_children = numberOfChildren;
+      number_of_infants = numberOfInfants;
+    }
+
+    const source = {
+      path: router.asPath,
+      ...routerquery,
+    };
+
+    // Calculate duration for flexible dates
+    let duration = null;
+    if (!flexible && start_date !== "1970-01-01" && end_date !== "1970-01-01") {
+      const startDateObj = new Date(start_date);
+      const endDateObj = new Date(end_date);
+      duration = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24));
+    }
+
+    // STEP 1: Build itinerary initiate payload
+    let initiateData = {
+      source,
+      experience_filters_selected: preferences,
+      user_location: {
+        place_id: startingLocation
+          ? startingLocation.place_id
+          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+      },
+      dates: {
+        type: flexible ? "flexible" : "fixed",
+      }
+    };
+
+    // Add dates based on type
+    if (!flexible) {
+      if (start_date !== "1970-01-01") {
+        initiateData.dates.start_date = start_date;
+      }
+      if (end_date !== "1970-01-01") {
+        initiateData.dates.end_date = end_date;
+      }
+      if (duration) {
+        initiateData.dates.duration = duration;
+      }
+    }
+
+    // Add city/state/country IDs
+    if (selectedCities[0].destination_id) {
+      initiateData.destination_id = [selectedCities[0].destination_id];
+    }
+    if (continentIds.length) initiateData.destination_id = continentIds;
+    if (stateIds.length) initiateData.states = stateIds;
+    if (countryIds.length) initiateData.countries = countryIds;
+    if (cityids.length) initiateData.cities = cityids;
+    if (locations.length) initiateData.locations = locations;
+
+    localStorage.removeItem("MyPlans");
+
+    try {
+      // STEP 2: Call itinerary initiate API
+      const initiateResponse = await itineraryInitiate.post("", initiateData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      const itineraryId = initiateResponse.data.itinerary_id;
+
+      const roomConfiguration = divideTravellers(
+        groupType || "Couple",
+        number_of_adults,
+        number_of_children,
+        number_of_infants
+      );
+
+
+      // STEP 3: Build complete payload
+      let completeData = {
+        itinerary_id: itineraryId,
+        group_type: groupType || "Couple",
+        number_of_adults: number_of_adults,
+        number_of_children: number_of_children,
+        number_of_infants: number_of_infants,
+        room_configuration: roomConfiguration,
+        add_flights: true,
+        add_hotels: true,
+        add_transfers_and_activities: true,
+        currency: props.userLocation?.currency || "INR",
+        hotel_types: [3, 4, 5], // Default hotel types
+        meal_preferences: [], // Can be populated from form if needed
+        special_request: "", // Can be populated from form if needed
+      };
+
+      // STEP 4: Call itinerary complete API
+      const completeResponse = await itineraryComplete.post("", completeData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      setSubmitted(true);
+      setLoading(false);
+      
+      // Navigate to itinerary page
+      if (itineraryId) {
+        window.location.href = "/itinerary/" + itineraryId;
+      } else {
+        router.push("/thank-you");
+      }
+
+      // Track conversion
+      logEvent({
+        action: "conversion",
+        params: {
+          send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+        },
+      });
+
+    } catch (err) {
+      console.error("Error creating itinerary:", err);
+      setLoading(false);
+      // Fallback to thank you page on error
+      router.push("/thank-you");
+    }
+  };
+
+  const _prevSlideHandler = () => {
+    if (slideIndex) setSlideIndex(slideIndex - 1);
+  };
+
+  const getHeading = () => {
+    if (props.tailoredFormModal && focusedDate) {
+      if (focusedDate == "startDate") return "Please select start date.";
+      if (focusedDate == "endDate") return "Please select end date.";
+    } else return "Get Your Free Travel Plan Now!";
+  };
+
+  const [selectedCities, setSelectedCities] = useState(selectedObj);
+
+  console.log("SSSS",selectedCities,routerquery);
+
+  useEffect(() => {
+    setShowPopup(popupObj);
+  }, [
+    valueStart,
+    valueEnd,
+    startingLocation,
+    destination,
+    showSearchStarting,
+    showCities,
+    groupType,
+    selectedCities.length,
+    slideIndex,
+  ]);
+
+  const _SlideOneSubmitHandler = () => {
+    if (!selectedCities[0].destination_id && !selectedCities[0].id) {
+      return setShowPopup({ ...showPopup, InputOne: true });
+    }
+    if (!valueStart && !flexible)
+      return setShowPopup({ ...showPopup, dateStart: true });
+    if (!valueEnd && !flexible)
+      return setShowPopup({ ...showPopup, dateEnd: true });
+    setShowPopup(popupObj);
+    setSlideIndex(slideIndex + 1);
+    if (props.HeroBanner && isPageWide)
+      window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const _SlideTwoSubmitHandler = () => {
+    if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
+    setShowPopup(popupObj);
+    setSlideIndex(slideIndex + 1);
+  };
+
+  if (!loading && !submitted)
+    return (
+      <>
+        {/* {showBlack && !props.tailoredFormModal ? (
+          <BlackContainer onClick={() => _handleHideBlack()}></BlackContainer>
+        ) : null} */}
+
+        <Container
+          showBlack={showBlack}
+          tailoredFormModal={props.tailoredFormModal}
+          slideIndex={slideIndex}
+          className={isPageWide ? "center-div border" : "center-div"}
+          onClick={() => {
+            setShowBlack(true);
+          }}
+        >
+          {showPopup.InputOne && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top={props.tailoredFormModal ? "17rem" : "12.6rem"}
+              mobileTop="14rem"
+              left="10px"
+              text="Please select your destination!"
+            />
+          )}
+
+          {showPopup.dateStart && !flexible && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="10px"
+              text="Please select starting date!"
+            />
+          )}
+
+          {showPopup.dateEnd && !flexible && (
+            <Popup
+              setShowPopup={setShowPopup}
+              bottom={props.tailoredFormModal ? "1.3rem" : "5.6rem"}
+              left="170px"
+              mobileleft={"135px"}
+              text="Please select ending date!"
+            />
+          )}
+
+          {showPopup.group && (
+            <Popup
+              setShowPopup={setShowPopup}
+              top={props.tailoredFormModal ? "16rem" : "190px"}
+              left="20%"
+              tipLeft="45%"
+              text="Please select your group type!"
+            />
+          )}
+
+          <div
+            style={{
+              padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
+              marginBottom: slideIndex === 2 ? "0rem" : "0rem",
+            }}
+            className="w-full flex flex-row items-center"
+          >
+            {slideIndex && !props.tailoredFormModal ? (
+              <div className="center-div">
+                <BiArrowBack
+                  onClick={_prevSlideHandler}
+                  className="hover-pointer"
+                  style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                ></BiArrowBack>
+              </div>
+            ) : (
+              <></>
+            )}
+
+            <div className="w-full">
+              {props.tailoredFormModal && (
+                <CloseIcon>
+                  {slideIndex ? (
+                    <BiArrowBack
+                      onClick={_prevSlideHandler}
+                      className="hover-pointer"
+                      style={{ marginTop: "2px", fontSize: "1.5rem" }}
+                    ></BiArrowBack>
+                  ) : (
+                    <div></div>
+                  )}
+                  <RxCross2
+                    style={{
+                      fontSize: "1.75rem",
+                      textAlign: "right",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      if (!focusedDate) {
+                        console.log("HERE");
+                        props.onHide();
+                      }
+                    }}
+                  />
+                </CloseIcon>
+              )}
+
+              <Heading
+                tailoredFormModal={props.tailoredFormModal}
+                style={{ textAlign: !slideIndex ? "left" : "center" }}
+              >
+                {getHeading()}
+              </Heading>
+            </div>
+          </div>
+
+          <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
+            <div
+              style={{
+                borderStyle: "solid none none none",
+                borderWidth: "1px",
+                color: "#D3D3D3",
+                height: "1px",
+                width: "100%",
+                marginBottom: "1.5rem",
+              }}
+            ></div>
+
+            <Flickity
+              initialInputId={initialInputId}
+              focusedDate={focusedDate}
+              setFocusedDate={setFocusedDate}
+              tailoredFormModal={props.tailoredFormModal}
+              flexible={flexible}
+              setFlexible={setFlexible}
+              startingLocation={startingLocation}
+              setStartingLocation={setStartingLocation}
+              children_cities={props.children_cities}
+              showSearchStarting={showSearchStarting}
+              setShowSearchStarting={setShowSearchStarting}
+              showCities={showCities}
+              setShowCities={setShowCities}
+              destination={destination}
+              setDestination={setDestination}
+              token={props.token}
+              phone={props.phone}
+              slideIndex={slideIndex}
+              cities={props.cities}
+              selectedCities={selectedCities}
+              setSelectedCities={setSelectedCities}
+              valueStart={valueStart}
+              valueEnd={valueEnd}
+              setValueStart={setValueStart}
+              setValueEnd={setValueEnd}
+              groupType={groupType}
+              setGroupType={setGroupType}
+              numberOfAdults={numberOfAdults}
+              setNumberOfAdults={setNumberOfAdults}
+              numberOfChildren={numberOfChildren}
+              setNumberOfChildren={setNumberOfChildren}
+              numberOfInfants={numberOfInfants}
+              setNumberOfInfants={setNumberOfInfants}
+              setBudget={setBudget}
+              selectedPreferences={selectedPreferences}
+              setSelectedPreferences={setSelectedPreferences}
+              setSubmitSecondSlide={setSubmitSecondSlide}
+              eventDates={props.eventDates}
+            ></Flickity>
+
+            {slideIndex === 0 ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide && isPageLoaded
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  onclick={() => _SlideOneSubmitHandler()}
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : null}
+
+            {slideIndex === 1 ? (
+              !props.token || props.phone === "null" ? (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    onclick={_SlideTwoSubmitHandler}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    loading={loading}
+                    onclick={_submitDataHandler}
+                  >
+                    Get Itinerary!
+                  </Button>
+                </div>
+              )
+            ) : null}
+          </div>
+        </Container>
+      </>
+    );
+  else
+    return (
+      <>
+        {/* {showBlack && !props.tailoredFormModal ? (
+          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+        ) : null} */}
+
+        <Container className="border center-div">
+          <LoadingLottie height="50%" width="50%"></LoadingLottie>
+          <LoadingText>Finalizing your plan...</LoadingText>
+        </Container>
+      </>
+    );
+};
+
+const mapStateToPros = (state) => {
+  return {
+    name: state.auth.name,
+    emailFail: state.auth.emailFail,
+    token: state.auth.token,
+    phone: state.auth.phone,
+    email: state.auth.email,
+    userLocation: state.UserLocation.location,
+  };
+};
+
+export default connect(mapStateToPros)(Enquiry);

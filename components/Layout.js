@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import Header from "./navbar/Index";
 import Footer from "./newfooter/Index";
 import { connect } from "react-redux";
@@ -8,9 +8,23 @@ import NotificationPopup from "./ui/NotificationPopup";
 import { changeUserLocation } from "../store/actions/userLocation";
 import Cookies from "js-cookie";
 import NavigationMenu from "./revamp/home/NavigationMenu";
+import TailoredFormMobileModal from "./modals/OldFormTailoredFomrMobile";
+import { useRouter } from "next/router";
+import { closeTailoredModal } from "../services/openTailoredModalV2";
 
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
+  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+
+   useEffect(() => {
+      if (router.isReady) {
+        const queries = router.query;
+        if (queries["tailored-travel"]) {
+          setShowMobilePlanner(true);
+        } else setShowMobilePlanner(false);
+      }
+    }, [router.isReady, router.asPath]);
 
   useLayoutEffect(() => {
     const userLocation = Cookies.get("userLocation");
@@ -99,10 +113,22 @@ const Layout = React.memo((props) => {
         {props.children}
       </div>
 
+      {props?.slug == 'AI-generic' && (
+        <TailoredFormMobileModal
+          destinationType={"city-planner"}
+          onHide={() => {
+          setShowMobilePlanner(false);
+          closeTailoredModal(router);
+          }}
+          show={showMoiblePlanner}
+        />
+      )}
       <NotificationPopup />
       {!props.itinerary ? (
         <Footer page={props.page} slug={props.slug}></Footer>
       ) : null}
+
+
     </div>
   );
 });
