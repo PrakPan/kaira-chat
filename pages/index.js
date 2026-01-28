@@ -1,7 +1,7 @@
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
@@ -13,6 +13,7 @@ import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
 import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
+import FaqSection from "../components/revamp/home/FaqSection";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -25,42 +26,81 @@ import axioscountrydetailsinstance from "../services/pages/country";
 import axioslocationsinstance from "../services/search/search";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
-import FaqSection from "../components/revamp/home/FaqSection";
 
+/* ---------------- Lazy-loaded sliders (no SSR) ---------------- */
 
-
-/* ---------------- Lazy-loaded below-the-fold sections ---------------- */
-
-const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"),{
+const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"), {
   ssr: false,
-} );
-const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"),{
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+});
+const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"), {
   ssr: false,
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
 });
 const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
   ssr: false,
+  loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
 });
 const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"), {
   ssr: false,
+  loading: () => <div style={{ height: 200, background: "#f3f4f6" }} />,
 });
-const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"),{
+const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"), {
   ssr: false,
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
 });
-const LuxuryEuropeDestinations = dynamic(() => import("../components/revamp/home/LuxuryEuropeDestinations"),{
-  ssr: false,
-});
-const TravelerMadeItinerariesSection = dynamic(() => import("../components/revamp/home/TravelerMadeItinerariesSection"),{
-  ssr: false,
-});
+const LuxuryEuropeDestinations = dynamic(
+  () => import("../components/revamp/home/LuxuryEuropeDestinations"),
+  {
+    ssr: false,
+    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+  }
+);
+const TravelerMadeItinerariesSection = dynamic(
+  () => import("../components/revamp/home/TravelerMadeItinerariesSection"),
+  {
+    ssr: false,
+    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+  }
+);
 
-/* -------------------------------------------------------------------- */
+/* ---------------- Lazy mount wrapper (no deps) ---------------- */
+
+const LazySection = ({ children }) => {
+  const ref = useRef(null);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShow(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return <div ref={ref}>{show ? children : null}</div>;
+};
+
+/* ---------------- Page ---------------- */
 
 const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }) => {
   useEffect(() => {
-    checkAuthState();
-
-    if (hotLocationSearch?.length) {
-      setHotLocationSearch(hotLocationSearch);
+    if (typeof window !== "undefined") {
+      requestIdleCallback(() => {
+        checkAuthState();
+        if (hotLocationSearch?.length) {
+          setHotLocationSearch(hotLocationSearch);
+        }
+      });
     }
   }, []);
 
@@ -68,14 +108,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
     <>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
-      <meta
+        <meta
           name="description"
           content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
-        ></meta>
-        <meta
-          property="og:title"
-          content="Travel Company | India | The Tarzan Way"
         />
+        <meta property="og:title" content="Travel Company | India | The Tarzan Way" />
         <meta
           property="og:description"
           content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
@@ -84,11 +121,16 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <meta
           property="keywords"
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
-        ></meta>
-
+        />
         <link rel="canonical" href="https://thetarzanway.com" />
-        <link rel="stylesheet" crossorigin href="/vendor/panorama-slider.css" />
 
+        {/* Non-blocking CSS */}
+        <link
+          rel="preload"
+          href="/vendor/panorama-slider.css"
+          as="style"
+          onLoad="this.rel='stylesheet'"
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -129,6 +171,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
       </Head>
 
       <div className={styles.ttwRevamp}>
+        {/* Above-the-fold */}
         <NavigationMenu />
         <HeroSection slug="home" />
         <TrustFactors />
@@ -136,17 +179,18 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
 
         {token && <MyTripsSection className="max-w-7xl" />}
 
-        <PlacesBragSection />
-        <LuxuryEuropeDestinations />
-        <TravelerMadeItinerariesSection />
-        <TravelVibeSection />
-        <PartnersSection />
-        <WhereNextSection />
-        <WhatMakesUsSection />
-        <CurveImageGallery />
-        <TestimonialCarousel />
-        <FaqSection />
-        <CtaBoardingSection />
+        {/* Below-the-fold */}
+        <LazySection><PlacesBragSection /></LazySection>
+        <LazySection><LuxuryEuropeDestinations /></LazySection>
+        <LazySection><TravelerMadeItinerariesSection /></LazySection>
+        <LazySection><TravelVibeSection /></LazySection>
+        <LazySection><PartnersSection /></LazySection>
+        <LazySection><WhereNextSection /></LazySection>
+        <LazySection><WhatMakesUsSection /></LazySection>
+        <LazySection><CurveImageGallery /></LazySection>
+        <LazySection><TestimonialCarousel /></LazySection>
+        <LazySection><FaqSection /></LazySection>
+        <LazySection><CtaBoardingSection /></LazySection>
       </div>
 
       <NewFooter page="Homepage" />
@@ -186,9 +230,7 @@ export async function getStaticProps() {
       axiospagelistinstance.get(
         "/?page_type=Theme&fields=id,slug,overview_image,tagline,path,image,name"
       ),
-      axiospagelistinstance.get(
-        "/?page_type=Continent&fields=id,slug,overview_image,tagline,path"
-      ),
+      axiospagelistinstance.get("/?page_type=Continent&fields=id,slug,overview_image,tagline,path"),
       axioslocationsinstance.get("hot_destinations/"),
     ]);
 
@@ -210,7 +252,7 @@ export async function getStaticProps() {
 
         return {
           ...continent,
-          hot_destinations: countries.filter(c => c.is_hot_location).slice(0, 6),
+          hot_destinations: countries.filter((c) => c.is_hot_location).slice(0, 6),
         };
       })
     );
@@ -228,6 +270,6 @@ export async function getStaticProps() {
       continetCarousel,
       hotLocationSearch,
     },
-    revalidate: 3600, 
+    revalidate: 3600,
   };
 }
