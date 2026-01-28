@@ -110,7 +110,7 @@ const PlacesBragSection = () => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
-      image: `media/website/compressedImage%20(8).jpeg`
+      image: `media/cities/175731712356781172752380371094.jpg`
     },
     {
       id: 5,
