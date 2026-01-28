@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Theme from "../public/Theme";
 import "../styles.css";
 import "../styles/globals.css";
@@ -7,82 +7,79 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID } from "../services/constants";
-import { GOOGLE_CLIENT_ID } from "../services/constants";
+import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
-import Loading from "./loading";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import ClarityInit from "../components/ClarityInit";
+
+// Lazy-loaded components (non-critical)
+const ClarityInit = dynamic(() => import("../components/ClarityInit"), {
+  ssr: false,
+});
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
-  const { id } = useSelector(state => state.auth);
+  const { id } = useSelector((state) => state.auth);
+
+  // Remove server-side JSS to avoid FOUC
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
+    if (jssStyles) jssStyles.parentElement.removeChild(jssStyles);
   }, []);
 
+  // Clean expired local storage
   useEffect(() => {
-    cleanExpiredLocalStorage(); 
+    cleanExpiredLocalStorage();
   }, []);
 
-  function setupTokenExpiryWatcher() {
-    if (typeof window === 'undefined') return;
+  // Token expiry watcher
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-    const expiry = localStorage.getItem('expirationDate');
+    const expiry = localStorage.getItem("expirationDate");
     if (!expiry) return;
 
     const timeLeft = new Date(expiry).getTime() - Date.now();
-
     if (timeLeft <= 0) {
       dispatch(authLogout());
       localStorage.clear();
     } else {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         dispatch(authLogout());
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        localStorage.removeItem("phone");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("expirationDate");
-        localStorage.removeItem("MyPlans");
-        localStorage.removeItem("user_image");
+        [
+          "access_token",
+          "name",
+          "email",
+          "phone",
+          "user_id",
+          "expirationDate",
+          "MyPlans",
+          "user_image",
+        ].forEach((key) => localStorage.removeItem(key));
       }, timeLeft);
+      return () => clearTimeout(timer);
     }
-  }
-
-  useEffect(() => {
-    setupTokenExpiryWatcher();
   }, []);
 
+  // Analytics & routing
   useEffect(() => {
     const handleRouteChange = (url) => {
-      ga.pageview(url);
-
-      if (window.fbq) {
-        window.fbq('track', 'PageView');
-      }
-
-      if (window.JupiterAnalytics?.trackPageView) {
-        window.JupiterAnalytics.trackPageView(url);
-      }
+      requestIdleCallback(() => {
+        ga.pageview(url);
+        if (window.fbq) window.fbq("track", "PageView");
+        if (window.JupiterAnalytics?.trackPageView)
+          window.JupiterAnalytics.trackPageView(url);
+      });
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
+    return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
 
   return (
@@ -100,15 +97,14 @@ function MyApp({ Component, pageProps }) {
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* <title>Plan your trip with The Tarzan Way</title> */}
       </Head>
 
       {/* Google Analytics */}
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
-      <Script strategy="lazyOnload">
+      <Script strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
@@ -117,8 +113,8 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
 
-      {/* Facebook Pixel (lighter, no React SDK) */}
-      <Script strategy="lazyOnload">
+      {/* Facebook Pixel */}
+      <Script strategy="afterInteractive">
         {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -133,24 +129,22 @@ function MyApp({ Component, pageProps }) {
         `}
       </Script>
 
-      {/* Jupiter Analytics (single init, no retry loop) */}
+      {/* Jupiter Analytics */}
       <Script
         src="https://dev.jupiter.tarzanway.com/jupiter.js"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
       />
-      <Script strategy="lazyOnload">
+      <Script strategy="afterInteractive">
         {`
-          if (window.JupiterAnalytics) {
-            window.JupiterAnalytics.init({
-              siteId: 'tarzanway-web',
-              apiHost: 'https://dev.jupiter.tarzanway.com'
-            });
+          if(window.JupiterAnalytics){
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://dev.jupiter.tarzanway.com' });
           }
         `}
       </Script>
 
       <div id="modal-root"></div>
 
+      {/* App */}
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
@@ -160,7 +154,7 @@ function MyApp({ Component, pageProps }) {
         </GoogleOAuthProvider>
       </div>
 
-      {/* CRMOne bot */}
+      {/* CRMOne Bot */}
       <Script
         src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
         strategy="afterInteractive"
@@ -169,6 +163,7 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
+// Support for page-level getInitialProps
 MyApp.getInitialProps = async ({ Component, ctx }) => {
   return {
     pageProps: {
@@ -179,7 +174,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   };
 };
 
-export default dynamic(
-  () => Promise.resolve(store.withRedux(MyApp)),
-  { ssr: false }
-);
+// Wrap Redux store and disable SSR for heavy hydration
+export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
+  ssr: false,
+});
