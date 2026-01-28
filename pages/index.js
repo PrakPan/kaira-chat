@@ -31,13 +31,27 @@ import FaqSection from "../components/revamp/home/FaqSection";
 
 /* ---------------- Lazy-loaded below-the-fold sections ---------------- */
 
-const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"));
-const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"));
-const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"));
-const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"));
-const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"));
-const LuxuryEuropeDestinations = dynamic(() => import("../components/revamp/home/LuxuryEuropeDestinations"));
-const TravelerMadeItinerariesSection = dynamic(() => import("../components/revamp/home/TravelerMadeItinerariesSection"));
+const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"),{
+  ssr: false,
+} );
+const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"),{
+  ssr: false,
+});
+const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
+  ssr: false,
+});
+const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"), {
+  ssr: false,
+});
+const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"),{
+  ssr: false,
+});
+const LuxuryEuropeDestinations = dynamic(() => import("../components/revamp/home/LuxuryEuropeDestinations"),{
+  ssr: false,
+});
+const TravelerMadeItinerariesSection = dynamic(() => import("../components/revamp/home/TravelerMadeItinerariesSection"),{
+  ssr: false,
+});
 
 /* -------------------------------------------------------------------- */
 
