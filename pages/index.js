@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import NavigationMenu from "../components/revamp/home/NavigationMenu";
 import HeroSection from "../components/revamp/home/HeroSection";
 import JourneySimplified from "../components/revamp/home/JourneySimplified";
-import TravelerMadeItinerariesSection from "../components/revamp/home/TravelerMadeItinerariesSection";
 import TravelVibeSection from "../components/revamp/home/TravelVibeSection";
 import WhereNextSection from "../components/revamp/home/WhereNextSection";
 import WhatMakesUsSection from "../components/revamp/home/WhatMakesUsSection";
@@ -38,6 +37,7 @@ const PartnersSection = dynamic(() => import("../components/theme/PartnersSectio
 const CtaBoardingSection = dynamic(() => import("../components/revamp/home/CtaBoardingSection"));
 const PlacesBragSection = dynamic(() => import("../components/revamp/home/PlacesBragSection"));
 const LuxuryEuropeDestinations = dynamic(() => import("../components/revamp/home/LuxuryEuropeDestinations"));
+const TravelerMadeItinerariesSection = dynamic(() => import("../components/revamp/home/TravelerMadeItinerariesSection"));
 
 /* -------------------------------------------------------------------- */
 
