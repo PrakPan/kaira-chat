@@ -26,14 +26,15 @@
   max-width: 1440px;
   aspect-ratio: 2;
   overflow: hidden;
-  bottom: -10px;
+  bottom: 5px;
+  transform: scale(1.1);
 
   @media (max-width: 840px) {
-    bottom: -5px;
+    bottom: 5px;
   }
 
   @media (max-width: 480px) {
-     bottom: 5px; 
+     bottom: 10px; 
   }
   
 }
