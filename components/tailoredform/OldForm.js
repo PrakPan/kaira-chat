@@ -86,6 +86,16 @@ const LoadingText = styled.div`
   opacity: 0.8;
 `;
 
+const ErrorMessage = styled.div`
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #ef5350;
+`;
+
 const divideTravellers = (groupType, numberOfAdults, numberOfChildren, numberOfInfants) => {
     if (groupType === "Solo") {
       return [{ adults: 1, children: 0, infants: 0, childAges: [] }];
@@ -107,6 +117,7 @@ const Enquiry = (props) => {
   const routerquery = router.query;
   const initialInputId = Date.now();
   const [loading, setLoading] = useState(false);
+  const [loadingSlideOne, setLoadingSlideOne] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
   const [slideIndex, setSlideIndex] = useState(0);
@@ -126,6 +137,10 @@ const Enquiry = (props) => {
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination
   );
+  const [itineraryId, setItineraryId] = useState(null);
+  const [errorSlideOne, setErrorSlideOne] = useState(null);
+  const [errorSubmit, setErrorSubmit] = useState(null);
+  
   const popupObj = {
     dateStart: false,
     dateEnd: false,
@@ -201,12 +216,133 @@ const Enquiry = (props) => {
     setShowSearchStarting(false);
   };
 
-  // MODIFIED: Now calls the new API flow (initiate -> complete)
+  // MODIFIED: Now only calls the complete API
   const _submitDataHandler = async () => {
-    const value_start = new Date(valueStart);
-    const value_end = new Date(valueEnd);
+    if (!itineraryId) {
+      setErrorSubmit("Itinerary ID not found. Please try again.");
+      return;
+    }
 
     setLoading(true);
+    setErrorSubmit(null);
+
+    let number_of_adults = 2,
+      number_of_children = 0,
+      number_of_infants = 0;
+
+    if (groupType === "Solo") {
+      number_of_adults = 1;
+    } else if (groupType === "Couple") {
+      number_of_adults = 2;
+    } else {
+      number_of_adults = numberOfAdults;
+      number_of_children = numberOfChildren;
+      number_of_infants = numberOfInfants;
+    }
+
+    const roomConfiguration = divideTravellers(
+      groupType || "Couple",
+      number_of_adults,
+      number_of_children,
+      number_of_infants
+    );
+
+    // Build complete payload
+    let completeData = {
+      itinerary_id: itineraryId,
+      group_type: groupType || "Couple",
+      number_of_adults: number_of_adults,
+      number_of_children: number_of_children,
+      number_of_infants: number_of_infants,
+      room_configuration: roomConfiguration,
+      add_flights: true,
+      add_hotels: true,
+      add_transfers_and_activities: true,
+      currency: props.userLocation?.currency || "INR",
+      hotel_types: [3, 4, 5],
+      meal_preferences: [],
+      special_request: "",
+    };
+
+    try {
+      // Call itinerary complete API
+      const completeResponse = await itineraryComplete.post("", completeData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      });
+
+      setSubmitted(true);
+      setLoading(false);
+      
+      // Navigate to itinerary page
+      window.location.href = "/itinerary/" + itineraryId;
+
+      // Track conversion
+      logEvent({
+        action: "conversion",
+        params: {
+          send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+        },
+      });
+
+    } catch (err) {
+      console.error("Error completing itinerary:", err);
+      setLoading(false);
+      setErrorSubmit(
+        // err.response?.data?.message || 
+        "Failed to complete itinerary. Please try again."
+      );
+    }
+  };
+
+  const _prevSlideHandler = () => {
+    if (slideIndex) setSlideIndex(slideIndex - 1);
+  };
+
+  const getHeading = () => {
+    if (props.tailoredFormModal && focusedDate) {
+      if (focusedDate == "startDate") return "Please select start date.";
+      if (focusedDate == "endDate") return "Please select end date.";
+    } else return "Get Your Free Travel Plan Now!";
+  };
+
+  const [selectedCities, setSelectedCities] = useState(selectedObj);
+
+  console.log("SSSS",selectedCities,routerquery);
+
+  useEffect(() => {
+    setShowPopup(popupObj);
+  }, [
+    valueStart,
+    valueEnd,
+    startingLocation,
+    destination,
+    showSearchStarting,
+    showCities,
+    groupType,
+    selectedCities.length,
+    slideIndex,
+  ]);
+
+  // NEW: Handle slide one submission with initiate API call
+  const _SlideOneSubmitHandler = async () => {
+    // Validation
+    if (!selectedCities[0].destination_id && !selectedCities[0].id) {
+      return setShowPopup({ ...showPopup, InputOne: true });
+    }
+    if (!valueStart && !flexible)
+      return setShowPopup({ ...showPopup, dateStart: true });
+    if (!valueEnd && !flexible)
+      return setShowPopup({ ...showPopup, dateEnd: true });
+    
+    setShowPopup(popupObj);
+    setLoadingSlideOne(true);
+    setErrorSlideOne(null);
+
+    // Prepare data for initiate API
+    const value_start = valueStart ? new Date(valueStart) : null;
+    const value_end = valueEnd ? new Date(valueEnd) : null;
 
     let cityids = [];
     let locations = [];
@@ -251,22 +387,8 @@ const Enquiry = (props) => {
       }
     } catch {}
 
-    const start_date = format(value_start, "yyyy-MM-dd");
-    const end_date = format(value_end, "yyyy-MM-dd");
-
-    let number_of_adults = 2,
-      number_of_children = 0,
-      number_of_infants = 0;
-
-    if (groupType === "Solo") {
-      number_of_adults = 1;
-    } else if (groupType === "Couple") {
-      number_of_adults = 2;
-    } else {
-      number_of_adults = numberOfAdults;
-      number_of_children = numberOfChildren;
-      number_of_infants = numberOfInfants;
-    }
+    const start_date = value_start ? format(value_start, "yyyy-MM-dd") : null;
+    const end_date = value_end ? format(value_end, "yyyy-MM-dd") : null;
 
     const source = {
       path: router.asPath,
@@ -275,13 +397,13 @@ const Enquiry = (props) => {
 
     // Calculate duration for flexible dates
     let duration = null;
-    if (!flexible && start_date !== "1970-01-01" && end_date !== "1970-01-01") {
+    if (!flexible && start_date && end_date && start_date !== "1970-01-01" && end_date !== "1970-01-01") {
       const startDateObj = new Date(start_date);
       const endDateObj = new Date(end_date);
       duration = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24));
     }
 
-    // STEP 1: Build itinerary initiate payload
+    // Build itinerary initiate payload
     let initiateData = {
       source,
       experience_filters_selected: preferences,
@@ -297,10 +419,10 @@ const Enquiry = (props) => {
 
     // Add dates based on type
     if (!flexible) {
-      if (start_date !== "1970-01-01") {
+      if (start_date && start_date !== "1970-01-01") {
         initiateData.dates.start_date = start_date;
       }
-      if (end_date !== "1970-01-01") {
+      if (end_date && end_date !== "1970-01-01") {
         initiateData.dates.end_date = end_date;
       }
       if (duration) {
@@ -321,114 +443,30 @@ const Enquiry = (props) => {
     localStorage.removeItem("MyPlans");
 
     try {
-      // STEP 2: Call itinerary initiate API
+      // Call itinerary initiate API
       const initiateResponse = await itineraryInitiate.post("", initiateData, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
       });
 
-      const itineraryId = initiateResponse.data.itinerary_id;
-
-      const roomConfiguration = divideTravellers(
-        groupType || "Couple",
-        number_of_adults,
-        number_of_children,
-        number_of_infants
-      );
-
-
-      // STEP 3: Build complete payload
-      let completeData = {
-        itinerary_id: itineraryId,
-        group_type: groupType || "Couple",
-        number_of_adults: number_of_adults,
-        number_of_children: number_of_children,
-        number_of_infants: number_of_infants,
-        room_configuration: roomConfiguration,
-        add_flights: true,
-        add_hotels: true,
-        add_transfers_and_activities: true,
-        currency: props.userLocation?.currency || "INR",
-        hotel_types: [3, 4, 5], // Default hotel types
-        meal_preferences: [], // Can be populated from form if needed
-        special_request: "", // Can be populated from form if needed
-      };
-
-      // STEP 4: Call itinerary complete API
-      const completeResponse = await itineraryComplete.post("", completeData, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      });
-
-      setSubmitted(true);
-      setLoading(false);
+      const newItineraryId = initiateResponse.data.itinerary_id;
+      setItineraryId(newItineraryId);
       
-      // Navigate to itinerary page
-      if (itineraryId) {
-        window.location.href = "/itinerary/" + itineraryId;
-      } else {
-        router.push("/thank-you");
-      }
-
-      // Track conversion
-      logEvent({
-        action: "conversion",
-        params: {
-          send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-        },
-      });
+      setLoadingSlideOne(false);
+      setSlideIndex(slideIndex + 1);
+      
+      if (props.HeroBanner && isPageWide)
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
     } catch (err) {
-      console.error("Error creating itinerary:", err);
-      setLoading(false);
-      // Fallback to thank you page on error
-      router.push("/thank-you");
+      console.error("Error initiating itinerary:", err);
+      setLoadingSlideOne(false);
+      setErrorSlideOne(
+        // err.response?.data?.message || 
+        "Failed to initiate itinerary. Please try again."
+      );
     }
-  };
-
-  const _prevSlideHandler = () => {
-    if (slideIndex) setSlideIndex(slideIndex - 1);
-  };
-
-  const getHeading = () => {
-    if (props.tailoredFormModal && focusedDate) {
-      if (focusedDate == "startDate") return "Please select start date.";
-      if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get Your Free Travel Plan Now!";
-  };
-
-  const [selectedCities, setSelectedCities] = useState(selectedObj);
-
-  console.log("SSSS",selectedCities,routerquery);
-
-  useEffect(() => {
-    setShowPopup(popupObj);
-  }, [
-    valueStart,
-    valueEnd,
-    startingLocation,
-    destination,
-    showSearchStarting,
-    showCities,
-    groupType,
-    selectedCities.length,
-    slideIndex,
-  ]);
-
-  const _SlideOneSubmitHandler = () => {
-    if (!selectedCities[0].destination_id && !selectedCities[0].id) {
-      return setShowPopup({ ...showPopup, InputOne: true });
-    }
-    if (!valueStart && !flexible)
-      return setShowPopup({ ...showPopup, dateStart: true });
-    if (!valueEnd && !flexible)
-      return setShowPopup({ ...showPopup, dateEnd: true });
-    setShowPopup(popupObj);
-    setSlideIndex(slideIndex + 1);
-    if (props.HeroBanner && isPageWide)
-      window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const _SlideTwoSubmitHandler = () => {
@@ -602,35 +640,41 @@ const Enquiry = (props) => {
             ></Flickity>
 
             {slideIndex === 0 ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide && isPageLoaded
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={() => _SlideOneSubmitHandler()}
+              <div>
+                {errorSlideOne && (
+                  <ErrorMessage>{errorSlideOne}</ErrorMessage>
+                )}
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
                 >
-                  Continue
-                </Button>
+                  <Button
+                    fontSize="1rem"
+                    width={!isPageWide ? "auto" : "100%"}
+                    style={
+                      !isPageWide && isPageLoaded
+                        ? {
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
+                        : {}
+                    }
+                    padding="0.5rem 2rem"
+                    fontWeight="500"
+                    margin="1rem 0"
+                    borderRadius="5px"
+                    borderWidth="1px"
+                    bgColor="#f7e700"
+                    loading={loadingSlideOne}
+                    onclick={() => _SlideOneSubmitHandler()}
+                  >
+                    Continue
+                  </Button>
+                </div>
               </div>
             ) : null}
 
@@ -662,31 +706,36 @@ const Enquiry = (props) => {
                   </Button>
                 </div>
               ) : (
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <Button
-                    fontSize="1rem"
-                    width={!isPageWide ? "auto" : "100%"}
-                    style={
-                      !isPageWide
-                        ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
-                        : {}
-                    }
-                    padding="0.5rem 2rem"
-                    fontWeight="500"
-                    margin="1rem 0"
-                    borderRadius="5px"
-                    borderWidth="1px"
-                    bgColor="#f7e700"
-                    loading={loading}
-                    onclick={_submitDataHandler}
-                  >
-                    Get Itinerary!
-                  </Button>
+                <div>
+                  {errorSubmit && (
+                    <ErrorMessage>{errorSubmit}</ErrorMessage>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                    <Button
+                      fontSize="1rem"
+                      width={!isPageWide ? "auto" : "100%"}
+                      style={
+                        !isPageWide
+                          ? {
+                              position: "fixed",
+                              left: "1rem",
+                              right: "1rem",
+                              bottom: "0",
+                            }
+                          : {}
+                      }
+                      padding="0.5rem 2rem"
+                      fontWeight="500"
+                      margin="1rem 0"
+                      borderRadius="5px"
+                      borderWidth="1px"
+                      bgColor="#f7e700"
+                      loading={loading}
+                      onclick={_submitDataHandler}
+                    >
+                      Get Itinerary!
+                    </Button>
+                  </div>
                 </div>
               )
             ) : null}

@@ -3,6 +3,9 @@ import styled from "styled-components";
 import Destinations from "./destinations/Index";
 import Question from "../Question";
 import { BsCheck } from "react-icons/bs";
+import { useState } from "react";
+import { AiFillCaretDown } from "react-icons/ai";
+import Preferences from "../OldFormSlideTwo/preferences/Index";
 
 const Container = styled.div`
   color: black;
@@ -16,6 +19,7 @@ const Section = styled.div`
 `;
 
 const SlideOne = (props) => {
+  const [showPreferences, setShowPreferences] = useState(false);
   const getHeading = () => {
     if (props.tailoredFormModal && props.focusedDate) {
       if (props.focusedDate == "startDate") return "Please select start date.";
@@ -75,6 +79,9 @@ const SlideOne = (props) => {
             alignItems: "center",
             marginTop: "1rem",
             marginLeft: "2px",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            overflowY: "scroll",
           }}
         >
           {props.eventDates && props.destination ? (
@@ -87,6 +94,30 @@ const SlideOne = (props) => {
             <>
             </>
           )}
+
+          <div
+        style={{ display: "flex" }}
+        onClick={() => setShowPreferences(!showPreferences)}
+      >
+        <Question hover_pointer>Activity Preferences?</Question>
+        <div style={{ flexGrow: "1", textAlign: "right" }}>
+          <AiFillCaretDown
+            style={{ verticalAlign: "initial" }}
+            className="hover-pointer"
+          >
+            {" "}
+          </AiFillCaretDown>
+        </div>
+        
+      </div>
+
+      {showPreferences || props.tailoredFormModal ? (
+        <Preferences
+          tailoredFormModal={props.tailoredFormModal}
+          selectedPreferences={props.selectedPreferences}
+          setSelectedPreferences={props.setSelectedPreferences}
+        ></Preferences>
+      ) : null}
 
         </div>
       </Section >

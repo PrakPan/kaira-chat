@@ -38,6 +38,8 @@ const FlickityComp = (props) => {
             setSelectedCities={props.setSelectedCities}
             valueStart={props.valueStart}
             valueEnd={props.valueEnd}
+            selectedPreferences={props.selectedPreferences}
+            setSelectedPreferences={props.setSelectedPreferences}
             setValueStart={props.setValueStart}
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}

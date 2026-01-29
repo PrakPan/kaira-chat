@@ -57,28 +57,7 @@ const SlideTwo = (props) => {
         <Budget setShowPax={setShowPax} setBudget={props.setBudget}></Budget>
       </Section>
 
-      <div
-        style={{ display: "flex" }}
-        onClick={() => setShowPreferences(!showPreferences)}
-      >
-        <Question hover_pointer>Activity Preferences?</Question>
-        <div style={{ flexGrow: "1", textAlign: "right" }}>
-          <AiFillCaretDown
-            style={{ verticalAlign: "initial" }}
-            className="hover-pointer"
-          >
-            {" "}
-          </AiFillCaretDown>
-        </div>
-      </div>
-
-      {showPreferences || props.tailoredFormModal ? (
-        <Preferences
-          tailoredFormModal={props.tailoredFormModal}
-          selectedPreferences={props.selectedPreferences}
-          setSelectedPreferences={props.setSelectedPreferences}
-        ></Preferences>
-      ) : null}
+      
     </Container>
   );
 };
