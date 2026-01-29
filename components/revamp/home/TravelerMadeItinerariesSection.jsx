@@ -15,6 +15,7 @@ import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import Button from "../common/components/button";
 import Link from "next/link";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
+import { corporateItineraries } from "../../../data/corporatesItineraries";
 
 const TravelerMadeItinerariesSection = (props) => {
   // Sample traveler-made itinerary data
@@ -3663,7 +3664,7 @@ const TravelerMadeItinerariesSection = (props) => {
 
         {/* Itineraries Slider */}
         <div className="relative px-2 sm:px-0">
-          <Itinerary1Carousel itineraries={itineraries} />
+          <Itinerary1Carousel itineraries={props?.corporates ? corporateItineraries : itineraries} />
           {/* <Swiper
             style={{ height: "677px" }}
             modules={[Navigation]}
