@@ -17,6 +17,9 @@ import Modal from "../../../components/ui/Modal";
 import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
 import AirbnbCalendarMobile from "../../../components/calendar/MobileCalendar";
 import BottomModal from "../../../components/ui/LowerModal";
+import { set } from "nprogress";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 
 const StyledDateRangeContainer = styled.div`
   .DateRangePicker {
@@ -88,7 +91,7 @@ const StyledDateRangeContainer = styled.div`
       box-shadow: none;
     }
   }
-  
+
   .DayPickerNavigation_button {
     border: 2px solid #000000 !important;
     border-radius: 50% !important;
@@ -99,7 +102,7 @@ const StyledDateRangeContainer = styled.div`
     align-items: center !important;
     justify-content: center !important;
     transition: all 0.2s ease !important;
-    color:black;
+    color: black;
   }
 
   .DayPickerNavigation_button:hover {
@@ -117,7 +120,7 @@ const StyledDateRangeContainer = styled.div`
     display: none !important;
   }
 
-   .DayPickerNavigation_button:first-child::after {
+  .DayPickerNavigation_button:first-child::after {
     content: "<";
     position: absolute;
     top: 50%;
@@ -158,7 +161,7 @@ const StyledDateRangeContainer = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
   }
-    
+
   .DayPicker_caption {
     text-align: center !important;
     padding: 0 !important;
@@ -269,25 +272,25 @@ const UpdateItineraryDates = ({
   duration,
   resetRef,
   handleCloseDrawer,
-  cartValue=false,
+  cartValue = false,
+  setShowSettings,
+  isHotelsPresent,
+  setIsHotelsPresent,
 }) => {
-
- 
-
   const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
-    itinerary?.start_date ? moment(itinerary.start_date) : null
+    itinerary?.start_date ? moment(itinerary.start_date) : null,
   );
   const [endDate, setEndDate] = useState(
-    itinerary?.end_date ? moment(itinerary.end_date) : null
+    itinerary?.end_date ? moment(itinerary.end_date) : null,
   );
   const [isLoading, setIsLoading] = useState(false);
   const [focusedInput, setFocusedInput] = useState(null);
   const router = useRouter();
   const [dateType, setDateType] = useState("fixed");
- const start = new Date(startDate);
+  const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   start.setHours(0, 0, 0, 0);
   end.setHours(0, 0, 0, 0);
 
@@ -296,14 +299,14 @@ const UpdateItineraryDates = ({
     start_date: start.toISOString(),
     end_date: end.toISOString(),
     month: "",
-    duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1
+    duration: Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1,
   };
 
   const [momentStartDate, setMomentStartDate] = useState(
-    itinerary?.start_date ? moment(itinerary.start_date) : null
+    itinerary?.start_date ? moment(itinerary.start_date) : null,
   );
   const [momentEndDate, setMomentEndDate] = useState(
-    itinerary?.end_date ? moment(itinerary.end_date) : null
+    itinerary?.end_date ? moment(itinerary.end_date) : null,
   );
   const [showCalendar, setShowCalendar] = useState(false);
   const [isEditing, setIsEditing] = useState(autoOpenCalendar);
@@ -311,20 +314,18 @@ const UpdateItineraryDates = ({
   const [isMobile, setIsMobile] = useState(false);
 
   // REPLACE the existing useEffect that sets showCalendar
-useEffect(() => {
+  useEffect(() => {
     if (autoOpenCalendar) {
       setShowCalendar(true);
       setFocusedInput("startDate");
     }
   }, [autoOpenCalendar]);
 
-
   useEffect(() => {
     const checkScreenSize = () => {
-      if(showPhoneView){
+      if (showPhoneView) {
         setIsMobile(true);
-      }
-      else setIsMobile(window.innerWidth < 768);
+      } else setIsMobile(window.innerWidth < 768);
     };
 
     checkScreenSize();
@@ -344,28 +345,51 @@ useEffect(() => {
   };
 
   const formatDateRangeDisplay = () => {
-    const start = isEditing ? momentStartDate : (itinerary?.start_date ? moment(itinerary.start_date) : null);
-    const end = isEditing ? momentEndDate : (itinerary?.end_date ? moment(itinerary.end_date) : null);
+    const start = isEditing
+      ? momentStartDate
+      : itinerary?.start_date
+        ? moment(itinerary.start_date)
+        : null;
+    const end = isEditing
+      ? momentEndDate
+      : itinerary?.end_date
+        ? moment(itinerary.end_date)
+        : null;
 
     if (!start || !end) return "Select dates";
 
     if (convertDFormat) {
-      return `${convertDFormat(start.format('YYYY-MM-DD'))} - ${convertDFormat(end.format('YYYY-MM-DD'))}`;
+      return `${convertDFormat(start.format("YYYY-MM-DD"))} - ${convertDFormat(end.format("YYYY-MM-DD"))}`;
     }
 
-    return `${start.format('YYYY-MM-DD')} - ${end.format('YYYY-MM-DD')}`;
+    return `${start.format("YYYY-MM-DD")} - ${end.format("YYYY-MM-DD")}`;
   };
 
   const handleEditClick = () => {
-    setStartDate(formatDateForInput(itinerary?.start_date));
-    setEndDate(formatDateForInput(itinerary?.end_date));
-    setMomentStartDate(
-      itinerary?.start_date ? moment(itinerary.start_date) : null
-    );
-    setMomentEndDate(itinerary?.end_date ? moment(itinerary.end_date) : null);
-    setShowCalendar(true);
-    setIsEditing(true);
-    setFocusedInput("startDate");
+    if (setShowSettings) {
+      Promise.resolve(
+        axios.get(
+          `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/bookings/hotels/?fields=no_of_hotels`,
+        ),
+      )
+        .then((res) => {
+          setIsHotelsPresent(res.data.no_of_hotels > 0);
+        })
+        .catch((err) => {
+          setIsHotelsPresent(false);
+        });
+      setShowSettings(true);
+    } else {
+      setStartDate(formatDateForInput(itinerary?.start_date));
+      setEndDate(formatDateForInput(itinerary?.end_date));
+      setMomentStartDate(
+        itinerary?.start_date ? moment(itinerary.start_date) : null,
+      );
+      setMomentEndDate(itinerary?.end_date ? moment(itinerary.end_date) : null);
+      setShowCalendar(true);
+      setIsEditing(true);
+      setFocusedInput("startDate");
+    }
   };
 
   const handleSingleInputClick = () => {
@@ -381,7 +405,7 @@ useEffect(() => {
     setStartDate(itinerary?.start_date || "");
     setEndDate(itinerary?.end_date || "");
     setMomentStartDate(
-      itinerary?.start_date ? moment(itinerary.start_date) : null
+      itinerary?.start_date ? moment(itinerary.start_date) : null,
     );
     setMomentEndDate(itinerary?.end_date ? moment(itinerary.end_date) : null);
     setShowCalendar(false);
@@ -389,76 +413,79 @@ useEffect(() => {
     setFocusedInput(null);
   };
 
-const handleOnCalenderApplyDates = async (values) => {
-  await handleUpdateDates(values);
-}
-
-const handleUpdateDates = async (dateObj) => {
-  if (!dateObj.start || !dateObj.end) {
-    alert("Please select valid dates. End date must be after start date.");
-    return;
-  }
-  
-  setIsLoading(true);
-  
-  const payload = {
-    start_date: moment(dateObj.start).format("YYYY-MM-DD"),
-    end_date: moment(dateObj.end).format("YYYY-MM-DD"),
+  const handleOnCalenderApplyDates = async (values) => {
+    await handleUpdateDates(values);
   };
 
-  try {
-    const res = await axiosUpdateItineraryDates.post(
-      `${router.query.id}/update-dates/`, 
-      payload, 
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
-    );
-    
-    setItinerary(res?.data?.data);
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
-        localStorage.removeItem(key);
-      }
-    });
-    
-    if (onUpdateSuccess) {
-      if(handleCloseDrawer)
-      handleCloseDrawer();
-      resetRef();
-      onUpdateSuccess(true);
+  const handleUpdateDates = async (dateObj) => {
+    if (!dateObj.start || !dateObj.end) {
+      alert("Please select valid dates. End date must be after start date.");
+      return;
     }
-    
-    // Only close after success
-    setShowCalendar(false);
-    setIsEditing(false);
-    setFocusedInput(null);
-  } catch (error) {
-    let errorMsg = error.response?.data?.errors?.[0]?.detail?.[0] || 
-                   "There seems to be a problem, please try again!";
-    console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
-    dispatch(openNotification({
-      type: "error",
-      text: errorMsg,
-      heading: "Error!",
-    }));
-  } finally {
-    setIsLoading(false);
-  }
-};
 
+    setIsLoading(true);
+
+    const payload = {
+      start_date: moment(dateObj.start).format("YYYY-MM-DD"),
+      end_date: moment(dateObj.end).format("YYYY-MM-DD"),
+    };
+
+    try {
+      const res = await axiosUpdateItineraryDates.post(
+        `${router.query.id}/update-dates/`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
+      );
+
+      setItinerary(res?.data?.data);
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith(`notes_dismissed_${router.query.id}`)) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      if (onUpdateSuccess) {
+        if (handleCloseDrawer) handleCloseDrawer();
+        resetRef();
+        onUpdateSuccess(true);
+      }
+
+      // Only close after success
+      setShowCalendar(false);
+      setIsEditing(false);
+      setFocusedInput(null);
+    } catch (error) {
+      let errorMsg =
+        error.response?.data?.errors?.[0]?.detail?.[0] ||
+        "There seems to be a problem, please try again!";
+      console.log("ERROR:UPDATING ITINERARY DATES", error?.message);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        }),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const closeModal = () => {
     setShowCalendar(false);
     setIsEditing(false);
-  }
+  };
 
   return (
     <div className="">
       {/* Date display with pen icon */}
-      <div className={`font-400 ${cartValue ? 'text-white font-normal': ''} flex flex-row items-center gap-2`}>
+      <div
+        className={`font-400 ${cartValue ? "text-white font-normal" : ""} flex flex-row items-center gap-2`}
+      >
         {!isEditing && !cartValue ? (
           <div className="min-w-max ">
             {convertDFormat
@@ -470,10 +497,15 @@ const handleUpdateDates = async (dateObj) => {
               : itinerary?.end_date}
           </div>
         ) : !cartValue ? (
-          <div className="min-w-max">
-            {formatDateRangeDisplay()}
+          <div className="min-w-max">{formatDateRangeDisplay()}</div>
+        ) : (
+          <div
+            className="text-white min-w-max cursor-pointer"
+            onClick={handleEditClick}
+          >
+            Update Dates
           </div>
-        ) : <div className="text-white min-w-max cursor-pointer" onClick={handleEditClick}>Update Dates</div>}
+        )}
 
         {/* Show pencil icon when not editing, reset button when editing */}
         {!isEditing && !cartValue ? (
@@ -483,14 +515,17 @@ const handleUpdateDates = async (dateObj) => {
           >
             <FaPen
               size={16}
-              className={`transition-transform hover:scale-150 duration-300 ${cartValue ? 'text-white': ''}`}
+              className={`transition-transform hover:scale-150 duration-300 ${cartValue ? "text-white" : ""}`}
             />
           </button>
-        ) :  !cartValue ? (
-          <div className={`cursor-pointer ${cartValue ? 'text-white': 'text-blue'} underline text-sm`} onClick={handleCancel}>
+        ) : !cartValue ? (
+          <div
+            className={`cursor-pointer ${cartValue ? "text-white" : "text-blue"} underline text-sm`}
+            onClick={handleCancel}
+          >
             Reset
           </div>
-        ): null }
+        ) : null}
       </div>
 
       {/* Update button - show only when editing and dates are selected */}
@@ -498,10 +533,9 @@ const handleUpdateDates = async (dateObj) => {
         <button
           onClick={handleUpdateDates}
           disabled={isLoading}
-          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${isLoading
-            ? "opacity-50 cursor-not-allowed"
-            : ""
-            }`}
+          className={`px-4 py-2 bg-[#07213A] text-white border-2 border-black rounded-lg font-medium text-sm transition-opacity whitespace-nowrap ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {isLoading ? "Applying..." : "Apply Date Change!"}
         </button>
@@ -510,80 +544,79 @@ const handleUpdateDates = async (dateObj) => {
       {/* Calendar overlay - positioned absolutely but relative to this container */}
       {showCalendar && (
         <div>
-        {!isMobile?<ModalWithBackdrop
-          centered
-          closeIcon={true}
-          backdrop
-          show={showCalendar}
-          onHide={() => closeModal(false)}
-          borderRadius="20px"
-          paddingX="20px"
-          paddingY="20px"
-        >
-          <AirbnbCalendar
-            valueStart={new Date(itinerary?.start_date)}
-            valueEnd={new Date(itinerary?.end_date)}
-            onChangeDate={handleOnCalenderApplyDates}
-            isLoading={isLoading}
-            setShowCalendar={() => closeModal(false)}
-            dateType={dateType}
-            setDateType={setDateType}
-            date={date}
-            isNotForm={true}
-            duration={duration}
-          />
-        </ModalWithBackdrop>:
-        
-        showPhoneView ? (
-          <ModalWithBackdrop
-            centered
-            closeIcon={true}
-            backdrop
-            show={showCalendar}
-            onHide={() => closeModal(false)}
-            borderRadius="20px"
-            paddingX="20px"
-            paddingY="20px"
-            showPhoneView={true}
-          >
-            <AirbnbCalendarMobile
-              valueStart={new Date(itinerary?.start_date)}
-              valueEnd={new Date(itinerary?.end_date)}
-              onChangeDate={handleOnCalenderApplyDates}
-              setShowCalendar={() => closeModal(false)}
-              setDateType={setDateType}
-              isLoading={isLoading}
-              dateType={dateType}
-              duration={duration}
-              date={date}
-              isNotForm={true}
-            />
-          </ModalWithBackdrop>
-        ) : (
-          <BottomModal
-            show={showCalendar}
-            onHide={() => closeModal(false)}
-            width="100%"
-            height="max-content"
-            paddingX="20px"
-            paddingY="20px"
-          >
-            <AirbnbCalendarMobile
-              valueStart={new Date(itinerary?.start_date)}
-              valueEnd={new Date(itinerary?.end_date)}
-              onChangeDate={handleOnCalenderApplyDates}
-              setShowCalendar={() => closeModal(false)}
-              setDateType={setDateType}
-              dateType={dateType}
-              duration={duration}
-              date={date}
-              isNotForm={true}
-            />
-          </BottomModal>
-        )}
+          {!isMobile ? (
+            <ModalWithBackdrop
+              centered
+              closeIcon={true}
+              backdrop
+              show={showCalendar}
+              onHide={() => closeModal(false)}
+              borderRadius="20px"
+              paddingX="20px"
+              paddingY="20px"
+            >
+              <AirbnbCalendar
+                valueStart={new Date(itinerary?.start_date)}
+                valueEnd={new Date(itinerary?.end_date)}
+                onChangeDate={handleOnCalenderApplyDates}
+                isLoading={isLoading}
+                setShowCalendar={() => closeModal(false)}
+                dateType={dateType}
+                setDateType={setDateType}
+                date={date}
+                isNotForm={true}
+                duration={duration}
+              />
+            </ModalWithBackdrop>
+          ) : showPhoneView ? (
+            <ModalWithBackdrop
+              centered
+              closeIcon={true}
+              backdrop
+              show={showCalendar}
+              onHide={() => closeModal(false)}
+              borderRadius="20px"
+              paddingX="20px"
+              paddingY="20px"
+              showPhoneView={true}
+            >
+              <AirbnbCalendarMobile
+                valueStart={new Date(itinerary?.start_date)}
+                valueEnd={new Date(itinerary?.end_date)}
+                onChangeDate={handleOnCalenderApplyDates}
+                setShowCalendar={() => closeModal(false)}
+                setDateType={setDateType}
+                isLoading={isLoading}
+                dateType={dateType}
+                duration={duration}
+                date={date}
+                isNotForm={true}
+              />
+            </ModalWithBackdrop>
+          ) : (
+            <BottomModal
+              show={showCalendar}
+              onHide={() => closeModal(false)}
+              width="100%"
+              height="max-content"
+              paddingX="20px"
+              paddingY="20px"
+            >
+              <AirbnbCalendarMobile
+                valueStart={new Date(itinerary?.start_date)}
+                valueEnd={new Date(itinerary?.end_date)}
+                onChangeDate={handleOnCalenderApplyDates}
+                setShowCalendar={() => closeModal(false)}
+                setDateType={setDateType}
+                dateType={dateType}
+                duration={duration}
+                date={date}
+                isNotForm={true}
+              />
+            </BottomModal>
+          )}
         </div>
       )}
-       
     </div>
   );
 };

@@ -206,6 +206,9 @@ const Details = (props) => {
                     showEditDate={showEditDate}
                     duration={props?.duration}
                     resetRef={props?.resetRef}
+                    setShowSettings={props?.setShowSettings}
+                    setIsHotelsPresent={props?.setIsHotelsPresent}
+                    isHotelsPresent={props?.isHotelsPresent}
                   />
                 </DateRow>
               </div>
