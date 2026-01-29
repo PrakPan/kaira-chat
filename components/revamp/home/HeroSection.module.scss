@@ -26,6 +26,16 @@
   max-width: 1440px;
   aspect-ratio: 2;
   overflow: hidden;
+  bottom: -10px;
+
+  @media (max-width: 840px) {
+    bottom: -5px;
+  }
+
+  @media (max-width: 480px) {
+     bottom: 5px; 
+  }
+  
 }
 
 .foregroundImage {
@@ -47,6 +57,23 @@
   background: #ffffcf;
   z-index: 2;
   pointer-events: none;
+}
+
+.bottomGreeLine{
+  background-color:#00a14b ;
+  position: absolute;
+  bottom: 0px;
+  height: 40px;
+  width: 100%;
+  z-index: 3;
+
+  @media (max-width: 840px) {
+    height: 30px;
+  }
+
+  @media (max-width: 480px) {
+    height: 20px; 
+  }
 }
 
 // Features Section Styles
