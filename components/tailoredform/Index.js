@@ -114,6 +114,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
+  const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
   const [errors, setErrors] = useState({
     startLocation: null,
@@ -448,6 +449,7 @@ const Enquiry = (props) => {
 
     try {
       setIsLoading(true);
+      
       // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
         headers: {
@@ -456,6 +458,9 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
+      if(resData){
+        setApiSucceeded(true);
+      }
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
       if (routeToTrack) {
@@ -487,32 +492,36 @@ const Enquiry = (props) => {
       }
 
       setIsRouteChanged(false);
+      
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       //will be removed later
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      const currentSlideIndex = Number(router.query.slideIndex) || 0;
-      const nextSlideIndex = currentSlideIndex + 1;
+      // await new Promise((resolve) => setTimeout(resolve, 100));
+      // const currentSlideIndex = Number(router.query.slideIndex) || 0;
+      // const nextSlideIndex = currentSlideIndex + 1;
 
-      router.push(
-        {
-          // pathname: "/new-trip",
-          query: {
-            ...router.query,
-            slideIndex: nextSlideIndex,
-          },
-        },
-        undefined,
-        { shallow: true }
-      );
+      // router.push(
+      //   {
+      //     // pathname: "/new-trip",
+      //     query: {
+      //       ...router.query,
+      //       slideIndex: nextSlideIndex,
+      //     },
+      //   },
+      //   undefined,
+      //   { shallow: true }
+      // );
     } catch (err) {
       console.log("ERROR: ", err.message);
-      setError(err.message);
+      setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
       setIsLoading(false);
+      setApiSucceeded(false);
       setLoadingItineraryId(null);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const completeItineraryCreate = () => {
@@ -744,11 +753,12 @@ const Enquiry = (props) => {
   };
 
   const handleLoadingError = (errorMessage) => {
-    console.error("❌ Loading error:", errorMessage);
-    setError(errorMessage);
-    setIsLoading(false);
-    setLoadingItineraryId(null);
-  };
+  console.error("❌ Loading error:", errorMessage);
+  setError(errorMessage);
+  setIsLoading(false);
+  setLoadingItineraryId(null);
+  setApiSucceeded(false);
+};
 
   if (isLoading  && slideIndex === 0) {
   return (
@@ -769,6 +779,7 @@ const Enquiry = (props) => {
         onComplete={handleLoadingComplete}
         onError={handleLoadingError}
         handleCompletion={handleLoadingComplete}
+        apiSucceeded={apiSucceeded}
       />
     </div>
   );
@@ -979,8 +990,8 @@ const Enquiry = (props) => {
                       slideIndex == 1
                         ? "w-[100%]"
                         : isDesktop
-                          ? "max-w-[600px] pb-[210px]"
-                          : "w-full"
+                          ? `max-w-[600px] ${slideIndex == 0 ? "pb-[260px]" : ""}`
+                          : `w-full ${slideIndex == 0 ? "pb-[300px]" : ""}`
                     }`}
                   >
                     <Flickity
@@ -1053,9 +1064,7 @@ const Enquiry = (props) => {
                       </BottomModal>
                     )}
 
-                    {error ? (
-                      <p className="text-sm text-red-600">{error}</p>
-                    ) : null}
+                    
                   </div>
                 </div>
               </div>
@@ -1067,6 +1076,9 @@ const Enquiry = (props) => {
       <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
         {/* <div className="border-b-sm"></div> */}
         <div className="container p-md">
+          {error ? (
+                      <p className="text-sm text-red-600 text-center">{"Connection Lost Please try again" || error}</p>
+                    ) : null}
           {slideIndex === 0 && (
             <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
               <div className="flex justify-between">

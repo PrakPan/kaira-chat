@@ -7,16 +7,26 @@ const RoutePreparationLoader = ({
   onComplete,
   onError,
   handleCompletion,
+  apiSucceeded, // Add this prop
 }) => {
   const [message, setMessage] = useState("Preparing your route...");
   const [reasoningParts, setReasoningParts] = useState([]);
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
+  const noResponseTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
   const hasCompletedRef = useRef(false);
   const MAX_RECONNECT_ATTEMPTS = 3;
   const NO_RESPONSE_TIMEOUT = 10000;
   const { sessionId, isReady } = useAnalyticsSession();
+
+  // Handle API success - navigate even if WebSocket doesn't send 'done'
+  useEffect(() => {
+    if (apiSucceeded && !hasCompletedRef.current) {
+      console.log("✅ API succeeded, completing even without 'done' event");
+      handleRealCompletion();
+    }
+  }, [apiSucceeded]);
 
   const handleRealCompletion = () => {
     if (hasCompletedRef.current) {
@@ -46,13 +56,10 @@ const RoutePreparationLoader = ({
     }
 
     console.error("Error:", errorMessage);
-    setMessage(errorMessage || "An error occurred while preparing your route");
+    // Don't show error message, keep showing "Preparing your route..."
+    // Just log it and let API success/failure handle the UI
 
     cleanupTimers();
-
-    setTimeout(() => {
-      onError?.(errorMessage);
-    }, 2000);
   };
 
   const cleanupTimers = () => {
@@ -60,18 +67,28 @@ const RoutePreparationLoader = ({
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
+    if (noResponseTimeoutRef.current) {
+      clearTimeout(noResponseTimeoutRef.current);
+      noResponseTimeoutRef.current = null;
+    }
   };
 
   useEffect(() => {
     if (!isReady || !sessionId) {
       console.log("⏳ Waiting for session to be ready...");
-      return;
+      // Don't return - still show the loading message even if session isn't ready
     }
 
     const initializeSocket = () => {
       // Don't reconnect if already completed
       if (hasCompletedRef.current) {
         console.log("Already completed, skipping socket initialization");
+        return;
+      }
+
+      // Don't try to connect if session isn't ready
+      if (!isReady || !sessionId) {
+        console.log("⏳ Session not ready, skipping WebSocket connection");
         return;
       }
 
@@ -116,9 +133,7 @@ const RoutePreparationLoader = ({
             // Handle errors
             if (data.type === "error") {
               console.error("Server error:", data.error);
-              if (data.error !== "Missing message.") {
-                handleError(data.error);
-              }
+              // Don't show error, keep showing "Preparing your route..."
               return;
             }
           } catch (err) {
@@ -147,17 +162,19 @@ const RoutePreparationLoader = ({
               initializeSocket();
             }, 2000);
           } else {
-            console.log("Max reconnection attempts reached");
-            handleError("Connection lost. Please try again.");
+            console.log("Max reconnection attempts reached - will rely on API success");
+            // Don't show error, keep showing "Preparing your route..." until API completes
           }
         };
       } catch (error) {
         console.error("WebSocket initialization error:", error);
-        handleError("Failed to establish connection");
+        // Don't show error, keep showing "Preparing your route..." until API completes
       }
     };
 
-    initializeSocket();
+    if (isReady && sessionId) {
+      initializeSocket();
+    }
 
     return () => {
       console.log("🧹 Cleaning up WebSocket");
