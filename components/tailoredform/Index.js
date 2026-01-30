@@ -42,6 +42,8 @@ import Login from "../modals/Login";
 import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
 import { useAnalyticsSession } from "../../hooks/useAnalyticsSession";
+import Image from "next/image";
+import RoutePreparationLoader from "./RoutePreparationLoader";
 
 {
   /* <Login/> to see this itinerary's cost */
@@ -65,8 +67,8 @@ const Enquiry = (props) => {
   const [route, setRoute] = useState([]);
   const [locationsLatLong, setLocationsLatLong] = useState(
     useSelector(
-      (state) => state.tailoredInfoReducer.itineraryInititateData?.basic_route
-    ) || []
+      (state) => state.tailoredInfoReducer.itineraryInititateData?.basic_route,
+    ) || [],
   );
   const [showRouteOverview, setShowRouteOverview] = useState(false);
 
@@ -74,22 +76,23 @@ const Enquiry = (props) => {
   const initialInputId = Date.now();
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const slideOneData = useSelector(
-    (state) => state.tailoredInfoReducer.slideOne
+    (state) => state.tailoredInfoReducer.slideOne,
   );
   const itineraryInititateData = useSelector(
-    (state) => state.tailoredInfoReducer.itineraryInititateData
+    (state) => state.tailoredInfoReducer.itineraryInititateData,
   );
   const slideThreeData = useSelector(
-    (state) => state.tailoredInfoReducer.slideThree
+    (state) => state.tailoredInfoReducer.slideThree,
   );
   const slideFourData = useSelector(
-    (state) => state.tailoredInfoReducer.slideFour
+    (state) => state.tailoredInfoReducer.slideFour,
   );
   const isItineraryCreated = useSelector(
-    (state) => state.tailoredInfoReducer.itineraryCreated
+    (state) => state.tailoredInfoReducer.itineraryCreated,
   );
 
   const [showCities, setShowCities] = useState(false);
@@ -99,7 +102,7 @@ const Enquiry = (props) => {
   const isPageLoaded = usePageLoaded();
   const [isRouteChanged, setIsRouteChanged] = useState(false);
   const [destination, setDestination] = useState(
-    routerquery.destination || props.destination
+    routerquery.destination || props.destination,
   );
   const popupObj = {
     dateStart: false,
@@ -111,6 +114,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
+  const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
   const [errors, setErrors] = useState({
     startLocation: null,
@@ -176,7 +180,7 @@ const Enquiry = (props) => {
             },
           },
           undefined,
-          { shallow: true }
+          { shallow: true },
         );
     }
   }, [router.isReady, slideIndex]);
@@ -216,7 +220,7 @@ const Enquiry = (props) => {
           },
         },
         undefined,
-        { shallow: true }
+        { shallow: true },
       );
     }
   };
@@ -306,7 +310,7 @@ const Enquiry = (props) => {
         },
       },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   };
 
@@ -321,7 +325,7 @@ const Enquiry = (props) => {
           },
         },
         undefined,
-        { shallow: true }
+        { shallow: true },
       );
     } catch (error) {
       console.log("new slide index is: ", error);
@@ -368,7 +372,7 @@ const Enquiry = (props) => {
 
         newEndDate = new Date(currentDate);
         totalDuration = Math.ceil(
-          (newEndDate - startDate) / (1000 * 60 * 60 * 24)
+          (newEndDate - startDate) / (1000 * 60 * 60 * 24),
         );
         shouldUpdateDates = true;
 
@@ -381,7 +385,7 @@ const Enquiry = (props) => {
         };
       } else {
         const hasResponseDates = locationsLatLong.some(
-          (loc) => loc.start_date && loc.end_date
+          (loc) => loc.start_date && loc.end_date,
         );
 
         if (hasResponseDates && itineraryInititateData?.start_date) {
@@ -423,7 +427,7 @@ const Enquiry = (props) => {
 
         totalDuration = data["basic_route"].reduce(
           (sum, loc) => sum + (loc.duration || 1),
-          0
+          0,
         );
 
         if (data["dates"]) {
@@ -445,6 +449,8 @@ const Enquiry = (props) => {
 
     try {
       setIsLoading(true);
+      
+      // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
@@ -452,6 +458,9 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
+      if(resData){
+        setApiSucceeded(true);
+      }
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
       if (routeToTrack) {
@@ -464,6 +473,7 @@ const Enquiry = (props) => {
 
       if (!itineraryId) {
         setItineraryId(resData.itinerary_id);
+        setLoadingItineraryId(resData.itinerary_id);
       }
 
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
@@ -476,34 +486,42 @@ const Enquiry = (props) => {
         dispatch(
           setFixedDate(
             slideOneData.date.start_date,
-            newEndDate.toISOString().split("T")[0]
-          )
+            newEndDate.toISOString().split("T")[0],
+          ),
         );
       }
 
       setIsRouteChanged(false);
-
+      
       await new Promise((resolve) => setTimeout(resolve, 100));
-      const currentSlideIndex = Number(router.query.slideIndex) || 0;
-      const nextSlideIndex = currentSlideIndex + 1;
 
-      router.push(
-        {
-          // pathname: "/new-trip",
-          query: {
-            ...router.query,
-            slideIndex: nextSlideIndex,
-          },
-        },
-        undefined,
-        { shallow: true }
-      );
+      //will be removed later
+
+      // await new Promise((resolve) => setTimeout(resolve, 100));
+      // const currentSlideIndex = Number(router.query.slideIndex) || 0;
+      // const nextSlideIndex = currentSlideIndex + 1;
+
+      // router.push(
+      //   {
+      //     // pathname: "/new-trip",
+      //     query: {
+      //       ...router.query,
+      //       slideIndex: nextSlideIndex,
+      //     },
+      //   },
+      //   undefined,
+      //   { shallow: true }
+      // );
     } catch (err) {
       console.log("ERROR: ", err.message);
-      setError(err.message);
-    } finally {
+      setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
       setIsLoading(false);
-    }
+      setApiSucceeded(false);
+      setLoadingItineraryId(null);
+    } 
+    // finally {
+    //   setIsLoading(false);
+    // }
   };
 
   const completeItineraryCreate = () => {
@@ -515,7 +533,7 @@ const Enquiry = (props) => {
     if (!finalItineraryId) {
       console.error("❌ No itinerary ID available for completion");
       setError(
-        "Unable to complete itinerary. Please start from the beginning."
+        "Unable to complete itinerary. Please start from the beginning.",
       );
       setIsSubmitting(false);
       setIsLoading(false);
@@ -526,7 +544,7 @@ const Enquiry = (props) => {
           query: { ...router.query, slideIndex: 0 },
         },
         undefined,
-        { shallow: true }
+        { shallow: true },
       );
       return;
     }
@@ -649,8 +667,8 @@ const Enquiry = (props) => {
       ? 4
       : 3
     : slideThreeData.addHotels
-    ? 5
-    : 4;
+      ? 5
+      : 4;
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
   const [steps, setSteps] = useState([
@@ -666,7 +684,7 @@ const Enquiry = (props) => {
       let updatedSteps = [...prevSteps];
 
       updatedSteps = updatedSteps.filter(
-        (step) => step !== "Stay Preferences" && step !== "Login"
+        (step) => step !== "Stay Preferences" && step !== "Login",
       );
 
       if (slideThreeData?.addHotels) updatedSteps.push("Stay Preferences");
@@ -707,11 +725,65 @@ const Enquiry = (props) => {
         const stepTitle = `Introduction: ${duration} Days, ${cityName}`;
 
         setSteps((prev) =>
-          prev.map((title, index) => (index === 0 ? stepTitle : title))
+          prev.map((title, index) => (index === 0 ? stepTitle : title)),
         );
       }
     }
   }, [slideOneData]);
+
+  const handleLoadingComplete = () => {
+    console.log("✅ Loading complete, navigating to next slide");
+
+    setIsLoading(false);
+    setLoadingItineraryId(null);
+
+    const currentSlideIndex = Number(router.query.slideIndex) || 0;
+    const nextSlideIndex = currentSlideIndex + 1;
+
+    router.push(
+      {
+        query: {
+          ...router.query,
+          slideIndex: nextSlideIndex,
+        },
+      },
+      undefined,
+      { shallow: true },
+    );
+  };
+
+  const handleLoadingError = (errorMessage) => {
+  console.error("❌ Loading error:", errorMessage);
+  setError(errorMessage);
+  setIsLoading(false);
+  setLoadingItineraryId(null);
+  setApiSucceeded(false);
+};
+
+  if (isLoading  && slideIndex === 0) {
+  return (
+    <div className="container">
+      <div className="py-2xl">
+        <div className="text-md-lg font-600 leading-xl-sm mb-md">
+          Plan Your Trip
+        </div>
+        <StepsProgress
+          slideIndex={slideIndex}
+          totalSlides={totalSlides}
+          steps={steps}
+        />
+      </div>
+      
+      <RoutePreparationLoader
+        itineraryId={loadingItineraryId}
+        onComplete={handleLoadingComplete}
+        onError={handleLoadingError}
+        handleCompletion={handleLoadingComplete}
+        apiSucceeded={apiSucceeded}
+      />
+    </div>
+  );
+}
 
   return (
     <>
@@ -918,8 +990,8 @@ const Enquiry = (props) => {
                       slideIndex == 1
                         ? "w-[100%]"
                         : isDesktop
-                        ? "max-w-[600px]"
-                        : "w-full"
+                          ? `max-w-[600px] ${slideIndex == 0 ? "pb-[260px]" : ""}`
+                          : `w-full ${slideIndex == 0 ? "pb-[300px]" : ""}`
                     }`}
                   >
                     <Flickity
@@ -992,9 +1064,7 @@ const Enquiry = (props) => {
                       </BottomModal>
                     )}
 
-                    {error ? (
-                      <p className="text-sm text-red-600">{error}</p>
-                    ) : null}
+                    
                   </div>
                 </div>
               </div>
@@ -1006,6 +1076,9 @@ const Enquiry = (props) => {
       <div className="fixed bottom-[70px] max-sm:bottom-0 w-100 bg-primary-cornsilk z-[22]">
         {/* <div className="border-b-sm"></div> */}
         <div className="container p-md">
+          {error ? (
+                      <p className="text-sm text-red-600 text-center">{"Connection Lost Please try again" || error}</p>
+                    ) : null}
           {slideIndex === 0 && (
             <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
               <div className="flex justify-between">
@@ -1092,7 +1165,7 @@ const Enquiry = (props) => {
                         query: { ...router.query, slideIndex: slideIndex + 1 },
                       },
                       undefined,
-                      { shallow: true }
+                      { shallow: true },
                     );
                   }}
                 >
@@ -1165,7 +1238,7 @@ const Enquiry = (props) => {
                             },
                           },
                           undefined,
-                          { shallow: true }
+                          { shallow: true },
                         );
                   }}
                 >
@@ -1209,7 +1282,7 @@ const Enquiry = (props) => {
                           },
                         },
                         undefined,
-                        { shallow: true }
+                        { shallow: true },
                       );
                 }}
                 height="50px"
