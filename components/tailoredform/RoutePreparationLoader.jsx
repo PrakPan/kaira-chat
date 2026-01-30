@@ -16,9 +16,15 @@ const RoutePreparationLoader = ({
   const noResponseTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
   const hasCompletedRef = useRef(false);
+  const apiSucceededRef = useRef(false);
   const MAX_RECONNECT_ATTEMPTS = 3;
   const NO_RESPONSE_TIMEOUT = 10000;
   const { sessionId, isReady } = useAnalyticsSession();
+
+
+  useEffect(() => {
+    apiSucceededRef.current = apiSucceeded;
+  }, [apiSucceeded]);
 
   useEffect(() => {
   if (apiSucceeded && !hasCompletedRef.current) {
@@ -30,7 +36,7 @@ const RoutePreparationLoader = ({
   }
 }, [apiSucceeded]);
 
-  const handleRealCompletion = () => {
+ const handleRealCompletion = () => {
   if (hasCompletedRef.current) {
     return;
   }
@@ -41,16 +47,17 @@ const RoutePreparationLoader = ({
 
   cleanupTimers();
 
-  // ✅ Close WebSocket immediately to prevent reconnection
   if (socketRef.current?.readyState === WebSocket.OPEN) {
     socketRef.current.close();
   }
 
-  // Call completion handler immediately
+  // ✅ Call completion handler immediately
   if (handleCompletion) {
     handleCompletion();
+  } else if (onComplete) { // ✅ Fallback to onComplete
+    onComplete();
   } else {
-    console.warn("⚠️ handleCompletion is not defined");
+    console.warn("⚠️ No completion handler defined");
   }
 };
 
@@ -60,8 +67,6 @@ const RoutePreparationLoader = ({
     }
 
     console.error("Error:", errorMessage);
-    // Don't show error message, keep showing "Preparing your route..."
-    // Just log it and let API success/failure handle the UI
 
     cleanupTimers();
   };
@@ -77,9 +82,8 @@ const RoutePreparationLoader = ({
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
     if (!isReady || !sessionId) {
-
       // Don't return - still show the loading message even if session isn't ready
     }
 
@@ -119,9 +123,13 @@ const RoutePreparationLoader = ({
               const newProgress = Math.min(20 + currentParts * 15, 95);
             }
 
-            // Handle done event - this is the success case
+            // ✅ UPDATED: Handle done event - check API success before completing
             if (data.type === "done") {
-              handleRealCompletion();
+              // Only complete if API has succeeded
+              if (apiSucceededRef.current) {
+                handleRealCompletion();
+              } else {
+              }
               return;
             }
 
@@ -146,7 +154,6 @@ const RoutePreparationLoader = ({
         };
 
         socketRef.current.onclose = (event) => {
-
           // Don't reconnect if already completed successfully
           if (hasCompletedRef.current) {
             return;
@@ -157,12 +164,10 @@ const RoutePreparationLoader = ({
             reconnectTimeoutRef.current = setTimeout(() => {
               initializeSocket();
             }, 2000);
-          } else {
           }
         };
       } catch (error) {
         console.error("WebSocket initialization error:", error);
-        // Don't show error, keep showing "Preparing your route..." until API completes
       }
     };
 
@@ -171,7 +176,6 @@ const RoutePreparationLoader = ({
     }
 
     return () => {
-
       cleanupTimers();
 
       if (socketRef.current) {

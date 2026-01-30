@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Button from "../ui/button/Index";
 import media from "../media";
 import {
@@ -78,6 +78,7 @@ const Enquiry = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasCompletedRef = useRef(false);
 
   const slideOneData = useSelector(
     (state) => state.tailoredInfoReducer.slideOne,
@@ -101,6 +102,7 @@ const Enquiry = (props) => {
   const [selectedRoutes, setSelectedRoutes] = useState();
   const isPageLoaded = usePageLoaded();
   const [isRouteChanged, setIsRouteChanged] = useState(false);
+  const [isManualNavigation, setIsManualNavigation] = useState(false);
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination,
   );
@@ -116,7 +118,8 @@ const Enquiry = (props) => {
   const [itineraryId, setItineraryId] = useState(null);
   const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
-  const [shouldNavigateToNextSlide, setShouldNavigateToNextSlide] = useState(false);
+  const [shouldNavigateToNextSlide, setShouldNavigateToNextSlide] =
+    useState(false);
   const [errors, setErrors] = useState({
     startLocation: null,
     destination1: null,
@@ -139,27 +142,10 @@ const Enquiry = (props) => {
   useEffect(() => {
     if (slideIndex === 0) {
       setApiSucceeded(false);
+      setIsManualNavigation(false);
+      hasCompletedRef.current = false;
     }
   }, [slideIndex]);
-
-useEffect(() => {
-  if (apiSucceeded && slideIndex === 0 && !isLoading) {
-    const timer = setTimeout(() => {
-      router.push(
-        {
-          query: {
-            ...router.query,
-            slideIndex: 1,
-          },
-        },
-        undefined,
-        { shallow: true },
-      );
-    }, 200);
-    
-    return () => clearTimeout(timer);
-  }
-}, [apiSucceeded, slideIndex, isLoading, router.query]);
 
   useEffect(() => {
     {
@@ -237,9 +223,9 @@ useEffect(() => {
       if (slideIndex == 1) {
         setIsRouteChanged(false);
       }
+      setIsManualNavigation(true);
       router.push(
         {
-          // pathname: "/new-trip",
           query: {
             ...router.query,
             slideIndex: slideIndex - 1,
@@ -312,6 +298,7 @@ useEffect(() => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    setIsManualNavigation(false);
     initiateItineraryCreate(slideOneData);
   };
 
@@ -475,6 +462,8 @@ useEffect(() => {
 
     try {
       setIsLoading(true);
+      setApiSucceeded(false);
+      hasCompletedRef.current = false;
 
       // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
@@ -484,8 +473,7 @@ useEffect(() => {
       });
       const resData = res.data;
 
-
-        setApiSucceeded(true);
+      setApiSucceeded(true);
 
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
@@ -757,25 +745,38 @@ useEffect(() => {
     }
   }, [slideOneData]);
 
-  const handleLoadingComplete = () => {
-  setIsLoading(false);
-  setLoadingItineraryId(null);
-  
-  // Double-check navigation
-  const currentSlideIndex = Number(router.query.slideIndex) || 0;
-  const nextSlideIndex = currentSlideIndex + 1;
+ const handleLoadingComplete = () => {
+  const MINIMUM_LOADING_TIME = 2000;
 
-  // Immediate navigation attempt
-  router.push(
-    {
-      query: {
-        ...router.query,
-        slideIndex: nextSlideIndex,
-      },
-    },
-    undefined,
-    { shallow: true },
-  );
+  setTimeout(() => {
+    const currentSlideIndex = Number(router.query.slideIndex) || 0;
+
+    if (
+      !isManualNavigation &&
+      (currentSlideIndex === 0 || currentSlideIndex === 1)
+    ) {
+      const nextSlideIndex = currentSlideIndex + 1;
+
+      router.push(
+        {
+          query: {
+            ...router.query,
+            slideIndex: nextSlideIndex,
+          },
+        },
+        undefined,
+        { shallow: true },
+      );
+
+      setTimeout(() => {
+        setIsLoading(false);
+        setLoadingItineraryId(null);
+      }, 300);
+    } else {
+      setIsLoading(false);
+      setLoadingItineraryId(null);
+    }
+  }, MINIMUM_LOADING_TIME);
 };
 
   const handleLoadingError = (errorMessage) => {
@@ -786,7 +787,7 @@ useEffect(() => {
     setApiSucceeded(false);
   };
 
-  if (isLoading && slideIndex === 0) {
+  if (isLoading && (slideIndex === 0 || slideIndex === 1)) {
     return (
       <div className="container">
         <div className="py-2xl">
@@ -1171,6 +1172,10 @@ useEffect(() => {
                   loading={isLoading}
                   disabled={isLoading}
                   onclick={() => {
+                    setIsLoading(true);
+                    setApiSucceeded(false);
+                    setLoadingItineraryId(itineraryId);
+                    setIsManualNavigation(false);
                     initiateItineraryCreate(slideOneData);
                   }}
                 >
@@ -1181,6 +1186,9 @@ useEffect(() => {
                   className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
                     isDesktop && "w-[300px]"
                   } `}
+                  style={{
+                    width: isPageWide ? "300px" : "50%",
+                  }}
                   onClick={() => {
                     trackItineraryRoute(itineraryId, locationsLatLong);
                     router.push(

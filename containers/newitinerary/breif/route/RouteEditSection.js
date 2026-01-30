@@ -1259,11 +1259,15 @@ export const DragDrop = (props) => {
           {(provided, snapshot) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {destinations.map((item, index) => {
-                if (index !== 0 && index !== destinations.length - 1)
+                if (index !== 0 && index !== destinations.length - 1){
+                  const uniqueId = item.cityData?.id 
+                    || item.cityData?.city_id 
+                    || item.cityData?.place_id 
+                    || `city-${index}-${item.cityData?.city_name || item.cityData?.name || 'unknown'}`;
                   return (
                     <Draggable
-                      key={`item-${index}`}
-                      draggableId={`item-${index}`}
+                      key={`city-${index}-${uniqueId}`}
+                      draggableId={`city-${index}-${uniqueId}`}
                       index={index}
                     >
                       {(provided, snapshot) => (
@@ -1294,6 +1298,7 @@ export const DragDrop = (props) => {
                       )}
                     </Draggable>
                   );
+                }
               })}
               {provided.placeholder}
             </div>
