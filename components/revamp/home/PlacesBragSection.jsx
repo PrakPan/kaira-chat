@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { DestinationCard } from "../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper";
