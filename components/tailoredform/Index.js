@@ -750,29 +750,29 @@ const Enquiry = (props) => {
     setLoadingItineraryId(null);
   };
 
-//   if (isLoading  && slideIndex === 0) {
-//   return (
-//     <div className="container">
-//       <div className="py-2xl">
-//         <div className="text-md-lg font-600 leading-xl-sm mb-md">
-//           Plan Your Trip
-//         </div>
-//         <StepsProgress
-//           slideIndex={slideIndex}
-//           totalSlides={totalSlides}
-//           steps={steps}
-//         />
-//       </div>
+  if (isLoading  && slideIndex === 0) {
+  return (
+    <div className="container">
+      <div className="py-2xl">
+        <div className="text-md-lg font-600 leading-xl-sm mb-md">
+          Plan Your Trip
+        </div>
+        <StepsProgress
+          slideIndex={slideIndex}
+          totalSlides={totalSlides}
+          steps={steps}
+        />
+      </div>
       
-//       <RoutePreparationLoader
-//         itineraryId={loadingItineraryId}
-//         onComplete={handleLoadingComplete}
-//         onError={handleLoadingError}
-//         handleCompletion={handleLoadingComplete}
-//       />
-//     </div>
-//   );
-// }
+      <RoutePreparationLoader
+        itineraryId={loadingItineraryId}
+        onComplete={handleLoadingComplete}
+        onError={handleLoadingError}
+        handleCompletion={handleLoadingComplete}
+      />
+    </div>
+  );
+}
 
   return (
     <>

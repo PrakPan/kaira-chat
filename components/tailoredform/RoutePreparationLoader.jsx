@@ -13,34 +13,31 @@ const RoutePreparationLoader = ({
   const socketRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
-  const hasCompletedRef = useRef(false); 
+  const hasCompletedRef = useRef(false);
   const MAX_RECONNECT_ATTEMPTS = 3;
-  const NO_RESPONSE_TIMEOUT = 10000; 
+  const NO_RESPONSE_TIMEOUT = 10000;
   const { sessionId, isReady } = useAnalyticsSession();
 
-
   const handleRealCompletion = () => {
-    // Prevent duplicate completion calls
     if (hasCompletedRef.current) {
       console.log("⚠️ Completion already handled, ignoring duplicate call");
       return;
     }
 
     hasCompletedRef.current = true;
-    
+
     setMessage("Route prepared successfully!");
-    
+
     cleanupTimers();
-    
+
     // ✅ Close WebSocket immediately to prevent reconnection
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       console.log("🔌 Closing WebSocket after successful completion");
       socketRef.current.close();
     }
-    
+
     handleCompletion?.();
   };
-
 
   const handleError = (errorMessage) => {
     if (hasCompletedRef.current) {
@@ -71,7 +68,6 @@ const RoutePreparationLoader = ({
       return;
     }
 
-
     const initializeSocket = () => {
       // Don't reconnect if already completed
       if (hasCompletedRef.current) {
@@ -91,26 +87,23 @@ const RoutePreparationLoader = ({
         };
 
         socketRef.current.onmessage = (event) => {
-
           try {
             const data = JSON.parse(event.data);
 
-            if (data.type === "reasoning_summary_part" && data.text) {
-
+            if (data.type === "progress" && data.text) {
               setReasoningParts((prev) => {
                 const newParts = [...prev, data.text];
                 return newParts;
               });
 
-              const cleanText = data.text.replace(/\*\*/g, "").trim();
-              setMessage(cleanText);
+              setMessage(data.text.trim());
 
               const currentParts = reasoningParts.length + 1;
               const newProgress = Math.min(20 + currentParts * 15, 95);
             }
 
-            // Handle text_complete event - this is the success case
-            if (data.type === "text_complete") {
+            // Handle done event - this is the success case
+            if (data.type === "done") {
               handleRealCompletion();
               return;
             }
@@ -129,11 +122,7 @@ const RoutePreparationLoader = ({
               return;
             }
           } catch (err) {
-            console.error(
-              "Failed to parse WebSocket message",
-              err,
-              event.data,
-            );
+            console.error("Failed to parse WebSocket message", err, event.data);
           }
         };
 
@@ -202,12 +191,32 @@ const RoutePreparationLoader = ({
         </div>
 
         {/* Title */}
-        <h2 className="text-xl-md font-600 text-gray-900">Preparing your route</h2>
+        {/* <h2 className="text-xl-md font-600 text-gray-900">
+          Preparing your route...
+        </h2> */}
 
         <div className="min-h-[60px] flex items-center justify-center">
-          <p className="text-md text-gray-600 leading-relaxed animate-fade-in">
-            {message}
-          </p>
+          <div className="text-md text-gray-600 leading-relaxed animate-fade-in max-w-xl">
+            {message.split("\n\n").map((paragraph, idx) => {
+              const isBold =
+                paragraph.startsWith("**") && paragraph.includes("**");
+
+              if (isBold) {
+                const boldText = paragraph.replace(/\*\*/g, "");
+                return (
+                  <p key={idx} className="text-xl-md font-600 text-gray-900 mb-2">
+                    {boldText}
+                  </p>
+                );
+              }
+
+              return (
+                <p key={idx} className="mb-2 last:mb-0">
+                  {paragraph}
+                </p>
+              );
+            })}
+          </div>
         </div>
       </div>
 
