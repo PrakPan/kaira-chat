@@ -125,6 +125,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <link rel="canonical" href="https://thetarzanway.com" />
 
         {/* Non-blocking CSS */}
+        <script
+          type="module"
+          crossorigin
+          src="/vendor/panorama-slider.js"
+        ></script>
         <link
           rel="preload"
           href="/vendor/panorama-slider.css"
