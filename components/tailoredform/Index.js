@@ -136,6 +136,12 @@ const Enquiry = (props) => {
   const source = useSourceParams();
 
   useEffect(() => {
+    if (slideIndex === 0) {
+      setApiSucceeded(false);
+    }
+  }, [slideIndex]);
+
+  useEffect(() => {
     {
       trackItineraryCreation();
     }
@@ -449,7 +455,7 @@ const Enquiry = (props) => {
 
     try {
       setIsLoading(true);
-      
+
       // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
         headers: {
@@ -458,7 +464,7 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
-      if(resData){
+      if (resData) {
         setApiSucceeded(true);
       }
       trackItineraryInitiated("itinerary_initiated");
@@ -492,7 +498,7 @@ const Enquiry = (props) => {
       }
 
       setIsRouteChanged(false);
-      
+
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       //will be removed later
@@ -518,7 +524,7 @@ const Enquiry = (props) => {
       setIsLoading(false);
       setApiSucceeded(false);
       setLoadingItineraryId(null);
-    } 
+    }
     // finally {
     //   setIsLoading(false);
     // }
@@ -753,37 +759,37 @@ const Enquiry = (props) => {
   };
 
   const handleLoadingError = (errorMessage) => {
-  console.error("❌ Loading error:", errorMessage);
-  setError(errorMessage);
-  setIsLoading(false);
-  setLoadingItineraryId(null);
-  setApiSucceeded(false);
-};
+    console.error("❌ Loading error:", errorMessage);
+    setError(errorMessage);
+    setIsLoading(false);
+    setLoadingItineraryId(null);
+    setApiSucceeded(false);
+  };
 
-  if (isLoading  && slideIndex === 0) {
-  return (
-    <div className="container">
-      <div className="py-2xl">
-        <div className="text-md-lg font-600 leading-xl-sm mb-md">
-          Plan Your Trip
+  if (isLoading && slideIndex === 0) {
+    return (
+      <div className="container">
+        <div className="py-2xl">
+          <div className="text-md-lg font-600 leading-xl-sm mb-md">
+            Plan Your Trip
+          </div>
+          <StepsProgress
+            slideIndex={slideIndex}
+            totalSlides={totalSlides}
+            steps={steps}
+          />
         </div>
-        <StepsProgress
-          slideIndex={slideIndex}
-          totalSlides={totalSlides}
-          steps={steps}
+
+        <RoutePreparationLoader
+          itineraryId={loadingItineraryId}
+          onComplete={handleLoadingComplete}
+          onError={handleLoadingError}
+          handleCompletion={handleLoadingComplete}
+          apiSucceeded={apiSucceeded}
         />
       </div>
-      
-      <RoutePreparationLoader
-        itineraryId={loadingItineraryId}
-        onComplete={handleLoadingComplete}
-        onError={handleLoadingError}
-        handleCompletion={handleLoadingComplete}
-        apiSucceeded={apiSucceeded}
-      />
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <>
@@ -990,8 +996,8 @@ const Enquiry = (props) => {
                       slideIndex == 1
                         ? "w-[100%]"
                         : isDesktop
-                          ? `max-w-[600px] ${slideIndex == 0 ? "pb-[260px]" : ""}`
-                          : `w-full ${slideIndex == 0 ? "pb-[300px]" : ""}`
+                          ? `max-w-[600px] ${slideIndex == 0 ? (error ? "pb-[50px]" : "pb-[5px]") : ""}`
+                          : `w-full ${slideIndex == 0 ? (error ? "pb-[40px]" : "pb-[5px]") : ""}`
                     }`}
                   >
                     <Flickity
@@ -1063,8 +1069,6 @@ const Enquiry = (props) => {
                         />
                       </BottomModal>
                     )}
-
-                    
                   </div>
                 </div>
               </div>
@@ -1077,8 +1081,8 @@ const Enquiry = (props) => {
         {/* <div className="border-b-sm"></div> */}
         <div className="container p-md">
           {error ? (
-                      <p className="text-sm text-red-600 text-center">{"Connection Lost Please try again" || error}</p>
-                    ) : null}
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          ) : null}
           {slideIndex === 0 && (
             <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
               <div className="flex justify-between">

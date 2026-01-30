@@ -198,7 +198,7 @@ const RoutePreparationLoader = ({
         <div className="relative">
           <div className="">
             <Image
-              src="/delivery 1.svg"
+              src="/delivery 1-1.svg"
               width={120}
               height={120}
               alt="Route preparation"
