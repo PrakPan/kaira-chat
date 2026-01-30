@@ -116,6 +116,7 @@ const Enquiry = (props) => {
   const [itineraryId, setItineraryId] = useState(null);
   const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
+  const [shouldNavigateToNextSlide, setShouldNavigateToNextSlide] = useState(false);
   const [errors, setErrors] = useState({
     startLocation: null,
     destination1: null,
@@ -140,6 +141,25 @@ const Enquiry = (props) => {
       setApiSucceeded(false);
     }
   }, [slideIndex]);
+
+useEffect(() => {
+  if (apiSucceeded && slideIndex === 0 && !isLoading) {
+    const timer = setTimeout(() => {
+      router.push(
+        {
+          query: {
+            ...router.query,
+            slideIndex: 1,
+          },
+        },
+        undefined,
+        { shallow: true },
+      );
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }
+}, [apiSucceeded, slideIndex, isLoading, router.query]);
 
   useEffect(() => {
     {
@@ -464,9 +484,9 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
-      if (resData) {
+
         setApiSucceeded(true);
-      }
+
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
       if (routeToTrack) {
@@ -521,9 +541,9 @@ const Enquiry = (props) => {
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
-      setIsLoading(false);
       setApiSucceeded(false);
       setLoadingItineraryId(null);
+      setIsLoading(false);
     }
     // finally {
     //   setIsLoading(false);
@@ -738,25 +758,25 @@ const Enquiry = (props) => {
   }, [slideOneData]);
 
   const handleLoadingComplete = () => {
-    console.log("✅ Loading complete, navigating to next slide");
+  setIsLoading(false);
+  setLoadingItineraryId(null);
+  
+  // Double-check navigation
+  const currentSlideIndex = Number(router.query.slideIndex) || 0;
+  const nextSlideIndex = currentSlideIndex + 1;
 
-    setIsLoading(false);
-    setLoadingItineraryId(null);
-
-    const currentSlideIndex = Number(router.query.slideIndex) || 0;
-    const nextSlideIndex = currentSlideIndex + 1;
-
-    router.push(
-      {
-        query: {
-          ...router.query,
-          slideIndex: nextSlideIndex,
-        },
+  // Immediate navigation attempt
+  router.push(
+    {
+      query: {
+        ...router.query,
+        slideIndex: nextSlideIndex,
       },
-      undefined,
-      { shallow: true },
-    );
-  };
+    },
+    undefined,
+    { shallow: true },
+  );
+};
 
   const handleLoadingError = (errorMessage) => {
     console.error("❌ Loading error:", errorMessage);
