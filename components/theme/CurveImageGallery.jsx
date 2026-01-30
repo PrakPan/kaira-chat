@@ -1,14 +1,36 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper";
-import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { imgUrlEndPoint } from "./ThemeConstants";
+
+/* -------- ONLY IMAGE OPTIMIZATION HELPERS -------- */
+const getImageUrl = (key, width, height) => {
+  const payload = {
+    bucket: "thetarzanway-web",
+    key,
+    edits: {
+      resize: {
+        width,
+        height,
+        fit: "inside",
+      },
+    },
+  };
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+};
+
+const getSrcSet = (src, height) =>
+  [320, 420, 520, 640, 720]
+    .map((w) => `${getImageUrl(src, w, height)} ${w}w`)
+    .join(", ");
+/* ----------------------------------------------- */
 
 const Carousel3D = () => {
-  const baseImages = [
+ const baseImages = [
     {
       image: "media/ladakh-carousel/pexels-yogendras31-14090506.jpg",
       title: "Leh Palace",
@@ -95,7 +117,7 @@ const Carousel3D = () => {
         </div>
       </div>
 
-      {/* Desktop Panorama Slider max-w-[1520px] mx-auto */}
+      {/* Desktop Panorama Slider */}
       <div className="md:block ">
         <div
           className="panorama-slider text-antialiased"
@@ -124,9 +146,14 @@ const Carousel3D = () => {
                   >
                     <img
                       className="slide-image block w-full h-full object-cover"
-                      src={`https://images.thetarzanway.com/${item.image}`}
+                      src={getImageUrl(item.image, 420, 416)}
+                      srcSet={getSrcSet(item.image, 416)}
+                      sizes="420px"
                       alt={item.title}
+                      loading="lazy"
+                      decoding="async"
                     />
+
                     {/* Gradient Overlay */}
                     <div
                       className=" absolute inset-0"
@@ -192,11 +219,14 @@ const Carousel3D = () => {
           {baseImages.map((item, index) => (
             <SwiperSlide key={index}>
               <div className="relative w-[352px] h-[416px] rounded-[16px] overflow-hidden group cursor-pointer">
-                <Image
-                  src={`https://images.thetarzanway.com/${item.image}`}
+                <img
+                  src={getImageUrl(item.image, 360, 416)}
+                  srcSet={getSrcSet(item.image, 416)}
+                  sizes="360px"
                   alt={item.title}
-                  fill
-                  className="object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
                 />
 
                 {/* Gradient Overlay */}

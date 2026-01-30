@@ -24,6 +24,9 @@ const DestinationCard = ({
   placesBragSection,
   link,
   total_price,
+  imageFallback,
+  imageSrcSet,
+  imageSizes,
   ...props
 }) => {
   const router = useRouter();
@@ -40,15 +43,20 @@ const DestinationCard = ({
     >
       {/* dummy load  */}
       <Image
-        src={imgSrc || image}
-        alt={title}
+        src={imageFallback || imgSrc || image}
+        srcSet={imageSrcSet}        
+        sizes={imageSizes}         
         fill
-        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        style={{ borderRadius: "14px", opacity:0 }}
-        priority
+        alt={title}
+        className="object-cover"
         onLoad={() => setImgLoaded(true)}
         onLoadingComplete={() => setImgLoaded(true)}
+        loading="lazy"
+        fetchPriority="low"
+        style={{ opacity: 0 }}
+        quality={0}
       />
+
 
       {/* SKELETON VERSION */}
       {!imgLoaded && (
@@ -110,16 +118,30 @@ const DestinationCard = ({
           {...props}
         >
           <div className="absolute inset-0">
-            <Image
-              src={imgSrc || image}
+            <picture>
+              <source
+                srcSet={imageSrcSet}
+                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 33vw"
+              />
+              <img
+                src={ imgSrc || image} 
+                alt={title}
+                className="absolute inset-0 w-full h-full object-cover"
+                loading="lazy"
+              />
+            </picture>
+            {/* <Image
+              src={imageFallback || imgSrc || image}
+              srcSet={imageSrcSet}        // NEW
               alt={title}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              priority
               onLoad={() => setImgLoaded(true)}
               onLoadingComplete={() => setImgLoaded(true)}
-            />
+              fetchPriority="low"
+            /> */}
+
 
             {showImageText && (
               <div className="absolute inset-0" style={{ background: gradientOverlay }} />

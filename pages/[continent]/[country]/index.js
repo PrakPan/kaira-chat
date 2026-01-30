@@ -1,43 +1,33 @@
 import Head from "next/head";
-import { connect } from "react-redux";
-import { useEffect } from "react";
 import Layout from "../../../components/Layout";
-import CountryPage from "../../../containers/country/Index";
+import CountryPageWrapper from "../../../components/country/CountryPageWrapper";
 import axioscountrydetailsinstance, {
   getCountryPaths,
 } from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
-import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
 import ThemePage from "../../../containers/travelplanner/ThemePage";
-import { useRouter } from "next/router";
-import { useAnalytics } from "../../../hooks/useAnalytics";
 
 const TravelPlanner = (props) => {
-  const router = useRouter();
-  const { trackPageView } = useAnalytics();
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-     trackPageView(props.Type, `${props?.Data?.name} Page`);
   }, []);
 
   return (
-    <Layout
+      <Layout
       destination={props?.Data?.name}
       id={props?.Data?.id}
       page={"Country Page"}
     >
       <Head>
-        <title>
-          {props?.Data?.name} | Trip Planner & Itinerary | The Tarzan Way
-        </title>
+        <title>{pageTitle}</title>
         <meta
           name="description"
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
-        ></meta>
+        />
         <meta
           property="og:title"
           content={
@@ -52,8 +42,7 @@ const TravelPlanner = (props) => {
         <meta
           property="keywords"
           content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
-        ></meta>
-
+        />
         <link
           rel="canonical"
           href={`https://thetarzanway.com/${props.path}`}
@@ -92,7 +81,7 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
     const data = res.data;
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < 2; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug] = pathArr;
       paths.push({
@@ -112,7 +101,6 @@ export async function getStaticPaths() {
   }
 }
 
-
 export async function getStaticProps(context) {
   let data = null;
   let locations = [];
@@ -121,16 +109,21 @@ export async function getStaticProps(context) {
   let Type = "Country";
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
-  let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
+  let pageId = PagesToIdMapping[path] !== undefined ? PagesToIdMapping[path] : "";
 
   let isThemePage = false;
+  let pageTitle = `${country.charAt(0).toUpperCase() + country.slice(1)} | Trip Planner & Itinerary | The Tarzan Way`;
 
   try {
-    //mercury api
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
-    );
+    // Fetch country data
+    const res = await axios.get(`${MERCURY_HOST}/api/v1/geos/country/${pageId}`);
     data = res.data.data.country;
+    
+    // Update pageTitle with actual country name if available
+    if (data?.name) {
+      pageTitle = `${data.name} | Trip Planner & Itinerary | The Tarzan Way`;
+    }
+    
     if (data?.page_data && Object.keys(data?.page_data).length > 0) {
       isThemePage = true;
     }
@@ -142,13 +135,13 @@ export async function getStaticProps(context) {
       };
     }
 
-    //mercury api
+    // Fetch continent data
     const continentData = await axiospagelistinstance.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
     for (let i = 0; i < continentData.data.data.pages.length; i++) {
-      let continentSlug=continentData.data.data.pages[i].slug
-      
+      let continentSlug = continentData.data.data.pages[i].slug;
+
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${continentSlug}`
       );
@@ -168,7 +161,7 @@ export async function getStaticProps(context) {
   }
 
   try {
-    //dev api
+    // Fetch hot location search data
     const response = await axioslocationsinstance.get(
       `hot_destinations/?country=${country}/`
     );
@@ -191,14 +184,9 @@ export async function getStaticProps(context) {
       page_id: PagesToIdMapping[path],
       Type,
       pageData: isThemePage,
+      pageTitle,
     },
   };
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
-  };
-};
-
-export default connect(null, mapDispatchToProps)(TravelPlanner);
+export default TravelPlanner;

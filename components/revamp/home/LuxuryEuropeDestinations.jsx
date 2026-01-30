@@ -1,23 +1,38 @@
-import React, { useState, useRef } from "react";
-import { Japan } from "../assets";
+import { useRef } from "react";
 import { DestinationCard } from "../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import Button from "../common/components/button";
 import Link from "next/link";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
-const LuxuryEuropeDestinations = (props) => {
-  // Sample destination data - replace with your actual data
+
+const getImageUrl = (key, width, height) => {
+  let payload = {
+    bucket: "thetarzanway-web",
+    key,
+    edits: {
+      resize: {
+        width,
+        fit: "cover",
+      },
+    },
+  };
+  if (height) {
+    payload.edits.resize['height'] = height
+  }
+
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+};
+const getSrcSet = (src) =>
+  [360, 400, 600, 800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+
+const LuxuryEuropeDestinations = () => {
   const destinations = [
     {
       id: 1,
@@ -35,7 +50,7 @@ const LuxuryEuropeDestinations = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/france",
-      image: `${imgUrlEndPoint}/media/website/france.jpg`,
+      image: `media/website/france.jpg`,
     },
     {
       id: 2,
@@ -51,7 +66,7 @@ const LuxuryEuropeDestinations = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/italy",
-      image: `${imgUrlEndPoint}/media/countries/168441961093255019187927246094.jpg`,
+      image: `media/countries/168441961093255019187927246094.jpg`,
     },
     {
       id: 3,
@@ -67,46 +82,54 @@ const LuxuryEuropeDestinations = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/spain",
-      image: `${imgUrlEndPoint}/media/countries/175344481739372777938842773438.jpg`,
+      image: `media/countries/175344481739372777938842773438.jpg`,
     },
     {
       id: 4,
       title: "Finland",
       description:
         "Escape to a land of serene lakes, enchanting forests, and the magical glow of the Northern Lights.",
-        tags: [
-          "Nature's Paradise",
-          "Peaceful & Serene",
-          "Winter Wonderland",
-          "Offbeat Wonder",
-        ],
+      tags: [
+        "Nature's Paradise",
+        "Peaceful & Serene",
+        "Winter Wonderland",
+        "Offbeat Wonder",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "europe/finland",
-      image: `${imgUrlEndPoint}/media/countries/168442263137298607826232910156.jpg`,
+      image: `media/countries/168442263137298607826232910156.jpg`,
     },
-
     {
       id: 5,
       title: "Singapore",
       description:
         "Discover a dynamic city where futuristic skyline, lush gardens, and vibrant multiculturalism ignite your senses and inspire wonder.",
-      tags: ["Adventure and Outdoors","Art and Culture","Shopping"],
+      tags: ["Adventure and Outdoors", "Art and Culture", "Shopping"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/singapore",
-      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
+      image: `media/cities/170359716563205981254577636719.jpg`,
     },
     {
       id: 6,
       title: "Prague",
       description:
         "Welcome to Prague, the city that has captured the heart of many travellers for centuries!",
-      tags: ["Adventure and Outdoors","spiritual","Nature and Retreat","Heritage","Art and Culture","Hidden Gem","Very Popular","Romantic"],
+      tags: [
+        "Adventure and Outdoors",
+        "spiritual",
+        "Nature and Retreat",
+        "Heritage",
+        "Art and Culture",
+        "Hidden Gem",
+        "Very Popular",
+        "Romantic",
+      ],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/indonesia/bali",
-      image: `${imgUrlEndPoint}/media/cities/168553058279981160163879394531.jpeg`,
+      image: `media/cities/168553058279981160163879394531.jpeg`,
     },
   ];
 
@@ -117,17 +140,6 @@ const LuxuryEuropeDestinations = (props) => {
 
   const handleSwiper = (swiper) => {
     swiperRef.current = swiper;
-    setActiveIndex(swiper.activeIndex);
-    // For non-loop mode, slideCount = slides.length
-    // For loop mode, Swiper duplicates slides, so subtract loopedSlides*2
-    const count = swiper.loopedSlides
-      ? swiper.slides.length - swiper.loopedSlides * 2
-      : swiper.slides.length;
-    setSlideCount(count);
-  };
-
-  const handleSlideChange = (swiper) => {
-    setActiveIndex(swiper.activeIndex);
   };
 
   return (
@@ -138,12 +150,9 @@ const LuxuryEuropeDestinations = (props) => {
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
             Elevating Luxury Across Europe
           </h2>
-          <p
-            className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0 text-base"
-            style={{ fontSize: "16px" }}
-          >
-            Discover iconic cities, elite resorts, and unforgettable 
-            experiences crafted for discerning travelers.
+          <p className="text-gray-600 max-w-2xl mx-auto px-2 sm:px-0 text-base">
+            Discover iconic cities, elite resorts, and unforgettable experiences
+            crafted for discerning travelers.
           </p>
         </div>
 
@@ -155,66 +164,59 @@ const LuxuryEuropeDestinations = (props) => {
             spaceBetween={16}
             slidesPerView={1}
             onSwiper={handleSwiper}
-            onSlideChange={handleSlideChange}
+            preloadImages={false}
+            lazy={{ loadPrevNext: true }}
             navigation={{
               nextEl: ".fullslider-n",
               prevEl: ".fullslider-p",
               clickable: true,
             }}
             breakpoints={{
-              // when window width is >= 640px
-              640: {
-                slidesPerView: 1,
-                spaceBetween: 16,
-              },
-              // when window width is >= 768px
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              // when window width is >= 1024px
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
+              640: { slidesPerView: 1, spaceBetween: 16 },
+              768: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 24 },
             }}
           >
             {destinations.map((destination) => (
               <SwiperSlide key={destination.id}>
-                <div className="w-full">
-                  <DestinationCard
-                    placesBragSection={true}
-                    title={destination.title}
-                    description={destination.description}
-                    image={destination.image}
-                    tags={destination.tags}
-                    link={destination.link}
-                    gradientOverlay={destination.gradientOverlay}
-                    onClick={() => {
-                      console.log(`Clicked on ${destination.title}`);
-                    }}
-                  />
-                </div>
+                <DestinationCard
+                  placesBragSection={true}
+                  title={destination.title}
+                  description={destination.description}
+                  image={destination.image}
+                  imageSrcSet={getSrcSet(destination.image)}
+                  imageSizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 33vw"
+                  imageFallback={getImageUrl(destination.image, 410, 376)}
+                  tags={destination.tags}
+                  link={destination.link}
+                  gradientOverlay={destination.gradientOverlay}
+                />
               </SwiperSlide>
             ))}
           </Swiper>
 
-          {/* Custom Prev Button */}
+          {/* Prev Button */}
           <div className="fullslider-p" aria-hidden>
-            <div className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1">
-              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div
+              aria-label="Previous destinations"
+              className="absolute -left-3 sm:left-2 top-1/2 -translate-y-1/2 z-10 p-1"
+            >
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronLeft}
-                  className="text-white  text-md transition-colors duration-300 transform w-full "
+                  className="text-white text-md transition-colors duration-300 transform w-full"
                 />
               </div>
             </div>
           </div>
 
-          {/* Custom Next Button */}
+          {/* Next Button */}
           <div className="fullslider-n" aria-hidden>
-            <div className="absolute -right-3  sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1">
-              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm  rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
+            <div
+              aria-label="Next destinations"
+              className="absolute -right-3 sm:right-2 top-1/2 -translate-y-1/2 z-10 p-1"
+            >
+              <div className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex items-center justify-center transform transition-all duration-300 sm:hover:scale-110 cursor-pointer">
                 <FontAwesomeIcon
                   icon={faChevronRight}
                   className="text-white transition-colors duration-300 transform"

@@ -1,11 +1,8 @@
-import React, { useRef, useEffect, useState } from "react";
+
+
+import React, { useRef, useState } from "react";
 import Button from "../common/components/button";
-import {
-  ANIMATION_CONFIG,
-  createEntranceAnimation,
-  gsap,
-  useGSAP,
-} from "../common/gsapConfig";
+import { gsap, useGSAP } from "../common/gsapConfig";
 import Link from "next/link";
 import useMediaQuery from "../../media";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
@@ -16,9 +13,11 @@ const JourneySimplified = (props) => {
   const headingRef = useRef(null);
   const stepsRef = useRef(null);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
-  // Custom SVG icons
-  const StarIcon = () => (
-    <svg
+
+/* ---------------- ICONS ---------------- */
+
+const StarIcon = React.memo(() => (
+  <svg
       xmlns="http://www.w3.org/2000/svg"
       width="30"
       height="30"
@@ -38,10 +37,10 @@ const JourneySimplified = (props) => {
         fill="#FFD600"
       />
     </svg>
-  );
+));
 
-  const HeartIcon = () => (
-    <svg
+const HeartIcon = React.memo(() => (
+   <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
@@ -53,10 +52,10 @@ const JourneySimplified = (props) => {
         fill="#FF1000"
       />
     </svg>
-  );
+));
 
-  const DollarIcon = () => (
-    <svg
+const DollarIcon = React.memo(() => (
+   <svg
       xmlns="http://www.w3.org/2000/svg"
       width="27"
       height="20"
@@ -68,10 +67,10 @@ const JourneySimplified = (props) => {
         fill="#5CBA66"
       />
     </svg>
-  );
+));
 
-  const ShieldIcon = () => (
-    <svg
+const ShieldIcon = React.memo(() => (
+   <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="25"
@@ -83,206 +82,108 @@ const JourneySimplified = (props) => {
         fill="#6600FF"
       />
     </svg>
-  );
+));
 
-  // Dynamic card data with custom SVG icons
-  const journeyFeatures = [
-    {
-      id: 1,
-      icon: <StarIcon />,
-      title: "Dream It, Tell Us.",
-      description:
-        "Tell us your vibe — romantic, offbeat, solo, or group. Kaira turns it into a real plan instantly.",
-      iconBgColor: "#FFF9DC",
-    },
-    {
-      id: 2,
-      icon: <HeartIcon />,
-      title: "Smart + Soulful Itineraries.",
-      description:
-        "Built by AI + local experts, you get a plan that's logical and love-filled.",
-      iconBgColor: "#FAEBEA",
-    },
-    {
-      id: 3,
-      icon: <DollarIcon />,
-      title: "Transparent Pricing, Always.",
-      description:
-        "No hidden charges, commissions or shady operators. You pay for what you pick.",
-      iconBgColor: "#EBFFED",
-    },
-    {
-      id: 4,
-      icon: <ShieldIcon />,
-      title: "TTW All-Cover Shield.",
-      description:
-        "Travel with 24*7 concierge, local on-ground help & insurance advisory that has your back.",
-      iconBgColor: "#F8F4FE",
-    },
-  ];
+/* ---------------- DATA ---------------- */
 
-  // GSAP Animation for step-by-step process with Intersection Observer
+const journeyFeatures = [
+  {
+    id: 1,
+    icon: <StarIcon />,
+    title: "Dream It, Tell Us.",
+    description:
+      "Tell us your vibe — romantic, offbeat, solo, or group. Kaira turns it into a real plan instantly.",
+    bg: "#FFF9DC",
+  },
+  {
+    id: 2,
+    icon: <HeartIcon />,
+    title: "Smart + Soulful Itineraries.",
+    description:
+      "Built by AI + local experts, you get a plan that's logical and love-filled.",
+    bg: "#FAEBEA",
+  },
+  {
+    id: 3,
+    icon: <DollarIcon />,
+    title: "Transparent Pricing, Always.",
+    description:
+      "No hidden charges, commissions or shady operators. You pay for what you pick.",
+    bg: "#EBFFED",
+  },
+  {
+    id: 4,
+    icon: <ShieldIcon />,
+    title: "TTW All-Cover Shield.",
+    description:
+      "Travel with 24/7 concierge, local on-ground help & insurance advisory.",
+    bg: "#F8F4FE",
+  },
+];
+
+/* ---------------- COMPONENT ---------------- */
+
+  const sectionRef = useRef(null);
+  const cardsRef = useRef([]);
+
   useGSAP(
     () => {
-      // Check if refs are properly attached
-      if (!headingRef.current || !stepsRef.current || !containerRef.current) {
-        console.warn("GSAP refs not properly attached");
-        return;
-      }
-
-      // Split the steps text into individual words/steps
-      const stepsElement = stepsRef.current;
-      const stepWords = stepsElement.textContent.split(/\s*→\s*/);
-
-      // Clear the original content and create spans for each step
-      stepsElement.innerHTML = "";
-      const stepSpans = stepWords.map((step, index) => {
-        const span = document.createElement("span");
-        span.textContent = step.trim();
-        span.className = "step-word";
-        stepsElement.appendChild(span);
-
-        // Add arrow after each step except the last one
-        if (index < stepWords.length - 1) {
-          const arrow = document.createElement("span");
-          arrow.textContent = " → ";
-          arrow.className = "step-arrow";
-          stepsElement.appendChild(arrow);
-        }
-
-        return span;
-      });
-
-      // Get all elements (steps + arrows)
-      const allElements = stepsElement.querySelectorAll(
-        ".step-word, .step-arrow"
-      );
-
-      // Set initial states - make sure elements are hidden initially
-      gsap.set(headingRef.current, {
-        opacity: 0,
-        y: 50,
-      });
-      gsap.set(allElements, {
-        opacity: 0,
-        y: 30,
-        scale: 0.8,
-      });
-
-      // Create timeline that will be triggered manually
       const tl = gsap.timeline({
-        paused: true, // Important: start paused
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 70%",
+          once: true,
+        },
       });
 
-      // Animate heading first
-      tl.to(headingRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "back.out(1.7)",
+      tl.from(cardsRef.current, {
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power3.out",
+        stagger: 0.15,
       });
-
-      // Animate each step with a smooth stagger
-      tl.to(
-        allElements,
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.6,
-          ease: "back.out(1.7)",
-          stagger: {
-            amount: 1.5, // Total time for all steps
-            from: "start",
-            ease: "power2.inOut",
-          },
-        },
-        "-=0.3"
-      ); // Start slightly before heading animation completes
-
-      // Use Intersection Observer as fallback
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              tl.play();
-              observer.unobserve(entry.target); // Only animate once
-            }
-          });
-        },
-        {
-          threshold: 0.3, // Trigger when 30% of element is visible
-          rootMargin: "-10% 0px -10% 0px", // Some margin for better timing
-        }
-      );
-
-      // Start observing
-      observer.observe(containerRef.current);
-
-      // Cleanup function
-      return () => {
-        observer.disconnect();
-      };
     },
-    { scope: containerRef, dependencies: [] }
+    { scope: sectionRef }
   );
-
-  const isDesktop = useMediaQuery("(min-width:767px)");
 
   return (
     <section
-      ref={containerRef}
-      className="py-12 sm:py-16 lg:py-24 max-sm:px-2 sm:px-4 lg:px-8 bg-white"
+      ref={sectionRef}
+      className="py-16 lg:py-24 px-4 bg-white"
     >
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-16 lg:mb-20">
-          <h2
-            // ref={headingRef}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 px-5"
-            style={{ maxFontSize: "40px" }}
-          >
-            {isDesktop ? "Because Great Trips Should Feel Easy" : "Your Journey, Simplified"}
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            Because Great Trips Should Feel Easy
           </h2>
-          <p
-            // ref={stepsRef}
-            className="text-base font-normal text-gray-600 max-w-2xl mx-auto italic"
-            style={{ fontStyle: "normal" }}
-          >
+          <p className="text-gray-600 max-w-2xl mx-auto">
             No chaos. No guesswork. Just good journeys.
-            {/* Plan → Personalize → Pack → Peace of Mind */}
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12 lg:mb-16">
-          {journeyFeatures.map((feature) => (
+        {/* Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {journeyFeatures.map((feature, i) => (
             <div
               key={feature.id}
-              className="rounded-2xl p-6 lg:p-8 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              ref={(el) => (cardsRef.current[i] = el)}
+              className="rounded-2xl p-6 text-center hover:shadow-lg transition-transform hover:-translate-y-1"
             >
-              {/* Icon */}
               <div
-                className="w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center mx-auto mb-4 lg:mb-6"
-                style={{ backgroundColor: feature.iconBgColor }}
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: feature.bg }}
               >
                 {feature.icon}
               </div>
-
-              {/* Title */}
-              <h3 className="text-base font-medium text-gray-900 mb-3 lg:mb-4">
-                {feature.title}
-              </h3>
-
-              {/* Description */}
-              <p className="text-sm font-normal text-gray-700 leading-relaxed">
-                {feature.description}
-              </p>
+              <h3 className="text-base font-medium text-gray-900 mb-3 lg:mb-4">{feature.title}</h3>
+              <p className="text-sm text-gray-700">{feature.description}</p>
             </div>
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* CTA */}
         <div className="text-center">
                 {/* <Link href="/new-trip"> */}
                   <Button

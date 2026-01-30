@@ -1,58 +1,81 @@
 import React from "react";
 import Image from "next/image";
-import Button from "../common/components/button";
-import { Pinned, Japan } from "../assets";
 import Link from "next/link";
-import useMediaQuery from "../../media";
 import styles from "./HeroSection.module.scss";
 
 const TrustFactors = () => {
-  // Statistics data
-  const isDesktop = useMediaQuery("(min-width:767px)");
   return (
-   <div>
-        <div className={styles.featuresContainer}>
-          <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>
-              <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/google.svg" width={24} height={24} alt="5 Star Rating" />
-              </div>
-            </div>
-            <span className={styles.featureText}>4.8+ rated</span>
+    <div>
+      <ul className={styles.featuresContainer}>
+        <li className={styles.featureItem}>
+          <div className={styles.featureIcon}>
+            <Image
+              src="/google.svg"
+              width={24}
+              height={24}
+              alt="5 Star Rating"
+              loading="lazy"
+              fetchPriority="low"
+              className="rounded-circle"
+            />
           </div>
-          
-          <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>
-              <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/assets/trustfactor/trust-factor-3.svg" width={24} height={24} alt="All Taxes & Fees Included" />
-              </div>
-            </div>
-            <span className={styles.featureText}>All Taxes & Fees Included</span>
+          <span className={styles.featureText}>4.8+ rated</span>
+        </li>
+
+        <li className={styles.featureItem}>
+          <div className={styles.featureIcon}>
+            <Image
+              src="/assets/trustfactor/trust-factor-3.svg"
+              width={24}
+              height={24}
+              alt="All Taxes & Fees Included"
+              loading="lazy"
+              fetchPriority="low"
+            />
           </div>
-          
-          <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>
-              <div className="w-6 h-6 relative rounded-full overflow-hidden">
-              <Image src="/assets/trustfactor/trust-factor-2.svg" width={24} height={24} alt="No Hidden Charges" />
-              </div>
-            </div>
-            <span className={styles.featureText}>24/7 Support</span>
+          <span className={styles.featureText}>
+            All Taxes &amp; Fees Included
+          </span>
+        </li>
+
+        <li className={styles.featureItem}>
+          <div className={styles.featureIcon}>
+            <Image
+              src="/assets/trustfactor/trust-factor-2.svg"
+              width={24}
+              height={24}
+              alt="24/7 Support"
+              loading="lazy"
+              fetchPriority="low"
+            />
           </div>
-          
-          <div className={styles.featureItem}>
-            <div className={styles.featureIcon}>
-              <div className="w-6 h-6 relative  overflow-hidden">
-              <Image src="/assets/trustfactor/trust-factor-4.svg" width={24} height={24} alt="Secure Payments" />
-              </div>
-            </div>
-            <span className={styles.featureText}>Secure Payments</span>
+          <span className={styles.featureText}>24/7 Support</span>
+        </li>
+
+        <li className={styles.featureItem}>
+          <div className={styles.featureIcon}>
+            <Image
+              src="/assets/trustfactor/trust-factor-4.svg"
+              width={24}
+              height={24}
+              alt="Secure Payments"
+              loading="lazy"
+              fetchPriority="low"
+            />
           </div>
-        </div>
-        
-        {/* Background Decorative Curved Lines */}
-        <div className={styles.featuresBg}>
-          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <path 
+          <span className={styles.featureText}>Secure Payments</span>
+        </li>
+      </ul>
+
+      <div className={styles.featuresBg}>
+        <svg
+          width="100%"
+          height="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
+        >
+         <path 
               d="M 0 30 Q 100 10, 200 30 T 400 30 T 600 30 T 800 30 T 1000 30 T 1200 30 T 1400 30" 
               stroke="rgba(255, 255, 255, 0.15)" 
               strokeWidth="2" 
@@ -79,10 +102,10 @@ const TrustFactors = () => {
               strokeWidth="2" 
               fill="none"
               className={styles.bgCurve}
-            />
-          </svg>
-        </div>
+              />
+        </svg>
       </div>
+    </div>
   );
 };
 
