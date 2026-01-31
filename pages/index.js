@@ -276,6 +276,6 @@ export async function getStaticProps() {
       continetCarousel,
       hotLocationSearch,
     },
-    revalidate: 3600,
+    // revalidate: 3600,
   };
 }
