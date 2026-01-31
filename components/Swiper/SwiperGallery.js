@@ -63,7 +63,7 @@ const SwiperGallery = (props) => {
       <div className="hidden max-ph:!flex justify-between items-baseline px-xl mb-lg">
         {" "}
         <span className="text-black leading-xl-sm text-md-lg font-600">
-          Photo Gallery
+          Trip Highlights
         </span>{" "}
         <span className="text-sm font-400 text-text-spacegrey">
           {currentIndex}/{props.images.length}

@@ -139,8 +139,9 @@ const Home = (props) => {
         {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
         <HeroSection slug={'home'} />
         <TrustFactors/>
-        <JourneySimplified />
         {props.token && <MyTripsSection className={'max-w-7xl'} />} 
+        <JourneySimplified />
+        
         
         
         <PlacesBragSection />

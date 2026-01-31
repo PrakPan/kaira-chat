@@ -67,6 +67,7 @@ import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBoo
 import { getDateInfo } from "../../../utils/dateFormate";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { Link } from "react-scroll";
 
 const svgIcons = {
   time: (
@@ -217,7 +218,7 @@ const TransferEditDrawer = (props) => {
   const [transferType, setTransferType] = useState(
     booking_type == "multicity" || drawerType == "multicity"
       ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-      : TRANSFER_TYPES.ONEWAYTRIP.name
+      : TRANSFER_TYPES.ONEWAYTRIP.name,
   );
   const [loadingRoundTrip, setLoadingRoundTrip] = useState(false);
   const [loadingMultiCity, setLoadingMultiCity] = useState(false);
@@ -243,15 +244,16 @@ const TransferEditDrawer = (props) => {
   const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
-    const ItineraryId = useSelector((state) => state.ItineraryId);
+  const ItineraryId = useSelector((state) => state.ItineraryId);
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
+  const { email } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -309,7 +311,7 @@ const TransferEditDrawer = (props) => {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
             .get(
-              `/${router.query.id}/?currency=${currency?.currency || 'INR'}`
+              `/${router.query.id}/?currency=${currency?.currency || "INR"}`,
               // multiCityRoundtripRequestData
             )
             .then((response) => {
@@ -330,7 +332,7 @@ const TransferEditDrawer = (props) => {
       booking_type != "multicity" && (mercury || props?.isMercury)
         ? fetchTransferMode
             .post(
-              `?currency=${currency?.currency || 'INR'}`,
+              `?currency=${currency?.currency || "INR"}`,
               {
                 origin:
                   props?.origin ||
@@ -351,10 +353,10 @@ const TransferEditDrawer = (props) => {
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem(
-                    "access_token"
+                    "access_token",
                   )}`,
                 },
-              }
+              },
             )
 
             .then((res) => {
@@ -363,7 +365,7 @@ const TransferEditDrawer = (props) => {
                 setTransfers(data);
               } else {
                 setTransfersError(
-                  "No route found, please get in touch with us to complete this booking!"
+                  "No route found, please get in touch with us to complete this booking!",
                 );
               }
               setLoadingTransfers(false);
@@ -371,7 +373,8 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                err?.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
+                err?.response?.data?.errors[0]?.message[0] ||
+                  "No route found, please get in touch with us to complete this booking!",
               );
             })
         : booking_type != "multicity" &&
@@ -383,7 +386,7 @@ const TransferEditDrawer = (props) => {
                 setTransfers(data);
               } else {
                 setTransfersError(
-                  "No route found, please get in touch with us to complete this booking!"
+                  "No route found, please get in touch with us to complete this booking!",
                 );
               }
               setLoadingTransfers(false);
@@ -391,7 +394,8 @@ const TransferEditDrawer = (props) => {
             .catch((err) => {
               setLoadingTransfers(false);
               setTransfersError(
-                err.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
+                err.response?.data?.errors[0]?.message[0] ||
+                  "No route found, please get in touch with us to complete this booking!",
               );
             });
     }
@@ -578,7 +582,9 @@ const TransferEditDrawer = (props) => {
             });
           } else {
             openNotification({
-              text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
+              text:
+                err.response?.data?.errors[0]?.message[0] ||
+                "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
@@ -642,7 +648,7 @@ const TransferEditDrawer = (props) => {
         setCurrentStep(0);
         console.error(
           "Error::While Creating Multicity/RoundTrip Booking",
-          err.message
+          err.message,
         );
         if (err.response?.status === 403) {
           openNotification({
@@ -652,7 +658,9 @@ const TransferEditDrawer = (props) => {
           });
         } else {
           openNotification({
-            text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
+            text:
+              err.response?.data?.errors[0]?.message[0] ||
+              "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -696,7 +704,7 @@ const TransferEditDrawer = (props) => {
         setTransferType(
           booking_type == "multicity"
             ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-            : TRANSFER_TYPES.ONEWAYTRIP.name
+            : TRANSFER_TYPES.ONEWAYTRIP.name,
         );
         setSelectedCab(null);
       }}
@@ -708,7 +716,7 @@ const TransferEditDrawer = (props) => {
             : "md:pb-[30px]"
         } justify-start items-start mx-auto w-[100%] min-h-screen`}
       >
-        <div className="flex flex-row gap-2 my-0 justify-start items-center">
+        <div className="flex flex-row gap-2 w-full my-0 justify-between items-center">
           {currentStep === 0 ? (
             <>
               <BackArrow
@@ -721,12 +729,22 @@ const TransferEditDrawer = (props) => {
                   setTransferType(
                     booking_type == "multicity"
                       ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-                      : TRANSFER_TYPES.ONEWAYTRIP.name
+                      : TRANSFER_TYPES.ONEWAYTRIP.name,
                   );
                   setFlightResults([]);
                   setTaxiResults([]);
                 }}
               />
+
+              {email && email?.includes('tarzanway.com') && (
+                <a
+                  href={`https://mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto text-sm text-blue font-500 underline"
+                >
+                + Add Custom Transfer
+              </a>)}
             </>
           ) : (
             <>
@@ -915,8 +933,8 @@ const TransferEditDrawer = (props) => {
                                   {Math.ceil(
                                     transfers[0].transfers.reduce(
                                       (sum, t) => sum + (t.duration || 0),
-                                      0
-                                    ) / 60
+                                      0,
+                                    ) / 60,
                                   ) ? (
                                     <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
                                       <span> {svgIcons.time} </span>
@@ -924,8 +942,8 @@ const TransferEditDrawer = (props) => {
                                         {Math.ceil(
                                           transfers[0].transfers.reduce(
                                             (sum, t) => sum + (t.duration || 0),
-                                            0
-                                          ) / 60
+                                            0,
+                                          ) / 60,
                                         )}
                                         &nbsp;Hours
                                       </span>
@@ -933,14 +951,14 @@ const TransferEditDrawer = (props) => {
                                   ) : null}
                                   {transfers[0].transfers.reduce(
                                     (sum, t) => sum + (t.distance || 0),
-                                    0
+                                    0,
                                   ) ? (
                                     <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
                                       <span> {svgIcons.location} </span>
                                       <span>
                                         {transfers[0].transfers.reduce(
                                           (sum, t) => sum + (t.distance || 0),
-                                          0
+                                          0,
                                         )}
                                         &nbsp;kms
                                       </span>
@@ -982,8 +1000,8 @@ const TransferEditDrawer = (props) => {
                                             transfer.transfers.reduce(
                                               (sum, t) =>
                                                 sum + (t.duration || 0),
-                                              0
-                                            ) / 60
+                                              0,
+                                            ) / 60,
                                           )}
                                           &nbsp;Hours
                                         </span>
@@ -993,7 +1011,7 @@ const TransferEditDrawer = (props) => {
                                         <span>
                                           {transfer.transfers.reduce(
                                             (sum, t) => sum + (t.distance || 0),
-                                            0
+                                            0,
                                           )}
                                           &nbsp;kms
                                         </span>
@@ -1364,7 +1382,7 @@ const TransferEditDrawer = (props) => {
                 {multiCitySuggestions && (
                   <div className="w-full">
                     {/* <h3 className="text-lg font-semibold mb-3"></h3> */}
-                
+
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
@@ -1391,7 +1409,7 @@ const TransferEditDrawer = (props) => {
                     handleMultiCitySelect(
                       multicityRoundtripTraceId,
                       tripTypeIndex,
-                      selectedCab?.result_index
+                      selectedCab?.result_index,
                     );
                   }}
                   className={`
@@ -1615,8 +1633,8 @@ const RouteContainer = (props) => {
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-        ? oCityData?.start_date
-        : start_date;
+          ? oCityData?.start_date
+          : start_date;
 
     let calculatedStartTime;
 
@@ -1715,7 +1733,6 @@ const RouteContainer = (props) => {
         ) : (
           //  need to add header
           <>
-            
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
@@ -1991,8 +2008,10 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
-  const {trackTransferBookingAdd} = useAnalytics();
-  const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
+  const { trackTransferBookingAdd } = useAnalytics();
+  const { intercity } = useSelector(
+    (state) => state.TransferBookings,
+  )?.transferBookings;
 
   const {
     number_of_adults,
@@ -2041,11 +2060,11 @@ const NewMultiModeContainer = ({
             // If this is a non-Flight/non-Taxi mode, calculate its arrival time
             if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
               const newDepartureDateTime = dayjs(
-                `${newDepartureDate}T${newDepartureTimeStr}`
+                `${newDepartureDate}T${newDepartureTimeStr}`,
               );
               const newArrivalDateTime = newDepartureDateTime.add(
                 newData[i].duration || 0,
-                "minute"
+                "minute",
               );
               newData[i].arrival_time =
                 newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2210,11 +2229,11 @@ const NewMultiModeContainer = ({
         if (mode !== "Flight" && mode !== "Taxi") {
           // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
           const departureDateTime = dayjs(
-            `${currentModeDepartureDate}T${currentModeDepartureTime}`
+            `${currentModeDepartureDate}T${currentModeDepartureTime}`,
           );
           const arrivalDateTime = departureDateTime.add(
             searchData.duration || 0,
-            "minute"
+            "minute",
           );
 
           searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
@@ -2235,11 +2254,11 @@ const NewMultiModeContainer = ({
           ) {
             // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
             const departureDateTime = dayjs(
-              `${currentModeDepartureDate}T${currentModeDepartureTime}`
+              `${currentModeDepartureDate}T${currentModeDepartureTime}`,
             );
             const arrivalDateTime = departureDateTime.add(
               selectedTransfer.duration || 0,
-              "minute"
+              "minute",
             );
 
             selectedTransfer.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
@@ -2262,7 +2281,7 @@ const NewMultiModeContainer = ({
         ? null
         : searchData || transfer.find((item) => item.id === id),
       transfer,
-      mode
+      mode,
     );
 
     // Propagate time changes to all subsequent steps
@@ -2276,7 +2295,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       flightData?.id || flightData?.resultIndex,
       flightData,
-      "Flight"
+      "Flight",
     );
   };
 
@@ -2285,7 +2304,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       taxiData?.id || taxiData?.result_index,
       taxiData,
-      "Taxi"
+      "Taxi",
     );
   };
 
@@ -2378,7 +2397,7 @@ const NewMultiModeContainer = ({
       const departureDateTime = dayjs(`${currentModeDepartureDate}T${time}:00`);
       const arrivalDateTime = departureDateTime.add(
         currentSelectedData.duration || 0,
-        "minute"
+        "minute",
       );
       currentSelectedData.arrival_time =
         arrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2392,7 +2411,7 @@ const NewMultiModeContainer = ({
       loadTransfers(
         currentTransfer,
         paxData,
-        `${currentModeDepartureDate}T${time}:00`
+        `${currentModeDepartureDate}T${time}:00`,
       );
     }
 
@@ -2419,11 +2438,11 @@ const NewMultiModeContainer = ({
 
             if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
               const newDepartureDateTime = dayjs(
-                `${newDepartureDate}T${newDepartureTimeStr}`
+                `${newDepartureDate}T${newDepartureTimeStr}`,
               );
               const newArrivalDateTime = newDepartureDateTime.add(
                 newData[i].duration || 0,
-                "minute"
+                "minute",
               );
               newData[i].arrival_time =
                 newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2439,7 +2458,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       currentSelectedData,
       currentTransferData,
-      currentTransferData.mode
+      currentTransferData.mode,
     );
 
     selectedData.forEach((data, index) => {
@@ -2449,7 +2468,7 @@ const NewMultiModeContainer = ({
           index,
           selectedData[index],
           modeTransfer,
-          modeTransfer.mode
+          modeTransfer.mode,
         );
       }
     });
@@ -2465,7 +2484,6 @@ const NewMultiModeContainer = ({
   // Add this handleCancel function inside your NewMultiModeContainer component
 
   const handleCancel = () => {
-
     // Find the last selected step (highest index with a selection)
 
     console.log("Selected Mode Ids", selectedModeIds);
@@ -2529,7 +2547,7 @@ const NewMultiModeContainer = ({
               ? transfer[index].prices.findIndex(
                   (p) =>
                     p.price === item.selectedPrice.price &&
-                    p.currency === item.selectedPrice.currency
+                    p.currency === item.selectedPrice.currency,
                 )
               : 0,
             start_time:
@@ -2543,8 +2561,8 @@ const NewMultiModeContainer = ({
         oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : oCityData?.id
-          ? oCityData?.start_date
-          : start_date;
+            ? oCityData?.start_date
+            : start_date;
 
       const requestBody = {
         destination_itinerary_city: destination_itinerary_city_id,
@@ -2573,13 +2591,13 @@ const NewMultiModeContainer = ({
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (warningResponse?.data?.show_warning === true) {
           // Show warning modal
           setWarningMessage(
-            warningResponse.data.warning || "Please confirm this action."
+            warningResponse.data.warning || "Please confirm this action.",
           );
           setPendingBookingData(requestBody);
           setShowWarningModal(true);
@@ -2631,18 +2649,27 @@ const NewMultiModeContainer = ({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = response.data;
       dispatch(
         updateSingleTransferBooking(
           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          data
-        )
+          data,
+        ),
       );
 
-      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],data,city || mercury?.source?.city_name,dcity || mercury?.destination?.city_name)
+      trackTransferBookingAdd(
+        itinerary_id,
+        `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+        intercity?.[
+          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`
+        ],
+        data,
+        city || mercury?.source?.city_name,
+        dcity || mercury?.destination?.city_name,
+      );
 
       getPaymentHandler();
       actualClose();
@@ -2742,8 +2769,8 @@ const NewMultiModeContainer = ({
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-        ? oCityData?.start_date
-        : start_date;
+          ? oCityData?.start_date
+          : start_date;
 
     let calculatedStartTime;
 
@@ -2760,10 +2787,10 @@ const NewMultiModeContainer = ({
         let departureDateTime = dayjs(prevSelected.departure_time);
         let calculatedArrival = departureDateTime.add(
           prevSelected.duration,
-          "minute"
+          "minute",
         );
         calculatedStartTime = roundUpToNext30Min(
-          calculatedArrival.add(1, "hour")
+          calculatedArrival.add(1, "hour"),
         );
 
         setSelectedData((prev) => {
@@ -2778,7 +2805,7 @@ const NewMultiModeContainer = ({
         });
       } else {
         calculatedStartTime = roundUpToNext30Min(
-          dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`)
+          dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`),
         );
       }
     }
@@ -2794,7 +2821,7 @@ const NewMultiModeContainer = ({
           currentStep - 1,
           currentTransfer,
           "",
-          currentTransfer.mode
+          currentTransfer.mode,
         );
 
         if (currentTransfer.mode === "Flight") {
@@ -2817,7 +2844,7 @@ const NewMultiModeContainer = ({
           infants: pax.infants,
         };
         const departureDateTime = `${calculatedStartTime.format(
-          "YYYY-MM-DD"
+          "YYYY-MM-DD",
         )}T${calculatedStartTime.format("HH:mm")}:00`;
         loadTransfers(currentTransfer, paxData, departureDateTime);
       }
@@ -2858,7 +2885,7 @@ const NewMultiModeContainer = ({
           const departureDateTime = dayjs(selectedData[i].departure_time);
           const arrivalDateTime = departureDateTime.add(
             selectedData[i].duration,
-            "minute"
+            "minute",
           );
 
           setSelectedData((prev) => {
@@ -2938,7 +2965,7 @@ const NewMultiModeContainer = ({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
       {/* {currentStep === 0 && (
         <div
@@ -3179,7 +3206,7 @@ const NewMultiModeContainer = ({
                     const formatTimeForDisplay = (timeValue) => {
                       if (!timeValue) return "";
                       const timeOption = timeOptions.find(
-                        (option) => option.value === timeValue
+                        (option) => option.value === timeValue,
                       );
                       if (timeOption) {
                         return timeOption.display;
@@ -3204,7 +3231,7 @@ const NewMultiModeContainer = ({
                                 date={currentModeDepartureDate}
                                 onDateChange={(e) => {
                                   const selectedDate = dayjs(
-                                    e.target.value
+                                    e.target.value,
                                   ).format("YYYY-MM-DD");
                                   handleDateSelect(selectedDate);
                                 }}
@@ -3229,7 +3256,7 @@ const NewMultiModeContainer = ({
                                 >
                                   <span className="text-sm font-medium">
                                     {formatTimeForDisplay(
-                                      currentModeDepartureTime
+                                      currentModeDepartureTime,
                                     )}
                                   </span>
                                   <button
@@ -3324,7 +3351,7 @@ const NewMultiModeContainer = ({
                               const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
                               const currentDateTimeInfo = getDateInfo(
                                 currentTransferData.start_datetime,
-                                currentTransferData.duration
+                                currentTransferData.duration,
                               );
                               return (
                                 <div
@@ -3378,7 +3405,7 @@ const NewMultiModeContainer = ({
                                               <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
                                                 {getModeIcon(
                                                   currentTransferData.mode,
-                                                  13
+                                                  13,
                                                 )}
                                               </span>
                                               <span className="text-sm font-400 leading-lg-md">
@@ -3444,7 +3471,7 @@ const NewMultiModeContainer = ({
                                             currentStep - 1,
                                             priceOptionId,
                                             selectedPriceData,
-                                            currentTransferData.mode
+                                            currentTransferData.mode,
                                           );
                                         }}
                                       >
@@ -3469,7 +3496,7 @@ const NewMultiModeContainer = ({
                                   </div>
                                 </div>
                               );
-                            }
+                            },
                           )}
                       </div>
                     );
@@ -3515,7 +3542,7 @@ const NewMultiModeContainer = ({
                                 currentStep - 1,
                                 option.id,
                                 option,
-                                option.mode
+                                option.mode,
                               )
                             }
                           >
@@ -3803,23 +3830,22 @@ const RoundTripSuggestion = ({
     ...Array(roundTripSuggestions.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
- useEffect(() => {
-  const routes = [];
-  const pricing = [];
-  
-  roundTripSuggestions?.data?.trips?.forEach((route) => {
-    routes.push(route);
-  });
-  setRoutes(routes);
-  
-  roundTripSuggestions?.data?.quotes?.forEach((quote) => {
-    pricing.push(quote);
-  });
-  setPricing(pricing);
-}, [roundTripSuggestions]);
+  useEffect(() => {
+    const routes = [];
+    const pricing = [];
 
+    roundTripSuggestions?.data?.trips?.forEach((route) => {
+      routes.push(route);
+    });
+    setRoutes(routes);
+
+    roundTripSuggestions?.data?.quotes?.forEach((quote) => {
+      pricing.push(quote);
+    });
+    setPricing(pricing);
+  }, [roundTripSuggestions]);
 
   const handleSelectCab = (e) => {
     setSelectError(false);
@@ -3837,7 +3863,7 @@ const RoundTripSuggestion = ({
       handleRoundTripSelect(
         roundTripSuggestions?.trace_id,
         1,
-        selectedCab.result_index
+        selectedCab.result_index,
       );
     } else {
       setSelectError(true);
@@ -3886,8 +3912,8 @@ const RoundTripSuggestion = ({
               {roundTripSuggestions?.name}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
-  Distance: {roundTripSuggestions?.distance?.value} Kms
-</div>
+              Distance: {roundTripSuggestions?.distance?.value} Kms
+            </div>
           </div>
         </div>
 
@@ -3916,65 +3942,68 @@ const RoundTripSuggestion = ({
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {pricing?.length > 0 ? 
-            pricing.map((price, i) => (
-              <div
-                key={`price-${i}`}
-                className="w-full flex flex-row items-start gap-2"
-              >
-                <div>
+            {pricing?.length > 0
+              ? pricing.map((price, i) => (
                   <div
-                    id={price?.result_index}
-                    onClick={handleSelectCab}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                      selectedCab?.result_index == price?.result_index &&
-                      selectedTripType === "roundtrip"
-                        ? "border-black"
-                        : "border-[#636366]"
-                    } `}
+                    key={`price-${i}`}
+                    className="w-full flex flex-row items-start gap-2"
                   >
-                    {selectedCab?.result_index == price?.result_index &&
-                      selectedTripType === "roundtrip" && (
-                        <div
-                          id={price?.result_index}
-                          className="w-3 h-3 bg-black rounded-full"
-                        ></div>
-                      )}
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-start gap-1">
-                  <div className="text-[#636366] text-[14px] font-normal">
-                    {price.transfer_details?.model_name ||
-                      price.transfer_details?.type}
-                    :{" "}
-                    <span className="text-black font-bold">
-                      {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}
-                      {getIndianPrice(
-                        Math.floor(price?.transfer_details?.total)
-                      )}
-                    </span>
-                  </div>
-                  {(viewDetails[i] || true) && (
-                    <div className="text-sm">
-                      <span className="font-semibold">Facilities: </span>
-                      {price?.transfer_details?.seating_capacity
-                        ? `${price.transfer_details.seating_capacity} Seats | `
-                        : null}
-                      {price?.transfer_details?.bag_capacity
-                        ? `${price.cab.bagCapacity} Bags | `
-                        : null}
-                      {price?.cab?.bigBagCapaCity
-                        ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
-                        : null}
-                      {price?.transfer_details?.fuel_type
-                        ? ` Fuel Type ${price.transfer_details?.fuel_type}`
-                        : null}
+                    <div>
+                      <div
+                        id={price?.result_index}
+                        onClick={handleSelectCab}
+                        className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                          selectedCab?.result_index == price?.result_index &&
+                          selectedTripType === "roundtrip"
+                            ? "border-black"
+                            : "border-[#636366]"
+                        } `}
+                      >
+                        {selectedCab?.result_index == price?.result_index &&
+                          selectedTripType === "roundtrip" && (
+                            <div
+                              id={price?.result_index}
+                              className="w-3 h-3 bg-black rounded-full"
+                            ></div>
+                          )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            )): "No Cabs Available"} 
+
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="text-[#636366] text-[14px] font-normal">
+                        {price.transfer_details?.model_name ||
+                          price.transfer_details?.type}
+                        :{" "}
+                        <span className="text-black font-bold">
+                          {currency?.currency
+                            ? currencySymbols?.[currency?.currency]
+                            : "₹"}
+                          {getIndianPrice(
+                            Math.floor(price?.transfer_details?.total),
+                          )}
+                        </span>
+                      </div>
+                      {(viewDetails[i] || true) && (
+                        <div className="text-sm">
+                          <span className="font-semibold">Facilities: </span>
+                          {price?.transfer_details?.seating_capacity
+                            ? `${price.transfer_details.seating_capacity} Seats | `
+                            : null}
+                          {price?.transfer_details?.bag_capacity
+                            ? `${price.cab.bagCapacity} Bags | `
+                            : null}
+                          {price?.cab?.bigBagCapaCity
+                            ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
+                            : null}
+                          {price?.transfer_details?.fuel_type
+                            ? ` Fuel Type ${price.transfer_details?.fuel_type}`
+                            : null}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              : "No Cabs Available"}
           </div>
         </div>
 
@@ -4009,7 +4038,7 @@ const MultiCityTripSuggestion = ({
     ...Array(multiCitySuggestions?.data?.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
     const routes = [];
@@ -4046,7 +4075,7 @@ const MultiCityTripSuggestion = ({
       handleRoundTripSelect(
         multiCitySuggestions?.trace_id,
         0,
-        selectedCab.result_index
+        selectedCab.result_index,
       );
     } else {
       setSelectError(true);
@@ -4157,7 +4186,10 @@ const MultiCityTripSuggestion = ({
                       price?.taxi_category?.type}
                     :{" "}
                     <span className="text-black font-bold">
-                      {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.floor(price?.price?.total))}
+                      {currency?.currency
+                        ? currencySymbols?.[currency?.currency]
+                        : "₹"}
+                      {getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
                   </div>
                   {(viewDetails[i] || true) && (
@@ -4420,9 +4452,11 @@ const OtherTransfer = ({
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
   const [lastRequestData, setLastRequestData] = useState(null);
-   const {trackTransferBookingAdd} = useAnalytics();
-   const {intercity} = useSelector(state=>state.TransferBookings)?.transferBookings;
-   const currency = useSelector(state=>state.currency);
+  const { trackTransferBookingAdd } = useAnalytics();
+  const { intercity } = useSelector(
+    (state) => state.TransferBookings,
+  )?.transferBookings;
+  const currency = useSelector((state) => state.currency);
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -4500,7 +4534,7 @@ const OtherTransfer = ({
 
       const transferKey = `${transferData.id}-${currentStep}`;
       const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(
-        paxData
+        paxData,
       )}`;
 
       // Prevent duplicate requests
@@ -4529,7 +4563,7 @@ const OtherTransfer = ({
         };
 
         const response = await loadOtherTransfers.post(
-          `/search/?currency=${currency?.currency || 'INR'}`,
+          `/search/?currency=${currency?.currency || "INR"}`,
           requestBody,
           {
             headers: {
@@ -4537,7 +4571,7 @@ const OtherTransfer = ({
               "Content-Type": "application/json",
             },
             signal: abortControllerRef.current.signal,
-          }
+          },
         );
 
         const data = response.data;
@@ -4588,7 +4622,7 @@ const OtherTransfer = ({
         setLoadingRequestKey(null);
       }
     },
-    [token, currentStep]
+    [token, currentStep],
   );
 
   // FIXED: Debounced useEffect to prevent cascading API calls
@@ -4746,7 +4780,7 @@ const OtherTransfer = ({
 
     const isDeselecting = isPriceOptionSelected(
       selectedPriceData.id,
-      parseInt(priceIndex)
+      parseInt(priceIndex),
     );
 
     setLoadingOptionId(priceOptionId);
@@ -4892,11 +4926,10 @@ const OtherTransfer = ({
   const handleUpdateTransferWithData = async (
     updatedData,
     newTime = null,
-    newDate = null
+    newDate = null,
   ) => {
     // Prevent multiple simultaneous booking calls
     if (isBookingInProgress) {
-      
       return;
     }
 
@@ -4935,13 +4968,13 @@ const OtherTransfer = ({
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          }
+          },
         );
 
         if (warningResponse?.data?.show_warning === true) {
           // Show warning modal
           setWarningMessage(
-            warningResponse.data.warning || "Please confirm this action."
+            warningResponse.data.warning || "Please confirm this action.",
           );
           setPendingBookingData({
             requestBody: newRequestBody,
@@ -4979,7 +5012,7 @@ const OtherTransfer = ({
             text: errorMsg,
             heading: "Error!",
             type: "error",
-          })
+          }),
         );
       }
 
@@ -4994,7 +5027,7 @@ const OtherTransfer = ({
           text: error.message || "Failed to update transfer booking",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -5002,7 +5035,7 @@ const OtherTransfer = ({
   const handleBookingConfirm = async (
     newRequestBody,
     newTime = null,
-    newDate = null
+    newDate = null,
   ) => {
     setIsProcessingBooking(true);
 
@@ -5014,7 +5047,7 @@ const OtherTransfer = ({
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       setUpdateLoading(false);
@@ -5025,11 +5058,20 @@ const OtherTransfer = ({
       dispatch(
         updateSingleTransferBooking(
           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          response.data
-        )
+          response.data,
+        ),
       );
 
-      trackTransferBookingAdd(itinerary_id,`${origin_itinerary_city_id}:${destination_itinerary_city_id}`,intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`],response.data,city || transfer[0]?.source?.city_name,dcity || transfer[0]?.destination?.city_name);
+      trackTransferBookingAdd(
+        itinerary_id,
+        `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+        intercity?.[
+          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`
+        ],
+        response.data,
+        city || transfer[0]?.source?.city_name,
+        dcity || transfer[0]?.destination?.city_name,
+      );
 
       getPaymentHandler();
 
@@ -5043,7 +5085,7 @@ const OtherTransfer = ({
             } has been updated successfully!`,
             heading: "Success!",
             type: "success",
-          })
+          }),
         );
 
         if (response.data?.is_refresh_needed) {
@@ -5073,7 +5115,7 @@ const OtherTransfer = ({
             text: message,
             heading: "Success!",
             type: "success",
-          })
+          }),
         );
       }
 
@@ -5103,7 +5145,7 @@ const OtherTransfer = ({
           text: errorMessage,
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -5114,7 +5156,7 @@ const OtherTransfer = ({
       await handleBookingConfirm(
         pendingBookingData.requestBody,
         pendingBookingData.newTime,
-        pendingBookingData.newDate
+        pendingBookingData.newDate,
       );
       setPendingBookingData(null);
     }
@@ -5256,7 +5298,7 @@ const OtherTransfer = ({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
       <div className="w-full">
         <div>
@@ -5389,19 +5431,21 @@ const OtherTransfer = ({
         !error &&
         otherTransfer.prices.map((priceOption, priceIndex) => {
           const price = priceOption.price || 0;
-          const transfer_currency = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
-            // priceOption.currency === "INR" ? "₹" : currencySymbols?.[priceOption.currency] || priceOption.currency;
+          const transfer_currency = currency?.currency
+            ? currencySymbols?.[currency?.currency]
+            : "₹";
+          // priceOption.currency === "INR" ? "₹" : currencySymbols?.[priceOption.currency] || priceOption.currency;
           const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
 
           const isOptionSelected = isPriceOptionSelected(
             otherTransfer.id,
-            priceIndex
+            priceIndex,
           );
 
           const isOptionLoading = loadingOptionId === priceOptionId;
           const currentDateTimeInfo = getDateInfo(
             otherTransfer.start_datetime,
-            otherTransfer.duration
+            otherTransfer.duration,
           );
           return (
             <div
@@ -5521,7 +5565,7 @@ const OtherTransfer = ({
                         currentStep - 1,
                         priceOptionId,
                         selectedPriceData,
-                        otherTransfer.mode
+                        otherTransfer.mode,
                       );
                     }}
                   >

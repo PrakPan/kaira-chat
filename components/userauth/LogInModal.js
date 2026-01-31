@@ -209,7 +209,6 @@ const LogIn = React.memo((props) => {
       return;
     }
 
-    console.log("OnSuccess", props?.onSuccess);
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();

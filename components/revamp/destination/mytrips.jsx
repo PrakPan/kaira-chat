@@ -62,11 +62,11 @@ const MyTripsSection = ({ apiItineraries, className }) => {
 
 
   return (
-    <section className="py-12 sm:py-16 lg:py-14  px-0 sm:px-4 lg:px-8 bg-white">
+    <section className="py-12 sm:py-16 lg:py-14  px-0 sm:px-4 lg:px-8 bg-white ">
       <div className={`w-full mx-auto ${className}`}>
-          <div className="text-center mb-8 lg:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight">
-              My Trips {`(${plansCount})`}
+          <div className="text-center mb-8 lg:mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 lg:mb-6 leading-tight mt-[2rem] md:mt-[4rem]">
+              My Trips {plansCount ? `(${plansCount})` : null}
             </h2>
             <p className="text-gray-600 text-base max-w-2xl mx-auto leading-6">
               View your trips and start planning your next adventure.
