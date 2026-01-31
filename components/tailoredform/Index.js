@@ -79,6 +79,7 @@ const Enquiry = (props) => {
   const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const hasCompletedRef = useRef(false);
+  const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
 
   const slideOneData = useSelector(
     (state) => state.tailoredInfoReducer.slideOne,
@@ -363,6 +364,8 @@ const Enquiry = (props) => {
 
     const isFixedDate = slideOneData.date.type === "fixed";
 
+    const isRecalculating = slideIndex === 1 && isRouteChanged;
+
     if (locationsLatLong.length > 0 && slideIndex == 1) {
       if (isFixedDate && slideOneData.date.start_date) {
         const startDate = new Date(slideOneData.date.start_date);
@@ -485,10 +488,8 @@ const Enquiry = (props) => {
 
       setError(null);
 
-      if (!itineraryId) {
-        setItineraryId(resData.itinerary_id);
-        setLoadingItineraryId(resData.itinerary_id);
-      }
+      setItineraryId(resData.itinerary_id);
+      setLoadingItineraryId(resData.itinerary_id);
 
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
 
@@ -507,31 +508,35 @@ const Enquiry = (props) => {
 
       setIsRouteChanged(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      if (isRecalculating) {
 
-      //will be removed later
+      router.push(
+        {
+          query: {
+            ...router.query,
+            slideIndex: slideIndex + 1,
+          },
+        },
+        undefined,
+        { shallow: true },
+      );
+      
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        setIsRecalculatingRoute(false);
+        setLoadingItineraryId(null);
+      }, 100);
 
-      // await new Promise((resolve) => setTimeout(resolve, 100));
-      // const currentSlideIndex = Number(router.query.slideIndex) || 0;
-      // const nextSlideIndex = currentSlideIndex + 1;
-
-      // router.push(
-      //   {
-      //     // pathname: "/new-trip",
-      //     query: {
-      //       ...router.query,
-      //       slideIndex: nextSlideIndex,
-      //     },
-      //   },
-      //   undefined,
-      //   { shallow: true }
-      // );
+      return;
+    }
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
       setApiSucceeded(false);
       setLoadingItineraryId(null);
       setIsLoading(false);
+      setIsRecalculatingRoute(false);
     }
     // finally {
     //   setIsLoading(false);
@@ -600,7 +605,11 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
+        trackItineraryCompleted(
+          finalItineraryId,
+          "itinerary_completed",
+          platform,
+        );
         dispatch(setItineraryInitiateData(null));
         dispatch(setItineraryCreated(true));
 
@@ -745,39 +754,43 @@ const Enquiry = (props) => {
     }
   }, [slideOneData]);
 
- const handleLoadingComplete = () => {
-  const MINIMUM_LOADING_TIME = 2000;
+  const handleLoadingComplete = () => {
+    const MINIMUM_LOADING_TIME = 2000;
 
-  setTimeout(() => {
-    const currentSlideIndex = Number(router.query.slideIndex) || 0;
+    setTimeout(() => {
+      const currentSlideIndex = Number(router.query.slideIndex) || 0;
 
-    if (
-      !isManualNavigation &&
-      (currentSlideIndex === 0 || currentSlideIndex === 1)
-    ) {
-      const nextSlideIndex = currentSlideIndex + 1;
+      // Only auto-navigate from slide 0 (not for route recalculation on slide 1)
+      if (
+        !isManualNavigation &&
+        currentSlideIndex === 0 &&
+        !isRecalculatingRoute
+      ) {
+        const nextSlideIndex = currentSlideIndex + 1;
 
-      router.push(
-        {
-          query: {
-            ...router.query,
-            slideIndex: nextSlideIndex,
+        router.push(
+          {
+            query: {
+              ...router.query,
+              slideIndex: nextSlideIndex,
+            },
           },
-        },
-        undefined,
-        { shallow: true },
-      );
+          undefined,
+          { shallow: true },
+        );
 
-      setTimeout(() => {
+        setTimeout(() => {
+          setIsLoading(false);
+          setLoadingItineraryId(null);
+          setIsRecalculatingRoute(false);
+        }, 300);
+      } else {
         setIsLoading(false);
         setLoadingItineraryId(null);
-      }, 300);
-    } else {
-      setIsLoading(false);
-      setLoadingItineraryId(null);
-    }
-  }, MINIMUM_LOADING_TIME);
-};
+        setIsRecalculatingRoute(false);
+      }
+    }, MINIMUM_LOADING_TIME);
+  };
 
   const handleLoadingError = (errorMessage) => {
     console.error("❌ Loading error:", errorMessage);
@@ -787,7 +800,7 @@ const Enquiry = (props) => {
     setApiSucceeded(false);
   };
 
-  if (isLoading && (slideIndex === 0 || slideIndex === 1)) {
+  if (isLoading && slideIndex === 0 && !isRecalculatingRoute) {
     return (
       <div className="container">
         <div className="py-2xl">
@@ -1145,20 +1158,14 @@ const Enquiry = (props) => {
     ${!isDesktop && "flex items-center justify-between gap-2"}
   `}
             >
-              {/* LEFT SIDE */}
               <button
                 className={`LargeIndigoOutlinedButton `}
                 onClick={_prevSlideHandler}
+                // disabled={isLoading}
               >
                 Back
               </button>
 
-              {/* <button
-                className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
-                onClick={_slideTwoSkip}
-              >
-                Skip
-              </button> */}
               {isRouteChanged ? (
                 <Button
                   width={`${isPageWide ? "300px" : "50%"}`}
@@ -1174,7 +1181,7 @@ const Enquiry = (props) => {
                   onclick={() => {
                     setIsLoading(true);
                     setApiSucceeded(false);
-                    setLoadingItineraryId(itineraryId);
+                    setIsRecalculatingRoute(true);
                     setIsManualNavigation(false);
                     initiateItineraryCreate(slideOneData);
                   }}
@@ -1183,22 +1190,28 @@ const Enquiry = (props) => {
                 </Button>
               ) : (
                 <button
-                  className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
+                  className={`LargeIndigoButton w-[50%] ${
                     isDesktop && "w-[300px]"
                   } `}
                   style={{
                     width: isPageWide ? "300px" : "50%",
                   }}
+                  disabled={isLoading}
                   onClick={() => {
-                    trackItineraryRoute(itineraryId, locationsLatLong);
-                    router.push(
-                      {
-                        // pathname: "/new-trip",
-                        query: { ...router.query, slideIndex: slideIndex + 1 },
-                      },
-                      undefined,
-                      { shallow: true },
-                    );
+                    if (!isLoading) {
+                      // Add this check
+                      trackItineraryRoute(itineraryId, locationsLatLong);
+                      router.push(
+                        {
+                          query: {
+                            ...router.query,
+                            slideIndex: slideIndex + 1,
+                          },
+                        },
+                        undefined,
+                        { shallow: true },
+                      );
+                    }
                   }}
                 >
                   Continue
