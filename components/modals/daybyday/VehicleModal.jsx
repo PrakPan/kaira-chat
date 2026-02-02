@@ -252,78 +252,182 @@ const VehicleDetailModal = ({
             </div>
 
             {/* Transfer Details */}
-            <div className="mt-8 pt-4 border-t border-gray-200">
-              <p className="text-gray-400 font-medium text-sm">
-                {loading ? (
-                  <div className="w-24 h-4 bg-gray-300 opacity-50 rounded"></div>
-                ) : (
-                  "TRANSFER DETAILS"
-                )}
-              </p>
+           
+<div className="mt-8 pt-4 border-t border-gray-200">
+  <p className="text-gray-400 font-medium text-sm mb-4">
+    {loading ? (
+      <div className="w-24 h-4 bg-gray-300 opacity-50 rounded"></div>
+    ) : (
+      "TRANSFER DETAILS"
+    )}
+  </p>
 
-              <div className="flex justify-between mt-4">
-                <div>
-                  {loading ? (
-                    <>
-                      <div className="w-32 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md">
-                        {number_of_adults} Adults, {number_of_children} Children
-                      </p>
-                      <p className="text-gray-500 text-sm">Passengers</p>
-                    </>
-                  )}
+  <div className="grid grid-cols-2 gap-4">
+    <div>
+      {loading ? (
+        <>
+          <div className="w-32 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
+          <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
+        </>
+      ) : (
+        <>
+          <p className="font-semibold text-md">
+            {number_of_adults} Adults, {number_of_children} Children
+          </p>
+          <p className="text-gray-500 text-sm">Passengers</p>
+        </>
+      )}
+    </div>
+    {!loading && transfer_details?.prices?.[0]?.class && (
+      <div>
+        <p className="font-semibold text-md">
+          {transfer_details.prices[0].class}
+        </p>
+        <p className="text-gray-500 text-sm">Class</p>
+      </div>
+    )}
+  </div>
+</div>
+
+
+
+{/* Journey Details - Only for Omio/12go with segments - MOVED TO NEW SECTION */}
+{!loading && transfer_details?.results?.[0]?.segments && transfer_details.results[0].segments.length > 0 && (
+  <div className="mt-6 pt-4 border-t border-gray-200">
+    <p className="text-gray-400 font-medium text-sm mb-4">
+      JOURNEY DETAILS
+    </p>
+    
+    {/* {transfer_details.results[0].segments.length > 1 && (
+      <div className="mb-4 px-3 py-2 bg-gray-50 rounded-lg inline-block">
+        <p className="text-xs text-gray-600 font-medium">
+          {transfer_details.results[0].segments.length} segments · {transfer_details.results[0].segments.length - 1} connection{transfer_details.results[0].segments.length > 2 ? 's' : ''}
+        </p>
+      </div>
+    )} */}
+
+    <div className="space-y-3">
+      {transfer_details.results[0].segments.map((segment, idx) => {
+        const isLast = idx === transfer_details.results[0].segments.length - 1;
+        const depTime = segment.departure_datetime ? new Date(segment.departure_datetime) : null;
+        const arrTime = segment.arrival_datetime ? new Date(segment.arrival_datetime) : null;
+        const nextSegment = !isLast ? transfer_details.results[0].segments[idx + 1] : null;
+        
+        return (
+          <div key={idx} className="relative">
+            {/* Departure */}
+            <div className="flex items-start gap-3">
+              <div className="flex flex-col items-end w-20 shrink-0">
+                {depTime && (
+                  <>
+                    <span className="text-sm font-semibold leading-tight">
+                      {depTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {depTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    </span>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center shrink-0 pt-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 line-clamp-2" title={segment.departure_station?.name}>
+                  {segment.departure_station?.name}
+                </p>
+              </div>
+            </div>
+
+            {/* Journey Line with Operator */}
+            <div className="flex items-start gap-3 ml-20 my-2">
+              <div className="flex flex-col items-center shrink-0">
+                <div className="w-0.5 bg-gray-300" style={{ height: "40px" }}></div>
+              </div>
+              <div className="pt-1 flex items-center gap-2 flex-wrap">
+                {segment.operator?.image && (
+                  <img 
+                    src={segment.operator.image} 
+                    alt={segment.operator.name}
+                    className="h-5 w-auto object-contain"
+                  />
+                )}
+                <span className="text-xs font-medium text-gray-700">
+                  {segment.duration_formatted || `${Math.floor(segment.duration / 60)}h ${segment.duration % 60}m`}
+                </span>
+              </div>
+            </div>
+
+            {/* Arrival */}
+            {arrTime && (
+              <div className="flex items-start gap-3">
+                <div className="flex flex-col items-end w-20 shrink-0">
+                  <span className="text-sm font-semibold leading-tight">
+                    {arrTime.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {arrTime.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  </span>
                 </div>
-                <div>
-                  {loading ? (
-                    <>
-                      <div className="w-20 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-16 h-3 bg-gray-300 opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    transfer_details?.prices?.[0]?.class ? <>
-                      <p className="font-semibold text-md">
-                        Class 
-                      </p>
-                      <p className="text-gray-500 text-sm">{transfer_details?.prices?.[0]?.class} </p>
-                    </> : null
-                  )}
+                <div className="flex items-center shrink-0 pt-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 ring-4 ring-black"></div>
                 </div>
-                {/* <div className="text-right">
-                  {loading ? (
-                    <>
-                      <div className="w-20 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                      <div className="w-16 h-3 bg-gray-300 opacity-50 rounded"></div>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-md">
-                        {price} {currency}
-                      </p>
-                      <p className="text-gray-500 text-sm">Price</p>
-                    </>
-                  )}
-                </div> */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 line-clamp-2" title={segment.arrival_station?.name}>
+                    {segment.arrival_station?.name}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Layover between segments */}
+            {!isLast && nextSegment && arrTime && (
+              <div className="flex items-center gap-3 ml-20 my-3">
+                <div className="flex flex-col items-center shrink-0">
+                  <div className="w-0.5 h-4 bg-gray-200"></div>
+                </div>
+                <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-md text-xs font-medium text-amber-800">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>
+                    {(() => {
+                      const nextDep = new Date(nextSegment.departure_datetime);
+                      const layoverMs = nextDep - arrTime;
+                      const layoverMin = Math.floor(layoverMs / 60000);
+                      const h = Math.floor(layoverMin / 60);
+                      const m = layoverMin % 60;
+                      return h > 0 ? `${h}h ${m}m layover` : `${m}m layover`;
+                    })()}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
+          </div>
+
+          {cancellation_policies && (
+          <>
+            {" "}
+            <div className="flex flex-col">
+              <div className="w-fit py-2 mb-2 text-lg font-bold">
+                Cancellation Policies
               </div>
 
-              {/* <div className="mt-4">
-                {loading ? (
-                  <>
-                    <div className="w-20 h-4 bg-gray-300 opacity-50 rounded mb-1"></div>
-                    <div className="w-24 h-3 bg-gray-300 opacity-50 rounded"></div>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold text-md">One way</p>
-                    <p className="text-gray-500 text-sm">Transfer way</p>
-                  </>
-                )}
-              </div> */}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: cancellation_policies,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
             </div>
-          </div>
+          </>
+        )}
         </div>
 
         {/* {!isPageWide && (
@@ -369,23 +473,7 @@ const VehicleDetailModal = ({
           </div>
         )}
       </div>
-      {cancellation_policies && (
-          <>
-            {" "}
-            <div className="flex flex-col">
-              <div className="w-fit py-2 mb-2 text-lg font-bold">
-                Cancellation Policies
-              </div>
-
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: cancellation_policies,
-                }}
-                className="flex flex-col gap-1 text-sm ml-4"
-              ></div>
-            </div>
-          </>
-        )}
+      
     </>
   );
 };

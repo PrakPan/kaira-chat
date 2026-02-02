@@ -2332,8 +2332,9 @@ const NewMultiModeContainer = ({
       const requestBody = {
         edge_id: option?.id,
         start_datetime: departureDateTime,
-        number_of_travellers:
-          paxData.adults + paxData.children + paxData.infants,
+        number_of_adults: paxData.adults,
+        number_of_children: paxData.children,
+        number_of_infants: paxData.infants,
       };
 
       const response = await loadOtherTransfers.post(`/search/`, requestBody, {
@@ -2536,9 +2537,19 @@ const NewMultiModeContainer = ({
       const transfersPayload = selectedData.map((item, index) => {
         const currentTransfer = transfer[index];
 
+        console.log(
+          "Preparing payload for item:",
+          item,
+          "at index:",
+          index,
+          "current transfer:",
+          currentTransfer,
+        );
+
         const transferObj = {
           booking_type: currentTransfer.mode,
           edge_id: currentTransfer.id,
+          // booking_source: item.booking_source || "Self",
         };
 
         if (currentTransfer.mode === "Flight") {
@@ -2561,16 +2572,18 @@ const NewMultiModeContainer = ({
           if (isOmio) {
             return {
               ...transferObj,
-              source: "Omio",
+              source: item.booking_source || "Self",
               trace_id: item.trace_id,
               price_result_index: item.selectedPrice?.result_index || null,
               segment_result_index:
-                item.selectedOmioResult?.prices?.[0]?.result_index || null,
+                item.selectedOmioResult?.result_index || null,
             };
           }
 
           return {
             ...transferObj,
+            source: "Self",
+            price_result_index: item.selectedPrice?.result_index || 0,
             trace_id: item.trace_id,
             result_index: item.selectedPrice
               ? transfer[index].prices.findIndex(
@@ -3247,7 +3260,12 @@ const NewMultiModeContainer = ({
                       return `${hour12}:${minutes} ${period}`;
                     };
 
-                    {console.log("Rendering otherTransfer:", currentTransferData)}
+                    {
+                      console.log(
+                        "Rendering otherTransfer:",
+                        currentTransferData,
+                      );
+                    }
 
                     return (
                       <div key={key}>
@@ -3369,7 +3387,15 @@ const NewMultiModeContainer = ({
                           </div>
                         )}
 
-                      {console.log("Rendering otherTransfer inside return:", !isLoading, currentTransferData, transferErrors[transferKey],currentTransferData.results,currentTransferData.results && currentTransferData.results.length > 0)}
+                        {console.log(
+                          "Rendering otherTransfer inside return:",
+                          !isLoading,
+                          currentTransferData,
+                          transferErrors[transferKey],
+                          currentTransferData.results,
+                          currentTransferData.results &&
+                            currentTransferData.results.length > 0,
+                        )}
 
                         {/* Render prices from current transfer data */}
                         {!isLoading &&
@@ -3407,11 +3433,10 @@ const NewMultiModeContainer = ({
                                           key={priceOptionId}
                                           className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md"
                                         >
-                                         
                                           <div className="flex justify-between max-ph:flex-col">
                                             <div className="w-full">
                                               {/* Operator + class header */}
-                                              <div className="flex flex-row items-center gap-xs justify-between">
+                                              <div className="flex flex-row items-center gap-2">
                                                 <div className="flex flex-row items-center gap-xs">
                                                   {operators.map(
                                                     (op, opIdx) =>
@@ -3451,7 +3476,7 @@ const NewMultiModeContainer = ({
                                                         "h:mm A",
                                                       )}
                                                     </span>
-                                                    <span className="text-sm font-400 leading-lg-md">
+                                                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
                                                       {result.source?.name ||
                                                         currentTransferData
                                                           .source?.city_name}
@@ -3460,17 +3485,17 @@ const NewMultiModeContainer = ({
                                                   <div className="flex items-center flex-1 mx-md relative">
                                                     <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
                                                     <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
-                                                      <span className="text-sm font-400 leading-lg-md">
+                                                      <span className="text-sm font-400 leading-tight">
                                                         {result.duration_formatted ||
                                                           `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
                                                       </span>
-                                                      <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                                      <span className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
                                                         {getModeIcon(
                                                           currentTransferData.mode,
                                                           13,
                                                         )}
                                                       </span>
-                                                      <span className="text-sm font-400 leading-lg-md">
+                                                      <span className="text-sm font-400 leading-tight">
                                                         {
                                                           currentTransferData.distance
                                                         }{" "}
@@ -3489,7 +3514,7 @@ const NewMultiModeContainer = ({
                                                         "h:mm A",
                                                       )}
                                                     </span>
-                                                    <span className="text-sm font-400 leading-lg-md">
+                                                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
                                                       {result.destination
                                                         ?.name ||
                                                         currentTransferData
@@ -3503,11 +3528,15 @@ const NewMultiModeContainer = ({
                                               {/* Segments breakdown for connections */}
                                               {segments.length > 1 && (
                                                 <div className="mt-md border-t border-text-disabled pt-md">
-                                                  <div className="text-xs font-500 text-text-spacegrey mb-xs">
-                                                    {segments.length} segments ·
-                                                    1 connection
+                                                  <div className="text-xs font-500 text-text-spacegrey mb-md">
+                                                    {segments.length} segments ·{" "}
+                                                    {segments.length - 1}{" "}
+                                                    connection
+                                                    {segments.length > 2
+                                                      ? "s"
+                                                      : ""}
                                                   </div>
-                                                  <div className="flex flex-col gap-xs">
+                                                  <div className="flex flex-col gap-2">
                                                     {segments.map(
                                                       (seg, segIdx) => {
                                                         const segDep =
@@ -3525,79 +3554,108 @@ const NewMultiModeContainer = ({
                                                         const isLastSegment =
                                                           segIdx ===
                                                           segments.length - 1;
+
                                                         return (
                                                           <div key={segIdx}>
-                                                            <div className="flex flex-row items-start gap-xs">
+                                                            {/* Departure Row */}
+                                                            <div className="flex flex-row items-center gap-2">
                                                               <div className="flex flex-col items-end w-[68px] shrink-0">
                                                                 {segDep && (
                                                                   <>
-                                                                    <span className="text-sm font-600">
+                                                                    <span className="text-sm font-600 leading-tight">
                                                                       {segDep.format(
                                                                         "h:mm A",
                                                                       )}
                                                                     </span>
-                                                                    <span className="text-xs text-text-spacegrey">
-                                                                      {
-                                                                        seg
-                                                                          .departure_station
-                                                                          ?.name
-                                                                      }
-                                                                    </span>
                                                                   </>
                                                                 )}
                                                               </div>
-                                                              <div className="flex flex-col items-center shrink-0 pt-[3px]">
+
+                                                              <div className="flex items-center shrink-0">
                                                                 <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                                              </div>
+
+                                                              <div className="flex-1 min-w-0">
+                                                                <span
+                                                                  className="text-sm text-text-spacegrey block truncate"
+                                                                  title={
+                                                                    seg
+                                                                      .departure_station
+                                                                      ?.name
+                                                                  }
+                                                                >
+                                                                  {
+                                                                    seg
+                                                                      .departure_station
+                                                                      ?.name
+                                                                  }
+                                                                </span>
+                                                              </div>
+                                                            </div>
+
+                                                            {/* Journey Line with Duration */}
+                                                            <div className="flex flex-row items-start gap-2 ml-[68px]">
+                                                              <div className="flex flex-col items-center shrink-0 relative">
                                                                 <div
-                                                                  className="w-[1px] h-full bg-text-disabled mt-[2px]"
+                                                                  className="w-[1px] bg-text-disabled"
                                                                   style={{
-                                                                    minHeight:
-                                                                      "28px",
+                                                                    height:
+                                                                      "36px",
                                                                   }}
                                                                 ></div>
                                                               </div>
-                                                              <div className="flex flex-col gap-[1px] flex-1 min-w-0">
-                                                                <div className="flex flex-row items-center gap-xs">
-                                                                  {seg.operator
-                                                                    ?.image && (
-                                                                    <img
-                                                                      src={
-                                                                        seg
-                                                                          .operator
-                                                                          .image
-                                                                      }
-                                                                      alt={
-                                                                        seg
-                                                                          .operator
-                                                                          .name
-                                                                      }
-                                                                      className="h-3.5 w-auto object-contain"
-                                                                    />
-                                                                  )}
-                                                                  <span className="text-xs font-500 text-text-spacegrey truncate">
-                                                                    {
-                                                                      seg
-                                                                        .operator
-                                                                        ?.name
-                                                                    }
-                                                                  </span>
-                                                                </div>
+                                                              <div className="pt-1">
                                                                 <span className="text-xs text-text-spacegrey">
                                                                   {seg.duration_formatted ||
                                                                     `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
                                                                 </span>
                                                               </div>
                                                             </div>
+
+                                                            {/* Arrival Row */}
+                                                            {segArr && (
+                                                              <div className="flex flex-row items-center gap-2">
+                                                                <div className="flex flex-col items-end w-[68px] shrink-0">
+                                                                  <span className="text-sm font-600 leading-tight">
+                                                                    {segArr.format(
+                                                                      "h:mm A",
+                                                                    )}
+                                                                  </span>
+                                                                </div>
+
+                                                                <div className="flex items-center shrink-0">
+                                                                  <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                                                </div>
+
+                                                                <div className="flex-1 min-w-0">
+                                                                  <span
+                                                                    className="text-sm text-text-spacegrey block truncate"
+                                                                    title={
+                                                                      seg
+                                                                        .arrival_station
+                                                                        ?.name
+                                                                    }
+                                                                  >
+                                                                    {
+                                                                      seg
+                                                                        .arrival_station
+                                                                        ?.name
+                                                                    }
+                                                                  </span>
+                                                                </div>
+                                                              </div>
+                                                            )}
+
+                                                            {/* Connection/Layover indicator */}
                                                             {!isLastSegment &&
                                                               segments[
                                                                 segIdx + 1
                                                               ] && (
-                                                                <div className="flex flex-row items-center gap-xs mt-xs">
-                                                                  <div className="w-[68px]"></div>
+                                                                <div className="flex flex-row items-center gap-2 ml-[68px] mt-2 mb-2">
                                                                   <div className="flex flex-col items-center shrink-0">
                                                                     <div className="w-[1px] h-3 bg-text-disabled"></div>
                                                                   </div>
-                                                                  <div className="flex flex-row items-center gap-[3px]">
+                                                                  <div className="flex flex-row items-center gap-1 bg-gray-50 px-2 py-1 rounded">
                                                                     <FaClock
                                                                       size={10}
                                                                       className="text-text-spacegrey"
@@ -3634,28 +3692,6 @@ const NewMultiModeContainer = ({
                                                                   </div>
                                                                 </div>
                                                               )}
-                                                            {isLastSegment &&
-                                                              segArr && (
-                                                                <div className="flex flex-row items-start gap-xs mt-[2px]">
-                                                                  <div className="w-[68px] flex flex-col items-end">
-                                                                    <span className="text-sm font-600">
-                                                                      {segArr.format(
-                                                                        "h:mm A",
-                                                                      )}
-                                                                    </span>
-                                                                    <span className="text-xs text-text-spacegrey">
-                                                                      {
-                                                                        seg
-                                                                          .arrival_station
-                                                                          ?.name
-                                                                      }
-                                                                    </span>
-                                                                  </div>
-                                                                  <div className="flex flex-col items-center shrink-0 pt-[3px]">
-                                                                    <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                                                  </div>
-                                                                </div>
-                                                              )}
                                                           </div>
                                                         );
                                                       },
@@ -3664,13 +3700,13 @@ const NewMultiModeContainer = ({
                                                 </div>
                                               )}
 
-                                              {priceOption.cancellation_policy && (
-                                                <div className="text-xs text-text-spacegrey mt-xs">
+                                              {/* {priceOption.cancellation_policy && (
+                                                <div className="text-xs text-text-spacegrey truncate max-w-[68px] mt-xs">
                                                   {
                                                     priceOption.cancellation_policy
                                                   }
                                                 </div>
-                                              )}
+                                              )} */}
                                             </div>
 
                                             {/* Price + button */}
@@ -4841,6 +4877,7 @@ const OtherTransfer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const hasInitialLoadRef = useRef(new Set());
 
   const [lastRequestData, setLastRequestData] = useState(null);
   const { trackTransferBookingAdd } = useAnalytics();
@@ -4861,17 +4898,6 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
-  useEffect(() => {
-    if (selectedResult?.transfer && !isBookingInProgress) {
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
-
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-        loadTransfers(selectedResult.transfer, pax, departureDateTime);
-      }
-    }
-  }, [selectedResult?.transfer, token]); // Only depend on transfer and token for initial load
   // FIXED: Update state when props change with proper guards
   useEffect(() => {
     if (
@@ -4949,8 +4975,9 @@ const OtherTransfer = ({
         const requestBody = {
           edge_id: transferData.id,
           start_datetime: departureDateTime,
-          number_of_travellers:
-            paxData.adults + paxData.children + paxData.infants,
+          number_of_adults: paxData.adults,
+          number_of_children: paxData.children,
+          number_of_infants: paxData.infants,
         };
 
         const response = await loadOtherTransfers.post(
@@ -5016,33 +5043,43 @@ const OtherTransfer = ({
     [token, currentStep],
   );
 
-  {console.log("Rendering otherTransfer:", otherTransfer)}
+  {
+    console.log("Rendering otherTransfer:", otherTransfer);
+  }
 
-  // FIXED: Debounced useEffect to prevent cascading API calls
   useEffect(() => {
+    // Don't proceed if transfer hasn't loaded yet or if booking is in progress
+    if (!selectedResult?.transfer?.id || isBookingInProgress) return;
+
+    const transferId = selectedResult.transfer.id;
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+
+    if (!finalDate || !finalTime) return;
+
     const timeoutId = setTimeout(() => {
       const currentPaxString = JSON.stringify(pax);
       const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
       const timeChanged = lastTimeState && lastTimeState !== departureTime;
       const dateChanged = lastDateState && lastDateState !== departureDate;
 
-      const isInitialLoad = !lastPaxState && !lastTimeState && !lastDateState;
+      // Check if this is the first load for this specific transfer
+      const isFirstLoadForTransfer = !hasInitialLoadRef.current.has(transferId);
 
-      // Only call API if parameters changed AND we're not already processing
-      if (
-        (paxChanged || timeChanged || dateChanged) &&
-        !isInitialLoad && // ADD this condition
-        selectedResult?.transfer &&
-        !isResultSelected &&
-        !isBookingInProgress &&
-        !loadingRequestKey
-      ) {
-        const finalDate = departureDate || currentModeDepartureDate;
-        const finalTime = departureTime || currentModeDepartureTime;
+      // Determine if we should call the API
+      const shouldCallApi =
+        isFirstLoadForTransfer || // First time loading this transfer
+        ((paxChanged || timeChanged || dateChanged) && // Something changed
+          !isResultSelected && // Not already selected
+          !loadingRequestKey); // Not already loading
 
-        if (finalDate && finalTime) {
-          const departureDateTime = `${finalDate}T${finalTime}:00`;
-          loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      if (shouldCallApi) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+
+        // Mark this transfer as loaded
+        if (isFirstLoadForTransfer) {
+          hasInitialLoadRef.current.add(transferId);
         }
       }
 
@@ -5050,22 +5087,31 @@ const OtherTransfer = ({
       setLastPaxState(currentPaxString);
       setLastTimeState(departureTime);
       setLastDateState(departureDate);
-    }, 300); // Debounce for 300ms
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [
     pax,
     departureTime,
     departureDate,
-    selectedResult?.transfer,
-    error,
+    selectedResult?.transfer?.id,
     currentModeDepartureDate,
     currentModeDepartureTime,
     isResultSelected,
     isBookingInProgress,
     loadingRequestKey,
-    loadTransfers,
   ]);
+
+  // Reset tracking when going back to index 0 or when transfer changes
+  useEffect(() => {
+    if (currentStep === 0 || !selectedResult?.transfer) {
+      // Clear the tracking when going back to step 0
+      hasInitialLoadRef.current.clear();
+      setLastPaxState(null);
+      setLastTimeState(null);
+      setLastDateState(null);
+    }
+  }, [currentStep, selectedResult?.transfer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -5268,6 +5314,7 @@ const OtherTransfer = ({
         const transferObj = {
           booking_type: transferItem.mode,
           edge_id: transferItem.id,
+          // booking_source: transferItem.booking_source || "Self",
         };
 
         if (transferItem.mode === "Flight") {
@@ -5291,11 +5338,11 @@ const OtherTransfer = ({
             // 12go-Omio single booking payload
             return {
               ...transferObj,
-              source: "Omio",
+              source: item?.booking_source || "Omio",
               trace_id: item.trace_id || traceId,
               price_result_index: item.selectedPrice?.result_index || null,
               segment_result_index:
-                item.selectedOmioResult?.prices?.[0]?.result_index || null,
+                item.selectedOmioResult?.result_index || null,
             };
           }
 
@@ -5307,6 +5354,8 @@ const OtherTransfer = ({
 
           return {
             ...transferObj,
+            source: "Self",
+            price_result_index: item.selectedPrice?.result_index || 0,
             trace_id: item.trace_id || traceId,
             start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
             result_index: resultIndex,
@@ -5843,8 +5892,6 @@ const OtherTransfer = ({
         </div>
       )}
 
-       
-
       {/* Transfer options display */}
       {otherTransfer &&
         !isCurrentTransferLoading() &&
@@ -5852,8 +5899,6 @@ const OtherTransfer = ({
         (() => {
           const hasOmioResults =
             otherTransfer.results && otherTransfer.results.length > 0;
-
-           
 
           if (hasOmioResults) {
             // ─── OMIO RESULTS RENDERING ───
@@ -5890,7 +5935,7 @@ const OtherTransfer = ({
                     <div className="flex justify-between max-ph:flex-col">
                       <div className="w-full">
                         {/* Header: operator + class */}
-                        <div className="flex flex-row items-center gap-xs justify-between">
+                        <div className="flex flex-row items-center gap-2">
                           <div className="flex flex-row items-center gap-xs">
                             {operators.map(
                               (op, opIdx) =>
@@ -5924,7 +5969,7 @@ const OtherTransfer = ({
                               <span className="text-md-lg font-600 leading-lg-md">
                                 {departureInfo.format("h:mm A")}
                               </span>
-                              <span className="text-sm font-400 leading-lg-md">
+                              <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
                                 {result.source?.name ||
                                   otherTransfer.source?.city_name}
                               </span>
@@ -5932,15 +5977,15 @@ const OtherTransfer = ({
 
                             <div className="flex items-center flex-1 mx-md relative">
                               <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
-                                <span className="text-sm font-400 leading-lg-md">
+                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-1">
+                                <span className="text-sm font-400 leading-tight">
                                   {result.duration_formatted ||
                                     `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
                                 </span>
-                                <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                <div className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
                                   {getModeIcon(otherTransfer.mode, 13)}
-                                </span>
-                                <span className="text-sm font-400 leading-lg-md">
+                                </div>
+                                <span className="text-sm font-400 leading-tight">
                                   {otherTransfer.distance} Km
                                 </span>
                               </div>
@@ -5953,7 +5998,7 @@ const OtherTransfer = ({
                               <span className="text-md-lg font-600 leading-lg-md">
                                 {arrivalInfo.format("h:mm A")}
                               </span>
-                              <span className="text-sm font-400 leading-lg-md">
+                              <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
                                 {result.destination?.name ||
                                   otherTransfer.destination?.city_name}
                               </span>
@@ -5964,10 +6009,11 @@ const OtherTransfer = ({
                         {/* Segments breakdown — only shown when there are 2+ segments (i.e. a connection) */}
                         {segments.length > 1 && (
                           <div className="mt-md border-t border-text-disabled pt-md">
-                            <div className="text-xs font-500 text-text-spacegrey mb-xs">
-                              {segments.length} segments · 1 connection
+                            <div className="text-xs font-500 text-text-spacegrey mb-md">
+                              {segments.length} segments · {segments.length - 1}{" "}
+                              connection{segments.length > 2 ? "s" : ""}
                             </div>
-                            <div className="flex flex-col gap-xs">
+                            <div className="flex flex-col gap-2">
                               {segments.map((seg, segIdx) => {
                                 const segDep = seg.departure_datetime
                                   ? dayjs(seg.departure_datetime)
@@ -5980,44 +6026,41 @@ const OtherTransfer = ({
 
                                 return (
                                   <div key={segIdx}>
-                                    <div className="flex flex-row items-start gap-xs">
-                                      {/* Left time column */}
+                                    {/* Departure Row */}
+                                    <div className="flex flex-row items-center gap-2">
                                       <div className="flex flex-col items-end w-[68px] shrink-0">
                                         {segDep && (
                                           <>
-                                            <span className="text-sm font-600">
+                                            <span className="text-sm font-600 leading-tight">
                                               {segDep.format("h:mm A")}
-                                            </span>
-                                            <span className="text-xs text-text-spacegrey">
-                                              {seg.departure_station?.name}
                                             </span>
                                           </>
                                         )}
                                       </div>
 
-                                      {/* Connector dot + operator line */}
-                                      <div className="flex flex-col items-center shrink-0 pt-[3px]">
+                                      <div className="flex items-center shrink-0">
                                         <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                        <div
-                                          className="w-[1px] h-full bg-text-disabled mt-[2px]"
-                                          style={{ minHeight: "28px" }}
-                                        ></div>
                                       </div>
 
-                                      {/* Operator + duration */}
-                                      <div className="flex flex-col gap-[1px] flex-1 min-w-0">
-                                        <div className="flex flex-row items-center gap-xs">
-                                          {seg.operator?.image && (
-                                            <img
-                                              src={seg.operator.image}
-                                              alt={seg.operator.name}
-                                              className="h-3.5 w-auto object-contain"
-                                            />
-                                          )}
-                                          <span className="text-xs font-500 text-text-spacegrey truncate">
-                                            {seg.operator?.name}
-                                          </span>
-                                        </div>
+                                      <div className="flex-1 min-w-0">
+                                        <span
+                                          className="text-sm text-text-spacegrey block truncate"
+                                          title={seg.departure_station?.name}
+                                        >
+                                          {seg.departure_station?.name}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Journey Line with Duration */}
+                                    <div className="flex flex-row items-start gap-2 ml-[68px]">
+                                      <div className="flex flex-col items-center shrink-0 relative">
+                                        <div
+                                          className="w-[1px] bg-text-disabled"
+                                          style={{ height: "36px" }}
+                                        ></div>
+                                      </div>
+                                      <div className="pt-1">
                                         <span className="text-xs text-text-spacegrey">
                                           {seg.duration_formatted ||
                                             `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
@@ -6025,14 +6068,37 @@ const OtherTransfer = ({
                                       </div>
                                     </div>
 
-                                    {/* Connection wait time between segments */}
+                                    {/* Arrival Row */}
+                                    {segArr && (
+                                      <div className="flex flex-row items-center gap-2">
+                                        <div className="flex flex-col items-end w-[68px] shrink-0">
+                                          <span className="text-sm font-600 leading-tight">
+                                            {segArr.format("h:mm A")}
+                                          </span>
+                                        </div>
+
+                                        <div className="flex items-center shrink-0">
+                                          <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                          <span
+                                            className="text-sm text-text-spacegrey block truncate"
+                                            title={seg.arrival_station?.name}
+                                          >
+                                            {seg.arrival_station?.name}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Connection/Layover indicator */}
                                     {!isLastSegment && segments[segIdx + 1] && (
-                                      <div className="flex flex-row items-center gap-xs mt-xs">
-                                        <div className="w-[68px]"></div>
+                                      <div className="flex flex-row items-center gap-2 ml-[68px] mt-2 mb-2">
                                         <div className="flex flex-col items-center shrink-0">
                                           <div className="w-[1px] h-3 bg-text-disabled"></div>
                                         </div>
-                                        <div className="flex flex-row items-center gap-[3px]">
+                                        <div className="flex flex-row items-center gap-1 bg-gray-50 px-2 py-1 rounded">
                                           <FaClock
                                             size={10}
                                             className="text-text-spacegrey"
@@ -6058,23 +6124,6 @@ const OtherTransfer = ({
                                         </div>
                                       </div>
                                     )}
-
-                                    {/* Arrival info at the bottom of last segment */}
-                                    {isLastSegment && segArr && (
-                                      <div className="flex flex-row items-start gap-xs mt-[2px]">
-                                        <div className="w-[68px] flex flex-col items-end">
-                                          <span className="text-sm font-600">
-                                            {segArr.format("h:mm A")}
-                                          </span>
-                                          <span className="text-xs text-text-spacegrey">
-                                            {seg.arrival_station?.name}
-                                          </span>
-                                        </div>
-                                        <div className="flex flex-col items-center shrink-0 pt-[3px]">
-                                          <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                        </div>
-                                      </div>
-                                    )}
                                   </div>
                                 );
                               })}
@@ -6083,11 +6132,11 @@ const OtherTransfer = ({
                         )}
 
                         {/* Cancellation policy */}
-                        {priceOption.cancellation_policy && (
-                          <div className="text-xs text-text-spacegrey mt-xs">
+                        {/* {priceOption.cancellation_policy && (
+                          <div className="text-xs text-text-spacegrey truncate max-w-[68px] mt-xs">
                             {priceOption.cancellation_policy}
                           </div>
-                        )}
+                        )} */}
                       </div>
 
                       {/* Price + action button */}
