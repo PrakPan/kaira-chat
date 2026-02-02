@@ -4898,6 +4898,22 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
+  useEffect(() => {
+  if (selectedResult?.transfer?.id) {
+    const currentTransferId = otherTransfer?.id;
+    const newTransferId = selectedResult.transfer.id;
+    
+    // Clear immediately if it's a different transfer
+    if (currentTransferId !== newTransferId) {
+      setOtherTransfer(null);
+      setError(null);
+      setIsResultSelected(false);
+      setLocalSelectedData([]);
+      setLoadingRequestKey(null);
+    }
+  }
+}, [selectedResult?.transfer?.id, otherTransfer?.id]);
+
   // FIXED: Update state when props change with proper guards
   useEffect(() => {
     if (
@@ -4966,6 +4982,8 @@ const OtherTransfer = ({
 
       // Create new abort controller
       abortControllerRef.current = new AbortController();
+
+       setOtherTransfer(null);
 
       setLoadingRequestKey(requestKey);
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
@@ -5142,7 +5160,7 @@ const OtherTransfer = ({
   useEffect(() => {
     if (selectedResult) {
       setSelectedResult(selectedResult);
-      getOtherTrasfer(selectedResult?.transfer);
+      // getOtherTrasfer(selectedResult?.transfer);
     }
 
     if (selectedResult?.selectedPrice) {
@@ -5863,14 +5881,14 @@ const OtherTransfer = ({
       </div>
 
       {/* Loading indicator for dynamic transfer loading */}
-      {isCurrentTransferLoading() && (
-        <div className="flex justify-center items-center py-8">
-          <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
-          <span className="ml-3 text-sm text-gray-600">
-            Loading transfer options...
-          </span>
-        </div>
-      )}
+      {(isCurrentTransferLoading() || (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
+  <div className="flex justify-center items-center py-8">
+    <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
+    <span className="ml-3 text-sm text-gray-600">
+      Loading transfer options...
+    </span>
+  </div>
+)}
 
       {/* Error message display */}
       {error && !isCurrentTransferLoading() && (
@@ -5894,13 +5912,16 @@ const OtherTransfer = ({
 
       {/* Transfer options display */}
       {otherTransfer &&
-        !isCurrentTransferLoading() &&
-        !error &&
+  !isCurrentTransferLoading() &&
+  !loadingRequestKey &&
+  !error &&
+  selectedResult?.transfer?.id === otherTransfer.id &&
         (() => {
           const hasOmioResults =
             otherTransfer.results && otherTransfer.results.length > 0;
 
           if (hasOmioResults) {
+            console.log("Inside Omio");
             // ─── OMIO RESULTS RENDERING ───
             return otherTransfer.results.map((result, resultIndex) => {
               const resultPrices = result.prices || [];
@@ -6210,6 +6231,8 @@ const OtherTransfer = ({
           if (!otherTransfer.prices || otherTransfer.prices.length === 0)
             return null;
 
+          
+
           return otherTransfer.prices.map((priceOption, priceIndex) => {
             const price = priceOption.price || 0;
             const transfer_currency = currency?.currency
@@ -6225,6 +6248,8 @@ const OtherTransfer = ({
               otherTransfer.start_datetime,
               otherTransfer.duration,
             );
+
+            console.log("Inside Om", otherTransfer);
 
             return (
               <div
