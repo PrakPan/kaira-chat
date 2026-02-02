@@ -218,7 +218,7 @@ const TransferEditDrawer = (props) => {
   const [transferType, setTransferType] = useState(
     booking_type == "multicity" || drawerType == "multicity"
       ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-      : TRANSFER_TYPES.ONEWAYTRIP.name
+      : TRANSFER_TYPES.ONEWAYTRIP.name,
   );
   const [loadingRoundTrip, setLoadingRoundTrip] = useState(false);
   const [loadingMultiCity, setLoadingMultiCity] = useState(false);
@@ -251,8 +251,7 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-  const currency = useSelector(state => state.currency);
-
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -309,92 +308,94 @@ const TransferEditDrawer = (props) => {
     {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
-          .get(
-            `/${router.query.id}/?currency=${currency?.currency || 'INR'}`
-            // multiCityRoundtripRequestData
-          )
-          .then((response) => {
-            setMultiCitySuggestions(response?.data?.suggestions?.[0]);
-            setMulticityRoundtripTraceId(response?.data?.trace_id);
-            setRoundTripSuggestions(response?.data?.suggestions?.[1]);
-            setLoadingMulticityTransfers(false);
-            setLoadingTransfers(false);
-          })
-          .catch((error) => {
-            setLoadingTransfers(false);
-            setLoadingMulticityTransfers(false);
-            console.error("Error::Fetching Multicity Round Trip");
-          })
+            .get(
+              `/${router.query.id}/?currency=${currency?.currency || "INR"}`,
+              // multiCityRoundtripRequestData
+            )
+            .then((response) => {
+              setMultiCitySuggestions(response?.data?.suggestions?.[0]);
+              setMulticityRoundtripTraceId(response?.data?.trace_id);
+              setRoundTripSuggestions(response?.data?.suggestions?.[1]);
+              setLoadingMulticityTransfers(false);
+              setLoadingTransfers(false);
+            })
+            .catch((error) => {
+              setLoadingTransfers(false);
+              setLoadingMulticityTransfers(false);
+              console.error("Error::Fetching Multicity Round Trip");
+            })
         : null;
     }
     {
       booking_type != "multicity" && (mercury || props?.isMercury)
         ? fetchTransferMode
-          .post(
-            `?currency=${currency?.currency || 'INR'}`,
-            {
-              origin:
-                props?.origin ||
-                originCityId ||
-                mercuryTransfer?.source?.city,
-              destination:
-                props?.destination ||
-                mercuryTransfer?.destination?.city ||
-                destinationCityId,
-              number_of_adults:
-                number_of_adults || props?.plan?.number_of_adults || 1,
-              number_of_children:
-                number_of_children || props?.plan?.number_of_children || 0,
-              number_of_infants:
-                number_of_infants || props?.plan?.number_of_infants || 0,
-              //top_only: "false",
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem(
-                  "access_token"
-                )}`,
+            .post(
+              `?currency=${currency?.currency || "INR"}`,
+              {
+                origin:
+                  props?.origin ||
+                  originCityId ||
+                  mercuryTransfer?.source?.city,
+                destination:
+                  props?.destination ||
+                  mercuryTransfer?.destination?.city ||
+                  destinationCityId,
+                number_of_adults:
+                  number_of_adults || props?.plan?.number_of_adults || 1,
+                number_of_children:
+                  number_of_children || props?.plan?.number_of_children || 0,
+                number_of_infants:
+                  number_of_infants || props?.plan?.number_of_infants || 0,
+                //top_only: "false",
               },
-            }
-          )
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(
+                    "access_token",
+                  )}`,
+                },
+              },
+            )
 
-          .then((res) => {
-            if (res.data.success && res.data.routes.data.length > 0) {
-              const data = res.data.routes.data;
-              setTransfers(data);
-            } else {
+            .then((res) => {
+              if (res.data.success && res.data.routes.data.length > 0) {
+                const data = res.data.routes.data;
+                setTransfers(data);
+              } else {
+                setTransfersError(
+                  "No route found, please get in touch with us to complete this booking!",
+                );
+              }
+              setLoadingTransfers(false);
+            })
+            .catch((err) => {
+              setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err?.response?.data?.errors[0]?.message[0] ||
+                  "No route found, please get in touch with us to complete this booking!",
               );
-            }
-            setLoadingTransfers(false);
-          })
-          .catch((err) => {
-            setLoadingTransfers(false);
-            setTransfersError(
-              err?.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
-            );
-          })
+            })
         : booking_type != "multicity" &&
-        routeDetails
-          .get(`${routeId}/`, requestData)
-          .then((res) => {
-            if (res.data.success && res.data.routes.data.length > 0) {
-              const data = res.data.routes.data;
-              setTransfers(data);
-            } else {
+          routeDetails
+            .get(`${routeId}/`, requestData)
+            .then((res) => {
+              if (res.data.success && res.data.routes.data.length > 0) {
+                const data = res.data.routes.data;
+                setTransfers(data);
+              } else {
+                setTransfersError(
+                  "No route found, please get in touch with us to complete this booking!",
+                );
+              }
+              setLoadingTransfers(false);
+            })
+            .catch((err) => {
+              setLoadingTransfers(false);
               setTransfersError(
-                "No route found, please get in touch with us to complete this booking!"
+                err.response?.data?.errors[0]?.message[0] ||
+                  "No route found, please get in touch with us to complete this booking!",
               );
-            }
-            setLoadingTransfers(false);
-          })
-          .catch((err) => {
-            setLoadingTransfers(false);
-            setTransfersError(
-              err.response?.data?.errors[0]?.message[0] || "No route found, please get in touch with us to complete this booking!"
-            );
-          });
+            });
     }
   };
 
@@ -579,7 +580,9 @@ const TransferEditDrawer = (props) => {
             });
           } else {
             openNotification({
-              text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
+              text:
+                err.response?.data?.errors[0]?.message[0] ||
+                "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
@@ -643,7 +646,7 @@ const TransferEditDrawer = (props) => {
         setCurrentStep(0);
         console.error(
           "Error::While Creating Multicity/RoundTrip Booking",
-          err.message
+          err.message,
         );
         if (err.response?.status === 403) {
           openNotification({
@@ -653,7 +656,9 @@ const TransferEditDrawer = (props) => {
           });
         } else {
           openNotification({
-            text: err.response?.data?.errors[0]?.message[0] || "There seems to be a problem, please try again!",
+            text:
+              err.response?.data?.errors[0]?.message[0] ||
+              "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -697,16 +702,17 @@ const TransferEditDrawer = (props) => {
         setTransferType(
           booking_type == "multicity"
             ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-            : TRANSFER_TYPES.ONEWAYTRIP.name
+            : TRANSFER_TYPES.ONEWAYTRIP.name,
         );
         setSelectedCab(null);
       }}
     >
       <div
-        className={`relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4  ${transfers[selectedTransferIndex]?.transfers?.length > 1
-          ? "md:pb-0"
-          : "md:pb-[30px]"
-          } justify-start items-start mx-auto w-[100%] min-h-screen`}
+        className={`relative px-xl bg-white z-[900] flex flex-col gap-xl pt-4  ${
+          transfers[selectedTransferIndex]?.transfers?.length > 1
+            ? "md:pb-0"
+            : "md:pb-[30px]"
+        } justify-start items-start mx-auto w-[100%] min-h-screen`}
       >
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
@@ -721,7 +727,7 @@ const TransferEditDrawer = (props) => {
                   setTransferType(
                     booking_type == "multicity"
                       ? TRANSFER_TYPES.MULTICITYROUNDTRIP.name
-                      : TRANSFER_TYPES.ONEWAYTRIP.name
+                      : TRANSFER_TYPES.ONEWAYTRIP.name,
                   );
                   setFlightResults([]);
                   setTaxiResults([]);
@@ -766,38 +772,85 @@ const TransferEditDrawer = (props) => {
 
         {(loadingTransfers &&
           transferType === TRANSFER_TYPES.ONEWAYTRIP.name) ||
-          (loadingMulticityTransfers &&
-            transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
+        (loadingMulticityTransfers &&
+          transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
-          {['', '', ''].map(() => <>
-            <div className="rounded-3xl border-sm border-solid border-text-disabled p-md relative w-full">
-              <div>
-                <div className=" text-white text-sm  leading-lg inline">
-                  <SkeletonCard width="40%" height="30px" borderRadius="8px" variant="default" />
-                </div>
-                <div>
+            {["", "", ""].map(() => (
+              <>
+                <div className="rounded-3xl border-sm border-solid border-text-disabled p-md relative w-full">
                   <div>
-                    <div className="text-md-lg font-600 leading-xl-sm mt-sm mb-sm"><SkeletonCard width="70%" height="25px" borderRadius="8px" variant="default" /></div>
-                    <div className="flex mt-xs"><div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
-                      <span>  <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" /></span>
-                      <span><SkeletonCard width="100px" height="20px" borderRadius="8px" variant="default" /></span>
+                    <div className=" text-white text-sm  leading-lg inline">
+                      <SkeletonCard
+                        width="40%"
+                        height="30px"
+                        borderRadius="8px"
+                        variant="default"
+                      />
                     </div>
-                      <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
-                        <span>
-                          <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" /></span>
-                        <span><SkeletonCard width="100px" height="20px" borderRadius="8px" variant="default" /></span>
+                    <div>
+                      <div>
+                        <div className="text-md-lg font-600 leading-xl-sm mt-sm mb-sm">
+                          <SkeletonCard
+                            width="70%"
+                            height="25px"
+                            borderRadius="8px"
+                            variant="default"
+                          />
+                        </div>
+                        <div className="flex mt-xs">
+                          <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
+                            <span>
+                              {" "}
+                              <SkeletonCard
+                                width="20px"
+                                height="20px"
+                                borderRadius="50%"
+                                variant="default"
+                              />
+                            </span>
+                            <span>
+                              <SkeletonCard
+                                width="100px"
+                                height="20px"
+                                borderRadius="8px"
+                                variant="default"
+                              />
+                            </span>
+                          </div>
+                          <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
+                            <span>
+                              <SkeletonCard
+                                width="20px"
+                                height="20px"
+                                borderRadius="50%"
+                                variant="default"
+                              />
+                            </span>
+                            <span>
+                              <SkeletonCard
+                                width="100px"
+                                height="20px"
+                                borderRadius="8px"
+                                variant="default"
+                              />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute right-lg top-lg">
+                        <SkeletonCard
+                          width="20px"
+                          height="20px"
+                          borderRadius="50%"
+                          variant="default"
+                        />
                       </div>
                     </div>
                   </div>
-                  <div className="absolute right-lg top-lg">
-                    <SkeletonCard width="20px" height="20px" borderRadius="50%" variant="default" />
-                  </div>
                 </div>
-              </div>
-            </div>
-
-          </>)}
-        </div>
+              </>
+            ))}
+          </div>
         ) : transfersError &&
           roundTripSuggestions === null &&
           multiCitySuggestions === null ? (
@@ -855,13 +908,13 @@ const TransferEditDrawer = (props) => {
                     {(booking_type == "multicity" ||
                       roundTripSuggestions ||
                       multiCitySuggestions) && (
-                        <RadioButton
-                          name="MULTICITYROUNDTRIP"
-                          label="Multi-City/Round Trip Taxi"
-                          transferType={transferType}
-                          handleTransferType={handleTransferType}
-                        />
-                      )}
+                      <RadioButton
+                        name="MULTICITYROUNDTRIP"
+                        label="Multi-City/Round Trip Taxi"
+                        transferType={transferType}
+                        handleTransferType={handleTransferType}
+                      />
+                    )}
                   </div>
                   <hr className="my-lg w-100" />
                 </div>
@@ -896,8 +949,8 @@ const TransferEditDrawer = (props) => {
                                   {Math.ceil(
                                     transfers[0].transfers.reduce(
                                       (sum, t) => sum + (t.duration || 0),
-                                      0
-                                    ) / 60
+                                      0,
+                                    ) / 60,
                                   ) ? (
                                     <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
                                       <span> {svgIcons.time} </span>
@@ -905,8 +958,8 @@ const TransferEditDrawer = (props) => {
                                         {Math.ceil(
                                           transfers[0].transfers.reduce(
                                             (sum, t) => sum + (t.duration || 0),
-                                            0
-                                          ) / 60
+                                            0,
+                                          ) / 60,
                                         )}
                                         &nbsp;Hours
                                       </span>
@@ -914,14 +967,14 @@ const TransferEditDrawer = (props) => {
                                   ) : null}
                                   {transfers[0].transfers.reduce(
                                     (sum, t) => sum + (t.distance || 0),
-                                    0
+                                    0,
                                   ) ? (
                                     <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
                                       <span> {svgIcons.location} </span>
                                       <span>
                                         {transfers[0].transfers.reduce(
                                           (sum, t) => sum + (t.distance || 0),
-                                          0
+                                          0,
                                         )}
                                         &nbsp;kms
                                       </span>
@@ -963,8 +1016,8 @@ const TransferEditDrawer = (props) => {
                                             transfer.transfers.reduce(
                                               (sum, t) =>
                                                 sum + (t.duration || 0),
-                                              0
-                                            ) / 60
+                                              0,
+                                            ) / 60,
                                           )}
                                           &nbsp;Hours
                                         </span>
@@ -974,7 +1027,7 @@ const TransferEditDrawer = (props) => {
                                         <span>
                                           {transfer.transfers.reduce(
                                             (sum, t) => sum + (t.distance || 0),
-                                            0
+                                            0,
                                           )}
                                           &nbsp;kms
                                         </span>
@@ -1016,7 +1069,7 @@ const TransferEditDrawer = (props) => {
                     selectedTransferIndex !== null &&
                     (isDesktop ? (
                       transfers[selectedTransferIndex]?.transfers?.length >
-                        1 ? (
+                      1 ? (
                         <NewMultiModeContainer
                           useHandleClose={actualClose}
                           key={selectedTransferIndex}
@@ -1171,158 +1224,158 @@ const TransferEditDrawer = (props) => {
                         />
                       )
                     ) : // Mobile view logic
-                      transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
-                        <NewMultiModeContainer
-                          useHandleClose={actualClose}
-                          key={selectedTransferIndex}
-                          booking_id={booking_id}
-                          name={transfers[selectedTransferIndex]?.name}
-                          transferIndex={selectedTransferIndex}
-                          transfer={transfers[selectedTransferIndex]?.transfers}
-                          handleSelect={handleSelect}
-                          selectedResult={selectedResult}
-                          setCurrentStep={setCurrentStep}
-                          currentStep={currentStep}
-                          handleFlightSelect={handleSelectResult}
-                          showComboFlightModal={showComboFlightModal}
-                          setShowComboFlightModal={setShowComboFlightModal}
-                          setHideFlightModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          setHideBookingModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          showTaxiModal={showComboTaxiModal}
-                          setShowComboTaxiModal={setShowComboTaxiModal}
-                          setHideTaxiModal={() => setShowComboTaxiModal(false)}
-                          getPaymentHandler={props.getPaymentHandler}
-                          _updatePaymentHandler={props._updatePaymentHandler}
-                          _updateFlightBookingHandler={
-                            _updateFlightBookingHandler
-                          }
-                          _updateBookingHandler={props._updateBookingHandler}
-                          alternates={selectedBooking?.id}
-                          tailored_id={selectedBooking?.tailored_itinerary}
-                          selectedBooking={selectedBooking}
-                          itinerary_id={ItineraryId}
-                          setShowLoginModal={setShowLoginModal}
-                          check_in={check_in}
-                          _GetInTouch={props._GetInTouch}
-                          daySlabIndex={day_slab_index}
-                          routeId={routeId}
-                          mercuryTransfer={selectedMercuryTransfer}
-                          mercury={mercuryTransfer}
-                          individual={props?.individual}
-                          originCityId={props?.originCityId}
-                          destinationCityId={props?.destinationCityId}
-                          token={props?.token}
-                          origin_itinerary_city_id={origin_itinerary_city_id}
-                          destination_itinerary_city_id={
-                            destination_itinerary_city_id
-                          }
-                          dCityData={dCityData}
-                          oCityData={oCityData}
-                          openNotification={openNotification}
-                          showDrawer={showDrawer}
-                          origin={origin}
-                          destination={destination}
-                          city={city}
-                          dcity={dcity}
-                          currentModeDepartureDate={currentModeDepartureDate}
-                          setCurrentModeDepartureDate={
-                            setCurrentModeDepartureDate
-                          }
-                          currentModeDepartureTime={currentModeDepartureTime}
-                          setCurrentModeDepartureTime={
-                            setCurrentModeDepartureTime
-                          }
-                          skipTaxiFetch={skipTaxiFetch}
-                          skipFlightFetch={skipFlightFetch}
-                          setSkipFlightFetch={setSkipFlightFetch}
-                          setSkipTaxiFetch={setSkipTaxiFetch}
-                          flightResults={flightResults}
-                          taxiResults={taxiResults}
-                          setFlightResults={setFlightResults}
-                          setTaxiResults={setTaxiResults}
-                        />
-                      ) : (
-                        <RouteContainer
-                          useHandleClose={actualClose}
-                          setSelectedMercuryTransfer={setSelectedMercuryTransfer}
-                          booking_id={booking_id}
-                          key={selectedTransferIndex}
-                          name={transfers[selectedTransferIndex]?.name}
-                          transferIndex={selectedTransferIndex}
-                          transfer={transfers[selectedTransferIndex]?.transfers}
-                          handleSelect={handleSelect}
-                          selectedResult={selectedResult}
-                          setSelectedResult={setSelectedResult}
-                          setCurrentStep={setCurrentStep}
-                          currentStep={currentStep}
-                          handleFlightSelect={handleSelectResult}
-                          showComboFlightModal={showComboFlightModal}
-                          setShowComboFlightModal={setShowComboFlightModal}
-                          setHideFlightModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          hideDrawer={() => {
-                            actualClose();
-                            setCurrentStep(0);
-                            setIsRouteSelected(false);
-                            setShowOtherTrasfer(false);
-                            setSelectedTransferIndex(null); // Reset selected transfer
-                          }}
-                          setHideBookingModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          showTaxiModal={showComboTaxiModal}
-                          setShowComboTaxiModal={setShowComboTaxiModal}
-                          setHideTaxiModal={() => setShowComboTaxiModal(false)}
-                          getPaymentHandler={props.getPaymentHandler}
-                          _updatePaymentHandler={props._updatePaymentHandler}
-                          _updateFlightBookingHandler={
-                            _updateFlightBookingHandler
-                          }
-                          _updateTaxiBookingHandler={
-                            props._updateTaxiBookingHandler
-                          }
-                          _updateBookingHandler={props._updateBookingHandler}
-                          alternates={selectedBooking?.id}
-                          tailored_id={selectedBooking?.tailored_itinerary}
-                          selectedBooking={selectedBooking}
-                          itinerary_id={ItineraryId}
-                          setShowLoginModal={setShowLoginModal}
-                          check_in={check_in}
-                          _GetInTouch={props._GetInTouch}
-                          daySlabIndex={day_slab_index}
-                          routeId={routeId}
-                          mercuryTransfer={selectedMercuryTransfer}
-                          individual={props?.individual}
-                          originCityId={props?.originCityId}
-                          destinationCityId={props?.destinationCityId}
-                          token={props?.token}
-                          origin_itinerary_city_id={origin_itinerary_city_id}
-                          destination_itinerary_city_id={
-                            destination_itinerary_city_id
-                          }
-                          dCityData={dCityData}
-                          oCityData={oCityData}
-                          openNotification={openNotification}
-                          showDrawer={showDrawer}
-                          origin={origin}
-                          destination={destination}
-                          currentModeDepartureDate={currentModeDepartureDate}
-                          setCurrentModeDepartureDate={
-                            setCurrentModeDepartureDate
-                          }
-                          currentModeDepartureTime={currentModeDepartureTime}
-                          setCurrentModeDepartureTime={
-                            setCurrentModeDepartureTime
-                          }
-                          showOtherTrasfer={showOtherTransfer}
-                          setShowOtherTrasfer={setShowOtherTrasfer}
-                        />
-                      ))
+                    transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
+                      <NewMultiModeContainer
+                        useHandleClose={actualClose}
+                        key={selectedTransferIndex}
+                        booking_id={booking_id}
+                        name={transfers[selectedTransferIndex]?.name}
+                        transferIndex={selectedTransferIndex}
+                        transfer={transfers[selectedTransferIndex]?.transfers}
+                        handleSelect={handleSelect}
+                        selectedResult={selectedResult}
+                        setCurrentStep={setCurrentStep}
+                        currentStep={currentStep}
+                        handleFlightSelect={handleSelectResult}
+                        showComboFlightModal={showComboFlightModal}
+                        setShowComboFlightModal={setShowComboFlightModal}
+                        setHideFlightModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        setHideBookingModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        showTaxiModal={showComboTaxiModal}
+                        setShowComboTaxiModal={setShowComboTaxiModal}
+                        setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        _updateFlightBookingHandler={
+                          _updateFlightBookingHandler
+                        }
+                        _updateBookingHandler={props._updateBookingHandler}
+                        alternates={selectedBooking?.id}
+                        tailored_id={selectedBooking?.tailored_itinerary}
+                        selectedBooking={selectedBooking}
+                        itinerary_id={ItineraryId}
+                        setShowLoginModal={setShowLoginModal}
+                        check_in={check_in}
+                        _GetInTouch={props._GetInTouch}
+                        daySlabIndex={day_slab_index}
+                        routeId={routeId}
+                        mercuryTransfer={selectedMercuryTransfer}
+                        mercury={mercuryTransfer}
+                        individual={props?.individual}
+                        originCityId={props?.originCityId}
+                        destinationCityId={props?.destinationCityId}
+                        token={props?.token}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={
+                          destination_itinerary_city_id
+                        }
+                        dCityData={dCityData}
+                        oCityData={oCityData}
+                        openNotification={openNotification}
+                        showDrawer={showDrawer}
+                        origin={origin}
+                        destination={destination}
+                        city={city}
+                        dcity={dcity}
+                        currentModeDepartureDate={currentModeDepartureDate}
+                        setCurrentModeDepartureDate={
+                          setCurrentModeDepartureDate
+                        }
+                        currentModeDepartureTime={currentModeDepartureTime}
+                        setCurrentModeDepartureTime={
+                          setCurrentModeDepartureTime
+                        }
+                        skipTaxiFetch={skipTaxiFetch}
+                        skipFlightFetch={skipFlightFetch}
+                        setSkipFlightFetch={setSkipFlightFetch}
+                        setSkipTaxiFetch={setSkipTaxiFetch}
+                        flightResults={flightResults}
+                        taxiResults={taxiResults}
+                        setFlightResults={setFlightResults}
+                        setTaxiResults={setTaxiResults}
+                      />
+                    ) : (
+                      <RouteContainer
+                        useHandleClose={actualClose}
+                        setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                        booking_id={booking_id}
+                        key={selectedTransferIndex}
+                        name={transfers[selectedTransferIndex]?.name}
+                        transferIndex={selectedTransferIndex}
+                        transfer={transfers[selectedTransferIndex]?.transfers}
+                        handleSelect={handleSelect}
+                        selectedResult={selectedResult}
+                        setSelectedResult={setSelectedResult}
+                        setCurrentStep={setCurrentStep}
+                        currentStep={currentStep}
+                        handleFlightSelect={handleSelectResult}
+                        showComboFlightModal={showComboFlightModal}
+                        setShowComboFlightModal={setShowComboFlightModal}
+                        setHideFlightModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        hideDrawer={() => {
+                          actualClose();
+                          setCurrentStep(0);
+                          setIsRouteSelected(false);
+                          setShowOtherTrasfer(false);
+                          setSelectedTransferIndex(null); // Reset selected transfer
+                        }}
+                        setHideBookingModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        showTaxiModal={showComboTaxiModal}
+                        setShowComboTaxiModal={setShowComboTaxiModal}
+                        setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        _updateFlightBookingHandler={
+                          _updateFlightBookingHandler
+                        }
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        _updateBookingHandler={props._updateBookingHandler}
+                        alternates={selectedBooking?.id}
+                        tailored_id={selectedBooking?.tailored_itinerary}
+                        selectedBooking={selectedBooking}
+                        itinerary_id={ItineraryId}
+                        setShowLoginModal={setShowLoginModal}
+                        check_in={check_in}
+                        _GetInTouch={props._GetInTouch}
+                        daySlabIndex={day_slab_index}
+                        routeId={routeId}
+                        mercuryTransfer={selectedMercuryTransfer}
+                        individual={props?.individual}
+                        originCityId={props?.originCityId}
+                        destinationCityId={props?.destinationCityId}
+                        token={props?.token}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={
+                          destination_itinerary_city_id
+                        }
+                        dCityData={dCityData}
+                        oCityData={oCityData}
+                        openNotification={openNotification}
+                        showDrawer={showDrawer}
+                        origin={origin}
+                        destination={destination}
+                        currentModeDepartureDate={currentModeDepartureDate}
+                        setCurrentModeDepartureDate={
+                          setCurrentModeDepartureDate
+                        }
+                        currentModeDepartureTime={currentModeDepartureTime}
+                        setCurrentModeDepartureTime={
+                          setCurrentModeDepartureTime
+                        }
+                        showOtherTrasfer={showOtherTransfer}
+                        setShowOtherTrasfer={setShowOtherTrasfer}
+                      />
+                    ))
                   )}
                 </div>
               </>
@@ -1372,7 +1425,7 @@ const TransferEditDrawer = (props) => {
                     handleMultiCitySelect(
                       multicityRoundtripTraceId,
                       tripTypeIndex,
-                      selectedCab?.result_index
+                      selectedCab?.result_index,
                     );
                   }}
                   className={`
@@ -1380,10 +1433,11 @@ const TransferEditDrawer = (props) => {
             transition-all duration-200 ease-in-out
             flex items-center justify-center
             
-            ${!selectedCab || updatingTransfer
-                      ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
-                      : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
-                    }
+            ${
+              !selectedCab || updatingTransfer
+                ? "bg-[#f8e000] text-gray-500 cursor-not-allowed"
+                : "bg-[#f8e000] text-black border-1 border-black hover:bg-yellow-400 active:transform active:scale-95 cursor-pointer"
+            }
           `}
                   disabled={!selectedCab || updatingTransfer}
                 >
@@ -1641,13 +1695,15 @@ const RouteContainer = (props) => {
   return (
     <>
       <div
-        className={` ${transfer?.length > 1
-          ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer[0]?.isSelected
-            ? "border-yellow-300"
-            : ""
-          } border-x-2 border-t-2 border-b-4`
-          : "w-full"
-          }`}
+        className={` ${
+          transfer?.length > 1
+            ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
+                transferIndex === 0 && transfer[0]?.isSelected
+                  ? "border-yellow-300"
+                  : ""
+              } border-x-2 border-t-2 border-b-4`
+            : "w-full"
+        }`}
       >
         {transfer[0]?.recommended && (
           <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
@@ -1693,7 +1749,6 @@ const RouteContainer = (props) => {
         ) : (
           //  need to add header
           <>
-
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
@@ -1970,7 +2025,9 @@ const NewMultiModeContainer = ({
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const { trackTransferBookingAdd } = useAnalytics();
-  const { intercity } = useSelector(state => state.TransferBookings)?.transferBookings;
+  const { intercity } = useSelector(
+    (state) => state.TransferBookings,
+  )?.transferBookings;
 
   const {
     number_of_adults,
@@ -2019,11 +2076,11 @@ const NewMultiModeContainer = ({
             // If this is a non-Flight/non-Taxi mode, calculate its arrival time
             if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
               const newDepartureDateTime = dayjs(
-                `${newDepartureDate}T${newDepartureTimeStr}`
+                `${newDepartureDate}T${newDepartureTimeStr}`,
               );
               const newArrivalDateTime = newDepartureDateTime.add(
                 newData[i].duration || 0,
-                "minute"
+                "minute",
               );
               newData[i].arrival_time =
                 newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2188,11 +2245,11 @@ const NewMultiModeContainer = ({
         if (mode !== "Flight" && mode !== "Taxi") {
           // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
           const departureDateTime = dayjs(
-            `${currentModeDepartureDate}T${currentModeDepartureTime}`
+            `${currentModeDepartureDate}T${currentModeDepartureTime}`,
           );
           const arrivalDateTime = departureDateTime.add(
             searchData.duration || 0,
-            "minute"
+            "minute",
           );
 
           searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
@@ -2213,11 +2270,11 @@ const NewMultiModeContainer = ({
           ) {
             // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
             const departureDateTime = dayjs(
-              `${currentModeDepartureDate}T${currentModeDepartureTime}`
+              `${currentModeDepartureDate}T${currentModeDepartureTime}`,
             );
             const arrivalDateTime = departureDateTime.add(
               selectedTransfer.duration || 0,
-              "minute"
+              "minute",
             );
 
             selectedTransfer.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
@@ -2240,7 +2297,7 @@ const NewMultiModeContainer = ({
         ? null
         : searchData || transfer.find((item) => item.id === id),
       transfer,
-      mode
+      mode,
     );
 
     // Propagate time changes to all subsequent steps
@@ -2254,7 +2311,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       flightData?.id || flightData?.resultIndex,
       flightData,
-      "Flight"
+      "Flight",
     );
   };
 
@@ -2263,7 +2320,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       taxiData?.id || taxiData?.result_index,
       taxiData,
-      "Taxi"
+      "Taxi",
     );
   };
 
@@ -2356,7 +2413,7 @@ const NewMultiModeContainer = ({
       const departureDateTime = dayjs(`${currentModeDepartureDate}T${time}:00`);
       const arrivalDateTime = departureDateTime.add(
         currentSelectedData.duration || 0,
-        "minute"
+        "minute",
       );
       currentSelectedData.arrival_time =
         arrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2370,7 +2427,7 @@ const NewMultiModeContainer = ({
       loadTransfers(
         currentTransfer,
         paxData,
-        `${currentModeDepartureDate}T${time}:00`
+        `${currentModeDepartureDate}T${time}:00`,
       );
     }
 
@@ -2397,11 +2454,11 @@ const NewMultiModeContainer = ({
 
             if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
               const newDepartureDateTime = dayjs(
-                `${newDepartureDate}T${newDepartureTimeStr}`
+                `${newDepartureDate}T${newDepartureTimeStr}`,
               );
               const newArrivalDateTime = newDepartureDateTime.add(
                 newData[i].duration || 0,
-                "minute"
+                "minute",
               );
               newData[i].arrival_time =
                 newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
@@ -2417,7 +2474,7 @@ const NewMultiModeContainer = ({
       currentStep - 1,
       currentSelectedData,
       currentTransferData,
-      currentTransferData.mode
+      currentTransferData.mode,
     );
 
     selectedData.forEach((data, index) => {
@@ -2427,7 +2484,7 @@ const NewMultiModeContainer = ({
           index,
           selectedData[index],
           modeTransfer,
-          modeTransfer.mode
+          modeTransfer.mode,
         );
       }
     });
@@ -2443,7 +2500,6 @@ const NewMultiModeContainer = ({
   // Add this handleCancel function inside your NewMultiModeContainer component
 
   const handleCancel = () => {
-
     // Find the last selected step (highest index with a selection)
 
     console.log("Selected Mode Ids", selectedModeIds);
@@ -2500,15 +2556,28 @@ const NewMultiModeContainer = ({
             source: item.source,
           };
         } else {
+          const isOmio = !!item.selectedOmioResult;
+
+          if (isOmio) {
+            return {
+              ...transferObj,
+              source: "Omio",
+              trace_id: item.trace_id,
+              price_result_index: item.selectedPrice?.result_index || null,
+              segment_result_index:
+                item.selectedOmioResult?.prices?.[0]?.result_index || null,
+            };
+          }
+
           return {
             ...transferObj,
             trace_id: item.trace_id,
             result_index: item.selectedPrice
               ? transfer[index].prices.findIndex(
-                (p) =>
-                  p.price === item.selectedPrice.price &&
-                  p.currency === item.selectedPrice.currency
-              )
+                  (p) =>
+                    p.price === item.selectedPrice.price &&
+                    p.currency === item.selectedPrice.currency,
+                )
               : 0,
             start_time:
               item.departure_time ||
@@ -2551,13 +2620,13 @@ const NewMultiModeContainer = ({
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (warningResponse?.data?.show_warning === true) {
           // Show warning modal
           setWarningMessage(
-            warningResponse.data.warning || "Please confirm this action."
+            warningResponse.data.warning || "Please confirm this action.",
           );
           setPendingBookingData(requestBody);
           setShowWarningModal(true);
@@ -2609,25 +2678,35 @@ const NewMultiModeContainer = ({
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = response.data;
       dispatch(
         updateSingleTransferBooking(
           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          data
-        )
+          data,
+        ),
       );
 
-      trackTransferBookingAdd(itinerary_id, `${origin_itinerary_city_id}:${destination_itinerary_city_id}`, intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`], data, city || mercury?.source?.city_name, dcity || mercury?.destination?.city_name)
+      trackTransferBookingAdd(
+        itinerary_id,
+        `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+        intercity?.[
+          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`
+        ],
+        data,
+        city || mercury?.source?.city_name,
+        dcity || mercury?.destination?.city_name,
+      );
 
       getPaymentHandler();
       actualClose();
 
       openNotification({
-        text: `Transfer from ${city || mercury?.source?.city_name} to ${dcity || mercury?.destination?.city_name
-          } has been updated successfully!`,
+        text: `Transfer from ${city || mercury?.source?.city_name} to ${
+          dcity || mercury?.destination?.city_name
+        } has been updated successfully!`,
         heading: "Success!",
         type: "success",
       });
@@ -2737,10 +2816,10 @@ const NewMultiModeContainer = ({
         let departureDateTime = dayjs(prevSelected.departure_time);
         let calculatedArrival = departureDateTime.add(
           prevSelected.duration,
-          "minute"
+          "minute",
         );
         calculatedStartTime = roundUpToNext30Min(
-          calculatedArrival.add(1, "hour")
+          calculatedArrival.add(1, "hour"),
         );
 
         setSelectedData((prev) => {
@@ -2755,7 +2834,7 @@ const NewMultiModeContainer = ({
         });
       } else {
         calculatedStartTime = roundUpToNext30Min(
-          dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`)
+          dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`),
         );
       }
     }
@@ -2771,7 +2850,7 @@ const NewMultiModeContainer = ({
           currentStep - 1,
           currentTransfer,
           "",
-          currentTransfer.mode
+          currentTransfer.mode,
         );
 
         if (currentTransfer.mode === "Flight") {
@@ -2794,7 +2873,7 @@ const NewMultiModeContainer = ({
           infants: pax.infants,
         };
         const departureDateTime = `${calculatedStartTime.format(
-          "YYYY-MM-DD"
+          "YYYY-MM-DD",
         )}T${calculatedStartTime.format("HH:mm")}:00`;
         loadTransfers(currentTransfer, paxData, departureDateTime);
       }
@@ -2835,7 +2914,7 @@ const NewMultiModeContainer = ({
           const departureDateTime = dayjs(selectedData[i].departure_time);
           const arrivalDateTime = departureDateTime.add(
             selectedData[i].duration,
-            "minute"
+            "minute",
           );
 
           setSelectedData((prev) => {
@@ -2915,7 +2994,7 @@ const NewMultiModeContainer = ({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
       {/* {currentStep === 0 && (
         <div
@@ -2947,23 +3026,26 @@ const NewMultiModeContainer = ({
                 {transfer.map((item, index) => (
                   <div
                     key={index}
-                    className={`flex items-center relative ${index < transfer.length - 1 ? "w-[40%]" : ""
-                      }`}
+                    className={`flex items-center relative ${
+                      index < transfer.length - 1 ? "w-[40%]" : ""
+                    }`}
                   >
                     <div
                       className={`flex items-center flex-col gap-lg justify-center  `}
                     >
                       <div
-                        className={`w-[25px] h-[25px] flex items-center justify-center rounded-full border-1  ${currentStep >= index + 1
-                          ? "border-pureBlack"
-                          : "border-text-disabled"
-                          }  ${currentStep >= index + 2 ? "bg-pureBlack" : ""}`}
+                        className={`w-[25px] h-[25px] flex items-center justify-center rounded-full border-1  ${
+                          currentStep >= index + 1
+                            ? "border-pureBlack"
+                            : "border-text-disabled"
+                        }  ${currentStep >= index + 2 ? "bg-pureBlack" : ""}`}
                       >
                         <span
-                          className={`text-sm font-500 leading-md  ${currentStep >= index + 1
-                            ? "text-pureBlack"
-                            : "text-text-disabled"
-                            }`}
+                          className={`text-sm font-500 leading-md  ${
+                            currentStep >= index + 1
+                              ? "text-pureBlack"
+                              : "text-text-disabled"
+                          }`}
                         >
                           {" "}
                           {currentStep >= index + 2
@@ -2972,10 +3054,11 @@ const NewMultiModeContainer = ({
                         </span>
                       </div>
                       <span
-                        className={`text-sm-md font-500 leading-md whitespace-nowrap ${currentStep >= index + 1
-                          ? "text-pureBlack"
-                          : "text-text-disabled"
-                          }`}
+                        className={`text-sm-md font-500 leading-md whitespace-nowrap ${
+                          currentStep >= index + 1
+                            ? "text-pureBlack"
+                            : "text-text-disabled"
+                        }`}
                       >
                         Add a {item.mode}
                       </span>
@@ -2983,13 +3066,15 @@ const NewMultiModeContainer = ({
 
                     {index < transfer.length - 1 && (
                       <div
-                        className={`h-[1px] absolute left-[48px] top-[12px] ${currentStep >= index + 2
-                          ? "bg-pureBlack"
-                          : "bg-text-disabled"
-                          }`}
+                        className={`h-[1px] absolute left-[48px] top-[12px] ${
+                          currentStep >= index + 2
+                            ? "bg-pureBlack"
+                            : "bg-text-disabled"
+                        }`}
                         style={{
-                          width: `calc(100% - ${index < transfer.length - 2 ? "25px" : "20px"
-                            })`,
+                          width: `calc(100% - ${
+                            index < transfer.length - 2 ? "25px" : "20px"
+                          })`,
                         }}
                       ></div>
                     )}
@@ -3061,8 +3146,8 @@ const NewMultiModeContainer = ({
                         }
                         selectedData={
                           selectedModeIds[currentStep - 1] &&
-                            selectedData &&
-                            selectedData?.length
+                          selectedData &&
+                          selectedData?.length
                             ? selectedData?.[currentStep - 1]
                             : null
                         }
@@ -3132,8 +3217,8 @@ const NewMultiModeContainer = ({
                         setTransferResults={setTransferResults}
                         selectedData={
                           selectedModeIds[currentStep - 1] &&
-                            selectedData &&
-                            selectedData?.length
+                          selectedData &&
+                          selectedData?.length
                             ? selectedData?.[currentStep - 1]
                             : null
                         }
@@ -3150,7 +3235,7 @@ const NewMultiModeContainer = ({
                     const formatTimeForDisplay = (timeValue) => {
                       if (!timeValue) return "";
                       const timeOption = timeOptions.find(
-                        (option) => option.value === timeValue
+                        (option) => option.value === timeValue,
                       );
                       if (timeOption) {
                         return timeOption.display;
@@ -3161,6 +3246,8 @@ const NewMultiModeContainer = ({
                       const period = hour < 12 ? "AM" : "PM";
                       return `${hour12}:${minutes} ${period}`;
                     };
+
+                    {console.log("Rendering otherTransfer:", currentTransferData)}
 
                     return (
                       <div key={key}>
@@ -3175,7 +3262,7 @@ const NewMultiModeContainer = ({
                                 date={currentModeDepartureDate}
                                 onDateChange={(e) => {
                                   const selectedDate = dayjs(
-                                    e.target.value
+                                    e.target.value,
                                   ).format("YYYY-MM-DD");
                                   handleDateSelect(selectedDate);
                                 }}
@@ -3200,7 +3287,7 @@ const NewMultiModeContainer = ({
                                 >
                                   <span className="text-sm font-medium">
                                     {formatTimeForDisplay(
-                                      currentModeDepartureTime
+                                      currentModeDepartureTime,
                                     )}
                                   </span>
                                   <button
@@ -3230,11 +3317,12 @@ const NewMultiModeContainer = ({
                                     {timeOptions.map((time, idx) => (
                                       <div
                                         key={idx}
-                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${time.value ===
+                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                          time.value ===
                                           currentModeDepartureTime
-                                          ? "bg-yellow-100 font-medium"
-                                          : ""
-                                          }`}
+                                            ? "bg-yellow-100 font-medium"
+                                            : ""
+                                        }`}
                                         onClick={() =>
                                           handleTimeSelect(time.value)
                                         }
@@ -3281,166 +3369,526 @@ const NewMultiModeContainer = ({
                           </div>
                         )}
 
+                      {console.log("Rendering otherTransfer inside return:", !isLoading, currentTransferData, transferErrors[transferKey],currentTransferData.results,currentTransferData.results && currentTransferData.results.length > 0)}
+
                         {/* Render prices from current transfer data */}
                         {!isLoading &&
                           !transferErrors[transferKey] &&
-                          currentTransferData.prices.map(
-                            (priceOption, priceIndex) => {
-                              const price = priceOption.price || 0;
-                              const currency =
-                                priceOption.currency === "INR"
-                                  ? "₹"
-                                  : priceOption.currency;
-                              const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
-                              const currentDateTimeInfo = getDateInfo(
-                                currentTransferData.start_datetime,
-                                currentTransferData.duration
-                              );
-                              return (
-                                <div
-                                  key={`${currentTransferData.id}-price-${priceIndex}`}
-                                  className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md"
-                                >
-                                  <div className="flex justify-between max-ph:flex-col">
-                                    <div className="w-full">
-                                      <div className="text-md font-600 leading-xl ">
-                                        {currentTransferData.text}{" "}
-                                        {priceOption.name
-                                          ? `- ${priceOption.name}`
-                                          : ""}
-                                      </div>
+                          (() => {
+                            const hasOmioResults =
+                              currentTransferData.results &&
+                              currentTransferData.results.length > 0;
 
-                                      {priceOption.description && (
-                                        <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                          {priceOption.description}
-                                        </div>
-                                      )}
+                            if (hasOmioResults) {
+                              return currentTransferData.results.map(
+                                (result, resultIndex) => {
+                                  const resultPrices = result.prices || [];
+                                  return resultPrices.map(
+                                    (priceOption, priceIndex) => {
+                                      const price = priceOption.price || 0;
+                                      const currencySymbol =
+                                        priceOption.currency === "INR"
+                                          ? "₹"
+                                          : priceOption.currency;
+                                      const priceOptionId = `${currentTransferData.id}-${resultIndex}-${priceIndex}`;
+                                      const operators = result.operator || [];
+                                      const segments = result.segments || [];
+                                      const departureInfo =
+                                        result.departure_datetime
+                                          ? dayjs(result.departure_datetime)
+                                          : null;
+                                      const arrivalInfo =
+                                        result.arrival_datetime
+                                          ? dayjs(result.arrival_datetime)
+                                          : null;
 
-                                      {currentDateTimeInfo && (
-                                        <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                                          <div className="flex flex-col gap-xs shrink-0">
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedStartDate
-                                              }
-                                            </span>
-                                            <span className="text-md-lg font-600 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedStartTime
-                                              }
-                                            </span>
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentTransferData.source
-                                                  .city_name
-                                              }
-                                            </span>
+                                      return (
+                                        <div
+                                          key={priceOptionId}
+                                          className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md"
+                                        >
+                                         
+                                          <div className="flex justify-between max-ph:flex-col">
+                                            <div className="w-full">
+                                              {/* Operator + class header */}
+                                              <div className="flex flex-row items-center gap-xs justify-between">
+                                                <div className="flex flex-row items-center gap-xs">
+                                                  {operators.map(
+                                                    (op, opIdx) =>
+                                                      op.image && (
+                                                        <img
+                                                          key={opIdx}
+                                                          src={op.image}
+                                                          alt={op.name}
+                                                          className="h-5 w-auto object-contain"
+                                                        />
+                                                      ),
+                                                  )}
+                                                  <span className="text-sm font-500 text-text-spacegrey">
+                                                    {operators
+                                                      .map((op) => op.name)
+                                                      .join(" | ")}
+                                                  </span>
+                                                </div>
+                                                {priceOption.class_name && (
+                                                  <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                                                    {priceOption.class_name}
+                                                  </span>
+                                                )}
+                                              </div>
+
+                                              {/* Departure → Arrival timeline */}
+                                              {departureInfo && arrivalInfo && (
+                                                <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                                                  <div className="flex flex-col gap-xs shrink-0">
+                                                    <span className="text-sm font-400 leading-lg-md">
+                                                      {departureInfo.format(
+                                                        "MMM D",
+                                                      )}
+                                                    </span>
+                                                    <span className="text-md-lg font-600 leading-lg-md">
+                                                      {departureInfo.format(
+                                                        "h:mm A",
+                                                      )}
+                                                    </span>
+                                                    <span className="text-sm font-400 leading-lg-md">
+                                                      {result.source?.name ||
+                                                        currentTransferData
+                                                          .source?.city_name}
+                                                    </span>
+                                                  </div>
+                                                  <div className="flex items-center flex-1 mx-md relative">
+                                                    <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                                                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                                                      <span className="text-sm font-400 leading-lg-md">
+                                                        {result.duration_formatted ||
+                                                          `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                                                      </span>
+                                                      <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                                        {getModeIcon(
+                                                          currentTransferData.mode,
+                                                          13,
+                                                        )}
+                                                      </span>
+                                                      <span className="text-sm font-400 leading-lg-md">
+                                                        {
+                                                          currentTransferData.distance
+                                                        }{" "}
+                                                        Km
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex flex-col gap-xs shrink-0">
+                                                    <span className="text-sm font-400 leading-lg-md">
+                                                      {arrivalInfo.format(
+                                                        "MMM D",
+                                                      )}
+                                                    </span>
+                                                    <span className="text-md-lg font-600 leading-lg-md">
+                                                      {arrivalInfo.format(
+                                                        "h:mm A",
+                                                      )}
+                                                    </span>
+                                                    <span className="text-sm font-400 leading-lg-md">
+                                                      {result.destination
+                                                        ?.name ||
+                                                        currentTransferData
+                                                          .destination
+                                                          ?.city_name}
+                                                    </span>
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {/* Segments breakdown for connections */}
+                                              {segments.length > 1 && (
+                                                <div className="mt-md border-t border-text-disabled pt-md">
+                                                  <div className="text-xs font-500 text-text-spacegrey mb-xs">
+                                                    {segments.length} segments ·
+                                                    1 connection
+                                                  </div>
+                                                  <div className="flex flex-col gap-xs">
+                                                    {segments.map(
+                                                      (seg, segIdx) => {
+                                                        const segDep =
+                                                          seg.departure_datetime
+                                                            ? dayjs(
+                                                                seg.departure_datetime,
+                                                              )
+                                                            : null;
+                                                        const segArr =
+                                                          seg.arrival_datetime
+                                                            ? dayjs(
+                                                                seg.arrival_datetime,
+                                                              )
+                                                            : null;
+                                                        const isLastSegment =
+                                                          segIdx ===
+                                                          segments.length - 1;
+                                                        return (
+                                                          <div key={segIdx}>
+                                                            <div className="flex flex-row items-start gap-xs">
+                                                              <div className="flex flex-col items-end w-[68px] shrink-0">
+                                                                {segDep && (
+                                                                  <>
+                                                                    <span className="text-sm font-600">
+                                                                      {segDep.format(
+                                                                        "h:mm A",
+                                                                      )}
+                                                                    </span>
+                                                                    <span className="text-xs text-text-spacegrey">
+                                                                      {
+                                                                        seg
+                                                                          .departure_station
+                                                                          ?.name
+                                                                      }
+                                                                    </span>
+                                                                  </>
+                                                                )}
+                                                              </div>
+                                                              <div className="flex flex-col items-center shrink-0 pt-[3px]">
+                                                                <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                                                <div
+                                                                  className="w-[1px] h-full bg-text-disabled mt-[2px]"
+                                                                  style={{
+                                                                    minHeight:
+                                                                      "28px",
+                                                                  }}
+                                                                ></div>
+                                                              </div>
+                                                              <div className="flex flex-col gap-[1px] flex-1 min-w-0">
+                                                                <div className="flex flex-row items-center gap-xs">
+                                                                  {seg.operator
+                                                                    ?.image && (
+                                                                    <img
+                                                                      src={
+                                                                        seg
+                                                                          .operator
+                                                                          .image
+                                                                      }
+                                                                      alt={
+                                                                        seg
+                                                                          .operator
+                                                                          .name
+                                                                      }
+                                                                      className="h-3.5 w-auto object-contain"
+                                                                    />
+                                                                  )}
+                                                                  <span className="text-xs font-500 text-text-spacegrey truncate">
+                                                                    {
+                                                                      seg
+                                                                        .operator
+                                                                        ?.name
+                                                                    }
+                                                                  </span>
+                                                                </div>
+                                                                <span className="text-xs text-text-spacegrey">
+                                                                  {seg.duration_formatted ||
+                                                                    `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                                                                </span>
+                                                              </div>
+                                                            </div>
+                                                            {!isLastSegment &&
+                                                              segments[
+                                                                segIdx + 1
+                                                              ] && (
+                                                                <div className="flex flex-row items-center gap-xs mt-xs">
+                                                                  <div className="w-[68px]"></div>
+                                                                  <div className="flex flex-col items-center shrink-0">
+                                                                    <div className="w-[1px] h-3 bg-text-disabled"></div>
+                                                                  </div>
+                                                                  <div className="flex flex-row items-center gap-[3px]">
+                                                                    <FaClock
+                                                                      size={10}
+                                                                      className="text-text-spacegrey"
+                                                                    />
+                                                                    <span className="text-xs text-text-spacegrey">
+                                                                      {(() => {
+                                                                        const layover =
+                                                                          dayjs(
+                                                                            segments[
+                                                                              segIdx +
+                                                                                1
+                                                                            ]
+                                                                              .departure_datetime,
+                                                                          ).diff(
+                                                                            dayjs(
+                                                                              seg.arrival_datetime,
+                                                                            ),
+                                                                            "minute",
+                                                                          );
+                                                                        const h =
+                                                                          Math.floor(
+                                                                            layover /
+                                                                              60,
+                                                                          );
+                                                                        const m =
+                                                                          layover %
+                                                                          60;
+                                                                        return h >
+                                                                          0
+                                                                          ? `${h}h ${m}m layover`
+                                                                          : `${m}m layover`;
+                                                                      })()}
+                                                                    </span>
+                                                                  </div>
+                                                                </div>
+                                                              )}
+                                                            {isLastSegment &&
+                                                              segArr && (
+                                                                <div className="flex flex-row items-start gap-xs mt-[2px]">
+                                                                  <div className="w-[68px] flex flex-col items-end">
+                                                                    <span className="text-sm font-600">
+                                                                      {segArr.format(
+                                                                        "h:mm A",
+                                                                      )}
+                                                                    </span>
+                                                                    <span className="text-xs text-text-spacegrey">
+                                                                      {
+                                                                        seg
+                                                                          .arrival_station
+                                                                          ?.name
+                                                                      }
+                                                                    </span>
+                                                                  </div>
+                                                                  <div className="flex flex-col items-center shrink-0 pt-[3px]">
+                                                                    <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                                                  </div>
+                                                                </div>
+                                                              )}
+                                                          </div>
+                                                        );
+                                                      },
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {priceOption.cancellation_policy && (
+                                                <div className="text-xs text-text-spacegrey mt-xs">
+                                                  {
+                                                    priceOption.cancellation_policy
+                                                  }
+                                                </div>
+                                              )}
+                                            </div>
+
+                                            {/* Price + button */}
+                                            <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                                              <div>
+                                                <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                                                  {currencySymbol} {price}
+                                                </div>
+                                                <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                                                  for{" "}
+                                                  {pax?.adults +
+                                                    pax?.children +
+                                                    pax?.infants}{" "}
+                                                  people
+                                                </div>
+                                              </div>
+                                              <div
+                                                className="cursor-pointer"
+                                                onClick={() => {
+                                                  const selectedPriceData = {
+                                                    ...currentTransferData,
+                                                    selectedOmioResult: result,
+                                                    selectedOmioResultIndex:
+                                                      resultIndex,
+                                                    selectedPrice: {
+                                                      ...priceOption,
+                                                      result_index:
+                                                        priceOption.result_index,
+                                                    },
+                                                  };
+                                                  handleModeSelect(
+                                                    currentStep - 1,
+                                                    priceOptionId,
+                                                    selectedPriceData,
+                                                    currentTransferData.mode,
+                                                  );
+                                                }}
+                                              >
+                                                {selectedModeIds[
+                                                  currentStep - 1
+                                                ] === priceOptionId ? (
+                                                  <button className="ttw-btn-secondary-fill max-ph:w-full">
+                                                    Selected
+                                                  </button>
+                                                ) : (
+                                                  <button className="ttw-btn-fill-yellow max-ph:w-full">
+                                                    Add to Itinerary
+                                                  </button>
+                                                )}
+                                              </div>
+                                            </div>
                                           </div>
+                                        </div>
+                                      );
+                                    },
+                                  );
+                                },
+                              );
+                            }
 
-                                          <div className="flex items-center flex-1 mx-md relative">
-                                            <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                                            <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                            return currentTransferData.prices.map(
+                              (priceOption, priceIndex) => {
+                                const price = priceOption.price || 0;
+                                const currency =
+                                  priceOption.currency === "INR"
+                                    ? "₹"
+                                    : priceOption.currency;
+                                const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
+                                const currentDateTimeInfo = getDateInfo(
+                                  currentTransferData.start_datetime,
+                                  currentTransferData.duration,
+                                );
+                                return (
+                                  <div
+                                    key={`${currentTransferData.id}-price-${priceIndex}`}
+                                    className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md"
+                                  >
+                                    <div className="flex justify-between max-ph:flex-col">
+                                      <div className="w-full">
+                                        <div className="text-md font-600 leading-xl ">
+                                          {currentTransferData.text}{" "}
+                                          {priceOption.name
+                                            ? `- ${priceOption.name}`
+                                            : ""}
+                                        </div>
+
+                                        {priceOption.description && (
+                                          <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                            {priceOption.description}
+                                          </div>
+                                        )}
+
+                                        {currentDateTimeInfo && (
+                                          <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                                            <div className="flex flex-col gap-xs shrink-0">
                                               <span className="text-sm font-400 leading-lg-md">
                                                 {
-                                                  currentDateTimeInfo.formattedDuration
+                                                  currentDateTimeInfo.formattedStartDate
                                                 }
                                               </span>
-                                              <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
-                                                {getModeIcon(
-                                                  currentTransferData.mode,
-                                                  13
-                                                )}
+                                              <span className="text-md-lg font-600 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedStartTime
+                                                }
                                               </span>
                                               <span className="text-sm font-400 leading-lg-md">
-                                                {currentTransferData.distance}{" "}
-                                                Km
+                                                {
+                                                  currentTransferData.source
+                                                    .city_name
+                                                }
+                                              </span>
+                                            </div>
+
+                                            <div className="flex items-center flex-1 mx-md relative">
+                                              <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                                                <span className="text-sm font-400 leading-lg-md">
+                                                  {
+                                                    currentDateTimeInfo.formattedDuration
+                                                  }
+                                                </span>
+                                                <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                                  {getModeIcon(
+                                                    currentTransferData.mode,
+                                                    13,
+                                                  )}
+                                                </span>
+                                                <span className="text-sm font-400 leading-lg-md">
+                                                  {currentTransferData.distance}{" "}
+                                                  Km
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            <div className="flex flex-col gap-xs shrink-0">
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedEndDate
+                                                }
+                                              </span>
+                                              <span className="text-md-lg font-600 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedEndTime
+                                                }
+                                              </span>
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentTransferData
+                                                    .destination.city_name
+                                                }
                                               </span>
                                             </div>
                                           </div>
+                                        )}
 
-                                          <div className="flex flex-col gap-xs shrink-0">
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedEndDate
-                                              }
-                                            </span>
-                                            <span className="text-md-lg font-600 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedEndTime
-                                              }
-                                            </span>
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentTransferData.destination
-                                                  .city_name
-                                              }
-                                            </span>
-                                          </div>
-                                        </div>
-                                      )}
-
-                                      {priceOption?.class && (
-                                        <div className="text-xs md:text-sm">
-                                          <span className="font-semibold">
-                                            Facilities:
-                                          </span>{" "}
-                                          {priceOption?.class}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                                      <div>
-                                        <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
-                                          {" "}
-                                          {currency} {price}{" "}
-                                        </div>
-                                        <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
-                                          for{" "}
-                                          {pax?.adults +
-                                            pax?.children +
-                                            pax?.infants}{" "}
-                                          people{" "}
-                                        </div>
-                                      </div>
-
-                                      <div
-                                        className="cursor-pointer"
-                                        onClick={() => {
-                                          const selectedPriceData = {
-                                            ...currentTransferData,
-                                            selectedPrice: priceOption,
-                                          };
-                                          handleModeSelect(
-                                            currentStep - 1,
-                                            priceOptionId,
-                                            selectedPriceData,
-                                            currentTransferData.mode
-                                          );
-                                        }}
-                                      >
-                                        {selectedModeIds[currentStep - 1] ===
-                                          priceOptionId ? (
-                                          <div className="flex items-center gap-1">
-                                            {/* <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> */}
-                                            <button className="ttw-btn-secondary-fill max-ph:w-full">
-                                              Selected
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <div className="flex items-center gap-1">
-                                            {/* <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" /> */}
-                                            <button className="ttw-btn-fill-yellow max-ph:w-full">
-                                              Add to Itinerary
-                                            </button>
+                                        {priceOption?.class && (
+                                          <div className="text-xs md:text-sm">
+                                            <span className="font-semibold">
+                                              Facilities:
+                                            </span>{" "}
+                                            {priceOption?.class}
                                           </div>
                                         )}
                                       </div>
+                                      <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                                        <div>
+                                          <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
+                                            {" "}
+                                            {currency} {price}{" "}
+                                          </div>
+                                          <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
+                                            for{" "}
+                                            {pax?.adults +
+                                              pax?.children +
+                                              pax?.infants}{" "}
+                                            people{" "}
+                                          </div>
+                                        </div>
+
+                                        <div
+                                          className="cursor-pointer"
+                                          onClick={() => {
+                                            const selectedPriceData = {
+                                              ...currentTransferData,
+                                              selectedPrice: priceOption,
+                                            };
+                                            handleModeSelect(
+                                              currentStep - 1,
+                                              priceOptionId,
+                                              selectedPriceData,
+                                              currentTransferData.mode,
+                                            );
+                                          }}
+                                        >
+                                          {selectedModeIds[currentStep - 1] ===
+                                          priceOptionId ? (
+                                            <div className="flex items-center gap-1">
+                                              {/* <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> */}
+                                              <button className="ttw-btn-secondary-fill max-ph:w-full">
+                                                Selected
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1">
+                                              {/* <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" /> */}
+                                              <button className="ttw-btn-fill-yellow max-ph:w-full">
+                                                Add to Itinerary
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            }
-                          )}
+                                );
+                              },
+                            );
+                          })()}
                       </div>
                     );
                   } else {
@@ -3448,9 +3896,10 @@ const NewMultiModeContainer = ({
                       <div
                         key={index}
                         className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md 
-                          ${selectedModeIds[currentStep - 1] === option.id
-                            ? "border border-yellow-400 bg-yellow-50"
-                            : "border"
+                          ${
+                            selectedModeIds[currentStep - 1] === option.id
+                              ? "border border-yellow-400 bg-yellow-50"
+                              : "border"
                           }
                         `}
                       >
@@ -3484,7 +3933,7 @@ const NewMultiModeContainer = ({
                                 currentStep - 1,
                                 option.id,
                                 option,
-                                option.mode
+                                option.mode,
                               )
                             }
                           >
@@ -3524,10 +3973,11 @@ const NewMultiModeContainer = ({
                       <button
                         onClick={() => handleNextStep()}
                         className={`
-        ${isCurrentModeSelected()
-                            ? "ttw-btn-secondary-fill"
-                            : "ttw-btn-secondary-fill-disabled"
-                          }`}
+        ${
+          isCurrentModeSelected()
+            ? "ttw-btn-secondary-fill"
+            : "ttw-btn-secondary-fill-disabled"
+        }`}
                         disabled={!isCurrentModeSelected()}
                       >
                         Next
@@ -3536,14 +3986,15 @@ const NewMultiModeContainer = ({
                       <div className="flex flex-col md:flex-row items-end gap-2 md:gap-4 w-full md:w-auto">
                         <button
                           onClick={handleUpdateTransfer}
-                          className={`ttw-btn-secondary-fill ${Object.keys(selectedModeIds).length !==
-                            totalSteps || updateLoading
-                            ? "cursor-not-allowed"
-                            : "cursor-pointer"
-                            }`}
+                          className={`ttw-btn-secondary-fill ${
+                            Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading
+                              ? "cursor-not-allowed"
+                              : "cursor-pointer"
+                          }`}
                           disabled={
                             Object.keys(selectedModeIds).length !==
-                            totalSteps || updateLoading
+                              totalSteps || updateLoading
                           }
                         >
                           <div className="flex items-center justify-center min-w-[140px]">
@@ -3733,16 +4184,18 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
       <div
         onClick={handleTransferType}
         id={name}
-        className={`flex items-center justify-center w-5 h-5 border-2 ${transferType === name
-          ? "border-primary-yellow"
-          : "border-text-spacegrey"
-          } rounded-full cursor-pointer`}
+        className={`flex items-center justify-center w-5 h-5 border-2 ${
+          transferType === name
+            ? "border-primary-yellow"
+            : "border-text-spacegrey"
+        } rounded-full cursor-pointer`}
       >
         {transferType === name && (
           <div
             id={name}
-            className={`p-1 w-3 h-3 rounded-full ${transferType === name ? "bg-primary-yellow" : "bg-text-spacegrey"
-              }`}
+            className={`p-1 w-3 h-3 rounded-full ${
+              transferType === name ? "bg-primary-yellow" : "bg-text-spacegrey"
+            }`}
           ></div>
         )}
       </div>
@@ -3768,7 +4221,7 @@ const RoundTripSuggestion = ({
     ...Array(roundTripSuggestions.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const currency = useSelector(state => state.currency);
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
     const routes = [];
@@ -3784,7 +4237,6 @@ const RoundTripSuggestion = ({
     });
     setPricing(pricing);
   }, [roundTripSuggestions]);
-
 
   const handleSelectCab = (e) => {
     setSelectError(false);
@@ -3802,7 +4254,7 @@ const RoundTripSuggestion = ({
       handleRoundTripSelect(
         roundTripSuggestions?.trace_id,
         1,
-        selectedCab.result_index
+        selectedCab.result_index,
       );
     } else {
       setSelectError(true);
@@ -3811,8 +4263,9 @@ const RoundTripSuggestion = ({
 
   return (
     <div
-      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${selectedTripType === "roundtrip" ? "border-blue-300 bg-blue-50" : ""
-        }`}
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
+        selectedTripType === "roundtrip" ? "border-blue-300 bg-blue-50" : ""
+      }`}
     >
       {isDesktop && (
         <div
@@ -3880,64 +4333,68 @@ const RoundTripSuggestion = ({
             )}
           </div>
           <div className="flex flex-col gap-4">
-            {pricing?.length > 0 ?
-              pricing.map((price, i) => (
-                <div
-                  key={`price-${i}`}
-                  className="w-full flex flex-row items-start gap-2"
-                >
-                  <div>
-                    <div
-                      id={price?.result_index}
-                      onClick={handleSelectCab}
-                      className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab?.result_index == price?.result_index &&
-                        selectedTripType === "roundtrip"
-                        ? "border-black"
-                        : "border-[#636366]"
+            {pricing?.length > 0
+              ? pricing.map((price, i) => (
+                  <div
+                    key={`price-${i}`}
+                    className="w-full flex flex-row items-start gap-2"
+                  >
+                    <div>
+                      <div
+                        id={price?.result_index}
+                        onClick={handleSelectCab}
+                        className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                          selectedCab?.result_index == price?.result_index &&
+                          selectedTripType === "roundtrip"
+                            ? "border-black"
+                            : "border-[#636366]"
                         } `}
-                    >
-                      {selectedCab?.result_index == price?.result_index &&
-                        selectedTripType === "roundtrip" && (
-                          <div
-                            id={price?.result_index}
-                            className="w-3 h-3 bg-black rounded-full"
-                          ></div>
-                        )}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-start gap-1">
-                    <div className="text-[#636366] text-[14px] font-normal">
-                      {price.transfer_details?.model_name ||
-                        price.transfer_details?.type}
-                      :{" "}
-                      <span className="text-black font-bold">
-                        {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}
-                        {getIndianPrice(
-                          Math.floor(price?.transfer_details?.total)
-                        )}
-                      </span>
-                    </div>
-                    {(viewDetails[i] || true) && (
-                      <div className="text-sm">
-                        <span className="font-semibold">Facilities: </span>
-                        {price?.transfer_details?.seating_capacity
-                          ? `${price.transfer_details.seating_capacity} Seats | `
-                          : null}
-                        {price?.transfer_details?.bag_capacity
-                          ? `${price.cab.bagCapacity} Bags | `
-                          : null}
-                        {price?.cab?.bigBagCapaCity
-                          ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
-                          : null}
-                        {price?.transfer_details?.fuel_type
-                          ? ` Fuel Type ${price.transfer_details?.fuel_type}`
-                          : null}
+                      >
+                        {selectedCab?.result_index == price?.result_index &&
+                          selectedTripType === "roundtrip" && (
+                            <div
+                              id={price?.result_index}
+                              className="w-3 h-3 bg-black rounded-full"
+                            ></div>
+                          )}
                       </div>
-                    )}
+                    </div>
+
+                    <div className="flex flex-col items-start gap-1">
+                      <div className="text-[#636366] text-[14px] font-normal">
+                        {price.transfer_details?.model_name ||
+                          price.transfer_details?.type}
+                        :{" "}
+                        <span className="text-black font-bold">
+                          {currency?.currency
+                            ? currencySymbols?.[currency?.currency]
+                            : "₹"}
+                          {getIndianPrice(
+                            Math.floor(price?.transfer_details?.total),
+                          )}
+                        </span>
+                      </div>
+                      {(viewDetails[i] || true) && (
+                        <div className="text-sm">
+                          <span className="font-semibold">Facilities: </span>
+                          {price?.transfer_details?.seating_capacity
+                            ? `${price.transfer_details.seating_capacity} Seats | `
+                            : null}
+                          {price?.transfer_details?.bag_capacity
+                            ? `${price.cab.bagCapacity} Bags | `
+                            : null}
+                          {price?.cab?.bigBagCapaCity
+                            ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
+                            : null}
+                          {price?.transfer_details?.fuel_type
+                            ? ` Fuel Type ${price.transfer_details?.fuel_type}`
+                            : null}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )) : "No Cabs Available"}
+                ))
+              : "No Cabs Available"}
           </div>
         </div>
 
@@ -3972,7 +4429,7 @@ const MultiCityTripSuggestion = ({
     ...Array(multiCitySuggestions?.data?.length).fill(false),
   ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const currency = useSelector(state => state.currency);
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
     const routes = [];
@@ -4009,7 +4466,7 @@ const MultiCityTripSuggestion = ({
       handleRoundTripSelect(
         multiCitySuggestions?.trace_id,
         0,
-        selectedCab.result_index
+        selectedCab.result_index,
       );
     } else {
       setSelectError(true);
@@ -4018,8 +4475,9 @@ const MultiCityTripSuggestion = ({
 
   return (
     <div
-      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${selectedTripType === "multicity" ? "border-blue-300 bg-blue-50" : ""
-        }`}
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4 ${
+        selectedTripType === "multicity" ? "border-blue-300 bg-blue-50" : ""
+      }`}
     >
       {isDesktop && (
         <div
@@ -4096,11 +4554,12 @@ const MultiCityTripSuggestion = ({
                   <div
                     id={price?.result_index}
                     onClick={() => handleSelectCab(price)}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab?.result_index == price?.result_index &&
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                      selectedCab?.result_index == price?.result_index &&
                       selectedTripType === "multicity"
-                      ? "border-black"
-                      : "border-[#636366]"
-                      } `}
+                        ? "border-black"
+                        : "border-[#636366]"
+                    } `}
                   >
                     {selectedCab?.result_index == price?.result_index &&
                       selectedTripType === "multicity" && (
@@ -4118,7 +4577,10 @@ const MultiCityTripSuggestion = ({
                       price?.taxi_category?.type}
                     :{" "}
                     <span className="text-black font-bold">
-                      {currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}{getIndianPrice(Math.floor(price?.price?.total))}
+                      {currency?.currency
+                        ? currencySymbols?.[currency?.currency]
+                        : "₹"}
+                      {getIndianPrice(Math.floor(price?.price?.total))}
                     </span>
                   </div>
                   {(viewDetails[i] || true) && (
@@ -4382,8 +4844,10 @@ const OtherTransfer = ({
 
   const [lastRequestData, setLastRequestData] = useState(null);
   const { trackTransferBookingAdd } = useAnalytics();
-  const { intercity } = useSelector(state => state.TransferBookings)?.transferBookings;
-  const currency = useSelector(state => state.currency);
+  const { intercity } = useSelector(
+    (state) => state.TransferBookings,
+  )?.transferBookings;
+  const currency = useSelector((state) => state.currency);
 
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -4461,7 +4925,7 @@ const OtherTransfer = ({
 
       const transferKey = `${transferData.id}-${currentStep}`;
       const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(
-        paxData
+        paxData,
       )}`;
 
       // Prevent duplicate requests
@@ -4490,7 +4954,7 @@ const OtherTransfer = ({
         };
 
         const response = await loadOtherTransfers.post(
-          `/search/?currency=${currency?.currency || 'INR'}`,
+          `/search/?currency=${currency?.currency || "INR"}`,
           requestBody,
           {
             headers: {
@@ -4498,7 +4962,7 @@ const OtherTransfer = ({
               "Content-Type": "application/json",
             },
             signal: abortControllerRef.current.signal,
-          }
+          },
         );
 
         const data = response.data;
@@ -4549,8 +5013,10 @@ const OtherTransfer = ({
         setLoadingRequestKey(null);
       }
     },
-    [token, currentStep]
+    [token, currentStep],
   );
+
+  {console.log("Rendering otherTransfer:", otherTransfer)}
 
   // FIXED: Debounced useEffect to prevent cascading API calls
   useEffect(() => {
@@ -4682,14 +5148,29 @@ const OtherTransfer = ({
     setOtherTransfer(transfer);
   };
 
-  const isPriceOptionSelected = (transferId, priceIndex) => {
+  const isPriceOptionSelected = (
+    transferId,
+    priceIndexOrResultIndex,
+    omiopriceIndex,
+  ) => {
     const currentSelection = localSelectedData[currentStep - 1];
-
     if (!currentSelection) return false;
 
+    // Omio path: 3 args (transferId, resultIndex, priceIndex)
+    if (omiopriceIndex !== undefined) {
+      return (
+        currentSelection.id === transferId &&
+        currentSelection.selectedOmioResultIndex === priceIndexOrResultIndex &&
+        currentSelection.selectedPrice?.result_index ===
+          currentSelection.selectedOmioResult?.prices?.[omiopriceIndex]
+            ?.result_index
+      );
+    }
+
+    // Self / non-Omio path: 2 args (transferId, priceIndex)
     return (
       currentSelection.id === transferId &&
-      currentSelection.selectedPrice?.result_index === priceIndex
+      currentSelection.selectedPrice?.result_index === priceIndexOrResultIndex
     );
   };
 
@@ -4707,7 +5188,7 @@ const OtherTransfer = ({
 
     const isDeselecting = isPriceOptionSelected(
       selectedPriceData.id,
-      parseInt(priceIndex)
+      parseInt(priceIndex),
     );
 
     setLoadingOptionId(priceOptionId);
@@ -4804,8 +5285,22 @@ const OtherTransfer = ({
             source: item.source || "",
           };
         } else {
-          let resultIndex = 0;
+          const isOmio = !!item.selectedOmioResult;
 
+          if (isOmio) {
+            // 12go-Omio single booking payload
+            return {
+              ...transferObj,
+              source: "Omio",
+              trace_id: item.trace_id || traceId,
+              price_result_index: item.selectedPrice?.result_index || null,
+              segment_result_index:
+                item.selectedOmioResult?.prices?.[0]?.result_index || null,
+            };
+          }
+
+          // Self booking payload (original)
+          let resultIndex = 0;
           if (item.selectedPrice) {
             resultIndex = item.selectedPrice.result_index || 0;
           }
@@ -4813,8 +5308,7 @@ const OtherTransfer = ({
           return {
             ...transferObj,
             trace_id: item.trace_id || traceId,
-            start_datetime: `${newDate || departureDate}T${newTime || departureTime
-              }:00`,
+            start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
             result_index: resultIndex,
           };
         }
@@ -4852,11 +5346,10 @@ const OtherTransfer = ({
   const handleUpdateTransferWithData = async (
     updatedData,
     newTime = null,
-    newDate = null
+    newDate = null,
   ) => {
     // Prevent multiple simultaneous booking calls
     if (isBookingInProgress) {
-
       return;
     }
 
@@ -4869,13 +5362,13 @@ const OtherTransfer = ({
         newTime === null &&
         newDate === null &&
         JSON.stringify(lastRequestData.transfers) ===
-        JSON.stringify(newRequestBody.transfers) &&
+          JSON.stringify(newRequestBody.transfers) &&
         lastRequestData.start_datetime === newRequestBody.start_datetime &&
         (lastRequestData.number_of_adults !== newRequestBody.number_of_adults ||
           lastRequestData.number_of_children !==
-          newRequestBody.number_of_children ||
+            newRequestBody.number_of_children ||
           lastRequestData.number_of_infants !==
-          newRequestBody.number_of_infants)
+            newRequestBody.number_of_infants)
       ) {
         setLastRequestData(newRequestBody);
         return;
@@ -4895,13 +5388,13 @@ const OtherTransfer = ({
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          }
+          },
         );
 
         if (warningResponse?.data?.show_warning === true) {
           // Show warning modal
           setWarningMessage(
-            warningResponse.data.warning || "Please confirm this action."
+            warningResponse.data.warning || "Please confirm this action.",
           );
           setPendingBookingData({
             requestBody: newRequestBody,
@@ -4939,7 +5432,7 @@ const OtherTransfer = ({
             text: errorMsg,
             heading: "Error!",
             type: "error",
-          })
+          }),
         );
       }
 
@@ -4954,7 +5447,7 @@ const OtherTransfer = ({
           text: error.message || "Failed to update transfer booking",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -4962,7 +5455,7 @@ const OtherTransfer = ({
   const handleBookingConfirm = async (
     newRequestBody,
     newTime = null,
-    newDate = null
+    newDate = null,
   ) => {
     setIsProcessingBooking(true);
 
@@ -4974,7 +5467,7 @@ const OtherTransfer = ({
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
 
       setUpdateLoading(false);
@@ -4985,11 +5478,20 @@ const OtherTransfer = ({
       dispatch(
         updateSingleTransferBooking(
           `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
-          response.data
-        )
+          response.data,
+        ),
       );
 
-      trackTransferBookingAdd(itinerary_id, `${origin_itinerary_city_id}:${destination_itinerary_city_id}`, intercity?.[`${origin_itinerary_city_id}:${destination_itinerary_city_id}`], response.data, city || transfer[0]?.source?.city_name, dcity || transfer[0]?.destination?.city_name);
+      trackTransferBookingAdd(
+        itinerary_id,
+        `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+        intercity?.[
+          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`
+        ],
+        response.data,
+        city || transfer[0]?.source?.city_name,
+        dcity || transfer[0]?.destination?.city_name,
+      );
 
       getPaymentHandler();
 
@@ -4998,11 +5500,12 @@ const OtherTransfer = ({
 
         dispatch(
           openNotification({
-            text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${dcity || transfer[0]?.destination?.city_name
-              } has been updated successfully!`,
+            text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${
+              dcity || transfer[0]?.destination?.city_name
+            } has been updated successfully!`,
             heading: "Success!",
             type: "success",
-          })
+          }),
         );
 
         if (response.data?.is_refresh_needed) {
@@ -5032,7 +5535,7 @@ const OtherTransfer = ({
             text: message,
             heading: "Success!",
             type: "success",
-          })
+          }),
         );
       }
 
@@ -5062,7 +5565,7 @@ const OtherTransfer = ({
           text: errorMessage,
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -5073,7 +5576,7 @@ const OtherTransfer = ({
       await handleBookingConfirm(
         pendingBookingData.requestBody,
         pendingBookingData.newTime,
-        pendingBookingData.newDate
+        pendingBookingData.newDate,
       );
       setPendingBookingData(null);
     }
@@ -5215,7 +5718,7 @@ const OtherTransfer = ({
               </div>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
       <div className="w-full">
         <div>
@@ -5248,8 +5751,9 @@ const OtherTransfer = ({
               Departure Time
             </div>
             <div
-              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${isBookingInProgress ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50 ${
+                isBookingInProgress ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={() =>
                 !isBookingInProgress && setShowTimeDropdown((prev) => !prev)
               }
@@ -5281,9 +5785,10 @@ const OtherTransfer = ({
                   <div
                     key={index}
                     className={`p-2 hover:bg-gray-100 cursor-pointer text-sm
-                      ${time.value === departureTime
-                        ? "bg-yellow-100 font-medium"
-                        : ""
+                      ${
+                        time.value === departureTime
+                          ? "bg-yellow-100 font-medium"
+                          : ""
                       }
                     `}
                     onClick={() => handleTimeSelect(time)}
@@ -5338,175 +5843,476 @@ const OtherTransfer = ({
         </div>
       )}
 
+       
+
       {/* Transfer options display */}
       {otherTransfer &&
-        otherTransfer.prices &&
-        otherTransfer.prices.length > 0 &&
         !isCurrentTransferLoading() &&
         !error &&
-        otherTransfer.prices.map((priceOption, priceIndex) => {
-          const price = priceOption.price || 0;
-          const transfer_currency = currency?.currency ? currencySymbols?.[currency?.currency] : "₹";
-          // priceOption.currency === "INR" ? "₹" : currencySymbols?.[priceOption.currency] || priceOption.currency;
-          const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+        (() => {
+          const hasOmioResults =
+            otherTransfer.results && otherTransfer.results.length > 0;
 
-          const isOptionSelected = isPriceOptionSelected(
-            otherTransfer.id,
-            priceIndex
-          );
+           
 
-          const isOptionLoading = loadingOptionId === priceOptionId;
-          const currentDateTimeInfo = getDateInfo(
-            otherTransfer.start_datetime,
-            otherTransfer.duration
-          );
-          return (
-            <div
-              key={`${otherTransfer.id}-price-${priceIndex}`}
-              className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md
-                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
-                ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
-            >
-              <div className="flex justify-between max-ph:flex-col">
-                <div className="w-full">
-                  <div className="text-md font-600 leading-xl ">
-                    {otherTransfer.text}{" "}
-                    {priceOption.name ? `- ${priceOption.name}` : ""}
-                  </div>
+          if (hasOmioResults) {
+            // ─── OMIO RESULTS RENDERING ───
+            return otherTransfer.results.map((result, resultIndex) => {
+              const resultPrices = result.prices || [];
+              return resultPrices.map((priceOption, priceIndex) => {
+                const price = priceOption.price || 0;
+                const transfer_currency = currency?.currency
+                  ? currencySymbols?.[currency?.currency]
+                  : "₹";
+                const priceOptionId = `${otherTransfer.id}-${resultIndex}-${priceIndex}`;
+                const isOptionSelected = isPriceOptionSelected(
+                  otherTransfer.id,
+                  resultIndex,
+                  priceIndex,
+                );
+                const isOptionLoading = loadingOptionId === priceOptionId;
+                const departureInfo = result.departure_datetime
+                  ? dayjs(result.departure_datetime)
+                  : null;
+                const arrivalInfo = result.arrival_datetime
+                  ? dayjs(result.arrival_datetime)
+                  : null;
+                const segments = result.segments || [];
+                const operators = result.operator || [];
 
-                  {priceOption.description && (
-                    <div className="text-xs md:text-sm text-gray-700 mt-1">
-                      {priceOption.description}
-                    </div>
-                  )}
-
-                  {currentDateTimeInfo && (
-                    <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                      <div className="flex flex-col gap-xs shrink-0">
-                        <span className="text-sm font-400 leading-lg-md">
-                          {currentDateTimeInfo.formattedStartDate}
-                        </span>
-                        <span className="text-md-lg font-600 leading-lg-md">
-                          {currentDateTimeInfo.formattedStartTime}
-                        </span>
-                        <span className="text-sm font-400 leading-lg-md">
-                          {otherTransfer.source.city_name}{" "}
-                          {otherTransfer.source.code && (
-                            <span className="text-sm font-400 leading-lg-md">
-                              {" "}
-                              ( {otherTransfer.source.code} )
+                return (
+                  <div
+                    key={priceOptionId}
+                    className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
+                      ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+                      ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+                  >
+                    <div className="flex justify-between max-ph:flex-col">
+                      <div className="w-full">
+                        {/* Header: operator + class */}
+                        <div className="flex flex-row items-center gap-xs justify-between">
+                          <div className="flex flex-row items-center gap-xs">
+                            {operators.map(
+                              (op, opIdx) =>
+                                op.image && (
+                                  <img
+                                    key={opIdx}
+                                    src={op.image}
+                                    alt={op.name}
+                                    className="h-5 w-auto object-contain"
+                                  />
+                                ),
+                            )}
+                            <span className="text-sm font-500 text-text-spacegrey">
+                              {operators.map((op) => op.name).join(" | ")}
+                            </span>
+                          </div>
+                          {priceOption.class_name && (
+                            <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                              {priceOption.class_name}
                             </span>
                           )}
-                        </span>
+                        </div>
+
+                        {/* Main departure → arrival timeline */}
+                        {departureInfo && arrivalInfo && (
+                          <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                            <div className="flex flex-col gap-xs shrink-0">
+                              <span className="text-sm font-400 leading-lg-md">
+                                {departureInfo.format("MMM D")}
+                              </span>
+                              <span className="text-md-lg font-600 leading-lg-md">
+                                {departureInfo.format("h:mm A")}
+                              </span>
+                              <span className="text-sm font-400 leading-lg-md">
+                                {result.source?.name ||
+                                  otherTransfer.source?.city_name}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center flex-1 mx-md relative">
+                              <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                                <span className="text-sm font-400 leading-lg-md">
+                                  {result.duration_formatted ||
+                                    `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                                </span>
+                                <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                  {getModeIcon(otherTransfer.mode, 13)}
+                                </span>
+                                <span className="text-sm font-400 leading-lg-md">
+                                  {otherTransfer.distance} Km
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-xs shrink-0">
+                              <span className="text-sm font-400 leading-lg-md">
+                                {arrivalInfo.format("MMM D")}
+                              </span>
+                              <span className="text-md-lg font-600 leading-lg-md">
+                                {arrivalInfo.format("h:mm A")}
+                              </span>
+                              <span className="text-sm font-400 leading-lg-md">
+                                {result.destination?.name ||
+                                  otherTransfer.destination?.city_name}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Segments breakdown — only shown when there are 2+ segments (i.e. a connection) */}
+                        {segments.length > 1 && (
+                          <div className="mt-md border-t border-text-disabled pt-md">
+                            <div className="text-xs font-500 text-text-spacegrey mb-xs">
+                              {segments.length} segments · 1 connection
+                            </div>
+                            <div className="flex flex-col gap-xs">
+                              {segments.map((seg, segIdx) => {
+                                const segDep = seg.departure_datetime
+                                  ? dayjs(seg.departure_datetime)
+                                  : null;
+                                const segArr = seg.arrival_datetime
+                                  ? dayjs(seg.arrival_datetime)
+                                  : null;
+                                const isLastSegment =
+                                  segIdx === segments.length - 1;
+
+                                return (
+                                  <div key={segIdx}>
+                                    <div className="flex flex-row items-start gap-xs">
+                                      {/* Left time column */}
+                                      <div className="flex flex-col items-end w-[68px] shrink-0">
+                                        {segDep && (
+                                          <>
+                                            <span className="text-sm font-600">
+                                              {segDep.format("h:mm A")}
+                                            </span>
+                                            <span className="text-xs text-text-spacegrey">
+                                              {seg.departure_station?.name}
+                                            </span>
+                                          </>
+                                        )}
+                                      </div>
+
+                                      {/* Connector dot + operator line */}
+                                      <div className="flex flex-col items-center shrink-0 pt-[3px]">
+                                        <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                        <div
+                                          className="w-[1px] h-full bg-text-disabled mt-[2px]"
+                                          style={{ minHeight: "28px" }}
+                                        ></div>
+                                      </div>
+
+                                      {/* Operator + duration */}
+                                      <div className="flex flex-col gap-[1px] flex-1 min-w-0">
+                                        <div className="flex flex-row items-center gap-xs">
+                                          {seg.operator?.image && (
+                                            <img
+                                              src={seg.operator.image}
+                                              alt={seg.operator.name}
+                                              className="h-3.5 w-auto object-contain"
+                                            />
+                                          )}
+                                          <span className="text-xs font-500 text-text-spacegrey truncate">
+                                            {seg.operator?.name}
+                                          </span>
+                                        </div>
+                                        <span className="text-xs text-text-spacegrey">
+                                          {seg.duration_formatted ||
+                                            `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Connection wait time between segments */}
+                                    {!isLastSegment && segments[segIdx + 1] && (
+                                      <div className="flex flex-row items-center gap-xs mt-xs">
+                                        <div className="w-[68px]"></div>
+                                        <div className="flex flex-col items-center shrink-0">
+                                          <div className="w-[1px] h-3 bg-text-disabled"></div>
+                                        </div>
+                                        <div className="flex flex-row items-center gap-[3px]">
+                                          <FaClock
+                                            size={10}
+                                            className="text-text-spacegrey"
+                                          />
+                                          <span className="text-xs text-text-spacegrey">
+                                            {(() => {
+                                              const layover = dayjs(
+                                                segments[segIdx + 1]
+                                                  .departure_datetime,
+                                              ).diff(
+                                                dayjs(seg.arrival_datetime),
+                                                "minute",
+                                              );
+                                              const h = Math.floor(
+                                                layover / 60,
+                                              );
+                                              const m = layover % 60;
+                                              return h > 0
+                                                ? `${h}h ${m}m layover`
+                                                : `${m}m layover`;
+                                            })()}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Arrival info at the bottom of last segment */}
+                                    {isLastSegment && segArr && (
+                                      <div className="flex flex-row items-start gap-xs mt-[2px]">
+                                        <div className="w-[68px] flex flex-col items-end">
+                                          <span className="text-sm font-600">
+                                            {segArr.format("h:mm A")}
+                                          </span>
+                                          <span className="text-xs text-text-spacegrey">
+                                            {seg.arrival_station?.name}
+                                          </span>
+                                        </div>
+                                        <div className="flex flex-col items-center shrink-0 pt-[3px]">
+                                          <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cancellation policy */}
+                        {priceOption.cancellation_policy && (
+                          <div className="text-xs text-text-spacegrey mt-xs">
+                            {priceOption.cancellation_policy}
+                          </div>
+                        )}
                       </div>
 
-                      <div className="flex items-center flex-1 mx-md relative">
-                        <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                      {/* Price + action button */}
+                      <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                        <div>
+                          <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                            {transfer_currency} {price}
+                          </div>
+                          <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                            for {pax?.adults + pax?.children + pax?.infants}{" "}
+                            people
+                          </div>
+                        </div>
+
+                        <div
+                          className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                          onClick={() => {
+                            if (updateLoading && !isOptionLoading) return;
+                            if (isBookingInProgress && !isOptionLoading) return;
+
+                            const selectedPriceData = {
+                              ...otherTransfer,
+                              selectedOmioResult: result,
+                              selectedOmioResultIndex: resultIndex,
+                              selectedPrice: {
+                                ...priceOption,
+                                result_index: priceOption.result_index,
+                              },
+                            };
+
+                            handleModeSelect(
+                              currentStep - 1,
+                              priceOptionId,
+                              selectedPriceData,
+                              otherTransfer.mode,
+                            );
+                          }}
+                        >
+                          {isOptionLoading ||
+                          (updateLoading && isOptionSelected) ? (
+                            <div className="flex items-center gap-1">
+                              <PulseLoader
+                                size={15}
+                                speedMultiplier={0.6}
+                                color="#000000"
+                              />
+                            </div>
+                          ) : isOptionSelected && isResultSelected ? (
+                            <div className="flex items-center gap-1">
+                              <button className="ttw-btn-secondary-fill max-ph:w-full">
+                                Selected
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <button className="ttw-btn-fill-yellow max-ph:w-full">
+                                Add to Itinerary
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              });
+            });
+          }
+
+          // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───
+          if (!otherTransfer.prices || otherTransfer.prices.length === 0)
+            return null;
+
+          return otherTransfer.prices.map((priceOption, priceIndex) => {
+            const price = priceOption.price || 0;
+            const transfer_currency = currency?.currency
+              ? currencySymbols?.[currency?.currency]
+              : "₹";
+            const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+            const isOptionSelected = isPriceOptionSelected(
+              otherTransfer.id,
+              priceIndex,
+            );
+            const isOptionLoading = loadingOptionId === priceOptionId;
+            const currentDateTimeInfo = getDateInfo(
+              otherTransfer.start_datetime,
+              otherTransfer.duration,
+            );
+
+            return (
+              <div
+                key={`${otherTransfer.id}-price-${priceIndex}`}
+                className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
+                  ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+                  ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+              >
+                <div className="flex justify-between max-ph:flex-col">
+                  <div className="w-full">
+                    <div className="text-md font-600 leading-xl">
+                      {otherTransfer.text}{" "}
+                      {priceOption.name ? `- ${priceOption.name}` : ""}
+                    </div>
+                    {priceOption.description && (
+                      <div className="text-xs md:text-sm text-gray-700 mt-1">
+                        {priceOption.description}
+                      </div>
+                    )}
+                    {currentDateTimeInfo && (
+                      <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                        <div className="flex flex-col gap-xs shrink-0">
                           <span className="text-sm font-400 leading-lg-md">
-                            {currentDateTimeInfo.formattedDuration}
+                            {currentDateTimeInfo.formattedStartDate}
                           </span>
-                          <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
-                            {getModeIcon(otherTransfer.mode, 13)}
+                          <span className="text-md-lg font-600 leading-lg-md">
+                            {currentDateTimeInfo.formattedStartTime}
                           </span>
                           <span className="text-sm font-400 leading-lg-md">
-                            {otherTransfer.distance} Km
+                            {otherTransfer.source.city_name}{" "}
+                            {otherTransfer.source.code && (
+                              <span className="text-sm font-400 leading-lg-md">
+                                {" "}
+                                ( {otherTransfer.source.code} )
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center flex-1 mx-md relative">
+                          <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                            <span className="text-sm font-400 leading-lg-md">
+                              {currentDateTimeInfo.formattedDuration}
+                            </span>
+                            <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                              {getModeIcon(otherTransfer.mode, 13)}
+                            </span>
+                            <span className="text-sm font-400 leading-lg-md">
+                              {otherTransfer.distance} Km
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-xs shrink-0">
+                          <span className="text-sm font-400 leading-lg-md">
+                            {currentDateTimeInfo.formattedEndDate}
+                          </span>
+                          <span className="text-md-lg font-600 leading-lg-md">
+                            {currentDateTimeInfo.formattedEndTime}
+                          </span>
+                          <span className="text-sm font-400 leading-lg-md">
+                            {otherTransfer.destination.city_name}{" "}
+                            {otherTransfer.destination.code && (
+                              <span className="text-sm font-400 leading-lg-md">
+                                {" "}
+                                ( {otherTransfer.destination.code} )
+                              </span>
+                            )}
                           </span>
                         </div>
                       </div>
-
-                      <div className="flex flex-col gap-xs shrink-0">
-                        <span className="text-sm font-400 leading-lg-md">
-                          {currentDateTimeInfo.formattedEndDate}
-                        </span>
-                        <span className="text-md-lg font-600 leading-lg-md">
-                          {currentDateTimeInfo.formattedEndTime}
-                        </span>
-                        <span className="text-sm font-400 leading-lg-md">
-                          {otherTransfer.destination.city_name}{" "}
-                          {otherTransfer.destination.code && (
-                            <span className="text-sm font-400 leading-lg-md">
-                              {" "}
-                              ( {otherTransfer.destination.code} )
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {priceOption?.class && (
-                    <div className="text-xs md:text-sm">
-                      <span className="font-semibold">Facilities:</span>{" "}
-                      {priceOption?.class}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                  <div>
-                    <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
-                      {" "}
-                      {transfer_currency} {price}{" "}
-                    </div>
-                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
-                      for {pax?.adults + pax?.children + pax?.infants} people
-                    </div>
-                  </div>
-
-                  <div
-                    className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""
-                      } ${isBookingInProgress && !isOptionLoading
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                      }`}
-                    onClick={() => {
-                      if (updateLoading && !isOptionLoading) return;
-                      if (isBookingInProgress && !isOptionLoading) return;
-
-                      const selectedPriceData = {
-                        ...otherTransfer,
-                        selectedPrice: {
-                          ...priceOption,
-                          result_index: priceOption.result_index,
-                        },
-                      };
-
-                      handleModeSelect(
-                        currentStep - 1,
-                        priceOptionId,
-                        selectedPriceData,
-                        otherTransfer.mode
-                      );
-                    }}
-                  >
-                    {isOptionLoading || (updateLoading && isOptionSelected) ? (
-                      <div className="flex items-center gap-1">
-                        <PulseLoader
-                          size={15}
-                          speedMultiplier={0.6}
-                          color="#000000"
-                        />
-                      </div>
-                    ) : isOptionSelected && isResultSelected ? (
-                      <div className="flex items-center gap-1">
-                        <button className="ttw-btn-secondary-fill max-ph:w-full">
-                          Selected
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1">
-                        <button className="ttw-btn-fill-yellow max-ph:w-full">
-                          Add to Itinerary
-                        </button>
+                    )}
+                    {priceOption?.class && (
+                      <div className="text-xs md:text-sm">
+                        <span className="font-semibold">Facilities:</span>{" "}
+                        {priceOption?.class}
                       </div>
                     )}
                   </div>
+                  <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                    <div>
+                      <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                        {" "}
+                        {transfer_currency} {price}{" "}
+                      </div>
+                      <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                        for {pax?.adults + pax?.children + pax?.infants} people
+                      </div>
+                    </div>
+                    <div
+                      className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                      onClick={() => {
+                        if (updateLoading && !isOptionLoading) return;
+                        if (isBookingInProgress && !isOptionLoading) return;
+                        const selectedPriceData = {
+                          ...otherTransfer,
+                          selectedPrice: {
+                            ...priceOption,
+                            result_index: priceOption.result_index,
+                          },
+                        };
+                        handleModeSelect(
+                          currentStep - 1,
+                          priceOptionId,
+                          selectedPriceData,
+                          otherTransfer.mode,
+                        );
+                      }}
+                    >
+                      {isOptionLoading ||
+                      (updateLoading && isOptionSelected) ? (
+                        <div className="flex items-center gap-1">
+                          <PulseLoader
+                            size={15}
+                            speedMultiplier={0.6}
+                            color="#000000"
+                          />
+                        </div>
+                      ) : isOptionSelected && isResultSelected ? (
+                        <div className="flex items-center gap-1">
+                          <button className="ttw-btn-secondary-fill max-ph:w-full">
+                            Selected
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <button className="ttw-btn-fill-yellow max-ph:w-full">
+                            Add to Itinerary
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          });
+        })()}
       {showLoginModal && (
         <LoginModal
           show={showLoginModal}
