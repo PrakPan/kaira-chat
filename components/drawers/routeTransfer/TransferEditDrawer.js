@@ -1603,7 +1603,7 @@ const RouteContainer = (props) => {
     hideDrawer,
     booking_id,
   } = props;
-  console.log(name, "from royte");
+
   const actualClose = useHandleClose();
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -2117,36 +2117,52 @@ const NewMultiModeContainer = ({
   };
 
   const handleNextStep = () => {
-    const currentTransfer = transfer[currentStep - 1];
-    if (currentTransfer.mode === "Flight") {
-      // setSkipFlightFetch(true);
-      setShowComboFlightModal(false);
-    } else if (currentTransfer.mode === "Taxi") {
-      // setSkipTaxiFetch(true);
-      setShowComboTaxiModal(false);
+  const currentTransfer = transfer[currentStep - 1];
+  if (currentTransfer.mode === "Flight") {
+    setShowComboFlightModal(false);
+  } else if (currentTransfer.mode === "Taxi") {
+    setShowComboTaxiModal(false);
+  }
+
+  // Set up time for the next step based on current step's arrival time
+  const currentSelectedData = selectedData[currentStep - 1];
+  
+  if (currentSelectedData && currentStep < transfer.length) {
+    let arrivalTime = null;
+
+    // For other transfers (Train, Bus, Ferry, etc.) with Omio results
+    if (currentSelectedData.selectedOmioResult) {
+      arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
+    }
+    // For other transfers with regular arrival_time
+    else if (currentSelectedData.arrival_time) {
+      arrivalTime = currentSelectedData.arrival_time;
+    }
+    // For Flight or Taxi bookings
+    else if (currentSelectedData.arrivalTime) {
+      arrivalTime = currentSelectedData.arrivalTime;
     }
 
-    // Set up time for the next step based on current step's arrival time
-    const currentSelectedData = selectedData[currentStep - 1];
-    if (
-      currentSelectedData &&
-      currentSelectedData.arrival_time &&
-      currentStep < transfer.length
-    ) {
-      let arrivalMoment = dayjs(currentSelectedData.arrival_time);
+    if (arrivalTime) {
+      let arrivalMoment = dayjs(arrivalTime);
       let nextDepartureTime = arrivalMoment.add(1, "hour");
 
       const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
       const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
 
+
+
       setCurrentModeDepartureDate(newDepartureDate);
       setCurrentModeDepartureTime(newDepartureTimeStr);
       setComboStartDate(newDepartureDate);
       setComboStartTime(newDepartureTimeStr);
+    } else {
+      console.warn("No arrival time found in currentSelectedData:", currentSelectedData);
     }
+  }
 
-    setCurrentStep(currentStep + 1);
-  };
+  setCurrentStep(currentStep + 1);
+};
 
   const handleBackButton = () => {
     if (currentStep === 1) {
@@ -2164,6 +2180,8 @@ const NewMultiModeContainer = ({
     }
 
     const prevStepData = selectedData[currentStep - 2];
+
+
     if (prevStepData && prevStepData.departure_time) {
       const departureDateTime = dayjs(prevStepData.departure_time);
       const departureDate = departureDateTime.format("YYYY-MM-DD");
@@ -2242,26 +2260,33 @@ const NewMultiModeContainer = ({
       }));
 
       if (searchData) {
-        if (mode !== "Flight" && mode !== "Taxi") {
-          // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
-          const departureDateTime = dayjs(
-            `${currentModeDepartureDate}T${currentModeDepartureTime}`,
-          );
-          const arrivalDateTime = departureDateTime.add(
-            searchData.duration || 0,
-            "minute",
-          );
+  if (mode !== "Flight" && mode !== "Taxi") {
+    // For Omio results
+    if (searchData.selectedOmioResult) {
+      searchData.departure_time = searchData.selectedOmioResult.departure_datetime;
+      searchData.arrival_time = searchData.selectedOmioResult.arrival_datetime;
+    } 
+    // For regular other transfer results
+    else {
+      const departureDateTime = dayjs(
+        `${currentModeDepartureDate}T${currentModeDepartureTime}`,
+      );
+      const arrivalDateTime = departureDateTime.add(
+        searchData.duration || 0,
+        "minute",
+      );
 
-          searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
-          searchData.arrival_time = arrivalDateTime.format("YYYY-MM-DDTHH:mm");
-        }
+      searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+      searchData.arrival_time = arrivalDateTime.format("YYYY-MM-DDTHH:mm");
+    }
+  }
 
-        setSelectedData((prev) => {
-          const newData = [...prev];
-          newData[index] = searchData;
-          return newData;
-        });
-      } else {
+  setSelectedData((prev) => {
+    const newData = [...prev];
+    newData[index] = searchData;
+    return newData;
+  });
+} else {
         const selectedTransfer = transfer.find((item) => item.id === id);
         if (selectedTransfer) {
           if (
@@ -2502,8 +2527,6 @@ const NewMultiModeContainer = ({
 
   const handleCancel = () => {
     // Find the last selected step (highest index with a selection)
-
-    console.log("Selected Mode Ids", selectedModeIds);
     let lastSelectedIndex = -1;
     Object.keys(selectedModeIds).forEach((index) => {
       const numIndex = parseInt(index);
@@ -2525,7 +2548,6 @@ const NewMultiModeContainer = ({
         return newData;
       });
 
-      console.log(`Deselected result at index ${lastSelectedIndex}`);
     }
 
     setUpdateLoading(false);
@@ -2537,14 +2559,7 @@ const NewMultiModeContainer = ({
       const transfersPayload = selectedData.map((item, index) => {
         const currentTransfer = transfer[index];
 
-        console.log(
-          "Preparing payload for item:",
-          item,
-          "at index:",
-          index,
-          "current transfer:",
-          currentTransfer,
-        );
+       
 
         const transferObj = {
           booking_type: currentTransfer.mode,
@@ -3260,12 +3275,6 @@ const NewMultiModeContainer = ({
                       return `${hour12}:${minutes} ${period}`;
                     };
 
-                    {
-                      console.log(
-                        "Rendering otherTransfer:",
-                        currentTransferData,
-                      );
-                    }
 
                     return (
                       <div key={key}>
@@ -3387,15 +3396,7 @@ const NewMultiModeContainer = ({
                           </div>
                         )}
 
-                        {console.log(
-                          "Rendering otherTransfer inside return:",
-                          !isLoading,
-                          currentTransferData,
-                          transferErrors[transferKey],
-                          currentTransferData.results,
-                          currentTransferData.results &&
-                            currentTransferData.results.length > 0,
-                        )}
+                        
 
                         {/* Render prices from current transfer data */}
                         {!isLoading &&
@@ -5035,7 +5036,7 @@ const OtherTransfer = ({
         }
       } catch (error) {
         if (error.name === "AbortError") {
-          console.log("Request aborted");
+    
           return;
         }
 
@@ -5061,9 +5062,7 @@ const OtherTransfer = ({
     [token, currentStep],
   );
 
-  {
-    console.log("Rendering otherTransfer:", otherTransfer);
-  }
+
 
   useEffect(() => {
     // Don't proceed if transfer hasn't loaded yet or if booking is in progress
@@ -5364,19 +5363,14 @@ const OtherTransfer = ({
             };
           }
 
-          // Self booking payload (original)
-          let resultIndex = 0;
-          if (item.selectedPrice) {
-            resultIndex = item.selectedPrice.result_index || 0;
-          }
+         
 
           return {
             ...transferObj,
             source: "Self",
             price_result_index: item.selectedPrice?.result_index || 0,
+            segment_result_index: null,
             trace_id: item.trace_id || traceId,
-            start_datetime: `${newDate || departureDate}T${newTime || departureTime}:00`,
-            result_index: resultIndex,
           };
         }
       })
@@ -5445,6 +5439,8 @@ const OtherTransfer = ({
       setIsBookingInProgress(true);
       setUpdateLoading(true);
       setIsProcessingWarning(true);
+
+     
 
       try {
         // Call warning API
@@ -5526,10 +5522,26 @@ const OtherTransfer = ({
   ) => {
     setIsProcessingBooking(true);
 
+  let requestPayload;
+
+    requestPayload = {
+      source: newRequestBody.transfers[0]?.source || "Self",
+      destination_itinerary_city: newRequestBody.destination_itinerary_city,
+      source_itinerary_city: newRequestBody.source_itinerary_city,
+      edge: newRequestBody.transfers[0]?.edge_id,
+      trace_id: newRequestBody.transfers[0]?.trace_id || traceId,
+      price_result_index: newRequestBody.transfers[0]?.price_result_index || 0,
+      segment_result_index: newRequestBody.transfers[0]?.segment_result_index || null,
+    };
+
+  if (newRequestBody.booking_id || booking_id) {
+    requestPayload.booking_id = newRequestBody.booking_id || booking_id;
+  }
+
     try {
       const response = await UpdateTransferMode.post(
-        `${itinerary_id}/bookings/transfer/`,
-        newRequestBody,
+        `${itinerary_id}/bookings/${otherTransfer?.mode?.toLowerCase()}/`,
+        requestPayload,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -5921,7 +5933,6 @@ const OtherTransfer = ({
             otherTransfer.results && otherTransfer.results.length > 0;
 
           if (hasOmioResults) {
-            console.log("Inside Omio");
             // ─── OMIO RESULTS RENDERING ───
             return otherTransfer.results.map((result, resultIndex) => {
               const resultPrices = result.prices || [];
@@ -6249,7 +6260,6 @@ const OtherTransfer = ({
               otherTransfer.duration,
             );
 
-            console.log("Inside Om", otherTransfer);
 
             return (
               <div
