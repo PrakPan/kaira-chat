@@ -277,15 +277,20 @@ const VehicleDetailModal = ({
           <p className="text-gray-500 text-sm">Passengers</p>
         </>
       )}
+      
+
+
     </div>
-    {!loading && transfer_details?.prices?.[0]?.class && (
-      <div>
+    {!loading && (transfer_details?.prices?.[0]?.class || transfer_details?.results?.[0]?.prices?.[0]?.class_name) && (
+      <div className="items-right text-right">
         <p className="font-semibold text-md">
-          {transfer_details.prices[0].class}
+          {transfer_details.prices[0].class || transfer_details.results?.[0]?.prices?.[0]?.class_name}
         </p>
         <p className="text-gray-500 text-sm">Class</p>
       </div>
     )}
+
+    
   </div>
 </div>
 
@@ -334,8 +339,12 @@ const VehicleDetailModal = ({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800 line-clamp-2" title={segment.departure_station?.name}>
-                  {segment.departure_station?.name}
+                  {segment.departure_station?.name} <br />
+                  {segment.vehicle_number ? <span className="text-xs text-gray-500">
+                  {segment.vehicle_number}
+                </span> : null}
                 </p>
+                
               </div>
             </div>
 

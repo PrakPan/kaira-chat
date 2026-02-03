@@ -2117,52 +2117,53 @@ const NewMultiModeContainer = ({
   };
 
   const handleNextStep = () => {
-  const currentTransfer = transfer[currentStep - 1];
-  if (currentTransfer.mode === "Flight") {
-    setShowComboFlightModal(false);
-  } else if (currentTransfer.mode === "Taxi") {
-    setShowComboTaxiModal(false);
-  }
-
-  // Set up time for the next step based on current step's arrival time
-  const currentSelectedData = selectedData[currentStep - 1];
-  
-  if (currentSelectedData && currentStep < transfer.length) {
-    let arrivalTime = null;
-
-    // For other transfers (Train, Bus, Ferry, etc.) with Omio results
-    if (currentSelectedData.selectedOmioResult) {
-      arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
-    }
-    // For other transfers with regular arrival_time
-    else if (currentSelectedData.arrival_time) {
-      arrivalTime = currentSelectedData.arrival_time;
-    }
-    // For Flight or Taxi bookings
-    else if (currentSelectedData.arrivalTime) {
-      arrivalTime = currentSelectedData.arrivalTime;
+    const currentTransfer = transfer[currentStep - 1];
+    if (currentTransfer.mode === "Flight") {
+      setShowComboFlightModal(false);
+    } else if (currentTransfer.mode === "Taxi") {
+      setShowComboTaxiModal(false);
     }
 
-    if (arrivalTime) {
-      let arrivalMoment = dayjs(arrivalTime);
-      let nextDepartureTime = arrivalMoment.add(1, "hour");
+    // Set up time for the next step based on current step's arrival time
+    const currentSelectedData = selectedData[currentStep - 1];
 
-      const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
-      const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
+    if (currentSelectedData && currentStep < transfer.length) {
+      let arrivalTime = null;
 
+      // For other transfers (Train, Bus, Ferry, etc.) with Omio results
+      if (currentSelectedData.selectedOmioResult) {
+        arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
+      }
+      // For other transfers with regular arrival_time
+      else if (currentSelectedData.arrival_time) {
+        arrivalTime = currentSelectedData.arrival_time;
+      }
+      // For Flight or Taxi bookings
+      else if (currentSelectedData.arrivalTime) {
+        arrivalTime = currentSelectedData.arrivalTime;
+      }
 
+      if (arrivalTime) {
+        let arrivalMoment = dayjs(arrivalTime);
+        let nextDepartureTime = arrivalMoment.add(1, "hour");
 
-      setCurrentModeDepartureDate(newDepartureDate);
-      setCurrentModeDepartureTime(newDepartureTimeStr);
-      setComboStartDate(newDepartureDate);
-      setComboStartTime(newDepartureTimeStr);
-    } else {
-      console.warn("No arrival time found in currentSelectedData:", currentSelectedData);
+        const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
+        const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
+
+        setCurrentModeDepartureDate(newDepartureDate);
+        setCurrentModeDepartureTime(newDepartureTimeStr);
+        setComboStartDate(newDepartureDate);
+        setComboStartTime(newDepartureTimeStr);
+      } else {
+        console.warn(
+          "No arrival time found in currentSelectedData:",
+          currentSelectedData,
+        );
+      }
     }
-  }
 
-  setCurrentStep(currentStep + 1);
-};
+    setCurrentStep(currentStep + 1);
+  };
 
   const handleBackButton = () => {
     if (currentStep === 1) {
@@ -2180,7 +2181,6 @@ const NewMultiModeContainer = ({
     }
 
     const prevStepData = selectedData[currentStep - 2];
-
 
     if (prevStepData && prevStepData.departure_time) {
       const departureDateTime = dayjs(prevStepData.departure_time);
@@ -2260,33 +2260,36 @@ const NewMultiModeContainer = ({
       }));
 
       if (searchData) {
-  if (mode !== "Flight" && mode !== "Taxi") {
-    // For Omio results
-    if (searchData.selectedOmioResult) {
-      searchData.departure_time = searchData.selectedOmioResult.departure_datetime;
-      searchData.arrival_time = searchData.selectedOmioResult.arrival_datetime;
-    } 
-    // For regular other transfer results
-    else {
-      const departureDateTime = dayjs(
-        `${currentModeDepartureDate}T${currentModeDepartureTime}`,
-      );
-      const arrivalDateTime = departureDateTime.add(
-        searchData.duration || 0,
-        "minute",
-      );
+        if (mode !== "Flight" && mode !== "Taxi") {
+          // For Omio results
+          if (searchData.selectedOmioResult) {
+            searchData.departure_time =
+              searchData.selectedOmioResult.departure_datetime;
+            searchData.arrival_time =
+              searchData.selectedOmioResult.arrival_datetime;
+          }
+          // For regular other transfer results
+          else {
+            const departureDateTime = dayjs(
+              `${currentModeDepartureDate}T${currentModeDepartureTime}`,
+            );
+            const arrivalDateTime = departureDateTime.add(
+              searchData.duration || 0,
+              "minute",
+            );
 
-      searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
-      searchData.arrival_time = arrivalDateTime.format("YYYY-MM-DDTHH:mm");
-    }
-  }
+            searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+            searchData.arrival_time =
+              arrivalDateTime.format("YYYY-MM-DDTHH:mm");
+          }
+        }
 
-  setSelectedData((prev) => {
-    const newData = [...prev];
-    newData[index] = searchData;
-    return newData;
-  });
-} else {
+        setSelectedData((prev) => {
+          const newData = [...prev];
+          newData[index] = searchData;
+          return newData;
+        });
+      } else {
         const selectedTransfer = transfer.find((item) => item.id === id);
         if (selectedTransfer) {
           if (
@@ -2547,7 +2550,6 @@ const NewMultiModeContainer = ({
         newData[lastSelectedIndex] = undefined;
         return newData;
       });
-
     }
 
     setUpdateLoading(false);
@@ -2558,8 +2560,6 @@ const NewMultiModeContainer = ({
     if (Object.keys(selectedModeIds).length === totalSteps) {
       const transfersPayload = selectedData.map((item, index) => {
         const currentTransfer = transfer[index];
-
-       
 
         const transferObj = {
           booking_type: currentTransfer.mode,
@@ -3275,7 +3275,6 @@ const NewMultiModeContainer = ({
                       return `${hour12}:${minutes} ${period}`;
                     };
 
-
                     return (
                       <div key={key}>
                         <div>
@@ -3396,8 +3395,6 @@ const NewMultiModeContainer = ({
                           </div>
                         )}
 
-                        
-
                         {/* Render prices from current transfer data */}
                         {!isLoading &&
                           !transferErrors[transferKey] &&
@@ -3469,7 +3466,7 @@ const NewMultiModeContainer = ({
                                                   <div className="flex flex-col gap-xs shrink-0">
                                                     <span className="text-sm font-400 leading-lg-md">
                                                       {departureInfo.format(
-                                                        "MMM D",
+                                                        "ddd, MMM D",
                                                       )}
                                                     </span>
                                                     <span className="text-md-lg font-600 leading-lg-md">
@@ -3591,6 +3588,14 @@ const NewMultiModeContainer = ({
                                                                       ?.name
                                                                   }
                                                                 </span>
+                                                                {seg.vehicle_number && (
+                                                                  <span className="text-xs text-gray-500 block">
+                                                                    Vehicle:{" "}
+                                                                    {
+                                                                      seg.vehicle_number
+                                                                    }
+                                                                  </span>
+                                                                )}
                                                               </div>
                                                             </div>
 
@@ -4807,6 +4812,14 @@ const Cost = styled.p`
   }
 `;
 
+const formatPriceWithComma = (price) => {
+  if (!price) return "0";
+  return price.toLocaleString("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+};
+
 const OtherTransfer = ({
   getPaymentHandler,
   setShowOtherTrasfer,
@@ -4900,20 +4913,20 @@ const OtherTransfer = ({
   });
 
   useEffect(() => {
-  if (selectedResult?.transfer?.id) {
-    const currentTransferId = otherTransfer?.id;
-    const newTransferId = selectedResult.transfer.id;
-    
-    // Clear immediately if it's a different transfer
-    if (currentTransferId !== newTransferId) {
-      setOtherTransfer(null);
-      setError(null);
-      setIsResultSelected(false);
-      setLocalSelectedData([]);
-      setLoadingRequestKey(null);
+    if (selectedResult?.transfer?.id) {
+      const currentTransferId = otherTransfer?.id;
+      const newTransferId = selectedResult.transfer.id;
+
+      // Clear immediately if it's a different transfer
+      if (currentTransferId !== newTransferId) {
+        setOtherTransfer(null);
+        setError(null);
+        setIsResultSelected(false);
+        setLocalSelectedData([]);
+        setLoadingRequestKey(null);
+      }
     }
-  }
-}, [selectedResult?.transfer?.id, otherTransfer?.id]);
+  }, [selectedResult?.transfer?.id, otherTransfer?.id]);
 
   // FIXED: Update state when props change with proper guards
   useEffect(() => {
@@ -4984,7 +4997,7 @@ const OtherTransfer = ({
       // Create new abort controller
       abortControllerRef.current = new AbortController();
 
-       setOtherTransfer(null);
+      setOtherTransfer(null);
 
       setLoadingRequestKey(requestKey);
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
@@ -5036,7 +5049,6 @@ const OtherTransfer = ({
         }
       } catch (error) {
         if (error.name === "AbortError") {
-    
           return;
         }
 
@@ -5061,8 +5073,6 @@ const OtherTransfer = ({
     },
     [token, currentStep],
   );
-
-
 
   useEffect(() => {
     // Don't proceed if transfer hasn't loaded yet or if booking is in progress
@@ -5363,8 +5373,6 @@ const OtherTransfer = ({
             };
           }
 
-         
-
           return {
             ...transferObj,
             source: "Self",
@@ -5439,8 +5447,6 @@ const OtherTransfer = ({
       setIsBookingInProgress(true);
       setUpdateLoading(true);
       setIsProcessingWarning(true);
-
-     
 
       try {
         // Call warning API
@@ -5522,7 +5528,7 @@ const OtherTransfer = ({
   ) => {
     setIsProcessingBooking(true);
 
-  let requestPayload;
+    let requestPayload;
 
     requestPayload = {
       source: newRequestBody.transfers[0]?.source || "Self",
@@ -5531,12 +5537,13 @@ const OtherTransfer = ({
       edge: newRequestBody.transfers[0]?.edge_id,
       trace_id: newRequestBody.transfers[0]?.trace_id || traceId,
       price_result_index: newRequestBody.transfers[0]?.price_result_index || 0,
-      segment_result_index: newRequestBody.transfers[0]?.segment_result_index || null,
+      segment_result_index:
+        newRequestBody.transfers[0]?.segment_result_index || null,
     };
 
-  if (newRequestBody.booking_id || booking_id) {
-    requestPayload.booking_id = newRequestBody.booking_id || booking_id;
-  }
+    if (newRequestBody.booking_id || booking_id) {
+      requestPayload.booking_id = newRequestBody.booking_id || booking_id;
+    }
 
     try {
       const response = await UpdateTransferMode.post(
@@ -5893,14 +5900,15 @@ const OtherTransfer = ({
       </div>
 
       {/* Loading indicator for dynamic transfer loading */}
-      {(isCurrentTransferLoading() || (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
-  <div className="flex justify-center items-center py-8">
-    <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
-    <span className="ml-3 text-sm text-gray-600">
-      Loading transfer options...
-    </span>
-  </div>
-)}
+      {(isCurrentTransferLoading() ||
+        (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
+        <div className="flex justify-center items-center py-8">
+          <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
+          <span className="ml-3 text-sm text-gray-600">
+            Loading transfer options...
+          </span>
+        </div>
+      )}
 
       {/* Error message display */}
       {error && !isCurrentTransferLoading() && (
@@ -5924,10 +5932,10 @@ const OtherTransfer = ({
 
       {/* Transfer options display */}
       {otherTransfer &&
-  !isCurrentTransferLoading() &&
-  !loadingRequestKey &&
-  !error &&
-  selectedResult?.transfer?.id === otherTransfer.id &&
+        !isCurrentTransferLoading() &&
+        !loadingRequestKey &&
+        !error &&
+        selectedResult?.transfer?.id === otherTransfer.id &&
         (() => {
           const hasOmioResults =
             otherTransfer.results && otherTransfer.results.length > 0;
@@ -5938,6 +5946,7 @@ const OtherTransfer = ({
               const resultPrices = result.prices || [];
               return resultPrices.map((priceOption, priceIndex) => {
                 const price = priceOption.price || 0;
+                const formattedPrice = formatPriceWithComma(price);
                 const transfer_currency = currency?.currency
                   ? currencySymbols?.[currency?.currency]
                   : "₹";
@@ -5996,7 +6005,7 @@ const OtherTransfer = ({
                           <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
                             <div className="flex flex-col gap-xs shrink-0">
                               <span className="text-sm font-400 leading-lg-md">
-                                {departureInfo.format("MMM D")}
+                                {departureInfo.format("ddd, MMM D")}
                               </span>
                               <span className="text-md-lg font-600 leading-lg-md">
                                 {departureInfo.format("h:mm A")}
@@ -6025,7 +6034,7 @@ const OtherTransfer = ({
 
                             <div className="flex flex-col gap-xs shrink-0">
                               <span className="text-sm font-400 leading-lg-md">
-                                {arrivalInfo.format("MMM D")}
+                                {arrivalInfo.format("ddd, MMM D")}
                               </span>
                               <span className="text-md-lg font-600 leading-lg-md">
                                 {arrivalInfo.format("h:mm A")}
@@ -6081,6 +6090,11 @@ const OtherTransfer = ({
                                         >
                                           {seg.departure_station?.name}
                                         </span>
+                                        {seg.vehicle_number && (
+                                          <span className="text-xs text-gray-500 block">
+                                            Vehicle: {seg.vehicle_number}
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
 
@@ -6175,7 +6189,7 @@ const OtherTransfer = ({
                       <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
                         <div>
                           <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
-                            {transfer_currency} {price}
+                            {transfer_currency} {formattedPrice}
                           </div>
                           <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
                             for {pax?.adults + pax?.children + pax?.infants}{" "}
@@ -6242,8 +6256,6 @@ const OtherTransfer = ({
           if (!otherTransfer.prices || otherTransfer.prices.length === 0)
             return null;
 
-          
-
           return otherTransfer.prices.map((priceOption, priceIndex) => {
             const price = priceOption.price || 0;
             const transfer_currency = currency?.currency
@@ -6259,7 +6271,6 @@ const OtherTransfer = ({
               otherTransfer.start_datetime,
               otherTransfer.duration,
             );
-
 
             return (
               <div
