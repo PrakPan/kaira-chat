@@ -35,6 +35,7 @@ import { useAnalytics } from "../../../hooks/useAnalytics";
 import useMediaQuery from "../../media";
 import { MdOutlineDownhillSkiing } from "react-icons/md";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { FaTaxi } from "react-icons/fa6";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 767px)");
@@ -169,6 +170,23 @@ const CityDay = (props) => {
     return `${day}${getOrdinalSuffix(day)} ${month}`;
   };
 
+  const handleSightseeingTaxi = (id) => {
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query:{
+        drawer: "SightSeeing",
+        bookingId: id,
+        transferType: "Taxi",
+        itinerary_city_id: props?.itinerary_city_id,
+        
+      }
+    },
+  undefined,
+      {
+        scroll: false,
+      });
+  }
+
   return (
     <div
       id="cityday"
@@ -179,6 +197,8 @@ const CityDay = (props) => {
           viewMore ? "bg-[#FFFAF5] " : "bg-white"
         }`}
       >
+
+       
         <div
           className={`flex items-center justify-between rounded-t-[8px] py-[12px] px-[16px] cursor-pointer`}
           onClick={() => setViewMore((prev) => !prev)}
@@ -206,6 +226,18 @@ const CityDay = (props) => {
           <>
             {elements.length > 0 ? (
               <>
+                 {matchingIntracityBookings &&
+          formattedTaxiDetails &&
+          matchingIntracityBookings?.length > 0 ? (
+              <div className="flex flex-row gap-xs flex-wrap px-3 pb-3 cursor-pointer" onClick={()=>handleSightseeingTaxi(formattedTaxiDetails?.[0]?.id)}>
+                <div
+                  className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white ${"bg-[#5CBA66]"} flex gap-2 items-center justify-center`}
+                >
+                  <FaTaxi/> Sightseing Taxi Included
+                </div>
+            
+              </div>
+            ) : null}
                 {elements.map((element, index) => (
                   <>
                     <SlabElement
@@ -313,11 +345,11 @@ const CityDay = (props) => {
           </>
         )}
 
-        {matchingIntracityBookings &&
+        {/* {matchingIntracityBookings &&
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 && (
             <>
-              {/* <hr /> */}
+              
               <div className="">
                 <SectionHeading className="p-2">
                   {formattedTaxiDetails?.length > 0 && <>Taxi:</>}
@@ -329,7 +361,7 @@ const CityDay = (props) => {
                         <div
                           key={item.id}
                           className="flex gap-3 items-center bg-white border-radius-10 p-2 border-1 w-100 mb-2"
-                          // onClick={() => handleTaxi(item.id)}
+                         
                         >
                           <div className="hidden hover:block cursor-pointer">
                             <FaEdit />
@@ -344,7 +376,7 @@ const CityDay = (props) => {
                                 objectFit: "contain",
                                 cursor: "pointer",
                                 margin: "auto",
-                                // display: "block",
+                                
                               }}
                               url={
                                 item?.transfer_details?.quote?.taxi_category
@@ -362,21 +394,7 @@ const CityDay = (props) => {
                               <div className="w-fit font-semibold  text-[12px] cursor-pointer">
                                 {item?.name}
                               </div>
-                              {/* <div className="hidden group-hover:!block ">
-                              <svg
-                                stroke="currentColor"
-                                fill="currentColor"
-                                stroke-width="0"
-                                viewBox="0 0 24 24"
-                                class="mt-1"
-                                height="1em"
-                                width="1em"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path fill="none" d="M0 0h24v24H0z"></path>
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                              </svg>
-                            </div> */}
+                             
                             </div>
                             <div className="flex gap-3 text-[12px] ">
                               <div className="w-auto flex items-center gap-1">
@@ -421,7 +439,7 @@ const CityDay = (props) => {
                 </div>
               </div>
             </>
-          )}
+          )} */}
         {/* <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
             + Add Sightseeing Taxi
