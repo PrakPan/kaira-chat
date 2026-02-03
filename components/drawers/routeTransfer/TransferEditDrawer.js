@@ -3088,7 +3088,7 @@ const NewMultiModeContainer = ({
                             : "text-text-disabled"
                         }`}
                       >
-                        Add a {item.mode}
+                        Add a {item.mode} 
                       </span>
                     </div>
 
@@ -3998,7 +3998,7 @@ const NewMultiModeContainer = ({
                 })}
 
                 {/* Navigation buttons - Fixed to bottom */}
-                <div className="sticky bottom-0 left-0 right-0 w-full bg-white border-t z-[100]">
+                <div className="sticky bottom-0 left-0 right-0 w-full bg-white border-t z-[13]">
                   <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-3 px-4 md:px-0 max-w-full">
                     {currentStep > 1 ? (
                       <button
