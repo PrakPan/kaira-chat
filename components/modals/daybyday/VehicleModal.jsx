@@ -282,7 +282,7 @@ const VehicleDetailModal = ({
 
     </div>
     {!loading && (transfer_details?.prices?.[0]?.class || transfer_details?.results?.[0]?.prices?.[0]?.class_name) && (
-      <div className="items-right text-right">
+      <div className="">
         <p className="font-semibold text-md">
           {transfer_details.prices[0].class || transfer_details.results?.[0]?.prices?.[0]?.class_name}
         </p>

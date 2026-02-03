@@ -593,9 +593,11 @@ const handleViewMore = async () => {
     setOffset(newOffset);
 
     if (props?.setFlightResults) {
-      props.setFlightResults(prevFlights => [...prevFlights, ...(response.data.results || [])]);
+      props.setFlightResults(prevFlights => [
+  ...(Array.isArray(prevFlights) ? prevFlights : []),
+  ...(response.data.results || [])
+    ]);
     }
-
 
     if (response.data.trace_id) {
       setTraceId(response.data.trace_id);

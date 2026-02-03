@@ -276,22 +276,34 @@ const TransferDrawer = ({
                   <div className="flex items-center space-x-2 mb-1">
                     <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
                       {childTitle} &nbsp;
-                      <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
-                        {" "}
-                        {transferType}
-                      </span>
-                      {transferData.status === "Paid" && (
-                        <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
-                          Paid
-                        </span>
-                      )}
+                      {type === "Flight" ? (
+                    <span className="text-xs font-medium bg-purple-100 text-purple-800 capitalize">
+                      {transferData.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_name} → {transferData.transfer_details?.items?.[0]?.segments?.[transferData.transfer_details?.items?.[0]?.segments?.length - 1]?.destination?.city_name}
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                      {transferType}
+                    </span>
+                  )}
+                  {transferData.status === "Paid" && (
+                    <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
+                      Paid
+                    </span>
+                  )}
                     </h3>
                     {/* <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
                       
                     </span> */}
                   </div>
                   <div className="text-xs md:text-sm text-gray-600">
-                    {transferType === "sightseeing" ? (
+
+                    {type === "Flight" ? (
+                  <span>
+                    {transferData.transfer_details?.items?.[0]?.segments?.[0]?.airline?.name} • 
+                    {transferData.transfer_details?.items?.[0]?.segments?.length === 1 ? " Non-stop" : ` ${transferData.transfer_details?.items?.[0]?.segments?.length - 1} stop(s)`}
+                  </span>
+                ) :
+                    transferType === "sightseeing" ? (
                       <span>
                         <div className="w-auto flex items-center gap-1">
                           <svg
@@ -371,7 +383,97 @@ const TransferDrawer = ({
                 <div className="p-4 space-y-4">
                   {/* Route/Timing Information */}
                   <div className="bg-white rounded-lg p-3">
-                    {transferType === "sightseeing" ? (
+
+                    {type === "Flight" ? (
+                // Flight-specific details
+                <>
+                  <div className="bg-white rounded-lg p-3">
+                    <h4 className="font-medium text-gray-900 mb-3 text-sm">
+                      Flight Details
+                    </h4>
+                    {transferData.transfer_details?.items?.[0]?.segments?.map((segment, segIdx) => (
+                      <div key={segIdx} className="mb-4 last:mb-0">
+                        <div className="flex items-center justify-between space-x-4 mb-2">
+                          {/* Departure */}
+                          <div className="flex flex-col items-center">
+                            <div className="text-lg font-bold text-gray-900">
+                              {new Date(segment.origin.departure_time).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              })}
+                            </div>
+                            <div className="text-xs font-medium text-gray-900 text-center">
+                              {segment.origin.airport_code}
+                            </div>
+                            <div className="text-xs text-gray-500 text-center">
+                              {segment.origin.city_name}
+                            </div>
+                          </div>
+
+                          {/* Flight info */}
+                          <div className="flex-1 flex flex-col items-center">
+                            <div className="w-full border-t-2 border-dotted border-gray-300 mb-1"></div>
+                            <div className="text-xs text-gray-500 whitespace-nowrap">
+                              {segment.airline.code}-{segment.airline.flight_number}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {Math.floor(segment.duration / 60)}h {segment.duration % 60}m
+                            </div>
+                          </div>
+
+                          {/* Arrival */}
+                          <div className="flex flex-col items-center">
+                            <div className="text-lg font-bold text-gray-900">
+                              {new Date(segment.destination.arrival_time).toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              })}
+                            </div>
+                            <div className="text-xs font-medium text-gray-900 text-center">
+                              {segment.destination.airport_code}
+                            </div>
+                            <div className="text-xs text-gray-500 text-center">
+                              {segment.destination.city_name}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 p-2 rounded">
+                          <div>
+                            <span className="text-gray-500">Cabin:</span> {segment.cabin_class}
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Baggage:</span> {segment.baggage_allowance}
+                          </div>
+                        </div>
+                        
+                        {segIdx < transferData.transfer_details?.items?.[0]?.segments?.length - 1 && (
+                          <div className="my-3 text-center text-xs text-gray-500 border-t pt-2">
+                            Layover at {segment.destination.city_name}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Fare Rules */}
+                  {transferData.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail && (
+                    <div className="bg-white rounded-lg p-3 border-l-4 border-orange-400">
+                      <h4 className="font-medium text-gray-900 mb-2 text-sm">
+                        Fare Rules & Cancellation Policy
+                      </h4>
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: transferData.transfer_details.items[0].fare_rule[0].fareRuleDetail,
+                        }}
+                        className="text-sm ml-4"
+                      ></div>
+                    </div>
+                  )}
+                </>
+              ) : transferType === "sightseeing" ? (
                       // Check if sightseeing has source and destination addresses
                       originName && destinationName ? (
                         <>
@@ -693,30 +795,31 @@ const TransferDrawer = ({
                 </div>
               </div>
               {data?.transfer_type != "sightseeing" &&
-                drawer != "SightSeeing" && (
-                  <div>
-                    {/* Only show parent change button if ALL children are unpaid */}
-                    {data?.children?.every(
-                      (child) => child.status !== "Paid"
-                    ) && (
-                      <Generalbuttonstyle
-                        borderRadius={"7px"}
-                        fontSize={"1rem"}
-                        padding={"7px 25px"}
-                        onClick={() => {
-                          handleEditRoute(data);
-                        }}
-                      >
-                        Change
-                      </Generalbuttonstyle>
-                    )}
-                  </div>
-                )}
+  drawer != "SightSeeing" && 
+  !(data?.combo_type === 'multicity' && data?.booking_type === 'Flight') && (
+    <div>
+     
+      {data?.children?.every(
+        (child) => child.status !== "Paid"
+      ) && (
+        <Generalbuttonstyle
+          borderRadius={"7px"}
+          fontSize={"1rem"}
+          padding={"7px 25px"}
+          onClick={() => {
+            handleEditRoute(data);
+          }}
+        >
+          Change
+        </Generalbuttonstyle>
+      )}
+    </div>
+  )}
             </div>
           </div>
 
           <div className="flex-grow overflow-auto py-4 pb-24 ">
-            {data?.combo_type == "multicity" && (
+            {data?.combo_type == "multicity"  &&  data?.booking_type == "taxi" && (
               <>
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="font-semibold text-gray-800 mb-4">
@@ -907,6 +1010,50 @@ const TransferDrawer = ({
               </button>
             </div>
           )}
+
+          {data?.combo_type === "multicity" && (
+  <div className="p-4 bg-white sticky bottom-0 shadow-md">
+    <button
+      className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+      onClick={() => handleDelete(data)}
+      disabled={loading}
+    >
+      <div style={{ position: "relative" }}>
+        <div className="flex gap-1 items-center text-white">
+          <div
+            style={{ visibility: loading ? "hidden" : "visible" }}
+            className="flex gap-1 items-center"
+          >
+            <Image
+              src="/delete.svg"
+              width={20}
+              height={20}
+              alt="Delete"
+            />
+            <div>Delete Booking</div>
+          </div>
+
+          {loading && (
+            <div
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              <PulseLoader
+                size={12}
+                speedMultiplier={0.6}
+                color="#ffffff"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  </div>
+)}
         </div>
       )}
       {/* {!isPageWide && (

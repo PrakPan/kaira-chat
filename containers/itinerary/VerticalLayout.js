@@ -982,7 +982,6 @@ useEffect(() => {
 
 
   const handleIntracityBookings = async (combo, booking) => {
-    console.log("CityItem");
     setIsIntracity(true);
     setTransferType(booking?.booking_type);
     if (combo) {
@@ -1003,70 +1002,80 @@ useEffect(() => {
     }
   };
 
+
   const handleDelete = async (val) => {
-    if (!localStorage?.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    const dataPassed = val != null ? val : data;
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${dataPassed?.booking_type?.includes(",")
+  if (!localStorage?.getItem("access_token")) {
+    setShowLoginModal(true);
+    return;
+  }
+  const dataPassed = val != null ? val : data;
+  
+  try {
+    setLoading(true);
+    const response = await axiosDeleteBooking.delete(
+      `${router?.query?.id}/bookings/${
+        dataPassed?.booking_type?.includes(",")
           ? `combo`
           : dataPassed?.booking_type?.toLowerCase()
-        }/${dataPassed?.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(dataPassed?.id));
-        setLoading(false);
-        getPaymentHandler();
-        trackTransferBookingDelete(router.query.id, bookingIdToDelete, id);
-
-        if (isIntracity) {
-          setCurrentAirportBookings((prev) =>
-            prev.filter((booking) => booking.id !== dataPassed?.id)
-          );
-        } else {
-          setVisible(true);
-        }
-
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${city} deleted successfully`,
-            heading: "Success!",
-          })
-        );
-        handleClose();
-
-        const bodyStyle = window.getComputedStyle(document.body).overflow;
-        if (bodyStyle === "hidden") {
-          document.body.style.overflow = "initial";
-        }
-
+      }/${dataPassed?.id}/`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
       }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] ||
-        err.response?.data?.errors[0]?.detail ||
-        err.message;
+    );
+
+    if (response.status === 204) {
+      // For multicity combo, pass all child booking IDs along with parent ID
+      if (dataPassed?.combo_type === "multicity" && dataPassed?.children) {
+        const childIds = dataPassed.children.map(child => child.id);
+        dispatch(updateTransferBookings(dataPassed?.id, childIds, dataPassed?.combo_type));
+      } else {
+        // For regular bookings
+        dispatch(updateTransferBookings(dataPassed?.id));
+      }
+      
+      setLoading(false);
+      getPaymentHandler();
+      trackTransferBookingDelete(router.query.id, dataPassed?.id, id);
+
+      if (isIntracity) {
+        setCurrentAirportBookings((prev) =>
+          prev.filter((booking) => booking.id !== dataPassed?.id)
+        );
+      } else {
+        setVisible(true);
+      }
+
       dispatch(
         openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
+          type: "success",
+          text: `${city} deleted successfully`,
+          heading: "Success!",
         })
       );
-      setLoading(false);
+      handleClose();
+
+      const bodyStyle = window.getComputedStyle(document.body).overflow;
+      if (bodyStyle === "hidden") {
+        document.body.style.overflow = "initial";
+      }
     }
-  };
+  } catch (err) {
+    const errorMsg =
+      err?.response?.data?.errors?.[0]?.message?.[0] ||
+      err.response?.data?.errors[0]?.detail ||
+      err.message;
+    dispatch(
+      openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      })
+    );
+    setLoading(false);
+  }
+};
 
   //   useEffect(() => {
   //   if (transferType !== null && airportBookingId) {

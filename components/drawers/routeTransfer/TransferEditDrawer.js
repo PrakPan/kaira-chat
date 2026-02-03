@@ -2117,53 +2117,55 @@ const NewMultiModeContainer = ({
   };
 
   const handleNextStep = () => {
-    const currentTransfer = transfer[currentStep - 1];
-    if (currentTransfer.mode === "Flight") {
-      setShowComboFlightModal(false);
-    } else if (currentTransfer.mode === "Taxi") {
-      setShowComboTaxiModal(false);
+  const currentTransfer = transfer[currentStep - 1];
+  if (currentTransfer.mode === "Flight") {
+    setShowComboFlightModal(false);
+  } else if (currentTransfer.mode === "Taxi") {
+    setShowComboTaxiModal(false);
+  }
+
+  // Set up time for the next step based on current step's arrival time
+  const currentSelectedData = selectedData[currentStep - 1];
+
+  if (currentSelectedData && currentStep < transfer.length) {
+    let arrivalTime = null;
+
+    // FIXED: Check for Flight bookings FIRST - get arrival time from last segment
+    if (currentSelectedData.segments && currentSelectedData.segments.length > 0) {
+      const lastSegment = currentSelectedData.segments[currentSelectedData.segments.length - 1];
+      arrivalTime = lastSegment.destination.arrival_time;
+    }
+    // For other transfers (Train, Bus, Ferry, etc.) with Omio results
+    else if (currentSelectedData.selectedOmioResult) {
+      arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
+    }
+    // For other transfers with regular arrival_time
+    else if (currentSelectedData.arrival_time) {
+      arrivalTime = currentSelectedData.arrival_time;
+    }
+    // For Taxi bookings with arrivalTime field
+    else if (currentSelectedData.arrivalTime) {
+      arrivalTime = currentSelectedData.arrivalTime;
     }
 
-    // Set up time for the next step based on current step's arrival time
-    const currentSelectedData = selectedData[currentStep - 1];
+    if (arrivalTime) {
+      let arrivalMoment = dayjs(arrivalTime);
+      let nextDepartureTime = arrivalMoment.add(1, "hour");
 
-    if (currentSelectedData && currentStep < transfer.length) {
-      let arrivalTime = null;
+      const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
+      const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
 
-      // For other transfers (Train, Bus, Ferry, etc.) with Omio results
-      if (currentSelectedData.selectedOmioResult) {
-        arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
-      }
-      // For other transfers with regular arrival_time
-      else if (currentSelectedData.arrival_time) {
-        arrivalTime = currentSelectedData.arrival_time;
-      }
-      // For Flight or Taxi bookings
-      else if (currentSelectedData.arrivalTime) {
-        arrivalTime = currentSelectedData.arrivalTime;
-      }
+      console.log("Setting next step departure to:", newDepartureDate, newDepartureTimeStr);
 
-      if (arrivalTime) {
-        let arrivalMoment = dayjs(arrivalTime);
-        let nextDepartureTime = arrivalMoment.add(1, "hour");
+      setCurrentModeDepartureDate(newDepartureDate);
+      setCurrentModeDepartureTime(newDepartureTimeStr);
+      setComboStartDate(newDepartureDate);
+      setComboStartTime(newDepartureTimeStr);
+    } 
+  }
 
-        const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
-        const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
-
-        setCurrentModeDepartureDate(newDepartureDate);
-        setCurrentModeDepartureTime(newDepartureTimeStr);
-        setComboStartDate(newDepartureDate);
-        setComboStartTime(newDepartureTimeStr);
-      } else {
-        console.warn(
-          "No arrival time found in currentSelectedData:",
-          currentSelectedData,
-        );
-      }
-    }
-
-    setCurrentStep(currentStep + 1);
-  };
+  setCurrentStep(currentStep + 1);
+};
 
   const handleBackButton = () => {
     if (currentStep === 1) {
@@ -2238,8 +2240,12 @@ const NewMultiModeContainer = ({
 
   const timeOptions = generateTimeOptions();
 
+  console.log("selectedModeIds:", selectedModeIds,selectedData);
+
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
+
+
 
     if (isDeselecting) {
       setSelectedModeIds((prev) => {
@@ -2260,6 +2266,13 @@ const NewMultiModeContainer = ({
       }));
 
       if (searchData) {
+
+        if (mode === "Flight" && searchData.segments && searchData.segments.length > 0) {
+        const lastSegment = searchData.segments[searchData.segments.length - 1];
+        searchData.arrival_time = lastSegment.destination.arrival_time;
+        console.log("Storing flight arrival time:", searchData.arrival_time);
+      }
+
         if (mode !== "Flight" && mode !== "Taxi") {
           // For Omio results
           if (searchData.selectedOmioResult) {
