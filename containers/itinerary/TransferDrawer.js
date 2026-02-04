@@ -80,7 +80,7 @@ const TransferDrawer = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
     router?.query;
 
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
@@ -100,10 +100,10 @@ const TransferDrawer = ({
           drawerType: data?.is_airport_drop
             ? "drop"
             : data?.is_airport_pickup
-            ? "pickup"
-            : data?.combo_type === "multicity"
-            ? "multicity"
-            : null,
+              ? "pickup"
+              : data?.combo_type === "multicity"
+                ? "multicity"
+                : null,
           bookingId: booking_id,
           oItineraryCity: origin_itinerary_city_id,
           dItineraryCity: destination_itinerary_city_id,
@@ -112,10 +112,9 @@ const TransferDrawer = ({
       undefined,
       {
         scroll: false,
-      }
+      },
     );
   };
-
 
   const toggleExpand = (index) => {
     if (expandedIndexes.includes(index)) {
@@ -132,7 +131,7 @@ const TransferDrawer = ({
         const res = await axios.get(
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
             combo ? `combo` : booking_type?.toLowerCase()
-          }/${booking_id}/`
+          }/${booking_id}/`,
         );
         setData(res?.data);
         setLoading(false);
@@ -146,7 +145,7 @@ const TransferDrawer = ({
             text: errorMsg,
             heading: "Error!",
             type: "error",
-          })
+          }),
         );
       }
     };
@@ -231,8 +230,7 @@ const TransferDrawer = ({
               isEmbedded={true}
               setShowLoginModal={setShowLoginModal}
               handleEditRoute={handleEditRoute}
-              data={isCombo ? transferData :data}
-
+              data={isCombo ? transferData : data}
             />
           );
         case "Taxi":
@@ -276,10 +274,26 @@ const TransferDrawer = ({
                   <div className="flex items-center space-x-2 mb-1">
                     <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
                       {childTitle} &nbsp;
-                      <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
-                        {" "}
-                        {transferType}
-                      </span>
+                      {type === "Flight" ? (
+                        <span className="text-xs font-medium bg-purple-100 text-purple-800 capitalize">
+                          {
+                            transferData.transfer_details?.items?.[0]
+                              ?.segments?.[0]?.origin?.city_name
+                          }{" "}
+                          →{" "}
+                          {
+                            transferData.transfer_details?.items?.[0]
+                              ?.segments?.[
+                              transferData.transfer_details?.items?.[0]
+                                ?.segments?.length - 1
+                            ]?.destination?.city_name
+                          }
+                        </span>
+                      ) : (
+                        <span className="text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                          {transferType}
+                        </span>
+                      )}
                       {transferData.status === "Paid" && (
                         <span className="ml-2 text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">
                           Paid
@@ -291,7 +305,19 @@ const TransferDrawer = ({
                     </span> */}
                   </div>
                   <div className="text-xs md:text-sm text-gray-600">
-                    {transferType === "sightseeing" ? (
+                    {type === "Flight" ? (
+                      <span>
+                        {
+                          transferData.transfer_details?.items?.[0]
+                            ?.segments?.[0]?.airline?.name
+                        }{" "}
+                        •
+                        {transferData.transfer_details?.items?.[0]?.segments
+                          ?.length === 1
+                          ? " Non-stop"
+                          : ` ${transferData.transfer_details?.items?.[0]?.segments?.length - 1} stop(s)`}
+                      </span>
+                    ) : transferType === "sightseeing" ? (
                       <span>
                         <div className="w-auto flex items-center gap-1">
                           <svg
@@ -328,7 +354,8 @@ const TransferDrawer = ({
               <div className="hidden md:flex items-center space-x-4">
                 <div className="text-right">
                   <div className="text-lg font-bold text-gray-900">
-                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{transferData.price?.toLocaleString()}
+                    {`${currency?.currency ? currencySymbols?.[currency?.currency] : "₹"}`}
+                    {transferData.price?.toLocaleString()}
                   </div>
                   <div className="text-xs text-gray-500">{checkIn.date}</div>
                 </div>
@@ -368,10 +395,29 @@ const TransferDrawer = ({
             {/* Expanded Content */}
             {isExpanded && (
               <div className="border-t border-gray-100 bg-gray-50">
-                <div className="p-4 space-y-4">
+                <div className="p-2 space-y-4">
                   {/* Route/Timing Information */}
                   <div className="bg-white rounded-lg p-3">
-                    {transferType === "sightseeing" ? (
+                    {type === "Flight" ? (
+                      // Flight-specific details
+                      <FlightDetailModal
+                        segments={
+                          transferData?.transfer_details?.items?.[0]?.segments
+                        }
+                        fareRule={
+                          transferData?.transfer_details?.items?.[0]
+                            ?.fare_rule?.[0]
+                        }
+                        booking_id={transferData?.id}
+                        setShowDetails={null}
+                        name={transferData?.name}
+                        getPaymentHandler={getPaymentHandler}
+                        isEmbedded={true}
+                        setShowLoginModal={setShowLoginModal}
+                        handleEditRoute={handleEditRoute}
+                        data={transferData}
+                      />
+                    ) : transferType === "sightseeing" ? (
                       // Check if sightseeing has source and destination addresses
                       originName && destinationName ? (
                         <>
@@ -688,16 +734,19 @@ const TransferDrawer = ({
                         ?.destination_address?.name || ""
                     }`}
                 </div>
-                <div className="text-sm text-gray-500 mt-1">
+                {/* <div className="text-sm text-gray-500 mt-1">
                   {data.duration || `${data.children.length} transfers`}
-                </div>
+                </div> */}
               </div>
               {data?.transfer_type != "sightseeing" &&
-                drawer != "SightSeeing" && (
+                drawer != "SightSeeing" &&
+                !(
+                  data?.combo_type === "multicity" &&
+                  data?.booking_type === "Flight"
+                ) && (
                   <div>
-                    {/* Only show parent change button if ALL children are unpaid */}
                     {data?.children?.every(
-                      (child) => child.status !== "Paid"
+                      (child) => child.status !== "Paid",
                     ) && (
                       <Generalbuttonstyle
                         borderRadius={"7px"}
@@ -716,155 +765,200 @@ const TransferDrawer = ({
           </div>
 
           <div className="flex-grow overflow-auto py-4 pb-24 ">
-            {data?.combo_type == "multicity" && (
-              <>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-semibold text-gray-800 mb-4">
-                    {loading ? (
-                      <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
-                    ) : (
-                      "TAXI DETAILS"
-                    )}
-                  </p>
+            {data?.combo_type == "multicity" &&
+              data?.booking_type == "taxi" && (
+                <>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p className="font-semibold text-gray-800 mb-4">
+                      {loading ? (
+                        <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                      ) : (
+                        "TAXI DETAILS"
+                      )}
+                    </p>
 
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex flex-col gap-4 items-center">
-                      <div
-                        className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
-                        style={{ height: "140px" }}
-                      >
-                        {loading ? (
-                          <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
-                        ) : (
-                          <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
-                            {data?.children[0]?.transfer_details?.quote
-                              ?.taxi_category?.image ? (
-                              <ImageLoader
-                                url={
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <div className="flex flex-col gap-4 items-center">
+                        <div
+                          className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
+                          style={{ height: "140px" }}
+                        >
+                          {loading ? (
+                            <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
+                          ) : (
+                            <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
+                              {data?.children[0]?.transfer_details?.quote
+                                ?.taxi_category?.image ? (
+                                <ImageLoader
+                                  url={
+                                    data?.children[0]?.transfer_details?.quote
+                                      ?.taxi_category?.image
+                                  }
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <FaTaxi className="w-16 h-16 text-gray-400" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {data?.children[0]?.transfer_details?.quote
+                          ?.taxi_category?.type && (
+                          <div>
+                            <p className="text-gray-500 text-sm">
+                              <span className="font-semibold text-gray-800">
+                                {loading ? (
+                                  <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                ) : data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.type ? (
                                   data?.children[0]?.transfer_details?.quote
-                                    ?.taxi_category?.image
-                                }
-                                className="w-full h-full object-contain"
-                              />
-                            ) : (
-                              <FaTaxi className="w-16 h-16 text-gray-400" />
-                            )}
+                                    ?.taxi_category?.type
+                                ) : (
+                                  ""
+                                )}
+                              </span>
+                            </p>
                           </div>
                         )}
                       </div>
 
-                      {data?.children[0]?.transfer_details?.quote?.taxi_category
-                        ?.type && (
-                        <div>
-                          <p className="text-gray-500 text-sm">
-                            <span className="font-semibold text-gray-800">
-                              {loading ? (
-                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                              ) : data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.type ? (
-                                data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.type
-                              ) : (
-                                ""
-                              )}
-                            </span>
-                          </p>
+                      <div className="flex-1 w-full">
+                        <div className="grid grid-cols-2 gap-4">
+                          {
+                            <div>
+                              <p className="text-gray-500 text-sm">Model</p>
+                              <p className="font-semibold text-gray-800">
+                                {loading ? (
+                                  <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                ) : data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.model_name ? (
+                                  data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.model_name
+                                ) : (
+                                  "NA"
+                                )}
+                              </p>
+                            </div>
+                          }
+
+                          {/* Fuel Type */}
+                          {
+                            <div>
+                              <p className="text-gray-500 text-sm">Fuel Type</p>
+                              <p className="font-semibold text-gray-800">
+                                {loading ? (
+                                  <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                ) : data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.fuel_type ? (
+                                  data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.fuel_type
+                                ) : (
+                                  "NA"
+                                )}
+                              </p>
+                            </div>
+                          }
+
+                          {/* Luggage Bags */}
+                          {
+                            <div>
+                              <p className="text-gray-500 text-sm">
+                                Luggage Bags
+                              </p>
+                              <p className="font-semibold text-gray-800">
+                                {loading ? (
+                                  <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                ) : data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.bag_capacity ? (
+                                  data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.bag_capacity
+                                ) : (
+                                  "NA"
+                                )}
+                              </p>
+                            </div>
+                          }
+
+                          {/* Seat Capacity */}
+                          {
+                            <div>
+                              <p className="text-gray-500 text-sm">
+                                Seat Capacity
+                              </p>
+                              <p className="font-semibold text-gray-800">
+                                {loading ? (
+                                  <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+                                ) : data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.seating_capacity ? (
+                                  data?.children[0]?.transfer_details?.quote
+                                    ?.taxi_category?.seating_capacity
+                                ) : (
+                                  "NA"
+                                )}
+                              </p>
+                            </div>
+                          }
                         </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 w-full">
-                      <div className="grid grid-cols-2 gap-4">
-                        {
-                          <div>
-                            <p className="text-gray-500 text-sm">Model</p>
-                            <p className="font-semibold text-gray-800">
-                              {loading ? (
-                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                              ) : data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.model_name ? (
-                                data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.model_name
-                              ) : (
-                                "NA"
-                              )}
-                            </p>
-                          </div>
-                        }
-
-                        {/* Fuel Type */}
-                        {
-                          <div>
-                            <p className="text-gray-500 text-sm">Fuel Type</p>
-                            <p className="font-semibold text-gray-800">
-                              {loading ? (
-                                <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                              ) : data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.fuel_type ? (
-                                data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.fuel_type
-                              ) : (
-                                "NA"
-                              )}
-                            </p>
-                          </div>
-                        }
-
-                        {/* Luggage Bags */}
-                        {
-                          <div>
-                            <p className="text-gray-500 text-sm">
-                              Luggage Bags
-                            </p>
-                            <p className="font-semibold text-gray-800">
-                              {loading ? (
-                                <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
-                              ) : data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.bag_capacity ? (
-                                data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.bag_capacity
-                              ) : (
-                                "NA"
-                              )}
-                            </p>
-                          </div>
-                        }
-
-                        {/* Seat Capacity */}
-                        {
-                          <div>
-                            <p className="text-gray-500 text-sm">
-                              Seat Capacity
-                            </p>
-                            <p className="font-semibold text-gray-800">
-                              {loading ? (
-                                <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
-                              ) : data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.seating_capacity ? (
-                                data?.children[0]?.transfer_details?.quote
-                                  ?.taxi_category?.seating_capacity
-                              ) : (
-                                "NA"
-                              )}
-                            </p>
-                          </div>
-                        }
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <h2 className="text-sm md:text-base ml-2 md:ml-5 font-semibold text-gray-900">
-                  Booking Inclusions
-                </h2>
-              </>
-            )}
+                  <h2 className="text-sm md:text-base ml-2 md:ml-5 font-semibold text-gray-900">
+                    Booking Inclusions
+                  </h2>
+                </>
+              )}
             {data.children.map((child, index) =>
-              renderDetailContent(child, index)
+              renderDetailContent(child, index),
             )}
           </div>
 
           {data?.combo_type != "multicity" && (
+            <div className="p-4 bg-white sticky bottom-0 shadow-md">
+              <button
+                className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+                onClick={() => handleDelete(data)}
+                disabled={loading}
+              >
+                <div style={{ position: "relative" }}>
+                  <div className="flex gap-1 items-center text-white">
+                    <div
+                      style={{ visibility: loading ? "hidden" : "visible" }}
+                      className="flex gap-1 items-center"
+                    >
+                      <Image
+                        src="/delete.svg"
+                        width={20}
+                        height={20}
+                        alt="Delete"
+                      />
+                      <div>Delete Booking</div>
+                    </div>
+
+                    {loading && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                        }}
+                      >
+                        <PulseLoader
+                          size={12}
+                          speedMultiplier={0.6}
+                          color="#ffffff"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {data?.combo_type === "multicity" && (
             <div className="p-4 bg-white sticky bottom-0 shadow-md">
               <button
                 className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"

@@ -68,6 +68,7 @@ import { getDateInfo } from "../../../utils/dateFormate";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { Link } from "react-scroll";
+import SkeletonCard from "../../ui/SkeletonCard";
 
 const svgIcons = {
   time: (
@@ -787,53 +788,81 @@ const TransferEditDrawer = (props) => {
         (loadingMulticityTransfers &&
           transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name) ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
-            <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              {/* <div className="flex items-center justify-center">
-                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div> */}
-              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
-                <div className="w-full flex flex-row space-x-3 items-start justify-between">
-                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
+            {["", "", ""].map(() => (
+              <>
+                <div className="rounded-3xl border-sm border-solid border-text-disabled p-md relative w-full">
+                  <div>
+                    <div className=" text-white text-sm  leading-lg inline">
+                      <SkeletonCard
+                        width="40%"
+                        height="30px"
+                        borderRadius="8px"
+                        variant="default"
+                      />
+                    </div>
+                    <div>
+                      <div>
+                        <div className="text-md-lg font-600 leading-xl-sm mt-sm mb-sm">
+                          <SkeletonCard
+                            width="70%"
+                            height="25px"
+                            borderRadius="8px"
+                            variant="default"
+                          />
+                        </div>
+                        <div className="flex mt-xs">
+                          <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs w-40">
+                            <span>
+                              {" "}
+                              <SkeletonCard
+                                width="20px"
+                                height="20px"
+                                borderRadius="50%"
+                                variant="default"
+                              />
+                            </span>
+                            <span>
+                              <SkeletonCard
+                                width="100px"
+                                height="20px"
+                                borderRadius="8px"
+                                variant="default"
+                              />
+                            </span>
+                          </div>
+                          <div className="flex text-text-spacegrey text-400 text-sm-md items-center gap-xs">
+                            <span>
+                              <SkeletonCard
+                                width="20px"
+                                height="20px"
+                                borderRadius="50%"
+                                variant="default"
+                              />
+                            </span>
+                            <span>
+                              <SkeletonCard
+                                width="100px"
+                                height="20px"
+                                borderRadius="8px"
+                                variant="default"
+                              />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="absolute right-lg top-lg">
+                        <SkeletonCard
+                          width="20px"
+                          height="20px"
+                          borderRadius="50%"
+                          variant="default"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-full flex flex-row space-x-3 items-center justify-between">
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              {/* <div className="flex items-center justify-center">
-                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div> */}
-              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
-                <div className="w-full flex flex-row space-x-3 items-start justify-between">
-                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
-                </div>
-                <div className="w-full flex flex-row space-x-3 items-center justify-between">
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              {/* <div className="flex items-center justify-center">
-                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div> */}
-              <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
-                <div className="w-full flex flex-row space-x-3 items-start justify-between">
-                  <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-7 rounded-lg"></div>
-                </div>
-                <div className="w-full flex flex-row space-x-3 items-center justify-between">
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                  <div className="bg-gray-300 w-1/5 h-10 rounded-lg"></div>
-                </div>
-              </div>
-            </div>
+              </>
+            ))}
           </div>
         ) : transfersError &&
           roundTripSuggestions === null &&
@@ -1587,7 +1616,7 @@ const RouteContainer = (props) => {
     hideDrawer,
     booking_id,
   } = props;
-  console.log(name, "from royte");
+
   const actualClose = useHandleClose();
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -2026,6 +2055,15 @@ const NewMultiModeContainer = ({
   });
   const [showPax, setShowPax] = useState(false);
 
+  const [expandedTransfersMulti, setExpandedTransfersMulti] = useState({});
+
+const toggleTransferDetailsMulti = (priceOptionId) => {
+  setExpandedTransfersMulti(prev => ({
+    ...prev,
+    [priceOptionId]: !prev[priceOptionId]
+  }));
+};
+
   const sequencedModes = transfer.map((t) => t.mode);
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
@@ -2101,36 +2139,55 @@ const NewMultiModeContainer = ({
   };
 
   const handleNextStep = () => {
-    const currentTransfer = transfer[currentStep - 1];
-    if (currentTransfer.mode === "Flight") {
-      // setSkipFlightFetch(true);
-      setShowComboFlightModal(false);
-    } else if (currentTransfer.mode === "Taxi") {
-      // setSkipTaxiFetch(true);
-      setShowComboTaxiModal(false);
+  const currentTransfer = transfer[currentStep - 1];
+  if (currentTransfer.mode === "Flight") {
+    setShowComboFlightModal(false);
+  } else if (currentTransfer.mode === "Taxi") {
+    setShowComboTaxiModal(false);
+  }
+
+  // Set up time for the next step based on current step's arrival time
+  const currentSelectedData = selectedData[currentStep - 1];
+
+  if (currentSelectedData && currentStep < transfer.length) {
+    let arrivalTime = null;
+
+    // FIXED: Check for Flight bookings FIRST - get arrival time from last segment
+    if (currentSelectedData.segments && currentSelectedData.segments.length > 0) {
+      const lastSegment = currentSelectedData.segments[currentSelectedData.segments.length - 1];
+      arrivalTime = lastSegment.destination.arrival_time;
+    }
+    // For other transfers (Train, Bus, Ferry, etc.) with Omio results
+    else if (currentSelectedData.selectedOmioResult) {
+      arrivalTime = currentSelectedData.selectedOmioResult.arrival_datetime;
+    }
+    // For other transfers with regular arrival_time
+    else if (currentSelectedData.arrival_time) {
+      arrivalTime = currentSelectedData.arrival_time;
+    }
+    // For Taxi bookings with arrivalTime field
+    else if (currentSelectedData.arrivalTime) {
+      arrivalTime = currentSelectedData.arrivalTime;
     }
 
-    // Set up time for the next step based on current step's arrival time
-    const currentSelectedData = selectedData[currentStep - 1];
-    if (
-      currentSelectedData &&
-      currentSelectedData.arrival_time &&
-      currentStep < transfer.length
-    ) {
-      let arrivalMoment = dayjs(currentSelectedData.arrival_time);
+    if (arrivalTime) {
+      let arrivalMoment = dayjs(arrivalTime);
       let nextDepartureTime = arrivalMoment.add(1, "hour");
 
       const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
       const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
 
+      console.log("Setting next step departure to:", newDepartureDate, newDepartureTimeStr);
+
       setCurrentModeDepartureDate(newDepartureDate);
       setCurrentModeDepartureTime(newDepartureTimeStr);
       setComboStartDate(newDepartureDate);
       setComboStartTime(newDepartureTimeStr);
-    }
+    } 
+  }
 
-    setCurrentStep(currentStep + 1);
-  };
+  setCurrentStep(currentStep + 1);
+};
 
   const handleBackButton = () => {
     if (currentStep === 1) {
@@ -2148,6 +2205,7 @@ const NewMultiModeContainer = ({
     }
 
     const prevStepData = selectedData[currentStep - 2];
+
     if (prevStepData && prevStepData.departure_time) {
       const departureDateTime = dayjs(prevStepData.departure_time);
       const departureDate = departureDateTime.format("YYYY-MM-DD");
@@ -2204,8 +2262,12 @@ const NewMultiModeContainer = ({
 
   const timeOptions = generateTimeOptions();
 
+  console.log("selectedModeIds:", selectedModeIds,selectedData);
+
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
+
+
 
     if (isDeselecting) {
       setSelectedModeIds((prev) => {
@@ -2226,18 +2288,35 @@ const NewMultiModeContainer = ({
       }));
 
       if (searchData) {
-        if (mode !== "Flight" && mode !== "Taxi") {
-          // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
-          const departureDateTime = dayjs(
-            `${currentModeDepartureDate}T${currentModeDepartureTime}`,
-          );
-          const arrivalDateTime = departureDateTime.add(
-            searchData.duration || 0,
-            "minute",
-          );
 
-          searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
-          searchData.arrival_time = arrivalDateTime.format("YYYY-MM-DDTHH:mm");
+        if (mode === "Flight" && searchData.segments && searchData.segments.length > 0) {
+        const lastSegment = searchData.segments[searchData.segments.length - 1];
+        searchData.arrival_time = lastSegment.destination.arrival_time;
+        console.log("Storing flight arrival time:", searchData.arrival_time);
+      }
+
+        if (mode !== "Flight" && mode !== "Taxi") {
+          // For Omio results
+          if (searchData.selectedOmioResult) {
+            searchData.departure_time =
+              searchData.selectedOmioResult.departure_datetime;
+            searchData.arrival_time =
+              searchData.selectedOmioResult.arrival_datetime;
+          }
+          // For regular other transfer results
+          else {
+            const departureDateTime = dayjs(
+              `${currentModeDepartureDate}T${currentModeDepartureTime}`,
+            );
+            const arrivalDateTime = departureDateTime.add(
+              searchData.duration || 0,
+              "minute",
+            );
+
+            searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+            searchData.arrival_time =
+              arrivalDateTime.format("YYYY-MM-DDTHH:mm");
+          }
         }
 
         setSelectedData((prev) => {
@@ -2316,8 +2395,9 @@ const NewMultiModeContainer = ({
       const requestBody = {
         edge_id: option?.id,
         start_datetime: departureDateTime,
-        number_of_travellers:
-          paxData.adults + paxData.children + paxData.infants,
+        number_of_adults: paxData.adults,
+        number_of_children: paxData.children,
+        number_of_infants: paxData.infants,
       };
 
       const response = await loadOtherTransfers.post(`/search/`, requestBody, {
@@ -2485,8 +2565,6 @@ const NewMultiModeContainer = ({
 
   const handleCancel = () => {
     // Find the last selected step (highest index with a selection)
-
-    console.log("Selected Mode Ids", selectedModeIds);
     let lastSelectedIndex = -1;
     Object.keys(selectedModeIds).forEach((index) => {
       const numIndex = parseInt(index);
@@ -2507,8 +2585,6 @@ const NewMultiModeContainer = ({
         newData[lastSelectedIndex] = undefined;
         return newData;
       });
-
-      console.log(`Deselected result at index ${lastSelectedIndex}`);
     }
 
     setUpdateLoading(false);
@@ -2523,6 +2599,7 @@ const NewMultiModeContainer = ({
         const transferObj = {
           booking_type: currentTransfer.mode,
           edge_id: currentTransfer.id,
+          // booking_source: item.booking_source || "Self",
         };
 
         if (currentTransfer.mode === "Flight") {
@@ -2540,8 +2617,23 @@ const NewMultiModeContainer = ({
             source: item.source,
           };
         } else {
+          const isOmio = !!item.selectedOmioResult;
+
+          if (isOmio) {
+            return {
+              ...transferObj,
+              source: item.booking_source || "Self",
+              trace_id: item.trace_id,
+              price_result_index: item.selectedPrice?.result_index || null,
+              segment_result_index:
+                item.selectedOmioResult?.result_index || null,
+            };
+          }
+
           return {
             ...transferObj,
+            source: "Self",
+            price_result_index: item.selectedPrice?.result_index || 0,
             trace_id: item.trace_id,
             result_index: item.selectedPrice
               ? transfer[index].prices.findIndex(
@@ -3009,7 +3101,7 @@ const NewMultiModeContainer = ({
                           currentStep >= index + 1
                             ? "border-pureBlack"
                             : "border-text-disabled"
-                        }  ${currentStep >= index + 2 ? "bg-pureBlack" : ""}`}
+                        }  ${currentStep >= index + 2 ? "bg-green-500" : ""}`}
                       >
                         <span
                           className={`text-sm font-500 leading-md  ${
@@ -3031,7 +3123,7 @@ const NewMultiModeContainer = ({
                             : "text-text-disabled"
                         }`}
                       >
-                        Add a {item.mode}
+                        Add a {item.mode} 
                       </span>
                     </div>
 
@@ -3341,163 +3433,567 @@ const NewMultiModeContainer = ({
                         {/* Render prices from current transfer data */}
                         {!isLoading &&
                           !transferErrors[transferKey] &&
-                          currentTransferData.prices.map(
-                            (priceOption, priceIndex) => {
-                              const price = priceOption.price || 0;
-                              const currency =
-                                priceOption.currency === "INR"
-                                  ? "₹"
-                                  : priceOption.currency;
-                              const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
-                              const currentDateTimeInfo = getDateInfo(
-                                currentTransferData.start_datetime,
-                                currentTransferData.duration,
-                              );
-                              return (
-                                <div
-                                  key={`${currentTransferData.id}-price-${priceIndex}`}
-                                  className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md"
-                                >
-                                  <div className="flex justify-between max-ph:flex-col">
-                                    <div className="w-full">
-                                      <div className="text-md font-600 leading-xl ">
-                                        {currentTransferData.text}{" "}
-                                        {priceOption.name
-                                          ? `- ${priceOption.name}`
-                                          : ""}
-                                      </div>
+                          (() => {
+                            const hasOmioResults =
+                              currentTransferData.results &&
+                              currentTransferData.results.length > 0;
 
-                                      {priceOption.description && (
-                                        <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                          {priceOption.description}
-                                        </div>
-                                      )}
+                            if (hasOmioResults) {
+  return currentTransferData.results.map(
+    (result, resultIndex) => {
+      const resultPrices = result.prices || [];
+      return resultPrices.map(
+        (priceOption, priceIndex) => {
+          const price = priceOption.price || 0;
+          const currencySymbol =
+            priceOption.currency === "INR"
+              ? "₹"
+              : priceOption.currency;
+          const priceOptionId = `${currentTransferData.id}-${resultIndex}-${priceIndex}`;
+          const operators = result.operator || [];
+          const segments = result.segments || [];
+          const departureInfo =
+            result.departure_datetime
+              ? dayjs(result.departure_datetime)
+              : null;
+          const arrivalInfo =
+            result.arrival_datetime
+              ? dayjs(result.arrival_datetime)
+              : null;
+          const isExpanded = expandedTransfersMulti[priceOptionId] || false;
 
-                                      {currentDateTimeInfo && (
-                                        <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                                          <div className="flex flex-col gap-xs shrink-0">
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedStartDate
-                                              }
-                                            </span>
-                                            <span className="text-md-lg font-600 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedStartTime
-                                              }
-                                            </span>
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentTransferData.source
-                                                  .city_name
-                                              }
-                                            </span>
-                                          </div>
+          return (
+            <div
+              key={priceOptionId}
+              className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md"
+            >
+              <div className="flex justify-between max-ph:flex-col">
+                <div className="w-full">
+                  {/* Operator + class header */}
+                  <div className="flex flex-row items-center gap-2">
+                    <div className="flex flex-row items-center gap-xs">
+                      {operators.map(
+                        (op, opIdx) =>
+                          op.image && (
+                            <img
+                              key={opIdx}
+                              src={op.image}
+                              alt={op.name}
+                              className="h-5 w-auto object-contain"
+                            />
+                          ),
+                      )}
+                      <span className="text-sm font-500 text-text-spacegrey">
+                        {operators
+                          .map((op) => op.name)
+                          .join(" | ")}
+                      </span>
+                    </div>
+                    {priceOption.class_name && (
+                      <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                        {priceOption.class_name}
+                      </span>
+                    )}
+                  </div>
 
-                                          <div className="flex items-center flex-1 mx-md relative">
-                                            <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                                            <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
-                                              <span className="text-sm font-400 leading-lg-md">
-                                                {
-                                                  currentDateTimeInfo.formattedDuration
-                                                }
-                                              </span>
-                                              <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
-                                                {getModeIcon(
-                                                  currentTransferData.mode,
-                                                  13,
-                                                )}
-                                              </span>
-                                              <span className="text-sm font-400 leading-lg-md">
-                                                {currentTransferData.distance}{" "}
-                                                Km
-                                              </span>
-                                            </div>
-                                          </div>
+                  {/* Departure → Arrival timeline */}
+                  {departureInfo && arrivalInfo && (
+                    <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {departureInfo.format(
+                            "ddd, MMM D",
+                          )}
+                        </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {departureInfo.format(
+                            "h:mm A",
+                          )}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                          {result.source?.name ||
+                            currentTransferData
+                              .source?.city_name}
+                        </span>
+                      </div>
+                      <div className="flex items-center flex-1 mx-md relative">
+                        <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                          <span className="text-sm font-400 leading-tight">
+                            {result.duration_formatted ||
+                              `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                          </span>
+                          <span className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
+                            {getModeIcon(
+                              currentTransferData.mode,
+                              13,
+                            )}
+                          </span>
+                          <span className="text-sm font-400 leading-tight">
+                            {
+                              currentTransferData.distance
+                            }{" "}
+                            Km
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {arrivalInfo.format(
+                            "ddd, MMM D",
+                          )}
+                        </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {arrivalInfo.format(
+                            "h:mm A",
+                          )}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                          {result.destination
+                            ?.name ||
+                            currentTransferData
+                              .destination
+                              ?.city_name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
-                                          <div className="flex flex-col gap-xs shrink-0">
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedEndDate
-                                              }
-                                            </span>
-                                            <span className="text-md-lg font-600 leading-lg-md">
-                                              {
-                                                currentDateTimeInfo.formattedEndTime
-                                              }
-                                            </span>
-                                            <span className="text-sm font-400 leading-lg-md">
-                                              {
-                                                currentTransferData.destination
-                                                  .city_name
-                                              }
-                                            </span>
-                                          </div>
-                                        </div>
-                                      )}
+                  {/* Transfer Details Button */}
+                  {segments.length >= 1 && (
+                    <div 
+                      className="flex items-center gap-2 mt-md cursor-pointer"
+                      onClick={() => toggleTransferDetailsMulti(priceOptionId)}
+                    >
+                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                        <span className="mb-2 md:mb-0">
+                          Details
+                          {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                          Transfer{segments.length > 2 ? 's' : ''} */}
+                        </span>
+                        {isExpanded ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
-                                      {priceOption?.class && (
-                                        <div className="text-xs md:text-sm">
-                                          <span className="font-semibold">
-                                            Facilities:
-                                          </span>{" "}
-                                          {priceOption?.class}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                                      <div>
-                                        <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
-                                          {" "}
-                                          {currency} {price}{" "}
-                                        </div>
-                                        <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
-                                          for{" "}
-                                          {pax?.adults +
-                                            pax?.children +
-                                            pax?.infants}{" "}
-                                          people{" "}
-                                        </div>
-                                      </div>
+                  {/* Segments breakdown for connections */}
+                  {segments.length >=1 && isExpanded && (
+                    <div className="mt-md border-t border-text-disabled pt-md">
+                      <div className="flex flex-col gap-2">
+                        {segments.map(
+                          (seg, segIdx) => {
+                            const segDep =
+                              seg.departure_datetime
+                                ? dayjs(
+                                    seg.departure_datetime,
+                                  )
+                                : null;
+                            const segArr =
+                              seg.arrival_datetime
+                                ? dayjs(
+                                    seg.arrival_datetime,
+                                  )
+                                : null;
+                            const isLastSegment =
+                              segIdx ===
+                              segments.length - 1;
 
-                                      <div
-                                        className="cursor-pointer"
-                                        onClick={() => {
-                                          const selectedPriceData = {
-                                            ...currentTransferData,
-                                            selectedPrice: priceOption,
-                                          };
-                                          handleModeSelect(
-                                            currentStep - 1,
-                                            priceOptionId,
-                                            selectedPriceData,
-                                            currentTransferData.mode,
-                                          );
-                                        }}
-                                      >
-                                        {selectedModeIds[currentStep - 1] ===
-                                        priceOptionId ? (
-                                          <div className="flex items-center gap-1">
-                                            {/* <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> */}
-                                            <button className="ttw-btn-secondary-fill max-ph:w-full">
-                                              Selected
-                                            </button>
-                                          </div>
-                                        ) : (
-                                          <div className="flex items-center gap-1">
-                                            {/* <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" /> */}
-                                            <button className="ttw-btn-fill-yellow max-ph:w-full">
-                                              Add to Itinerary
-                                            </button>
-                                          </div>
+                            return (
+                              <div key={segIdx}>
+                                {/* Departure Row */}
+                                <div className="flex flex-row items-start gap-3">
+                                  {/* Time column */}
+                                  <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                    {segDep && (
+                                      <span className="text-sm font-600 leading-tight">
+                                        {segDep.format(
+                                          "h:mm A",
                                         )}
-                                      </div>
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Dot column */}
+                                  <div className="flex flex-col items-center shrink-0 pt-1">
+                                    <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                                  </div>
+
+                                  {/* Station info column */}
+                                  <div className="flex-1 min-w-0">
+                                    <span
+                                      className="text-sm font-600 text-gray-900 block truncate"
+                                      title={
+                                        seg
+                                          .departure_station
+                                          ?.name
+                                      }
+                                    >
+                                      {
+                                        seg
+                                          .departure_station
+                                          ?.name
+                                      }
+                                    </span>
+                                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                                      {seg.operator?.name && (
+                                        <span>{seg.operator.name}</span>
+                                      )}
+                                      {seg.vehicle_number && (
+                                        <>
+                                          {seg.operator?.name && <span>|</span>}
+                                          <span>{seg.vehicle_number}</span>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
-                              );
-                            },
-                          )}
+
+                                {/* Journey Line with Duration */}
+                                <div className="flex flex-row items-start gap-3">
+                                  {/* Time column - empty */}
+                                  <div className="w-[68px] shrink-0 mr-1"></div>
+
+                                  {/* Vertical line column - aligned with dots */}
+                                  <div className="flex flex-col items-center shrink-0">
+                                    <div
+                                      className="w-[2px] bg-gray-300"
+                                      style={{
+                                        height:
+                                          "40px",
+                                      }}
+                                    ></div>
+                                  </div>
+
+                                  {/* Duration info */}
+                                  <div className="pt-2">
+                                    <span className="text-xs text-gray-500">
+                                      {seg.duration_formatted ||
+                                        `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Arrival Row */}
+                                {segArr && (
+                                  <div className="flex flex-row items-start gap-3">
+                                    {/* Time column */}
+                                    <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                      <span className="text-sm font-600 leading-tight">
+                                        {segArr.format(
+                                          "h:mm A",
+                                        )}
+                                      </span>
+                                    </div>
+
+                                    {/* Dot column */}
+                                    <div className="flex flex-col items-center shrink-0 pt-1">
+                                      <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                                    </div>
+
+                                    {/* Station info column */}
+                                    <div className="flex-1 min-w-0">
+                                      <span
+                                        className="text-sm font-600 text-gray-900 block truncate"
+                                        title={
+                                          seg
+                                            .arrival_station
+                                            ?.name
+                                        }
+                                      >
+                                        {
+                                          seg
+                                            .arrival_station
+                                            ?.name
+                                        }
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Connection/Layover indicator */}
+                                {!isLastSegment &&
+                                  segments[
+                                    segIdx + 1
+                                  ] && (
+                                    <div className="flex flex-row items-center gap-3 mt-3 mb-3">
+                                      {/* Time column - empty */}
+                                      <div className="w-[68px] shrink-0 mr-1"></div>
+
+                                      {/* Vertical line column */}
+                                      <div className="flex flex-col items-center shrink-0">
+                                        <div className="w-[2px] h-4 bg-gray-300"></div>
+                                      </div>
+
+                                      {/* Transfer badge */}
+                                      <div className="flex flex-row items-center gap-2 bg-[#07213A] text-white px-3 py-1.5 rounded-md">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                        <span className="text-xs font-500">
+                                          Transfer, {(() => {
+                                            const layover =
+                                              dayjs(
+                                                segments[
+                                                  segIdx +
+                                                    1
+                                                ]
+                                                  .departure_datetime,
+                                              ).diff(
+                                                dayjs(
+                                                  seg.arrival_datetime,
+                                                ),
+                                                "minute",
+                                              );
+                                            const h =
+                                              Math.floor(
+                                                layover /
+                                                  60,
+                                              );
+                                            const m =
+                                              layover %
+                                              60;
+                                            return h >
+                                              0
+                                              ? `${h}h${m}m`
+                                              : `${m}m`;
+                                          })()}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+                              </div>
+                            );
+                          },
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Price + button */}
+                <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                  <div>
+                    <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                      {currencySymbol} {price}
+                    </div>
+                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                      for{" "}
+                      {pax?.adults +
+                        pax?.children +
+                        pax?.infants}{" "}
+                      people
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const selectedPriceData = {
+                        ...currentTransferData,
+                        selectedOmioResult: result,
+                        selectedOmioResultIndex:
+                          resultIndex,
+                        selectedPrice: {
+                          ...priceOption,
+                          result_index:
+                            priceOption.result_index,
+                        },
+                      };
+                      handleModeSelect(
+                        currentStep - 1,
+                        priceOptionId,
+                        selectedPriceData,
+                        currentTransferData.mode,
+                      );
+                    }}
+                  >
+                    {selectedModeIds[
+                      currentStep - 1
+                    ] === priceOptionId ? (
+                      <button className="ttw-btn-secondary-fill max-ph:w-full">
+                        Selected
+                      </button>
+                    ) : (
+                      <button className="ttw-btn-fill-yellow max-ph:w-full">
+                        Add to Itinerary
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        },
+      );
+    },
+  );
+}
+
+                            return currentTransferData.prices.map(
+                              (priceOption, priceIndex) => {
+                                const price = priceOption.price || 0;
+                                const currency =
+                                  priceOption.currency === "INR"
+                                    ? "₹"
+                                    : priceOption.currency;
+                                const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
+                                const currentDateTimeInfo = getDateInfo(
+                                  currentTransferData.start_datetime,
+                                  currentTransferData.duration,
+                                );
+                                return (
+                                  <div
+                                    key={`${currentTransferData.id}-price-${priceIndex}`}
+                                    className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md"
+                                  >
+                                    <div className="flex justify-between max-ph:flex-col">
+                                      <div className="w-full">
+                                        <div className="text-md font-600 leading-xl ">
+                                          {currentTransferData.text}{" "}
+                                          {priceOption.name
+                                            ? `- ${priceOption.name}`
+                                            : ""}
+                                        </div>
+
+                                        {priceOption.description && (
+                                          <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                            {priceOption.description}
+                                          </div>
+                                        )}
+
+                                        {currentDateTimeInfo && (
+                                          <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                                            <div className="flex flex-col gap-xs shrink-0">
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedStartDate
+                                                }
+                                              </span>
+                                              <span className="text-md-lg font-600 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedStartTime
+                                                }
+                                              </span>
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentTransferData.source
+                                                    .city_name
+                                                }
+                                              </span>
+                                            </div>
+
+                                            <div className="flex items-center flex-1 mx-md relative">
+                                              <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                                                <span className="text-sm font-400 leading-lg-md">
+                                                  {
+                                                    currentDateTimeInfo.formattedDuration
+                                                  }
+                                                </span>
+                                                <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                                                  {getModeIcon(
+                                                    currentTransferData.mode,
+                                                    13,
+                                                  )}
+                                                </span>
+                                                <span className="text-sm font-400 leading-lg-md">
+                                                  {currentTransferData.distance}{" "}
+                                                  Km
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            <div className="flex flex-col gap-xs shrink-0">
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedEndDate
+                                                }
+                                              </span>
+                                              <span className="text-md-lg font-600 leading-lg-md">
+                                                {
+                                                  currentDateTimeInfo.formattedEndTime
+                                                }
+                                              </span>
+                                              <span className="text-sm font-400 leading-lg-md">
+                                                {
+                                                  currentTransferData
+                                                    .destination.city_name
+                                                }
+                                              </span>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {priceOption?.class && (
+                                          <div className="text-xs md:text-sm">
+                                            <span className="font-semibold">
+                                              Facilities:
+                                            </span>{" "}
+                                            {priceOption?.class}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                                        <div>
+                                          <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
+                                            {" "}
+                                            {currency} {price}{" "}
+                                          </div>
+                                          <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
+                                            for{" "}
+                                            {pax?.adults +
+                                              pax?.children +
+                                              pax?.infants}{" "}
+                                            people{" "}
+                                          </div>
+                                        </div>
+
+                                        <div
+                                          className="cursor-pointer"
+                                          onClick={() => {
+                                            const selectedPriceData = {
+                                              ...currentTransferData,
+                                              selectedPrice: priceOption,
+                                            };
+                                            handleModeSelect(
+                                              currentStep - 1,
+                                              priceOptionId,
+                                              selectedPriceData,
+                                              currentTransferData.mode,
+                                            );
+                                          }}
+                                        >
+                                          {selectedModeIds[currentStep - 1] ===
+                                          priceOptionId ? (
+                                            <div className="flex items-center gap-1">
+                                              {/* <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> */}
+                                              <button className="ttw-btn-secondary-fill max-ph:w-full">
+                                                Selected
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1">
+                                              {/* <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" /> */}
+                                              <button className="ttw-btn-fill-yellow max-ph:w-full">
+                                                Add to Itinerary
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              },
+                            );
+                          })()}
                       </div>
                     );
                   } else {
@@ -3565,7 +4061,7 @@ const NewMultiModeContainer = ({
                 })}
 
                 {/* Navigation buttons - Fixed to bottom */}
-                <div className="sticky bottom-0 left-0 right-0 w-full bg-white border-t z-[100]">
+                <div className="sticky bottom-0 left-0 right-0 w-full bg-white border-t z-[13]">
                   <div className="flex flex-row md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center py-3 px-4 md:px-0 max-w-full">
                     {currentStep > 1 ? (
                       <button
@@ -4379,6 +4875,14 @@ const Cost = styled.p`
   }
 `;
 
+const formatPriceWithComma = (price) => {
+  if (!price) return "0";
+  return price.toLocaleString("en-IN", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  });
+};
+
 const OtherTransfer = ({
   getPaymentHandler,
   setShowOtherTrasfer,
@@ -4450,6 +4954,7 @@ const OtherTransfer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+  const hasInitialLoadRef = useRef(new Set());
 
   const [lastRequestData, setLastRequestData] = useState(null);
   const { trackTransferBookingAdd } = useAnalytics();
@@ -4470,17 +4975,31 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
-  useEffect(() => {
-    if (selectedResult?.transfer && !isBookingInProgress) {
-      const finalDate = departureDate || currentModeDepartureDate;
-      const finalTime = departureTime || currentModeDepartureTime;
+  const [expandedTransfers, setExpandedTransfers] = useState({});
 
-      if (finalDate && finalTime) {
-        const departureDateTime = `${finalDate}T${finalTime}:00`;
-        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+const toggleTransferDetails = (priceOptionId) => {
+  setExpandedTransfers(prev => ({
+    ...prev,
+    [priceOptionId]: !prev[priceOptionId]
+  }));
+};
+
+  useEffect(() => {
+    if (selectedResult?.transfer?.id) {
+      const currentTransferId = otherTransfer?.id;
+      const newTransferId = selectedResult.transfer.id;
+
+      // Clear immediately if it's a different transfer
+      if (currentTransferId !== newTransferId) {
+        setOtherTransfer(null);
+        setError(null);
+        setIsResultSelected(false);
+        setLocalSelectedData([]);
+        setLoadingRequestKey(null);
       }
     }
-  }, [selectedResult?.transfer, token]); // Only depend on transfer and token for initial load
+  }, [selectedResult?.transfer?.id, otherTransfer?.id]);
+
   // FIXED: Update state when props change with proper guards
   useEffect(() => {
     if (
@@ -4550,6 +5069,8 @@ const OtherTransfer = ({
       // Create new abort controller
       abortControllerRef.current = new AbortController();
 
+      setOtherTransfer(null);
+
       setLoadingRequestKey(requestKey);
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
       setError(null);
@@ -4558,8 +5079,9 @@ const OtherTransfer = ({
         const requestBody = {
           edge_id: transferData.id,
           start_datetime: departureDateTime,
-          number_of_travellers:
-            paxData.adults + paxData.children + paxData.infants,
+          number_of_adults: paxData.adults,
+          number_of_children: paxData.children,
+          number_of_infants: paxData.infants,
         };
 
         const response = await loadOtherTransfers.post(
@@ -4599,7 +5121,6 @@ const OtherTransfer = ({
         }
       } catch (error) {
         if (error.name === "AbortError") {
-          console.log("Request aborted");
           return;
         }
 
@@ -4625,31 +5146,39 @@ const OtherTransfer = ({
     [token, currentStep],
   );
 
-  // FIXED: Debounced useEffect to prevent cascading API calls
   useEffect(() => {
+    // Don't proceed if transfer hasn't loaded yet or if booking is in progress
+    if (!selectedResult?.transfer?.id || isBookingInProgress) return;
+
+    const transferId = selectedResult.transfer.id;
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+
+    if (!finalDate || !finalTime) return;
+
     const timeoutId = setTimeout(() => {
       const currentPaxString = JSON.stringify(pax);
       const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
       const timeChanged = lastTimeState && lastTimeState !== departureTime;
       const dateChanged = lastDateState && lastDateState !== departureDate;
 
-      const isInitialLoad = !lastPaxState && !lastTimeState && !lastDateState;
+      // Check if this is the first load for this specific transfer
+      const isFirstLoadForTransfer = !hasInitialLoadRef.current.has(transferId);
 
-      // Only call API if parameters changed AND we're not already processing
-      if (
-        (paxChanged || timeChanged || dateChanged) &&
-        !isInitialLoad && // ADD this condition
-        selectedResult?.transfer &&
-        !isResultSelected &&
-        !isBookingInProgress &&
-        !loadingRequestKey
-      ) {
-        const finalDate = departureDate || currentModeDepartureDate;
-        const finalTime = departureTime || currentModeDepartureTime;
+      // Determine if we should call the API
+      const shouldCallApi =
+        isFirstLoadForTransfer || // First time loading this transfer
+        ((paxChanged || timeChanged || dateChanged) && // Something changed
+          !isResultSelected && // Not already selected
+          !loadingRequestKey); // Not already loading
 
-        if (finalDate && finalTime) {
-          const departureDateTime = `${finalDate}T${finalTime}:00`;
-          loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      if (shouldCallApi) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+
+        // Mark this transfer as loaded
+        if (isFirstLoadForTransfer) {
+          hasInitialLoadRef.current.add(transferId);
         }
       }
 
@@ -4657,22 +5186,31 @@ const OtherTransfer = ({
       setLastPaxState(currentPaxString);
       setLastTimeState(departureTime);
       setLastDateState(departureDate);
-    }, 300); // Debounce for 300ms
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [
     pax,
     departureTime,
     departureDate,
-    selectedResult?.transfer,
-    error,
+    selectedResult?.transfer?.id,
     currentModeDepartureDate,
     currentModeDepartureTime,
     isResultSelected,
     isBookingInProgress,
     loadingRequestKey,
-    loadTransfers,
   ]);
+
+  // Reset tracking when going back to index 0 or when transfer changes
+  useEffect(() => {
+    if (currentStep === 0 || !selectedResult?.transfer) {
+      // Clear the tracking when going back to step 0
+      hasInitialLoadRef.current.clear();
+      setLastPaxState(null);
+      setLastTimeState(null);
+      setLastDateState(null);
+    }
+  }, [currentStep, selectedResult?.transfer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -4703,7 +5241,7 @@ const OtherTransfer = ({
   useEffect(() => {
     if (selectedResult) {
       setSelectedResult(selectedResult);
-      getOtherTrasfer(selectedResult?.transfer);
+      // getOtherTrasfer(selectedResult?.transfer);
     }
 
     if (selectedResult?.selectedPrice) {
@@ -4755,14 +5293,29 @@ const OtherTransfer = ({
     setOtherTransfer(transfer);
   };
 
-  const isPriceOptionSelected = (transferId, priceIndex) => {
+  const isPriceOptionSelected = (
+    transferId,
+    priceIndexOrResultIndex,
+    omiopriceIndex,
+  ) => {
     const currentSelection = localSelectedData[currentStep - 1];
-
     if (!currentSelection) return false;
 
+    // Omio path: 3 args (transferId, resultIndex, priceIndex)
+    if (omiopriceIndex !== undefined) {
+      return (
+        currentSelection.id === transferId &&
+        currentSelection.selectedOmioResultIndex === priceIndexOrResultIndex &&
+        currentSelection.selectedPrice?.result_index ===
+          currentSelection.selectedOmioResult?.prices?.[omiopriceIndex]
+            ?.result_index
+      );
+    }
+
+    // Self / non-Omio path: 2 args (transferId, priceIndex)
     return (
       currentSelection.id === transferId &&
-      currentSelection.selectedPrice?.result_index === priceIndex
+      currentSelection.selectedPrice?.result_index === priceIndexOrResultIndex
     );
   };
 
@@ -4860,6 +5413,7 @@ const OtherTransfer = ({
         const transferObj = {
           booking_type: transferItem.mode,
           edge_id: transferItem.id,
+          // booking_source: transferItem.booking_source || "Self",
         };
 
         if (transferItem.mode === "Flight") {
@@ -4877,19 +5431,26 @@ const OtherTransfer = ({
             source: item.source || "",
           };
         } else {
-          let resultIndex = 0;
+          const isOmio = !!item.selectedOmioResult;
 
-          if (item.selectedPrice) {
-            resultIndex = item.selectedPrice.result_index || 0;
+          if (isOmio) {
+            // 12go-Omio single booking payload
+            return {
+              ...transferObj,
+              source: item?.booking_source || "Omio",
+              trace_id: item.trace_id || traceId,
+              price_result_index: item.selectedPrice?.result_index || null,
+              segment_result_index:
+                item.selectedOmioResult?.result_index || null,
+            };
           }
 
           return {
             ...transferObj,
+            source: "Self",
+            price_result_index: item.selectedPrice?.result_index || 0,
+            segment_result_index: null,
             trace_id: item.trace_id || traceId,
-            start_datetime: `${newDate || departureDate}T${
-              newTime || departureTime
-            }:00`,
-            result_index: resultIndex,
           };
         }
       })
@@ -5039,10 +5600,27 @@ const OtherTransfer = ({
   ) => {
     setIsProcessingBooking(true);
 
+    let requestPayload;
+
+    requestPayload = {
+      source: newRequestBody.transfers[0]?.source || "Self",
+      destination_itinerary_city: newRequestBody.destination_itinerary_city,
+      source_itinerary_city: newRequestBody.source_itinerary_city,
+      edge: newRequestBody.transfers[0]?.edge_id,
+      trace_id: newRequestBody.transfers[0]?.trace_id || traceId,
+      price_result_index: newRequestBody.transfers[0]?.price_result_index || 0,
+      segment_result_index:
+        newRequestBody.transfers[0]?.segment_result_index || null,
+    };
+
+    if (newRequestBody.booking_id || booking_id) {
+      requestPayload.booking_id = newRequestBody.booking_id || booking_id;
+    }
+
     try {
       const response = await UpdateTransferMode.post(
-        `${itinerary_id}/bookings/transfer/`,
-        newRequestBody,
+        `${itinerary_id}/bookings/${otherTransfer?.mode?.toLowerCase()}/`,
+        requestPayload,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -5394,7 +5972,8 @@ const OtherTransfer = ({
       </div>
 
       {/* Loading indicator for dynamic transfer loading */}
-      {isCurrentTransferLoading() && (
+      {(isCurrentTransferLoading() ||
+        (!otherTransfer && !error && selectedResult?.transfer?.id)) && (
         <div className="flex justify-center items-center py-8">
           <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
           <span className="ml-3 text-sm text-gray-600">
@@ -5425,177 +6004,512 @@ const OtherTransfer = ({
 
       {/* Transfer options display */}
       {otherTransfer &&
-        otherTransfer.prices &&
-        otherTransfer.prices.length > 0 &&
         !isCurrentTransferLoading() &&
+        !loadingRequestKey &&
         !error &&
-        otherTransfer.prices.map((priceOption, priceIndex) => {
-          const price = priceOption.price || 0;
-          const transfer_currency = currency?.currency
-            ? currencySymbols?.[currency?.currency]
-            : "₹";
-          // priceOption.currency === "INR" ? "₹" : currencySymbols?.[priceOption.currency] || priceOption.currency;
-          const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+        selectedResult?.transfer?.id === otherTransfer.id &&
+        (() => {
+          const hasOmioResults =
+            otherTransfer.results && otherTransfer.results.length > 0;
 
-          const isOptionSelected = isPriceOptionSelected(
-            otherTransfer.id,
-            priceIndex,
-          );
+      if (hasOmioResults) {
+  // ─── OMIO RESULTS RENDERING ───
+  return otherTransfer.results.map((result, resultIndex) => {
+    const resultPrices = result.prices || [];
+    return resultPrices.map((priceOption, priceIndex) => {
+      const price = priceOption.price || 0;
+      const formattedPrice = formatPriceWithComma(price);
+      const transfer_currency = currency?.currency
+        ? currencySymbols?.[currency?.currency]
+        : "₹";
+      const priceOptionId = `${otherTransfer.id}-${resultIndex}-${priceIndex}`;
+      const isOptionSelected = isPriceOptionSelected(
+        otherTransfer.id,
+        resultIndex,
+        priceIndex,
+      );
+      const isOptionLoading = loadingOptionId === priceOptionId;
+      const departureInfo = result.departure_datetime
+        ? dayjs(result.departure_datetime)
+        : null;
+      const arrivalInfo = result.arrival_datetime
+        ? dayjs(result.arrival_datetime)
+        : null;
+      const segments = result.segments || [];
+      const operators = result.operator || [];
+      const isExpanded = expandedTransfers[priceOptionId] || false;
 
-          const isOptionLoading = loadingOptionId === priceOptionId;
-          const currentDateTimeInfo = getDateInfo(
-            otherTransfer.start_datetime,
-            otherTransfer.duration,
-          );
-          return (
-            <div
-              key={`${otherTransfer.id}-price-${priceIndex}`}
-              className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md  hover:bg-text-smoothwhite relative mt-md
-                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
-                ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
-            >
-              <div className="flex justify-between max-ph:flex-col">
-                <div className="w-full">
-                  <div className="text-md font-600 leading-xl ">
-                    {otherTransfer.text}{" "}
-                    {priceOption.name ? `- ${priceOption.name}` : ""}
-                  </div>
-
-                  {priceOption.description && (
-                    <div className="text-xs md:text-sm text-gray-700 mt-1">
-                      {priceOption.description}
-                    </div>
-                  )}
-
-                  {currentDateTimeInfo && (
-                    <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                      <div className="flex flex-col gap-xs shrink-0">
-                        <span className="text-sm font-400 leading-lg-md">
-                          {currentDateTimeInfo.formattedStartDate}
-                        </span>
-                        <span className="text-md-lg font-600 leading-lg-md">
-                          {currentDateTimeInfo.formattedStartTime}
-                        </span>
-                        <span className="text-sm font-400 leading-lg-md">
-                          {otherTransfer.source.city_name}{" "}
-                          {otherTransfer.source.code && (
-                            <span className="text-sm font-400 leading-lg-md">
-                              {" "}
-                              ( {otherTransfer.source.code} )
-                            </span>
-                          )}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center flex-1 mx-md relative">
-                        <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
-                          <span className="text-sm font-400 leading-lg-md">
-                            {currentDateTimeInfo.formattedDuration}
-                          </span>
-                          <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
-                            {getModeIcon(otherTransfer.mode, 13)}
-                          </span>
-                          <span className="text-sm font-400 leading-lg-md">
-                            {otherTransfer.distance} Km
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-xs shrink-0">
-                        <span className="text-sm font-400 leading-lg-md">
-                          {currentDateTimeInfo.formattedEndDate}
-                        </span>
-                        <span className="text-md-lg font-600 leading-lg-md">
-                          {currentDateTimeInfo.formattedEndTime}
-                        </span>
-                        <span className="text-sm font-400 leading-lg-md">
-                          {otherTransfer.destination.city_name}{" "}
-                          {otherTransfer.destination.code && (
-                            <span className="text-sm font-400 leading-lg-md">
-                              {" "}
-                              ( {otherTransfer.destination.code} )
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {priceOption?.class && (
-                    <div className="text-xs md:text-sm">
-                      <span className="font-semibold">Facilities:</span>{" "}
-                      {priceOption?.class}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                  <div>
-                    <div className=" text-lg font-700 2xl-md text-right max-ph:text-left">
-                      {" "}
-                      {transfer_currency} {price}{" "}
-                    </div>
-                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg ">
-                      for {pax?.adults + pax?.children + pax?.infants} people
-                    </div>
-                  </div>
-
-                  <div
-                    className={`cursor-pointer ${
-                      updateLoading && !isOptionLoading ? "opacity-50" : ""
-                    } ${
-                      isBookingInProgress && !isOptionLoading
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      if (updateLoading && !isOptionLoading) return;
-                      if (isBookingInProgress && !isOptionLoading) return;
-
-                      const selectedPriceData = {
-                        ...otherTransfer,
-                        selectedPrice: {
-                          ...priceOption,
-                          result_index: priceOption.result_index,
-                        },
-                      };
-
-                      handleModeSelect(
-                        currentStep - 1,
-                        priceOptionId,
-                        selectedPriceData,
-                        otherTransfer.mode,
-                      );
-                    }}
-                  >
-                    {isOptionLoading || (updateLoading && isOptionSelected) ? (
-                      <div className="flex items-center gap-1">
-                        <PulseLoader
-                          size={15}
-                          speedMultiplier={0.6}
-                          color="#000000"
+      return (
+        <div
+          key={priceOptionId}
+          className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
+            ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+            ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+        >
+          <div className="flex justify-between max-ph:flex-col">
+            <div className="w-full">
+              {/* Header: operator + class */}
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-xs">
+                  {operators.map(
+                    (op, opIdx) =>
+                      op.image && (
+                        <img
+                          key={opIdx}
+                          src={op.image}
+                          alt={op.name}
+                          className="h-5 w-auto object-contain"
                         />
+                      ),
+                  )}
+                  <span className="text-sm font-500 text-text-spacegrey">
+                    {operators.map((op) => op.name).join(" | ")}
+                  </span>
+                </div>
+                {priceOption.class_name && (
+                  <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                    {priceOption.class_name}
+                  </span>
+                )}
+              </div>
+
+              {/* Main departure → arrival timeline */}
+              {departureInfo && arrivalInfo && (
+                <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                  <div className="flex flex-col gap-xs shrink-0">
+                    <span className="text-sm font-400 leading-lg-md">
+                      {departureInfo.format("ddd, MMM D")}
+                    </span>
+                    <span className="text-md-lg font-600 leading-lg-md">
+                      {departureInfo.format("h:mm A")}
+                    </span>
+                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                      {result.source?.name ||
+                        otherTransfer.source?.city_name}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center flex-1 mx-md relative">
+                    <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-1">
+                      <span className="text-sm font-400 leading-tight">
+                        {result.duration_formatted ||
+                          `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                      </span>
+                      <div className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
+                        {getModeIcon(otherTransfer.mode, 13)}
                       </div>
-                    ) : isOptionSelected && isResultSelected ? (
-                      <div className="flex items-center gap-1">
-                        <button className="ttw-btn-secondary-fill max-ph:w-full">
-                          Selected
-                        </button>
-                      </div>
+                      <span className="text-sm font-400 leading-tight">
+                        {otherTransfer.distance} Km
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-xs shrink-0">
+                    <span className="text-sm font-400 leading-lg-md">
+                      {arrivalInfo.format("ddd, MMM D")}
+                    </span>
+                    <span className="text-md-lg font-600 leading-lg-md">
+                      {arrivalInfo.format("h:mm A")}
+                    </span>
+                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                      {result.destination?.name ||
+                        otherTransfer.destination?.city_name}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Transfer Details Button */}
+              {segments.length >=1 && (
+                <div 
+                  className="flex items-center gap-2 mt-md cursor-pointer"
+                  onClick={() => toggleTransferDetails(priceOptionId)}
+                >
+                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                    <span className="mb-2 md:mb-0">
+                      Details
+                      {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                      Transfer{segments.length > 2 ? 's' : ''} */}
+                    </span>
+                    {isExpanded ? (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      </svg>
                     ) : (
-                      <div className="flex items-center gap-1">
-                        <button className="ttw-btn-fill-yellow max-ph:w-full">
-                          Add to Itinerary
-                        </button>
-                      </div>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     )}
                   </div>
                 </div>
+              )}
+
+              {/* Segments breakdown */}
+              {segments.length >= 1 && isExpanded && (
+                <div className="mt-md border-t border-text-disabled pt-md">
+                  <div className="flex flex-col gap-2">
+                    {segments.map((seg, segIdx) => {
+                      const segDep = seg.departure_datetime
+                        ? dayjs(seg.departure_datetime)
+                        : null;
+                      const segArr = seg.arrival_datetime
+                        ? dayjs(seg.arrival_datetime)
+                        : null;
+                      const isLastSegment = segIdx === segments.length - 1;
+
+                      return (
+                        <div key={segIdx}>
+                          {/* Departure Row */}
+                          <div className="flex flex-row items-start gap-3">
+                            {/* Time column */}
+                            <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                              {segDep && (
+                                <span className="text-sm font-600 leading-tight">
+                                  {segDep.format("h:mm A")}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Dot column */}
+                            <div className="flex flex-col items-center shrink-0 pt-1">
+                              <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                            </div>
+
+                            {/* Station info column */}
+                            <div className="flex-1 min-w-0">
+                              <span
+                                className="text-sm font-600 text-gray-900 block truncate"
+                                title={seg.departure_station?.name}
+                              >
+                                {seg.departure_station?.name}
+                              </span>
+                              <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                                {seg.operator?.name && (
+                                  <span>{seg.operator.name}</span>
+                                )}
+                                {seg.vehicle_number && (
+                                  <>
+                                    {seg.operator?.name && <span>|</span>}
+                                    <span>{seg.vehicle_number}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Journey Line with Duration */}
+                          <div className="flex flex-row items-start gap-3">
+                            {/* Time column - empty */}
+                            <div className="w-[68px] shrink-0 items-end mr-1"></div>
+
+                            {/* Vertical line column - aligned with dots */}
+                            <div className="flex flex-col items-center shrink-0">
+                              <div
+                                className="w-[2px] bg-gray-300"
+                                style={{ height: "40px" }}
+                              ></div>
+                            </div>
+
+                            {/* Duration info */}
+                            <div className="pt-2">
+                              <span className="text-xs text-gray-500">
+                                {seg.duration_formatted ||
+                                  `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Arrival Row */}
+                          {segArr && (
+                            <div className="flex flex-row items-start gap-3">
+                              {/* Time column */}
+                              <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                <span className="text-sm font-600 leading-tight">
+                                  {segArr.format("h:mm A")}
+                                </span>
+                              </div>
+
+                              {/* Dot column */}
+                              <div className="flex flex-col items-center shrink-0 pt-1">
+                                <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                              </div>
+
+                              {/* Station info column */}
+                              <div className="flex-1 min-w-0">
+                                <span
+                                  className="text-sm font-600 text-gray-900 block truncate"
+                                  title={seg.arrival_station?.name}
+                                >
+                                  {seg.arrival_station?.name}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Connection/Layover indicator */}
+                          {!isLastSegment && segments[segIdx + 1] && (
+                            <div className="flex flex-row items-center gap-3 mt-3 mb-3">
+                              {/* Time column - empty */}
+                              <div className="w-[68px] shrink-0 mr-1"></div>
+
+                              {/* Vertical line column */}
+                              <div className="flex flex-col items-center shrink-0">
+                                <div className="w-[2px] h-4 bg-gray-300"></div>
+                              </div>
+
+                              {/* Transfer badge */}
+                              <div className="flex flex-row items-center gap-2 bg-[#07213A] text-white px-3 py-1.5 rounded-md">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                                <span className="text-xs font-500">
+                                  Transfer, {(() => {
+                                    const layover = dayjs(
+                                      segments[segIdx + 1].departure_datetime,
+                                    ).diff(
+                                      dayjs(seg.arrival_datetime),
+                                      "minute",
+                                    );
+                                    const h = Math.floor(layover / 60);
+                                    const m = layover % 60;
+                                    return h > 0
+                                      ? `${h}h${m}m`
+                                      : `${m}m`;
+                                  })()}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Price + action button */}
+            <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+              <div>
+                <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                  {transfer_currency} {formattedPrice}
+                </div>
+                <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                  for {pax?.adults + pax?.children + pax?.infants} people
+                </div>
+              </div>
+
+              <div
+                className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                onClick={() => {
+                  if (updateLoading && !isOptionLoading) return;
+                  if (isBookingInProgress && !isOptionLoading) return;
+
+                  const selectedPriceData = {
+                    ...otherTransfer,
+                    selectedOmioResult: result,
+                    selectedOmioResultIndex: resultIndex,
+                    selectedPrice: {
+                      ...priceOption,
+                      result_index: priceOption.result_index,
+                    },
+                  };
+
+                  handleModeSelect(
+                    currentStep - 1,
+                    priceOptionId,
+                    selectedPriceData,
+                    otherTransfer.mode,
+                  );
+                }}
+              >
+                {isOptionLoading || (updateLoading && isOptionSelected) ? (
+                  <div className="flex items-center gap-1">
+                    <PulseLoader
+                      size={15}
+                      speedMultiplier={0.6}
+                      color="#000000"
+                    />
+                  </div>
+                ) : isOptionSelected && isResultSelected ? (
+                  <div className="flex items-center gap-1">
+                    <button className="ttw-btn-secondary-fill max-ph:w-full">
+                      Selected
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <button className="ttw-btn-fill-yellow max-ph:w-full">
+                      Add to Itinerary
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          );
-        })}
+          </div>
+        </div>
+      );
+    });
+  });
+}
+
+          // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───
+          if (!otherTransfer.prices || otherTransfer.prices.length === 0)
+            return null;
+
+          return otherTransfer.prices.map((priceOption, priceIndex) => {
+            const price = priceOption.price || 0;
+            const transfer_currency = currency?.currency
+              ? currencySymbols?.[currency?.currency]
+              : "₹";
+            const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+            const isOptionSelected = isPriceOptionSelected(
+              otherTransfer.id,
+              priceIndex,
+            );
+            const isOptionLoading = loadingOptionId === priceOptionId;
+            const currentDateTimeInfo = getDateInfo(
+              otherTransfer.start_datetime,
+              otherTransfer.duration,
+            );
+
+            return (
+              <div
+                key={`${otherTransfer.id}-price-${priceIndex}`}
+                className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
+                  ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+                  ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+              >
+                <div className="flex justify-between max-ph:flex-col">
+                  <div className="w-full">
+                    <div className="text-md font-600 leading-xl">
+                      {otherTransfer.text}{" "}
+                      {priceOption.name ? `- ${priceOption.name}` : ""}
+                    </div>
+                    {priceOption.description && (
+                      <div className="text-xs md:text-sm text-gray-700 mt-1">
+                        {priceOption.description}
+                      </div>
+                    )}
+                    {currentDateTimeInfo && (
+                      <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                        <div className="flex flex-col gap-xs shrink-0">
+                          <span className="text-sm font-400 leading-lg-md">
+                            {currentDateTimeInfo.formattedStartDate}
+                          </span>
+                          <span className="text-md-lg font-600 leading-lg-md">
+                            {currentDateTimeInfo.formattedStartTime}
+                          </span>
+                          <span className="text-sm font-400 leading-lg-md">
+                            {otherTransfer.source.city_name}{" "}
+                            {otherTransfer.source.code && (
+                              <span className="text-sm font-400 leading-lg-md">
+                                {" "}
+                                ( {otherTransfer.source.code} )
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center flex-1 mx-md relative">
+                          <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                          <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                            <span className="text-sm font-400 leading-lg-md">
+                              {currentDateTimeInfo.formattedDuration}
+                            </span>
+                            <span className="text-md-lg font-600 leading-lg-md bg-primary-indigo rounded-full w-[25px] h-[25px] flex items-center justify-center">
+                              {getModeIcon(otherTransfer.mode, 13)}
+                            </span>
+                            <span className="text-sm font-400 leading-lg-md">
+                              {otherTransfer.distance} Km
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-xs shrink-0">
+                          <span className="text-sm font-400 leading-lg-md">
+                            {currentDateTimeInfo.formattedEndDate}
+                          </span>
+                          <span className="text-md-lg font-600 leading-lg-md">
+                            {currentDateTimeInfo.formattedEndTime}
+                          </span>
+                          <span className="text-sm font-400 leading-lg-md">
+                            {otherTransfer.destination.city_name}{" "}
+                            {otherTransfer.destination.code && (
+                              <span className="text-sm font-400 leading-lg-md">
+                                {" "}
+                                ( {otherTransfer.destination.code} )
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                    {priceOption?.class && (
+                      <div className="text-xs md:text-sm">
+                        <span className="font-semibold">Facilities:</span>{" "}
+                        {priceOption?.class}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                    <div>
+                      <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                        {" "}
+                        {transfer_currency} {price}{" "}
+                      </div>
+                      <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                        for {pax?.adults + pax?.children + pax?.infants} people
+                      </div>
+                    </div>
+                    <div
+                      className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                      onClick={() => {
+                        if (updateLoading && !isOptionLoading) return;
+                        if (isBookingInProgress && !isOptionLoading) return;
+                        const selectedPriceData = {
+                          ...otherTransfer,
+                          selectedPrice: {
+                            ...priceOption,
+                            result_index: priceOption.result_index,
+                          },
+                        };
+                        handleModeSelect(
+                          currentStep - 1,
+                          priceOptionId,
+                          selectedPriceData,
+                          otherTransfer.mode,
+                        );
+                      }}
+                    >
+                      {isOptionLoading ||
+                      (updateLoading && isOptionSelected) ? (
+                        <div className="flex items-center gap-1">
+                          <PulseLoader
+                            size={15}
+                            speedMultiplier={0.6}
+                            color="#000000"
+                          />
+                        </div>
+                      ) : isOptionSelected && isResultSelected ? (
+                        <div className="flex items-center gap-1">
+                          <button className="ttw-btn-secondary-fill max-ph:w-full">
+                            Selected
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <button className="ttw-btn-fill-yellow max-ph:w-full">
+                            Add to Itinerary
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          });
+        })()}
       {showLoginModal && (
         <LoginModal
           show={showLoginModal}
