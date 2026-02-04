@@ -1,0 +1,43 @@
+import React, {useState } from 'react';
+import styled from 'styled-components';
+import {AiOutlineSearch} from 'react-icons/ai';
+import SearchInput from './Input';
+ 
+ const Container = styled.div`
+ 
+ `;
+
+
+ const ClosedContainer = styled.div`
+    display: flex;
+    border-style: none none solid none;
+    color: #DEDEDE;
+    align-items: center;
+    font-size: 14px;
+    margin: 0.5rem auto;
+    justify-content: center;
+    width: 90%;
+    padding: 0.5rem;
+
+ `;
+
+ 
+const Search = (props) => {
+
+    const [open, setOpen] = useState(false);
+  return (
+    <Container>
+        {!open ? 
+        <ClosedContainer onClick={() => setOpen(true)}>
+            <AiOutlineSearch></AiOutlineSearch>
+            Filter Cities
+        </ClosedContainer>    
+        : <SearchInput _showSearchedLocations={props._showSearchedLocations}></SearchInput>
+    }
+           </Container>
+  );
+}
+
+
+export default Search;
+

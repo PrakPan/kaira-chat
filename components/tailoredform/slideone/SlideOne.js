@@ -146,8 +146,8 @@ const SlideOne = (props) => {
               alt="calendar"
             />
           </div>
-          {props.errors.when !== null && <p className="mt-1 text-sm text-red-600 font-medium">
-            {props.errors.when}
+          {props?.errors?.when !== null && <p className="mt-1 text-sm text-red-600 font-medium">
+            {props?.errors?.when}
           </p>}
         </div>
         <div

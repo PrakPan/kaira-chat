@@ -7,7 +7,7 @@ const RoutePreparationLoader = ({
   onComplete,
   onError,
   handleCompletion,
-  apiSucceeded, // Add this prop
+  apiSucceeded, 
 }) => {
   const [message, setMessage] = useState("Preparing your route...");
   const [reasoningParts, setReasoningParts] = useState([]);
@@ -16,48 +16,57 @@ const RoutePreparationLoader = ({
   const noResponseTimeoutRef = useRef(null);
   const reconnectAttemptsRef = useRef(0);
   const hasCompletedRef = useRef(false);
+  const apiSucceededRef = useRef(false);
   const MAX_RECONNECT_ATTEMPTS = 3;
   const NO_RESPONSE_TIMEOUT = 10000;
   const { sessionId, isReady } = useAnalyticsSession();
 
-  // Handle API success - navigate even if WebSocket doesn't send 'done'
+
   useEffect(() => {
-    if (apiSucceeded && !hasCompletedRef.current) {
-      console.log("✅ API succeeded, completing even without 'done' event");
-      handleRealCompletion();
-    }
+    apiSucceededRef.current = apiSucceeded;
   }, [apiSucceeded]);
 
-  const handleRealCompletion = () => {
-    if (hasCompletedRef.current) {
-      console.log("⚠️ Completion already handled, ignoring duplicate call");
-      return;
-    }
+  useEffect(() => {
+  if (apiSucceeded && !hasCompletedRef.current) {
+    const timer = setTimeout(() => {
+      handleRealCompletion();
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }
+}, [apiSucceeded]);
 
-    hasCompletedRef.current = true;
+ const handleRealCompletion = () => {
+  if (hasCompletedRef.current) {
+    return;
+  }
 
-    setMessage("Route prepared successfully!");
+  hasCompletedRef.current = true;
 
-    cleanupTimers();
+  setMessage("Route prepared successfully!");
 
-    // ✅ Close WebSocket immediately to prevent reconnection
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      console.log("🔌 Closing WebSocket after successful completion");
-      socketRef.current.close();
-    }
+  cleanupTimers();
 
-    handleCompletion?.();
-  };
+  if (socketRef.current?.readyState === WebSocket.OPEN) {
+    socketRef.current.close();
+  }
+
+  // ✅ Call completion handler immediately
+  if (handleCompletion) {
+    handleCompletion();
+  } else if (onComplete) { // ✅ Fallback to onComplete
+    onComplete();
+  } else {
+    console.warn("⚠️ No completion handler defined");
+  }
+};
 
   const handleError = (errorMessage) => {
     if (hasCompletedRef.current) {
-      console.log("Ignoring error after completion");
       return;
     }
 
     console.error("Error:", errorMessage);
-    // Don't show error message, keep showing "Preparing your route..."
-    // Just log it and let API success/failure handle the UI
 
     cleanupTimers();
   };
@@ -73,33 +82,28 @@ const RoutePreparationLoader = ({
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
     if (!isReady || !sessionId) {
-      console.log("⏳ Waiting for session to be ready...");
       // Don't return - still show the loading message even if session isn't ready
     }
 
     const initializeSocket = () => {
       // Don't reconnect if already completed
       if (hasCompletedRef.current) {
-        console.log("Already completed, skipping socket initialization");
         return;
       }
 
       // Don't try to connect if session isn't ready
       if (!isReady || !sessionId) {
-        console.log("⏳ Session not ready, skipping WebSocket connection");
         return;
       }
 
       try {
-        const socketUrl = `wss://dev.chat.tarzanway.com/ws?session_id=${sessionId}`;
-        console.log("🔌 Connecting to WebSocket:", socketUrl);
+        const socketUrl = `wss://chat.tarzanway.com/ws?session_id=${sessionId}`;
 
         socketRef.current = new WebSocket(socketUrl);
 
         socketRef.current.onopen = () => {
-          console.log("✅ WebSocket connected successfully");
           reconnectAttemptsRef.current = 0;
         };
 
@@ -119,9 +123,13 @@ const RoutePreparationLoader = ({
               const newProgress = Math.min(20 + currentParts * 15, 95);
             }
 
-            // Handle done event - this is the success case
+            // ✅ UPDATED: Handle done event - check API success before completing
             if (data.type === "done") {
-              handleRealCompletion();
+              // Only complete if API has succeeded
+              if (apiSucceededRef.current) {
+                handleRealCompletion();
+              } else {
+              }
               return;
             }
 
@@ -146,8 +154,6 @@ const RoutePreparationLoader = ({
         };
 
         socketRef.current.onclose = (event) => {
-          console.log("⚠️ WebSocket disconnected:", event.code, event.reason);
-
           // Don't reconnect if already completed successfully
           if (hasCompletedRef.current) {
             return;
@@ -156,19 +162,12 @@ const RoutePreparationLoader = ({
           if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
             reconnectAttemptsRef.current++;
             reconnectTimeoutRef.current = setTimeout(() => {
-              console.log(
-                `Reconnecting... (attempt ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS})`,
-              );
               initializeSocket();
             }, 2000);
-          } else {
-            console.log("Max reconnection attempts reached - will rely on API success");
-            // Don't show error, keep showing "Preparing your route..." until API completes
           }
         };
       } catch (error) {
         console.error("WebSocket initialization error:", error);
-        // Don't show error, keep showing "Preparing your route..." until API completes
       }
     };
 
@@ -177,8 +176,6 @@ const RoutePreparationLoader = ({
     }
 
     return () => {
-      console.log("🧹 Cleaning up WebSocket");
-
       cleanupTimers();
 
       if (socketRef.current) {
@@ -189,16 +186,16 @@ const RoutePreparationLoader = ({
         }
       }
     };
-  }, [itineraryId, sessionId, isReady]);
+  }, [itineraryId, sessionId, isReady, apiSucceeded, handleCompletion]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] px-4">
-      <div className="flex flex-col items-center gap-6 max-w-md text-center">
+      <div className="flex flex-col items-center gap-6 max-w-md  text-center">
         {/* Animated Icon */}
         <div className="relative">
           <div className="">
             <Image
-              src="/delivery 1.svg"
+              src="/delivery 1-1.svg"
               width={120}
               height={120}
               alt="Route preparation"
@@ -221,7 +218,7 @@ const RoutePreparationLoader = ({
               if (isBold) {
                 const boldText = paragraph.replace(/\*\*/g, "");
                 return (
-                  <p key={idx} className="text-xl-md font-600 text-gray-900 mb-2">
+                  <p key={idx} className="text-[24px] font-600 text-gray-900 mb-2">
                     {boldText}
                   </p>
                 );

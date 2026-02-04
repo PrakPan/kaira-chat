@@ -907,6 +907,7 @@ const handleRouteTabClick = (label) => {
               itineraryLoading={itineraryLoading}
               handleClose={handleClose}
               setActiveTab={props?.setActiveTab}
+              destinationChanges={destinationChanges}
             />
           </div>
         )}
@@ -1259,11 +1260,15 @@ export const DragDrop = (props) => {
           {(provided, snapshot) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {destinations.map((item, index) => {
-                if (index !== 0 && index !== destinations.length - 1)
+                if (index !== 0 && index !== destinations.length - 1){
+                  const uniqueId = item.cityData?.id 
+                    || item.cityData?.city_id 
+                    || item.cityData?.place_id 
+                    || `city-${index}-${item.cityData?.city_name || item.cityData?.name || 'unknown'}`;
                   return (
                     <Draggable
-                      key={`item-${index}`}
-                      draggableId={`item-${index}`}
+                      key={`city-${index}-${uniqueId}`}
+                      draggableId={`city-${index}-${uniqueId}`}
                       index={index}
                     >
                       {(provided, snapshot) => (
@@ -1294,6 +1299,7 @@ export const DragDrop = (props) => {
                       )}
                     </Draggable>
                   );
+                }
               })}
               {provided.placeholder}
             </div>
@@ -2723,7 +2729,8 @@ export const ActionPanel = (props) => {
     handleSaveButton,
     itineraryLoading,
     handleClose,
-    setActiveTab
+    setActiveTab,
+    destinationChanges
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const router = useRouter();
@@ -2765,18 +2772,20 @@ export const ActionPanel = (props) => {
         fontWeight="500"
         margin="1rem 0"
         borderRadius="5px"
-        borderWidth="1px"
-        bgColor="#07213A"
+        borderWidth={destinationChanges ? "1px" : "0px"}
+        bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
         zIndex={9999}
         onclick={handleSaveButton}
         height="50px"
         color="white"
+        disabled={!destinationChanges}
         style={{
           maxWidth: isDesktop ? "500px" : "50%",
           width: "100%",
+          fontSize: isDesktop ? "1rem" : "0.8rem"
         }}
       >
-        Continue
+        Update Route
       </Button>
     </div>
   );

@@ -57,6 +57,7 @@ import useMediaQuery from "../../media";
 import { MdOutlineDownhillSkiing } from "react-icons/md";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { FaTaxi } from "react-icons/fa6";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 767px)");

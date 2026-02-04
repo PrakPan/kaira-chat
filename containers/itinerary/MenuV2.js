@@ -163,10 +163,28 @@ const SimpleTabsV2 = (props) => {
   };
 
   useEffect(() => {
-    const hasSeenBanner = localStorage.getItem("hasSeenChatBanner");
-    if (!hasSeenBanner) {
+    const chatBannerData = localStorage.getItem("chatBannerData");
+
+    if (chatBannerData) {
+      const { timestamp } = JSON.parse(chatBannerData);
+      const now = new Date().getTime();
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      if (now - timestamp < twentyFourHours) {
+        setShowChatBanner(false);
+      } else {
+        setShowChatBanner(true);
+        localStorage.setItem(
+          "chatBannerData",
+          JSON.stringify({ timestamp: now }),
+        );
+      }
+    } else {
       setShowChatBanner(true);
-      localStorage.setItem("hasSeenChatBanner", "true");
+      const now = new Date().getTime();
+      localStorage.setItem(
+        "chatBannerData",
+        JSON.stringify({ timestamp: now }),
+      );
     }
   }, []);
 
@@ -854,7 +872,14 @@ const SimpleTabsV2 = (props) => {
             {showChatBanner && !isPageWide && (
               <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
                 <button
-                  onClick={() => setShowChatBanner(false)}
+                  onClick={() => {
+                    setShowChatBanner(false);
+                    const now = new Date().getTime();
+                    localStorage.setItem(
+                      "chatBannerData",
+                      JSON.stringify({ timestamp: now }),
+                    );
+                  }}
                   className="absolute top-2 right-2 text-black hover:text-gray-700"
                 >
                   <RxCross2 size={18} />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Button from "../ui/button/Index";
 import media from "../media";
 import {
@@ -78,6 +78,8 @@ const Enquiry = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingItineraryId, setLoadingItineraryId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const hasCompletedRef = useRef(false);
+  const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
 
   const slideOneData = useSelector(
     (state) => state.tailoredInfoReducer.slideOne,
@@ -101,6 +103,7 @@ const Enquiry = (props) => {
   const [selectedRoutes, setSelectedRoutes] = useState();
   const isPageLoaded = usePageLoaded();
   const [isRouteChanged, setIsRouteChanged] = useState(false);
+  const [isManualNavigation, setIsManualNavigation] = useState(false);
   const [destination, setDestination] = useState(
     routerquery.destination || props.destination,
   );
@@ -116,6 +119,8 @@ const Enquiry = (props) => {
   const [itineraryId, setItineraryId] = useState(null);
   const [apiSucceeded, setApiSucceeded] = useState(false);
   const [error, setError] = useState(null);
+  const [shouldNavigateToNextSlide, setShouldNavigateToNextSlide] =
+    useState(false);
   const [errors, setErrors] = useState({
     startLocation: null,
     destination1: null,
@@ -134,6 +139,14 @@ const Enquiry = (props) => {
   const { sessionId, isReady } = useAnalyticsSession();
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
+
+  useEffect(() => {
+    if (slideIndex === 0) {
+      setApiSucceeded(false);
+      setIsManualNavigation(false);
+      hasCompletedRef.current = false;
+    }
+  }, [slideIndex]);
 
   useEffect(() => {
     {
@@ -211,9 +224,9 @@ const Enquiry = (props) => {
       if (slideIndex == 1) {
         setIsRouteChanged(false);
       }
+      setIsManualNavigation(true);
       router.push(
         {
-          // pathname: "/new-trip",
           query: {
             ...router.query,
             slideIndex: slideIndex - 1,
@@ -286,6 +299,7 @@ const Enquiry = (props) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    setIsManualNavigation(false);
     initiateItineraryCreate(slideOneData);
   };
 
@@ -349,6 +363,8 @@ const Enquiry = (props) => {
     let routeToTrack = null;
 
     const isFixedDate = slideOneData.date.type === "fixed";
+
+    const isRecalculating = slideIndex === 1 && isRouteChanged;
 
     if (locationsLatLong.length > 0 && slideIndex == 1) {
       if (isFixedDate && slideOneData.date.start_date) {
@@ -449,7 +465,9 @@ const Enquiry = (props) => {
 
     try {
       setIsLoading(true);
-      
+      setApiSucceeded(false);
+      hasCompletedRef.current = false;
+
       // setLoadingItineraryId(null);
       const res = await itineraryInitiate.post("", data, {
         headers: {
@@ -461,6 +479,7 @@ const Enquiry = (props) => {
       if(resData){
         setApiSucceeded(true);
       }
+
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
       if (routeToTrack) {
@@ -471,10 +490,8 @@ const Enquiry = (props) => {
 
       setError(null);
 
-      if (!itineraryId) {
-        setItineraryId(resData.itinerary_id);
-        setLoadingItineraryId(resData.itinerary_id);
-      }
+      setItineraryId(resData.itinerary_id);
+      setLoadingItineraryId(resData.itinerary_id);
 
       setRoute([resData.start_city, ...resData.basic_route, resData.end_city]);
 
@@ -492,33 +509,37 @@ const Enquiry = (props) => {
       }
 
       setIsRouteChanged(false);
+
+      if (isRecalculating) {
+
+      router.push(
+        {
+          query: {
+            ...router.query,
+            slideIndex: slideIndex + 1,
+          },
+        },
+        undefined,
+        { shallow: true },
+      );
       
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        setIsRecalculatingRoute(false);
+        setLoadingItineraryId(null);
+      }, 100);
 
-      //will be removed later
-
-      // await new Promise((resolve) => setTimeout(resolve, 100));
-      // const currentSlideIndex = Number(router.query.slideIndex) || 0;
-      // const nextSlideIndex = currentSlideIndex + 1;
-
-      // router.push(
-      //   {
-      //     // pathname: "/new-trip",
-      //     query: {
-      //       ...router.query,
-      //       slideIndex: nextSlideIndex,
-      //     },
-      //   },
-      //   undefined,
-      //   { shallow: true }
-      // );
+      return;
+    }
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
-      setIsLoading(false);
       setApiSucceeded(false);
       setLoadingItineraryId(null);
-    } 
+      setIsLoading(false);
+      setIsRecalculatingRoute(false);
+    }
     // finally {
     //   setIsLoading(false);
     // }
@@ -586,7 +607,11 @@ const Enquiry = (props) => {
       .then((response) => {
         setError(null);
         setSubmitted(true);
-        trackItineraryCompleted(itineraryId, "itinerary_completed", platform);
+        trackItineraryCompleted(
+          finalItineraryId,
+          "itinerary_completed",
+          platform,
+        );
         dispatch(setItineraryInitiateData(null));
         dispatch(setItineraryCreated(true));
 
@@ -732,58 +757,75 @@ const Enquiry = (props) => {
   }, [slideOneData]);
 
   const handleLoadingComplete = () => {
-    console.log("✅ Loading complete, navigating to next slide");
+    const MINIMUM_LOADING_TIME = 2000;
 
-    setIsLoading(false);
-    setLoadingItineraryId(null);
+    setTimeout(() => {
+      const currentSlideIndex = Number(router.query.slideIndex) || 0;
 
-    const currentSlideIndex = Number(router.query.slideIndex) || 0;
-    const nextSlideIndex = currentSlideIndex + 1;
+      // Only auto-navigate from slide 0 (not for route recalculation on slide 1)
+      if (
+        !isManualNavigation &&
+        currentSlideIndex === 0 &&
+        !isRecalculatingRoute
+      ) {
+        const nextSlideIndex = currentSlideIndex + 1;
 
-    router.push(
-      {
-        query: {
-          ...router.query,
-          slideIndex: nextSlideIndex,
-        },
-      },
-      undefined,
-      { shallow: true },
-    );
+        router.push(
+          {
+            query: {
+              ...router.query,
+              slideIndex: nextSlideIndex,
+            },
+          },
+          undefined,
+          { shallow: true },
+        );
+
+        setTimeout(() => {
+          setIsLoading(false);
+          setLoadingItineraryId(null);
+          setIsRecalculatingRoute(false);
+        }, 300);
+      } else {
+        setIsLoading(false);
+        setLoadingItineraryId(null);
+        setIsRecalculatingRoute(false);
+      }
+    }, MINIMUM_LOADING_TIME);
   };
 
   const handleLoadingError = (errorMessage) => {
-  console.error("❌ Loading error:", errorMessage);
-  setError(errorMessage);
-  setIsLoading(false);
-  setLoadingItineraryId(null);
-  setApiSucceeded(false);
-};
+    console.error("❌ Loading error:", errorMessage);
+    setError(errorMessage);
+    setIsLoading(false);
+    setLoadingItineraryId(null);
+    setApiSucceeded(false);
+  };
 
-  if (isLoading  && slideIndex === 0) {
-  return (
-    <div className="container">
-      <div className="py-2xl">
-        <div className="text-md-lg font-600 leading-xl-sm mb-md">
-          Plan Your Trip
+  if (isLoading && slideIndex === 0 && !isRecalculatingRoute) {
+    return (
+      <div className="container">
+        <div className="py-2xl">
+          <div className="text-md-lg font-600 leading-xl-sm mb-md">
+            Plan Your Trip
+          </div>
+          <StepsProgress
+            slideIndex={slideIndex}
+            totalSlides={totalSlides}
+            steps={steps}
+          />
         </div>
-        <StepsProgress
-          slideIndex={slideIndex}
-          totalSlides={totalSlides}
-          steps={steps}
+
+        <RoutePreparationLoader
+          itineraryId={loadingItineraryId}
+          onComplete={handleLoadingComplete}
+          onError={handleLoadingError}
+          handleCompletion={handleLoadingComplete}
+          apiSucceeded={apiSucceeded}
         />
       </div>
-      
-      <RoutePreparationLoader
-        itineraryId={loadingItineraryId}
-        onComplete={handleLoadingComplete}
-        onError={handleLoadingError}
-        handleCompletion={handleLoadingComplete}
-        apiSucceeded={apiSucceeded}
-      />
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <>
@@ -990,8 +1032,8 @@ const Enquiry = (props) => {
                       slideIndex == 1
                         ? "w-[100%]"
                         : isDesktop
-                          ? `max-w-[600px] ${slideIndex == 0 ? "pb-[260px]" : ""}`
-                          : `w-full ${slideIndex == 0 ? "pb-[300px]" : ""}`
+                          ? `max-w-[600px] ${slideIndex == 0 ? (error ? "pb-[50px]" : "pb-[5px]") : ""}`
+                          : `w-full ${slideIndex == 0 ? (error ? "pb-[40px]" : "pb-[5px]") : ""}`
                     }`}
                   >
                     <Flickity
@@ -1063,8 +1105,6 @@ const Enquiry = (props) => {
                         />
                       </BottomModal>
                     )}
-
-                    
                   </div>
                 </div>
               </div>
@@ -1077,8 +1117,8 @@ const Enquiry = (props) => {
         {/* <div className="border-b-sm"></div> */}
         <div className="container p-md">
           {error ? (
-                      <p className="text-sm text-red-600 text-center">{"Connection Lost Please try again" || error}</p>
-                    ) : null}
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          ) : null}
           {slideIndex === 0 && (
             <div className="max-w-[600px] my-zero mx-auto max-ph:w-full">
               <div className="flex justify-between">
@@ -1120,20 +1160,14 @@ const Enquiry = (props) => {
     ${!isDesktop && "flex items-center justify-between gap-2"}
   `}
             >
-              {/* LEFT SIDE */}
               <button
                 className={`LargeIndigoOutlinedButton `}
                 onClick={_prevSlideHandler}
+                // disabled={isLoading}
               >
                 Back
               </button>
 
-              {/* <button
-                className={`LargeIndigoOutlinedButton ${!isDesktop && "w-[90px]"}`}
-                onClick={_slideTwoSkip}
-              >
-                Skip
-              </button> */}
               {isRouteChanged ? (
                 <Button
                   width={`${isPageWide ? "300px" : "50%"}`}
@@ -1147,6 +1181,10 @@ const Enquiry = (props) => {
                   loading={isLoading}
                   disabled={isLoading}
                   onclick={() => {
+                    setIsLoading(true);
+                    setApiSucceeded(false);
+                    setIsRecalculatingRoute(true);
+                    setIsManualNavigation(false);
                     initiateItineraryCreate(slideOneData);
                   }}
                 >
@@ -1154,19 +1192,28 @@ const Enquiry = (props) => {
                 </Button>
               ) : (
                 <button
-                  className={`LargeIndigoButton cursor-not-allowed w-[50%] ${
+                  className={`LargeIndigoButton w-[50%] ${
                     isDesktop && "w-[300px]"
                   } `}
+                  style={{
+                    width: isPageWide ? "300px" : "50%",
+                  }}
+                  disabled={isLoading}
                   onClick={() => {
-                    trackItineraryRoute(itineraryId, locationsLatLong);
-                    router.push(
-                      {
-                        // pathname: "/new-trip",
-                        query: { ...router.query, slideIndex: slideIndex + 1 },
-                      },
-                      undefined,
-                      { shallow: true },
-                    );
+                    if (!isLoading) {
+                      // Add this check
+                      trackItineraryRoute(itineraryId, locationsLatLong);
+                      router.push(
+                        {
+                          query: {
+                            ...router.query,
+                            slideIndex: slideIndex + 1,
+                          },
+                        },
+                        undefined,
+                        { shallow: true },
+                      );
+                    }
                   }}
                 >
                   Continue

@@ -67,6 +67,7 @@ import { updateFlightBookingWarning } from "../../../services/bookings/UpdateBoo
 import { getDateInfo } from "../../../utils/dateFormate";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../data/currencySymbols";
+import { Link } from "react-scroll";
 import SkeletonCard from "../../ui/SkeletonCard";
 
 const svgIcons = {
@@ -252,6 +253,8 @@ const TransferEditDrawer = (props) => {
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
   const currency = useSelector((state) => state.currency);
+
+  const { email } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (booking_type == "multicity" || drawerType == "multicity") {
@@ -714,7 +717,7 @@ const TransferEditDrawer = (props) => {
             : "md:pb-[30px]"
         } justify-start items-start mx-auto w-[100%] min-h-screen`}
       >
-        <div className="flex flex-row gap-2 my-0 justify-start items-center">
+        <div className="flex flex-row gap-2 w-full my-0 justify-between items-center">
           {currentStep === 0 ? (
             <>
               <BackArrow
@@ -733,6 +736,16 @@ const TransferEditDrawer = (props) => {
                   setTaxiResults([]);
                 }}
               />
+
+              {email && email?.includes('tarzanway.com') && (
+                <a
+                  href={`https://mercury.tarzanway.com/admin/geos/route/search-route/?origin=${props?.origin || originCityId || mercuryTransfer?.source?.city}&destination=${props?.destination || destinationCityId || mercuryTransfer?.destination?.city}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-auto text-sm text-blue font-500"
+                >
+                + Modify from Backend (Staff)
+              </a>)}
             </>
           ) : (
             <>
@@ -3552,10 +3565,11 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                       className="flex items-center gap-2 mt-md cursor-pointer"
                       onClick={() => toggleTransferDetailsMulti(priceOptionId)}
                     >
-                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center justify-center gap-2 text-xs md:text-[14px] font-500">
                         <span>
-                          {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
-                          Transfer{segments.length > 2 ? 's' : ''}
+                          Details
+                          {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                          Transfer{segments.length > 2 ? 's' : ''} */}
                         </span>
                         {isExpanded ? (
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -6112,10 +6126,11 @@ const toggleTransferDetails = (priceOptionId) => {
                   className="flex items-center gap-2 mt-md cursor-pointer"
                   onClick={() => toggleTransferDetails(priceOptionId)}
                 >
-                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center justify-center gap-2 text-xs md:text-[14px]  font-500">
                     <span>
-                      {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
-                      Transfer{segments.length > 2 ? 's' : ''}
+                      Details
+                      {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                      Transfer{segments.length > 2 ? 's' : ''} */}
                     </span>
                     {isExpanded ? (
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

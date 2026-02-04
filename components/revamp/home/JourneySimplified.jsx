@@ -191,7 +191,10 @@ const journeyFeatures = [
                     size="medium"
                     onClick={() => {
                       console.log("Create a Trip Now! clicked");
+                      if(!props?.oldForm)
                       setShowTailoredModal(true);
+                      else
+                      props.handlePlanButton(props.page_id, "home", "default");
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

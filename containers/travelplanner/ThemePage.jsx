@@ -67,6 +67,8 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import TestimonialCarousel from "../../components/theme/TestimonialCarousel.jsx";
+import TravelVibeSection from "../../components/revamp/home/TravelVibeSection.jsx";
+import JourneySimplified from "../../components/revamp/home/JourneySimplified.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -452,6 +454,18 @@ export default function ThemePage(props) {
                           page_id={props.experienceData?.id}
                           destination={props.experienceData?.destination}
                         ></BannerTwo>
+                      </div>
+                    )}
+
+                    {component.carousel === "Journey" && (
+                      <div>
+                        <JourneySimplified/>
+                      </div>
+                    )}
+
+                     {component.carousel === "Travel-Match" && (
+                      <div>
+                        <TravelVibeSection isTheme={true}/>
                       </div>
                     )}
 

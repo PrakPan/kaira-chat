@@ -264,6 +264,7 @@ export const EditDestinations = (props) => {
     );
 };
 
+
 export const DragDrop = (props) => {
     const {
         destinations,
@@ -287,6 +288,7 @@ export const DragDrop = (props) => {
                     cityData={destinations[0]?.cityData}
                     pinColour={destinations[0]?.cityData?.color}
                     setDestinations={setDestinations}
+                    destinations={destinations}
                     updateLatLong={updateLatLong}
                     updateDestinationsDates={updateDestinationsDates}
                     setDestinationChanges={setDestinationChanges}
@@ -316,10 +318,15 @@ export const DragDrop = (props) => {
                             {destinations.map((item, index) => {
                                 // Only middle destinations, exclude first and last
                                 if (index !== 0 && index !== destinations.length - 1) {
+                                    // Create unique ID using itinerary_city_id if available, otherwise use index
+                                    const uniqueId = item.cityData.itinerary_city_id 
+                                        ? `${item.cityData.itinerary_city_id}` 
+                                        : `temp-${index}-${item.cityData.city_id || item.cityData.resource_id}`;
+                                    
                                     return (
                                         <Draggable
-                                            key={item.cityData.city_id+index}
-                                            draggableId={String(item.cityData.city_id+index)}
+                                            key={uniqueId}
+                                            draggableId={uniqueId}
                                             index={index}
                                         >
                                             {(provided, snapshot) => (
@@ -387,8 +394,7 @@ export const DragDrop = (props) => {
     );
 };
 
-
-
+// Update the Destination component to show visit number for repeated cities
 export const Destination = (props) => {
     const {
         startingCity,
@@ -452,12 +458,12 @@ export const Destination = (props) => {
                         )}
 
                         <div className="flex flex-row items-center justify-center gap-2 sm:gap-3">
-                            <div className=" Body1M_16  cursor-pointer ">
+                            <div className="Body1M_16 cursor-pointer">
                                 {cityData.city_name || cityData.name || cityData.text}
                             </div>
                             {!(startingCity || endingCity) && cityData?.nights && (
                                 <div className="Body1R_16 text-gray-500">
-                                    <span className="text-[16px] text-gray-500">I</span> &nbsp;
+                                    <span className="text-[16px] text-gray-500">|</span> &nbsp;
                                     {`${cityData.nights > 1 && isDesktop ? `${cityData.nights} Nights` : isDesktop ? `${cityData.nights} Night` : `${cityData.nights}N`}`}
                                 </div>
                             )}
@@ -465,47 +471,42 @@ export const Destination = (props) => {
                     </div>
                 </div>
 
-                {!startingCity && !endingCity && (<div className="flex flex-row items-center gap-2">
-                    <div
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            handleEditDestination(setPopUp, props.setIsRouteChanged);
-                        }}
-                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
-                    >
-                        <MdOutlineEdit size={24} color={"#3B82F6"} />
-                    </div>
+                {!startingCity && !endingCity && (
+                    <div className="flex flex-row items-center gap-2">
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                handleEditDestination(setPopUp, props.setIsRouteChanged);
+                            }}
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-blue-50 rounded z-2"
+                        >
+                            <MdOutlineEdit size={24} color={"#3B82F6"} />
+                        </div>
 
-
-                    <div
-                        onClick={(e) =>
-                            handleRemoveDestination(
-                                e,
-                                index,
-                                setDestinations,
-                                updateLatLong,
-                                updateDestinationsDates,
-                                setDestinationChanges,
-                                props.setIsRouteChanged
-                            )
-                        }
-                        className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
-                    >
-                        <MdOutlineDelete size={24} color="#EF4444" />
+                        <div
+                            onClick={(e) =>
+                                handleRemoveDestination(
+                                    e,
+                                    index,
+                                    setDestinations,
+                                    updateLatLong,
+                                    updateDestinationsDates,
+                                    setDestinationChanges,
+                                    props.setIsRouteChanged
+                                )
+                            }
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-red-50 rounded"
+                        >
+                            <MdOutlineDelete size={24} color="#EF4444" />
+                        </div>
                     </div>
-                </div>
                 )}
-
             </div>
 
             {/* Dotted line */}
             {index < props?.totalDestinations - 2 && (
-                <div
-                    className={`absolute z-0
-                         left-[40px] top-[45px]
-                    `}
-                >
+                <div className="absolute z-0 left-[40px] top-[45px]">
                     <DottedLine />
                 </div>
             )}

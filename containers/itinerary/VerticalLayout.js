@@ -1003,7 +1003,7 @@ useEffect(() => {
   };
 
 
-  const handleDelete = async (val) => {
+   const handleDelete = async (val) => {
   if (!localStorage?.getItem("access_token")) {
     setShowLoginModal(true);
     return;

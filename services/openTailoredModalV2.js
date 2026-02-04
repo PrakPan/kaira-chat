@@ -25,8 +25,15 @@ export default function openTailoredModal(router, page_id, destination) {
 }
 
 export function closeTailoredModal(router, id) {
-  delete router.query["tailored-travel"];
-  delete router.query["page_id"];
-  delete router.query["destination"];
-  router.push(`/itinerary/${id}`, undefined, { scroll: false });
+  const { ["tailored-travel"]: _, ...restQuery } = router.query;
+
+  router.replace(
+    {
+      pathname: router.pathname,
+      query: restQuery,
+    },
+    undefined,
+    { shallow: true, scroll: false }
+  );
 }
+

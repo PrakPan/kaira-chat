@@ -24,7 +24,8 @@ const getSrcSet = (src) =>
   [360, 600, 900].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
 /* ------------------------------------------------------------ */
 
-const TravelVibeSection = () => {
+const TravelVibeSection = (props) => {
+  // Sample travel vibe data - replace with your actual data
   const router = useRouter();
 
   const travelVibes = [
@@ -52,18 +53,17 @@ const TravelVibeSection = () => {
       id: 3,
       title: "Perfect Proposals",
       description: "SAY YES SPOTS",
-      image: `media/page/174120792530050110816955566406/.png`,
+      image: `${imgUrlEndPoint}/media/page/174120792530050110816955566406/.png`, 
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link: "theme/perfect-proposals-2025",
+      link:"theme/perfect-proposals-2026"
     },
     {
       id: 4,
       title: "Japan In Autumn",
       description: "GOLDEN GATEWAYS",
-      image: `media/page/176061499439999198913574218750.jpg`,
-      tags: [],
+      image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`,
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "theme/japan-cherry-blossom",
@@ -80,21 +80,12 @@ const TravelVibeSection = () => {
     },
   ];
 
-  const renderCard = (vibe, height = 376) => (
-    <TravelVibeCard
-      key={vibe.id}
-      title={vibe.title}
-      description={vibe.description}
-      image={getImageUrl(vibe.image, 800, height)}
-      imageSrcSet={getSrcSet(vibe.image)}
-      imageSizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
-      imageFallback={getImageUrl(vibe.image, 800, height)}
-      tags={vibe.tags}
-      gradientOverlay={vibe.gradientOverlay}
-      height={`${height}px`}
-      onClick={() => router.push(vibe.link)}
-    />
-  );
+  const getLink = (link) => {
+  if (props?.isTheme) {
+    return link.replace(/^theme\//, "");
+  }
+  return link;
+};
 
   return (
     <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
@@ -115,12 +106,72 @@ const TravelVibeSection = () => {
 
         {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8 px-2 sm:px-0">
-          <div className="lg:col-span-2">{renderCard(travelVibes[0])}</div>
-          <div className="lg:col-span-1">{renderCard(travelVibes[1])}</div>
+          {/* Top Row - First card spans 2 columns, second card spans 1 column */}
+          <div className="lg:col-span-2">
+            <TravelVibeCard
+              key={travelVibes[0].id}
+              title={travelVibes[0].title}
+              description={travelVibes[0].description}
+              image={travelVibes[0].image}
+              tags={travelVibes[0].tags}
+              gradientOverlay={travelVibes[0].gradientOverlay}
+              height="376px"
+              onClick={() => router.push(getLink(travelVibes[0].link))}
+            />
+          </div>
 
-          <div className="lg:col-span-1">{renderCard(travelVibes[2])}</div>
-          <div className="lg:col-span-1">{renderCard(travelVibes[3])}</div>
-          <div className="lg:col-span-1">{renderCard(travelVibes[4])}</div>
+          <div className="lg:col-span-1">
+            <TravelVibeCard
+              key={travelVibes[1].id}
+              title={travelVibes[1].title}
+              description={travelVibes[1].description}
+              image={travelVibes[1].image}
+              tags={travelVibes[1].tags}
+              gradientOverlay={travelVibes[1].gradientOverlay}
+              height="376px"
+              onClick={() => router.push(getLink(travelVibes[1].link))}
+            />
+          </div>
+
+          {/* Bottom Row - Three equal cards, each spanning 1 column */}
+          <div className="lg:col-span-1">
+            <TravelVibeCard
+              key={travelVibes[2].id}
+              title={travelVibes[2].title}
+              description={travelVibes[2].description}
+              image={travelVibes[2].image}
+              tags={travelVibes[2].tags}
+              gradientOverlay={travelVibes[2].gradientOverlay}
+              height="376px"
+              onClick={() => router.push(getLink(travelVibes[2].link))}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <TravelVibeCard
+              key={travelVibes[3].id}
+              title={travelVibes[3].title}
+              description={travelVibes[3].description}
+              image={travelVibes[3].image}
+              tags={travelVibes[3].tags}
+              gradientOverlay={travelVibes[3].gradientOverlay}
+              height="376px"
+              onClick={() => router.push(getLink(travelVibes[3].link))}
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <TravelVibeCard
+              key={travelVibes[4].id}
+              title={travelVibes[4].title}
+              description={travelVibes[4].description}
+              image={travelVibes[4].image}
+              tags={travelVibes[4].tags}
+              gradientOverlay={travelVibes[4].gradientOverlay}
+              height="376px"
+              onClick={() => router.push(getLink(travelVibes[4].link))}
+            />
+          </div>
         </div>
       </div>
     </section>

@@ -85,9 +85,9 @@ const Destinations = (props) => {
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
         ></SelectedDestination>
-        {props.errors.startLocation !== null && (
+        {props?.errors?.startLocation !== null && (
           <p className="mt-1 text-sm text-red-600 font-medium">
-            {props.errors.startLocation}
+            {props?.errors?.startLocation}
           </p>
         )}
       </div>
@@ -117,9 +117,9 @@ const Destinations = (props) => {
                 hotlocations={props.hotlocations}
               />
             </div>
-            {i === 0 && props.errors.destination1 && props.errors.destination1 !== null && (
+            {i === 0 && props.errors?.destination1 && props.errors?.destination1 !== null && (
               <p className="mt-1 text-sm text-red-600 font-medium">
-                {props.errors.destination1}
+                {props.errors?.destination1}
               </p>
             )}
           </div>
