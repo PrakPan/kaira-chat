@@ -27,6 +27,24 @@ import axioslocationsinstance from "../services/search/search";
 import { MERCURY_HOST } from "../services/constants";
 import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 
+// Polyfill for requestIdleCallback (Safari compatibility)
+if (typeof window !== "undefined" && !window.requestIdleCallback) {
+  window.requestIdleCallback = function (callback) {
+    const start = Date.now();
+    return setTimeout(function () {
+      callback({
+        didTimeout: false,
+        timeRemaining: function () {
+          return Math.max(0, 50 - (Date.now() - start));
+        },
+      });
+    }, 1);
+  };
+  window.cancelIdleCallback = function (id) {
+    clearTimeout(id);
+  };
+}
+
 /* ---------------- Lazy-loaded sliders (no SSR) ---------------- */
 
 const CurveImageGallery = dynamic(() => import("../components/theme/CurveImageGallery"), {
@@ -127,7 +145,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         {/* Non-blocking CSS */}
         <script
           type="module"
-          crossorigin
+          crossOrigin="anonymous"
           src="/vendor/panorama-slider.js"
         ></script>
         <link
@@ -138,7 +156,6 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         />
         <script
           type="application/ld+json"
-           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",

@@ -16,6 +16,24 @@ import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 
+// Polyfill for requestIdleCallback (Safari compatibility)
+if (typeof window !== "undefined" && !window.requestIdleCallback) {
+  window.requestIdleCallback = function (callback) {
+    const start = Date.now();
+    return setTimeout(function () {
+      callback({
+        didTimeout: false,
+        timeRemaining: function () {
+          return Math.max(0, 50 - (Date.now() - start));
+        },
+      });
+    }, 1);
+  };
+  window.cancelIdleCallback = function (id) {
+    clearTimeout(id);
+  };
+}
+
 // Lazy-loaded components (non-critical)
 const ClarityInit = dynamic(() => import("../components/ClarityInit"), {
   ssr: false,

@@ -3088,7 +3088,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                           currentStep >= index + 1
                             ? "border-pureBlack"
                             : "border-text-disabled"
-                        }  ${currentStep >= index + 2 ? "bg-pureBlack" : ""}`}
+                        }  ${currentStep >= index + 2 ? "bg-green-500" : ""}`}
                       >
                         <span
                           className={`text-sm font-500 leading-md  ${
