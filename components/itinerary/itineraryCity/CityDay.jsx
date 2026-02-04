@@ -224,9 +224,7 @@ const CityDay = (props) => {
 
         {viewMore && (
           <>
-            {elements.length > 0 ? (
-              <>
-                 {matchingIntracityBookings &&
+            {matchingIntracityBookings &&
           formattedTaxiDetails &&
           matchingIntracityBookings?.length > 0 ? (
               <div className="flex flex-row gap-xs flex-wrap px-3 pb-3 cursor-pointer" onClick={()=>handleSightseeingTaxi(formattedTaxiDetails?.[0]?.id)}>
@@ -238,6 +236,9 @@ const CityDay = (props) => {
             
               </div>
             ) : null}
+            {elements.length > 0 ? (
+              <>
+                 
                 {elements.map((element, index) => (
                   <>
                     <SlabElement
