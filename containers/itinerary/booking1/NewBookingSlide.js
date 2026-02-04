@@ -739,9 +739,9 @@ const PriceDetails = ({
   // }
 
   const finalTotal =
-    (typeof itineraryCost === "string"
-      ? parseFloat(itineraryCost.replace(/,/g, "")) || 0
-      : itineraryCost || 0) - Math.abs(couponDiscount || 0);
+    (typeof totalPayable === "string"
+      ? parseFloat(totalPayable.replace(/,/g, "")) || 0
+      : totalPayable || 0);
 
   return (
     <div className="mb-4">
@@ -776,15 +776,26 @@ const PriceDetails = ({
           )
         } */}
 
-        {couponDiscount >= 0 ? (
+        {
+          Cart?.taxation_policy == "TCS" && (
+            <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+              <span>GST</span>
+              <span>{currencySymbols?.[currency]
+                ? currencySymbols?.[currency]
+                : "₹"}{Cart?.gst?.toLocaleString("en-IN")}</span>
+            </div>
+          )
+        }
+
+        {couponDiscount >= 0 || couponDiscount < 0 ? (
           <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
             <span>Coupon Discount</span>
             <span>
               {couponDiscount
                 ? currencySymbols?.[currency]
-                  ? currencySymbols?.[currency] +
+                  ? "-" + currencySymbols?.[currency] +
                     Math.abs(couponDiscount).toLocaleString("en-IN")
-                  : "₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                  : "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
                 : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
             </span>
           </div>
@@ -1512,7 +1523,6 @@ const Details = (props) => {
   };
 
   const handleCloseDrawer = () => {
-    console.log("handle paymenmt close");
     if (isDirectlyOpenPaymentDrawer) {
       setIsDirectlyOpenPaymentDrawer(false);
       props.setShowFooterBannerMobile();
@@ -2619,8 +2629,7 @@ const Details = (props) => {
                     <PriceDetails
                       itineraryCost={getIndianPrice(
                         Math.round(
-                          Cart?.discounted_cost +
-                            (couponUsageData?.discount || 0),
+                          Cart?.total_itinerary_cost
                         ),
                       )}
                       lockInCost={0}
