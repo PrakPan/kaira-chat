@@ -2042,6 +2042,15 @@ const NewMultiModeContainer = ({
   });
   const [showPax, setShowPax] = useState(false);
 
+  const [expandedTransfersMulti, setExpandedTransfersMulti] = useState({});
+
+const toggleTransferDetailsMulti = (priceOptionId) => {
+  setExpandedTransfersMulti(prev => ({
+    ...prev,
+    [priceOptionId]: !prev[priceOptionId]
+  }));
+};
+
   const sequencedModes = transfer.map((t) => t.mode);
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
@@ -3417,374 +3426,401 @@ const NewMultiModeContainer = ({
                               currentTransferData.results.length > 0;
 
                             if (hasOmioResults) {
-                              return currentTransferData.results.map(
-                                (result, resultIndex) => {
-                                  const resultPrices = result.prices || [];
-                                  return resultPrices.map(
-                                    (priceOption, priceIndex) => {
-                                      const price = priceOption.price || 0;
-                                      const currencySymbol =
-                                        priceOption.currency === "INR"
-                                          ? "₹"
-                                          : priceOption.currency;
-                                      const priceOptionId = `${currentTransferData.id}-${resultIndex}-${priceIndex}`;
-                                      const operators = result.operator || [];
-                                      const segments = result.segments || [];
-                                      const departureInfo =
-                                        result.departure_datetime
-                                          ? dayjs(result.departure_datetime)
-                                          : null;
-                                      const arrivalInfo =
-                                        result.arrival_datetime
-                                          ? dayjs(result.arrival_datetime)
-                                          : null;
+  return currentTransferData.results.map(
+    (result, resultIndex) => {
+      const resultPrices = result.prices || [];
+      return resultPrices.map(
+        (priceOption, priceIndex) => {
+          const price = priceOption.price || 0;
+          const currencySymbol =
+            priceOption.currency === "INR"
+              ? "₹"
+              : priceOption.currency;
+          const priceOptionId = `${currentTransferData.id}-${resultIndex}-${priceIndex}`;
+          const operators = result.operator || [];
+          const segments = result.segments || [];
+          const departureInfo =
+            result.departure_datetime
+              ? dayjs(result.departure_datetime)
+              : null;
+          const arrivalInfo =
+            result.arrival_datetime
+              ? dayjs(result.arrival_datetime)
+              : null;
+          const isExpanded = expandedTransfersMulti[priceOptionId] || false;
 
-                                      return (
-                                        <div
-                                          key={priceOptionId}
-                                          className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md"
-                                        >
-                                          <div className="flex justify-between max-ph:flex-col">
-                                            <div className="w-full">
-                                              {/* Operator + class header */}
-                                              <div className="flex flex-row items-center gap-2">
-                                                <div className="flex flex-row items-center gap-xs">
-                                                  {operators.map(
-                                                    (op, opIdx) =>
-                                                      op.image && (
-                                                        <img
-                                                          key={opIdx}
-                                                          src={op.image}
-                                                          alt={op.name}
-                                                          className="h-5 w-auto object-contain"
-                                                        />
-                                                      ),
-                                                  )}
-                                                  <span className="text-sm font-500 text-text-spacegrey">
-                                                    {operators
-                                                      .map((op) => op.name)
-                                                      .join(" | ")}
-                                                  </span>
-                                                </div>
-                                                {priceOption.class_name && (
-                                                  <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
-                                                    {priceOption.class_name}
-                                                  </span>
-                                                )}
-                                              </div>
+          return (
+            <div
+              key={priceOptionId}
+              className="flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md"
+            >
+              <div className="flex justify-between max-ph:flex-col">
+                <div className="w-full">
+                  {/* Operator + class header */}
+                  <div className="flex flex-row items-center gap-2">
+                    <div className="flex flex-row items-center gap-xs">
+                      {operators.map(
+                        (op, opIdx) =>
+                          op.image && (
+                            <img
+                              key={opIdx}
+                              src={op.image}
+                              alt={op.name}
+                              className="h-5 w-auto object-contain"
+                            />
+                          ),
+                      )}
+                      <span className="text-sm font-500 text-text-spacegrey">
+                        {operators
+                          .map((op) => op.name)
+                          .join(" | ")}
+                      </span>
+                    </div>
+                    {priceOption.class_name && (
+                      <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                        {priceOption.class_name}
+                      </span>
+                    )}
+                  </div>
 
-                                              {/* Departure → Arrival timeline */}
-                                              {departureInfo && arrivalInfo && (
-                                                <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                                                  <div className="flex flex-col gap-xs shrink-0">
-                                                    <span className="text-sm font-400 leading-lg-md">
-                                                      {departureInfo.format(
-                                                        "ddd, MMM D",
-                                                      )}
-                                                    </span>
-                                                    <span className="text-md-lg font-600 leading-lg-md">
-                                                      {departureInfo.format(
-                                                        "h:mm A",
-                                                      )}
-                                                    </span>
-                                                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
-                                                      {result.source?.name ||
-                                                        currentTransferData
-                                                          .source?.city_name}
-                                                    </span>
-                                                  </div>
-                                                  <div className="flex items-center flex-1 mx-md relative">
-                                                    <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                                                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
-                                                      <span className="text-sm font-400 leading-tight">
-                                                        {result.duration_formatted ||
-                                                          `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
-                                                      </span>
-                                                      <span className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
-                                                        {getModeIcon(
-                                                          currentTransferData.mode,
-                                                          13,
-                                                        )}
-                                                      </span>
-                                                      <span className="text-sm font-400 leading-tight">
-                                                        {
-                                                          currentTransferData.distance
-                                                        }{" "}
-                                                        Km
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                  <div className="flex flex-col gap-xs shrink-0">
-                                                    <span className="text-sm font-400 leading-lg-md">
-                                                      {arrivalInfo.format(
-                                                        "MMM D",
-                                                      )}
-                                                    </span>
-                                                    <span className="text-md-lg font-600 leading-lg-md">
-                                                      {arrivalInfo.format(
-                                                        "h:mm A",
-                                                      )}
-                                                    </span>
-                                                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
-                                                      {result.destination
-                                                        ?.name ||
-                                                        currentTransferData
-                                                          .destination
-                                                          ?.city_name}
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              )}
+                  {/* Departure → Arrival timeline */}
+                  {departureInfo && arrivalInfo && (
+                    <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {departureInfo.format(
+                            "ddd, MMM D",
+                          )}
+                        </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {departureInfo.format(
+                            "h:mm A",
+                          )}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                          {result.source?.name ||
+                            currentTransferData
+                              .source?.city_name}
+                        </span>
+                      </div>
+                      <div className="flex items-center flex-1 mx-md relative">
+                        <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-2">
+                          <span className="text-sm font-400 leading-tight">
+                            {result.duration_formatted ||
+                              `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                          </span>
+                          <span className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
+                            {getModeIcon(
+                              currentTransferData.mode,
+                              13,
+                            )}
+                          </span>
+                          <span className="text-sm font-400 leading-tight">
+                            {
+                              currentTransferData.distance
+                            }{" "}
+                            Km
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-xs shrink-0">
+                        <span className="text-sm font-400 leading-lg-md">
+                          {arrivalInfo.format(
+                            "ddd, MMM D",
+                          )}
+                        </span>
+                        <span className="text-md-lg font-600 leading-lg-md">
+                          {arrivalInfo.format(
+                            "h:mm A",
+                          )}
+                        </span>
+                        <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                          {result.destination
+                            ?.name ||
+                            currentTransferData
+                              .destination
+                              ?.city_name}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
-                                              {/* Segments breakdown for connections */}
-                                              {segments.length > 1 && (
-                                                <div className="mt-md border-t border-text-disabled pt-md">
-                                                  <div className="text-xs font-500 text-text-spacegrey mb-md">
-                                                    {segments.length} segments ·{" "}
-                                                    {segments.length - 1}{" "}
-                                                    connection
-                                                    {segments.length > 2
-                                                      ? "s"
-                                                      : ""}
-                                                  </div>
-                                                  <div className="flex flex-col gap-2">
-                                                    {segments.map(
-                                                      (seg, segIdx) => {
-                                                        const segDep =
-                                                          seg.departure_datetime
-                                                            ? dayjs(
-                                                                seg.departure_datetime,
-                                                              )
-                                                            : null;
-                                                        const segArr =
-                                                          seg.arrival_datetime
-                                                            ? dayjs(
-                                                                seg.arrival_datetime,
-                                                              )
-                                                            : null;
-                                                        const isLastSegment =
-                                                          segIdx ===
-                                                          segments.length - 1;
+                  {/* Transfer Details Button */}
+                  {segments.length >= 1 && (
+                    <div 
+                      className="flex items-center gap-2 mt-md cursor-pointer"
+                      onClick={() => toggleTransferDetailsMulti(priceOptionId)}
+                    >
+                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                        <span>
+                          {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                          Transfer{segments.length > 2 ? 's' : ''}
+                        </span>
+                        {isExpanded ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
-                                                        return (
-                                                          <div key={segIdx}>
-                                                            {/* Departure Row */}
-                                                            <div className="flex flex-row items-center gap-2">
-                                                              <div className="flex flex-col items-end w-[68px] shrink-0">
-                                                                {segDep && (
-                                                                  <>
-                                                                    <span className="text-sm font-600 leading-tight">
-                                                                      {segDep.format(
-                                                                        "h:mm A",
-                                                                      )}
-                                                                    </span>
-                                                                  </>
-                                                                )}
-                                                              </div>
+                  {/* Segments breakdown for connections */}
+                  {segments.length >=1 && isExpanded && (
+                    <div className="mt-md border-t border-text-disabled pt-md">
+                      <div className="flex flex-col gap-2">
+                        {segments.map(
+                          (seg, segIdx) => {
+                            const segDep =
+                              seg.departure_datetime
+                                ? dayjs(
+                                    seg.departure_datetime,
+                                  )
+                                : null;
+                            const segArr =
+                              seg.arrival_datetime
+                                ? dayjs(
+                                    seg.arrival_datetime,
+                                  )
+                                : null;
+                            const isLastSegment =
+                              segIdx ===
+                              segments.length - 1;
 
-                                                              <div className="flex items-center shrink-0">
-                                                                <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                                              </div>
+                            return (
+                              <div key={segIdx}>
+                                {/* Departure Row */}
+                                <div className="flex flex-row items-start gap-3">
+                                  {/* Time column */}
+                                  <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                    {segDep && (
+                                      <span className="text-sm font-600 leading-tight">
+                                        {segDep.format(
+                                          "h:mm A",
+                                        )}
+                                      </span>
+                                    )}
+                                  </div>
 
-                                                              <div className="flex-1 min-w-0">
-                                                                <span
-                                                                  className="text-sm text-text-spacegrey block truncate"
-                                                                  title={
-                                                                    seg
-                                                                      .departure_station
-                                                                      ?.name
-                                                                  }
-                                                                >
-                                                                  {
-                                                                    seg
-                                                                      .departure_station
-                                                                      ?.name
-                                                                  }
-                                                                </span>
-                                                                {seg.vehicle_number && (
-                                                                  <span className="text-xs text-gray-500 block">
-                                                                    Vehicle:{" "}
-                                                                    {
-                                                                      seg.vehicle_number
-                                                                    }
-                                                                  </span>
-                                                                )}
-                                                              </div>
-                                                            </div>
+                                  {/* Dot column */}
+                                  <div className="flex flex-col items-center shrink-0 pt-1">
+                                    <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                                  </div>
 
-                                                            {/* Journey Line with Duration */}
-                                                            <div className="flex flex-row items-start gap-2 ml-[68px]">
-                                                              <div className="flex flex-col items-center shrink-0 relative">
-                                                                <div
-                                                                  className="w-[1px] bg-text-disabled"
-                                                                  style={{
-                                                                    height:
-                                                                      "36px",
-                                                                  }}
-                                                                ></div>
-                                                              </div>
-                                                              <div className="pt-1">
-                                                                <span className="text-xs text-text-spacegrey">
-                                                                  {seg.duration_formatted ||
-                                                                    `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
-                                                                </span>
-                                                              </div>
-                                                            </div>
+                                  {/* Station info column */}
+                                  <div className="flex-1 min-w-0">
+                                    <span
+                                      className="text-sm font-600 text-gray-900 block truncate"
+                                      title={
+                                        seg
+                                          .departure_station
+                                          ?.name
+                                      }
+                                    >
+                                      {
+                                        seg
+                                          .departure_station
+                                          ?.name
+                                      }
+                                    </span>
+                                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                                      {seg.operator?.name && (
+                                        <span>{seg.operator.name}</span>
+                                      )}
+                                      {seg.vehicle_number && (
+                                        <>
+                                          {seg.operator?.name && <span>|</span>}
+                                          <span>{seg.vehicle_number}</span>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
 
-                                                            {/* Arrival Row */}
-                                                            {segArr && (
-                                                              <div className="flex flex-row items-center gap-2">
-                                                                <div className="flex flex-col items-end w-[68px] shrink-0">
-                                                                  <span className="text-sm font-600 leading-tight">
-                                                                    {segArr.format(
-                                                                      "h:mm A",
-                                                                    )}
-                                                                  </span>
-                                                                </div>
+                                {/* Journey Line with Duration */}
+                                <div className="flex flex-row items-start gap-3">
+                                  {/* Time column - empty */}
+                                  <div className="w-[68px] shrink-0 mr-1"></div>
 
-                                                                <div className="flex items-center shrink-0">
-                                                                  <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                                                </div>
+                                  {/* Vertical line column - aligned with dots */}
+                                  <div className="flex flex-col items-center shrink-0">
+                                    <div
+                                      className="w-[2px] bg-gray-300"
+                                      style={{
+                                        height:
+                                          "40px",
+                                      }}
+                                    ></div>
+                                  </div>
 
-                                                                <div className="flex-1 min-w-0">
-                                                                  <span
-                                                                    className="text-sm text-text-spacegrey block truncate"
-                                                                    title={
-                                                                      seg
-                                                                        .arrival_station
-                                                                        ?.name
-                                                                    }
-                                                                  >
-                                                                    {
-                                                                      seg
-                                                                        .arrival_station
-                                                                        ?.name
-                                                                    }
-                                                                  </span>
-                                                                </div>
-                                                              </div>
-                                                            )}
+                                  {/* Duration info */}
+                                  <div className="pt-2">
+                                    <span className="text-xs text-gray-500">
+                                      {seg.duration_formatted ||
+                                        `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                                    </span>
+                                  </div>
+                                </div>
 
-                                                            {/* Connection/Layover indicator */}
-                                                            {!isLastSegment &&
-                                                              segments[
-                                                                segIdx + 1
-                                                              ] && (
-                                                                <div className="flex flex-row items-center gap-2 ml-[68px] mt-2 mb-2">
-                                                                  <div className="flex flex-col items-center shrink-0">
-                                                                    <div className="w-[1px] h-3 bg-text-disabled"></div>
-                                                                  </div>
-                                                                  <div className="flex flex-row items-center gap-1 bg-gray-50 px-2 py-1 rounded">
-                                                                    <FaClock
-                                                                      size={10}
-                                                                      className="text-text-spacegrey"
-                                                                    />
-                                                                    <span className="text-xs text-text-spacegrey">
-                                                                      {(() => {
-                                                                        const layover =
-                                                                          dayjs(
-                                                                            segments[
-                                                                              segIdx +
-                                                                                1
-                                                                            ]
-                                                                              .departure_datetime,
-                                                                          ).diff(
-                                                                            dayjs(
-                                                                              seg.arrival_datetime,
-                                                                            ),
-                                                                            "minute",
-                                                                          );
-                                                                        const h =
-                                                                          Math.floor(
-                                                                            layover /
-                                                                              60,
-                                                                          );
-                                                                        const m =
-                                                                          layover %
-                                                                          60;
-                                                                        return h >
-                                                                          0
-                                                                          ? `${h}h ${m}m layover`
-                                                                          : `${m}m layover`;
-                                                                      })()}
-                                                                    </span>
-                                                                  </div>
-                                                                </div>
-                                                              )}
-                                                          </div>
-                                                        );
-                                                      },
-                                                    )}
-                                                  </div>
-                                                </div>
-                                              )}
+                                {/* Arrival Row */}
+                                {segArr && (
+                                  <div className="flex flex-row items-start gap-3">
+                                    {/* Time column */}
+                                    <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                      <span className="text-sm font-600 leading-tight">
+                                        {segArr.format(
+                                          "h:mm A",
+                                        )}
+                                      </span>
+                                    </div>
 
-                                              {/* {priceOption.cancellation_policy && (
-                                                <div className="text-xs text-text-spacegrey truncate max-w-[68px] mt-xs">
-                                                  {
-                                                    priceOption.cancellation_policy
-                                                  }
-                                                </div>
-                                              )} */}
-                                            </div>
+                                    {/* Dot column */}
+                                    <div className="flex flex-col items-center shrink-0 pt-1">
+                                      <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                                    </div>
 
-                                            {/* Price + button */}
-                                            <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                                              <div>
-                                                <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
-                                                  {currencySymbol} {price}
-                                                </div>
-                                                <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
-                                                  for{" "}
-                                                  {pax?.adults +
-                                                    pax?.children +
-                                                    pax?.infants}{" "}
-                                                  people
-                                                </div>
-                                              </div>
-                                              <div
-                                                className="cursor-pointer"
-                                                onClick={() => {
-                                                  const selectedPriceData = {
-                                                    ...currentTransferData,
-                                                    selectedOmioResult: result,
-                                                    selectedOmioResultIndex:
-                                                      resultIndex,
-                                                    selectedPrice: {
-                                                      ...priceOption,
-                                                      result_index:
-                                                        priceOption.result_index,
-                                                    },
-                                                  };
-                                                  handleModeSelect(
-                                                    currentStep - 1,
-                                                    priceOptionId,
-                                                    selectedPriceData,
-                                                    currentTransferData.mode,
-                                                  );
-                                                }}
-                                              >
-                                                {selectedModeIds[
-                                                  currentStep - 1
-                                                ] === priceOptionId ? (
-                                                  <button className="ttw-btn-secondary-fill max-ph:w-full">
-                                                    Selected
-                                                  </button>
-                                                ) : (
-                                                  <button className="ttw-btn-fill-yellow max-ph:w-full">
-                                                    Add to Itinerary
-                                                  </button>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            }
+                                    {/* Station info column */}
+                                    <div className="flex-1 min-w-0">
+                                      <span
+                                        className="text-sm font-600 text-gray-900 block truncate"
+                                        title={
+                                          seg
+                                            .arrival_station
+                                            ?.name
+                                        }
+                                      >
+                                        {
+                                          seg
+                                            .arrival_station
+                                            ?.name
+                                        }
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Connection/Layover indicator */}
+                                {!isLastSegment &&
+                                  segments[
+                                    segIdx + 1
+                                  ] && (
+                                    <div className="flex flex-row items-center gap-3 mt-3 mb-3">
+                                      {/* Time column - empty */}
+                                      <div className="w-[68px] shrink-0 mr-1"></div>
+
+                                      {/* Vertical line column */}
+                                      <div className="flex flex-col items-center shrink-0">
+                                        <div className="w-[2px] h-4 bg-gray-300"></div>
+                                      </div>
+
+                                      {/* Transfer badge */}
+                                      <div className="flex flex-row items-center gap-2 bg-[#07213A] text-white px-3 py-1.5 rounded-md">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                        </svg>
+                                        <span className="text-xs font-500">
+                                          Transfer, {(() => {
+                                            const layover =
+                                              dayjs(
+                                                segments[
+                                                  segIdx +
+                                                    1
+                                                ]
+                                                  .departure_datetime,
+                                              ).diff(
+                                                dayjs(
+                                                  seg.arrival_datetime,
+                                                ),
+                                                "minute",
+                                              );
+                                            const h =
+                                              Math.floor(
+                                                layover /
+                                                  60,
+                                              );
+                                            const m =
+                                              layover %
+                                              60;
+                                            return h >
+                                              0
+                                              ? `${h}h${m}m`
+                                              : `${m}m`;
+                                          })()}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+                              </div>
+                            );
+                          },
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Price + button */}
+                <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+                  <div>
+                    <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                      {currencySymbol} {price}
+                    </div>
+                    <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                      for{" "}
+                      {pax?.adults +
+                        pax?.children +
+                        pax?.infants}{" "}
+                      people
+                    </div>
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const selectedPriceData = {
+                        ...currentTransferData,
+                        selectedOmioResult: result,
+                        selectedOmioResultIndex:
+                          resultIndex,
+                        selectedPrice: {
+                          ...priceOption,
+                          result_index:
+                            priceOption.result_index,
+                        },
+                      };
+                      handleModeSelect(
+                        currentStep - 1,
+                        priceOptionId,
+                        selectedPriceData,
+                        currentTransferData.mode,
+                      );
+                    }}
+                  >
+                    {selectedModeIds[
+                      currentStep - 1
+                    ] === priceOptionId ? (
+                      <button className="ttw-btn-secondary-fill max-ph:w-full">
+                        Selected
+                      </button>
+                    ) : (
+                      <button className="ttw-btn-fill-yellow max-ph:w-full">
+                        Add to Itinerary
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        },
+      );
+    },
+  );
+}
 
                             return currentTransferData.prices.map(
                               (priceOption, priceIndex) => {
@@ -4925,6 +4961,15 @@ const OtherTransfer = ({
       : number_of_infants,
   });
 
+  const [expandedTransfers, setExpandedTransfers] = useState({});
+
+const toggleTransferDetails = (priceOptionId) => {
+  setExpandedTransfers(prev => ({
+    ...prev,
+    [priceOptionId]: !prev[priceOptionId]
+  }));
+};
+
   useEffect(() => {
     if (selectedResult?.transfer?.id) {
       const currentTransferId = otherTransfer?.id;
@@ -5953,317 +5998,346 @@ const OtherTransfer = ({
           const hasOmioResults =
             otherTransfer.results && otherTransfer.results.length > 0;
 
-          if (hasOmioResults) {
-            // ─── OMIO RESULTS RENDERING ───
-            return otherTransfer.results.map((result, resultIndex) => {
-              const resultPrices = result.prices || [];
-              return resultPrices.map((priceOption, priceIndex) => {
-                const price = priceOption.price || 0;
-                const formattedPrice = formatPriceWithComma(price);
-                const transfer_currency = currency?.currency
-                  ? currencySymbols?.[currency?.currency]
-                  : "₹";
-                const priceOptionId = `${otherTransfer.id}-${resultIndex}-${priceIndex}`;
-                const isOptionSelected = isPriceOptionSelected(
-                  otherTransfer.id,
-                  resultIndex,
-                  priceIndex,
-                );
-                const isOptionLoading = loadingOptionId === priceOptionId;
-                const departureInfo = result.departure_datetime
-                  ? dayjs(result.departure_datetime)
-                  : null;
-                const arrivalInfo = result.arrival_datetime
-                  ? dayjs(result.arrival_datetime)
-                  : null;
-                const segments = result.segments || [];
-                const operators = result.operator || [];
+      if (hasOmioResults) {
+  // ─── OMIO RESULTS RENDERING ───
+  return otherTransfer.results.map((result, resultIndex) => {
+    const resultPrices = result.prices || [];
+    return resultPrices.map((priceOption, priceIndex) => {
+      const price = priceOption.price || 0;
+      const formattedPrice = formatPriceWithComma(price);
+      const transfer_currency = currency?.currency
+        ? currencySymbols?.[currency?.currency]
+        : "₹";
+      const priceOptionId = `${otherTransfer.id}-${resultIndex}-${priceIndex}`;
+      const isOptionSelected = isPriceOptionSelected(
+        otherTransfer.id,
+        resultIndex,
+        priceIndex,
+      );
+      const isOptionLoading = loadingOptionId === priceOptionId;
+      const departureInfo = result.departure_datetime
+        ? dayjs(result.departure_datetime)
+        : null;
+      const arrivalInfo = result.arrival_datetime
+        ? dayjs(result.arrival_datetime)
+        : null;
+      const segments = result.segments || [];
+      const operators = result.operator || [];
+      const isExpanded = expandedTransfers[priceOptionId] || false;
 
-                return (
-                  <div
-                    key={priceOptionId}
-                    className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
-                      ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
-                      ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
-                  >
-                    <div className="flex justify-between max-ph:flex-col">
-                      <div className="w-full">
-                        {/* Header: operator + class */}
-                        <div className="flex flex-row items-center gap-2">
-                          <div className="flex flex-row items-center gap-xs">
-                            {operators.map(
-                              (op, opIdx) =>
-                                op.image && (
-                                  <img
-                                    key={opIdx}
-                                    src={op.image}
-                                    alt={op.name}
-                                    className="h-5 w-auto object-contain"
-                                  />
-                                ),
-                            )}
-                            <span className="text-sm font-500 text-text-spacegrey">
-                              {operators.map((op) => op.name).join(" | ")}
-                            </span>
-                          </div>
-                          {priceOption.class_name && (
-                            <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
-                              {priceOption.class_name}
-                            </span>
-                          )}
-                        </div>
+      return (
+        <div
+          key={priceOptionId}
+          className={`flex flex-col rounded-3xl border-sm border-solid border-text-disabled p-md hover:bg-text-smoothwhite relative mt-md
+            ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}
+            ${isBookingInProgress && !isOptionLoading ? "opacity-50" : ""}`}
+        >
+          <div className="flex justify-between max-ph:flex-col">
+            <div className="w-full">
+              {/* Header: operator + class */}
+              <div className="flex flex-row items-center gap-2">
+                <div className="flex flex-row items-center gap-xs">
+                  {operators.map(
+                    (op, opIdx) =>
+                      op.image && (
+                        <img
+                          key={opIdx}
+                          src={op.image}
+                          alt={op.name}
+                          className="h-5 w-auto object-contain"
+                        />
+                      ),
+                  )}
+                  <span className="text-sm font-500 text-text-spacegrey">
+                    {operators.map((op) => op.name).join(" | ")}
+                  </span>
+                </div>
+                {priceOption.class_name && (
+                  <span className="text-xs font-500 bg-gray-100 px-xs py-[2px] rounded-md text-text-spacegrey">
+                    {priceOption.class_name}
+                  </span>
+                )}
+              </div>
 
-                        {/* Main departure → arrival timeline */}
-                        {departureInfo && arrivalInfo && (
-                          <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
-                            <div className="flex flex-col gap-xs shrink-0">
-                              <span className="text-sm font-400 leading-lg-md">
-                                {departureInfo.format("ddd, MMM D")}
-                              </span>
-                              <span className="text-md-lg font-600 leading-lg-md">
-                                {departureInfo.format("h:mm A")}
-                              </span>
-                              <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
-                                {result.source?.name ||
-                                  otherTransfer.source?.city_name}
-                              </span>
+              {/* Main departure → arrival timeline */}
+              {departureInfo && arrivalInfo && (
+                <div className="flex items-center justify-between mt-md mr-2xl max-ph:mr-zero max-ph:mb-md">
+                  <div className="flex flex-col gap-xs shrink-0">
+                    <span className="text-sm font-400 leading-lg-md">
+                      {departureInfo.format("ddd, MMM D")}
+                    </span>
+                    <span className="text-md-lg font-600 leading-lg-md">
+                      {departureInfo.format("h:mm A")}
+                    </span>
+                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                      {result.source?.name ||
+                        otherTransfer.source?.city_name}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center flex-1 mx-md relative">
+                    <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
+                    <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-1">
+                      <span className="text-sm font-400 leading-tight">
+                        {result.duration_formatted ||
+                          `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                      </span>
+                      <div className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
+                        {getModeIcon(otherTransfer.mode, 13)}
+                      </div>
+                      <span className="text-sm font-400 leading-tight">
+                        {otherTransfer.distance} Km
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-xs shrink-0">
+                    <span className="text-sm font-400 leading-lg-md">
+                      {arrivalInfo.format("ddd, MMM D")}
+                    </span>
+                    <span className="text-md-lg font-600 leading-lg-md">
+                      {arrivalInfo.format("h:mm A")}
+                    </span>
+                    <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
+                      {result.destination?.name ||
+                        otherTransfer.destination?.city_name}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Transfer Details Button */}
+              {segments.length >=1 && (
+                <div 
+                  className="flex items-center gap-2 mt-md cursor-pointer"
+                  onClick={() => toggleTransferDetails(priceOptionId)}
+                >
+                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-sm font-500">
+                    <span>
+                      {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
+                      Transfer{segments.length > 2 ? 's' : ''}
+                    </span>
+                    {isExpanded ? (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Segments breakdown */}
+              {segments.length >= 1 && isExpanded && (
+                <div className="mt-md border-t border-text-disabled pt-md">
+                  <div className="flex flex-col gap-2">
+                    {segments.map((seg, segIdx) => {
+                      const segDep = seg.departure_datetime
+                        ? dayjs(seg.departure_datetime)
+                        : null;
+                      const segArr = seg.arrival_datetime
+                        ? dayjs(seg.arrival_datetime)
+                        : null;
+                      const isLastSegment = segIdx === segments.length - 1;
+
+                      return (
+                        <div key={segIdx}>
+                          {/* Departure Row */}
+                          <div className="flex flex-row items-start gap-3">
+                            {/* Time column */}
+                            <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                              {segDep && (
+                                <span className="text-sm font-600 leading-tight">
+                                  {segDep.format("h:mm A")}
+                                </span>
+                              )}
                             </div>
 
-                            <div className="flex items-center flex-1 mx-md relative">
-                              <div className="w-full border-b-[2px] border-black [border-style:dashed] [border-image:repeating-linear-gradient(to_right,#6E757A_0_6px,transparent_6px_12px)_1]"></div>
-                              <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center px-1 gap-1">
-                                <span className="text-sm font-400 leading-tight">
-                                  {result.duration_formatted ||
-                                    `${Math.floor(result.duration / 60)}h ${result.duration % 60}m`}
+                            {/* Dot column */}
+                            <div className="flex flex-col items-center shrink-0 pt-1">
+                              <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                            </div>
+
+                            {/* Station info column */}
+                            <div className="flex-1 min-w-0">
+                              <span
+                                className="text-sm font-600 text-gray-900 block truncate"
+                                title={seg.departure_station?.name}
+                              >
+                                {seg.departure_station?.name}
+                              </span>
+                              <div className="flex items-center gap-2 mt-1 text-xs text-gray-600">
+                                {seg.operator?.name && (
+                                  <span>{seg.operator.name}</span>
+                                )}
+                                {seg.vehicle_number && (
+                                  <>
+                                    {seg.operator?.name && <span>|</span>}
+                                    <span>{seg.vehicle_number}</span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Journey Line with Duration */}
+                          <div className="flex flex-row items-start gap-3">
+                            {/* Time column - empty */}
+                            <div className="w-[68px] shrink-0 items-end mr-1"></div>
+
+                            {/* Vertical line column - aligned with dots */}
+                            <div className="flex flex-col items-center shrink-0">
+                              <div
+                                className="w-[2px] bg-gray-300"
+                                style={{ height: "40px" }}
+                              ></div>
+                            </div>
+
+                            {/* Duration info */}
+                            <div className="pt-2">
+                              <span className="text-xs text-gray-500">
+                                {seg.duration_formatted ||
+                                  `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Arrival Row */}
+                          {segArr && (
+                            <div className="flex flex-row items-start gap-3">
+                              {/* Time column */}
+                              <div className="flex flex-col items-end w-[68px] shrink-0 pt-1">
+                                <span className="text-sm font-600 leading-tight">
+                                  {segArr.format("h:mm A")}
                                 </span>
-                                <div className="bg-primary-indigo rounded-full w-[26px] h-[26px] flex items-center justify-center flex-shrink-0">
-                                  {getModeIcon(otherTransfer.mode, 13)}
-                                </div>
-                                <span className="text-sm font-400 leading-tight">
-                                  {otherTransfer.distance} Km
+                              </div>
+
+                              {/* Dot column */}
+                              <div className="flex flex-col items-center shrink-0 pt-1">
+                                <div className="w-3 h-3 rounded-full border-2 border-primary-indigo bg-white"></div>
+                              </div>
+
+                              {/* Station info column */}
+                              <div className="flex-1 min-w-0">
+                                <span
+                                  className="text-sm font-600 text-gray-900 block truncate"
+                                  title={seg.arrival_station?.name}
+                                >
+                                  {seg.arrival_station?.name}
                                 </span>
                               </div>
                             </div>
+                          )}
 
-                            <div className="flex flex-col gap-xs shrink-0">
-                              <span className="text-sm font-400 leading-lg-md">
-                                {arrivalInfo.format("ddd, MMM D")}
-                              </span>
-                              <span className="text-md-lg font-600 leading-lg-md">
-                                {arrivalInfo.format("h:mm A")}
-                              </span>
-                              <span className="text-sm font-400 leading-lg-md truncate max-w-[75px] md:max-w-[140px]">
-                                {result.destination?.name ||
-                                  otherTransfer.destination?.city_name}
-                              </span>
-                            </div>
-                          </div>
-                        )}
+                          {/* Connection/Layover indicator */}
+                          {!isLastSegment && segments[segIdx + 1] && (
+                            <div className="flex flex-row items-center gap-3 mt-3 mb-3">
+                              {/* Time column - empty */}
+                              <div className="w-[68px] shrink-0 mr-1"></div>
 
-                        {/* Segments breakdown — only shown when there are 2+ segments (i.e. a connection) */}
-                        {segments.length > 1 && (
-                          <div className="mt-md border-t border-text-disabled pt-md">
-                            <div className="text-xs font-500 text-text-spacegrey mb-md">
-                              {segments.length} segments · {segments.length - 1}{" "}
-                              connection{segments.length > 2 ? "s" : ""}
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              {segments.map((seg, segIdx) => {
-                                const segDep = seg.departure_datetime
-                                  ? dayjs(seg.departure_datetime)
-                                  : null;
-                                const segArr = seg.arrival_datetime
-                                  ? dayjs(seg.arrival_datetime)
-                                  : null;
-                                const isLastSegment =
-                                  segIdx === segments.length - 1;
+                              {/* Vertical line column */}
+                              <div className="flex flex-col items-center shrink-0">
+                                <div className="w-[2px] h-4 bg-gray-300"></div>
+                              </div>
 
-                                return (
-                                  <div key={segIdx}>
-                                    {/* Departure Row */}
-                                    <div className="flex flex-row items-center gap-2">
-                                      <div className="flex flex-col items-end w-[68px] shrink-0">
-                                        {segDep && (
-                                          <>
-                                            <span className="text-sm font-600 leading-tight">
-                                              {segDep.format("h:mm A")}
-                                            </span>
-                                          </>
-                                        )}
-                                      </div>
-
-                                      <div className="flex items-center shrink-0">
-                                        <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                      </div>
-
-                                      <div className="flex-1 min-w-0">
-                                        <span
-                                          className="text-sm text-text-spacegrey block truncate"
-                                          title={seg.departure_station?.name}
-                                        >
-                                          {seg.departure_station?.name}
-                                        </span>
-                                        {seg.vehicle_number && (
-                                          <span className="text-xs text-gray-500 block">
-                                            Vehicle: {seg.vehicle_number}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {/* Journey Line with Duration */}
-                                    <div className="flex flex-row items-start gap-2 ml-[68px]">
-                                      <div className="flex flex-col items-center shrink-0 relative">
-                                        <div
-                                          className="w-[1px] bg-text-disabled"
-                                          style={{ height: "36px" }}
-                                        ></div>
-                                      </div>
-                                      <div className="pt-1">
-                                        <span className="text-xs text-text-spacegrey">
-                                          {seg.duration_formatted ||
-                                            `${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m`}
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Arrival Row */}
-                                    {segArr && (
-                                      <div className="flex flex-row items-center gap-2">
-                                        <div className="flex flex-col items-end w-[68px] shrink-0">
-                                          <span className="text-sm font-600 leading-tight">
-                                            {segArr.format("h:mm A")}
-                                          </span>
-                                        </div>
-
-                                        <div className="flex items-center shrink-0">
-                                          <div className="w-2 h-2 rounded-full bg-primary-indigo"></div>
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                          <span
-                                            className="text-sm text-text-spacegrey block truncate"
-                                            title={seg.arrival_station?.name}
-                                          >
-                                            {seg.arrival_station?.name}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* Connection/Layover indicator */}
-                                    {!isLastSegment && segments[segIdx + 1] && (
-                                      <div className="flex flex-row items-center gap-2 ml-[68px] mt-2 mb-2">
-                                        <div className="flex flex-col items-center shrink-0">
-                                          <div className="w-[1px] h-3 bg-text-disabled"></div>
-                                        </div>
-                                        <div className="flex flex-row items-center gap-1 bg-gray-50 px-2 py-1 rounded">
-                                          <FaClock
-                                            size={10}
-                                            className="text-text-spacegrey"
-                                          />
-                                          <span className="text-xs text-text-spacegrey">
-                                            {(() => {
-                                              const layover = dayjs(
-                                                segments[segIdx + 1]
-                                                  .departure_datetime,
-                                              ).diff(
-                                                dayjs(seg.arrival_datetime),
-                                                "minute",
-                                              );
-                                              const h = Math.floor(
-                                                layover / 60,
-                                              );
-                                              const m = layover % 60;
-                                              return h > 0
-                                                ? `${h}h ${m}m layover`
-                                                : `${m}m layover`;
-                                            })()}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Cancellation policy */}
-                        {/* {priceOption.cancellation_policy && (
-                          <div className="text-xs text-text-spacegrey truncate max-w-[68px] mt-xs">
-                            {priceOption.cancellation_policy}
-                          </div>
-                        )} */}
-                      </div>
-
-                      {/* Price + action button */}
-                      <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
-                        <div>
-                          <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
-                            {transfer_currency} {formattedPrice}
-                          </div>
-                          <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
-                            for {pax?.adults + pax?.children + pax?.infants}{" "}
-                            people
-                          </div>
-                        </div>
-
-                        <div
-                          className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
-                          onClick={() => {
-                            if (updateLoading && !isOptionLoading) return;
-                            if (isBookingInProgress && !isOptionLoading) return;
-
-                            const selectedPriceData = {
-                              ...otherTransfer,
-                              selectedOmioResult: result,
-                              selectedOmioResultIndex: resultIndex,
-                              selectedPrice: {
-                                ...priceOption,
-                                result_index: priceOption.result_index,
-                              },
-                            };
-
-                            handleModeSelect(
-                              currentStep - 1,
-                              priceOptionId,
-                              selectedPriceData,
-                              otherTransfer.mode,
-                            );
-                          }}
-                        >
-                          {isOptionLoading ||
-                          (updateLoading && isOptionSelected) ? (
-                            <div className="flex items-center gap-1">
-                              <PulseLoader
-                                size={15}
-                                speedMultiplier={0.6}
-                                color="#000000"
-                              />
-                            </div>
-                          ) : isOptionSelected && isResultSelected ? (
-                            <div className="flex items-center gap-1">
-                              <button className="ttw-btn-secondary-fill max-ph:w-full">
-                                Selected
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1">
-                              <button className="ttw-btn-fill-yellow max-ph:w-full">
-                                Add to Itinerary
-                              </button>
+                              {/* Transfer badge */}
+                              <div className="flex flex-row items-center gap-2 bg-[#07213A] text-white px-3 py-1.5 rounded-md">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                                <span className="text-xs font-500">
+                                  Transfer, {(() => {
+                                    const layover = dayjs(
+                                      segments[segIdx + 1].departure_datetime,
+                                    ).diff(
+                                      dayjs(seg.arrival_datetime),
+                                      "minute",
+                                    );
+                                    const h = Math.floor(layover / 60);
+                                    const m = layover % 60;
+                                    return h > 0
+                                      ? `${h}h${m}m`
+                                      : `${m}m`;
+                                  })()}
+                                </span>
+                              </div>
                             </div>
                           )}
                         </div>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
-                );
-              });
-            });
-          }
+                </div>
+              )}
+            </div>
+
+            {/* Price + action button */}
+            <div className="flex flex-col justify-between items-end max-ph:flex-row max-ph:items-center">
+              <div>
+                <div className="text-lg font-700 2xl-md text-right max-ph:text-left">
+                  {transfer_currency} {formattedPrice}
+                </div>
+                <div className="text-text-spacegrey text-sm-md font-400 leading-lg">
+                  for {pax?.adults + pax?.children + pax?.infants} people
+                </div>
+              </div>
+
+              <div
+                className={`cursor-pointer ${updateLoading && !isOptionLoading ? "opacity-50" : ""} ${isBookingInProgress && !isOptionLoading ? "cursor-not-allowed opacity-50" : ""}`}
+                onClick={() => {
+                  if (updateLoading && !isOptionLoading) return;
+                  if (isBookingInProgress && !isOptionLoading) return;
+
+                  const selectedPriceData = {
+                    ...otherTransfer,
+                    selectedOmioResult: result,
+                    selectedOmioResultIndex: resultIndex,
+                    selectedPrice: {
+                      ...priceOption,
+                      result_index: priceOption.result_index,
+                    },
+                  };
+
+                  handleModeSelect(
+                    currentStep - 1,
+                    priceOptionId,
+                    selectedPriceData,
+                    otherTransfer.mode,
+                  );
+                }}
+              >
+                {isOptionLoading || (updateLoading && isOptionSelected) ? (
+                  <div className="flex items-center gap-1">
+                    <PulseLoader
+                      size={15}
+                      speedMultiplier={0.6}
+                      color="#000000"
+                    />
+                  </div>
+                ) : isOptionSelected && isResultSelected ? (
+                  <div className="flex items-center gap-1">
+                    <button className="ttw-btn-secondary-fill max-ph:w-full">
+                      Selected
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <button className="ttw-btn-fill-yellow max-ph:w-full">
+                      Add to Itinerary
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    });
+  });
+}
 
           // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───
           if (!otherTransfer.prices || otherTransfer.prices.length === 0)
