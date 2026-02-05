@@ -739,9 +739,9 @@ const PriceDetails = ({
   // }
 
   const finalTotal =
-    (typeof totalPayable === "string"
+    typeof totalPayable === "string"
       ? parseFloat(totalPayable.replace(/,/g, "")) || 0
-      : totalPayable || 0);
+      : totalPayable || 0;
 
   return (
     <div className="mb-4">
@@ -776,16 +776,25 @@ const PriceDetails = ({
           )
         } */}
 
-        {
-          Cart?.taxation_policy == "TCS" && (
-            <div className="flex justify-between text-sm font-400 leading-md mb-sm">
-              <span>GST</span>
-              <span>{currencySymbols?.[currency]
-                ? currencySymbols?.[currency]
-                : "₹"}{Cart?.gst?.toLocaleString("en-IN")}</span>
-            </div>
-          )
-        }
+        {Cart?.taxation_policy == "TCS" && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>GST</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {Cart?.gst?.toLocaleString("en-IN")}
+            </span>
+          </div>
+        )}
+
+        {Cart?.taxation_policy == "TCS" && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>TCS</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {Cart?.tcs?.toLocaleString("en-IN")}
+            </span>
+          </div>
+        )}
 
         {couponDiscount >= 0 || couponDiscount < 0 ? (
           <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
@@ -793,7 +802,8 @@ const PriceDetails = ({
             <span>
               {couponDiscount
                 ? currencySymbols?.[currency]
-                  ? "-" + currencySymbols?.[currency] +
+                  ? "-" +
+                    currencySymbols?.[currency] +
                     Math.abs(couponDiscount).toLocaleString("en-IN")
                   : "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
                 : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
@@ -872,7 +882,7 @@ const ItineraryInclusions = ({
     const categories = {
       Flights: [],
       Stays: [],
-      Activities: [],
+      "Activities & Ancillaries": [],
       Transfers: [],
     };
 
@@ -881,7 +891,8 @@ const ItineraryInclusions = ({
     const orderedCategories = [
       { key: "Flights", ui: "Flights", type: "Flight" },
       { key: "Stays", ui: "Stays", type: "Accommodation" },
-      { key: "Activities", ui: "Activities", type: "Activity" },
+      { key: "Activities", ui: "Activities & Ancillaries", type: "Activity" },
+      { key: "Ancillaries", ui: "Activities & Ancillaries", type: "Ancillary" },
       { key: "Transfers", ui: "Transfers", type: "Transfer" },
     ];
 
@@ -889,7 +900,7 @@ const ItineraryInclusions = ({
       const data = Cart.summary[key];
       if (!data?.bookings?.length) return;
 
-      categories[ui] = data.bookings.map((booking) => ({
+      const bookings = data.bookings.map((booking) => ({
         id: booking.id,
         booking_cost: booking.booking_cost,
         detail: {
@@ -903,6 +914,13 @@ const ItineraryInclusions = ({
         status: booking.status,
         booking_type: type,
       }));
+
+      // For Activities & Ancillaries, append bookings instead of replacing
+      if (ui === "Activities & Ancillaries") {
+        categories[ui] = [...(categories[ui] || []), ...bookings];
+      } else {
+        categories[ui] = bookings;
+      }
     });
 
     return categories;
@@ -1438,7 +1456,9 @@ const Details = (props) => {
                     ? "flight"
                     : category === "Transfers"
                       ? "transfer"
-                      : "activity";
+                      : category === "Ancillaries"
+                        ? "ancillary"
+                        : "activity";
             }
           }
         });
@@ -2629,7 +2649,9 @@ const Details = (props) => {
                     <PriceDetails
                       itineraryCost={getIndianPrice(
                         Math.round(
-                          Cart?.total_itinerary_cost
+                          Cart?.taxation_policy == "TCS"
+                            ? Cart?.total_itinerary_cost
+                            : Cart?.total_cost,
                         ),
                       )}
                       lockInCost={0}
