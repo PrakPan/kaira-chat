@@ -535,8 +535,8 @@ export default function ActivityDetails(props) {
               <div className="font-medium text-gray-900">
                   {props.data?.is_package ? packageItem?.title ? packageItem.title : '' : ''}
               </div>
-              {!(packageItem?.description) && !packageItem?.title &&  <div className="text-sm text-gray-600">
-                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
+              {!(packageItem?.description) && !packageItem?.title && packageItem.pax_details?.adults && <div className="text-sm text-gray-600">
+                  For {packageItem.pax_details?.adults + packageItem.pax_details?.children} people
               </div>}
               </div>
               <div className="text-right">
