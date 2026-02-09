@@ -231,7 +231,7 @@ const CityDay = (props) => {
                 <div
                   className={`rounded-9xl text-[12px] font-400 leading-md px-sm py-xxs text-white ${"bg-[#5CBA66]"} flex gap-2 items-center justify-center`}
                 >
-                  <FaTaxi/> Sightseing Taxi Included
+                  <FaTaxi/> Sightseeing Taxi Included
                 </div>
             
               </div>
