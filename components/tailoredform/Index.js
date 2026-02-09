@@ -37,7 +37,7 @@ import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useAnalytics } from "../../hooks/useAnalytics";
 import styled, { keyframes } from "styled-components";
 import { fadeIn } from "react-animations";
-import { authCloseLogin } from "../../store/actions/auth";
+import { authCloseLogin, authShowLogin } from "../../store/actions/auth";
 import Login from "../modals/Login";
 import StepsProgress from "./StepsProgress";
 import getPlatform from "../../utils/getPlatform";
@@ -509,27 +509,25 @@ const Enquiry = (props) => {
       setIsRouteChanged(false);
 
       if (isRecalculating) {
-
-      router.push(
-        {
-          query: {
-            ...router.query,
-            slideIndex: slideIndex + 1,
+        router.push(
+          {
+            query: {
+              ...router.query,
+              slideIndex: slideIndex + 1,
+            },
           },
-        },
-        undefined,
-        { shallow: true },
-      );
-      
-      
-      setTimeout(() => {
-        setIsLoading(false);
-        setIsRecalculatingRoute(false);
-        setLoadingItineraryId(null);
-      }, 100);
+          undefined,
+          { shallow: true },
+        );
 
-      return;
-    }
+        setTimeout(() => {
+          setIsLoading(false);
+          setIsRecalculatingRoute(false);
+          setLoadingItineraryId(null);
+        }, 100);
+
+        return;
+      }
     } catch (err) {
       console.log("ERROR: ", err.message);
       setError(err.response.data?.errors?.[0]?.message?.[0] || err.message);
@@ -690,8 +688,8 @@ const Enquiry = (props) => {
       ? 4
       : 3
     : slideThreeData.addHotels
-      ? 5
-      : 4;
+      ? 4
+      : 3;
   // const totalSlides = (localStorage.getItem("access_token")&&!slideThreeData.addHotels) ? 3 :(slideThreeData.addHotels&&localStorage.getItem("access_token")) ? 4  : localStorage.getItem("access_token") ? 4 : 5;
 
   const [steps, setSteps] = useState([
@@ -706,15 +704,9 @@ const Enquiry = (props) => {
     setSteps((prevSteps) => {
       let updatedSteps = [...prevSteps];
 
-      updatedSteps = updatedSteps.filter(
-        (step) => step !== "Stay Preferences" && step !== "Login",
-      );
+      updatedSteps = updatedSteps.filter((step) => step !== "Stay Preferences");
 
       if (slideThreeData?.addHotels) updatedSteps.push("Stay Preferences");
-
-      if (!isLoggedIn) {
-        updatedSteps.push("Login");
-      }
 
       return updatedSteps;
     });
@@ -1272,71 +1264,19 @@ const Enquiry = (props) => {
                   loading={isSubmitting}
                   disabled={isSubmitting}
                   onclick={() => {
-                    totalSlides == 4
-                      ? _submitDataHandler()
-                      : router.push(
-                          {
-                            // pathname: "/new-trip",
-                            query: {
-                              ...router.query,
-                              slideIndex: slideIndex + 1,
-                            },
-                          },
-                          undefined,
-                          { shallow: true },
-                        );
+                    // Check if user is logged in
+                    if (!localStorage.getItem("access_token")) {
+                      dispatch(authShowLogin());
+                    } else {
+                      _submitDataHandler();
+                    }
                   }}
                 >
-                  {totalSlides == 4 ? "Get Itinerary!" : "Continue"}
+                  Get Itinerary!
                 </Button>
               </div>
             </div>
           )}
-          {slideIndex === 4 ? (
-            <div className="flex justify-end">
-              <Button
-                fontSize="1rem"
-                style={
-                  !isPageWide
-                    ? {
-                        position: "fixed",
-                        left: "1rem",
-                        right: "1rem",
-                        bottom: "0",
-                      }
-                    : {}
-                }
-                padding="0.5rem 2rem"
-                fontWeight="500"
-                margin="40px 0"
-                borderRadius="5px"
-                borderWidth="1px"
-                bgColor="#07213A"
-                color="white"
-                loading={isSubmitting}
-                disabled={isSubmitting}
-                onClick={() => {
-                  totalSlides == 5
-                    ? _submitDataHandler()
-                    : router.push(
-                        {
-                          // pathname: "/new-trip",
-                          query: {
-                            ...router.query,
-                            slideIndex: slideIndex + 1,
-                          },
-                        },
-                        undefined,
-                        { shallow: true },
-                      );
-                }}
-                height="50px"
-                width={`${isPageWide ? "300px" : ""}`}
-              >
-                {totalSlides == 5 ? "Get Itinerary!" : "Continue"}
-              </Button>
-            </div>
-          ) : null}
         </div>
       </div>
     </>
