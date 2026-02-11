@@ -184,8 +184,11 @@ const SimpleTabsV2 = (props) => {
 
   useEffect(() => {
     if (!props.token && props.itinerary && finalized_status == "SUCCESS") {
+      const timeout = setTimeout(()=>{
       setLoginModalMessage("Login to view details");
       setShowLoginModal(true);
+      },30000)
+       return () => clearTimeout(timeout);
     }
   }, [props.itinerary?.id]);
 

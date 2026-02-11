@@ -1265,11 +1265,11 @@ const Enquiry = (props) => {
                   disabled={isSubmitting}
                   onclick={() => {
                     // Check if user is logged in
-                    if (!localStorage.getItem("access_token")) {
-                      dispatch(authShowLogin());
-                    } else {
+                    // if (!localStorage.getItem("access_token")) {
+                    //   dispatch(authShowLogin());
+                    // } else {
                       _submitDataHandler();
-                    }
+                    // }
                   }}
                 >
                   Get Itinerary!

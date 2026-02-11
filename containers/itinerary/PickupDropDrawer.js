@@ -57,6 +57,7 @@ const PickupDropDrawer = ({
   sourceLong,
   destinationLat,
   destinationLong,
+  doj
 }) => {
 
   const [searchResults, setSearchResults] = useState([]);
@@ -504,11 +505,11 @@ const PickupDropDrawer = ({
       let newTime = { value: "12:00", display: "12:00 PM" };
 
       if (transferType === "pickup") {
-        const result = calculateTimeWithOffset(booking.check_out, 30);
+        const result = calculateTimeWithOffset(booking.check_out || doj, 30);
         newDate = result.date;
         newTime = { value: result.value, display: result.display };
       } else {
-        const result = calculateTimeWithOffset(booking.check_in, -30);
+        const result = calculateTimeWithOffset(booking.check_in || doj, -30);
         newDate = result.date;
         newTime = { value: result.value, display: result.display };
       }
@@ -523,7 +524,7 @@ const PickupDropDrawer = ({
 
       setIsAutoFilled(true);
     }
-  }, [isOpen, booking, transferType]);
+  }, [isOpen, booking, transferType,doj]);
 
   // 3. THIRD - Search for hubs when drawer opens
   // useEffect(() => {

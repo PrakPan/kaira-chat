@@ -28,7 +28,7 @@ const TravelPlanner = (props) => {
       page="Continent Page"
     >
       <Head>
-        <title>{`${convertDbNameToCapitalFirst(props.Data.slug)} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}</title>
+        <title>{`${convertDbNameToCapitalFirst(props.Data.slug)} AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`${props.Data.meta_description}`}

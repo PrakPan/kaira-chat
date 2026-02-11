@@ -767,7 +767,7 @@ const CityItem = ({
   const { trackTransferBookingAdd, trackTransferBookingChange, trackTransferBookingDelete } = useAnalytics();
   const { id } = useSelector((state) => state.auth);
 
-  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType } =
+  const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
     router?.query;
 
   const handlePickupClick = () => {
@@ -1420,6 +1420,7 @@ useEffect(() => {
             booking={booking}
             onClose={handleClose}
             transferType={drawerType}
+            doj={doj}
             bookingMode={booking_type?.toLowerCase()}
             originCityName={origin_city_name}
             destinationCityName={destination_city_name}

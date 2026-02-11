@@ -108,6 +108,7 @@ const TransferDrawer = ({
           bookingId: booking_id,
           oItineraryCity: origin_itinerary_city_id,
           dItineraryCity: destination_itinerary_city_id,
+          doj: data?.check_in,
         },
       },
       undefined,

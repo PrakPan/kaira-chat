@@ -34,7 +34,7 @@ export default class MyDocument extends Document {
     return (
       <Html id="html" lang="en">
         <Head>
-          <title>Trip Planner & Itinerary | The Tarzan Way</title>
+          <title>AI Trip Planner & Custom Travel Itineraries | The Tarzan Way</title>
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
