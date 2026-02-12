@@ -24,6 +24,7 @@ const CityDaybyDay = (props) => {
             getPaymentHandler={props?.getPaymentHandler}
             nextCity={props?.nextCity}
             isLastDay={index === props.city?.day_by_day.length - 1}
+            setShowSettings={props?.setShowSettings}
           />
         </>
       ))}

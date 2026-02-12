@@ -9,7 +9,6 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_USER_LOCATION:
-      console.log("Dataa",action.payload.location);
       return {
         location: action.payload.location,
       };

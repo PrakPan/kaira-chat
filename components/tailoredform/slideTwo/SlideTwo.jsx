@@ -549,7 +549,7 @@ export const DestinationPopUp = (props) => {
     }, []);
 
     useEffect(() => {
-        if (debouncedSearch) {
+        if (debouncedSearch && !isSearched) {
             handleDestinationSearch(
                 debouncedSearch,
                 startingCity,
@@ -557,7 +557,7 @@ export const DestinationPopUp = (props) => {
                 setSearchResults
             );
         }
-    }, [debouncedSearch, startingCity, endingCity]);
+    }, [debouncedSearch, startingCity, endingCity,isSearched]);
 
     const handleClose = () => {
         if (onClose) {

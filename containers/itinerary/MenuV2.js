@@ -651,6 +651,7 @@ const SimpleTabsV2 = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                   setShowLoginModal={setShowLoginModal}
                   _GetInTouch={_GetInTouch}
+                  setShowSettings={props?.setShowSettings}
                 />
               )
             ) : (
@@ -930,6 +931,7 @@ const SimpleTabsV2 = (props) => {
                       setHideBookingModal={props.setHideBookingModal}
                       setShowLoginModal={setShowLoginModal}
                       _GetInTouch={_GetInTouch}
+                       setShowSettings={props?.setShowSettings}
                     />
                   )
                 : props?.itinerary && (

@@ -76,7 +76,7 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
-  const router=useRouter()
+  const router = useRouter();
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);
@@ -105,8 +105,6 @@ const ActivityAddDrawer = (props) => {
     },
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
-
-
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -136,19 +134,18 @@ const ActivityAddDrawer = (props) => {
   const [showSkeleton, setShowSkeleton] = useState(false);
 
   const [error, setError] = useState(null);
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
   const dateObj = new Date(props.date);
 
-const pad = (n) => (n < 10 ? `0${n}` : n);
-const formattedDate =
-  pad(dateObj.getDate()) +
-  "/" +
-  pad(dateObj.getMonth() + 1) +
-  "/" +
-  dateObj.getFullYear();
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+  const formattedDate =
+    pad(dateObj.getDate()) +
+    "/" +
+    pad(dateObj.getMonth() + 1) +
+    "/" +
+    dateObj.getFullYear();
 
-  
   useEffect(() => {
     const updateHeight = () => setHeight(window.innerHeight);
     updateHeight(); // initial run
@@ -206,7 +203,7 @@ const formattedDate =
     debouncedSearch,
     filterState,
     startDate,
-    nearby
+    nearby,
   ]);
 
   useEffect(() => {
@@ -217,7 +214,7 @@ const formattedDate =
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
     const element = document.getElementById(
-      `${dayIndex}-${elementIndex}-${activityId}`
+      `${dayIndex}-${elementIndex}-${activityId}`,
     );
     let timeoutId;
     if (element) {
@@ -253,7 +250,7 @@ const formattedDate =
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       )
       .then((response) => {
         props.setItinerary(response.data);
@@ -279,7 +276,9 @@ const formattedDate =
           });
         } else {
           props.openNotification({
-            text:  err?.response?.data?.errors?.[0]?.message?.[0] || "There seems to be a problem, please try again!",
+            text:
+              err?.response?.data?.errors?.[0]?.message?.[0] ||
+              "There seems to be a problem, please try again!",
             heading: "Error!",
             type: "error",
           });
@@ -339,10 +338,13 @@ const formattedDate =
                 : null,
           },
           sort_by: {},
-          load_nearby: nearby
+          load_nearby: nearby,
         };
         activtySearch
-          .post(`/?limit=30&offset=${offSet}&currency=${currency?.currency || 'INR'}`, requestData)
+          .post(
+            `/?limit=30&offset=${offSet}&currency=${currency?.currency || "INR"}`,
+            requestData,
+          )
           .then((res) => {
             if (res.data?.data?.activities?.length) {
               setTotalResults(res.data.results);
@@ -372,7 +374,7 @@ const formattedDate =
                     activityBookings={props?.activityBookings}
                     setActivityBookings={props?.setActivityBookings}
                     pax={pax}
-                  ></NewActivityBooking>
+                  ></NewActivityBooking>,
                 );
               }
 
@@ -393,11 +395,13 @@ const formattedDate =
             setLoaded(true);
           })
           .catch((err) => {
-            console.log("error in activity search:", err);
+            setError(err.response?.data?.errors[0]?.message[0]);
+            setOptions([]);
             setLoaded(true);
           });
       } catch (error) {
         setError(error.response?.data?.errors[0]?.message[0]);
+        setOptions([]);
       }
     } else {
       setLoadingPoi(true);
@@ -407,9 +411,10 @@ const formattedDate =
             props?.cityID
           }&name=${debouncedSearch}&is_very_popular=${
             filterState?.recommended_only
-          }&filters=${filterState?.experienceFilters.join(",")}`
+          }&filters=${filterState?.experienceFilters.join(",")}`,
         );
         setTotalResults(res.data.results);
+        setError(null);
         const result = [];
         for (var i = 0; i < res.data.data.pois.length; i++) {
           result.push(
@@ -421,9 +426,13 @@ const formattedDate =
               date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={(new Date(startDate.split("/").reverse().join("-")) - new Date(props.start_date)) / (1000 * 60 * 60 * 24)}
+              dayIndex={
+                (new Date(startDate.split("/").reverse().join("-")) -
+                  new Date(props.start_date)) /
+                (1000 * 60 * 60 * 24)
+              }
               setShowLoginModal={props.setShowLoginModal}
-            ></NewPoiBooking>
+            ></NewPoiBooking>,
           );
         }
         for (var i = 0; i < res.data.data.suggested_places.length; i++) {
@@ -436,9 +445,13 @@ const formattedDate =
               date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={(new Date(startDate.split("/").reverse().join("-")) - new Date(props.start_date)) / (1000 * 60 * 60 * 24)}
+              dayIndex={
+                (new Date(startDate.split("/").reverse().join("-")) -
+                  new Date(props.start_date)) /
+                (1000 * 60 * 60 * 24)
+              }
               setShowLoginModal={props.setShowLoginModal}
-            ></NewPoiBooking>
+            ></NewPoiBooking>,
           );
         }
         for (var i = 0; i < res.data.data.suggested_places.length; i++) {
@@ -453,13 +466,14 @@ const formattedDate =
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}
               setShowLoginModal={props.setShowLoginModal}
-            ></NewPoiBooking>
+            ></NewPoiBooking>,
           );
         }
         setNextUrl(res?.data?.next);
         setOptions(result);
       } catch (error) {
         setError(error.response?.data?.errors[0]?.message[0]);
+        setOptions([]);
       }
       setLoadingPoi(false);
     }
@@ -518,7 +532,7 @@ const formattedDate =
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
               pax={pax}
-            ></NewActivityBooking>
+            ></NewActivityBooking>,
           );
         }
         setOptions((prev) => [...prev, ...options]);
@@ -544,7 +558,7 @@ const formattedDate =
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}
               setShowLoginModal={props.setShowLoginModal}
-            ></NewPoiBooking>
+            ></NewPoiBooking>,
           );
         }
         for (var i = 0; i < res.data.data.suggested_places.length; i++) {
@@ -559,14 +573,14 @@ const formattedDate =
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}
               setShowLoginModal={props.setShowLoginModal}
-            ></NewPoiBooking>
+            ></NewPoiBooking>,
           );
         }
         setOptions((prev) => [...prev, ...options]);
         setNextUrl(res?.data?.next);
       }
     } catch (error) {
-      console.log("error is:", error);
+      
     }
     setShowSkeleton(false);
   };
@@ -591,7 +605,7 @@ const formattedDate =
     }));
   };
 
-    const handleNearby = () => {
+  const handleNearby = () => {
     setNearby((prev) => !prev);
   };
 
@@ -603,14 +617,15 @@ const formattedDate =
 
   const ClickHandler = (child) => {
     setOffSet(0);
+    setOptions([]);
+    setTotalResults(null);
+    setError(null);
+
     if (child === "Things To Do") {
       setElementType("Activity");
     } else {
       setElementType("POI");
     }
-    setLoaded(false);
-    setLoadingPoi(true);
-    setOptions([]);
   };
   const handleCloseDrawer = () => {
     const { id, drawer } = router.query;
@@ -621,7 +636,7 @@ const formattedDate =
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false }
+      { scroll: false },
     );
   };
   return (
@@ -635,16 +650,22 @@ const formattedDate =
       className={` !overflow-y-hidden`}
       onHide={handleCloseDrawer}
     >
-      {error == null ? (
+      {
         <>
           <div
             className={`overflow-y-scroll px-lg max-ph:px-sm`}
             style={{ height: `${height}px` }}
           >
             <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto">
-                   <div>
-                      <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => handleCloseDrawer(e)} />
-                    </div>
+              <div>
+                <Image
+                  src="/backarrow.svg"
+                  className="cursor-pointer"
+                  width={22}
+                  height={2}
+                  onClick={(e) => handleCloseDrawer(e)}
+                />
+              </div>
               <div className="flex max-sm:flex-col max-sm:!items-start justify-between w-full items-center">
                 <div className=" line-clamp-1 text-[24px] font-semibold ">
                   Add {elementType == "POI" ? "Places to visit" : elementType}{" "}
@@ -682,29 +703,30 @@ const formattedDate =
                   onChange={(e) => setStartDate(e.target.value)}
                   defaultValue={formattedDate}
                 >
-        
-                  {[...Array(Math.max(0, Number(props.duration) || 0) + 1)].map((_, i) => {
-                    const baseDateStr = props?.mercuryItinerary
-                      ? props?.start_date
-                      : convertToISODate(props?.start_date);
+                  {[...Array(Math.max(0, Number(props.duration) || 0) + 1)].map(
+                    (_, i) => {
+                      const baseDateStr = props?.mercuryItinerary
+                        ? props?.start_date
+                        : convertToISODate(props?.start_date);
 
-                    const baseDate = new Date(baseDateStr);
-                    if (isNaN(baseDate.getTime())) return null;
+                      const baseDate = new Date(baseDateStr);
+                      if (isNaN(baseDate.getTime())) return null;
 
-                    const currentDate = new Date(baseDate);
-                    currentDate.setDate(currentDate.getDate() + i);
+                      const currentDate = new Date(baseDate);
+                      currentDate.setDate(currentDate.getDate() + i);
 
-                    const isoDate = `${pad(currentDate.getDate())}/${pad(
-                      currentDate.getMonth() + 1
-                    )}/${currentDate.getFullYear()}`;
-                    const formattedDate = getHumanDate(isoDate);
+                      const isoDate = `${pad(currentDate.getDate())}/${pad(
+                        currentDate.getMonth() + 1,
+                      )}/${currentDate.getFullYear()}`;
+                      const formattedDate = getHumanDate(isoDate);
 
-                    return (
-                      <option key={i} value={isoDate}>
-                        {formattedDate} | Day {i + 1}
-                      </option>
-                    );
-                  })}
+                      return (
+                        <option key={i} value={isoDate}>
+                          {formattedDate} | Day {i + 1}
+                        </option>
+                      );
+                    },
+                  )}
                 </select>
 
                 <div className="relative inline-block">
@@ -726,7 +748,7 @@ const formattedDate =
 
                   {showDynamicfilters && (
                     <div
-                    className={`
+                      className={`
                       z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
                 
                       sm:absolute sm:top-[calc(100%+8px)] sm:right-0 sm:block 
@@ -758,15 +780,15 @@ const formattedDate =
                   <CheckboxFormComponent checked={recommended} />
                   Top Recommended
                 </button> */}
-                
-                  <button
-                    onClick={handleNearby}
-                    className="flex flex-row items-center gap-1 cursor-pointer"
-                  >
-                    <CheckboxFormComponent checked={nearby} />
-                    Nearby Activities
-                  </button>
-               
+
+                <button
+                  onClick={handleNearby}
+                  className="flex flex-row items-center gap-1 cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={nearby} />
+                  Nearby Activities
+                </button>
+
                 <div className="flex gap-4">
                   <div
                     className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
@@ -798,9 +820,20 @@ const formattedDate =
 
               <div className="flex flex-row items-center justify-between w-full mb-[20px]">
                 <div>
-                  Showing {options.length}
-                  {elementType === "POI" ? " attractions" : nearby ? " nearby activities" : " activities"}
-                  {totalResults ? ` out of ${totalResults}` : null}
+                  Showing{" "}
+                  {(elementType === "Activity" ? loaded : !loadingPoi)
+                    ? options.length
+                    : ""}
+                  {elementType === "POI"
+                    ? " attractions"
+                    : nearby
+                      ? " nearby activities"
+                      : " activities"}
+                  {!error &&
+                  totalResults &&
+                  (elementType === "Activity" ? loaded : !loadingPoi)
+                    ? ` out of ${totalResults}`
+                    : null}
                   {props?.cityName ? ` in ${props?.cityName}` : null}
                 </div>
                 {/* <div className="max-sm:hidden">
@@ -861,16 +894,38 @@ const formattedDate =
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3">
-                    <EmptyMsg className="flex flex-row items-start px-1">
+                    <EmptyMsg className="flex flex-col items-start px-1">
+                      <div className="flex flex-row items-center gap-1 px-1">
                       <BiErrorCircle className="" />
                       <span className="">
-                        Oops, it looks like there are no{" "}
-                        {elementType === "POI"
-                          ? "places to visit"
-                          : "things to do"}{" "}
-                        available.
+                        {error ||
+                          `Oops, it looks like there are no
+                        ${
+                          elementType === "POI"
+                            ? "places to visit"
+                            : "things to do"
+                        }
+                        available.`}
+                        
                       </span>
-                      
+                      </div>
+                      {error == "Start date cannot be in the past" ? (
+                          <>
+                            {" "}
+                            <br />{" "}
+                            <button
+                              className="bg-[#07213a] text-white px-3 py-1 rounded-md"
+                              onClick={() => {
+                                if (props?.setShowSettings) {
+                                  handleCloseDrawer();
+                                  props?.setShowSettings(true);
+                                }
+                              }}
+                            >
+                              Update Date
+                            </button>{" "}
+                          </>
+                        ) : null}
                     </EmptyMsg>
                     {debouncedSearch !== "" ? (
                       <Button
@@ -970,13 +1025,13 @@ const formattedDate =
             </div>
           )}
         </>
-      ) : (
-        <div className="h-[100vh]">
-          <OptionsContainer className="px-2 center-div space-y-5">
+        // : (
+        //   <div className="h-[100vh]">
+        /* <OptionsContainer className="px-2 center-div space-y-5">
             {error}
-          </OptionsContainer>
-        </div>
-      )}
+          </OptionsContainer> */
+      }
+      {/* </div> */}
 
       {/* {!isDesktop && (
         <FloatingView>

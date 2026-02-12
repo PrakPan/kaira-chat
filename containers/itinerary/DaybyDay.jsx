@@ -53,6 +53,7 @@ const DaybyDay = ({
   _updateTaxiBookingHandler,
   setShowLoginModal,
   index,
+  setShowSettings,
   ...props
 }) => {
   const router = useRouter()
@@ -314,6 +315,7 @@ const DaybyDay = ({
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                   _updatePaymentHandler={_updatePaymentHandler}
                   getPaymentHandler={getPaymentHandler}
+                  setShowSettings={setShowSettings}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>

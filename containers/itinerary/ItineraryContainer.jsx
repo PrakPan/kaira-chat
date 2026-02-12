@@ -292,6 +292,7 @@ const ItineraryContainer = (props) => {
   const [gallery, setGallery] = useState([]);
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
   const { isOpen } = useSelector((state) => state.cloneItinerary);
+   const [showSettings, setShowSettings] = useState(false);
 
   const divideTravellers = (val) => {
     let distribution = [];
@@ -1601,6 +1602,8 @@ const ItineraryContainer = (props) => {
           resetRef={resetRef}
           fetchData={fetchData}
           handleEditRouteClick={handleEditRouteClick}
+          showSettings={showSettings}
+          setShowSettings={setShowSettings}
         ></Overview>
 
         <div id="itinerary-anchor">
@@ -1691,6 +1694,7 @@ const ItineraryContainer = (props) => {
             handleAddToStaysClick={handleAddToStaysClick}
             handlePaymentComponentClick={handlePaymentComponentClick}
             handleTransferComponentClick={handleTransferComponentClick}
+            setShowSettings={setShowSettings}
           ></Menu>
         </div>
 

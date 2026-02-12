@@ -2177,8 +2177,6 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
       const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
 
-      console.log("Setting next step departure to:", newDepartureDate, newDepartureTimeStr);
-
       setCurrentModeDepartureDate(newDepartureDate);
       setCurrentModeDepartureTime(newDepartureTimeStr);
       setComboStartDate(newDepartureDate);

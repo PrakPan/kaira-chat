@@ -402,6 +402,7 @@ const ItineraryCity = (props) => {
               setActivityBookings={props?.setActivityBookings}
               intracityBookings={props?.intracityBookings}
               nextCity={props?.nextCity}
+              setShowSettings={props?.setShowSettings}
             />
           </>
         ) : (
