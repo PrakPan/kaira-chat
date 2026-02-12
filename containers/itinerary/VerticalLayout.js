@@ -191,20 +191,20 @@ const AirportBookingItem = ({
   const hasDrop = dropBookings.length > 0;
 
   const supportsTransfers = (mode) => {
-    return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
-  };
+  return ["flight", "train", "ferry", "bus"].includes(mode?.toLowerCase());
+};
 
-  const getTransferLocationText = (mode, type) => {
-    const isPickup = type === "pickup";
-    const cityName = isPickup ? destinationCityName : originCityName;
+ const getTransferLocationText = (mode, type) => {
+  const isPickup = type === "pickup";
+  const cityName = isPickup ? destinationCityName : originCityName;
 
-    if (mode?.toLowerCase() === "flight") {
-      return `+ Add Airport ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
-    } else if (["train", "ferry"].includes(mode?.toLowerCase())) {
-      return `+ Add Station ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
-    }
-    return `+ Add ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
-  };
+  if (mode?.toLowerCase() === "flight") {
+    return `+ Add Airport ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
+  } else if (["train", "ferry", "bus"].includes(mode?.toLowerCase())) {
+    return `+ Add Station ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
+  }
+  return `+ Add ${isPickup ? "Pickup" : "Drop"} in ${cityName}`;
+};
 
   const getDisplayText = () => {
     const currentPickupBookings = booking.filter(

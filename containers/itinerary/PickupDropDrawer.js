@@ -622,29 +622,9 @@ const PickupDropDrawer = ({
       if (field === "source") {
         setSourceSuggestions(combinedResults);
         setShowSourceSuggestions(true);
-
-        // Auto-select on first load for hotel name OR city name
-        // if (combinedResults.length > 0 &&
-        //     !hasAutoFilledRef.current.source &&
-        //     transferType === "drop" &&
-        //     (query === hotelName || (!hotelName && query === originCityName)) &&
-        //     !formData.sourceGmapsId) {
-        //   handleSuggestionSelect(combinedResults[0], "source");
-        //   hasAutoFilledRef.current.source = true;
-        // }
       } else {
         setDestinationSuggestions(combinedResults);
         setShowDestinationSuggestions(true);
-
-        // Auto-select on first load for hotel name OR city name
-        // if (combinedResults.length > 0 &&
-        //     !hasAutoFilledRef.current.destination &&
-        //     transferType === "pickup" &&
-        //     (query === destinationHotelName || (!destinationHotelName && query === destinationCityName)) &&
-        //     !formData.destinationGmapsId) {
-        //   handleSuggestionSelect(combinedResults[0], "destination");
-        //   hasAutoFilledRef.current.destination = true;
-        // }
       }
     } catch (error) {
       console.error("Autocomplete search error:", error);
@@ -716,36 +696,41 @@ const PickupDropDrawer = ({
     return timeOption ? timeOption.display : formData.transferTime;
   };
 
-  const getStationName = () => {
-    switch (bookingMode?.toLowerCase()) {
-      case "flight":
-        return transferType === "pickup"
-          ? `${destinationCityName} City`
-          : `${originCityName} City`;
-      case "train":
-        return transferType === "pickup"
-          ? `${destinationCityName} City`
-          : `${originCityName} City`;
-      case "ferry":
-        return transferType === "pickup"
-          ? `${destinationCityName} City`
-          : `${originCityName} City`;
-      default:
-        return "";
-    }
-  };
+const getStationName = () => {
+  switch (bookingMode?.toLowerCase()) {
+    case "flight":
+      return transferType === "pickup"
+        ? `${destinationCityName} Airport`
+        : `${originCityName} Airport`;
+    case "train":
+      return transferType === "pickup"
+        ? `${destinationCityName} Station`
+        : `${originCityName} Station`;
+    case "ferry":
+      return transferType === "pickup"
+        ? `${destinationCityName} Terminal`
+        : `${originCityName} Terminal`;
+    case "bus":
+      return transferType === "pickup"
+        ? `${destinationCityName} Bus Station`
+        : `${originCityName} Bus Station`;
+    default:
+      return "";
+  }
+};
 
-  const getHubEndpoint = () => {
-    switch (bookingMode?.toLowerCase()) {
-      case "flight":
-        return "hubs/airport";
-      case "train":
-      case "ferry":
-        return "hubs/station";
-      default:
-        return "hubs/airport";
-    }
-  };
+ const getHubEndpoint = () => {
+  switch (bookingMode?.toLowerCase()) {
+    case "flight":
+      return "hubs/airport";
+    case "train":
+    case "ferry":
+    case "bus":
+      return "hubs/station";
+    default:
+      return "hubs/airport";
+  }
+};
 
   const searchHubs = async (query) => {
     if (!query.trim() || query.length < 2) {
@@ -1106,22 +1091,22 @@ const PickupDropDrawer = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const getTitle = () => {
-    const action = transferType === "pickup" ? "Pickup" : "Drop";
-    const hubType =
-      bookingMode === "flight"
-        ? "Airport"
-        : bookingMode === "train"
-        ? "Station"
-        : "Terminal";
-    const location =
-      transferType === "pickup"
-        ? destinationCityName || trips?.[0]?.destination?.address
-        : originCityName || trips?.[0]?.origin?.address;
-    return `${trips?.[0] ? "Changing" : "Add"} ${
-      trips?.[0] ? "" : hubType
-    } ${action} in ${location}`;
-  };
+const getTitle = () => {
+  const action = transferType === "pickup" ? "Pickup" : "Drop";
+  const hubType =
+    bookingMode === "flight"
+      ? "Airport"
+      : ["train", "ferry", "bus"].includes(bookingMode?.toLowerCase())
+      ? "Station"
+      : "Terminal";
+  const location =
+    transferType === "pickup"
+      ? destinationCityName || trips?.[0]?.destination?.address
+      : originCityName || trips?.[0]?.origin?.address;
+  return `${trips?.[0] ? "Changing" : "Add"} ${
+    trips?.[0] ? "" : hubType
+  } ${action} in ${location}`;
+};
 
   // Auto-search when all fields are filled on initial mount
   // Auto-search when all fields are filled on initial mount
