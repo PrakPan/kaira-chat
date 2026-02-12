@@ -22,35 +22,55 @@ to {
 
 `;
 
+const BottomSlideIn = keyframes`
+from {
+  transform: translateY(100%);
+}
+to {
+  transform: translateY(0%);
+}
+`;
+
+const BottomSlideOut = keyframes`
+from {
+  transform: translateY(0%);
+}
+to {
+  transform: translateY(100%);
+}
+`;
+
 const ModalContainer = styled.div`
   position: fixed;
-  top: ${(props) => (props.mobileTop ? props.mobileTop : "50%")};
-  left: ${(props) => (props.mobileLeft ? props.mobileLeft : "50%")};
+  top: ${(props) => (props.bottomSheet ? "auto" : props.mobileTop ? props.mobileTop : "50%")};
+  bottom: ${(props) => (props.bottomSheet ? "0" : "auto")};
+  left: ${(props) => (props.bottomSheet ? "0" : props.mobileLeft ? props.mobileLeft : "50%")};
+  right: ${(props) => (props.bottomSheet ? "0" : "auto")};
   background: ${(props) => (props.bgColor ? props.bgColor : "white")};
-  border-radius: ${(props) =>
-    props.borderRadius ? props.borderRadius : "0px"};
-  ${(props) => props.mobileWidth && `width : ${props.mobileWidth}`};
+  border-radius: ${(props) => props.borderRadius ? props.borderRadius : "0px"};
+  ${(props) => props.mobileWidth && !props.bottomSheet && `width : ${props.mobileWidth}`};
+  ${(props) => props.bottomSheet && `width: 100%`};
   ${(props) => props.height && `height : ${props.height}`};
   box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-  animation: 0.5s ${(props) => (props.fade === "in" ? TopSlideIn : TopSlideOut)}
-    forwards;
+  animation: 0.5s ${(props) => props.bottomSheet 
+    ? props.fade === "in" ? BottomSlideIn : BottomSlideOut
+    : props.fade === "in" ? TopSlideIn : TopSlideOut
+  } forwards;
   z-index: ${(props) => props.zIndex || "1600"};
   opacity: ${(props) => (props.fade === "in" ? "1" : "0")};
   transition: opacity 0.8s linear;
   ${(props) => (props.overflow ? props.overflow : "overflow : auto")};
   overscroll-behavior: contain;
   ${(props) => !props.height && "max-height: 95vh;"}
-
   margin: ${(props) => (props.margin ? props.margin : "0px")};
   @media screen and (min-width: 768px) {
     ${(props) => props.width && `width : ${props.width}`};
     top: ${(props) => (props.top ? props.top : "50%")};
     left: ${(props) => (props.left ? props.left : "50%")};
+    bottom: auto;
   }
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  &::-webkit-scrollbar { display: none; }
   -ms-overflow-style: none;
   scrollbar-width: none;
 `;
@@ -81,11 +101,10 @@ export default function Modal(props) {
     setFade("out");
     setTimeout(() => {
       if (props.onHide) {
-        console.log('on close 2 is clicked')
+  
 
         props.onHide();
       }
-      console.log('on close is clicked')
 
       setOpen(false);
     }, 800);
@@ -131,6 +150,7 @@ export default function Modal(props) {
               bgColor={props.bgColor}
               centered={props.centered}
               zIndex={props.zIndex ? props.zIndex : 1600}
+              bottomSheet={props.bottomSheet}
             >
               <div style={{ position: "relative", height: "100%" }}>
                 {props.closeIcon && (

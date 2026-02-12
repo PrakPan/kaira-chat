@@ -7,7 +7,8 @@ const AbsoluteContainer = styled.div`
   background-color: white;
   padding: 20px;
   position: absolute;
-  top: 53px;
+  bottom: 53px;
+  top: auto;
   width: 100%;
   left: 0;
   z-index: 1500;
@@ -17,6 +18,11 @@ const AbsoluteContainer = styled.div`
     min-height: 100px;
     overflow: auto;
     `}
+   @media screen and (min-width: 768px) {
+   top: 53px;
+   bottom: auto; 
+   background-color: white;
+  }
 `;
 
 const Heading = styled.p`

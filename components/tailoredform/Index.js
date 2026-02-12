@@ -62,7 +62,7 @@ const Enquiry = (props) => {
 
   const dispatch = useDispatch();
   const showLogin = useSelector((state) => state.auth.showLogin);
-  const onHide = () => dispatch(authCloseLogin());
+  const onHide = () => { setShowLoginForm(false); dispatch(authCloseLogin())};
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [route, setRoute] = useState([]);
   const [locationsLatLong, setLocationsLatLong] = useState(
@@ -139,6 +139,7 @@ const Enquiry = (props) => {
   const { sessionId, isReady } = useAnalyticsSession();
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
+  const [showLoginForm,setShowLoginForm] = useState(false);
 
   useEffect(() => {
     if (slideIndex === 0) {
@@ -1004,7 +1005,7 @@ const Enquiry = (props) => {
                 <div className="flex flex-col items-center">
                   <div id="login" className="z-[1650]">
                     <Login
-                      show={showLogin}
+                      show={showLoginForm}
                       onhide={onHide}
                       zIndex={"3300"}
                       onSuccess={() => {
@@ -1266,7 +1267,7 @@ const Enquiry = (props) => {
                   onclick={() => {
                     // Check if user is logged in
                     if (!localStorage.getItem("access_token")) {
-                      dispatch(authShowLogin());
+                      setShowLoginForm(true);
                     } else {
                       _submitDataHandler();
                      }

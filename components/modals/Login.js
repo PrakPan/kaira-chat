@@ -64,7 +64,7 @@ const Enquiry = (props) => {
   }, [myref]);
 
   useEffect(() => {
-    if (props.token && props.phone && props.onhide) props.onhide();
+    if (props.token && props.phone && props.onhide ) props.onhide();
   }, [props.token, props.onhide, props.phone]);
 
   useEffect(() => {
@@ -96,19 +96,19 @@ const Enquiry = (props) => {
       >
         <div id="login-modal" style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
           <div
-            style={{
-              backgroundColor: "#2C2C2C",
-              height: "100%",
-              width: "100%",
-              borderRadius: "20px 0 0 20px",
-              display: showImage ? "none" : "block",
-            }}
-          ></div>
+            style={{ 
+              backgroundColor: "#2C2C2C",  
+              height: "100%",  
+              width: "100%",  
+              borderRadius: "20px 0 0 20px", 
+              display: showImage ? "none" : "block",  
+            }} 
+          ></div> 
 
-          <ImgContainer style={{ display: showImage ? "block" : "none" }}>
+          <ImgContainer style={{ display: showImage ? "block" : "none" }}> 
             <ImageLoader
               noLazy
-              url={"media/themes/auth.png"}
+              url={"media/themes/auth.png"} 
               height="100%" 
               width="100%"
               onload={() => setShowImage(true)}
@@ -153,10 +153,11 @@ const Enquiry = (props) => {
   else
     return (
       <Modal
-        centered
+        centered={props?.isTailored ? false : true}
+        bottomSheet={props?.isTailored ? true : false}
         backdrop={props.hideloginclose ? "static" : true}
         show={props.show}
-        height={!isPageWide ? "100%" : "auto"}
+        height={!isPageWide ? props?.isTailored ? "70%" : "100%" : "auto"}
         onHide={props.onhide}
         width={modalWidth}
         borderRadius={"12px"}
@@ -168,7 +169,7 @@ const Enquiry = (props) => {
         style={{ overflowY: "scroll" }}
       >
           <ImgContainer style={{
-            display: showImage ? "block" : "none",
+            display: props?.isTailored ? "none" : showImage ? "block" : "none",
             height: "calc(100vh - 502px)",
             overflow: "hidden"
           }}>
