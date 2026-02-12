@@ -1023,7 +1023,7 @@ const Enquiry = (props) => {
                         ? "w-[100%]"
                         : isDesktop
                           ? `max-w-[600px] ${slideIndex == 0 ? (error ? "pb-[50px]" : "pb-[5px]") : ""}`
-                          : `w-full ${slideIndex == 0 ? (error ? "pb-[40px]" : "pb-[5px]") : ""}`
+                          : `w-full ${slideIndex == 0 ? (error ? "pb-[40px]" : "pb-[85px]") : ""}`
                     }`}
                   >
                     <Flickity
@@ -1265,11 +1265,11 @@ const Enquiry = (props) => {
                   disabled={isSubmitting}
                   onclick={() => {
                     // Check if user is logged in
-                    // if (!localStorage.getItem("access_token")) {
-                    //   dispatch(authShowLogin());
-                    // } else {
+                    if (!localStorage.getItem("access_token")) {
+                      dispatch(authShowLogin());
+                    } else {
                       _submitDataHandler();
-                    // }
+                     }
                   }}
                 >
                   Get Itinerary!

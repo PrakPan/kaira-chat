@@ -20,7 +20,7 @@ const ResultsContainer = styled.div`
 `;
 
 const InputContainer = styled.input`
-  width: 12rem;
+  width: 100%;
   &:focus {
     border: none;
     outline: none;
@@ -133,7 +133,7 @@ const SearchInput = (props) => {
         <div style={{ display: "flex" }}>
           <InputContainer
             onFocus={props.onfocus}
-            className="Body2M_14 placeholder:font-weight-400"
+            className="Body2M_14 placeholder:font-weight-400 w-full"
             onBlur={_handleBlur}
             placeholder="Enter the start Location"
             value={search}
@@ -142,7 +142,7 @@ const SearchInput = (props) => {
           {loading ? <Spinner size={16} margin="0"></Spinner> : null}
         </div>
       ) : null}
-      {!props.showSearchStarting && props.startingLocation ? (
+      {!props.showSearchStarting && props.startingLocation  ? (
         <div className="" onClick={_handleClearResults}>
           {props.startingLocation.name}
         </div>

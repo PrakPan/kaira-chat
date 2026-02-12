@@ -27,6 +27,9 @@ const SelectedDestination = (props) => {
   const dispatch = useDispatch();
   
   const [userLocation, setUserLocation] = useState(null);
+  const [hasManuallyCleared, setHasManuallyCleared] = useState(false);
+
+  
 
   const _handleShowSearchStarting = () => {
     props.setShowSearchStarting(true);
@@ -75,14 +78,11 @@ const SelectedDestination = (props) => {
   return () => clearInterval(interval);
 }, []);
 
-  // Watch for userLocation changes from Redux
   useEffect(() => {
     if (userLocation && isValidLocation(userLocation)) {
-      // Location is available, stop loading
       setLoading(false);
       
-      // Auto-populate starting location if not already set
-      if (!props.startingLocation) {
+      if (!props.startingLocation && !hasManuallyCleared) {
         props.setStartingLocation({
           name: userLocation.text || userLocation.city,
           place_id: userLocation.place_id,
@@ -94,12 +94,12 @@ const SelectedDestination = (props) => {
         });
       }
     } else if (!userLocation) {
-      
       setLoading(true);
     }
-  }, [userLocation]); 
+  }, [userLocation, hasManuallyCleared]);
 
   const handleLocationChange = (newLocation) => {
+    setHasManuallyCleared(false); 
     props.setStartingLocation(newLocation);
     
     if (newLocation && newLocation.currency) {
@@ -255,17 +255,20 @@ const SelectedDestination = (props) => {
         )}
       </div>
 
+
       <RightContainer className="hover-pointer">
-        <Image
+        {props?.startingLocation && <Image
           src="/close.svg"
           width={18}
           height={18}
           onClick={() => {
+            setHasManuallyCleared(true);
             props.setStartingLocation(null);
+            
           }}
           className="hover-pointer"
           style={{ fontSize: "1rem", marginLeft: "2px", color: "black" }}
-        />
+        />}
       </RightContainer>
     </StyledContainer>
   );

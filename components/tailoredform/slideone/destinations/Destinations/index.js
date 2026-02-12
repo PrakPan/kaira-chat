@@ -128,7 +128,7 @@ const EndDestination = (props) => {
         )}
       </div>
 
-      {!props.selectlocation ? (
+      {!props.selectlocation  ? (
         <RightContainer className="hover-pointer">
             {props.setDeletedId && <Image
             src="/close.svg"
