@@ -304,7 +304,7 @@ const TaxiPickupDropItem = ({
         </span>
 
         {/* Only show info icon for middle cities when no bookings */}
-        {isPageWide && !firstCity && !lastCity && !hasPickup && !hasDrop && (
+        {isPageWide && !firstCity && !lastCity  && (
           <div className="relative">
             <div
               className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
