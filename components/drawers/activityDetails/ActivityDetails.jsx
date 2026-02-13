@@ -223,7 +223,7 @@ export default function ActivityDetails(props) {
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
-                    className={`border-2 rounded-full px-2 py-1`}
+                    className={`rounded-full px-2 py-1`}
                     style={{ backgroundColor: colors[i % colors.length] }}
                   >
                     {e}
