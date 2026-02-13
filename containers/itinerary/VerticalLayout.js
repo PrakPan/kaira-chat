@@ -50,6 +50,300 @@ const PinWrapper = styled.div`
   align-items: center;
 `;
 
+const TaxiPickupDropItem = ({
+  handlePickupDropDrawer,
+  originCityName,
+  destinationCityName,
+  firstCity,
+  lastCity,
+  currentAirportBookings,
+  handleEdit,
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [showClickTooltip, setShowClickTooltip] = useState(false);
+  const dropdownRef = useRef(null);
+  const tooltipTimeoutRef = useRef(null);
+  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const isDesktop = useMediaQuery("(min-width:767px)");
+
+  const pickupBookings = currentAirportBookings?.filter((book) => book?.is_airport_pickup) || [];
+  const dropBookings = currentAirportBookings?.filter((book) => book?.is_airport_drop) || [];
+
+  const hasPickup = pickupBookings.length > 0;
+  const hasDrop = dropBookings.length > 0;
+
+  const handleInfoHover = (show) => {
+    if (!showClickTooltip) {
+      if (show) {
+        if (tooltipTimeoutRef.current) {
+          clearTimeout(tooltipTimeoutRef.current);
+          tooltipTimeoutRef.current = null;
+        }
+        setShowTooltip(true);
+      } else {
+        tooltipTimeoutRef.current = setTimeout(() => {
+          setShowTooltip(false);
+          tooltipTimeoutRef.current = null;
+        }, 1100);
+      }
+    }
+  };
+
+  const handleTooltipMouseEnter = () => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setShowTooltip(true);
+  };
+
+  const handleTooltipMouseLeave = () => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      tooltipTimeoutRef.current = null;
+    }, 1100);
+  };
+
+  const handleTooltipAddClick = (e, type) => {
+    e.stopPropagation();
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setShowTooltip(false);
+    setShowClickTooltip(false);
+    handlePickupDropDrawer(type);
+  };
+
+  // ADDED: handleClick function
+  const handleClick = () => {
+    // If no bookings at all, show click tooltip
+    if (!hasPickup && !hasDrop) {
+      // For first city - directly open pickup drawer
+      if (firstCity && !lastCity) {
+        handlePickupDropDrawer("pickup");
+        return;
+      }
+      
+      // For last city - directly open drop drawer
+      if (lastCity && !firstCity) {
+        handlePickupDropDrawer("drop");
+        return;
+      }
+      
+      // For middle cities - show click tooltip with both options
+      setShowClickTooltip(!showClickTooltip);
+      setShowTooltip(false);
+      return;
+    }
+
+    // If only one booking exists, open it directly
+    if (hasPickup && !hasDrop && pickupBookings.length === 1) {
+      handleEdit(false, pickupBookings[0]);
+    } else if (!hasPickup && hasDrop && dropBookings.length === 1) {
+      handleEdit(false, dropBookings[0]);
+    } else {
+      // Multiple bookings exist, show dropdown
+      setShowClickTooltip(!showClickTooltip);
+      setShowTooltip(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowClickTooltip(false);
+      }
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+        tooltipTimeoutRef.current = null;
+      }
+    };
+
+    if (showClickTooltip) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, [showClickTooltip]);
+
+  const getDisplayText = () => {
+    if (!hasPickup && !hasDrop) {
+      // For first city: show only pickup option
+      // For last city: show only drop option
+      // For middle cities: show both options
+      if (firstCity) {
+        return "+ Add Taxi Pickup";
+      } else if (lastCity) {
+        return "+ Add Taxi Drop";
+      } else {
+        return "+ Add Taxi Pickup/Drop";
+      }
+    }
+
+    if (hasPickup && hasDrop) {
+      return "Pickup & Drop Added";
+    } else if (hasPickup) {
+      return "Pickup Added";
+    } else if (hasDrop) {
+      return "Drop Added";
+    }
+    return null;
+  };
+
+  const renderTooltipContent = () => {
+    // If no bookings, show add options
+    if (!hasPickup && !hasDrop) {
+      return (
+        <div className="flex flex-col gap-1">
+          {/* Only show drop for non-first cities */}
+          {!firstCity && (
+            <div className="flex items-center gap-2">
+              <span
+                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                onClick={(e) => handleTooltipAddClick(e, "drop")}
+              >
+                + Add Taxi Drop in {originCityName}
+              </span>
+            </div>
+          )}
+          {/* Only show pickup for non-last cities */}
+          {!lastCity && (
+            <div className="flex items-center gap-2">
+              <span
+                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                onClick={(e) => handleTooltipAddClick(e, "pickup")}
+              >
+                + Add Taxi Pickup in {destinationCityName}
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // If bookings exist, show them with add options for missing ones
+    const existingBookings = [
+      ...pickupBookings.map((booking) => ({
+        ...booking,
+        displayType: "Taxi Pickup",
+        isExisting: true,
+      })),
+      ...dropBookings.map((booking) => ({
+        ...booking,
+        displayType: "Taxi Drop",
+        isExisting: true,
+      })),
+    ];
+
+    const addOptions = [];
+    if (!hasDrop && !firstCity) {
+      addOptions.push({
+        displayType: "Add Drop",
+        isAdd: true,
+        addType: "drop",
+      });
+    }
+    if (!hasPickup && !lastCity) {
+      addOptions.push({
+        displayType: "Add Pickup",
+        isAdd: true,
+        addType: "pickup",
+      });
+    }
+
+    const sortedBookings = [...existingBookings, ...addOptions];
+
+    return (
+      <div className="flex flex-col gap-1">
+        {sortedBookings.map((booking, index) => (
+          <div key={`taxi-booking-${index}`} className="flex items-center gap-2">
+            {booking.isAdd ? (
+              <span
+                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                onClick={(e) => handleTooltipAddClick(e, booking.addType)}
+              >
+                {booking.addType === "pickup"
+                  ? `+ Add Taxi Pickup in ${destinationCityName}`
+                  : `+ Add Taxi Drop in ${originCityName}`}
+              </span>
+            ) : (
+              <span
+                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEdit(false, booking);
+                }}
+              >
+                {booking?.name || booking.displayType}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const displayText = getDisplayText();
+
+  return displayText ? (
+    <div key={-4} className="group relative" ref={dropdownRef}>
+      <div className="flex items-center gap-2">
+        <span
+          className={`text-blue font-[500] text-[14px] ${
+            displayText ? "hover:underline cursor-pointer" : ""
+          }`}
+          onClick={handleClick}
+        >
+          {displayText}
+        </span>
+
+        {/* Only show info icon for middle cities when no bookings */}
+        {isPageWide && !firstCity && !lastCity && !hasPickup && !hasDrop && (
+          <div className="relative">
+            <div
+              className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
+              onMouseEnter={() => handleInfoHover(true)}
+              onMouseLeave={() => handleInfoHover(false)}
+            >
+              <LuInfo size={16} strokeWidth={2.5} />
+            </div>
+
+            {showTooltip && !showClickTooltip && (
+              <div
+                className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
+                style={{ zIndex: 100 }}
+                onMouseEnter={handleTooltipMouseEnter}
+                onMouseLeave={handleTooltipMouseLeave}
+              >
+                {renderTooltipContent()}
+                <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {showClickTooltip && (
+        <div className="relative mt-2">
+          <div
+            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 min-w-fit"
+            style={{ zIndex: 100 }}
+          >
+            {renderTooltipContent()}
+            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+          </div>
+        </div>
+      )}
+    </div>
+  ) : null;
+};
+
 const AirportBookingItem = ({
   booking,
   handleIntracityBookings,
@@ -754,7 +1048,9 @@ const CityItem = ({
   lastCity,
   bookingIdToDelete,
   pinColour,
-  isLast
+  isLast,
+  check_in,
+  check_out
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -925,7 +1221,7 @@ useEffect(() => {
           bookingId: book?.id,
           transferType: bookingType,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
-          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id
+          dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
         },
       },
       undefined,
@@ -944,6 +1240,8 @@ useEffect(() => {
           drawerType: drawerType,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
           dItineraryCity: dCityData?.id || dCityData?.gmaps_place_id,
+          doj: drawerType == 'pickup' ? check_out : check_in
+
         },
       },
       undefined,
@@ -982,7 +1280,6 @@ useEffect(() => {
 
 
   const handleIntracityBookings = async (combo, booking) => {
-    console.log("CityItem");
     setIsIntracity(true);
     setTransferType(booking?.booking_type);
     if (combo) {
@@ -1274,132 +1571,172 @@ useEffect(() => {
           {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
 
           {transfers_status === "PENDING" ? (
-            upPresent && downPresent ? (
-              <TransferSkeleton />
-            ) : (
-              ""
-            )
-          ) : (
-            upPresent &&
-            downPresent && (
-              <div
-                className={`text-[16px] font-[500] flex gap-1 ${(currentAirportBookings &&
-                  currentAirportBookings.length > 0) ||
-                  ["flight", "train", "ferry"].includes(
-                    booking_type?.toLowerCase()
-                  )
-                  ? "mt-5"
-                  : (booking_id || city) && !visible ? "mt-5" : "mt-0"
-                  }`}
-              >
-                {(booking_id || city) && !visible ? (
-                  <>
-                    {/* Icon Section */}
-                    <div className="mt-[4px] flex items-start">
-                      {booking?.children
-                        ? booking?.children?.map((book, i) => {
-                          const mode = extractMode(book?.booking_type);
-                          return (
-                            <React.Fragment key={i}>
-                              {correctIcon(mode)}
-                              {i < booking?.children?.length - 1 && (
-                                <span>
-                                  <RiArrowDropRightLine size={18} color={'#a5a5a5'} />
-                                </span>
-                              )}
-                            </React.Fragment>
-                          );
-                        })
-                        : correctIcon(booking_type)}
-                    </div>
-
-                    {/* City and Duration Section */}
-                    <div className="flex flex-col">
-                      <div
-                        className={`flex items-center gap-2 ${upPresent && downPresent
-                          ? "group hover:cursor-pointer"
-                          : ""
-                          }`}
-                        onClick={() => {
-                          upPresent &&
-                            downPresent &&
-                            handleEdit(transfer_type === "combo", booking);
-                        }}
-                      >
-                        <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"} group-hover:text-blue `}>
-                          {upPresent && downPresent ? city : ""}
-                        </div>
-                        {upPresent && downPresent && (
-                          <div className="">
-                            <FaPen
-                              size={12}
-                              className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
-                            />
-                          </div>
+  upPresent && downPresent ? (
+    <TransferSkeleton />
+  ) : (
+    ""
+  )
+) : (
+  upPresent &&
+  downPresent && (
+    <div
+      className={`text-[16px] font-[500] flex flex-col gap-2 ${
+        (currentAirportBookings &&
+          currentAirportBookings.length > 0) ||
+        ["flight", "train", "ferry", "bus"].includes(
+          booking_type?.toLowerCase()
+        )
+          ? "mt-2"
+          : (booking_id || city) && !visible
+          ? "mt-2"
+          : "mt-0"
+      }`}
+    >
+      {(booking_id || city) && !visible ? (
+        <>
+          {/* EXISTING BOOKING DISPLAY - Icon and City Name */}
+          <div className="flex gap-1">
+            <div className="mt-[4px] flex items-start">
+              {booking?.children
+                ? booking?.children?.map((book, i) => {
+                    const mode = extractMode(book?.booking_type);
+                    return (
+                      <React.Fragment key={i}>
+                        {correctIcon(mode)}
+                        {i < booking?.children?.length - 1 && (
+                          <span>
+                            <RiArrowDropRightLine size={18} color={"#a5a5a5"} />
+                          </span>
                         )}
-                      </div>
+                      </React.Fragment>
+                    );
+                  })
+                : correctIcon(booking_type)}
+            </div>
 
-                      {/* Duration */}
-                      {duration && (
-                        <div className="Body3R_12">
-                          Duration: {duration}
-                        </div>
-                      )}
-                    </div>
-                  </>
-                ) : isPageWide ? (
-                  <button
-                    onClick={handleAddTransfer}
-                    className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
-                  >
-                    + Add Transfer from {origin_city_name} to{" "}
-                    {destination_city_name}
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleAddTransfer}
-                    className={`${isDesktop ? "Body1M_16" : "Body2M_14"} text-blue hover:underline `}
-                  >
-                    + Add Transfer
-                  </button>
+            <div className="flex flex-col">
+              <div
+                className={`flex items-center gap-2 ${
+                  upPresent && downPresent ? "group hover:cursor-pointer" : ""
+                }`}
+                onClick={() => {
+                  upPresent &&
+                    downPresent &&
+                    handleEdit(transfer_type === "combo", booking);
+                }}
+              >
+                <div
+                  className={`${
+                    isDesktop ? "Body1M_16" : "Body2M_14"
+                  } group-hover:text-blue `}
+                >
+                  {upPresent && downPresent ? city : ""}
+                </div>
+                {upPresent && downPresent && (
+                  <div className="">
+                    <FaPen
+                      size={12}
+                      className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                    />
+                  </div>
                 )}
               </div>
-            )
+
+              {duration && (
+                <div className="Body3R_12">Duration: {duration}</div>
+              )}
+            </div>
+          </div>
+
+          {/* AIRPORT/STATION PICKUP DROP - Show only for flight/train/ferry/bus */}
+         {transfers_status == "SUCCESS" &&
+  pricing_status == "SUCCESS" && (
+    <div className="flex flex-col gap-1">
+      {/* CHANGED: Conditional rendering based on booking existence */}
+      {(booking_id || currentAirportBookings.length > 0) ? (
+        /* If main booking exists OR there are pickup/drop bookings, show AirportBookingItem */
+        <AirportBookingItem
+          key={`airport-${booking_id || "no-main"}`}
+          booking={currentAirportBookings}
+          handleIntracityBookings={handleIntracityBookings}
+          upPresent={upPresent}
+          downPresent={downPresent}
+          bookingMode={booking_type}
+          originCityName={origin_city_name}
+          destinationCityName={destination_city_name}
+          existingPickupBookings={existingPickupBookings}
+          existingDropBookings={existingDropBookings}
+          onPickupClick={handlePickupClick}
+          onDropClick={handleDropClick}
+          setHandleShow={setPickupDropShow}
+          show={pickupDropShow}
+          sourceGmaps={sourceGmaps}
+          destinationGmaps={destinationGmaps}
+          handleEdit={handleEdit}
+          handlePickupDropDrawer={handlePickupDropDrawer}
+          setAirportBookingId={setAirportBookingId}
+          setTransferType={setTransferType}
+          firstCity={firstCity}
+          lastCity={lastCity}
+        />
+      ) : (
+        /* If NO main booking and NO pickup/drop bookings, show TaxiPickupDropItem */
+        <TaxiPickupDropItem
+          key={`taxi-no-booking`}
+          handlePickupDropDrawer={handlePickupDropDrawer}
+          originCityName={origin_city_name}
+          destinationCityName={destination_city_name}
+          firstCity={firstCity}
+          lastCity={lastCity}
+          currentAirportBookings={currentAirportBookings}
+          handleEdit={handleEdit}
+        />
+      )}
+    </div>
+  )}
+        </>
+      ) : (
+        <>
+          {/* NO BOOKING - Show both CTAs */}
+          {/* First CTA: Add Transfer */}
+          {isPageWide ? (
+            <button
+              onClick={handleAddTransfer}
+              className={`${
+                isDesktop ? "Body1M_16" : "Body2M_14"
+              } text-blue hover:underline text-left`}
+            >
+              + Add Transfer from {origin_city_name} to {destination_city_name}
+            </button>
+          ) : (
+            <button
+              onClick={handleAddTransfer}
+              className={`${
+                isDesktop ? "Body1M_16" : "Body2M_14"
+              } text-blue hover:underline text-left`}
+            >
+              + Add Transfer
+            </button>
           )}
-          {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
-          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && <div
-            className={`flex flex-col gap-1 mb-3 ${!(upPresent && downPresent) ||
-              (!booking_id &&
-                !(currentAirportBookings && currentAirportBookings.length > 0))
-              ? "hidden"
-              : ""
-              }`}
-          >
-            <AirportBookingItem
-              key={`airport-${booking_id || "no-main"}`}
-              booking={currentAirportBookings}
-              handleIntracityBookings={handleIntracityBookings}
-              upPresent={upPresent}
-              downPresent={downPresent}
-              bookingMode={booking_type}
+
+          {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
+          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
+            <TaxiPickupDropItem
+              key={`taxi-no-booking`}
+              handlePickupDropDrawer={handlePickupDropDrawer}
               originCityName={origin_city_name}
               destinationCityName={destination_city_name}
-              existingPickupBookings={existingPickupBookings}
-              existingDropBookings={existingDropBookings}
-              onPickupClick={handlePickupClick}
-              onDropClick={handleDropClick}
-              setHandleShow={setPickupDropShow}
-              show={pickupDropShow}
-              sourceGmaps={sourceGmaps}
-              destinationGmaps={destinationGmaps}
-              handleEdit={handleEdit}
-              handlePickupDropDrawer={handlePickupDropDrawer}
-              setAirportBookingId={setAirportBookingId}
-              setTransferType={setTransferType}
               firstCity={firstCity}
               lastCity={lastCity}
+              currentAirportBookings={currentAirportBookings}
+              handleEdit={handleEdit}
             />
-          </div>}
+          )}
+        </>
+      )}
+    </div>
+  )
+)}
           {/* )} */}
         </div>
       </div>

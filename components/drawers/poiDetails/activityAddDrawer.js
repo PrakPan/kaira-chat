@@ -93,6 +93,7 @@ const ActivityAddDrawer = (props) => {
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const num_adults = itinerary.number_of_adults;
+  const num_children = itinerary?.number_of_children || 0;
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: [],
@@ -101,7 +102,7 @@ const ActivityAddDrawer = (props) => {
     guide: ["All"],
     pax: {
       number_of_travelers: num_adults,
-      traveler_ages: Array(num_adults).fill(null),
+      traveler_ages: Array(num_adults + num_children).fill(null),
     },
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
@@ -183,6 +184,10 @@ const ActivityAddDrawer = (props) => {
           rating: selectedRating,
           num_adults: 4,
           num_children: pax.children,
+          pax: {
+            number_of_travelers: pax.adults + pax.children,
+            traveler_ages: pax.childAges,
+          },
         }));
       }, 2000);
     }
@@ -314,7 +319,7 @@ const ActivityAddDrawer = (props) => {
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
-          traveler_ages: filterState.pax.traveler_ages,
+          traveler_ages: pax?.childAges || [],
           filter_by: {
             name: debouncedSearch,
             recommended_only: filterState.recommended_only,
@@ -490,7 +495,7 @@ const ActivityAddDrawer = (props) => {
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
-          traveler_ages: filterState.pax.traveler_ages,
+          traveler_ages: pax?.childAges || [],
           filter_by: {
             name: debouncedSearch,
             recommended_only: filterState.recommended_only,
@@ -731,7 +736,7 @@ const ActivityAddDrawer = (props) => {
 
                 <div className="relative inline-block">
                   <div
-                    className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
+                    className="relative px-4 py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-sm:hidden cursor-pointer"
                     onClick={() => setShowDynamicfilters(true)}
                   >
                     <Image
@@ -894,7 +899,7 @@ const ActivityAddDrawer = (props) => {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3">
-                    <EmptyMsg className="flex flex-col items-start px-1">
+                    <EmptyMsg className="flex flex-col items-start px-1 gap-2">
                       <div className="flex flex-row items-center gap-1 px-1">
                       <BiErrorCircle className="" />
                       <span className="">
@@ -912,9 +917,9 @@ const ActivityAddDrawer = (props) => {
                       {error == "Start date cannot be in the past" ? (
                           <>
                             {" "}
-                            <br />{" "}
+                            
                             <button
-                              className="bg-[#07213a] text-white px-3 py-1 rounded-md"
+                              className="bg-[#f7e700] border border-black  text-black px-4 py-2 rounded-md"
                               onClick={() => {
                                 if (props?.setShowSettings) {
                                   handleCloseDrawer();
@@ -922,7 +927,7 @@ const ActivityAddDrawer = (props) => {
                                 }
                               }}
                             >
-                              Update Date
+                              Update Itinerary Dates
                             </button>{" "}
                           </>
                         ) : null}

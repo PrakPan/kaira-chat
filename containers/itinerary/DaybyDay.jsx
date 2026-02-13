@@ -322,9 +322,11 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
+                      check_in={stay?.[index] ? stay?.[index]?.check_in : null}
+                      check_out={stay?.[index] ? stay?.[index]?.check_out : null}
                       hotelName={stay?.[index]?.name ? stay[index]?.name : null}
-                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
+                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
                       sourceLat={stay?.[index] ? stay[index]?.lat : null}
                       sourceLong={stay?.[index] ? stay[index]?.long : null}
                       destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}

@@ -472,7 +472,7 @@ const Activity = (props) => {
               ) : (
                 // For Activities - timings and ratings inline
                 <>
-                  {(props.element?.start_time || props.element?.end_time) && (
+                  {/* {(props.element?.start_time || props.element?.end_time) && (
                     <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] justify-center items-center">
                       {props.element?.start_time &&
                         formatTime(props.element.start_time)}
@@ -482,7 +482,7 @@ const Activity = (props) => {
                       {props.element?.end_time &&
                         formatTime(props.element.end_time)}
                     </div>
-                  )}
+                  )} */}
                   {props.element?.rating ? (
                     <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
                       <div className="Body3M_12">

@@ -259,7 +259,6 @@ const PickupDropDrawer = ({
   const [formData, setFormData] = useState(initialFormState);
 
 
-
   const formatDate = (dateTimeString) => {
     if (!dateTimeString) return "";
 
@@ -382,11 +381,11 @@ const PickupDropDrawer = ({
         if (sourceHubId) {
           updatedData.sourceHubId = sourceHubId;
           updatedData.sourceAddress = getStationName();
-        } else if (originCityName) {
+        } else if (destinationCityName) {
           // Fallback to city if no hub
-          updatedData.sourceAddress = originCityName;
-          if (sourceGmaps) {
-            updatedData.sourceGmapsId = sourceGmaps;
+          updatedData.sourceAddress = destinationCityName;
+          if (destinationGmaps) {
+            updatedData.sourceGmapsId = destinationGmaps;
           }
         }
       } else if (transferType === "drop") {
@@ -408,17 +407,16 @@ const PickupDropDrawer = ({
             updatedData.sourceGmapsId = sourceGmaps;
           }
         }
-
         // Destination gets hub data for drop
         const destHubId = getHubId(booking, "drop", "destination");
         if (destHubId) {
           updatedData.destinationHubId = destHubId;
           updatedData.destinationAddress = getStationName();
-        } else if (destinationCityName) {
+        } else if (originCityName) {
           // Fallback to city if no hub
-          updatedData.destinationAddress = destinationCityName;
-          if (destinationGmaps) {
-            updatedData.destinationGmapsId = destinationGmaps;
+          updatedData.destinationAddress = originCityName;
+          if (sourceGmaps) {
+            updatedData.destinationGmapsId = sourceGmaps;
           }
         }
       }
@@ -526,27 +524,6 @@ const PickupDropDrawer = ({
     }
   }, [isOpen, booking, transferType,doj]);
 
-  // 3. THIRD - Search for hubs when drawer opens
-  // useEffect(() => {
-  //   if (isOpen && bookingMode && booking) {
-  //     // Search hubs for the city where the hub should be located
-  //     const searchCityName =
-  //       transferType === "pickup" ? destinationCityName : originCityName;
-
-  //     console.log("Searching hubs for city:", searchCityName);
-
-  //     if (searchCityName) {
-  //       searchHubs(searchCityName);
-  //     }
-  //   }
-  // }, [
-  //   isOpen,
-  //   bookingMode,
-  //   transferType,
-  //   originCityName,
-  //   destinationCityName,
-  //   booking,
-  // ]);
 
   // 4. FOURTH - Auto-fill hub data when suggestions become available
   useEffect(() => {
@@ -1098,7 +1075,7 @@ const getTitle = () => {
       ? "Airport"
       : ["train", "ferry", "bus"].includes(bookingMode?.toLowerCase())
       ? "Station"
-      : "Terminal";
+      : "Taxi";
   const location =
     transferType === "pickup"
       ? destinationCityName || trips?.[0]?.destination?.address
@@ -1172,7 +1149,6 @@ const getTitle = () => {
         destinationId;
 
       if (allFieldsFilled) {
-        console.log("Auto-searching with current form data:", formData);
         hasAutoSearchedRef.current = true;
         searchTransfers();
       }
