@@ -121,7 +121,7 @@ export const Pax = ({ pax, setPax, combo,limit=null }) => {
       {showPax && (
         <div
           ref={refDesktop}
-          className="absolute top-full left-2 right-2 bg-white shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm w-[105%]"
+          className="absolute top-full right-2 bg-white shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm w-[45%]"
         >
           <div className="flex justify-between gap-1 w-full">
             <div>
