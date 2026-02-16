@@ -292,7 +292,15 @@ const ItineraryContainer = (props) => {
   const [gallery, setGallery] = useState([]);
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
   const { isOpen } = useSelector((state) => state.cloneItinerary);
-   const [showSettings, setShowSettings] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
+  useEffect(() => {
+    if (!router.isReady) return
+
+    if (router.query['craft-a-similar-trip'] === 'true') {
+      setShowSettings(true)
+    }
+  }, [router.isReady, router.query])
 
   const divideTravellers = (val) => {
     let distribution = [];
