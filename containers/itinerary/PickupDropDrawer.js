@@ -342,7 +342,7 @@ const PickupDropDrawer = ({
         // For drop destination, get destination hub from booking
         return (
           transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id ||
-          transferDetails.destination?.id ||
+          transferDetails.origin?.id ||
           null
         );
       }
