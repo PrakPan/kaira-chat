@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
@@ -68,7 +68,6 @@ import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
 
-
 const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
@@ -97,7 +96,7 @@ const CouponModal = ({
   const [applyingCouponId, setApplyingCouponId] = useState(null);
   const ItineraryId = useSelector((state) => state.ItineraryId);
   const Cart = useSelector((state) => state.Cart);
-  const {currency} = useSelector(state=>state.currency)
+  const { currency } = useSelector((state) => state.currency);
 
   useEffect(() => {
     if (show) {
@@ -121,14 +120,17 @@ const CouponModal = ({
   const fetchAvailableCoupons = async () => {
     try {
       setLoading(true);
-      const response = await fetchCoupons.get(`/?itinerary_id=${ItineraryId}&currency=${currency || 'INR'}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetchCoupons.get(
+        `/?itinerary_id=${ItineraryId}&currency=${currency || "INR"}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       const formattedCoupons = response.data.map((coupon) => ({
         id: coupon.id,
         code: coupon.code,
-        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}${coupon.discount_value}`,
+        title: `Save ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${coupon.discount_value}`,
         description: coupon.description,
         expiry: new Date(coupon.end_time).toLocaleDateString("en-IN"),
         type: coupon.discount_type.toLowerCase(),
@@ -246,8 +248,8 @@ const CouponModal = ({
                           payment.coupon_usage.id === coupon.id)
                           ? "bg-green-100 text-green-700 cursor-not-allowed"
                           : applyingCouponId === coupon.id
-                          ? "bg-blue-400  cursor-not-allowed"
-                          : "bg-blue-500  hover:bg-blue-600"
+                            ? "bg-blue-400  cursor-not-allowed"
+                            : "bg-blue-500  hover:bg-blue-600"
                       }`}
                     >
                       {applyingCouponId === coupon.id ? (
@@ -285,7 +287,7 @@ const CouponModal = ({
         </div>
       </div>
     </Drawer>,
-    document.body
+    document.body,
   );
 };
 
@@ -294,7 +296,7 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
     ? new Date(priceValidUntil.replace(" ", "T")).getTime()
     : null;
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
-    (state) => state.ItineraryStatus
+    (state) => state.ItineraryStatus,
   );
   const Itinerary = useSelector((state) => state.Itinerary);
 
@@ -374,7 +376,8 @@ const LivePriceTimer = ({ priceValidUntil, lockInAmount = 2000 }) => {
   if (!targetTime || timeLeft <= 0) {
     return (
       <div className="bg-red-500 text-white px-3 py-1 mt-2 rounded-full text-xs font-medium mb-3 inline-block">
-        Prices Expired! Click on reprice itinerary to check updated itinerary cost
+        Prices Expired! Click on reprice itinerary to check updated itinerary
+        cost
       </div>
     );
   }
@@ -471,10 +474,10 @@ const PaymentCreated = ({ onClickButton, loading }) => {
                   justifyContent: "center",
                   gap: "0.5rem",
                   alignItems: "center",
-                  color:"white"
+                  color: "white",
                 }}
               >
-                {loading ? <PulseLoader color="white"/> : <span>Retry</span>}
+                {loading ? <PulseLoader color="white" /> : <span>Retry</span>}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -520,7 +523,7 @@ const PaymentFailed = ({ onClickButton, loading }) => {
                   alignItems: "center",
                 }}
               >
-                {loading ? <PulseLoader color="white"/> : <span>Retry</span>}
+                {loading ? <PulseLoader color="white" /> : <span>Retry</span>}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -532,7 +535,7 @@ const PaymentFailed = ({ onClickButton, loading }) => {
 };
 
 const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
-  const {currency} = useSelector(state=>state.currency);
+  const { currency } = useSelector((state) => state.currency);
   return (
     <div className="bg-white px-2 rounded-lg">
       <div className="mb-2">
@@ -561,8 +564,10 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
               All set—your payment was successful.
             </h2>
             <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-              Your full payment of {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}{amount?.toLocaleString("en-IN")} has been
-              received. No pending balance.
+              Your full payment of{" "}
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {amount?.toLocaleString("en-IN")} has been received. No pending
+              balance.
             </p>
           </div>
           <GetInTouchContainer>
@@ -582,10 +587,14 @@ const PaymentSuccess = ({ amount, onDownloadInvoice, loading }) => {
                   justifyContent: "center",
                   gap: "0.5rem",
                   alignItems: "center",
-                  color:`white`
+                  color: `white`,
                 }}
               >
-                {loading ? <PulseLoader color="white"/> : <span>Get in touch</span>}
+                {loading ? (
+                  <PulseLoader color="white" />
+                ) : (
+                  <span>Get in touch</span>
+                )}
               </div>
             </Button>
           </GetInTouchContainer>
@@ -705,7 +714,7 @@ const PriceDetails = ({
   selectedPaymentOption,
 }) => {
   const Cart = useSelector((state) => state.Cart);
-  const {currency} = useSelector(state=>state.currency);
+  const { currency } = useSelector((state) => state.currency);
 
   const numericItineraryCost =
     typeof itineraryCost === "string"
@@ -729,9 +738,9 @@ const PriceDetails = ({
   // }
 
   const finalTotal =
-    (typeof itineraryCost === "string"
-      ? parseFloat(itineraryCost.replace(/,/g, "")) || 0
-      : itineraryCost || 0) - Math.abs(couponDiscount || 0);
+    typeof totalPayable === "string"
+      ? parseFloat(totalPayable.replace(/,/g, "")) || 0
+      : totalPayable || 0;
 
   return (
     <div className="mb-4">
@@ -750,7 +759,7 @@ const PriceDetails = ({
         <div className="flex justify-between text-sm font-400 leading-md mb-sm">
           <span> Total Itinerary Cost </span>
           <span>
-            {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
+            {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
             {typeof itineraryCost === "string"
               ? itineraryCost
               : itineraryCost.toLocaleString("en-IN")}
@@ -766,13 +775,37 @@ const PriceDetails = ({
           )
         } */}
 
-        {couponDiscount >= 0 ? (
+       
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>GST</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {Cart?.gst?.toLocaleString("en-IN")}
+            </span>
+          </div>
+      
+
+        {Cart?.taxation_policy == "TCS" && (
+          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+            <span>TCS</span>
+            <span>
+              {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
+              {Cart?.tcs?.toLocaleString("en-IN")}
+            </span>
+          </div>
+        )}
+
+        {couponDiscount >= 0 || couponDiscount < 0 ? (
           <div className="flex justify-between text-green-600 text-sm font-400 leading-md mb-sm">
             <span>Coupon Discount</span>
             <span>
               {couponDiscount
-                ? currencySymbols?.[currency] ? currencySymbols?.[currency] + Math.abs(couponDiscount).toLocaleString("en-IN")  : '₹' + Math.abs(couponDiscount).toLocaleString("en-IN")
-                : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}0`}
+                ? currencySymbols?.[currency]
+                  ? "-" +
+                    currencySymbols?.[currency] +
+                    Math.abs(couponDiscount).toLocaleString("en-IN")
+                  : "-₹" + Math.abs(couponDiscount).toLocaleString("en-IN")
+                : `${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}0`}
             </span>
           </div>
         ) : null}
@@ -780,7 +813,13 @@ const PriceDetails = ({
         <div className="border-t-sm border-text-disabled pt-2 mt-2">
           <div className="flex justify-between font-semibold text-md font-500 leading-xl">
             <span>Total Amount</span>
-            <span> {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'} {finalTotal.toLocaleString("en-IN")}</span>
+            <span>
+              {" "}
+              {currencySymbols?.[currency]
+                ? currencySymbols?.[currency]
+                : "₹"}{" "}
+              {finalTotal.toLocaleString("en-IN")}
+            </span>
           </div>
         </div>
       </div>
@@ -828,7 +867,7 @@ const ItineraryInclusions = ({
   arePricesHidden,
   updatingInclusions = {},
   defaultExpanded = false,
-  arePricesExpired=false
+  arePricesExpired = false,
 }) => {
   const [expandedCategories, setExpandedCategories] = useState({
     Stays: true,
@@ -836,48 +875,55 @@ const ItineraryInclusions = ({
     Flights: true,
     Activities: true,
   });
-  const {currency} = useSelector(state=>state.currency);
+  const { currency } = useSelector((state) => state.currency);
 
   const categorizeBookings = () => {
-  const categories = {
-    Flights: [],
-    Stays: [],
-    Activities: [],
-    Transfers: [],
+    const categories = {
+      Flights: [],
+      Stays: [],
+      "Activities & Ancillaries": [],
+      Transfers: [],
+    };
+
+    if (!Cart?.summary) return categories;
+
+    const orderedCategories = [
+      { key: "Flights", ui: "Flights", type: "Flight" },
+      { key: "Stays", ui: "Stays", type: "Accommodation" },
+      { key: "Activities", ui: "Activities & Ancillaries", type: "Activity" },
+      { key: "Ancillaries", ui: "Activities & Ancillaries", type: "Ancillary" },
+      { key: "Transfers", ui: "Transfers", type: "Transfer" },
+    ];
+
+    orderedCategories.forEach(({ key, ui, type }) => {
+      const data = Cart.summary[key];
+      if (!data?.bookings?.length) return;
+
+      const bookings = data.bookings.map((booking) => ({
+        id: booking.id,
+        booking_cost: booking.booking_cost,
+        detail: {
+          name: booking.name,
+          check_in: booking.check_in,
+          check_out: booking.check_out,
+          duration: booking.duration,
+          pax: booking.pax,
+          transfer_type: booking.transfer_type,
+        },
+        status: booking.status,
+        booking_type: type,
+      }));
+
+      // For Activities & Ancillaries, append bookings instead of replacing
+      if (ui === "Activities & Ancillaries") {
+        categories[ui] = [...(categories[ui] || []), ...bookings];
+      } else {
+        categories[ui] = bookings;
+      }
+    });
+
+    return categories;
   };
-
-  if (!Cart?.summary) return categories;
-
-  const orderedCategories = [
-    { key: "Flights", ui: "Flights", type: "Flight" },
-    { key: "Stays", ui: "Stays", type: "Accommodation" },
-    { key: "Activities", ui: "Activities", type: "Activity" },
-    { key: "Transfers", ui: "Transfers", type: "Transfer" },
-  ];
-
-  orderedCategories.forEach(({ key, ui, type }) => {
-    const data = Cart.summary[key];
-    if (!data?.bookings?.length) return;
-
-    categories[ui] = data.bookings.map((booking) => ({
-      id: booking.id,
-      booking_cost: booking.booking_cost,
-      detail: {
-        name: booking.name,
-        check_in: booking.check_in,
-        check_out: booking.check_out,
-        duration: booking.duration,
-        pax: booking.pax,
-        transfer_type: booking.transfer_type,
-      },
-      status: booking.status,
-      booking_type: type,
-    }));
-  });
-
-  return categories;
-};
-
 
   const categories = categorizeBookings();
 
@@ -929,10 +975,10 @@ const ItineraryInclusions = ({
         const categoryTotal = bookings.reduce(
           (sum, booking) =>
             selectedInclusions[booking.id] ? sum + booking.booking_cost : sum,
-          0
+          0,
         );
         const selectedCount = bookings.filter(
-          (b) => selectedInclusions[b.id]
+          (b) => selectedInclusions[b.id],
         ).length;
 
         return (
@@ -965,9 +1011,14 @@ const ItineraryInclusions = ({
 
               {categoryTotal > 0 && (
                 <>
-                  {!arePricesHidden && <div className="text-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
-                    {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'} {getIndianPrice(Math.round(categoryTotal))}
-                  </div>}
+                  {!arePricesHidden && (
+                    <div className="text-md leading-xl font-500 border-r-sm border-text-disabled pr-md mr-sm">
+                      {currencySymbols?.[currency]
+                        ? currencySymbols?.[currency]
+                        : "₹"}{" "}
+                      {getIndianPrice(Math.round(categoryTotal))}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -1003,10 +1054,13 @@ const ItineraryInclusions = ({
                         <div className="flex items-center gap-1">
                           {/* <BsCalendar2 className="flex-shrink-0" /> */}
                           <span className="text-sm font-400 leading-md text-text-spacegrey">
-                            {formatDate(booking.detail.check_in)}  {category == "Stays" ? "- " + formatDate(booking.detail.check_out) : null}
+                            {formatDate(booking.detail.check_in)}{" "}
+                            {category == "Stays"
+                              ? "- " + formatDate(booking.detail.check_out)
+                              : null}
                           </span>
                         </div>
-                        
+
                         {booking.detail.duration && (
                           <>
                             <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
@@ -1065,53 +1119,56 @@ const ItineraryInclusions = ({
 
                     {/* Checkbox */}
                     <div className="pt-0.5">
-  {updatingInclusions[booking.id] ? (
-    <div className="w-4 h-4 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-    </div>
-  ) : arePricesExpired ? (
-    <div className="relative group cursor-pointer">
-      <span className="relative mr-xl pointer-events-none">
-        <label className="ttw-custom-greenCheckbox-label opacity-60">
-          <input
-            type="checkbox"
-            checked={selectedInclusions[booking.id]}
-            disabled
-            className="ttw-custom-greenCheckbox"
-          />
-        </label>
-      </span>
+                      {updatingInclusions[booking.id] ? (
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+                        </div>
+                      ) : arePricesExpired ? (
+                        <div className="relative group cursor-pointer">
+                          <span className="relative mr-xl pointer-events-none">
+                            <label className="ttw-custom-greenCheckbox-label opacity-60">
+                              <input
+                                type="checkbox"
+                                checked={selectedInclusions[booking.id]}
+                                disabled
+                                className="ttw-custom-greenCheckbox"
+                              />
+                            </label>
+                          </span>
 
-      {/* Tooltip */}
-      <div className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
+                          {/* Tooltip */}
+                          <div
+                            className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
                        hidden group-hover:!block whitespace-nowrap overflow-visible
-                      bg-black text-white text-xs px-2 py-1 rounded cursor-pointer">
-        Reprice itinerary to add/remove this booking
-      </div>
-    </div>
-  ) : (
-    <span className="relative mr-xl">
-      <label className="cursor-pointer ttw-custom-greenCheckbox-label">
-        <input
-          type="checkbox"
-          checked={selectedInclusions[booking.id]}
-          onChange={() => onToggleInclusion(booking.id)}
-          disabled={booking.status === "Paid"}
-          className="accent-primary-yellow cursor-pointer
+                      bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
+                          >
+                            Reprice itinerary to add/remove this booking
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="relative mr-xl">
+                          <label className="cursor-pointer ttw-custom-greenCheckbox-label">
+                            <input
+                              type="checkbox"
+                              checked={selectedInclusions[booking.id]}
+                              onChange={() => onToggleInclusion(booking.id)}
+                              disabled={booking.status === "Paid"}
+                              className="accent-primary-yellow cursor-pointer
                      disabled:cursor-not-allowed disabled:opacity-50
                      ttw-custom-greenCheckbox"
-        />
-      </label>
-    </span>
-  )}
-</div>
-
-                    
+                            />
+                          </label>
+                        </span>
+                      )}
+                    </div>
 
                     {/* Price - Desktop only */}
                     {!arePricesHidden && booking.booking_cost > 0 && (
                       <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
-                        {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}{getIndianPrice(Math.round(booking.booking_cost))}
+                        {currencySymbols?.[currency]
+                          ? currencySymbols?.[currency]
+                          : "₹"}
+                        {getIndianPrice(Math.round(booking.booking_cost))}
                       </div>
                     )}
                   </div>
@@ -1157,7 +1214,7 @@ const Details = (props) => {
     useSelector((state) => state.ItineraryStatus);
   const Itinerary = useSelector((state) => state.Itinerary);
   const Cart = useSelector((state) => state.Cart);
-  const {currency} = useSelector(state=>state.currency);
+  const { currency } = useSelector((state) => state.currency);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState("full");
 
   const [selectedOption, setSelectedOption] = useState("full");
@@ -1172,22 +1229,22 @@ const Details = (props) => {
 
   // Add these new state variables after your existing useState declarations
   const [appliedCoupon, setAppliedCoupon] = useState(
-    Cart?.coupon_usage ? Cart?.coupon?.code : null
+    Cart?.coupon_usage ? Cart?.coupon?.code : null,
   );
   const [couponSavedAmount, setCouponSavedAmount] = useState(
-    Cart?.coupon_usage?.discount || 0
+    Cart?.coupon_usage?.discount || 0,
   );
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [isRemovingCoupon, setIsRemovingCoupon] = useState(false);
   const [couponUsageData, setCouponUsageData] = useState(
-    Cart?.coupon_usage || null
+    Cart?.coupon_usage || null,
   );
   const [sessionPaymentCompleted, setSessionPaymentCompleted] = useState(false);
   const passengersDetail = useSelector((state) => state.Passengers);
   const [selectedInclusions, setSelectedInclusions] = useState({});
   const [inclusionsExpanded, setInclusionsExpanded] = useState(
     Cart?.sales?.some((sale) => sale.status === "Completed") &&
-      Cart?.total_payable_amount !== 0
+      Cart?.total_payable_amount !== 0,
   );
   const [updatingInclusions, setUpdatingInclusions] = useState({});
   // const { resetSession } = useChatContext();
@@ -1254,7 +1311,7 @@ const Details = (props) => {
   };
 
   const [date, setDate] = useState(
-    getCurrentDateIfOlder(props?.itinerary?.start_date)
+    getCurrentDateIfOlder(props?.itinerary?.start_date),
   );
 
   const _handleVerificationSuccess = () => {
@@ -1285,7 +1342,7 @@ const Details = (props) => {
         Object.entries(Cart.summary).forEach(([category, data]) => {
           if (data.bookings && data.bookings.length > 0) {
             const found = data.bookings.find(
-              (booking) => booking.id === bookingId
+              (booking) => booking.id === bookingId,
             );
             if (found) {
               clickedBooking = found;
@@ -1293,10 +1350,12 @@ const Details = (props) => {
                 category === "Hotels" || category === "Stays"
                   ? "accommodation"
                   : category === "Flights"
-                  ? "flight"
-                  : category === "Transfers"
-                  ? "transfer"
-                  : "activity";
+                    ? "flight"
+                    : category === "Transfers"
+                      ? "transfer"
+                      : category === "Ancillaries"
+                        ? "ancillary"
+                        : "activity";
             }
           }
         });
@@ -1315,7 +1374,7 @@ const Details = (props) => {
         payload,
         {
           headers: { Authorization: `Bearer ${props.token}` },
-        }
+        },
       );
 
       if (response.data) {
@@ -1325,13 +1384,13 @@ const Details = (props) => {
           trackPaymentSelected(
             router?.query?.id,
             bookingType?.toLowerCase(),
-            bookingId
+            bookingId,
           );
         } else {
           trackPaymentDeselected(
             router?.query?.id,
             bookingType?.toLowerCase(),
-            bookingId
+            bookingId,
           );
         }
 
@@ -1340,7 +1399,7 @@ const Details = (props) => {
             text: "Cart updated successfully",
             heading: "Success",
             type: "success",
-          })
+          }),
         );
       }
     } catch (error) {
@@ -1357,7 +1416,7 @@ const Details = (props) => {
           text: error?.response?.data?.message || "Failed to update cart",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     } finally {
       setUpdatingInclusions((prev) => ({ ...prev, [bookingId]: false }));
@@ -1381,7 +1440,6 @@ const Details = (props) => {
   };
 
   const handleCloseDrawer = () => {
-    console.log("handle paymenmt close");
     if (isDirectlyOpenPaymentDrawer) {
       setIsDirectlyOpenPaymentDrawer(false);
       props.setShowFooterBannerMobile();
@@ -1393,7 +1451,7 @@ const Details = (props) => {
         pathname: `/itinerary/${router.query.id}`,
       },
       undefined,
-      { scroll: false }
+      { scroll: false },
     );
   };
 
@@ -1411,16 +1469,16 @@ const Details = (props) => {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
       const status = res.data?.celery;
       dispatch(
-        setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+        setItineraryStatus("pricing_status", status?.PRICING || "PENDING"),
       );
       dispatch(
-        setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+        setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING"),
       );
       dispatch(
-        setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+        setItineraryStatus("hotels_status", status?.HOTELS || "PENDING"),
       );
       dispatch(
-        setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+        setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING"),
       );
       fetchItinerary();
     } catch (err) {
@@ -1441,7 +1499,7 @@ const Details = (props) => {
         `${router.query.id}/reprice/bookings`,
         {
           headers: { Authorization: `Bearer ${props.token}` },
-        }
+        },
       );
 
       if (response.data) {
@@ -1454,7 +1512,7 @@ const Details = (props) => {
               "Itinerary repriced successfully",
             heading: "Success",
             type: "success",
-          })
+          }),
         );
         // Refresh payment data
         if (props?.fetchData) await props.fetchData(true);
@@ -1474,7 +1532,7 @@ const Details = (props) => {
             "Failed to reprice itinerary",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     } finally {
       setRepriceLoading(false);
@@ -1491,7 +1549,7 @@ const Details = (props) => {
         },
         {
           headers: { Authorization: `Bearer ${props.token}` },
-        }
+        },
       );
 
       if (response.data.coupon_usage) {
@@ -1506,7 +1564,7 @@ const Details = (props) => {
             text: response.data.coupon_usage.message || "Coupon applied",
             heading: "Success",
             type: "success",
-          })
+          }),
         );
         // Refresh payment data
         props.fetchData(true);
@@ -1518,7 +1576,7 @@ const Details = (props) => {
           text: "Something went wrong",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
       // alert('Failed to apply coupon. Please try again.');
     }
@@ -1535,7 +1593,7 @@ const Details = (props) => {
         },
         {
           headers: { Authorization: `Bearer ${props.token}` },
-        }
+        },
       );
 
       if (response.data) {
@@ -1556,7 +1614,7 @@ const Details = (props) => {
           text: "Something went wrong",
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
     }
   };
@@ -1589,11 +1647,10 @@ const Details = (props) => {
 
   const _startRazorpayHandler = (data, paymentType) => {
     let razorpayOptions = {
-      // key: "rzp_test_FEKg5ZWGWl9i7c",
       key: "rzp_live_t1AzJZflHj0jWg",
       amount: data.amount * 100 || data?.discounted_cost * 100,
       name: "The Tarzan Way Payment Portal",
-      description: " data.data.description",
+      description: "Payment for your itinerary",
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data?.sales[0]?.orders[0]?.order_id,
@@ -1605,29 +1662,30 @@ const Details = (props) => {
       handler: function (response) {
         setPaymentLoading(true);
 
-        axios
-          .post(
+      axios
+      .post(
             "https://mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
-            setPaymentLoading(false);
+      setPaymentLoading(false);
 
-            // Set session completion based on payment type
-            if (paymentType === "full") {
-              setSessionPaymentCompleted(true);
-              setPaymentCompleted(true);
-              trackPaymentBookingConfirmed(router?.query?.id, Cart);
-            } else {
-              setLockInCompleted(true);
-              setSelectedPaymentOption("full");
-            }
+      // Set session completion based on payment type
+      if (paymentType === "full") {
+        setSessionPaymentCompleted(true);
+        setPaymentCompleted(true);
+        trackPaymentBookingConfirmed(router?.query?.id, Cart);
+      } else {
+        setLockInCompleted(true);
+        setSelectedPaymentOption("full");
+      }
 
-            props.getPaymentHandler();
+
+      props.getPaymentHandler();
           })
           .catch((err) => {
-            setPaymentLoading(false);
+      setPaymentLoading(false);
           });
       },
       prefill: {
@@ -1657,9 +1715,8 @@ const Details = (props) => {
           payment_type: "full_payment",
         },
         {
-          headers: { Authorization: `Bearer ${props.token}` },
-        }
-      );
+        headers: { Authorization: `Bearer ${props.token}` },
+      });
 
       if (response.data) {
         dispatch(setCart(response.data));
@@ -1667,7 +1724,7 @@ const Details = (props) => {
 
         const fullPaymentSale = response.data?.sales?.find(
           (sale) =>
-            sale.payment_type === "full_payment" && sale.status === "Created"
+            sale.payment_type === "full_payment" && sale.status === "Created",
         );
 
         trackPaymentAttempted(router.query.id, Cart);
@@ -1679,7 +1736,7 @@ const Details = (props) => {
               text: "Payment order not found. Please refresh and try again.",
               heading: "Error!",
               type: "error",
-            })
+            }),
           );
           return;
         }
@@ -1687,6 +1744,7 @@ const Details = (props) => {
         const razorpayData = {
           amount: calculateFilteredTotal() + Cart?.surcharges_and_taxes,
           sales: [fullPaymentSale],
+          discounted_cost: calculateFilteredTotal(),
         };
 
         // Update the Razorpay handler to set session completion
@@ -1694,23 +1752,24 @@ const Details = (props) => {
       }
     } catch (error) {
       console.error("Error initiating full payment:", error);
-
       props.getPaymentHandler();
+
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
-        "Something went wrong"
+        "Something went wrong";
+
       dispatch(
         openNotification({
           text: errorMsg,
           heading: "Error!",
           type: "error",
-        })
+        }),
       );
       setPaymentLoading(false);
-      return;
     }
   };
 
+  // Updated lock-in payment handler
   const _lockInPaymentHandler = async (id) => {
     setPaymentLoading(true);
 
@@ -1722,7 +1781,7 @@ const Details = (props) => {
           payment_type: "lock_payment",
         },
         {
-          headers: { Authorization: `Bearer ${props.token}` },
+        headers: { Authorization: `Bearer ${props.token}` },
         }
       );
 
@@ -1848,9 +1907,9 @@ const Details = (props) => {
       _lockInPaymentHandler(Cart?.id);
     } else if (label === "full") {
       _fullPaymentHandler(Cart?.id);
-    } else {
-      setShowVerification(true);
-    }
+      } else {
+        setShowVerification(true);
+      }
 
     // logEvent({
     //   action: "Button_Click",
@@ -1894,7 +1953,7 @@ const Details = (props) => {
 
     window.open(
       urls.WHATSAPP + "?text=" + encodeURIComponent(message),
-      "_blank"
+      "_blank",
     );
   };
 
@@ -1935,7 +1994,7 @@ const Details = (props) => {
         },
       },
       undefined,
-      { scroll: false }
+      { scroll: false },
     );
   };
 
@@ -1983,7 +2042,7 @@ const Details = (props) => {
 
   const hasFullPaymentCompleted = Cart?.sales?.some(
     (sale) =>
-      sale.payment_type === "full_payment" && sale.status === "Completed"
+      sale.payment_type === "full_payment" && sale.status === "Completed",
   );
 
   const hasPlanExpired =
@@ -2095,7 +2154,7 @@ const Details = (props) => {
                           onClickButton={() => handlePayNow("full")}
                         />
                       </div>
-                    )} */}
+                 )} */}
 
                   {/* Rest of your conditional content */}
                   {Cart?.total_payable_amount == 0 &&
@@ -2145,47 +2204,47 @@ const Details = (props) => {
                   ) : !isItineraryInFuture() && areAnyInclusionsPaid() ? (
                     <GetInTouchContainer>
                       <div>
-                      <div className="bg-white rounded-lg">
-                        <div className="mb-2">
-                          <div className="mb-lg">
-                            <TbClockExclamation size={34} color="red" />
-                          </div>
-                          <div className="flex justify-between max-ph:flex-col">
-                            <div>
-                              <h2 className="text-lg font-500 leading-xl">
-                                Itinerary Prices Expired.
-                              </h2>
-                              <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-                                Your itinerary prices have expired. Click on
-                                reprice itinerary to get the latest prices.
-                              </p>
+                        <div className="bg-white rounded-lg">
+                          <div className="mb-2">
+                            <div className="mb-lg">
+                              <TbClockExclamation size={34} color="red" />
                             </div>
+                            <div className="flex justify-between max-ph:flex-col">
+                              <div>
+                                <h2 className="text-lg font-500 leading-xl">
+                                  Itinerary Prices Expired.
+                                </h2>
+                                <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
+                                  Your itinerary prices have expired. Click on
+                                  reprice itinerary to get the latest prices.
+                                </p>
+                              </div>
 
-                            <Button
-                              color="#fff"
-                              fontWeight="500"
-                              fontSize="16px"
-                              borderWidth="1px"
-                              borderRadius="6px"
-                              bgColor="#07213A"
-                              padding="6px 30px"
-                              onclick={handleRepriceBookings}
-                              disabled={repriceLoading}
-                            >
-                              {repriceLoading ? (
-                                <div className="flex items-center justify-center">
-                                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2 text-white font-normal"></div>
-                                  Repricing...
-                                </div>
-                              ) : (
-                                "Reprice Itinerary"
-                              )}
-                            </Button>
+                              <Button
+                                color="#fff"
+                                fontWeight="500"
+                                fontSize="16px"
+                                borderWidth="1px"
+                                borderRadius="6px"
+                                bgColor="#07213A"
+                                padding="6px 30px"
+                                onclick={handleRepriceBookings}
+                                disabled={repriceLoading}
+                              >
+                                {repriceLoading ? (
+                                  <div className="flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2 text-white font-normal"></div>
+                                    Repricing...
+                                  </div>
+                                ) : (
+                                  "Reprice Itinerary"
+                                )}
+                              </Button>
+                            </div>
                           </div>
+                          <hr />
                         </div>
-                        <hr />
                       </div>
-                    </div>
                       {/* <Button
                         color="white"
                         fontWeight="500"
@@ -2238,7 +2297,7 @@ const Details = (props) => {
                                 Itinerary Prices Expired.
                               </h2>
                               <p className="text-md font-400 leading-xl text-text-spacegrey mb-zero max-ph:mb-md">
-                                Your itinerary prices have expired. Click on 
+                                Your itinerary prices have expired. Click on
                                 reprice itinerary to get the latest prices.
                               </p>
                             </div>
@@ -2280,13 +2339,13 @@ const Details = (props) => {
                           {convertDFormat(
                             props?.itinerary?.start_date
                               ? props?.itinerary?.start_date
-                              : null
+                              : null,
                           )}{" "}
                           -{" "}
                           {convertDFormat(
                             props?.itinerary?.end_date
                               ? props?.itinerary?.end_date
-                              : null
+                              : null,
                           )}
                         </div>
                         <div className="border-r-sm border-text-disabled"></div>
@@ -2382,8 +2441,7 @@ const Details = (props) => {
                     <PriceDetails
                       itineraryCost={getIndianPrice(
                         Math.round(
-                          Cart?.discounted_cost +
-                            (couponUsageData?.discount || 0)
+                          Cart?.total_itinerary_cost
                         )
                       )}
                       lockInCost={0}
@@ -2392,7 +2450,7 @@ const Details = (props) => {
                         Math.round(Cart?.surcharges_and_taxes) || 0
                       }
                       totalPayable={getIndianPrice(
-                        Math.round(calculateFilteredTotal())
+                        Math.round(calculateFilteredTotal()),
                       )}
                       selectedPaymentOption={selectedPaymentOption}
                       selectedInclusions={selectedInclusions}
@@ -2407,8 +2465,8 @@ const Details = (props) => {
                             color="green"
                             className="inline align-middle mr-1 font-semibold"
                           />
-                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}${Math.round(
-                            Cart?.amount_paid
+                          {`You have paid ${currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}${Math.round(
+                            Cart?.amount_paid,
                           )} for your itinerary. ${
                             Cart.total_payable_amount != 0
                               ? "Please pay the remaining balance at least 7 days before your trip starts to confirm your booking."
@@ -2452,12 +2510,10 @@ const Details = (props) => {
                                 width={"20px"}
                                 widthmobile={"20px"}
                                 leftalign
-                                url={
-                                  "media/icons/login/customer-service.png"
-                                }
+                                url={"media/icons/login/customer-service.png"}
                               />
                               {props?.loading ? (
-                                <PulseLoader color="white"/>
+                                <PulseLoader color="white" />
                               ) : (
                                 <span>Get in touch!</span>
                               )}
@@ -2514,11 +2570,13 @@ const Details = (props) => {
                               }}
                             >
                               {props?.loading ? (
-                                <PulseLoader color="white"/>
+                                <PulseLoader color="white" />
                               ) : (
                                 <div className="flex flex-row justify-center items-center">
                                   <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
-                                  <div className="font-normal">Chat on WhatsApp</div>
+                                  <div className="font-normal">
+                                    Chat on WhatsApp
+                                  </div>
                                 </div>
                               )}
                             </div>
