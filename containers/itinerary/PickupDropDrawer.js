@@ -336,13 +336,13 @@ const PickupDropDrawer = ({
         return (
           transferDetails.items?.[0]?.segments?.[
             transferDetails.items?.[0]?.segments?.length - 1
-          ]?.destination?.hub_id || null
+          ]?.destination?.hub_id || destinationGmaps || null
         );
       } else if (transferType === "drop" && field === "destination") {
         // For drop destination, get destination hub from booking
         return (
           transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id ||
-          transferDetails.origin?.id ||
+          transferDetails.origin?.id || sourceGmaps ||
           null
         );
       }
@@ -1157,6 +1157,7 @@ const getTitle = () => {
     return () => clearTimeout(timeoutId);
   }
 }, [formData, isOpen, isAutoFilled, initialPropsAssigned]);
+
 
   if (!isOpen) return null;
 

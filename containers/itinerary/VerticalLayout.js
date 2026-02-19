@@ -1050,7 +1050,8 @@ const CityItem = ({
   pinColour,
   isLast,
   check_in,
-  check_out
+  check_out,
+  date_of_journey
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1757,7 +1758,7 @@ useEffect(() => {
             booking={booking}
             onClose={handleClose}
             transferType={drawerType}
-            doj={doj}
+            doj={doj || date_of_journey}
             bookingMode={booking_type?.toLowerCase()}
             originCityName={origin_city_name}
             destinationCityName={destination_city_name}
