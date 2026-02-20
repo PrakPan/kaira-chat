@@ -777,13 +777,13 @@ const PriceDetails = ({
         } */}
 
        
-          <div className="flex justify-between text-sm font-400 leading-md mb-sm">
+          {Cart?.taxation_policy == "TCS" && <div className="flex justify-between text-sm font-400 leading-md mb-sm">
             <span>GST</span>
             <span>
               {currencySymbols?.[currency] ? currencySymbols?.[currency] : "₹"}
               {Cart?.gst?.toLocaleString("en-IN")}
             </span>
-          </div>
+          </div>}
       
 
         {Cart?.taxation_policy == "TCS" && (
@@ -2648,7 +2648,7 @@ const Details = (props) => {
 
                     <PriceDetails
                       itineraryCost={getIndianPrice(
-                        Math.round( Cart?.total_itinerary_cost),
+                        Math.round( Cart?.taxation_policy == "TCS" ? Cart?.total_itinerary_cost : Cart?.total_cost),
                       )}
                       lockInCost={0}
                       couponDiscount={appliedCoupon ? -couponSavedAmount : 0}
