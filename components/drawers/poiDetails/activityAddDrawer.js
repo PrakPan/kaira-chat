@@ -620,18 +620,16 @@ const ActivityAddDrawer = (props) => {
     return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
   };
 
-  const ClickHandler = (child) => {
-    setOffSet(0);
-    setOptions([]);
-    setTotalResults(null);
-    setError(null);
+const ClickHandler = (child) => {
+  const newType = child === "Things To Do" ? "Activity" : "POI";
+  if (newType === elementType) return;
 
-    if (child === "Things To Do") {
-      setElementType("Activity");
-    } else {
-      setElementType("POI");
-    }
-  };
+  setOffSet(0);
+  setOptions([]);
+  setTotalResults(null);
+  setError(null);
+  setElementType(newType);
+};
   const handleCloseDrawer = () => {
     const { id, drawer } = router.query;
     if (!drawer || !props?.showDrawer) return;

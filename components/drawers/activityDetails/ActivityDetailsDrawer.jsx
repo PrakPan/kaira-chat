@@ -57,14 +57,20 @@ const ActivityDetailsDrawer = (props) => {
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const [hotelPickupIncluded,setHotelPickupIncluded] = useState(false);
-  const currency = useSelector(state=>state.currency);
+  const [hotelPickupIncluded, setHotelPickupIncluded] = useState(false);
+  const currency = useSelector((state) => state.currency);
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
+  const child_ages = props?.pax?.childAges || [];
+
+  const buildTravelerAges = () => [
+    ...child_ages,
+  ];
+
   const [filterState, setFilterState] = useState({
     number_of_travelers: num_adults + num_children,
-    traveler_ages: Array(num_adults).fill(null),
+    traveler_ages: buildTravelerAges(),
     children: num_children,
     adults: num_adults,
   });
@@ -75,7 +81,7 @@ const ActivityDetailsDrawer = (props) => {
 
   useEffect(() => {
     if (props.show) fetchData();
-  }, [props.show, filterState]);
+  }, [props.show]);
 
   useEffect(() => {
     if (props.show) {
@@ -88,13 +94,17 @@ const ActivityDetailsDrawer = (props) => {
   }, [props.show]);
 
   const fetchData = (data) => {
+    const paxSource = data?._paxOverride || filterState;
+
     if (!data?.amenities) {
       setLoading(true);
     }
+
     let requestData = {
       start_date: getDate(props.date),
-      number_of_adults: filterState.adults,
-      number_of_children: filterState.children,
+      number_of_adults: paxSource.adults,
+      number_of_children: paxSource.children,
+      traveler_ages: paxSource.traveler_ages,
     };
 
     if (data?.amenities) {
@@ -103,7 +113,7 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/?currency=${currency.currency || 'INR'}`, requestData, {
+      .post(`/${props.activityId}/?currency=${currency.currency || "INR"}`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -125,22 +135,22 @@ const ActivityDetailsDrawer = (props) => {
   };
 
   const formatTime = (time24) => {
-  if (!time24) return null;
+    if (!time24) return null;
 
-  const [hours, minutes, seconds] = time24.split(":");
-  const hour = parseInt(hours, 10);
-  const period = hour >= 12 ? "PM" : "AM";
-  const hour12 = hour === 0 ? 12 : hour;
+    const [hours, minutes, seconds] = time24.split(":");
+    const hour = parseInt(hours, 10);
+    const period = hour >= 12 ? "PM" : "AM";
+    const hour12 = hour === 0 ? 12 : hour;
 
-  return `${hour12}:${minutes}`;
-};
+    return `${hour12}:${minutes}`;
+  };
 
   const updatedActivityBooking = async (data) => {
     try {
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
         trace_id: traceId,
-       ...(data?.result_index !== undefined && { result_index: data.result_index }),
+        ...(data?.result_index !== undefined && { result_index: data.result_index }),
       };
 
       const res = await activityBooking.post(
@@ -179,7 +189,7 @@ const ActivityDetailsDrawer = (props) => {
               rating: res?.data?.activity?.rating,
               user_ratings_total: res?.data?.activity?.user_ratings_total,
               start_time: formatTime(res?.data?.check_in?.split(" ")?.[1]) || null,
-              end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null
+              end_time: formatTime(res?.data?.check_out?.split(" ")?.[1]) || null,
             };
 
             const updatedDayByDay = city?.day_by_day?.map((day) => {
@@ -216,7 +226,7 @@ const ActivityDetailsDrawer = (props) => {
         heading: "Success!",
       });
       props?.setShowDrawer(false);
-      return res; // ✅ return response so the caller knows it succeeded
+      return res;
     } catch (err) {
       console.error("error is:", err);
 
@@ -234,7 +244,7 @@ const ActivityDetailsDrawer = (props) => {
         });
       }
 
-      return err; // ❗ rethrow so the caller can handle error
+      return err;
     }
   };
 
@@ -285,16 +295,6 @@ const ActivityDetailsDrawer = (props) => {
           </OptionsContainer>
         </div>
       )}
-
-      {/* {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={(e) => props.handleCloseDrawer(e)}
-          />
-        </FloatingView>
-      )} */}
     </Drawer>
   );
 };
@@ -312,7 +312,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(
-  mapStateToPros,
-  mapDispatchToProps
-)(ActivityDetailsDrawer);
+export default connect(mapStateToPros, mapDispatchToProps)(ActivityDetailsDrawer);
