@@ -77,7 +77,7 @@ export default function ActivityDetails(props) {
       children: newPax.children,
       childAges: newPax.childAges || [],
       number_of_travelers: newPax.adults + newPax.children,
-      traveler_ages: [
+      children_ages: [
         ...(newPax.childAges || []),
       ],
     };

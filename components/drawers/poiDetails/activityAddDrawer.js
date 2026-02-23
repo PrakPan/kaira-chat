@@ -102,7 +102,7 @@ const ActivityAddDrawer = (props) => {
     guide: ["All"],
     pax: {
       number_of_travelers: num_adults,
-      traveler_ages: Array(num_adults + num_children).fill(null),
+      traveler_ages: Array(num_children).fill(null),
     },
     experienceFilters: ["All"],
     experienceFiltersActivity: ["All"],
@@ -186,7 +186,7 @@ const ActivityAddDrawer = (props) => {
           num_children: pax.children,
           pax: {
             number_of_travelers: pax.adults + pax.children,
-            traveler_ages: pax.childAges,
+            children_ages: pax.childAges,
           },
         }));
       }, 2000);
@@ -319,7 +319,7 @@ const ActivityAddDrawer = (props) => {
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
-          traveler_ages: pax?.childAges || [],
+          children_ages: pax?.childAges || [],
           filter_by: {
             name: debouncedSearch,
             recommended_only: filterState.recommended_only,
@@ -495,7 +495,7 @@ const ActivityAddDrawer = (props) => {
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
-          traveler_ages: pax?.childAges || [],
+          children_ages: pax?.childAges || [],
           filter_by: {
             name: debouncedSearch,
             recommended_only: filterState.recommended_only,

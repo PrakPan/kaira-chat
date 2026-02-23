@@ -70,7 +70,7 @@ const ActivityDetailsDrawer = (props) => {
 
   const [filterState, setFilterState] = useState({
     number_of_travelers: num_adults + num_children,
-    traveler_ages: buildTravelerAges(),
+    children_ages: buildTravelerAges(),
     children: num_children,
     adults: num_adults,
   });
@@ -96,6 +96,8 @@ const ActivityDetailsDrawer = (props) => {
   const fetchData = (data) => {
     const paxSource = data?._paxOverride || filterState;
 
+    console
+
     if (!data?.amenities) {
       setLoading(true);
     }
@@ -104,7 +106,7 @@ const ActivityDetailsDrawer = (props) => {
       start_date: getDate(props.date),
       number_of_adults: paxSource.adults,
       number_of_children: paxSource.children,
-      traveler_ages: paxSource.traveler_ages,
+      children_ages: paxSource?.children_ages || paxSource.traveler_ages,
     };
 
     if (data?.amenities) {
