@@ -21,7 +21,7 @@ const Experience = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
     trackPageView(props.Type, `${props.cityData.name} Page`)
-  }, []);
+  }, [props?.hotLocationSearch]);
 
   const schemaData = {
     "@context": "https://schema.org/",

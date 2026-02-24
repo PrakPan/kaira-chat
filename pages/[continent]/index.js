@@ -21,7 +21,7 @@ const TravelPlanner = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
     // trackPageView(props.Type, `${props.destination} Page`);
-  }, []);
+  }, [props.hotLocationSearch]);
 
   return (
     <Layout

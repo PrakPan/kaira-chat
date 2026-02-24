@@ -39,6 +39,7 @@ function MyApp({ Component, pageProps, store }) {
   const maxAttempts = 10;
   const { id } = useSelector(state => state.auth);
   const userLocation = useSelector((state) => state.UserLocation?.location);
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -290,7 +291,7 @@ function MyApp({ Component, pageProps, store }) {
               siteId="tarzanway-web"
               anonymousId="abc"
             /> 
-            <Component {...pageProps} />
+            <Component {...pageProps}  />
           </Theme>
         </GoogleOAuthProvider>
       </div>
