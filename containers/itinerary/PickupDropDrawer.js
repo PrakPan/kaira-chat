@@ -336,13 +336,13 @@ const PickupDropDrawer = ({
         return (
           transferDetails.items?.[0]?.segments?.[
             transferDetails.items?.[0]?.segments?.length - 1
-          ]?.destination?.hub_id || destinationGmaps || null
+          ]?.destination?.hub_id || transferDetails.destination?.id || null
         );
       } else if (transferType === "drop" && field === "destination") {
         // For drop destination, get destination hub from booking
         return (
           transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id ||
-          transferDetails.origin?.id || sourceGmaps ||
+          transferDetails.origin?.id || transferDetails.source?.id ||
           null
         );
       }
