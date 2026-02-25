@@ -476,11 +476,11 @@ const Activity = (props) => {
                     <div className="border-l pl-[8px] pr-[8px] border-[#BFBFBF] Body3M_12 text-[#6E757A] justify-center items-center">
                       {props.element?.start_time &&
                         formatTime(props.element.start_time)}
-                      {props.element?.start_time &&
+                      {/* {props.element?.start_time &&
                         props.element?.end_time &&
                         " - "}
                       {props.element?.end_time &&
-                        formatTime(props.element.end_time)}
+                        formatTime(props.element.end_time)} */}
                     </div>
                   )}
                   {props.element?.rating ? (

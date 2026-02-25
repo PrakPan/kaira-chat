@@ -21,7 +21,7 @@ const Experience = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
     trackPageView(props.Type, `${props.cityData.name} Page`)
-  }, []);
+  }, [props?.hotLocationSearch]);
 
   const schemaData = {
     "@context": "https://schema.org/",
@@ -55,8 +55,7 @@ const Experience = (props) => {
         />
         <meta property="og:image" content="/logoblack.svg" />
         <title>
-          Plan Your Trip to {props.cityData.name} | Trip Planner & Itinerary |
-          The Tarzan Way
+          Plan Your Trip to {props.cityData.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
         <meta
           property="keywords"

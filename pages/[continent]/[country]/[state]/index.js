@@ -22,7 +22,7 @@ const TravelPlanner = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
     // trackPageView(props.Type, `${props.Data?.name} Page`)
-  }, []);
+  }, [props?.hotLocationSearch]);
 
   const faq = [
     {
@@ -79,8 +79,7 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | Trip Planner & Itinerary
-          | The Tarzan Way
+          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data?.slug)} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
         <meta
           name="description"

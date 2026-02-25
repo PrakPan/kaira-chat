@@ -173,7 +173,7 @@ const ActivityDetails = (props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [aboutText, setAboutText] = useState(
-    props?.data?.overview ?? props?.data?.short_description
+    props?.data?.overview ?? props?.data?.short_description,
   );
   const itinerary = useSelector((state) => state.Itinerary);
   const token = useSelector((state) => state.auth.token);
@@ -214,7 +214,7 @@ const ActivityDetails = (props) => {
           setImagesLoaded((prev) => {
             return { ...prev, [i]: true };
           }),
-        1000
+        1000,
       );
     }
   }
@@ -232,7 +232,7 @@ const ActivityDetails = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
+        },
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
@@ -241,7 +241,7 @@ const ActivityDetails = (props) => {
         trackActivityBookingDelete(
           router.query.id,
           props?.data?.id,
-          "ActivityDetailsDrawer"
+          "ActivityDetailsDrawer",
         );
 
         const itineraryCities = newItinerary.cities.map((city) => {
@@ -249,13 +249,13 @@ const ActivityDetails = (props) => {
             city.day_by_day.forEach((day, index) => {
               if (day?.slab_elements) {
                 day.slab_elements = day.slab_elements.filter(
-                  (item) => item?.booking?.id !== props?.data?.id
+                  (item) => item?.booking?.id !== props?.data?.id,
                 );
               }
             });
 
             city.activities = city.activities?.filter(
-              (item) => item?.id !== props?.data?.id
+              (item) => item?.id !== props?.data?.id,
             );
           }
 
@@ -272,7 +272,7 @@ const ActivityDetails = (props) => {
             type: "success",
             text: `${props?.data?.name} has been removed from your itinerary`,
             heading: "Success!",
-          })
+          }),
         );
       }
     } catch (error) {
@@ -286,7 +286,7 @@ const ActivityDetails = (props) => {
           type: "error",
           text: errorMsg,
           heading: "Error!",
-        })
+        }),
       );
     }
     setLoading(false);
@@ -305,7 +305,7 @@ const ActivityDetails = (props) => {
       {props.data?.tags?.map((e, i) => (
         <div
           key={i}
-          className={`border-2 rounded-full px-2 py-1`}
+          className={`rounded-full px-2 py-1`}
           style={{ backgroundColor: colors[i % colors.length] }}
         >
           {e}
@@ -378,6 +378,22 @@ const ActivityDetails = (props) => {
                       }}
                       noLazy
                     ></ImageLoader>
+
+                    {props.data?.ideal_duration_number ? (
+                      <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
+                        <div className="text-[14px]">Approx Time:</div>
+                        <div className="text-[14px]">
+                          {props.data.ideal_duration_number}{" "}
+                          {props.data.ideal_duration_number > 1
+                            ? props.data?.ideal_duration_unit?.toLowerCase()
+                            : props.data?.ideal_duration_unit
+                                ?.toLowerCase()
+                                ?.slice(0, -1)}
+                        </div>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
 
                   <div
@@ -445,7 +461,7 @@ const ActivityDetails = (props) => {
                 <Text
                   onClick={() =>
                     setAboutText(
-                      props?.data?.overview || props.data.short_description
+                      props?.data?.overview || props.data.short_description,
                     )
                   }
                 >
@@ -717,7 +733,7 @@ const ActivityDetails = (props) => {
                   {props?.activityData?.selected_amenities.map(
                     (amenity, index) => (
                       <Amenity key={index} index={index} amenity={amenity} />
-                    )
+                    ),
                   )}
                 </div>
               </div>

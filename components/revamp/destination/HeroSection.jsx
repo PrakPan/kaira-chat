@@ -117,7 +117,7 @@ useGSAP(
             className={styles.imageContainer}
           >
             <Image
-              src={slug == 'AI-generic' ?  isPageWide ? img : `${imgUrlEndPoint}/media/website/mob-2.png` :img}
+              src={slug == 'kashmir-2026' ?  '/kashmir-2026.jpg' :img}
               alt={`Hero image ${index + 1}`}
               onLoad={handleImageLoad}
               fill

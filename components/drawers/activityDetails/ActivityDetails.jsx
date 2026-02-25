@@ -36,20 +36,13 @@ export default function ActivityDetails(props) {
   });
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
 
   useEffect(() => {
-  if (props.data?.prices?.length > 0) {
-    setSelectedPackage(props.data.prices[0]);
-  }
-}, [props.data?.prices]);
-
-
-  useEffect(() => {
-  if (props.data?.prices?.length > 0) {
-    setSelectedPackage(props.data.prices[0]);
-  }
-}, [props.data?.prices]);
+    if (props.data?.prices?.length > 0) {
+      setSelectedPackage(props.data.prices[0]);
+    }
+  }, [props.data?.prices]);
 
   useEffect(() => {
     if (props.data?.amenities?.length) {
@@ -77,6 +70,21 @@ export default function ActivityDetails(props) {
     setStars(stars);
   }, []);
 
+  const handlePaxChange = (newPax) => {
+    const updatedFilterState = {
+      ...props.filterState,
+      adults: newPax.adults,
+      children: newPax.children,
+      childAges: newPax.childAges || [],
+      number_of_travelers: newPax.adults + newPax.children,
+      children_ages: [
+        ...(newPax.childAges || []),
+      ],
+    };
+    props.setFilterState(updatedFilterState);
+    props.fetchData({ _paxOverride: updatedFilterState });
+  };
+
   const handleUpdate = (e) => {
     setLoading(true);
     if (!token) {
@@ -86,7 +94,7 @@ export default function ActivityDetails(props) {
     }
     const bookingData = {
       ...e,
-      result_index: selectedPackage?.result_index
+      result_index: selectedPackage?.result_index,
     };
 
     props.updatedActivityBooking(bookingData).then(() => {
@@ -113,7 +121,13 @@ export default function ActivityDetails(props) {
     <div className="h-[100vh] overflow-y-auto px-4">
       <div className="flex flex-col gap-4  mb-[100px] pb-[20px]">
         <div className="mt-xl">
-          <Image src="/backarrow.svg" className="cursor-pointer" width={22} height={2} onClick={(e) => props.handleCloseDrawer(e)} />
+          <Image
+            src="/backarrow.svg"
+            className="cursor-pointer"
+            width={22}
+            height={2}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
         </div>
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
@@ -123,8 +137,9 @@ export default function ActivityDetails(props) {
         )}
 
         <div
-          className={`flex flex-col gap-4 ${props.updateAmenities && "opacity-50"
-            }`}
+          className={`flex flex-col gap-4 ${
+            props.updateAmenities && "opacity-50"
+          }`}
         >
           <div className="h-[180px] md:h-[300px] relative">
             <div style={{ display: imageLoaded ? "initial" : "none" }}>
@@ -161,8 +176,8 @@ export default function ActivityDetails(props) {
                     {props.data.ideal_duration_number > 1
                       ? props.data?.ideal_duration_unit?.toLowerCase()
                       : props.data?.ideal_duration_unit
-                        ?.toLowerCase()
-                        ?.slice(0, -1)}
+                          ?.toLowerCase()
+                          ?.slice(0, -1)}
                   </div>
                 </div>
               ) : (
@@ -184,9 +199,19 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-              <div className="text-md-lg leading-xl-sm font-600 mb-0">{props.data?.display_name || props.data.name}</div>
+              <div className="text-md-lg leading-xl-sm font-600 mb-0">
+                {props.data?.display_name || props.data.name}
+              </div>
             </div>
-            <Pax pax={props?.filterState} setPax={props?.setFilterState} />
+
+           
+            <Pax
+              pax={{
+                ...props?.filterState,
+                childAges: props?.filterState?.childAges || [],
+              }}
+              setPax={handlePaxChange}
+            />
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -223,7 +248,7 @@ export default function ActivityDetails(props) {
                 {props.data.tags?.map((e, i) => (
                   <span
                     key={i}
-                    className={`border-2 rounded-full px-2 py-1`}
+                    className={`rounded-full px-2 py-1`}
                     style={{ backgroundColor: colors[i % colors.length] }}
                   >
                     {e}
@@ -241,34 +266,42 @@ export default function ActivityDetails(props) {
             )}
 
             {props.data?.inclusions && props.data?.inclusions?.length > 0 && (
-            <div className="flex flex-col gap-2 mb-[30px]">
-              <div className="text-[20px] font-semibold text-green">Inclusions</div>
-              <div className="border-b-[1px]"></div>
-              <div className="text-[14px]">
-                <ul style={{ paddingLeft: "0.5rem" }}>
-                  {props.data.inclusions.map((inclusion, i) => (
-                    <li key={i} className="mb-1">- {inclusion}</li>
-                  ))}
-                </ul>
+              <div className="flex flex-col gap-2 mb-[30px]">
+                <div className="text-[20px] font-semibold text-green">
+                  Inclusions
+                </div>
+                <div className="border-b-[1px]"></div>
+                <div className="text-[14px]">
+                  <ul style={{ paddingLeft: "0.5rem" }}>
+                    {props.data.inclusions.map((inclusion, i) => (
+                      <li key={i} className="mb-1">
+                        - {inclusion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Exclusions Section */}
-          {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
-            <div className="flex flex-col gap-2 mb-[30px]">
-              <div className="text-[20px] font-semibold text-red">Exclusions</div>
-              <div className="border-b-[1px]"></div>
-              <div className="text-[14px]">
-                <ul style={{ paddingLeft: "0.5rem" }}>
-                  {props.data.exclusions.map((exclusion, i) => (
-                    <li key={i} className="mb-1">- {exclusion}</li>
-                  ))}
-                </ul>
+            {props.data?.exclusions && props.data?.exclusions?.length > 0 && (
+              <div className="flex flex-col gap-2 mb-[30px]">
+                <div className="text-[20px] font-semibold text-red">
+                  Exclusions
+                </div>
+                <div className="border-b-[1px]"></div>
+                <div className="text-[14px]">
+                  <ul style={{ paddingLeft: "0.5rem" }}>
+                    {props.data.exclusions.map((exclusion, i) => (
+                      <li key={i} className="mb-1">
+                        - {exclusion}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
+
           {props?.hotel_pickup_included ? (
             <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
               <Image
@@ -296,7 +329,6 @@ export default function ActivityDetails(props) {
           )}
 
           <div className="flex items-center gap-4 flex-wraptext-[14px] text-gray-800">
-            {/* Tour Type */}
             {props?.data?.tour_type === "Private Tour" && (
               <div className="flex items-center gap-1">
                 <Image
@@ -320,7 +352,6 @@ export default function ActivityDetails(props) {
               </div>
             )}
 
-            {/* Guide Type */}
             {props?.data?.guide === "Guided" && (
               <div className="flex items-center gap-1">
                 <Image src="/guided.svg" alt="guided" width={20} height={20} />
@@ -354,22 +385,9 @@ export default function ActivityDetails(props) {
           <div>
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     generalGuidelines: !prev.generalGuidelines,
-                  //   }))
-                  // }
-                >
+                <div className="text-[20px] font-semibold">
                   <div>General guidelines</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.generalGuidelines ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
                 </div>
                 {boolDetails?.generalGuidelines && (
                   <div className="text-[14px]">
@@ -385,22 +403,9 @@ export default function ActivityDetails(props) {
 
             {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     thingsToBring: !prev.thingsToBring,
-                  //   }))
-                  // }
-                >
+                <div className="text-[20px] font-semibold">
                   <div>Things to bring</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.thingsToBring ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
                 </div>
                 {boolDetails?.thingsToBring && (
                   <div className="text-[14px]">
@@ -416,22 +421,9 @@ export default function ActivityDetails(props) {
 
             {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     notSuitableFor: !prev.notSuitableFor,
-                  //   }))
-                  // }
-                >
+                <div className="text-[20px] font-semibold">
                   <div>Not suitable for</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.notSuitableFor ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
                 </div>
                 {boolDetails?.notSuitableFor && (
                   <div className="text-[14px]">
@@ -447,22 +439,9 @@ export default function ActivityDetails(props) {
 
             {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div
-                  className="text-[20px] font-semibold"
-                  // onClick={() =>
-                  //   setBoolDetail((prev) => ({
-                  //     ...prev,
-                  //     tipsTricks: !prev.tipsTricks,
-                  //   }))
-                  // }
-                >
+                <div className="text-[20px] font-semibold">
                   <div>Tips, Tricks and Cautions</div>
                   <div className="border-b-[1px] mt-2 mb-2"></div>
-                  {/* {boolDetails?.tipsTricks ? (
-                    <IoIosArrowUp />
-                  ) : (
-                    <IoIosArrowDown />
-                  )} */}
                 </div>
                 {boolDetails?.tipsTricks && (
                   <div className="text-[14px]">
@@ -483,9 +462,8 @@ export default function ActivityDetails(props) {
               <div className="border-b-[1px]"></div>
               <div className="flex flex-col gap-2">
                 {props.data.amenities.map((amenity, index) => (
-                  <div>
+                  <div key={index}>
                     <Amenity
-                      key={index}
                       index={index}
                       amenity={amenity}
                       handleAmenityChange={handleAmenityChange}
@@ -493,81 +471,100 @@ export default function ActivityDetails(props) {
                     />
                   </div>
                 ))}
-
               </div>
             </div>
           ) : null}
 
+          {props?.data?.prices && props?.data?.prices?.length && (
+            <div className="mb-4">
+              <h3 className="font-medium text-base mb-3">Package Options</h3>
 
-          {/* Inclusions Section */}
-         
+              <div className="flex flex-col gap-3 w-full">
+                {props.data.prices.map((packageItem, index) => (
+                  <div
+                    key={packageItem.result_index}
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
+                      selectedPackage?.result_index === packageItem.result_index
+                        ? "border-yellow-400 bg-yellow-50"
+                        : "border-gray-200 bg-white hover:border-gray-300"
+                    }`}
+                    onClick={() => setSelectedPackage(packageItem)}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex  flex-col gap-2 w-full">
+                        <div className="flex justify-between w-full items-start">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                                selectedPackage?.result_index ===
+                                packageItem.result_index
+                                  ? "border-yellow-400 bg-yellow-400"
+                                  : "border-gray-300"
+                              }`}
+                            >
+                              {selectedPackage?.result_index ===
+                                packageItem.result_index && (
+                                <div className="w-2 h-2 rounded-full bg-white"></div>
+                              )}
+                            </div>
+                            <div className="font-medium text-gray-900">
+                              {props.data?.is_package
+                                ? packageItem?.title
+                                  ? packageItem.title
+                                  : ""
+                                : ""}
+                            </div>
+                            {!(packageItem?.description) &&
+                              !packageItem?.title &&
+                              packageItem.pax_details?.adults && (
+                                <div className="text-sm text-gray-600">
+                                  For{" "}
+                                  {packageItem.pax_details?.adults +
+                                    packageItem.pax_details?.children}{" "}
+                                  people
+                                </div>
+                              )}
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-lg">
+                              {`${
+                                currency?.currency
+                                  ? currencySymbols?.[currency?.currency]
+                                  : "₹"
+                              }`}
+                              {getIndianPrice(
+                                Math.round(packageItem.total_price)
+                              )}
+                            </div>
+                          </div>
+                        </div>
 
-       {props?.data?.prices && props?.data?.prices?.length && (
-  <div className="mb-4">
-    <h3 className="font-medium text-base mb-3">Package Options</h3>
-    
-    <div className="flex flex-col gap-3 w-full">
-      {props.data.prices.map((packageItem, index) => (
-        <div
-          key={packageItem.result_index}
-          className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
-            selectedPackage?.result_index === packageItem.result_index
-              ? 'border-yellow-400 bg-yellow-50'
-              : 'border-gray-200 bg-white hover:border-gray-300'
-          }`}
-          onClick={() => setSelectedPackage(packageItem)}
-        >
-          <div className="flex items-center justify-between w-full">
-            <div className="flex  flex-col gap-2 w-full">
-              <div className="flex justify-between w-full items-start">
-              <div className="flex items-center gap-3">
-              <div 
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedPackage?.result_index === packageItem.result_index
-                    ? 'border-yellow-400 bg-yellow-400'
-                    : 'border-gray-300'
-                }`}
-              >
-                {selectedPackage?.result_index === packageItem.result_index && (
-                  <div className="w-2 h-2 rounded-full bg-white"></div>
-                )}
-              </div>
-              <div className="font-medium text-gray-900">
-                  {props.data?.is_package ? packageItem?.title ? packageItem.title : '' : ''}
-              </div>
-              {!(packageItem?.description) && !packageItem?.title &&  <div className="text-sm text-gray-600">
-                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
-              </div>}
-              </div>
-              <div className="text-right">
-              <div className="font-bold text-lg">
-                {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(Math.round(packageItem.total_price))}
-              </div>
-              {/* <div className="text-sm text-gray-600">
-                per package
-              </div> */}
-              </div>
-
-              </div>
-
-              <div className="flex flex-col ">
-                
-                <div className="font-normal text-gray-900 text-sm">
-                  {props.data?.is_package ? packageItem?.description ? packageItem.description : '' : ''}
-                </div>
-                {(packageItem?.description || packageItem?.title) && <div className="text-sm text-gray-600">
-                  For {packageItem.pax_details.adults + packageItem.pax_details.children} people
-                </div>}
+                        <div className="flex flex-col ">
+                          <div className="font-normal text-gray-900 text-sm">
+                            {props.data?.is_package
+                              ? packageItem?.description
+                                ? packageItem.description
+                                : ""
+                              : ""}
+                          </div>
+                          {(packageItem?.description || packageItem?.title) && (
+                            <div className="text-sm text-gray-600">
+                              For{" "}
+                              {packageItem.pax_details.adults +
+                                packageItem.pax_details.children}{" "}
+                              people
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            
-          </div>
+          )}
         </div>
-      ))}
-    </div>
-  </div>
-)}
-        </div>
+
         {props?.data?.cancellation_policies && (
           <>
             <div className="text-[20px] font-semibold">
@@ -582,28 +579,20 @@ export default function ActivityDetails(props) {
           </>
         )}
       </div>
-      <div
-        className={`scroll-none border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
-        `}
-      >
+
+      <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
           <>
-            {/* {props.data?.prices?.total_price && (
-              <div className="font-bold">
-                <span className="text-[34px]">
-                  ₹
-                  {props.data?.prices?.total_price &&
-                  props.data?.prices?.total_price > 0
-                    ? getIndianPrice(Math.round(props.data.prices.total_price))
-                    : props.data.prices.total_price}
-                </span>
-              </div>
-            )} */}
             {selectedPackage?.total_price && (
               <div className="font-bold">
                 <span className="text-[34px]">
-                  {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}
-                  {selectedPackage?.total_price && selectedPackage?.total_price > 0
+                  {`${
+                    currency?.currency
+                      ? currencySymbols?.[currency?.currency]
+                      : "₹"
+                  }`}
+                  {selectedPackage?.total_price &&
+                  selectedPackage?.total_price > 0
                     ? getIndianPrice(Math.round(selectedPackage.total_price))
                     : selectedPackage.total_price}
                 </span>
@@ -611,7 +600,6 @@ export default function ActivityDetails(props) {
             )}
           </>
 
-  
           <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
             Add to Itinerary
           </button>
@@ -634,7 +622,7 @@ export default function ActivityDetails(props) {
 export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
   const [isHovered, setIsHovered] = useState(false);
-  const currency = useSelector(state=>state.currency);
+  const currency = useSelector((state) => state.currency);
   const popupStyle = {
     display: isHovered ? "block" : "none",
     backgroundColor: "#2b2b2a",
@@ -676,7 +664,6 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
     >
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
-          {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
         <div className="text-[14px]">{amenity.description}</div>
@@ -693,7 +680,10 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
       ) : (
         <div className="flex items-center justify-between">
           <div className="font-semibold text-[24px]">
-            {`${currency?.currency ? currencySymbols?.[currency?.currency] : '₹'}`}{getIndianPrice(amenity.price)}{" "}
+            {`${
+              currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
+            }`}
+            {getIndianPrice(amenity.price)}{" "}
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 
@@ -715,7 +705,6 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
                 style={popupStyle}
                 className="z-[1600] absolute -right-3 top-full mt-2  text-sm text-center flex flex-col gap-2"
               >
-                {/* Tooltip arrow */}
                 <div className="relative">
                   <span className="absolute -top-5 right-0  w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
                   <span className="absolute -top-[21px] -right-0 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>

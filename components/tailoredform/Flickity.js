@@ -6,7 +6,6 @@ import Login from "../userauth/LogInModal";
 import SlideFour from "./slidefour/SlideFour";
 import SlideTwo from "./slideTwo/SlideTwo";
 import { useRouter } from "next/router";
-import SlideFive from "./slideFive/SlideFive";
 import { useSelector } from "react-redux";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -80,11 +79,7 @@ const FlickityComp = (props) => {
         <SlideFour/> 
         </Card> : null}
 
-      {slideIndex == 4 &&
-        <div>
-          <SlideFive completeItineraryCreate={props.completeItineraryCreate} isloading={props.isloading}/>
-        </div>
-      }
+      
     </div>
   );
 };

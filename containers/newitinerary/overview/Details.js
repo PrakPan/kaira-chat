@@ -12,6 +12,8 @@ import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useChatContext } from "../../../components/Chatbot/context/ChatContext";
 import { resetChatSession } from "../../../store/actions/chatState";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 
 const Container = styled.div`
   display: grid;
@@ -143,7 +145,25 @@ const Details = (props) => {
       {props?.group_type !== null ? (
         <div className="pr-[24px]" style={{ width: "max-content" }}>
           <Heading>Traveller Type</Heading>
-          <Text className="flex flex-row gap-2">
+          <Text
+            className="flex flex-row gap-2 items-center justify-center"
+            onClick={() => {
+              if (props?.setShowSettings) {
+                Promise.resolve(
+                  axios.get(
+                    `${MERCURY_HOST}/api/v1/itinerary/${router.query.id}/bookings/hotels/?fields=no_of_hotels`,
+                  ),
+                )
+                  .then((res) => {
+                    props?.setIsHotelsPresent(res.data.no_of_hotels > 0);
+                  })
+                  .catch((err) => {
+                    props?.setIsHotelsPresent(false);
+                  });
+                props?.setShowSettings(true);
+              }
+            }}
+          >
             {props.group_type}
             {props.number_of_adults ||
             props.number_of_children ||
@@ -165,7 +185,8 @@ const Details = (props) => {
                   : null}
                 )
               </span>
-            ) : null}
+            ) : null}{" "}
+            <FaPen size={12} className="text-gray-500"/>
           </Text>
         </div>
       ) : null}

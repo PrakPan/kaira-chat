@@ -100,7 +100,7 @@ const toTitleCase = (str) => {
 
 const Overview = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
-  const [showSettings, setShowSettings] = useState(false);
+ 
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -165,7 +165,7 @@ const Overview = (props) => {
         throw err;
       })
       .finally(() => {
-        setShowSettings(false);
+        props?.setShowSettings(false);
       });
   };
 
@@ -182,8 +182,8 @@ const Overview = (props) => {
             itinerary={props?.itinerary}
             resetRef={props?.resetRef}
             fetchData={props?.fetchData}
-            showSettings={setShowSettings}
-            setShowSettings={setShowSettings}
+            showSettings={props?.showSettings}
+            setShowSettings={props?.setShowSettings}
             setIsHotelsPresent={setIsHotelsPresent}
             isHotelsPresent={isHotelsPresent}
           />
@@ -208,8 +208,8 @@ const Overview = (props) => {
           number_of_infants={props?.number_of_infants}
           setEditRoute={props.setEditRoute}
           v1={props?.v1}
-          showSettings={showSettings}
-          setShowSettings={setShowSettings}
+          showSettings={props?.showSettings}
+          setShowSettings={props?.setShowSettings}
           setIsHotelsPresent={setIsHotelsPresent}
           isHotelsPresent={isHotelsPresent}
         ></Details>
@@ -236,11 +236,11 @@ const Overview = (props) => {
       {isDesktop ? (
         <ModalWithBackdrop
           centered
-          show={showSettings == true}
+          show={props?.showSettings == true}
           mobileWidth="100%"
           backdrop
           closeIcon={true}
-          onHide={() => setShowSettings(false)}
+          onHide={() => props?.setShowSettings(false)}
           borderRadius={"12px"}
           animation={false}
           backdropStyle={{
@@ -251,22 +251,22 @@ const Overview = (props) => {
           paddingY="20px"
         >
           <Settings
-            setShowSettings={setShowSettings}
+            setShowSettings={props?.setShowSettings}
             isHotelsPresent={isHotelsPresent}
             handleApply={handleApply}
           />
         </ModalWithBackdrop>
       ) : (
         <BottomModal
-          show={showSettings == true}
-          onHide={() => setShowSettings(false)}
+          show={props?.showSettings == true}
+          onHide={() => props?.setShowSettings(false)}
           width="100%"
           height="max-content"
           paddingX="16px"
           paddingY="31px"
         >
           <Settings
-            setShowSettings={setShowSettings}
+            setShowSettings={props?.setShowSettings}
             isHotelsPresent={isHotelsPresent}
             handleApply={handleApply}
           />

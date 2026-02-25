@@ -18,6 +18,7 @@ const TailoredFormMobileModal = (props) => {
       onHide={props.onHide}
       animation={false}
       width={isPageWide ? "100%" : "100%"}
+      overflow="overflow: hidden"
     >
       <div className="flex justify-center items-center h-full">
       <div className="w-full h-full">

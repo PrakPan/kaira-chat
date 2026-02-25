@@ -138,7 +138,6 @@ const reducer = (state = initialReducer, action) => {
             };
 
         case actionTypes.SET_CALENDAR_DATES:
-            // console.log("Setting calendar dates:", action.payload);
             return {
                 ...state,
                 slideOne: {

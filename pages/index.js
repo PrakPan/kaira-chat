@@ -125,22 +125,27 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
   return (
     <>
       <Head>
-        <title>Travel Company | India | The Tarzan Way</title>
+        <title>
+          AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
+        </title>
         <meta
           name="description"
-          content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
+          content="The Tarzan Way is a smart AI Trip Planner designed to build custom travel itineraries in minutes. Use our AI Travel Planner to personalise trips, explore curated experiences, and manage bookings seamlessly."
+        ></meta>
+        <meta
+          property="og:title"
+          content="AI Trip Planner & Custom Travel Itineraries | The Tarzan Way"
         />
         <meta property="og:title" content="Travel Company | India | The Tarzan Way" />
         <meta
           property="og:description"
-          content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
+          content="Plan smarter with The Tarzan Way — an advanced AI Trip Planner and AI Travel Planner that creates personalized itineraries, flexible packages, and seamless travel experiences."
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="keywords"
-          content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
-        />
-        <link rel="canonical" href="https://thetarzanway.com" />
+          content="ai trip planner,ai travel planner,travel itinerary planner,custom travel itineraries,personalized travel planning,smart trip planner,automated itinerary builder,online trip planner,digital travel planner,travel planning platform,customized holiday packages,personalized travel package,luxury travel planning,honeymoon travel packages,family travel packages,international travel planner,travel packages with itinerary,create travel itinerary online,plan my trip online,The Tarzan Way, hotels,flights,activities,transfers local travel experience"
+        ></meta>
 
         {/* Non-blocking CSS */}
         <script
@@ -194,10 +199,11 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
       </Head>
 
       <div className={styles.ttwRevamp}>
-        <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
+        <NavigationMenu message={"Welcome to The Tarzan Way!"} />
         {/* <ThemeHeadline text={`Limited-Time Offer: Up to ₹20,000 OFF | Book Before Dec 20`}/> */}
-        <HeroSection slug={'home'} />
-        <TrustFactors/>
+        <HeroSection slug={"home"} />
+        <TrustFactors />
+        {/* {props.token && <MyTripsSection className={"max-w-7xl"} />} */}
         <JourneySimplified />
 
         {token && <MyTripsSection className="max-w-7xl" />}

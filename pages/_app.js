@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Theme from "../public/Theme";
 import "../styles.css";
 import "../styles/globals.css";
@@ -15,6 +15,7 @@ import Script from "next/script";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
+import { usePathname } from "next/navigation";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -43,9 +44,17 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
-  const { id } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
+  const [currentPath, setCurrentPath] = useState('');
+  const newPath=usePathname()
 
-  // Remove server-side JSS to avoid FOUC
+
+  const [jupiterInitialized, setJupiterInitialized] = useState(false);
+  const initializationAttempts = useRef(0);
+  const maxAttempts = 10;
+  const { id } = useSelector(state => state.auth);
+  const userLocation = useSelector((state) => state.UserLocation?.location);
+
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) jssStyles.parentElement.removeChild(jssStyles);
@@ -167,7 +176,15 @@ function MyApp({ Component, pageProps }) {
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
           <Theme>
-            <Component {...pageProps} />
+            {/* <JupyterAnalytics
+              apiEndpoint="https://jupiter.tarzanway.com"
+              userId={id || null}
+              batchSize={10}
+              flushInterval={3000}
+              siteId="tarzanway-web"
+              anonymousId="abc"
+            />  */}
+            <Component {...pageProps}  />
           </Theme>
         </GoogleOAuthProvider>
       </div>

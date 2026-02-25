@@ -22,7 +22,7 @@ const TravelPlanner = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
      trackPageView(props.Type, `${props?.Data?.name} Page`);
-  }, []);
+  }, [props?.hotLocationSearch]);
 
   return (
     <Layout
@@ -32,7 +32,7 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          {props?.Data?.name} | Trip Planner & Itinerary | The Tarzan Way
+          {props?.Data?.name} | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way
         </title>
         <meta
           name="description"
@@ -41,7 +41,7 @@ const TravelPlanner = (props) => {
         <meta
           property="og:title"
           content={
-            props?.Data?.name + " | Trip Planner & Itinerary | The Tarzan Way"
+            props?.Data?.name + " | AI Trip Planner & Custom Travel Itineraries | The Tarzan Way"
           }
         />
         <meta

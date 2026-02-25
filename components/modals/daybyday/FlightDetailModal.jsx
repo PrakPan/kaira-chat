@@ -237,7 +237,7 @@ const FlightDetailModal = ({
                               )}`
                             : null}
                         </div> */}
-                        <div className="text-xs md:text-base text-gray-500">For {totalPax} person</div>
+                        <div className="text-xs md:text-base text-gray-500">For {totalPax} people</div>
                       </div>
                     )}
                   </div>

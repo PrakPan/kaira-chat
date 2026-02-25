@@ -785,7 +785,7 @@ const LogIn = React.memo((props) => {
             >
               Continue
             </Button>
-            {props.isTailored && (
+            {/* {props.isTailored && (
               <div
                 className="text-center text-[#3A85FC] cursor-pointer Body1R_16"
                 onClick={() => {
@@ -797,7 +797,7 @@ const LogIn = React.memo((props) => {
               >
                 Continue without logging in?
               </div>
-            )}
+            )} */}
           </>
         ) : (
           <div

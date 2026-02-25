@@ -14,7 +14,7 @@ import media from "../components/media";
 import openTailoredModal from "../services/openTailoredModal";
 import Layout from "../components/Layout";
 
-const AITravelPlanner = ({
+const AITripPlanner = ({
   Data,
   hotLocationSearch,
   slug,
@@ -157,7 +157,7 @@ const mapDispatchToProps = (dispatch) => ({
   setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
 });
 
-export default connect(null, mapDispatchToProps)(AITravelPlanner);
+export default connect(null, mapDispatchToProps)(AITripPlanner);
 
 
 export async function getStaticProps({ params }) {

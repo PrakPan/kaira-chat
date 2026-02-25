@@ -53,6 +53,7 @@ const DaybyDay = ({
   _updateTaxiBookingHandler,
   setShowLoginModal,
   index,
+  setShowSettings,
   setShowCityDrawer,
   ...props
 }) => {
@@ -67,6 +68,7 @@ const DaybyDay = ({
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
+  const Itinerary = useSelector(state=>state.Itinerary)
 
   let isPageWide = media("(min-width: 768px)");
   const cityRefs = useRef({});
@@ -164,8 +166,9 @@ const DaybyDay = ({
             sourceLong={startCity?.longitude}
             destinationLat={stay?.[0] ? stay[0]?.lat : null}
             destinationLong={stay?.[0] ? stay[0]?.long : null}
-            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id : itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
+            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id || itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
             key={2}
+            date_of_journey={Itinerary?.start_date}
             pinColour={getCityColor(index)}
             bookingIdToDelete={
               startCity?.gmaps_place_id +
@@ -308,6 +311,7 @@ const DaybyDay = ({
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                   _updatePaymentHandler={_updatePaymentHandler}
                   getPaymentHandler={getPaymentHandler}
+                  setShowSettings={setShowSettings}
                   setShowCityDrawer={setShowCityDrawer}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
@@ -315,9 +319,11 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
+                      check_in={stay?.[index] ? stay?.[index]?.check_in : null}
+                      check_out={stay?.[index] ? stay?.[index]?.check_out : null}
                       hotelName={stay?.[index]?.name ? stay[index]?.name : null}
-                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
+                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
                       sourceLat={stay?.[index] ? stay[index]?.lat : null}
                       sourceLong={stay?.[index] ? stay[index]?.long : null}
                       destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}
@@ -513,6 +519,7 @@ const DaybyDay = ({
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
             lastCity={true}
+            date_of_journey={Itinerary?.end_date}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}

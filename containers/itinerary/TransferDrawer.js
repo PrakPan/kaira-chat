@@ -22,6 +22,7 @@ import { useRouter } from "next/router";
 import { useHandleClose } from "../../hooks/useHandleClose";
 import { getDateDifferenceInDays } from "../../helper/DateUtils";
 import { currencySymbols } from "../../data/currencySymbols";
+import dayjs from "dayjs";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -107,6 +108,7 @@ const TransferDrawer = ({
           bookingId: booking_id,
           oItineraryCity: origin_itinerary_city_id,
           dItineraryCity: destination_itinerary_city_id,
+          doj: data?.check_in,
         },
       },
       undefined,
@@ -307,15 +309,17 @@ const TransferDrawer = ({
                   <div className="text-xs md:text-sm text-gray-600">
                     {type === "Flight" ? (
                       <span>
+
                         {
                           transferData.transfer_details?.items?.[0]
                             ?.segments?.[0]?.airline?.name
                         }{" "}
                         •
-                        {transferData.transfer_details?.items?.[0]?.segments
+                        {/* {transferData.transfer_details?.items?.[0]?.segments
                           ?.length === 1
                           ? " Non-stop"
-                          : ` ${transferData.transfer_details?.items?.[0]?.segments?.length - 1} stop(s)`}
+                          : ` ${transferData.transfer_details?.items?.[0]?.segments?.length - 1} stop(s)`} */}
+                        { transferData.transfer_details?.items?.[0]?.segments?.[0]?.origin?.departure_time ? ` ${dayjs(transferData.transfer_details?.items?.[0]?.segments?.[0]?.origin?.departure_time)?.format("ddd, MMM D")}` : null }
                       </span>
                     ) : transferType === "sightseeing" ? (
                       <span>

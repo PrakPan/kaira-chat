@@ -2177,8 +2177,6 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
       const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
 
-      console.log("Setting next step departure to:", newDepartureDate, newDepartureTimeStr);
-
       setCurrentModeDepartureDate(newDepartureDate);
       setCurrentModeDepartureTime(newDepartureTimeStr);
       setComboStartDate(newDepartureDate);
@@ -3565,8 +3563,8 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                       className="flex items-center gap-2 mt-md cursor-pointer"
                       onClick={() => toggleTransferDetailsMulti(priceOptionId)}
                     >
-                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center justify-center gap-2 text-xs md:text-[14px] font-500">
-                        <span>
+                      <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-xs md:text-[14px] font-500">
+                        <span className="">
                           Details
                           {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
                           Transfer{segments.length > 2 ? 's' : ''} */}
@@ -6126,8 +6124,8 @@ const toggleTransferDetails = (priceOptionId) => {
                   className="flex items-center gap-2 mt-md cursor-pointer"
                   onClick={() => toggleTransferDetails(priceOptionId)}
                 >
-                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center justify-center gap-2 text-xs md:text-[14px]  font-500">
-                    <span>
+                  <div className="bg-[#07213A] text-white rounded-full px-3 py-1 flex items-center gap-2 text-xs md:text-[14px] font-500">
+                    <span className="">
                       Details
                       {/* {segments.length - 1 > 0 ? `${segments.length - 1} ` : ''}
                       Transfer{segments.length > 2 ? 's' : ''} */}

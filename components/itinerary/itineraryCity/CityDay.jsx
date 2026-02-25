@@ -445,7 +445,8 @@ const CityDay = (props) => {
             setShowLoginModal={props?.setShowLoginModal}
             activityBookings={props?.activityBookings}
             setActivityBookings={props?.setActivityBookings}
-          />
+            setShowSettings={props?.setShowSettings}
+          ></ActivityAddDrawer>
         )}
     </>
   );

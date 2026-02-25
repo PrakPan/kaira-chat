@@ -21,7 +21,7 @@ const TravelPlanner = (props) => {
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
     // trackPageView(props.Type, `${props.destination} Page`);
-  }, []);
+  }, [props.hotLocationSearch]);
 
   return (
     <Layout
@@ -33,7 +33,7 @@ const TravelPlanner = (props) => {
         <title>{`${props.Data.slug
               .split("_")
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ")} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}</title>
+              .join(" ")} AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`${props.Data.meta_description}`}
