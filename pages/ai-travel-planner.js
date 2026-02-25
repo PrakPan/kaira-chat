@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { connect } from "react-redux";
 
-import ThemePage from "../containers/travelplanner/OldFormThemePage";
+import ThemePage from "../containers/travelplanner/ThemePage";
 import { axiosPageInstance } from "../services/pages/travel-planner";
 import { axiosPageList } from "../services/pages/list";
 import axioslocationsinstance from "../services/search/search";
@@ -23,12 +23,12 @@ const AITravelPlanner = ({
   const router = useRouter();
 //   const [Data, setData] = useState(null);
 //   const [hotLocationSearch, sethotLocationSearch] = useState([]);
-//   const [slug, setSlug] = useState('AI-generic');
+//   const [slug, setSlug] = useState('AI-Travelplanner');
   let isPageWide = media("(min-width: 768px)");
 
 //   useEffect(() => {
 //     if (router.query.slug) {
-//       setSlug('AI-generic');
+//       setSlug('AI-Travelplanner');
 //     }
 //   }, [router]);
 
@@ -45,7 +45,7 @@ const AITravelPlanner = ({
 //   const fetchData = async () => {
 //     if (slug) {
 //       try {
-//         const res = await axiosPageInstance.get(`/AI-generic/`);
+//         const res = await axiosPageInstance.get(`/AI-Travelplanner/`);
 //         if (res?.data?.success) {
 //           setData(res.data.data);
 //         } else {
@@ -81,7 +81,7 @@ const AITravelPlanner = ({
       page_id={Data.id}
       destination={Data.name}
       page={"Theme Page"}
-      slug={'AI-generic'}
+      slug={'AI-Travelplanner'}
 
     >
       <Head>
@@ -130,25 +130,7 @@ const AITravelPlanner = ({
         ></link>
       </Head>
       
-      <HeroBanner
-      image={
-          isPageWide
-            ? "media/website/banners/ocean.jpg"
-            : "media/website/banners/ocean.jpg"
-        }
-        destinationType={"city-planner"}
-        title={
-          <p style={!isPageWide ? { fontSize: "22px" } : {}}>
-            Effortless Travel Planning!
-            <br />
-            Let AI Be Your Expert Guide.
-          </p>
-        }
-        _startPlanningFunction={() => openTailoredModal(router)}
-        resizeMode={"fill"}
-        page={"Home Page"}
-        />
-      <ThemePage themePage experienceData={Data} slug={'AI-generic'}></ThemePage>
+      <ThemePage themePage experienceData={Data} slug={'AI-Travelplanner'}></ThemePage>
     </Layout>
   );
 };
@@ -165,24 +147,24 @@ export async function getStaticProps({ params }) {
   let hotLocationSearch = [];
 
   try {
-    const res = await axiosPageInstance.get(`/${'AI-generic'}/`);
+    const res = await axiosPageInstance.get(`/${'AI-Travelplanner'}/`);
     if (res?.data?.success) {
       data = res.data.data;
     }
   } catch (err) {
-    console.error(`[ERROR][getStaticProps:slug:${'AI-generic'}]: `, err.message);
+    console.error(`[ERROR][getStaticProps:slug:${'AI-Travelplanner'}]: `, err.message);
   }
 
   try {
     const hotDestRes = await axioslocationsinstance.get(
-      `hot_destinations/?state=${'AI-generic'}/`
+      `hot_destinations/?state=${'AI-Travelplanner'}/`
     );
     if (hotDestRes?.data?.length) {
       hotLocationSearch = hotDestRes.data;
     }
   } catch (err) {
     console.error(
-      `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${'AI-generic'}/]: `,
+      `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${'AI-Travelplanner'}/]: `,
       err.message
     );
   }
@@ -197,7 +179,7 @@ export async function getStaticProps({ params }) {
     props: {
       Data: data,
       hotLocationSearch,
-      slug: 'AI-generic',
+      slug: 'AI-Travelplanner',
     },
   };
 }
