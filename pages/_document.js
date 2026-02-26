@@ -61,6 +61,10 @@ export default class MyDocument extends Document {
             />
           </noscript>
 
+          <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-AJwAHLnOSTh25KkTQdxyTFB7-v0uMaw"></script>
+    <script src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"></script>
+
+
           {/* ---------- Partytown ---------- */}
           <Partytown debug={isProduction} forward={["gtag", "mixpanel", "clarity"]} />
 

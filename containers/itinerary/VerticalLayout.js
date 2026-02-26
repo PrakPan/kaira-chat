@@ -1535,7 +1535,7 @@ useEffect(() => {
   {upPresent && <VerticalLine height={"50px"} gradient="top" />}
   {upPresent && downPresent ? (
     <div className="flex items-center justify-center">
-      {correctIcon(booking_type)}
+      {/* {correctIcon(booking_type)} */}
     </div>
   ) : (
     <Pin length={length} pinColour={"black"} inner={true} />

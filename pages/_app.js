@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
 import { usePathname } from "next/navigation";
+import BotApp from "../components/bot-components/BotApp";
 
 // Polyfill for requestIdleCallback (Safari compatibility)
 if (typeof window !== "undefined" && !window.requestIdleCallback) {
@@ -184,6 +185,7 @@ function MyApp({ Component, pageProps }) {
               siteId="tarzanway-web"
               anonymousId="abc"
             />  */}
+           
             <Component {...pageProps}  />
           </Theme>
         </GoogleOAuthProvider>
