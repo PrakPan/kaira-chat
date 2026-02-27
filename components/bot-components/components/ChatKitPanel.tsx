@@ -199,11 +199,11 @@ export function ChatKitPanel({
 
   return (
     <div
-      className="flex flex-col h-full min-h-0 bg-white max-h-[92vh]"
+      className="flex flex-col h-full min-h-0 bg-white max-h-[94vh]"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5  bg-white/80 backdrop-blur-sm">
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5  bg-white/80 backdrop-blur-sm mt-2">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full flex items-center justify-center">
             <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
