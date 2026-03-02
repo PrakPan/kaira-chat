@@ -7,6 +7,11 @@ export interface ProgressStep {
   done: boolean;
 }
 
+export interface ThinkingTask {
+  content: string;
+  done: boolean;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant";
@@ -19,6 +24,7 @@ export interface Message {
     widget: Record<string, unknown>;
   };
   progressSteps?: ProgressStep[];
+  thinkingTasks?: ThinkingTask[];
 }
 
 export interface UserLocationData {
@@ -69,9 +75,7 @@ function buildFirstMessageBody(
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.create",
-    params: {
-      input: buildInput(text),
-    },
+    params: { input: buildInput(text) },
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
@@ -86,10 +90,7 @@ function buildSubsequentMessageBody(
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.add_user_message",
-    params: {
-      input: buildInput(text),
-      thread_id: opts.threadId,
-    },
+    params: { input: buildInput(text), thread_id: opts.threadId },
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
@@ -98,18 +99,20 @@ function buildSubsequentMessageBody(
   return body;
 }
 
-// ─── SSE parser ───────────────────────────────────────────────────────────────
+// ─── SSE types & parser ───────────────────────────────────────────────────────
 
-function parseSseLine(
-  raw: string,
-  handlers: {
-    onTextChunk: (text: string) => void;
-    onThreadId: (id: string) => void;
-    onEffect: (effect: ClientEffect) => void;
-    onWidget?: (item: { id: string; widget: Record<string, unknown> }) => void;
-    onProgress?: (step: { text: string; done: boolean }) => void; // ← NEW
-  }
-) {
+interface SseHandlers {
+  onTextChunk: (text: string) => void;
+  onThreadId: (id: string) => void;
+  onEffect: (effect: ClientEffect) => void;
+  onWidget?: (item: { id: string; widget: Record<string, unknown> }) => void;
+  onProgress?: (step: { text: string; done: boolean }) => void;
+  onWorkflowTaskAdded?: (index: number, content: string) => void;
+  onWorkflowTaskUpdated?: (index: number, content: string) => void;
+  onWorkflowDone?: () => void;
+}
+
+function parseSseLine(raw: string, handlers: SseHandlers) {
   if (raw === "[DONE]") return;
 
   let ev: Record<string, unknown>;
@@ -123,26 +126,61 @@ function parseSseLine(
   const type = ev.type as string | undefined;
   if (!type) return;
 
-  // ── Thread created ────────────────────────────────────────────────────────
   if (type === "thread.created") {
     const thread = ev.thread as { id?: string } | undefined;
     if (thread?.id) handlers.onThreadId(thread.id);
     return;
   }
 
-  // ── Item updated — carries streaming text deltas ──────────────────────────
   if (type === "thread.item.updated") {
     const update = ev.update as Record<string, unknown> | undefined;
     if (!update) return;
     const utype = update.type as string | undefined;
+
     if (utype === "assistant_message.content_part.text_delta") {
       const delta = update.delta as string | undefined;
       if (delta) handlers.onTextChunk(delta);
+      return;
+    }
+
+    if (utype === "workflow.task.added") {
+      const task = update.task as Record<string, unknown> | undefined;
+      const taskIndex = update.task_index as number | undefined;
+      const content = task?.content as string | undefined;
+      if (task?.type === "thought" && content !== undefined && taskIndex !== undefined) {
+        handlers.onWorkflowTaskAdded?.(taskIndex, content);
+      }
+      return;
+    }
+
+    if (utype === "workflow.task.updated") {
+      const task = update.task as Record<string, unknown> | undefined;
+      const taskIndex = update.task_index as number | undefined;
+      const content = task?.content as string | undefined;
+      if (task?.type === "thought" && content !== undefined && taskIndex !== undefined) {
+        handlers.onWorkflowTaskUpdated?.(taskIndex, content);
+      }
+      return;
     }
     return;
   }
 
-  // ── Progress update ───────────────────────────────────────────────────────
+  if (type === "thread.item.done") {
+    const item = ev.item as Record<string, unknown> | undefined;
+    if (item?.type === "workflow") {
+      handlers.onWorkflowDone?.();
+      return;
+    }
+    if (item?.type === "widget") {
+      handlers.onWidget?.({
+        id: item.id as string,
+        widget: item.widget as Record<string, unknown>,
+      });
+      return;
+    }
+    return;
+  }
+
   if (type === "progress_update") {
     const text = ev.text as string | undefined;
     const done = (ev.done as boolean | undefined) ?? false;
@@ -150,7 +188,6 @@ function parseSseLine(
     return;
   }
 
-  // ── Client-side effect ────────────────────────────────────────────────────
   if (type === "client_effect") {
     const name = ev.name as string | undefined;
     const data = (ev.data ?? {}) as Record<string, unknown>;
@@ -158,32 +195,15 @@ function parseSseLine(
     return;
   }
 
-  // ── Batch effects (non-streamed response) ─────────────────────────────────
   if (Array.isArray(ev.effects)) {
     (ev.effects as ClientEffect[]).forEach(handlers.onEffect);
-    return;
-  }
-
-  // ── Widget item done ──────────────────────────────────────────────────────
-  if (type === "thread.item.done") {
-    const item = ev.item as Record<string, unknown> | undefined;
-    if (item?.type === "widget") {
-      handlers.onWidget?.({
-        id: item.id as string,
-        widget: item.widget as Record<string, unknown>,
-      });
-    }
     return;
   }
 }
 
 // ─── SSE stream reader ────────────────────────────────────────────────────────
 
-async function readStream(
-  response: Response,
-  handlers: Parameters<typeof parseSseLine>[1],
-  signal?: AbortSignal
-) {
+async function readStream(response: Response, handlers: SseHandlers, signal?: AbortSignal) {
   const reader = response.body?.getReader();
   if (!reader) throw new Error("No response body");
   const decoder = new TextDecoder();
@@ -219,26 +239,31 @@ const FALLBACK_LOCATION: UserLocationData = {
   source: "default",
 };
 
-// ─── Progress helpers ─────────────────────────────────────────────────────────
+// ─── Pure state-update helpers (NOT hooks, safe to call anywhere) ─────────────
 
-function applyProgressStep(
-  steps: ProgressStep[],
-  incoming: { text: string; done: boolean }
-): ProgressStep[] {
-  if (steps.length === 0) {
-    return [{ text: incoming.text, done: incoming.done }];
-  }
+function applyProgressStep(steps: ProgressStep[], incoming: { text: string; done: boolean }): ProgressStep[] {
+  if (steps.length === 0) return [{ text: incoming.text, done: incoming.done }];
   const last = steps[steps.length - 1];
   if (!last.done) {
-    // Mark the current active step done, then add the new one
-    return [
-      ...steps.slice(0, -1),
-      { ...last, done: true },
-      { text: incoming.text, done: incoming.done },
-    ];
+    return [...steps.slice(0, -1), { ...last, done: true }, { text: incoming.text, done: incoming.done }];
   }
-  // Last step was already done — just append
   return [...steps, { text: incoming.text, done: incoming.done }];
+}
+
+function applyTaskAdded(tasks: ThinkingTask[], index: number, content: string): ThinkingTask[] {
+  const next = [...tasks];
+  next[index] = { content, done: false };
+  return next;
+}
+
+function applyTaskUpdated(tasks: ThinkingTask[], index: number, content: string): ThinkingTask[] {
+  const next = [...tasks];
+  next[index] = { content, done: false };
+  return next;
+}
+
+function applyWorkflowDone(tasks: ThinkingTask[]): ThinkingTask[] {
+  return tasks.map((t) => ({ ...t, done: true }));
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -277,20 +302,20 @@ export function useChat({
 
     const assistantMsgId = `assistant-${Date.now()}`;
     setMessages((prev) => [...prev, {
-      id: assistantMsgId, role: "assistant",
-      content: "", timestamp: new Date(), isStreaming: true,
-      progressSteps: [], // ← initialise
+      id: assistantMsgId,
+      role: "assistant",
+      content: "",
+      timestamp: new Date(),
+      isStreaming: true,
+      progressSteps: [],
+      thinkingTasks: [],
     }]);
     setIsStreaming(true);
 
     const loc = (locationReady ? userLocation : null) ?? FALLBACK_LOCATION;
     const body = {
       type: "threads.custom_action",
-      params: {
-        thread_id: threadIdRef.current,
-        item_id: "",
-        action: { type, payload },
-      },
+      params: { thread_id: threadIdRef.current, item_id: "", action: { type, payload } },
       domain_key: domainKey,
       model,
       user_location: loc,
@@ -303,11 +328,7 @@ export function useChat({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (!response.ok) {
-        const errBody = await response.text();
-        console.error("[sendWidgetAction] error body:", errBody);
-        throw new Error(`${response.status}`);
-      }
+      if (!response.ok) throw new Error(`${response.status}`);
 
       await readStream(response, {
         onTextChunk: (chunk) => {
@@ -319,26 +340,42 @@ export function useChat({
         onEffect: (effect) => onEffect?.(effect),
         onWidget: (item) => {
           setMessages((prev) => [...prev, {
-            id: `widget-${Date.now()}`, role: "assistant",
-            content: "", timestamp: new Date(),
-            type: "widget", widgetItem: item,
+            id: `widget-${Date.now()}`,
+            role: "assistant",
+            content: "",
+            timestamp: new Date(),
+            type: "widget",
+            widgetItem: item,
           }]);
         },
-        // ← NEW: progress steps for widget action responses
         onProgress: (step) => {
-          setMessages((prev) => prev.map((m) => {
-            if (m.id !== assistantMsgId) return m;
-            return {
-              ...m,
-              progressSteps: applyProgressStep(m.progressSteps ?? [], step),
-            };
-          }));
+          setMessages((prev) => prev.map((m) =>
+            m.id !== assistantMsgId ? m
+              : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
+          ));
+        },
+        onWorkflowTaskAdded: (index, content) => {
+          setMessages((prev) => prev.map((m) =>
+            m.id !== assistantMsgId ? m
+              : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
+          ));
+        },
+        onWorkflowTaskUpdated: (index, content) => {
+          setMessages((prev) => prev.map((m) =>
+            m.id !== assistantMsgId ? m
+              : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
+          ));
+        },
+        onWorkflowDone: () => {
+          setMessages((prev) => prev.map((m) =>
+            m.id !== assistantMsgId ? m
+              : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
+          ));
         },
       });
     } catch (err) {
       console.error("[sendWidgetAction]", err);
     } finally {
-      // Mark last progress step as done when stream ends
       setMessages((prev) => prev.map((m) => {
         if (m.id !== assistantMsgId) return m;
         const steps = m.progressSteps ?? [];
@@ -349,8 +386,7 @@ export function useChat({
       }));
       setIsStreaming(false);
     }
-  }, [threadIdRef, apiUrl, domainKey, model, botMode, itineraryId,
-    locationReady, userLocation, onEffect]);
+  }, [apiUrl, domainKey, model, botMode, itineraryId, locationReady, userLocation, onEffect]);
 
   // ─── sendMessage ────────────────────────────────────────────────────────────
 
@@ -374,7 +410,8 @@ export function useChat({
           content: "",
           timestamp: new Date(),
           isStreaming: true,
-          progressSteps: [], // ← initialise
+          progressSteps: [],
+          thinkingTasks: [],
         },
       ]);
       setIsStreaming(true);
@@ -382,11 +419,8 @@ export function useChat({
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      const loc: UserLocationData =
-        (locationReady ? userLocation : null) ?? FALLBACK_LOCATION;
-
+      const loc: UserLocationData = (locationReady ? userLocation : null) ?? FALLBACK_LOCATION;
       const commonOpts = { domainKey, model, userLocation: loc, botMode, itineraryId };
-
       const body = threadIdRef.current
         ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
         : buildFirstMessageBody(trimmed, commonOpts);
@@ -413,11 +447,9 @@ export function useChat({
           {
             onTextChunk: (chunk) => {
               if (!firstToken) { firstToken = true; onFirstToken?.(); }
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
-                )
-              );
+              setMessages((prev) => prev.map((m) =>
+                m.id === assistantMsgId ? { ...m, content: m.content + chunk } : m
+              ));
             },
             onThreadId: (id) => {
               if (!threadIdRef.current) {
@@ -427,27 +459,38 @@ export function useChat({
             },
             onEffect: (effect) => onEffect?.(effect),
             onWidget: (item) => {
-              setMessages((prev) => [
-                ...prev,
-                {
-                  id: `widget-${item.id}`,
-                  role: "assistant",
-                  content: "",
-                  timestamp: new Date(),
-                  type: "widget",
-                  widgetItem: item,
-                },
-              ]);
+              setMessages((prev) => [...prev, {
+                id: `widget-${item.id}`,
+                role: "assistant",
+                content: "",
+                timestamp: new Date(),
+                type: "widget",
+                widgetItem: item,
+              }]);
             },
-            // ← NEW: progress steps for regular message responses
             onProgress: (step) => {
-              setMessages((prev) => prev.map((m) => {
-                if (m.id !== assistantMsgId) return m;
-                return {
-                  ...m,
-                  progressSteps: applyProgressStep(m.progressSteps ?? [], step),
-                };
-              }));
+              setMessages((prev) => prev.map((m) =>
+                m.id !== assistantMsgId ? m
+                  : { ...m, progressSteps: applyProgressStep(m.progressSteps ?? [], step) }
+              ));
+            },
+            onWorkflowTaskAdded: (index, content) => {
+              setMessages((prev) => prev.map((m) =>
+                m.id !== assistantMsgId ? m
+                  : { ...m, thinkingTasks: applyTaskAdded(m.thinkingTasks ?? [], index, content) }
+              ));
+            },
+            onWorkflowTaskUpdated: (index, content) => {
+              setMessages((prev) => prev.map((m) =>
+                m.id !== assistantMsgId ? m
+                  : { ...m, thinkingTasks: applyTaskUpdated(m.thinkingTasks ?? [], index, content) }
+              ));
+            },
+            onWorkflowDone: () => {
+              setMessages((prev) => prev.map((m) =>
+                m.id !== assistantMsgId ? m
+                  : { ...m, thinkingTasks: applyWorkflowDone(m.thinkingTasks ?? []) }
+              ));
             },
           },
           controller.signal
@@ -457,15 +500,12 @@ export function useChat({
         const msg = err instanceof Error ? err.message : "Unknown error";
         console.error("[useChat]", msg);
         setError(msg);
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantMsgId && !m.content
-              ? { ...m, content: "Sorry, something went wrong. Please try again." }
-              : m
-          )
-        );
+        setMessages((prev) => prev.map((m) =>
+          m.id === assistantMsgId && !m.content
+            ? { ...m, content: "Sorry, something went wrong. Please try again." }
+            : m
+        ));
       } finally {
-        // Mark last progress step as done when stream ends
         setMessages((prev) => prev.map((m) => {
           if (m.id !== assistantMsgId) return m;
           const steps = m.progressSteps ?? [];

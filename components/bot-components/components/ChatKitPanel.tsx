@@ -22,6 +22,7 @@ interface ChatKitPanelProps {
   onBotModeChange?: (mode: BotMode) => void;
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
+   onSendReady?: (sendFn: (message: string) => void) => void;
 }
 
 function useUserLocationData() {
@@ -103,6 +104,7 @@ export function ChatKitPanel({
   onBotModeChange,
   onItineraryIdChange,
   initialPrompt = null,
+   onSendReady,
 }: ChatKitPanelProps) {
   const [input, setInput] = useState("");
   const [selectedModel, setSelectedModel] = useState("high");
@@ -186,6 +188,10 @@ export function ChatKitPanel({
       sendMessage(initialPrompt);
     }
   }, [initialPrompt, locationReady, sendMessage]);
+
+  useEffect(() => {
+    onSendReady?.(sendMessage);
+  }, [onSendReady, sendMessage]);
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);

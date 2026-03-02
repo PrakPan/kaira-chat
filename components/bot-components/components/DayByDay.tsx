@@ -201,28 +201,6 @@ const DayByDay = ({
                 {item?.time ? item?.time : null}
               </span>
 
-               {/* {item?.type == "recommendation" && (
-                <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5cba66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
-                  Recommended
-                </span>
-              )} */}
-              {/* <span className="text-xs text-[#666666]">
-                {item?.rating != 0 ? getItemRating(item) : null}
-              </span>
-              {item?.rating != 0 ? <span className="text-yellow-500 text-xs">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                >
-                  <path
-                    d="M7.458 4.8L6 0L4.542 4.8H0L3.708 7.446L2.298 12L6 9.186L9.708 12L8.298 7.446L12 4.8H7.458Z"
-                    fill="#F7E700"
-                  />
-                </svg>
-              </span> : null} */}
               {item?.type === "activity" && (
                 <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
                   <svg
@@ -248,7 +226,7 @@ const DayByDay = ({
   };
 
   return (
-    <div className="flex border-1 border-[#E8E8E8] hover:bg-[#FAFAFA] bg-transition-colors ">
+    <div className="flex  border-[#E8E8E8] hover:bg-[#FAFAFA] bg-transition-colors ">
       <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
         <span className="text-xs md:text-sm text-[#000]">
           {/* {formatDateLabel(day?.date)}  */}

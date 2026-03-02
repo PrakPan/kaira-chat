@@ -5,6 +5,7 @@ import { IoMdTrain, IoMdBoat } from "react-icons/io";
 import { FaBus } from "react-icons/fa";
 import { RiArrowDropRightLine } from "react-icons/ri";
 
+
 interface TransferLeg {
   from_city: string;
   to_city: string;
@@ -54,6 +55,7 @@ function extractMode(text: string): string {
 const TransferSection: React.FC<TransferSectionProps> = ({ transfer }) => {
   const legs = transfer.legs ?? [];
   const isMultiLeg = legs.length > 1;
+  //  const isDesktop = useMediaQuery("(min-width:767px)");
 
   return (
     <div className="flex items-center gap-2 px-3 py-4 flex-wrap">
@@ -77,15 +79,15 @@ const TransferSection: React.FC<TransferSectionProps> = ({ transfer }) => {
       </div>
 
       {/* Route */}
-      <span className="text-base font-[500]">
+      {/* <span className="text-base font-[500]">
         {transfer.from_city} → {transfer.to_city}
-      </span>
+      </span> */}
 
       {/* Legs as comma-separated */}
       {legs.length > 0 && (
         <>
           <span className=" text-sm">·</span>
-          <span className="text-sm">
+          <span className={"Body1M_16"}>
             {legs.join(", ")}
           </span>
         </>

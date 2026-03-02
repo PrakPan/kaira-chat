@@ -30,6 +30,7 @@ export default function BotApp() {
     zoom: 12,
   });
   const mapRef = useRef<google.maps.Map | null>(null);
+  const sendMessageRef = useRef<((msg: string) => void) | null>(null);
 
   // Location state
   const [locations, setLocations] = useState<Location[] | null>(null);
@@ -48,11 +49,6 @@ export default function BotApp() {
   const [chatKey, setChatKey] = useState(0);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Panel visibility state
-  // showStartScreen: controls whether the LEFT panel shows the start screen
-  // hasBotResponded: true when a data event (route/location/itinerary) has been received
-  // isChatActive: true as soon as user sends first message (right panel switches from welcome to chat)
-  // isLeftPanelRevealing: used to animate the left panel transition
   const [showStartScreen, setShowStartScreen] = useState(true);
   const [hasBotResponded, setHasBotResponded] = useState(false);
   const [isChatActive, setIsChatActive] = useState(false);
@@ -159,13 +155,16 @@ export default function BotApp() {
     setChatKey((prev) => prev + 1);
   };
 
-  // Called when user selects a prompt from the start screen cards OR submits from welcome chat
-  const handlePromptSelect = (prompt: string) => {
+  
+const handlePromptSelect = (prompt: string) => {
+  if (isChatActive && sendMessageRef.current) {
+    // Chat is already open — send directly into it
+    sendMessageRef.current(prompt);
+  } else {
     initialPromptRef.current = prompt;
-    // Right panel switches to chat immediately
     setIsChatActive(true);
-    // Left panel stays as start screen until bot data event arrives
-  };
+  }
+};
 
   const handleToggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -237,7 +236,7 @@ export default function BotApp() {
         >
           {/* Welcome screen — slides/fades out when chat becomes active */}
           <div
-            className={`absolute inset-0 z-10 bg-white transition-all duration-500 ease-in-out ${
+            className={`absolute inset-0 z-10 bg-white  ease-in-out ${
               isChatActive
                 ? "opacity-0 pointer-events-none translate-y-2"
                 : "opacity-100 pointer-events-auto translate-y-0"
@@ -251,7 +250,7 @@ export default function BotApp() {
 
           {/* Chat panel — always mounted but invisible until chat is active */}
           <div
-            className={`flex-1 overflow-hidden min-h-0 transition-all duration-500 ease-in-out ${
+            className={`flex-1 overflow-hidden min-h-0  ease-in-out ${
               isChatActive
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-2 pointer-events-none"
@@ -335,6 +334,7 @@ export default function BotApp() {
                 onBotModeChange={setBotMode}
                 onItineraryIdChange={setItineraryId}
                 initialPrompt={initialPromptRef.current}
+                onSendReady={(fn) => { sendMessageRef.current = fn; }}
               />
             )}
           </div>

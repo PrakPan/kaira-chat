@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
-import type { Message, ProgressStep } from "../../hooks/useChat";
+import React, { useMemo, useState } from "react";
+import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
-import { CHATKIT_API_URL } from "../../lib/chatkitConfig";
 
 interface MessageBubbleProps {
   message: Message;
   onWidgetAction?: (action: { type: string; payload?: Record<string, unknown> }) => void;
 }
 
-// Lightweight markdown-to-JSX renderer (no external deps)
+// ─── Markdown renderer ────────────────────────────────────────────────────────
+
 function renderContent(text: string): React.ReactNode[] {
   const nodes: React.ReactNode[] = [];
   const lines = text.split("\n");
@@ -17,7 +17,6 @@ function renderContent(text: string): React.ReactNode[] {
   while (i < lines.length) {
     const line = lines[i];
 
-    // Bullet list
     if (/^[\-\*•]\s/.test(line)) {
       const items: string[] = [];
       while (i < lines.length && /^[\-\*•]\s/.test(lines[i])) {
@@ -26,17 +25,12 @@ function renderContent(text: string): React.ReactNode[] {
       }
       nodes.push(
         <ul key={`ul-${i}`}>
-          {items.map((item, idx) => (
-            <li key={idx}>
-              <span>{inlineFormat(item)}</span>
-            </li>
-          ))}
+          {items.map((item, idx) => <li key={idx}><span>{inlineFormat(item)}</span></li>)}
         </ul>
       );
       continue;
     }
 
-    // Ordered list
     if (/^\d+\.\s/.test(line)) {
       const items: string[] = [];
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
@@ -45,47 +39,32 @@ function renderContent(text: string): React.ReactNode[] {
       }
       nodes.push(
         <ol key={`ol-${i}`}>
-          {items.map((item, idx) => (
-            <li key={idx}>{inlineFormat(item)}</li>
-          ))}
+          {items.map((item, idx) => <li key={idx}>{inlineFormat(item)}</li>)}
         </ol>
       );
       continue;
     }
 
-    // Heading
     if (/^#{1,3}\s/.test(line)) {
       const level = line.match(/^(#+)/)?.[1].length ?? 1;
       const content = line.replace(/^#+\s/, "");
       const Tag = `h${Math.min(level, 3)}` as "h1" | "h2" | "h3";
-      nodes.push(
-        <Tag key={`h-${i}`}>{inlineFormat(content)}</Tag>
-      );
-      i++;
-      continue;
+      nodes.push(<Tag key={`h-${i}`}>{inlineFormat(content)}</Tag>);
+      i++; continue;
     }
 
-    // Blockquote
     if (/^>\s/.test(line)) {
       const content = line.replace(/^>\s/, "");
-      nodes.push(
-        <blockquote key={`bq-${i}`}>{inlineFormat(content)}</blockquote>
-      );
-      i++;
-      continue;
+      nodes.push(<blockquote key={`bq-${i}`}>{inlineFormat(content)}</blockquote>);
+      i++; continue;
     }
 
-    // Empty line -> spacer
     if (line.trim() === "") {
       nodes.push(<div key={`sp-${i}`} style={{ height: 6 }} />);
-      i++;
-      continue;
+      i++; continue;
     }
 
-    // Regular paragraph
-    nodes.push(
-      <p key={`p-${i}`}>{inlineFormat(line)}</p>
-    );
+    nodes.push(<p key={`p-${i}`}>{inlineFormat(line)}</p>);
     i++;
   }
 
@@ -95,41 +74,34 @@ function renderContent(text: string): React.ReactNode[] {
 function inlineFormat(text: string): React.ReactNode {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) {
+    if (part.startsWith("**") && part.endsWith("**"))
       return <strong key={i}>{part.slice(2, -2)}</strong>;
-    }
-    if (part.startsWith("`") && part.endsWith("`")) {
+    if (part.startsWith("`") && part.endsWith("`"))
       return <code key={i}>{part.slice(1, -1)}</code>;
-    }
     const linkMatch = part.match(/^\[(.*?)\]\((.*?)\)$/);
-    if (linkMatch) {
-      return (
-        <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer">
-          {linkMatch[1]}
-        </a>
-      );
-    }
+    if (linkMatch)
+      return <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer">{linkMatch[1]}</a>;
     return part;
   });
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetAction }) => {
-  const rendered = useMemo(() => renderContent(message.content), [message.content]);
-  const isUser = message.role === "user";
+// ─── ProgressLoader ───────────────────────────────────────────────────────────
 
-  // Add above the existing return in the assistant branch:
 const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "8px 0" }}>
     {steps.map((step, i) => (
-      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, 
-        fontFamily: "'Inter', sans-serif", fontSize: 13, color: step.done ? "#9ca3af" : "#374151" }}>
+      <div key={i} style={{
+        display: "flex", alignItems: "center", gap: 8,
+        fontFamily: "'Inter', sans-serif", fontSize: 13,
+        color: step.done ? "#9ca3af" : "#374151",
+      }}>
         {step.done ? (
           <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         ) : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{color:"#6b7280"}}>
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20"/>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#6b7280" }}>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20" />
           </svg>
         )}
         <span>{step.text}</span>
@@ -138,65 +110,255 @@ const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => (
   </div>
 );
 
- if (message.type === "widget" && message.widgetItem) {
+// ─── ThinkingBlock ────────────────────────────────────────────────────────────
+// Driven by workflow thought tasks from the SSE stream.
+// While tasks are streaming in (not all done) → open, animated.
+// Once workflow.item.done fires (all tasks marked done) AND content starts → collapses to a toggleable pill.
+
+// ─── ThinkingBlock ────────────────────────────────────────────────────────────
+// Matches ChatKit design:
+// • While thinking: rounded border card, lightbulb icon, "Thinking >" header,
+//   shows only the LATEST (current) task below in bold — single message at a time
+// • When done: no card border, "Thought for Xs ∨" header (toggleable),
+//   full task list with circle icons + vertical connector lines, "Done" at bottom
+
+const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> = ({
+  tasks,
+  isStreaming,
+}) => {
+  const allDone = tasks.length > 0 && tasks.every((t) => t.done);
+  const isThinking = !allDone || isStreaming;
+  const [expanded, setExpanded] = useState(false);
+
+  // Timer: count seconds while thinking
+  const [seconds, setSeconds] = useState(0);
+  const finalSeconds = React.useRef<number>(0);
+  React.useEffect(() => {
+    if (!isThinking) {
+      finalSeconds.current = seconds;
+      return;
+    }
+    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [isThinking]);
+
+  const cleanContent = (text: string) => text.replace(/\*\*/g, "");
+
+  // Current active task (last non-done, or last task while streaming)
+  const currentTask = isThinking
+    ? [...tasks].reverse().find((t) => !t.done) ?? tasks[tasks.length - 1]
+    : null;
+
+  // ── Thinking state: bordered card ──────────────────────────────────────────
+  if (isThinking) {
     return (
-      <WidgetRenderer
-        widget={message.widgetItem.widget}
-       onAction={onWidgetAction}
-      />
+      <div style={{
+        marginBottom: 12,
+        borderRadius: 12,
+        border: "1px solid #e5e7eb",
+        background: "#ffffff",
+        padding: "10px 14px 12px",
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+          {/* Lightbulb icon */}
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
+          </svg>
+          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>Thinking</span>
+          {/* Right chevron */}
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
+            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+          </svg>
+        </div>
+
+        {/* Current single task — bold, animated fade */}
+        {currentTask && (
+          <div key={currentTask.content} style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#374151",
+            paddingLeft: 2,
+            animation: "thinkFadeIn 0.3s ease",
+          }}>
+            {cleanContent(currentTask.content)}
+          </div>
+        )}
+
+        <style>{`
+          @keyframes thinkFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+      </div>
     );
   }
+
+  // ── Done state: no card, toggle list ───────────────────────────────────────
+  const displaySeconds = finalSeconds.current || seconds;
+
+  return (
+    <div style={{
+      marginBottom: 12,
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Header — clickable */}
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: 0,
+          marginBottom: expanded ? 12 : 0,
+        }}
+      >
+        <span style={{ fontSize: 14, color: "#374151", fontWeight: 400 }}>
+          Thought for {displaySeconds}s
+        </span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="#9ca3af"
+          style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </button>
+
+      {/* Expanded task list */}
+      {expanded && (
+        <div style={{ paddingLeft: 2 }}>
+          {tasks.map((task, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 0 }}>
+              {/* Icon + vertical line column */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, flexShrink: 0 }}>
+                {/* Circle icon */}
+                <div style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  border: "1.5px solid #d1d5db",
+                  background: "#fff",
+                  flexShrink: 0,
+                  marginTop: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }} />
+                {/* Vertical connector (not after last item) */}
+                {i < tasks.length - 1 && (
+                  <div style={{ width: 1, flex: 1, background: "#e5e7eb", minHeight: 16 }} />
+                )}
+              </div>
+
+              {/* Task text */}
+              <div style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: "#374151",
+                paddingLeft: 10,
+                paddingBottom: i < tasks.length - 1 ? 12 : 0,
+                lineHeight: "20px",
+              }}>
+                {cleanContent(task.content)}
+              </div>
+            </div>
+          ))}
+
+          {/* Done row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: 0 }}>
+            <div style={{ width: 20, display: "flex", justifyContent: "center" }}>
+              {/* Circled checkmark */}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span style={{ fontSize: 14, color: "#9ca3af", paddingLeft: 10, fontWeight: 400 }}>Done</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── MessageBubble ────────────────────────────────────────────────────────────
+
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetAction }) => {
+  const rendered = useMemo(() => renderContent(message.content), [message.content]);
+  const isUser = message.role === "user";
+
+  if (message.type === "widget" && message.widgetItem) {
+    return <WidgetRenderer widget={message.widgetItem.widget} onAction={onWidgetAction} />;
+  }
+
   if (isUser) {
     return (
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
-        <div
-          style={{
-            maxWidth: "85%",
-            background: "#fffaf5",
-            color: "#0d0d0d",
-            padding: "10px 16px",
-            borderRadius: 12,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 16,
-            lineHeight: "24px",
-            fontWeight: 400,
-          }}
-        >
+        <div style={{
+          maxWidth: "85%",
+          background: "#fffaf5",
+          color: "#0d0d0d",
+          padding: "10px 16px",
+          borderRadius: 12,
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 16,
+          lineHeight: "24px",
+          fontWeight: 400,
+        }}>
           {message.content}
         </div>
       </div>
     );
   }
 
+  // ── Derive display state ──────────────────────────────────────────────────
+  const hasProgress = (message.progressSteps?.length ?? 0) > 0;
+  const hasTasks = (message.thinkingTasks?.length ?? 0) > 0;
+  const hasContent = !!message.content;
+  const streaming = !!message.isStreaming;
+  const allTasksDone = hasTasks && message.thinkingTasks!.every((t) => t.done);
+
+  // Show thinking block if we have tasks (whether streaming or done)
+  const showThinking = hasTasks;
+  // Show dots only when truly nothing else: no progress, no tasks, no content
+  const showDots = !hasProgress && !hasTasks && !hasContent && streaming;
+
   return (
     <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 16 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, maxWidth: "98%" }}>
-        {/* Bot message wrapped in chatWrapper for scoped CSS styles */}
-        <div className="chatWrapper" style={{ padding: "10px 16px", color: "#374151", minWidth: 0 }}>
-         {(message.progressSteps?.length ?? 0) > 0 && (
-  <ProgressLoader steps={message.progressSteps!} />
-)}
-{message.content || message.isStreaming ? (
-  <>
-    {rendered}
-    {message.isStreaming && !message.content && <ThinkingDots />}
-  </>
-) : (!message.progressSteps?.length && <ThinkingDots />)}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, width: "98%" }}>
+        <div className="chatWrapper" style={{ padding: "10px 16px", color: "#374151", minWidth: "98%" }}>
+
+          {/* Progress steps (e.g. from progress_update events) */}
+          {hasProgress && <ProgressLoader steps={message.progressSteps!} />}
+
+          {/* Thinking block — shows tasks, collapses to pill once done + content arrives */}
+          {showThinking && (
+            <ThinkingBlock
+              tasks={message.thinkingTasks!}
+              // Still "streaming" visually until both workflow done AND content has started
+              isStreaming={!allTasksDone || (!hasContent && streaming)}
+            />
+          )}
+
+          {/* Main response content */}
+          {hasContent && rendered}
+
+          {/* Fallback bubble dots */}
+          {showDots && <ThinkingDots />}
         </div>
       </div>
     </div>
   );
 };
 
-// Uses .typingIndicator + .thinking + .typingDots from injected chatbot CSS
 export const ThinkingDots: React.FC = () => (
   <div className="typingIndicator" style={{ marginTop: 4 }}>
     <span className="thinking">
-      
       <span className="typingDots">
-        <span />
-        <span />
-        <span />
+        <span /><span /><span />
       </span>
     </span>
   </div>
