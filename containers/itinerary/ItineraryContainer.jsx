@@ -57,8 +57,8 @@ const Container = styled.div`
   padding: 17px 16px 0 16px;
   max-width: 100vw;
   @media screen and (min-width: 768px) {
-    width: 85%;
-    margin: -5vh auto 0 auto;
+    width: 95%;
+    margin: -5vh auto 0 3.5rem; !important
     padding: 0;
   }
   @media screen and (max-width: 639px) {

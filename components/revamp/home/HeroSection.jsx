@@ -79,7 +79,7 @@ const HeroSection = ({ title, subtitle }) => {
           </div>
         ))}
       </div>
-
+ <div className={styles.bottomGreeLine}></div>
      
     </section>
 

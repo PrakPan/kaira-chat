@@ -34,13 +34,22 @@
 
 html {
     scroll-behavior: auto !important;
+    scrollbar-gutter: stable;
 }
 
 html,
 body {
     padding: 0;
     margin: 0;
-    font-family: Lexend !important;
+     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+* {
+  font-family: inherit;
+}
+
+.fa, .glyphicon {
+  font-family: initial !important;
 }
 
 /* . {
@@ -421,7 +430,7 @@ a.termsnavunderlinelink {
 }
 
 .desktop-view-cart-fixed {
-    width: 43%;
+    width: 51vw;
     border-radius: var(--border-radius-md);
     border: 1px solid var(--color-spanish-grey);
     background: var(--color-pure-white);
@@ -565,3 +574,288 @@ a.termsnavunderlinelink {
   }
 }
 
+
+
+/* Base text styling */
+.chatWrapper p {
+    line-height: 24px;
+    font-size: 16px;
+    opacity: 0.9;
+    margin: 5px 0px;
+    /* font-family: Montserrat; */
+}
+
+/* List styling - ensure bullets show */
+.chatWrapper ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.chatWrapper ol {
+    list-style-type: decimal;
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.chatWrapper li {
+    line-height: 24px;
+    font-size: 16px;
+    opacity: 0.9;
+    margin: 4px 0;
+    display: list-item; /* Ensure bullets/numbers show */
+    /* font-family: Montserrat; */
+}
+
+/* Make bold text more visible */
+.chatWrapper strong,
+.chatWrapper b {
+    font-weight: 600; /* Changed from 500 to 600 for more boldness */
+    opacity: 1; /* Override parent opacity */
+}
+
+/* Prevent headings from being too large */
+.chatWrapper h1,
+.chatWrapper h2,
+.chatWrapper h3,
+.chatWrapper h4,
+.chatWrapper h5,
+.chatWrapper h6 {
+    font-size: 16px; /* Limit heading size */
+    font-weight: 600;
+    margin: 8px 0 4px 0;
+    line-height: 1.4;
+}
+
+/* Code blocks */
+.chatWrapper code {
+    /* font-family: 'Courier New', monospace; */
+    background: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.chatWrapper pre {
+    background: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 8px 0;
+}
+
+.chatWrapper pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Typing indicator */
+.typingIndicator {
+    max-width: 300px;
+    width:max-content;
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: #f1f3f4;
+    color: #666;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+    opacity: 0.8;
+}
+
+.thinking {
+    /* font-family: Inter; */
+    font-weight: 400;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.typingDots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typingDots span {
+    width: 6px; /* Increased from 4px to 6px */
+    height: 6px; /* Increased from 4px to 6px */
+    border-radius: 50%;
+    background: #999;
+    animation: typingDots 1.4s infinite ease-in-out;
+}
+
+.typingDots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typingDots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+.typingDots span:nth-child(3) {
+    animation-delay: 0s;
+}
+
+@keyframes typingDots {
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Links styling */
+.chatWrapper a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.chatWrapper a:hover {
+    text-decoration: none;
+}
+
+/* Blockquotes */
+.chatWrapper blockquote {
+    border-left: 3px solid #ddd;
+    padding-left: 12px;
+    margin: 8px 0;
+    color: #666;
+}
+
+
+
+/* ============================================================
+   Travel App — Global animation & responsive utilities
+   Add these to your main CSS / tailwind base layer
+   ============================================================ */
+
+/* ── Safe-area padding for iOS notch / home-indicator ── */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* ── Panel fade/slide animations ── */
+@keyframes panelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes panelFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(1.01);
+  }
+}
+
+.panel-enter {
+  animation: panelFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.panel-exit {
+  animation: panelFadeOut 0.3s ease-in forwards;
+}
+
+/* ── Map reveal ── */
+@keyframes mapReveal {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+}
+
+.map-reveal {
+  animation: mapReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Mobile tab bar active indicator ── */
+.tab-indicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #f59e0b; /* amber-500 */
+  transition: opacity 0.2s ease;
+}
+
+/* ── Card hover shimmer effect ── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-loading {
+  background: linear-gradient(
+    90deg,
+    #f3f4f6 25%,
+    #e5e7eb 50%,
+    #f3f4f6 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Smooth scrollbar hide (cross-browser) ── */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Mobile bottom nav ── */
+@media (max-width: 767px) {
+  /* Ensure chat panel keyboard doesn't break layout */
+  .mobile-chat-panel {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Ensure map fills correctly on mobile */
+  .mobile-map-panel {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+/* ── Transition utility for panels ── */
+.panel-transition {
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Welcome screen subtle gradient bg ── */
+.welcome-gradient {
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(251, 191, 36, 0.06) 0%,
+    rgba(255, 255, 255, 0) 65%
+  );
+}

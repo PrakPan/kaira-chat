@@ -101,8 +101,6 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const state = getState();
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
-
-  
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
@@ -111,17 +109,14 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
 
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
-      try{
-      updatedData.intercity[keyPath] = data;
-      
-      
-      dispatch({
-        type: actionTypes.UPDATE_SINGLE_TRANSFER,
-        payload: updatedData,
-      });
-    }catch(err){
-      
-    }
+      try {
+        updatedData.intercity[keyPath] = data;
+
+        dispatch({
+          type: actionTypes.UPDATE_SINGLE_TRANSFER,
+          payload: updatedData,
+        });
+      } catch (err) {}
     } else {
       console.error(`Key path ${keyPath} not found in intercity bookings`);
     }
@@ -149,7 +144,6 @@ export const updateAirportTransferBooking = (keyPath, data) => {
     } else {
       updatedData.airport[keyPath] = [data];
     }
-
 
     dispatch({
       type: actionTypes.UPDATE_AIRPORT_TRANSFER,

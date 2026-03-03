@@ -477,7 +477,9 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
-      setApiSucceeded(true);
+      if(resData){
+        setApiSucceeded(true);
+      }
 
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);

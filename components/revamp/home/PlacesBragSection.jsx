@@ -1,10 +1,8 @@
-import React, { useState, useRef } from "react";
-import { Japan } from "../assets";
+import { useRef, useState } from "react";
 import { DestinationCard } from "../common/components/card";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -14,6 +12,27 @@ import {
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import Button from "../common/components/button";
 import Link from "next/link";
+
+const getImageUrl = (key, width, height) => {
+  let payload = {
+    bucket: "thetarzanway-web",
+    key,
+    edits: {
+      resize: {
+        width,
+        fit: "cover",
+      },
+    },
+  };
+  if (height) {
+    payload.edits.resize['height'] = height
+  }
+
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+};
+const getSrcSet = (src) =>
+  [360, 400, 600, 800].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 const PlacesBragSection = (props) => {
   // Sample destination data - replace with your actual data
@@ -34,7 +53,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/thailand",
-      image: `${imgUrlEndPoint}/media/website/thailand.jpg`,
+      image: `media/website/thailand.jpg`,
     },
     {
       id: 2,
@@ -50,7 +69,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/vietnam",
-      image: `${imgUrlEndPoint}/media/countries/175871326394452381134033203125.png`,
+      image: `media/countries/175871326394452381134033203125.png`,
     },
     {
       id: 3,
@@ -71,7 +90,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/malaysia",
-      image: `${imgUrlEndPoint}/media/website/Malaysia.jpg`,
+      image: `media/website/Malaysia.jpg`,
     },
     {
       id: 4,
@@ -92,7 +111,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/united_arab_emirates/dubai",
-      image: `${imgUrlEndPoint}/media/cities/175731712356781172752380371094.jpg`,
+      image: `media/cities/175731712356781172752380371094.jpg`
     },
     {
       id: 5,
@@ -103,7 +122,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/singapore",
-      image: `${imgUrlEndPoint}/media/cities/170359716563205981254577636719.jpg`,
+      image: `media/cities/170359716563205981254577636719.jpg`,
     },
     {
       id: 6,
@@ -123,7 +142,7 @@ const PlacesBragSection = (props) => {
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "asia/indonesia/bali",
-      image: `${imgUrlEndPoint}/media/states/168449479198298645019531250000.jpeg`,
+      image: `media/states/168449479198298645019531250000.jpeg`,
     },
   ];
 
@@ -134,18 +153,8 @@ const PlacesBragSection = (props) => {
 
   const handleSwiper = (swiper) => {
     swiperRef.current = swiper;
-    setActiveIndex(swiper.activeIndex);
-    // For non-loop mode, slideCount = slides.length
-    // For loop mode, Swiper duplicates slides, so subtract loopedSlides*2
-    const count = swiper.loopedSlides
-      ? swiper.slides.length - swiper.loopedSlides * 2
-      : swiper.slides.length;
-    setSlideCount(count);
   };
 
-  const handleSlideChange = (swiper) => {
-    setActiveIndex(swiper.activeIndex);
-  };
 
   return (
     <section className="py-12 sm:py-16 lg:py-17 px-0 sm:px-4 lg:px-8 bg-white">
@@ -172,7 +181,7 @@ const PlacesBragSection = (props) => {
             spaceBetween={16}
             slidesPerView={1}
             onSwiper={handleSwiper}
-            onSlideChange={handleSlideChange}
+
             navigation={{
               nextEl: ".fullslider-next",
               prevEl: ".fullslider-prev",
@@ -204,6 +213,9 @@ const PlacesBragSection = (props) => {
                     title={destination.title}
                     description={destination.description}
                     image={destination.image}
+                    imageSrcSet={getSrcSet(destination.image)}
+                    imageSizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 33vw"
+                    imageFallback={getImageUrl(destination.image, 410, 376)}
                     tags={destination.tags}
                     link={destination.link}
                     gradientOverlay={destination.gradientOverlay}
@@ -218,7 +230,7 @@ const PlacesBragSection = (props) => {
 
           {/* Custom Prev Button */}
           {/* Custom Prev Button */}
-          <div className="fullslider-prev absolute -left-1 sm:left-1 top-[184px] z-20 cursor-pointer">
+          <div aria-label="Previous destinations" className="fullslider-prev absolute -left-1 sm:left-1 top-[184px] z-20 cursor-pointer">
             <div
               className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"
@@ -231,7 +243,7 @@ const PlacesBragSection = (props) => {
           </div>
 
           {/* Custom Next Button */}
-          <div className="fullslider-next absolute -right-1 sm:right-1 top-[184px] z-20 cursor-pointer">
+          <div aria-label="Next destinations" className="fullslider-next absolute -right-1 sm:right-1 top-[184px] z-20 cursor-pointer">
             <div
               className="w-10 h-10 bg-[#01202B] backdrop-blur-sm rounded-full flex
                   items-center justify-center hover:scale-110 transition-all duration-300"

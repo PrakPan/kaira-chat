@@ -143,7 +143,7 @@ export async function getStaticPaths() {
 
     const allPaths = [...data];
 
-    for (var i = 0; i < allPaths.length; i++) {
+    for (var i = 0; i < 2; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({

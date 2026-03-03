@@ -1,4 +1,4 @@
-"use client";
+
 
 import Image from "next/image";
 import { useRef, useState, useCallback } from "react";
@@ -67,40 +67,40 @@ useGSAP(
   { scope: containerRef, dependencies: [allImagesLoaded, animationStarted] }
 );
 
- const trustFactors = [
-    {
-      icon: 
-      "/assets/trustfactor/trust-factor-1.svg",
-      text: "Trusted by 10,000+ Travelers",
-      popupTitle: "No Hidden Charges",
-      popupDescription:
-        "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
-    },
-    {
-      icon: 
-      "/assets/trustfactor/trust-factor-2.svg",
-      text: "24/7 Support",
-      popupTitle: "No Hidden Charges",
-      popupDescription:
-        "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
-    },
-    {
-      icon:
-      "/assets/trustfactor/trust-factor-3.svg",
-      text: "GST Invoice Provided",
-      popupTitle: "No Hidden Charges",
-      popupDescription:
-        "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
-    },
-    {
-      icon:
-      "/assets/trustfactor/trust-factor-4.svg",
-      text: "Secure Payments",
-      popupTitle: "No Hidden Charges",
-      popupDescription:
-        "Safe and secure payment gateway with transparent pricing. No hidden transaction fees.",
-    },
-  ];
+//  const trustFactors = [
+//     {
+//       icon: 
+//       "/assets/trustfactor/trust-factor-1.svg",
+//       text: "Trusted by 10,000+ Travelers",
+//       popupTitle: "No Hidden Charges",
+//       popupDescription:
+//         "All costs are transparent and disclosed upfront. What you see is what you pay - no surprises at checkout.",
+//     },
+//     {
+//       icon: 
+//       "/assets/trustfactor/trust-factor-2.svg",
+//       text: "24/7 Support",
+//       popupTitle: "No Hidden Charges",
+//       popupDescription:
+//         "Round-the-clock customer support with complete pricing transparency. No hidden fees, ever.",
+//     },
+//     {
+//       icon:
+//       "/assets/trustfactor/trust-factor-3.svg",
+//       text: "GST Invoice Provided",
+//       popupTitle: "No Hidden Charges",
+//       popupDescription:
+//         "Complete tax transparency with detailed GST invoices. All charges clearly itemized.",
+//     },
+//     {
+//       icon:
+//       "/assets/trustfactor/trust-factor-4.svg",
+//       text: "Secure Payments",
+//       popupTitle: "No Hidden Charges",
+//       popupDescription:
+//         "Safe and secure payment gateway with transparent pricing. No hidden transaction fees.",
+//     },
+//   ];
 
 
   return (
@@ -133,7 +133,7 @@ useGSAP(
        {/* Features Section - Desktop Only */}
        
     </section>
-    <TrustFactors/>
+    {/* <TrustFactors/> */}
     </>
   );
 };

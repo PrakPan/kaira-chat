@@ -1,28 +1,49 @@
 import React from "react";
-import { Japan } from "../assets";
 import { TravelVibeCard } from "../common/components/card";
 import { useRouter } from "next/router";
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 
+/* ------------------ Dynamic Image Helpers ------------------ */
+const getImageUrl = (key, width, height) => {
+  const payload = {
+    bucket: "thetarzanway-web",
+    key,
+    edits: {
+      resize: {
+        width,
+        fit: "cover",
+      },
+    },
+  };
+  if (height) payload.edits.resize.height = height;
+
+  return `${imgUrlEndPoint}/${btoa(JSON.stringify(payload))}`;
+};
+
+const getSrcSet = (src) =>
+  [360, 600, 900].map((w) => `${getImageUrl(src, w)} ${w}w`).join(", ");
+/* ------------------------------------------------------------ */
+
 const TravelVibeSection = (props) => {
   // Sample travel vibe data - replace with your actual data
   const router = useRouter();
+
   const travelVibes = [
     {
       id: 1,
       title: "Honeymoon Trip Planner",
       description: "ROMANTIC ESCAPES",
-      image: `${imgUrlEndPoint}/media/page/173815280124938845634460449219/.jpg`, // Replace with actual honeymoon image
+      image: `media/page/173815280124938845634460449219/.jpg`,
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/honeymoon-2025"
+      link: "theme/honeymoon-2025",
     },
     {
       id: 2,
       title: "Road Trips 2025",
       description: "DRIVE DIARIES",
-      image: `${imgUrlEndPoint}/media/page/174860004456110548973083496094/.jpg`, // Replace with actual road trip image
+      image: `media/page/174860004456110548973083496094/.jpg`,
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -45,17 +66,17 @@ const TravelVibeSection = (props) => {
       image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`,
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/japan-cherry-blossom"
+      link: "theme/japan-cherry-blossom",
     },
     {
       id: 5,
       title: "Europe Under 1 Lakh",
       description: "BIG TRIPS, SMALL BUDGET",
-      image: `${imgUrlEndPoint}/media/page/174236505833778285980224609375/.jpg`, // Replace with actual Europe image
+      image: `media/website/compressedImage (7).jpeg`,
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
-      link:"theme/europe-under-1-lakh-2025"
+      link: "theme/europe-under-1-lakh-2025",
     },
   ];
 
@@ -69,7 +90,7 @@ const TravelVibeSection = (props) => {
   return (
     <section className="py-12 sm:py-16 lg:py-20 px-0 sm:px-4 lg:px-8 bg-white">
       <div className="w-full sm:max-w-7xl sm:mx-auto">
-        {/* Header Section */}
+        {/* Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-3 sm:mb-4 lg:mb-6 leading-tight">
             Travel to Match Your Vibe
@@ -83,7 +104,7 @@ const TravelVibeSection = (props) => {
           </p>
         </div>
 
-        {/* Travel Vibes Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8 px-2 sm:px-0">
           {/* Top Row - First card spans 2 columns, second card spans 1 column */}
           <div className="lg:col-span-2">

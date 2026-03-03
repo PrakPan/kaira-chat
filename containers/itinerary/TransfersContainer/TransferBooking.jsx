@@ -4,30 +4,18 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect,  useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
-import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
 import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail2";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import {
-  updateAirportTransferBooking,
-  updateTransferBookings,
-} from "../../../store/actions/transferBookingsStore";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
-import TransferDrawer from "../TransferDrawer";
-import PickupDropDrawer from "../PickupDropDrawer";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { useDispatch } from "react-redux";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -324,7 +312,7 @@ const TransferBooking = ({
                         <div
                           id={booking?.id}
                           className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                            !isPageWide ? "w-full" : "max-w-[54vw]"
+                            !isPageWide ? "w-full" : "max-w-[51vw]"
                           }`}
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
@@ -670,7 +658,7 @@ const TransferBooking = ({
                       <div
                         id={book?.id}
                         className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                          !isPageWide ? "w-full" : "max-w-[54vw]"
+                          !isPageWide ? "w-full" : "max-w-[51vw]"
                         }`}
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">

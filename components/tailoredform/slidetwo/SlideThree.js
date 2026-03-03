@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import GroupType from "./GroupType";
-import Question from "../Question";
 import GroupComponent from "./GroupComponent";
 import EnterPassenger from "./EnterPassenger";
 import { Body1M_16 } from "../../new-ui/Body";
@@ -32,6 +30,10 @@ const SlideThree = (props) => {
     addFlights,
     addInclusions
   } = useSelector((state) => state.tailoredInfoReducer.slideThree);
+  const selectedPreferences = useSelector((state) => state.tailoredInfoReducer.slideThree.selectedPreferences)||[];
+  const setSelectedPrefrences=(value)=>{
+    dispatch(togglePreference(value));
+  }
 
   useEffect(() => {
     if (groupType) {
@@ -69,6 +71,8 @@ const SlideThree = (props) => {
         <GroupComponent
           _handleShowPax={_handleShowPax}
           groupType={groupType}
+          selectedPreferences={selectedPreferences}
+          setSelectedPreferences={setSelectedPrefrences}
         ></GroupComponent>
       </div>
 

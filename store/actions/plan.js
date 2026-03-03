@@ -5,4 +5,5 @@ const setPlan = (data) => ({
   payload: data,
 });
 
+
 export default setPlan;

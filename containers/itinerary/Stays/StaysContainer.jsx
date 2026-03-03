@@ -1,7 +1,8 @@
-import { connect, useSelector } from "react-redux"; 
+import { connect, useSelector } from "react-redux";
 import HotelBooking from "./HotelBooking";
 import React, { useState } from "react";
 import media from "../../../components/media";
+import SkeletonCard from "../../../components/ui/SkeletonCard";
 
 const StaysContainer = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -10,7 +11,7 @@ const StaysContainer = (props) => {
     <div id="stays" className="mt-5">
       <div
         id="staysBooking"
-        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit"
+        className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit md:min-w-[51vw]"
       >
         Stays
         <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -49,45 +50,54 @@ const StaysContainer = (props) => {
           <>
             <div className={`${!isPageWide ? "w-full" : "max-w-[47vw]"}`}>
               {hotels_status === "PENDING" && (
-                <div className="animate-pulse">
-                  <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                    <div className="bg-gray-300 h-6 w-1/2 mb-2"></div>
-                    <span className="ml-1 bg-gray-200 h-4 w-12 inline-block"></span>
+                <div>
+                  <div className="pb-2">
+                    <SkeletonCard width="150px" height="25px" borderRadius="8px" variant="default" />
                   </div>
-
-                  <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+                  <div className="rounded-3xl border-sm border-solid border-text-disabled p-md  ">
                     <div className="relative flex lg:flex-row w-full flex-col gap-4">
-                      <div className="relative lg:h-[12rem] lg:w-[30%] w-full h-[12rem]">
-                        <div className="h-full w-full bg-gray-300 rounded-2xl"></div>
+                      <div>
+                        <SkeletonCard width="205px" height="192px" borderRadius="16px" variant="default" />
                       </div>
-
                       <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                         <div className="flex flex-col gap-2">
                           <div className="flex flex-row justify-between items-center">
-                            <div className="bg-gray-300 h-6 w-2/3"></div>
-                            <div className="bg-gray-300 h-4 w-16"></div>
+                            <SkeletonCard width="200px" height="20px" borderRadius="8px" variant="default" />
                           </div>
 
                           <div className="flex flex-col gap-1">
-                            <div className="bg-gray-300 h-4 w-32 mb-1"></div>
                             <div className="flex flex-row gap-2 items-center">
-                              <div className="bg-gray-300 h-5 w-1/2"></div>
-                              <div className="bg-gray-300 h-3 w-16"></div>
+                              <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                              <SkeletonCard width="100px" height="16px" borderRadius="8px" variant="default" />
                             </div>
                           </div>
 
-                          <div className="flex flex-row gap-2 items-center my-0">
-                            <div className="bg-gray-300 h-3 w-20"></div>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-row gap-2 items-center">
+                              <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                              <SkeletonCard width="200px" height="16px" borderRadius="8px" variant="default" />
+                              <SkeletonCard width="80px" height="16px" borderRadius="8px" variant="default" />
+                            </div>
                           </div>
 
-                          <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                            <div className="bg-gray-300 h-3 w-24"></div>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-row gap-2 items-center">
+                              <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                              <SkeletonCard width="250px" height="16px" borderRadius="8px" variant="default" />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-1">
+                            <div className="flex flex-row gap-2 items-center">
+                              <SkeletonCard width="16px" height="16px" borderRadius="50%" variant="default" />
+                              <SkeletonCard width="180px" height="16px" borderRadius="8px" variant="default" />
+                            </div>
                           </div>
                         </div>
 
                         <div className="flex flex-row gap-2 items-end justify-end w-full">
-                          <div className="bg-gray-300 h-8 w-24 rounded"></div>
-                          <div className="bg-gray-300 h-8 w-24 rounded"></div>
+                          <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
+                          <SkeletonCard width="90px" height="40px" borderRadius="8px" variant="default" />
                         </div>
                       </div>
                     </div>

@@ -2530,7 +2530,7 @@ export const DatePicker = (props) => {
 /* Force calendar to stay in normal document flow */
 .SingleDatePicker_picker,
 .SingleDatePicker_picker__portal {
-  z-index: 15 !important;
+  z-index: 115 !important;
   // transform: none !important;
   // top: 100% !important;
   // left: 0 !important;

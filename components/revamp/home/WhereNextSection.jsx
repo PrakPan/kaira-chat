@@ -35,11 +35,11 @@ const WhereNextSection = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Content Side */}
             <div className="order-2 lg:order-1"
-             style={{ padding: "1rem" }}
+              style={{ padding: "1rem" }}
             >
               <h2
                 className="font-bold text-2xl sm:text-xl lg:text-4xl  leading-tight"
-                // style={{ fontSize: "40px" }}
+              // style={{ fontSize: "40px" }}
               >
                 Where Will You Go Next?&nbsp;
                 {isDesktop ? <br /> : null}
@@ -96,7 +96,10 @@ const WhereNextSection = () => {
                     alt="Beautiful Italy coastal town with colorful buildings and boats"
                     fill
                     className="object-cover"
-                    priority
+                    sizes="(max-width: 640px) 100vw,
+                           (max-width: 1024px) 90vw,
+                            600px"
+                    loading="lazy"
                   />
                 </div>
               </div>

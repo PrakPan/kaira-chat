@@ -57,9 +57,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
   
   const chatState = useSelector((state) => state.chatState);
 
-  const setHasUnreadMessages = (value) => {
-    dispatch(setUnreadMessages(value));
-  };
+
 
   useEffect(() => {
     if (chatState?.shouldResetSession && chatState?.resetTimestamp) {
@@ -205,7 +203,7 @@ export const ChatProvider = ({ itinearyId, children }) => {
         setDisableQuerySection(false);
         setIsTyping(false);
         finalizeBotMessage(data.content);
-        setHasUnreadMessages(true);
+        dispatch(setUnreadMessages(true));
         trackChatMessageReceived(router?.query?.id, data.content);
         break;
 
@@ -724,8 +722,6 @@ export const ChatProvider = ({ itinearyId, children }) => {
         isloadingChatHistory,
         getAllChatHistory,
         resetSession,
-        hasUnreadMessages: chatState?.hasUnreadMessages || false,
-        setHasUnreadMessages,
       }}
     >
       {children}

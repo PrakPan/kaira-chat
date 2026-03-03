@@ -152,6 +152,7 @@ const TestimonialCarousel = (props) => {
             style={style}
             onClick={onClick}
             onError={() => handleImageError(imageId)}
+            loading="lazy"
           />
         ) : (
           <div

@@ -1351,7 +1351,7 @@ const ComboFlight = (props) => {
       return <Skeleton />;
     }
 
-    return (
+    return (   
       <OptionsContainer id="options">
         <div style={{ clear: "right" }}>
           {flights.map((flight, index) => (

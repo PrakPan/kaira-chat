@@ -54,6 +54,7 @@ const DaybyDay = ({
   setShowLoginModal,
   index,
   setShowSettings,
+  setShowCityDrawer,
   ...props
 }) => {
   const router = useRouter()
@@ -133,16 +134,9 @@ const DaybyDay = ({
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[54vw]"
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
           }`}
       >
-        {/* <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
-          Day By Day Itinerary
-          <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
-        </h1> */}
-
-        {/* to navigate between cities in frontend */}
-        {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
 
         <div className="flex flex-col">
           <CityItem
@@ -318,6 +312,7 @@ const DaybyDay = ({
                   _updatePaymentHandler={_updatePaymentHandler}
                   getPaymentHandler={getPaymentHandler}
                   setShowSettings={setShowSettings}
+                  setShowCityDrawer={setShowCityDrawer}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
