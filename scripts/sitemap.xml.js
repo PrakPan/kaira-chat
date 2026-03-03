@@ -10,6 +10,8 @@ const generateSitemap = async () => {
   const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
   const PROD_BASE_URL=  "https://thetarzanway.com";
 
+  const allowedCountries = ["india", "thailand", "vietnam", "indonesia"];
+
   // Fetch continents list
   const continents = await axios.get(
     `${BASE_URL}/api/v1/website/pages/?page_type=Continent&fields=path`
@@ -29,8 +31,13 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/geos/search/all/?type=Country`
   );
   const countriesData = countries.data;
-  let countriesPaths = countriesData
-  .filter((object) => object.path !== undefined && object.path.split("/").length === 2)
+let countriesPaths = countriesData
+  .filter(
+    (object) =>
+      object.path !== undefined &&
+      object.path.split("/").length === 2 &&
+      allowedCountries.includes(object.path.toLowerCase())
+  )
   .map((object) => {
     return { title: "Country Planner", link: PROD_BASE_URL + "/" + object.path };
   });
@@ -103,10 +110,10 @@ const generateSitemap = async () => {
     ...StaticPaths,
     ...continentsPaths,
     ...countriesPaths,
-    ...statesPaths,
-    ...cityPaths,
-    ...subRegionsPaths,
-    ...tripsPaths,
+    // ...statesPaths,
+    // ...cityPaths,
+    // ...subRegionsPaths,
+    // ...tripsPaths,
   ];
   console.log("all paths length: ",allPaths.length)
 
