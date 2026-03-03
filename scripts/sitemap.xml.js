@@ -109,7 +109,7 @@ let countriesPaths = countriesData
   const allPaths = [
     ...StaticPaths,
     ...continentsPaths,
-    ...countriesPaths,
+    // ...countriesPaths,
     // ...statesPaths,
     // ...cityPaths,
     // ...subRegionsPaths,
