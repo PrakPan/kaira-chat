@@ -1662,7 +1662,7 @@ const RouteContainer = (props) => {
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date
+          ? oCityData?.start_date || start_date
           : start_date;
 
     let calculatedStartTime;
@@ -2260,7 +2260,6 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
 
   const timeOptions = generateTimeOptions();
 
-  console.log("selectedModeIds:", selectedModeIds,selectedData);
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
@@ -2290,7 +2289,6 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         if (mode === "Flight" && searchData.segments && searchData.segments.length > 0) {
         const lastSegment = searchData.segments[searchData.segments.length - 1];
         searchData.arrival_time = lastSegment.destination.arrival_time;
-        console.log("Storing flight arrival time:", searchData.arrival_time);
       }
 
         if (mode !== "Flight" && mode !== "Taxi") {
@@ -2651,7 +2649,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : oCityData?.id
-            ? oCityData?.start_date
+            ? oCityData?.start_date || start_date
             : start_date;
 
       const requestBody = {
@@ -2859,7 +2857,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
         : oCityData?.id
-          ? oCityData?.start_date
+          ? oCityData?.start_date || start_date
           : start_date;
 
     let calculatedStartTime;
