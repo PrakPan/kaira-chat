@@ -126,7 +126,7 @@ React.useEffect(() => {
             </IconButton>
             <div
               style={popupStyle(hoveredIcon === "new")}
-              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 "
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[9999] "
             >
               New chat
             </div>
@@ -160,7 +160,7 @@ React.useEffect(() => {
             </IconButton>
             <div
               style={popupStyle(hoveredIcon === "history")}
-              className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-50"
+              className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-9999"
             >
               {/* <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-[6px] border-solid border-transparent border-b-[#2b2b2a]"></span> */}
               History
@@ -179,7 +179,7 @@ React.useEffect(() => {
        
         {isDesktop ?
         
-        <div className="flex-shrink-0 flex items-center justify-between py-1 bg-white/80 backdrop-blur-sm mt-2">
+        <div className="flex-shrink-0 flex items-center justify-between py-1 bg-white/80 backdrop-blur-sm border-b  border-gray-200">
   <div className="flex items-center gap-2">
     <div className="w-7 h-7 rounded-full flex items-center justify-center">
       <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
@@ -214,7 +214,7 @@ React.useEffect(() => {
           fontSize: "12px",
           whiteSpace: "nowrap",
         }}
-        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50"
+        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[9999]"
       >
         New chat
       </div>
@@ -245,7 +245,7 @@ React.useEffect(() => {
           fontSize: "12px",
           whiteSpace: "nowrap",
         }}
-        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50"
+        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[9999]"
       >
         History
       </div>
@@ -281,7 +281,7 @@ React.useEffect(() => {
             </IconButton>
             <div
               style={popupStyle(hoveredIcon === "new")}
-              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 "
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-[9999] "
             >
               New chat
             </div>
@@ -310,7 +310,7 @@ React.useEffect(() => {
             </IconButton>
             <div
               style={popupStyle(hoveredIcon === "history")}
-              className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-50"
+              className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-[9999]"
             >
               {/* <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-[6px] border-solid border-transparent border-b-[#2b2b2a]"></span> */}
               {/* History

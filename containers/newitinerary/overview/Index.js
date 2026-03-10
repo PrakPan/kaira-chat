@@ -174,7 +174,7 @@ const Overview = (props) => {
       <GridContainer className="gap-2">
         <div className="flex justify-between">
           <div
-            className={`${isDesktop ? "Heading" : "Heading2SB font-semibold"}`}
+            className={`${isDesktop ? "Heading text-2xl" : "Heading2SB font-semibold"}`}
           >
             {props.title}
           </div>
@@ -188,9 +188,9 @@ const Overview = (props) => {
             isHotelsPresent={isHotelsPresent}
           />
         </div>
-        {!isDesktop && props.tripsPage && <Ratings />}
+        {/* {!isDesktop && props.tripsPage && <Ratings />} */}
       </GridContainer>
-      <div className="flex flex-row">
+      {/* <div className="flex flex-row">
         <Details
           mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
@@ -226,7 +226,7 @@ const Overview = (props) => {
           maxShow={Math.min(3, props.images.length)}
           images={props.images}
         />
-      )}
+      )} */}
 
       {/* {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
@@ -250,11 +250,11 @@ const Overview = (props) => {
           paddingX="20px"
           paddingY="20px"
         >
-          <Settings
+          {/* <Settings
             setShowSettings={props?.setShowSettings}
             isHotelsPresent={isHotelsPresent}
             handleApply={handleApply}
-          />
+          /> */}
         </ModalWithBackdrop>
       ) : (
         <BottomModal

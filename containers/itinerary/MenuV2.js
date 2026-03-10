@@ -64,6 +64,8 @@ import axios from "axios";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary.js";
 import ChatButtonContainer from "./ChatButtonContainer.jsx";
 import CityDrawerView, { ItineraryCityWithDrawer } from "../../components/itinerary/CityDrawer.jsx";
+import Overview from "../newitinerary/overview/Index";
+import TrustFactor from "../../components/tailoredform/TrustFactor.js";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -932,6 +934,8 @@ const SimpleTabsV2 = (props) => {
       )}
 
       {isPageWide ? (
+        <>
+      
         <SplitScreen isPageWide leftWidth={5} rightWidth={5}>
           {showCityDrawer && selectedCityId ? (
             <CityDrawerView
@@ -966,6 +970,36 @@ const SimpleTabsV2 = (props) => {
             />
           ) : (
             <div className="mb-4">
+                
+                <Overview
+      mercuryItinerary
+      title={props.itinerary.name}
+      itinerary={props?.itinerary}
+      group_type={props.group_type || props.itinerary?.group_type}
+      duration_time={props.duration_time || props.itinerary?.duration_time}
+      images={props.images}
+      travellerType={props.travellerType}
+      start_date={props?.plan ? props.plan.start_date : props.itinerary.start_date || null}
+      end_date={props?.plan ? props.plan.end_date : props.itinerary.end_date || null}
+      duration={
+        props?.plan
+          ? props.plan.duration_number + " " + (props?.plan?.duration_unit || "nights")
+          : props.itinerary?.duration
+          ? props.itinerary?.duration + " nights"
+          : null
+      }
+      budget={props?.plan ? props.plan?.budget : props.itinerary?.budget || null}
+      number_of_adults={props?.plan ? props.plan?.number_of_adults : props.itinerary.number_of_adults || null}
+      number_of_children={props?.plan ? props.plan?.number_of_children : props.itinerary.number_of_children || null}
+      number_of_infants={props?.plan ? props.plan?.number_of_infants : props.itinerary.number_of_infants || null}
+      setEditRoute={props.setEditRoute}
+      cities={props?.cities}
+      resetRef={props.resetRef}
+      fetchData={props.fetchData}
+      handleEditRouteClick={props.handleEditRouteClick}
+      showSettings={props.showSettings}
+      setShowSettings={props.setShowSettings}
+    />
               <Navigation
                 items={items}
                 BarName="TabsName"
@@ -1050,7 +1084,7 @@ const SimpleTabsV2 = (props) => {
               <div
                 id={"Booking"}
                 className={
-                  activeTab === "Bookings" ? "block mb-[100px]" : "hidden"
+                  activeTab === "Bookings" ? "block mb-[100px] max-w-[49vw]" : "hidden"
                 }
               >
                 {isGroup ? (
@@ -1286,6 +1320,7 @@ const SimpleTabsV2 = (props) => {
             </>
           ) : null}
         </SplitScreen>
+        </>
       ) : null}
 
       {/* <Modal
@@ -1625,6 +1660,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
         )}
+
         <div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
           <style jsx>{`
             .scrollbar-hide {
@@ -1641,19 +1677,7 @@ const SimpleTabsV2 = (props) => {
               className="flex items-center text-[#ACACAC] text-xs flex-shrink-0"
             >
               <div className="flex items-center gap-1.5 text-gray-500">
-                {/* <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  className="flex-shrink-0"
-                >
-                  <path
-                    d="M5.73333 9.73333L10.4333 5.03333L9.5 4.1L5.73333 7.86667L3.83333 5.96667L2.9 6.9L5.73333 9.73333ZM6.66667 13.3333C5.74444 13.3333 4.87778 13.1583 4.06667 12.8083C3.25556 12.4583 2.55 11.9833 1.95 11.3833C1.35 10.7833 0.875 10.0778 0.525 9.26667C0.175 8.45555 0 7.58889 0 6.66667C0 5.74444 0.175 4.87778 0.525 4.06667C0.875 3.25556 1.35 2.55 1.95 1.95C2.55 1.35 3.25556 0.875 4.06667 0.525C4.87778 0.175 5.74444 0 6.66667 0C7.58889 0 8.45555 0.175 9.26667 0.525C10.0778 0.875 10.7833 1.35 11.3833 1.95C11.9833 2.55 12.4583 3.25556 12.8083 4.06667C13.1583 4.87778 13.3333 5.74444 13.3333 6.66667C13.3333 7.58889 13.1583 8.45555 12.8083 9.26667C12.4583 10.0778 11.9833 10.7833 11.3833 11.3833C10.7833 11.9833 10.0778 12.4583 9.26667 12.8083C8.45555 13.1583 7.58889 13.3333 6.66667 13.3333ZM6.66667 12C8.15555 12 9.41667 11.4833 10.45 10.45C11.4833 9.41667 12 8.15555 12 6.66667C12 5.17778 11.4833 3.91667 10.45 2.88333C9.41667 1.85 8.15555 1.33333 6.66667 1.33333C5.17778 1.33333 3.91667 1.85 2.88333 2.88333C1.85 3.91667 1.33333 5.17778 1.33333 6.66667C1.33333 8.15555 1.85 9.41667 2.88333 10.45C3.91667 11.4833 5.17778 12 6.66667 12Z"
-                    fill="#ACACAC"
-                  />
-                </svg> */}
+               
                 <img
                   src={factor.icon}
                   alt={factor.title}
@@ -1667,6 +1691,8 @@ const SimpleTabsV2 = (props) => {
           ))}
         </div>
       </div>
+
+
 
       {/* {isPageWide && (
         <div
@@ -1737,6 +1763,8 @@ const SimpleTabsV2 = (props) => {
             await attachUserToItinerary();
           }}
         ></LogInModal>
+
+       
       </div>
     </div>
   );

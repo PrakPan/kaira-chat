@@ -1547,7 +1547,7 @@ const ItineraryContainer = (props) => {
           onClose={() => setShowNotesPopup(false)}
         />
 
-        <Overview
+        {/* <Overview
           mercuryItinerary
           title={props.itinerary.name}
           itinerary={props?.itinerary}
@@ -1612,7 +1612,7 @@ const ItineraryContainer = (props) => {
           handleEditRouteClick={handleEditRouteClick}
           showSettings={showSettings}
           setShowSettings={setShowSettings}
-        ></Overview>
+        ></Overview> */}
 
         <div id="itinerary-anchor">
           <Menu

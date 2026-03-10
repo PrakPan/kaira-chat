@@ -10,10 +10,10 @@ import useChat from './hook/UseChat';
 
 const Container = styled.div`
   padding: ${(props) => (props.ispopup ? '0px 16px' : '20px')};
-  box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
+  // box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
   position: relative;
   height: ${(props) => (props.ispopup ? '100vh' : '96vh')};
-  border-radius: 16px;
+  // border-radius: 16px;
   overflow-y: hidden;
   
   @media screen and (max-width: 767px) {

@@ -11,7 +11,7 @@ import { authShowLogin } from '../../store/actions/auth';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Container = styled.div`
-   height: calc(100% - 270px);
+   height: calc(100% - 225px);
    margin-top: 10px;
    padding: 0px;
    overflow-y: auto;
@@ -44,22 +44,77 @@ const MessageWrapper = styled.div`
   justify-content: ${(props) => (props.isUser ? 'flex-end' : 'flex-start')};
   align-items: flex-start;
   gap: 10px;
+  margin-bottom: 16px;
 `;
 
 const Message = styled.div`
-    background:  ${(props) => (props.isUser ? '#F2F2F2' : '')};
-    border-radius: 7px;
-    padding: ${(props) => (props.isUser ? ' 6px 12px' : '')};
-    font-family: Montserrat;
+    background: ${(props) => (props.isUser ? '#fffaf5' : 'transparent')};
+    border-radius: ${(props) => (props.isUser ? '12px' : '0')};
+    padding: ${(props) => (props.isUser ? '10px 16px' : '0')};
+    font-family: Inter, sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 24px;
+    color: #0d0d0d;
     word-break: break-word;
-    max-width: 80%;
-    margin-bottom:15px;
-    @media screen and (max-width: 768px) {
-    margin-bottom:0px;
-  }
+    max-width: ${(props) => (props.isUser ? '85%' : '98%')};
 
+    p {
+      margin: 5px 0;
+      font-size: 16px;
+      line-height: 24px;
+      opacity: 0.9;
+    }
+
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    ol {
+      list-style-type: decimal;
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    li {
+      font-size: 16px;
+      line-height: 24px;
+      opacity: 0.9;
+      margin: 4px 0;
+    }
+
+    strong, b {
+      font-weight: 600;
+      opacity: 1;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 8px 0 4px 0;
+      line-height: 1.4;
+    }
+
+    code {
+      background: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: underline;
+    }
+
+    blockquote {
+      border-left: 3px solid #ddd;
+      padding-left: 12px;
+      margin: 8px 0;
+      color: #666;
+    }
 `;
 
 const LoginButton = styled.button`
@@ -72,27 +127,29 @@ const LoginButton = styled.button`
     font-weight: 500;
 `;
 
+
 const ChatMessage = React.memo(({ item, cachedAvatar }) => {
     const isUser = item.is_bot === false;
-    const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+    
     return (
         <MessageWrapper isUser={isUser}>
-
-
-            
-            {!isUser && cachedAvatar && item.message &&
-                <Image
-                    src={cachedAvatar}
-                    alt="ticket"
-                    width={26}
-                    height={26}
-                    className='mt-[8px]'
-                />
-            }
-            
-            <Message isUser={isUser}>
+            <div
+                className={!isUser ? 'chatWrapper' : ''}
+                style={{
+                    background: isUser ? '#fffaf5' : 'transparent',
+                    borderRadius: isUser ? '12px' : '0',
+                    padding: isUser ? '10px 16px' : '0',
+                    fontFamily: 'Inter, sans-serif',
+                    fontWeight: 400,
+                    fontSize: 16,
+                    lineHeight: '24px',
+                    color: '#374151', 
+                    wordBreak: 'break-word',
+                    maxWidth: isUser ? '85%' : '98%',
+                }}
+            >
                 <Markdown>{item.message}</Markdown>
-            </Message>
+            </div>
         </MessageWrapper>
     );
 });
@@ -100,13 +157,13 @@ const ChatMessage = React.memo(({ item, cachedAvatar }) => {
 function ChatSection(props) {
     const dispatch = useDispatch();
     let isPageWide = media("(min-width: 768px)");
-    const { conversations, isTyping, currentBotMessage,lastProductSliderPosition } = useChat();
+    const { conversations, isTyping, currentBotMessage, lastProductSliderPosition } = useChat();
     const { finalized_status } = useSelector((state) => state.ItineraryStatus);
     const scrollRef = useRef(null);
     const cachedAvatar = useCachedImage(
         "/assets/chatbot/chatbot-avaatar.svg",
         "chatbot-avatar",
-        24 * 60 * 60 * 1000     
+        24 * 60 * 60 * 1000
     );
 
     useEffect(() => {
@@ -136,14 +193,13 @@ function ChatSection(props) {
         };
     }, []);
 
-    const handleShowLogin=()=>{
+    const handleShowLogin = () => {
         dispatch(authShowLogin());
     }
 
-
     return (
-        <Container ref={scrollRef} className={styles.chatWrapper}>
-            <div className="chat-section" >
+        <Container ref={scrollRef}>
+            <div className="chat-section">
 
                 {!isPageWide && (
                     <div className="flex gap-[10px] items-start mb-4 pb-4 border-b border-gray-200">
@@ -167,52 +223,92 @@ function ChatSection(props) {
                     </div>
                 )}
 
-
-                {!localStorage.getItem("access_token")?<div className='flex items-start gap-2 '>
-                    {cachedAvatar &&
-                        <Image
-                            src={cachedAvatar}
-                            alt="ticket"
-                            width={26}
-                            height={26}
-                        />
-                    }
-                    <div>
-                        <div className="Body2R_14">I can see you're not logged in. Please log in to continue </div>
-                        <div className="Body2R_14">chatting and unlock your personalized travel experience.</div>
-                        <LoginButton onClick={handleShowLogin} className='mt-[24px]'>
-                            Login/Signup
-                        </LoginButton>
-                    </div>
-                </div>:
-                <>
-                {conversations.map((chatObj, idx) => (
-                    chatObj?.type && chatObj?.data?.length > 0 ?
-                        <div key={idx} style={{ width: isPageWide ? "calc(50vw - 160px)" : 'calc(100vw - 50px)' }}>
-                            <ProductSlider data={chatObj?.data}
-                                type={chatObj?.type}
-                                slidesPerView={4}
-                                navigationButtons={true}
-                                pageDots={false}
-                                position={chatObj.position}
-                                isDisabled={chatObj.position < lastProductSliderPosition}
+                {!localStorage.getItem("access_token") ? (
+                    <div className='flex items-start gap-2'>
+                        {cachedAvatar &&
+                            <Image
+                                src={cachedAvatar}
+                                alt="ticket"
+                                width={26}
+                                height={26}
                             />
+                        }
+                        <div>
+                            <div className="Body2R_14">I can see you're not logged in. Please log in to continue </div>
+                            <div className="Body2R_14">chatting and unlock your personalized travel experience.</div>
+                            <LoginButton onClick={handleShowLogin} className='mt-[24px]'>
+                                Login/Signup
+                            </LoginButton>
                         </div>
-                        :
-                        < ChatMessage key={idx} item={chatObj} cachedAvatar={cachedAvatar} ></ChatMessage>
-                ))}
+                    </div>
+                ) : (
+                    <>
+                        {conversations.map((chatObj, idx) => (
+                            chatObj?.type && chatObj?.data?.length > 0 ?
+                                <div key={idx} style={{ width: isPageWide ? "calc(50vw - 160px)" : 'calc(100vw - 50px)' }}>
+                                    <ProductSlider
+                                        data={chatObj?.data}
+                                        type={chatObj?.type}
+                                        slidesPerView={4}
+                                        navigationButtons={true}
+                                        pageDots={false}
+                                        position={chatObj.position}
+                                        isDisabled={chatObj.position < lastProductSliderPosition}
+                                    />
+                                </div>
+                                :
+                                <ChatMessage key={idx} item={chatObj} cachedAvatar={cachedAvatar} />
+                        ))}
 
-                {currentBotMessage && (
-                    < ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar}></ChatMessage>
+                        {currentBotMessage && (
+                            <ChatMessage item={{ 'is_bot': true, 'message': currentBotMessage }} cachedAvatar={cachedAvatar} />
+                        )}
+
+                        {isTyping && (
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+                                {cachedAvatar && (
+                                    <Image
+                                        src={cachedAvatar}
+                                        alt="ticket"
+                                        width={26}
+                                        height={26}
+                                        className='mt-[2px] flex-shrink-0'
+                                    />
+                                )}
+                                <div className={styles.typingIndicator} style={{ background: 'transparent', padding: '4px 0' }}>
+                                    <span className={styles.thinking}>
+                                        {conversations.length > 0 ? "" : "Analyzing your Itinerary"}
+                                        <div className={styles.typingDots}>
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {finalized_status === "PENDING" && (
+                            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+                                {cachedAvatar && (
+                                    <Image
+                                        src={cachedAvatar}
+                                        alt="ticket"
+                                        width={26}
+                                        height={26}
+                                        className='mt-[2px] flex-shrink-0'
+                                    />
+                                )}
+                                <div className={styles.typingIndicator} style={{ background: 'transparent', padding: '4px 0' }}>
+                                    <span className={styles.thinking}>
+                                        Fetching your itinerary
+                                        <div className={styles.typingDots}>
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
-
-                {isTyping && <div className={styles.typingIndicator}>  <span className={styles.thinking}>{conversations.length > 0 ? "" :  "Analyzing your Itinerary"}    <div className={styles.typingDots}>
-                    <span></span><span></span><span></span>
-                </div></span></div>}
-                {finalized_status=="PENDING" && <div className={styles.typingIndicator}><span className={styles.thinking}>Fetching your itinerary<div className={styles.typingDots}><span></span><span></span><span></span></div> </span></div>}
-                </>
-                }
-                
             </div>
         </Container>
     );
