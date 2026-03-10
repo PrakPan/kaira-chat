@@ -47,7 +47,7 @@ export default function BotApp() {
   const [botMode, setBotMode] = useState<BotMode>("p1");
   const [itineraryId, setItineraryId] = useState("");
   const [chatKey, setChatKey] = useState(0);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const [showStartScreen, setShowStartScreen] = useState(true);
   const [hasBotResponded, setHasBotResponded] = useState(false);
@@ -155,16 +155,33 @@ export default function BotApp() {
     setChatKey((prev) => prev + 1);
   };
 
-  
-const handlePromptSelect = (prompt: string) => {
-  if (isChatActive && sendMessageRef.current) {
-    // Chat is already open — send directly into it
-    sendMessageRef.current(prompt);
-  } else {
-    initialPromptRef.current = prompt;
-    setIsChatActive(true);
-  }
-};
+  const handlePromptSelect = (prompt: string) => {
+    if (isChatActive && sendMessageRef.current) {
+      // Chat is already open — send directly into it
+      sendMessageRef.current(prompt);
+    } else {
+      initialPromptRef.current = prompt;
+      setIsChatActive(true);
+    }
+  };
+
+  // This function will be passed to ItineraryView to send messages to chat
+  const handleSendMessage = useCallback((message: string) => {
+    console.log("BotApp: Received message from itinerary:", message);
+    if (sendMessageRef.current) {
+      console.log("BotApp: Sending message to chat...");
+      sendMessageRef.current(message);
+    } else {
+      console.log("BotApp: Chat send function not ready yet");
+      // Optionally store the message to send later
+    }
+  }, []);
+
+  // Handler for when chat panel is ready with send function
+  const handleSendReady = useCallback((sendFn: (msg: string) => void) => {
+    console.log("BotApp: Chat send function received and stored");
+    sendMessageRef.current = sendFn;
+  }, []);
 
   const handleToggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -224,6 +241,7 @@ const handlePromptSelect = (prompt: string) => {
                 itineraryData={itineraryData}
                 transfers={transfers}
                 showShimmer={showItineraryShimmer}
+                onSendMessage={handleSendMessage} // ✅ ADD THIS FOR DESKTOP
               />
             )}
           </div>
@@ -267,13 +285,14 @@ const handlePromptSelect = (prompt: string) => {
               onBotModeChange={setBotMode}
               onItineraryIdChange={setItineraryId}
               initialPrompt={initialPromptRef.current}
+              onSendReady={handleSendReady} 
             />
           </div>
         </div>
       </div>
 
       {/* ── Mobile layout ── */}
-      <div className=" flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
+      <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
         {/* Mobile panel content */}
         <div className="flex-1 overflow-hidden min-h-0 relative">
           {/* MAP PANEL */}
@@ -303,6 +322,7 @@ const handlePromptSelect = (prompt: string) => {
                     itineraryData={itineraryData}
                     transfers={transfers}
                     showShimmer={showItineraryShimmer}
+                    onSendMessage={handleSendMessage} // ✅ THIS WAS ALREADY HERE - GOOD!
                   />
                 )}
               </div>
@@ -334,7 +354,7 @@ const handlePromptSelect = (prompt: string) => {
                 onBotModeChange={setBotMode}
                 onItineraryIdChange={setItineraryId}
                 initialPrompt={initialPromptRef.current}
-                onSendReady={(fn) => { sendMessageRef.current = fn; }}
+                onSendReady={handleSendReady} // ✅ ADD THIS FOR MOBILE TOO
               />
             )}
           </div>

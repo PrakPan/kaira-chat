@@ -932,7 +932,7 @@ const SimpleTabsV2 = (props) => {
       )}
 
       {isPageWide ? (
-        <SplitScreen isPageWide leftWidth={5.5} rightWidth={4.5}>
+        <SplitScreen isPageWide leftWidth={5} rightWidth={5}>
           {showCityDrawer && selectedCityId ? (
             <CityDrawerView
               mercuryItinerary={props?.mercuryItinerary}
@@ -1393,7 +1393,7 @@ const SimpleTabsV2 = (props) => {
       <div
         className={
           isPageWide
-            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed w-[51vw]"
+            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed"
             : "z-10  fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
         }
       >
@@ -1405,7 +1405,7 @@ const SimpleTabsV2 = (props) => {
         ) : (
           <div className="flex flex-row justify-between items-center">
             <div className="flex flex-col">
-              <div className="flex justify-between">
+              <div className="flex justify-start items-center gap-2">
                 {pricing_status === "FAILURE" ? (
                   <p className="text-red-600 text-sm">
                     Get in touch to finalize the pricing!
