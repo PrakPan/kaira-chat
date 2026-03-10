@@ -248,6 +248,7 @@ function ButtonNode({
     label, iconStart, variant = "solid",
     color = "default", pill, onClickAction, submit,
   } = node;
+  console.log("Rendering button with props:", { label, iconStart, variant, color, pill, onClickAction, submit });
 
   const handleClick = () => {
     // Form submit button — serialize form values as comma-separated string
@@ -275,7 +276,8 @@ function ButtonNode({
     return (
       <button onClick={handleClick} style={{
         width: 36, height: 36, borderRadius: "50%",
-        border: "1.5px solid #d1d5db", background: "transparent",
+        border: "1.5px solid #d1d5db",
+         background: "transparent",
         display: "flex", alignItems: "center", justifyContent: "center",
         color: "#6b7280", cursor: "pointer", flexShrink: 0, outline: "none",
       }}>

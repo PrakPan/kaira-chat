@@ -256,8 +256,8 @@ const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> =
               {/* Task text */}
               <div style={{
                 fontSize: 14,
-                fontWeight: 600,
-                color: "#374151",
+                fontWeight: 400,
+                color: "#9ca3af",
                 paddingLeft: 10,
                 paddingBottom: i < tasks.length - 1 ? 12 : 0,
                 lineHeight: "20px",
@@ -268,7 +268,7 @@ const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> =
           ))}
 
           {/* Done row */}
-          <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: 2 }}>
             <div style={{ width: 20, display: "flex", justifyContent: "center" }}>
               {/* Circled checkmark */}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8">

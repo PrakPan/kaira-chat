@@ -177,31 +177,85 @@ React.useEffect(() => {
           </div> : null}
       <Container>
        
-        {isDesktop ? <div className={`flex gap-[10px] items-start`}>
-          
-          {cachedAvatar && (
-            <Image
-              src={cachedAvatar}
-              alt="ticket"
-              width={48}
-              height={48}
-              className="mt-[6px]"
-            />
-          )}
-          <div>
-            <Heading>
-              <span> Hey, I’m Kaira — Your AI Travel Buddy.</span>
-            </Heading>
-            <SubText>
-              Ready to plan your perfect trip? Let’s customize your itinerary
-              together!
-            </SubText>
-          </div>
-        </div> : null}
+        {isDesktop ?
+        
+        <div className="flex-shrink-0 flex items-center justify-between py-1 bg-white/80 backdrop-blur-sm mt-2">
+  <div className="flex items-center gap-2">
+    <div className="w-7 h-7 rounded-full flex items-center justify-center">
+      <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
+    </div>
+    <span className="text-sm font-semibold text-gray-800">Kaira</span>
+  </div>
 
-       {isDesktop ? <ButtonWrapper className="float-right">
+  {/* History & New Chat icons — replacing Settings */}
+  <div className="flex items-center gap-2">
+    {/* New Chat */}
+    <div className="relative icon-button-wrapper">
+      <IconButton
+        onClick={(e) => {
+          newSessionStart();
+          setHoveredIcon(hoveredIcon === "new" ? null : "new");
+        }}
+        onMouseEnter={() => setHoveredIcon("new")}
+        onMouseLeave={() => setHoveredIcon(null)}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2.6687 11.333V8.66699C2.6687 7.74455 2.66841 7.01205 2.71655 6.42285C2.76533 5.82612 2.86699 5.31731 3.10425 4.85156L3.25854 4.57617C3.64272 3.94975 4.19392 3.43995 4.85229 3.10449L5.02905 3.02149C5.44666 2.84233 5.90133 2.75849 6.42358 2.71582C7.01272 2.66769 7.74445 2.66797 8.66675 2.66797H9.16675C9.53393 2.66797 9.83165 2.96586 9.83179 3.33301C9.83179 3.70028 9.53402 3.99805 9.16675 3.99805H8.66675C7.7226 3.99805 7.05438 3.99834 6.53198 4.04102C6.14611 4.07254 5.87277 4.12568 5.65601 4.20313L5.45581 4.28906C5.01645 4.51293 4.64872 4.85345 4.39233 5.27149L4.28979 5.45508C4.16388 5.7022 4.08381 6.01663 4.04175 6.53125C3.99906 7.05373 3.99878 7.7226 3.99878 8.66699V11.333C3.99878 12.2774 3.99906 12.9463 4.04175 13.4688C4.08381 13.9833 4.16389 14.2978 4.28979 14.5449L4.39233 14.7285C4.64871 15.1465 5.01648 15.4871 5.45581 15.7109L5.65601 15.7969C5.87276 15.8743 6.14614 15.9265 6.53198 15.958C7.05439 16.0007 7.72256 16.002 8.66675 16.002H11.3337C12.2779 16.002 12.9461 16.0007 13.4685 15.958C13.9829 15.916 14.2976 15.8367 14.5447 15.7109L14.7292 15.6074C15.147 15.3511 15.4879 14.9841 15.7117 14.5449L15.7976 14.3447C15.8751 14.128 15.9272 13.8546 15.9587 13.4688C16.0014 12.9463 16.0017 12.2774 16.0017 11.333V10.833C16.0018 10.466 16.2997 10.1681 16.6667 10.168C17.0339 10.168 17.3316 10.4659 17.3318 10.833V11.333C17.3318 12.2555 17.3331 12.9879 17.2849 13.5771C17.2422 14.0993 17.1584 14.5541 16.9792 14.9717L16.8962 15.1484C16.5609 15.8066 16.0507 16.3571 15.4246 16.7412L15.1492 16.8955C14.6833 17.1329 14.1739 17.2354 13.5769 17.2842C12.9878 17.3323 12.256 17.332 11.3337 17.332H8.66675C7.74446 17.332 7.01271 17.3323 6.42358 17.2842C5.90135 17.2415 5.44665 17.1577 5.02905 16.9785L4.85229 16.8955C4.19396 16.5601 3.64271 16.0502 3.25854 15.4238L3.10425 15.1484C2.86697 14.6827 2.76534 14.1739 2.71655 13.5771C2.66841 12.9879 2.6687 12.2555 2.6687 11.333ZM13.4646 3.11328C14.4201 2.334 15.8288 2.38969 16.7195 3.28027L16.8865 3.46485C17.6141 4.35685 17.6143 5.64423 16.8865 6.53613L16.7195 6.7207L11.6726 11.7686C11.1373 12.3039 10.4624 12.6746 9.72827 12.8408L9.41089 12.8994L7.59351 13.1582C7.38637 13.1877 7.17701 13.1187 7.02905 12.9707C6.88112 12.8227 6.81199 12.6134 6.84155 12.4063L7.10132 10.5898L7.15991 10.2715C7.3262 9.53749 7.69692 8.86241 8.23218 8.32715L13.2791 3.28027L13.4646 3.11328ZM15.7791 4.2207C15.3753 3.81702 14.7366 3.79124 14.3035 4.14453L14.2195 4.2207L9.17261 9.26856C8.81541 9.62578 8.56774 10.0756 8.45679 10.5654L8.41772 10.7773L8.28296 11.7158L9.22241 11.582L9.43433 11.543C9.92426 11.432 10.3749 11.1844 10.7322 10.8271L15.7791 5.78027L15.8552 5.69629C16.185 5.29194 16.1852 4.708 15.8552 4.30371L15.7791 4.2207Z" fill="#6E757A" />
+        </svg>
+      </IconButton>
+      <div
+        style={{
+          display: hoveredIcon === "new" ? "block" : "none",
+          backgroundColor: "#2b2b2a",
+          border: "1px solid #e5e7eb",
+          borderRadius: "0.45rem",
+          padding: "5px 10px",
+          color: "#fff",
+          fontSize: "12px",
+          whiteSpace: "nowrap",
+        }}
+        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50"
+      >
+        New chat
+      </div>
+    </div>
+
+    {/* History */}
+    <div className="relative icon-button-wrapper">
+      <IconButton
+        onClick={(e) => {
+          handleOpenChatHistory();
+          setHoveredIcon(hoveredIcon === "history" ? null : "history");
+        }}
+        onMouseEnter={() => setHoveredIcon("history")}
+        onMouseLeave={() => setHoveredIcon(null)}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" fill="none">
+          <path d="M8 9.33333C7.63333 9.33333 7.31956 9.20267 7.05867 8.94133C6.79733 8.68044 6.66667 8.36667 6.66667 8C6.66667 7.63333 6.79733 7.31933 7.05867 7.058C7.31956 6.79711 7.63333 6.66667 8 6.66667C8.36667 6.66667 8.68067 6.79711 8.942 7.058C9.20289 7.31933 9.33333 7.63333 9.33333 8C9.33333 8.36667 9.20289 8.68044 8.942 8.94133C8.68067 9.20267 8.36667 9.33333 8 9.33333ZM8 14C6.45556 14 5.11667 13.4916 3.98333 12.4747C2.85 11.4582 2.2 10.1889 2.03333 8.66667H3.4C3.55556 9.82222 4.06933 10.7778 4.94133 11.5333C5.81378 12.2889 6.83333 12.6667 8 12.6667C9.3 12.6667 10.4027 12.2138 11.308 11.308C12.2138 10.4027 12.6667 9.3 12.6667 8C12.6667 6.7 12.2138 5.59711 11.308 4.69133C10.4027 3.786 9.3 3.33333 8 3.33333C7.23333 3.33333 6.51667 3.51111 5.85 3.86667C5.18333 4.22222 4.62222 4.71111 4.16667 5.33333H6V6.66667H2V2.66667H3.33333V4.23333C3.9 3.52222 4.59178 2.97222 5.40867 2.58333C6.22511 2.19444 7.08889 2 8 2C8.83333 2 9.614 2.15822 10.342 2.47467C11.0696 2.79156 11.7029 3.21933 12.242 3.758C12.7807 4.29711 13.2084 4.93044 13.5253 5.658C13.8418 6.386 14 7.16667 14 8C14 8.83333 13.8418 9.61378 13.5253 10.3413C13.2084 11.0693 12.7807 11.7027 12.242 12.2413C11.7029 12.7804 11.0696 13.2084 10.342 13.5253C9.614 13.8418 8.83333 14 8 14Z" fill="#6E757A" />
+        </svg>
+      </IconButton>
+      <div
+        style={{
+          display: hoveredIcon === "history" ? "block" : "none",
+          backgroundColor: "#2b2b2a",
+          border: "1px solid #e5e7eb",
+          borderRadius: "0.45rem",
+          padding: "5px 10px",
+          color: "#fff",
+          fontSize: "12px",
+          whiteSpace: "nowrap",
+        }}
+        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50"
+      >
+        History
+      </div>
+    </div>
+  </div>
+</div>: null}
+
+       {/* {isDesktop ? <ButtonWrapper className="float-right"> */}
           {/* New Chat Icon - Popup on right */}
-          <div className="relative">
+          {/* <div className="relative">
             <IconButton
               onClick={newSessionStart}
               onMouseEnter={() => setHoveredIcon("new")}
@@ -231,10 +285,10 @@ React.useEffect(() => {
             >
               New chat
             </div>
-          </div>
+          </div> */}
 
           {/* History Icon - Popup on bottom */}
-          <div className="relative">
+          {/* <div className="relative">
             <IconButton
               color="#000"
               onClick={handleOpenChatHistory}
@@ -259,10 +313,10 @@ React.useEffect(() => {
               className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-50"
             >
               {/* <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-[6px] border-solid border-transparent border-b-[#2b2b2a]"></span> */}
-              History
-            </div>
-          </div>
-        </ButtonWrapper> : null}
+              {/* History
+            </div> */}
+          {/* </div> */}
+        {/* </ButtonWrapper> : null}  */}
       </Container>
     </>
   );

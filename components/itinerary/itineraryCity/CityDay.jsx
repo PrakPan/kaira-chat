@@ -120,16 +120,16 @@ const CityDay = (props) => {
     let itemType = "";
     let itemId = "";
 
-    if (item?.activity) {
-      itemType = "activity";
-      itemId = item.booking.id;
-    } else if (item?.poi) {
-      itemType = "poi";
-      itemId = item.poi;
-    } else if (item?.restaurant) {
-      itemType = "restaurant";
-      itemId = item?.restaurant;
-    }
+    if (item?.activity || item?.element_type === "activity") {
+  itemType = "activity";
+  itemId = item?.booking?.id || item?.id;
+} else if (item?.element_type === "poi" || item?.poi) {
+  itemType = "poi";
+  itemId = item?.poi || item?.id;
+} else if (item?.element_type === "restaurant" || item?.restaurant) {
+  itemType = "restaurant";
+  itemId = item?.restaurant || item?.id;
+}
 
     if (itemType && itemId) {
       trackActivityCardClicked(router.query.id, itemType);
@@ -163,17 +163,16 @@ const CityDay = (props) => {
     let recommendations = [];
 
     for (let elem of props.day.slab_elements) {
-      if (elem?.activity || elem?.element_type === "activity") {
-        activities.push(elem);
-      } else if (elem?.poi) {
-        pois.push(elem);
-      } else if (elem?.restaurant) {
-        restaurants.push(elem);
-      }
-        else if (elem?.element_type == 'recommendation') {  
-        recommendations.push(elem);
-        }
-    }
+  if (elem?.activity || elem?.element_type === "activity") {
+    activities.push(elem);
+  } else if (elem?.element_type === "poi" || elem?.poi) {
+    pois.push(elem);
+  } else if (elem?.element_type === "restaurant" || elem?.restaurant) {
+    restaurants.push(elem);
+  } else if (elem?.element_type === "recommendation") {
+    recommendations.push(elem);
+  }
+}
 
     // Prioritize: Activities first, then POIs, then Restaurants
     const allElements = [...activities, ...pois, ...restaurants, ...recommendations];
@@ -234,10 +233,15 @@ const CityDay = (props) => {
     return item?.heading || item?.name;
   };
 
- const getItemImage = (item) =>
-  item?.icon
-    ? imgUrlEndPoint + item.icon
-    : "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop";
+  const getItemImage = (item) => {
+  if (!item?.icon) return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop";
+  if (item.icon.startsWith("http")) {
+    return item.icon;
+  }
+
+  return imgUrlEndPoint + item.icon;
+};
+
 
   const getItemRating = (item) => {
     return item?.rating;
