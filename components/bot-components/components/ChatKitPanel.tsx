@@ -7,18 +7,24 @@ import type { Location, BotMode } from "../types";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { authShowLogin } from "../../../store/actions/auth";
+import LogInModal from "../../userauth/LogInModal";
+import { set } from "nprogress";
+import { createPortal } from "react-dom";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
 const LoginButton = styled.button`
-  background: #f7e700;
-  padding: 10px 16px;
   width: 131px;
   height: 40px;
+  background: #f7e700;
+  padding: 10px 16px;
   border-radius: 8px;
   font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
+  border: none;
+  color: #111;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
 `;
 
 interface ChatKitPanelProps {
@@ -38,6 +44,8 @@ function useUserLocationData() {
   const [userLocationData, setUserLocationData] =
     useState<UserLocationData | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
+
+  
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -159,11 +167,25 @@ export function ChatKitPanel({
 
   const { userLocationData, isLoadingLocation } = useUserLocationData();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+const [showLoginModal, setShowLoginModal] = useState(false);
+
+// Reactive token from Redux — updates instantly when user logs in
+const reduxToken = useSelector((state: any) => state.auth.token);
+const authToken = reduxToken ?? getAuthToken();
+const isLoggedIn = !!authToken;
+
   const dispatch = useDispatch();
 
-  const handleShowLogin = useCallback(() => {
-    dispatch(authShowLogin());
-  }, [dispatch]);
+ const handleShowLogin = useCallback(() => {
+  setShowLoginModal(true);
+}, []);
+
+  useEffect(() => {
+  if (isLoggedIn) {
+    setShowLoginModal(false);
+    setShowLoginPrompt(false);
+  }
+}, [isLoggedIn]);
 
   const handleEffect = useCallback(
     ({ name, data }: { name: string; data: Record<string, unknown> }) => {
@@ -198,10 +220,9 @@ export function ChatKitPanel({
           }
           break;
         case "prompt_login": {
-          console.log("Prompting login due to effect:", name);
-          setShowLoginPrompt(true);
-          break;
-        }
+  setShowLoginPrompt(true); 
+  break;
+}
         default:
           console.warn("[Effect] unhandled:", name);
       }
@@ -215,8 +236,6 @@ export function ChatKitPanel({
       ? "https://chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
 
-  // FIX 2: Read token from localStorage and pass it to useChat
-  const authToken = getAuthToken();
 
   const {
     messages,
@@ -404,14 +423,14 @@ export function ChatKitPanel({
               </div>
             )}
 
-            {/* FIX 2 & 3: Login prompt — dispatch correctly opens the Redux-driven modal */}
-            {showLoginPrompt && (
-              <div>
-                <LoginButton onClick={handleShowLogin} className="mt-[24px]">
-                  Login/Signup
-                </LoginButton>
-              </div>
-            )}
+         
+{showLoginPrompt && !isLoggedIn && (
+  <div className="mt-[24px]">
+    <LoginButton onClick={handleShowLogin} >
+      Login/Signup
+    </LoginButton>
+  </div>
+)}
 
             <div ref={messagesEndRef} />
           </div>
@@ -432,6 +451,49 @@ export function ChatKitPanel({
           />
         </div>
       </div>
+
+{showLoginModal && !isLoggedIn && createPortal(
+  <>
+    {/* Backdrop — click outside closes modal but keeps the CTA button */}
+    <div
+      onClick={() => setShowLoginModal(false)}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.5)",
+        zIndex: 3299,
+      }}
+    />
+    {/* Modal */}
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        background: "#fff",
+        borderRadius: 16,
+        width: "min(480px, 95vw)",
+        maxHeight: "90vh",
+        overflowY: "auto",
+        zIndex: 3300,
+        boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+      }}
+    >
+      <LogInModal
+        show={showLoginModal}
+        onhide={() => setShowLoginModal(false)}
+        zIndex={"3300"}
+        message="Please login to continue"
+        onSuccess={async () => {
+          // isLoggedIn effect will handle hiding everything
+        }}
+      />
+    </div>
+  </>,
+  document.body
+)}
     </div>
   );
 }
