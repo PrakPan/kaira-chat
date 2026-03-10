@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { a } from "react-spring";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -72,7 +73,7 @@ function buildInput(text: string) {
 
 function buildFirstMessageBody(
   text: string,
-  opts: { domainKey: string; model: string; userLocation: UserLocationData; botMode: string; itineraryId: string }
+  opts: { domainKey: string; model: string; userLocation: UserLocationData; botMode: string; itineraryId: string; authToken?: string }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.create",
@@ -80,6 +81,7 @@ function buildFirstMessageBody(
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
+    access_token: opts.authToken,
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
   return body;
@@ -87,7 +89,7 @@ function buildFirstMessageBody(
 
 function buildSubsequentMessageBody(
   text: string,
-  opts: { threadId: string; domainKey: string; model: string; userLocation: UserLocationData; botMode: string; itineraryId: string }
+  opts: { threadId: string; domainKey: string; model: string; userLocation: UserLocationData; botMode: string; itineraryId: string, authToken?: string }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.add_user_message",
@@ -95,6 +97,7 @@ function buildSubsequentMessageBody(
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
+    access_token: opts.authToken,
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
   return body;
@@ -283,6 +286,8 @@ export function useChat({
   authToken,
   
 }: UseChatOptions) {
+
+  console.log("Auth token in useChat:", authToken);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -321,7 +326,7 @@ export function useChat({
       params: { thread_id: threadIdRef.current, item_id: "", action: { type, payload } },
       domain_key: domainKey,
       model,
-      ...(authToken ? { token: authToken } : {}),
+      ...(authToken ? { access_token: authToken } : {}),
       user_location: loc,
       ...(botMode === "p2" && itineraryId ? { itinerary_id: itineraryId } : {}),
     };
@@ -329,7 +334,7 @@ export function useChat({
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authToken}` },
         body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error(`${response.status}`);
@@ -426,15 +431,15 @@ export function useChat({
       const loc: UserLocationData = (locationReady ? userLocation : null) ?? FALLBACK_LOCATION;
       const commonOpts = { domainKey, model, userLocation: loc, botMode, itineraryId };
       const body = threadIdRef.current
-        ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts })
-        : buildFirstMessageBody(trimmed, commonOpts);
+        ? buildSubsequentMessageBody(trimmed, { threadId: threadIdRef.current, ...commonOpts, authToken })
+        : buildFirstMessageBody(trimmed, { ...commonOpts, authToken });
 
       console.log("[useChat] →", JSON.stringify(body, null, 2));
 
       try {
         const response = await fetch(apiUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+          headers: { "Content-Type": "application/json", Accept: "text/event-stream", "Authorization": `Bearer ${authToken}` },
           body: JSON.stringify(body),
           signal: controller.signal,
         });

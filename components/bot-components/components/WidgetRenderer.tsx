@@ -32,6 +32,7 @@ function useFormContext() {
 // ─── Color map ────────────────────────────────────────────────────────────────
 
 const BG_COLORS: Record<string, string> = {
+  // existing...
   blue:       "#2563eb",
   green:      "#16a34a",
   red:        "#dc2626",
@@ -39,17 +40,34 @@ const BG_COLORS: Record<string, string> = {
   orange:     "#ea580c",
   purple:     "#7c3aed",
   pink:       "#db2777",
+  cyan:       "#0891b2",
   gray:       "#9ca3af",
   "alpha-10": "rgba(0,0,0,0.08)",
   "alpha-20": "rgba(0,0,0,0.15)",
   primary:    "#FFD602",
   white:      "#ffffff",
+
+  // Accent tokens — exact design system colors
+  "accent.green-500":  "#22c55e",
+  "accent.blue-500":   "#3b82f6",
+  "accent.purple-500": "#a855f7",
+  "accent.red-500":    "#ef4444",
+  "accent.cyan-500":   "#06b6d4",
+  "accent.orange-500": "#f97316",
+  "accent.yellow-500": "#eab308",
+  "accent.pink-500":   "#ec4899",
 };
 
 function resolveBg(bg: string | undefined): string {
   if (!bg) return "transparent";
   if (BG_COLORS[bg]) return BG_COLORS[bg];
-  const base = bg.replace(/-\d+$/, ""); // "blue-500" → "blue"
+
+  // Normalize: "Accent.GREEN-500" → "accent.green-500"
+  const normalized = bg.toLowerCase();
+  if (BG_COLORS[normalized]) return BG_COLORS[normalized];
+
+  // Fallback: strip suffix/prefix for plain names like "blue-500" → "blue"
+  const base = normalized.replace(/^accent\./, "").replace(/-\d+$/, "");
   return BG_COLORS[base] ?? bg;
 }
 
