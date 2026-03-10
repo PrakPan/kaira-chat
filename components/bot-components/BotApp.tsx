@@ -47,7 +47,7 @@ export default function BotApp() {
   const [botMode, setBotMode] = useState<BotMode>("p1");
   const [itineraryId, setItineraryId] = useState("");
   const [chatKey, setChatKey] = useState(0);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const [showStartScreen, setShowStartScreen] = useState(true);
   const [hasBotResponded, setHasBotResponded] = useState(false);

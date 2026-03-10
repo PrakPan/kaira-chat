@@ -158,9 +158,28 @@ const ModalContent: React.FC<ModalContentProps> = ({
     </div>
 
     {/* Itinerary Name */}
-    <div className="mb-4 p-2.5 bg-gray-50 rounded-lg">
+    {/* <div className="mb-4 p-2.5 bg-gray-50 rounded-lg">
       <p className="text-xs text-gray-600">Itinerary</p>
       <p className="text-sm font-medium text-gray-800 truncate">{itineraryName}</p>
+    </div> */}
+
+     {/* Start Location */}
+    <div className="mb-3">
+      <label className="block text-xs font-medium text-gray-700 mb-1">
+        Start Location <span className="text-red-500">*</span>
+      </label>
+      <div className="relative">
+        <BsGeoAlt className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
+        <input
+          type="text"
+          value={location}
+          onChange={onLocationChange}
+          placeholder="e.g., New Delhi"
+          className="w-full pl-8 pr-2.5 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-gray-400 text-sm"
+          autoComplete="off"
+          spellCheck={false}
+        />
+      </div>
     </div>
 
     {/* Start Date */}
@@ -210,24 +229,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
       ))}
     </div>
 
-    {/* Start Location */}
-    <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1">
-        Start Location <span className="text-red-500">*</span>
-      </label>
-      <div className="relative">
-        <BsGeoAlt className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
-        <input
-          type="text"
-          value={location}
-          onChange={onLocationChange}
-          placeholder="e.g., New Delhi"
-          className="w-full pl-8 pr-2.5 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-gray-400 text-sm"
-          autoComplete="off"
-          spellCheck={false}
-        />
-      </div>
-    </div>
+   
 
     {/* Action Buttons */}
     <div className="flex gap-2">

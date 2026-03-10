@@ -268,7 +268,7 @@ const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> =
           ))}
 
           {/* Done row */}
-          <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: 2 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 0, marginTop: "7px" }}>
             <div style={{ width: 20, display: "flex", justifyContent: "center" }}>
               {/* Circled checkmark */}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8">
@@ -355,11 +355,35 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetA
 };
 
 export const ThinkingDots: React.FC = () => (
-  <div className="typingIndicator" style={{ marginTop: 4 }}>
-    <span className="thinking">
-      <span className="typingDots">
-        <span /><span /><span />
-      </span>
-    </span>
+  <div style={{
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "12px 16px",
+    // borderRadius: "18px 18px 18px 4px",
+    // background: "#f1f3f4",
+    alignSelf: "flex-start",
+    marginTop: 4,
+  }}>
+    {[0, 1, 2].map((i) => (
+      <span
+        key={i}
+        style={{
+          width: 10,
+          height: 10,
+          borderRadius: "50%",
+          background: "#111",
+          display: "inline-block",
+          animation: "thinkPulse 1.4s infinite ease-in-out",
+          animationDelay: `${[-0.32, -0.16, 0][i]}s`,
+        }}
+      />
+    ))}
+    <style>{`
+      @keyframes thinkPulse {
+        0%, 80%, 100% { transform: scale(0.4); opacity: 0.3; }
+        40%            { transform: scale(1);   opacity: 1; }
+      }
+    `}</style>
   </div>
 );

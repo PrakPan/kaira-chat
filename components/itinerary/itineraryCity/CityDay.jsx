@@ -155,32 +155,12 @@ const CityDay = (props) => {
     handleAddActivity();
   };
 
-  useEffect(() => {
-    // Collect all slab elements and prioritize activities
-    let activities = [];
-    let pois = [];
-    let restaurants = [];
-    let recommendations = [];
-
-    for (let elem of props.day.slab_elements) {
-  if (elem?.activity || elem?.element_type === "activity") {
-    activities.push(elem);
-  } else if (elem?.element_type === "poi" || elem?.poi) {
-    pois.push(elem);
-  } else if (elem?.element_type === "restaurant" || elem?.restaurant) {
-    restaurants.push(elem);
-  } else if (elem?.element_type === "recommendation") {
-    recommendations.push(elem);
+useEffect(() => {
+  if (props.day?.slab_elements) {
+    setElements(props.day.slab_elements);
+    setDisplayItems(props.day.slab_elements);
   }
-}
-
-    // Prioritize: Activities first, then POIs, then Restaurants
-    const allElements = [...activities, ...pois, ...restaurants, ...recommendations];
-    setElements(allElements);
-
-    // Show maximum 2 items
-   setDisplayItems(allElements);
-  }, [props.day?.slab_elements]);
+}, [props.day?.slab_elements]);
 
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 

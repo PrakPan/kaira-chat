@@ -203,7 +203,7 @@ const DayRow: React.FC<DayRowProps> = ({ day, isLastDay, cityName, index }) => {
     }
   }
 
-  const elements = [...activities, ...pois, ...restaurants, ...recommendations];
+  const elements = day?.slab_elements || [];
 
   return (
     <div className="flex border-b border-[#E8E8E8] hover:bg-[#FAFAFA] transition-colors">
@@ -261,39 +261,36 @@ interface HotelRowProps {
 const HotelRow: React.FC<HotelRowProps> = ({ hotels }) => {
   if (!hotels) return null;
 
-  if (typeof hotels === "string") {
-    return (
-      <div className="flex items-center gap-2 py-2 mt-1">
-        <HotelIcon />
-        <span className="text-[14px] font-400 cursor-pointer">{hotels}</span>
-      </div>
-    );
-  }
 
-  if (!Array.isArray(hotels) || hotels.length === 0) return null;
+  const hotelList: Hotel[] = typeof hotels === "string"
+    ? [{ id: "single", name: hotels }]
+    : Array.isArray(hotels)
+      ? hotels
+      : [hotels as Hotel]; 
+  if (hotelList.length === 0) return null;
 
   return (
     <>
-      {hotels.map((hotel) => (
+      {hotelList.map((hotel) => (
         <div key={hotel.id} className="flex flex-col gap-1">
-          <div className="flex flex-row">
-            {hotel?.name && (
-              <>
-                <div className="flex gap-2 pr-[8px]">
-                  <HotelIcon />
-                  <div className="text-[14px] font-400 leading-0 cursor-pointer">
-                    {hotel.name}
-                  </div>
+          {hotel?.name && (
+            <div className="flex flex-row">
+              <div className="flex gap-2 pr-[8px]">
+                <HotelIcon />
+                <div className="text-[14px] font-400 leading-0 cursor-pointer">
+                  {hotel.name}
                 </div>
+              </div>
+              {hotel?.rating && hotel.rating !== 0 && (
                 <div className="flex flex-row items-center pl-[8px]">
                   <div className="text-[#000] text-[12px] ml-1 mr-1 font-[500]">
-                    {hotel?.rating && hotel?.rating !== 0 ? hotel.rating : null}
+                    {hotel.rating}
                   </div>
-                  {hotel?.rating && hotel?.rating !== 0 ? <StarIcon /> : null}
+                  <StarIcon />
                 </div>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       ))}
     </>
