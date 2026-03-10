@@ -54,6 +54,7 @@ interface UseChatOptions {
   onEffect?: (effect: ClientEffect) => void;
   onFirstToken?: () => void;
   onWidget?: (item: unknown) => void;
+  authToken?: string;  
 }
 
 // ─── Shared input shape ───────────────────────────────────────────────────────
@@ -279,6 +280,8 @@ export function useChat({
   onEffect,
   onFirstToken,
   onWidget,
+  authToken,
+  
 }: UseChatOptions) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -318,6 +321,7 @@ export function useChat({
       params: { thread_id: threadIdRef.current, item_id: "", action: { type, payload } },
       domain_key: domainKey,
       model,
+      ...(authToken ? { token: authToken } : {}),
       user_location: loc,
       ...(botMode === "p2" && itineraryId ? { itinerary_id: itineraryId } : {}),
     };

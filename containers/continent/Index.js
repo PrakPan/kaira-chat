@@ -140,7 +140,7 @@ const Index = (props) => {
     
     //   router,
     //   props.data.id,
-    //   convertDbNameToCapitalFirst(props.data.slug),
+    //   convertDbNameToCapitalFirst(props.data?.slug),
     //   props.type
     // );
     setShowTailoredModal(true);
@@ -162,15 +162,15 @@ const Index = (props) => {
         <HeroSection
           title={validateTextSize(
             `Your ${convertDbNameToCapitalFirst(
-              props.data.slug
+              props.data?.slug
             )} Trip, Designed Around You`,
             // `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
-            //   props.data.slug
+            //   props.data?.slug
             // )} now!`,
             9,
-            `Craft a trip to ${props.data.destination} now!`
+            `Craft a trip to ${props.data?.destination} now!`
           )}
-          image={`${imgUrlEndPoint}${props.data.image}`}
+          image={`${imgUrlEndPoint}${props.data?.image}`}
           slug={props?.data?.slug}
           setShowTailoredModal={setShowTailoredModal}
         />
@@ -181,16 +181,16 @@ const Index = (props) => {
             loading={desktopBannerLoading}
             onclick={() =>setShowTailoredModal(true)}
             text={`Craft a personalized itinerary${
-              props.data.slug
+              props.data?.slug
                 ? " to " +
-                  convertDbNameToCapitalFirst(props.data.slug) +
+                  convertDbNameToCapitalFirst(props.data?.slug) +
                   " now"
                 : ""
             }!`}
           ></DesktopBanner>
 
 
-          <PathNavigation path={props.data.path} />
+          <PathNavigation path={props.data?.path} />
 
           {props.locations && props.locations.length ? (
             <>
@@ -325,13 +325,13 @@ const Index = (props) => {
 
           {/* <MapGridContainer> */}
           {props?.data?.slug != 'europe-continent' && <Overview
-            heading={props.data.overview_heading}
-            text={props.data.overview_text}
-            image={props.data.overview_image}
-            slug={props.data.slug}
-            page_id={props.data.id}
+            heading={props.data?.overview_heading}
+            text={props.data?.overview_text}
+            image={props.data?.overview_image}
+            slug={props.data?.slug}
+            page_id={props.data?.id}
             type={props.type}
-            destination={convertDbNameToCapitalFirst(props.data.slug)}
+            destination={convertDbNameToCapitalFirst(props.data?.slug)}
           ></Overview>}
 
           {/* <MapContainer>
@@ -397,7 +397,7 @@ const Index = (props) => {
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
-                            props.data.slug
+                            props.data?.slug
                           )}
                           type={props?.type}
                         />
@@ -803,7 +803,7 @@ const Index = (props) => {
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
-                            props.data.slug
+                            props.data?.slug
                           )}
                           type={props?.type}
                         />
@@ -940,7 +940,7 @@ const Index = (props) => {
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
-                            props.data.slug
+                            props.data?.slug
                           )}
                           type={props?.type}
                         />
@@ -964,7 +964,7 @@ const Index = (props) => {
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
-                            props.data.slug
+                            props.data?.slug
                           )}
                           type={props?.type}
                         />
@@ -1075,7 +1075,7 @@ const Index = (props) => {
                         <PlanYourTripButton
                           page_id={props.data.id}
                           destination={convertDbNameToCapitalFirst(
-                            props.data.slug
+                            props.data?.slug
                           )}
                           type={props?.type}
                         />
@@ -1097,13 +1097,13 @@ const Index = (props) => {
           <div>
             <BannerTwo
               page_id={props.data.id}
-              destination={props.data.destination}
+              destination={props.data?.destination}
             ></BannerTwo>
           </div> */}
 
           <JourneySimplified />
 
-          {props.continetCarousel.length ? (
+          {props.continetCarousel?.length ? (
             <>
               <H3
                 style={{
@@ -1173,7 +1173,7 @@ const Index = (props) => {
           {/* <AsSeenIn /> */}
           <PartnersSection />
 
-          <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
+          <ChatWithUs planner page_id={props.data?.id}></ChatWithUs>
         </SetWidthContainer>
       </div>
       <TailoredFormMobileModal

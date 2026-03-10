@@ -48,7 +48,9 @@ const BG_COLORS: Record<string, string> = {
 
 function resolveBg(bg: string | undefined): string {
   if (!bg) return "transparent";
-  return BG_COLORS[bg] ?? bg;
+  if (BG_COLORS[bg]) return BG_COLORS[bg];
+  const base = bg.replace(/-\d+$/, ""); // "blue-500" → "blue"
+  return BG_COLORS[base] ?? bg;
 }
 
 function resolveGap(gap: number | undefined): number {
@@ -248,6 +250,7 @@ function ButtonNode({
     label, iconStart, variant = "solid",
     color = "default", pill, onClickAction, submit,
   } = node;
+  console.log("Rendering button with props:", { label, iconStart, variant, color, pill, onClickAction, submit });
 
   const handleClick = () => {
     // Form submit button — serialize form values as comma-separated string
@@ -275,7 +278,8 @@ function ButtonNode({
     return (
       <button onClick={handleClick} style={{
         width: 36, height: 36, borderRadius: "50%",
-        border: "1.5px solid #d1d5db", background: "transparent",
+        border: "1.5px solid #d1d5db",
+         background: "transparent",
         display: "flex", alignItems: "center", justifyContent: "center",
         color: "#6b7280", cursor: "pointer", flexShrink: 0, outline: "none",
       }}>
@@ -325,57 +329,81 @@ function ButtonNode({
 
   // ── Primary solid ──
   if (color === "primary") {
-    return (
-      <button onClick={handleClick} style={{
-      padding: "6px 14px",
-      borderRadius: 8,
-      border: variant === "outline" ? "1.5px solid #d1d5db" : "none",
-      background: variant === "solid" ? "#111827" : "transparent",
-      color: variant === "solid" ? "#fff" : "#374151",
-      fontSize: 13, fontWeight: 500,
-      fontFamily: "'Inter', sans-serif",
-      cursor: "pointer", outline: "none",
-      }}>
-        {label as string}
-      </button>
-    );
-  }
-
-  // ── Generic fallback ──
   return (
-    <button onClick={handleClick} style={{
-      padding: "6px 14px",
-      borderRadius: pill ? "9999px" : 8,
-      border: variant === "outline" ? "1.5px solid #d1d5db" : "none",
-      background: variant === "solid" ? "#111827" : "transparent",
-      color: variant === "solid" ? "#fff" : "#374151",
-      fontSize: 13, fontWeight: 500,
-      fontFamily: "'Inter', sans-serif",
-      cursor: "pointer", outline: "none",
-    }}>
+    <button
+      onClick={handleClick}
+      style={{
+        padding: "12px 20px",
+        borderRadius: "8px",
+        borderWidth: "2px",
+        border: variant === "outline" ? "2px solid #111" : "none",
+        background: variant === "solid" ? "#f8e000" : "transparent",
+        backgroundColor: variant === "solid" ? "#f8e000" : "transparent",
+        color: "#111",
+        fontSize: "0.85rem",
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        cursor: "pointer",
+        outline: "none",
+      }}
+    >
       {label as string}
     </button>
   );
 }
 
-// ─── Box ──────────────────────────────────────────────────────────────────────
+  // ── Generic fallback ──
+  return (
+     <button
+      onClick={handleClick}
+      style={{
+        padding: "12px 20px",
+        borderRadius: "8px",
+        borderWidth: "2px",
+        border: variant === "outline" ? "2px solid #111" : "none",
+        background: variant === "solid" ? "#f8e000" : "transparent",
+        backgroundColor: variant === "solid" ? "#f8e000" : "transparent",
+        color: "#111",
+        fontSize: "0.85rem",
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        cursor: "pointer",
+        outline: "none",
+      }}
+    >
+      {label as string}
+    </button>
+  );
+}
 
-function BoxNode({ node }: { node: WidgetNode }) {
-  const { size, width, height, background, radius } = node;
-  const pxSize   = size  ? (size as number) * 4  : undefined;
-  const pxWidth  = width ? (width as number) * 4 : pxSize;
-  const pxHeight = height
-    ? (typeof height === "string" ? height : `${(height as number) * 4}px`)
-    : pxSize ? `${pxSize}px` : undefined;
+
+function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  const { size, width, height, background, radius, children, align, justify } = node;
+
+  const pxWidth  = width != null ? `${width as number}px` : size != null ? `${size as number}px` : undefined;
+  const pxHeight = height != null
+    ? (typeof height === "string" ? height : `${height as number}px`)
+    : size != null ? `${size as number}px` : undefined;
+
   const borderRadius =
     radius === "full" ? "9999px" : radius === "sm" ? "4px" :
     radius === "md"   ? "8px"   : radius === "lg"  ? "14px" : "6px";
+
+  const hasChildren = Array.isArray(children) && (children as WidgetNode[]).length > 0;
+
   return (
     <div style={{
-      width: pxWidth, height: pxHeight,
+      width: pxWidth, height: pxHeight, minWidth: pxWidth,
       background: resolveBg(background as string | undefined),
       borderRadius, flexShrink: 0,
-    }} />
+      display: "flex",
+      alignItems: ALIGN_MAP[align as string] ?? "center",
+      justifyContent: JUSTIFY_MAP[justify as string] ?? "center",
+    }}>
+      {hasChildren && (children as WidgetNode[]).map((child, i) => (
+        <NodeRenderer key={i} node={child} onAction={onAction} />
+      ))}
+    </div>
   );
 }
 
@@ -435,11 +463,12 @@ function RowNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
   const { children = [], gap, align, justify } = node;
   return (
     <div style={{
-      display: "flex", flexDirection: "row",
+      display: "flex",
+      flexDirection: "row",
       gap: resolveGap(gap as number | undefined),
-      alignItems: ALIGN_MAP[align as string] ?? "flex-start",
+      alignItems: ALIGN_MAP[align as string] ?? "center", // ← center by default
       justifyContent: JUSTIFY_MAP[justify as string] ?? "flex-start",
-      width: "100%",
+      width: "auto", // ← don't force 100%
     }}>
       {(children as WidgetNode[]).map((child, i) => (
         <NodeRenderer key={i} node={child} onAction={onAction} />
@@ -447,17 +476,15 @@ function RowNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
     </div>
   );
 }
-
 // ─── Col ──────────────────────────────────────────────────────────────────────
-
 function ColNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const { children = [], gap, align, width } = node;
   return (
     <div style={{
       display: "flex", flexDirection: "column",
-      gap: resolveGap(gap as number | undefined),
+      gap: gap != null ? `${gap as number}px` : 0,       // raw px
       alignItems: ALIGN_MAP[align as string] ?? "flex-start",
-      width: width ? (width as number) * 4 : "100%",
+      width: width != null ? `${width as number}px` : "auto", // raw px
       flexShrink: 0,
     }}>
       {(children as WidgetNode[]).map((child, i) => (
@@ -467,80 +494,37 @@ function ColNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
   );
 }
 
-// ─── ListView ─────────────────────────────────────────────────────────────────
+function IconNode({ node }: { node: WidgetNode }) {
+  const colorMap: Record<string, string> = { secondary: "#9ca3af", primary: "#111827" };
+  const color = colorMap[node.color as string] ?? "#9ca3af";
+  if (node.name === "dots-horizontal") {
+    return <span style={{ color, display: "flex" }}><DotsHorizontalIcon /></span>;
+  }
+  return null;
+}
 
-function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"]; isLast?: boolean }) {
   const children = (node.children ?? []) as WidgetNode[];
   return (
-    <div style={{ width: "100%", fontFamily: "'Inter', sans-serif" }}>
-      {children.map((item, idx) => (
-        <ListViewItemNode
-          key={(item.key as string) ?? idx}
-          node={item}
-          onAction={onAction}
-          isLast={idx === children.length}
-        />
+    <div style={{
+      display: "flex", flexDirection: "row", alignItems: "center",
+      gap: node.gap != null ? `${(node.gap as number) * 4}px` : "8px", // gap={3} → 12px
+      padding: "2px 0",
+    }}>
+      {children.map((child, i) => (
+        <NodeRenderer key={i} node={child} onAction={onAction} />
       ))}
     </div>
   );
 }
 
-function ListViewItemNode({
-  node, onAction, isLast = false,
-}: {
-  node: WidgetNode;
-  onAction?: WidgetRendererProps["onAction"];
-  isLast?: boolean;
-}) {
+function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const children = (node.children ?? []) as WidgetNode[];
-  const dotsBtn   = children[0];
-  const mainRow   = children[1];
-  const actionRow = children[3];
-
-  let dotColor = "#6366f1";
-  let cityName  = "";
-
-  if (mainRow?.type === "Row" && mainRow.children) {
-    const rowChildren = mainRow.children as WidgetNode[];
-    const col = rowChildren.find((c) => c.type === "Col");
-    if (col?.children) {
-      const dot = (col.children as WidgetNode[])[0];
-      if (dot?.type === "Box") dotColor = resolveBg(dot.background as string);
-    }
-    const textNode = rowChildren.find((c) => c.type === "Text");
-    if (textNode) cityName = textNode.value as string;
-  }
-
   return (
-    <div style={{
-      display: "flex", alignItems: "center",
-      gap: 14, padding: "10px 0", minHeight: 60,
-    }}>
-      {dotsBtn && <ButtonNode node={dotsBtn} onAction={onAction} />}
-      <div style={{
-        display: "flex", flexDirection: "column",
-        alignItems: "center", width: 18, flexShrink: 0, alignSelf: "stretch",
-      }}>
-        <div style={{
-          width: 11, height: 11, borderRadius: "50%",
-          background: dotColor, flexShrink: 0, marginTop: 4,
-        }} />
-        {!isLast && (
-          <div style={{
-            width: 2, flex: 1, background: "#e5e7eb",
-            borderRadius: 2, marginTop: 5,
-          }} />
-        )}
-      </div>
-      <span style={{
-        flex: 1, fontSize: 14, fontWeight: 600,
-        color: "#111827", fontFamily: "'Inter', sans-serif",
-      }}>
-        {cityName}
-      </span>
-      {actionRow?.type === "Row" && actionRow.children && (
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }} />
-      )}
+    <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', sans-serif" }}>
+      {children.map((item, idx) => (
+        <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
     </div>
   );
 }
@@ -599,6 +583,7 @@ function NodeRenderer({
     case "Spacer":       return <SpacerNode />;
     case "Divider":
       return <hr style={{ border: "none", borderTop: "1px solid #f3f4f6", margin: "4px 0" }} />;
+    case "Icon": return <IconNode node={node} />;
     default:
       return (
         <pre style={{
@@ -615,7 +600,7 @@ function NodeRenderer({
 
 export function WidgetRenderer({ widget, onAction }: WidgetRendererProps) {
   return (
-    <div style={{ width: "100%", maxWidth: 500, paddingBottom: 4 }}>
+    <div style={{ width: "fit-content", maxWidth: 320, paddingBottom: 4 }}>
       <NodeRenderer node={widget as WidgetNode} onAction={onAction} />
     </div>
   );
