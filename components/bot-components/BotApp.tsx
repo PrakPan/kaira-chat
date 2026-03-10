@@ -222,9 +222,23 @@ export default function BotApp() {
           </div>
 
           {/* Map/Itinerary — fades in when bot has responded */}
+
+          <style>
+    {`
+      #chatContainer::-webkit-scrollbar {
+        display: none;
+      }
+    `}
+  </style>
           <div
-            className="flex flex-col h-full bg-white border-r border-slate-200 transition-opacity duration-500 ease-in-out"
-            style={{ opacity: hasBotResponded ? 1 : 0 }}
+            id="chatContainer"
+            className="flex flex-col h-full bg-white  border-slate-200 transition-opacity duration-500 ease-in-out"
+            style={{
+      opacity: hasBotResponded ? 1 : 0,
+      overflowY: "scroll",
+      scrollbarWidth: "none",   // Firefox
+      msOverflowStyle: "none",  // IE/Edge
+    }}
           >
             <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
             {viewMode === "map" ? (
