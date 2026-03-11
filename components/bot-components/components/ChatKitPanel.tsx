@@ -23,7 +23,7 @@ const LoginButton = styled.button`
   cursor: pointer;
   border: none;
   color: #111;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 600;
 `;
 
@@ -44,8 +44,6 @@ function useUserLocationData() {
   const [userLocationData, setUserLocationData] =
     useState<UserLocationData | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(true);
-
-  
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -167,25 +165,22 @@ export function ChatKitPanel({
 
   const { userLocationData, isLoadingLocation } = useUserLocationData();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-// Reactive token from Redux — updates instantly when user logs in
-const reduxToken = useSelector((state: any) => state.auth.token);
-const authToken = reduxToken ?? getAuthToken();
-const isLoggedIn = !!authToken;
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [postLoginLoading, setPostLoginLoading] = useState(false);
+
+  // Reactive token from Redux — updates instantly when user logs in
+  const reduxToken = useSelector((state: any) => state.auth.token);
+  const authToken = reduxToken ?? getAuthToken();
+  const isLoggedIn = !!authToken;
 
   const dispatch = useDispatch();
 
- const handleShowLogin = useCallback(() => {
-  setShowLoginModal(true);
-}, []);
-
-  useEffect(() => {
-  if (isLoggedIn) {
-    setShowLoginModal(false);
-    setShowLoginPrompt(false);
-  }
-}, [isLoggedIn]);
+  const handleShowLogin = useCallback(() => {
+    if (input.trim()) setPendingMessage(input.trim());
+    setShowLoginModal(true);
+  }, [input]);
 
   const handleEffect = useCallback(
     ({ name, data }: { name: string; data: Record<string, unknown> }) => {
@@ -220,9 +215,14 @@ const isLoggedIn = !!authToken;
           }
           break;
         case "prompt_login": {
-  setShowLoginPrompt(true); 
+          setPendingMessage(input);
+          setShowLoginPrompt(true);
+          break;
+        }
+        case "display_pois_on_map":
+  onNewQuery();
+  if (data.data) onLocationReceived(data as { data: Location[] });
   break;
-}
         default:
           console.warn("[Effect] unhandled:", name);
       }
@@ -235,7 +235,6 @@ const isLoggedIn = !!authToken;
     botMode === "p2"
       ? "https://chat.tarzanway.com/chatkit/p2"
       : CHATKIT_API_URL;
-
 
   const {
     messages,
@@ -279,6 +278,21 @@ const isLoggedIn = !!authToken;
   useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setShowLoginModal(false);
+      setShowLoginPrompt(false);
+      if (pendingMessage) {
+        setPostLoginLoading(true);
+        setTimeout(() => {
+          sendMessage(pendingMessage.trim());
+          setPendingMessage(null);
+          setPostLoginLoading(false);
+        }, 800);
+      }
+    }
+  }, [isLoggedIn, pendingMessage, sendMessage]);
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);
@@ -423,14 +437,20 @@ const isLoggedIn = !!authToken;
               </div>
             )}
 
-         
-{showLoginPrompt && !isLoggedIn && (
-  <div className="mt-[24px]">
-    <LoginButton onClick={handleShowLogin} >
-      Login/Signup
-    </LoginButton>
-  </div>
-)}
+            {showLoginPrompt && !isLoggedIn && (
+              <div className="mt-[24px]">
+                <LoginButton onClick={handleShowLogin}>
+                  Login/Signup
+                </LoginButton>
+              </div>
+            )}
+
+            {postLoginLoading && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-gray-400">
+                <Spinner size={14} />
+                <span>Sending your message…</span>
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
@@ -452,48 +472,50 @@ const isLoggedIn = !!authToken;
         </div>
       </div>
 
-{showLoginModal && !isLoggedIn && createPortal(
-  <>
-    {/* Backdrop — click outside closes modal but keeps the CTA button */}
-    <div
-      onClick={() => setShowLoginModal(false)}
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.5)",
-        zIndex: 3299,
-      }}
-    />
-    {/* Modal */}
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        background: "#fff",
-        borderRadius: 16,
-        width: "min(480px, 95vw)",
-        maxHeight: "90vh",
-        overflowY: "auto",
-        zIndex: 3300,
-        boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
-      }}
-    >
-      <LogInModal
-        show={showLoginModal}
-        onhide={() => setShowLoginModal(false)}
-        zIndex={"3300"}
-        message="Please login to continue"
-        onSuccess={async () => {
-          // isLoggedIn effect will handle hiding everything
-        }}
-      />
-    </div>
-  </>,
-  document.body
-)}
+      {showLoginModal &&
+        !isLoggedIn &&
+        createPortal(
+          <>
+            {/* Backdrop — click outside closes modal but keeps the CTA button */}
+            <div
+              onClick={() => setShowLoginModal(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 3299,
+              }}
+            />
+            {/* Modal */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                background: "#fff",
+                borderRadius: 16,
+                width: "min(480px, 95vw)",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                zIndex: 3300,
+                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              }}
+            >
+              <LogInModal
+                show={showLoginModal}
+                onhide={() => setShowLoginModal(false)}
+                zIndex={"3300"}
+                message="Please login to continue"
+                onSuccess={async () => {
+                  setPostLoginLoading(true);
+                }}
+              />
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   );
 }

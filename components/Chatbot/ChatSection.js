@@ -128,27 +128,43 @@ const LoginButton = styled.button`
 `;
 
 
-const ChatMessage = React.memo(({ item, cachedAvatar }) => {
+const ChatMessage = React.memo(({ item, cachedAvatar,isPageWide }) => {
     const isUser = item.is_bot === false;
-    
+
     return (
         <MessageWrapper isUser={isUser}>
             <div
                 className={!isUser ? 'chatWrapper' : ''}
                 style={{
-                    background: isUser ? '#fffaf5' : 'transparent',
-                    borderRadius: isUser ? '12px' : '0',
-                    padding: isUser ? '10px 16px' : '0',
-                    fontFamily: 'Inter, sans-serif',
-                    fontWeight: 400,
-                    fontSize: 16,
-                    lineHeight: '24px',
-                    color: '#374151', 
-                    wordBreak: 'break-word',
-                    maxWidth: isUser ? '85%' : '98%',
-                }}
+  background: isUser ? '#fffaf5' : 'transparent',
+  borderRadius: isUser ? '12px' : '0',
+  padding: isUser ? '10px 16px' : '0',
+  fontFamily: "'Inter', sans-serif",
+  fontWeight: 400,
+  fontSize: isPageWide ? 16 : 14,   
+  lineHeight: '24px',
+  color: isUser ? '#0d0d0d' : '#374151',
+  wordBreak: 'break-word',
+  maxWidth: isUser ? '85%' : '98%',
+}}
             >
-                <Markdown>{item.message}</Markdown>
+               <Markdown components={{
+  p: ({ children }) => (
+    <p style={{ margin: '0.5px 0', fontSize: isPageWide ? 16 : 14, lineHeight: '24px', opacity: isUser ? 1 : 0.9, fontWeight: 400, color: isUser ? '#0d0d0d' : '#374151' }}>
+      {children}
+    </p>
+  ),
+  li: ({ children }) => (
+    <li style={{ fontSize: isPageWide ? 16 : 14, lineHeight: '24px', opacity: 0.9, margin: '4px 0', fontWeight: 400 }}>
+      {children}
+    </li>
+  ),
+  strong: ({ children }) => (
+    <strong style={{ fontWeight: 600, opacity: 1 }}>{children}</strong>
+  ),
+}}>
+  {item.message}
+</Markdown>
             </div>
         </MessageWrapper>
     );
@@ -257,7 +273,7 @@ function ChatSection(props) {
                                     />
                                 </div>
                                 :
-                                <ChatMessage key={idx} item={chatObj} cachedAvatar={cachedAvatar} />
+                                <ChatMessage key={idx} item={chatObj} cachedAvatar={cachedAvatar} isPageWide={isPageWide} />
                         ))}
 
                         {currentBotMessage && (
