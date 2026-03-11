@@ -150,12 +150,12 @@ const ChatMessage = React.memo(({ item, cachedAvatar,isPageWide }) => {
             >
                <Markdown components={{
   p: ({ children }) => (
-    <p style={{ margin: '0.5px 0', fontSize: isPageWide ? 16 : 14, lineHeight: '24px', opacity: isUser ? 1 : 0.9, fontWeight: 400, color: isUser ? '#0d0d0d' : '#374151' }}>
+    <p style={{ margin: '0.5px 0', fontSize: isPageWide ? 15 : 13, lineHeight: '24px', opacity: isUser ? 1 : 0.9, fontWeight: 400, color: isUser ? '#0d0d0d' : '#374151' }}>
       {children}
     </p>
   ),
   li: ({ children }) => (
-    <li style={{ fontSize: isPageWide ? 16 : 14, lineHeight: '24px', opacity: 0.9, margin: '4px 0', fontWeight: 400 }}>
+    <li style={{ fontSize: isPageWide ? 15 : 13, lineHeight: '24px', opacity: 0.9, margin: '4px 0', fontWeight: 400 }}>
       {children}
     </li>
   ),
