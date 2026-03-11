@@ -38,7 +38,7 @@ Start Location: ${details.startLocation}`;
   return (
     <div className="flex flex-col h-full">
       {/* Scrollable content area */}
-      <div className="flex-1 overflow-y-auto p-6 pb-4">
+      <div className="flex-1 overflow-y-auto pb-4">
         <div className="mb-6">
           <h1 className="text-xl font-bold text-gray-800">
             {itineraryData.name}
