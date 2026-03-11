@@ -18,6 +18,7 @@ const nextConfig = {
     "res.cloudinary.com",
     "lh3.googleusercontent.com",
     "maps.googleapis.com",
+    "mercury.tarzanway.com"
   ],
 },
 
