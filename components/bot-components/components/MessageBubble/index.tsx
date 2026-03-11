@@ -72,10 +72,12 @@ function renderContent(text: string): React.ReactNode[] {
 }
 
 function inlineFormat(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[.*?\]\(.*?\))/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**"))
       return <strong key={i}>{part.slice(2, -2)}</strong>;
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2)
+      return <em key={i}>{part.slice(1, -1)}</em>;
     if (part.startsWith("`") && part.endsWith("`"))
       return <code key={i}>{part.slice(1, -1)}</code>;
     const linkMatch = part.match(/^\[(.*?)\]\((.*?)\)$/);
@@ -180,7 +182,7 @@ const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> =
             fontWeight: 600,
             color: "#374151",
             paddingLeft: 2,
-            animation: "thinkFadeIn 0.3s ease",
+            animation: "thinkFadeIn 0.15s ease-out",
           }}>
             {cleanContent(currentTask.content)}
           </div>
@@ -344,7 +346,17 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetA
           )}
 
           {/* Main response content */}
-          {hasContent && rendered}
+           {hasContent && (
+  <div
+    style={{
+     willChange: "contents",
+     transition: "opacity 0.1s ease",
+   }}
+  >
+    {renderContent(message.content)}
+  </div>
+ )}
+
 
           {/* Fallback bubble dots */}
           {showDots && <ThinkingDots />}
