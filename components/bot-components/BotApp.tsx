@@ -358,7 +358,7 @@ export default function BotApp() {
               />
             ) : (
               <ChatKitPanel
-                key={`${botMode}-${itineraryId}-${chatKey}`}
+                key={`${botMode}-${chatKey}`}
                 onLocationReceived={handleLocationReceived}
                 onNewQuery={handleNewQuery}
                 onRouteReceived={handleRouteReceived}
