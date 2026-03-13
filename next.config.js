@@ -9,16 +9,16 @@ const nextConfig = {
   // trailingSlash: true,
   // skipTrailingSlashRedirect: true,
 
-  images: {
-  domains: [
-    "d31aoa0ehgvjdi.cloudfront.net",
-    "q-xx.bstatic.com",
-    "i.travelapi.com",
-    "imgak.mmtcdn.com",
-    "res.cloudinary.com",
-    "lh3.googleusercontent.com",
-    "maps.googleapis.com",
-    "mercury.tarzanway.com"
+images: {
+  remotePatterns: [
+    {
+      protocol: "https",
+      hostname: "**",
+    },
+    {
+      protocol: "http",
+      hostname: "**",
+    },
   ],
 },
 

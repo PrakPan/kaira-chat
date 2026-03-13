@@ -175,7 +175,7 @@ const ActivityRow: React.FC<{ item: SlabElement; index: number }> = ({
         )}
 
         {/* Included tag — only for included activities */}
-        {(item?.activity || (item?.type === "activity" && item?.time)) && (
+        {/* {(item?.activity || (item?.type === "activity" && item?.time)) && (
           <span className="flex gap-2 items-center px-1.5 md:px-2 py-0.5 bg-[#5CBA66] text-white text-[10px] md:text-xs rounded-full font-medium flex-shrink-0 whitespace-nowrap">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +191,7 @@ const ActivityRow: React.FC<{ item: SlabElement; index: number }> = ({
             </svg>{" "}
             Included
           </span>
-        )}
+        )} */}
          
           {item?.time && (
             <div className="flex items-center gap-1 flex-shrink-0">
