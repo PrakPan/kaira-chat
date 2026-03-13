@@ -157,7 +157,7 @@ function buildSubsequentMessageBody(
     type: "threads.add_user_message",
     params: { input: buildInput(text), thread_id: opts.threadId },
     model: opts.model,
-    user_location: opts.userLocation,
+    // user_location: opts.userLocation,
     domain_key: opts.domainKey,
     ...buildAuthFields(opts),
   };
@@ -440,7 +440,7 @@ export function useChat({
         },
         domain_key: domainKey,
         model,
-        user_location: loc,
+        // user_location: loc,
         ...buildAuthFields({
           authToken: authTokenRef.current,
           userId: userIdRef.current,

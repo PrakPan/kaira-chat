@@ -200,6 +200,7 @@ export function ChatKitPanel({
    * Also used as the URL segment: /chat/{sessionId}
    */
   const sessionIdRef = useRef<string>(generateSessionId());
+  const isFirstMessageRef = useRef(true);
 
   /**
    * Stable ref to sendWidgetAction — lets handleEffect call it without
@@ -350,13 +351,20 @@ export function ChatKitPanel({
   handleEffectRef.current = handleEffect;
 
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
-  const sendMessage = useCallback(
-    (text: string) => {
-      setQuickReplies([]);
-      rawSendMessage(text);
-    },
-    [rawSendMessage],
-  );
+ const sendMessage = useCallback(
+  (text: string) => {
+    setQuickReplies([]);
+
+    // Only pass userLocation on the first message, then clear it
+    if (isFirstMessageRef.current) {
+      isFirstMessageRef.current = false;
+      rawSendMessage(text, userLocationData ?? undefined);
+    } else {
+      rawSendMessage(text); // no location
+    }
+  },
+  [rawSendMessage, userLocationData],
+);
 
   // ── Side-effects ──────────────────────────────────────────────────────────
   useEffect(() => {
