@@ -4,14 +4,16 @@ import { WidgetRenderer } from "../WidgetRenderer";
 
 interface MessageBubbleProps {
   message: Message;
+  entities?: Record<string, { name: string; type: string }>;
   onWidgetAction?: (action: { type: string; payload?: Record<string, unknown> }) => void;
 }
 
 // ─── Markdown renderer ────────────────────────────────────────────────────────
 
-function renderContent(text: string): React.ReactNode[] {
+function renderContent(text: string, entities: Record<string, { name: string; type: string }> = {}): React.ReactNode[] {
+  const resolved = resolveEntityTokens(text, entities);
   const nodes: React.ReactNode[] = [];
-  const lines = text.split("\n");
+  const lines = resolved.split("\n");
   let i = 0;
 
   while (i < lines.length) {
@@ -84,6 +86,16 @@ function inlineFormat(text: string): React.ReactNode {
     if (linkMatch)
       return <a key={i} href={linkMatch[2]} target="_blank" rel="noopener noreferrer">{linkMatch[1]}</a>;
     return part;
+  });
+}
+
+function resolveEntityTokens(
+  text: string,
+  entities: Record<string, { name: string; type: string }>
+): string {
+  return text.replace(/\[\[(\w+):([^\]]+)\]\]/g, (_, _type, id) => {
+    const entity = entities[id];
+    return entity ? `**${entity.name}**` : id;
   });
 }
 
@@ -288,8 +300,11 @@ const ThinkingBlock: React.FC<{ tasks: ThinkingTask[]; isStreaming: boolean }> =
 
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetAction }) => {
-  const rendered = useMemo(() => renderContent(message.content), [message.content]);
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetAction, entities = {}, }) => {
+  const rendered = useMemo(
+  () => renderContent(message.content, entities ?? {}),
+  [message.content, entities]
+);
   const isUser = message.role === "user";
 
   if (message.type === "widget" && message.widgetItem) {
@@ -346,16 +361,11 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetA
           )}
 
           {/* Main response content */}
-           {hasContent && (
-  <div
-    style={{
-     willChange: "contents",
-     transition: "opacity 0.1s ease",
-   }}
-  >
-    {renderContent(message.content)}
+   {hasContent && (
+  <div style={{ willChange: "contents", transition: "opacity 0.1s ease" }}>
+    {renderContent(message.content, entities ?? {})}
   </div>
- )}
+)}
 
 
           {/* Fallback bubble dots */}
