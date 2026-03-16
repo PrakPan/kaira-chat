@@ -191,6 +191,7 @@ export function ChatKitPanel({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
+  const postLoginFiredRef = useRef(false);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -227,6 +228,8 @@ export function ChatKitPanel({
   // ── Location ─────────────────────────────────────────────────────────────
   const { userLocationData, isLoadingLocation } = useUserLocationData();
   const locationReady = !isLoadingLocation;
+  const [entities, setEntities] = useState<Record<string, { name: string; type: string }>>({});
+
 
   // ── Session created ───────────────────────────────────────────────────────
   // Called by useChat after the first API response confirms the thread.
@@ -321,6 +324,11 @@ export function ChatKitPanel({
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
           break;
+        case "itinerary_entities": {
+  const raw = (data.entities ?? {}) as Record<string, { name: string; type: string }>;
+  setEntities(prev => ({ ...prev, ...raw }));
+  break;
+}
         case "load_quick_replies": {
           const raw =
             (data.replies as any[]) ??
@@ -387,19 +395,29 @@ export function ChatKitPanel({
   }, [onSendReady, sendMessage]);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      setShowLoginModal(false);
-      setShowLoginPrompt(false);
-      if (pendingMessage) {
-        setPostLoginLoading(true);
-        setTimeout(() => {
-          sendMessage(pendingMessage.trim());
-          setPendingMessage(null);
-          setPostLoginLoading(false);
-        }, 800);
-      }
-    }
-  }, [isLoggedIn, pendingMessage, sendMessage]);
+  if (!isLoggedIn) {
+    // Reset guard when user logs out so a future login works again
+    postLoginFiredRef.current = false;
+    return;
+  }
+
+  // Guard: only execute the send logic once per login event
+  if (postLoginFiredRef.current) return;
+  postLoginFiredRef.current = true;
+
+  setShowLoginModal(false);
+  setShowLoginPrompt(false);
+
+  if (pendingMessage) {
+    const msg = pendingMessage; 
+    setPendingMessage(null);    
+    setPostLoginLoading(true);
+    setTimeout(() => {
+      sendMessage(msg.trim());
+      setPostLoginLoading(false);
+    }, 800);
+  }
+}, [isLoggedIn]);
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);
@@ -521,6 +539,7 @@ export function ChatKitPanel({
               <MessageBubble
                 key={msg.id}
                 message={msg}
+                entities={entities}
                 onWidgetAction={(action) => {
                   sendWidgetAction(action.type, action.payload ?? {});
                 }}
