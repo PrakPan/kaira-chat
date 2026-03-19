@@ -710,5 +710,5 @@ export function useChat({
     sessionCreatedFiredRef.current = false;
   }, [cancelStream]);
 
-  return { messages, isStreaming, error, sendMessage, sendWidgetAction, clearMessages, cancelStream };
+  return { messages, isStreaming, error, sendMessage, sendWidgetAction, clearMessages, cancelStream , setMessages, threadIdRef,};
 }

@@ -582,7 +582,7 @@ const SimpleTabsV2 = (props) => {
         ></FullScreenGallery>
       ) : null}
       {/* <div id={"Brief"}> */}
-      {props?.mercuryItinerary && citydatadone ? (
+      {props?.mercuryItinerary && citydatadone && !props?.fromChat ? (
         <Breif
           mercuryItinerary={props?.mercuryItinerary}
           loadbookings={props?.loadbookings}
@@ -614,7 +614,7 @@ const SimpleTabsV2 = (props) => {
           requireAuth={requireAuth}
         ></Breif>
       ) : (
-        citydatadone && (
+        citydatadone && !props?.fromChat && (
           <OldBreif
             plan={props.plan}
             routesData={RoutesData}
@@ -674,13 +674,13 @@ const SimpleTabsV2 = (props) => {
               isInDrawer={true} 
             />
           ) : <><div className={`z-10 sticky z-2 md:top-[0px] top-[1px]`}>
-          <ScrollableMenuTabs
+          {!props?.fromChat && <ScrollableMenuTabs
             icons={false}
             offset={isDesktop ? "0px" : "0px"}
             items={items}
             BarName="TabsName"
             scrollOffSet={-50}
-          />
+          />}
         </div>
         <div id={"Itenary"}>
           {props.mercuryItinerary ? (
@@ -898,14 +898,14 @@ const SimpleTabsV2 = (props) => {
             )}
 
             {/* Chat Button */}
-            <ChatButtonContainer
+           {!props.fromChat && <ChatButtonContainer
               onOpenChat={() => {
                 handleChatBotOpen(true);
                 setShowChatBanner(false);
               }}
-            />
+            />}
           </div>
-          {isChatBotEnable ? (
+          {!props.fromChat &&  isChatBotEnable ? (
             <Drawer
               show={isChatBotEnable}
               anchor={"right"}
@@ -933,7 +933,76 @@ const SimpleTabsV2 = (props) => {
         </>
       )}
 
-      {isPageWide ? (
+      {isPageWide ? 
+      props.fromChat ? (
+    <div className="mb-4 w-full">
+       <div
+                id={"Itenary"}
+                className={activeTab === "Itinerary" ? "block" : "hidden"}
+              >
+                {props.mercuryItinerary
+                  ? props?.itineraryDaybyDay && (
+                      <DaybyDay
+                        mercuryItinerary={props?.mercuryItinerary}
+                        activityBookings={props?.activityBookings}
+                        setActivityBookings={props?.setActivityBookings}
+                        transferBookings={props?.transferBookings}
+                        setTransferBookings={props?.setTransferBookings}
+                        setItinerary={props?.setItinerary}
+                        itinerary={props?.itinerary}
+                        loadbookings={props?.loadbookings}
+                        payment={props.payment}
+                        stayBookings={stays}
+                        setStayBookings={props.setStayBookings}
+                        _updateBookingHandler={props._updateBookingHandler}
+                        _updateStayBookingHandler={
+                          props._updateStayBookingHandler
+                        }
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateFlightBookingHandler={
+                          props._updateFlightBookingHandler
+                        }
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        setShowBookingModal={(val) =>
+                          props.setShowStayBookingModal(val)
+                        }
+                        showBookingModal={props.showStayBookingModal}
+                        setHideBookingModal={props.setHideBookingModal}
+                        setShowLoginModal={setShowLoginModal}
+                        _GetInTouch={_GetInTouch}
+                        setShowCityDrawer={handleShowCityDrawer}
+                      />
+                    )
+                  : props?.itinerary && (
+                      <NewItenaryMain
+                        setShowLoginModal={setShowLoginModal}
+                        plan={props.plan}
+                        payment={props.payment}
+                        city_slabs={props?.breif?.city_slabs}
+                        itinerary={props?.itinerary}
+                        setItinerary={props.setItinerary}
+                        getPaymentHandler={props.getPaymentHandler}
+                        token={props.token}
+                        transferBookings={props.transferBookings}
+                        stayBookings={props.stayBookings}
+                        activityBookings={props.activityBookings}
+                        getAccommodationAndActivitiesHandler={
+                          props.getAccommodationAndActivitiesHandler
+                        }
+                        setShowBookingModal={() =>
+                          props.setShowBookingModal(true)
+                        }
+                        _GetInTouch={_GetInTouch}
+                      ></NewItenaryMain>
+                    )}
+              </div>
+    </div>
+  ) : 
+      
+      (
         <>
       
         <SplitScreen isPageWide leftWidth={5} rightWidth={5}>
@@ -971,7 +1040,7 @@ const SimpleTabsV2 = (props) => {
           ) : (
             <div className="mb-4">
                 
-                <Overview
+                {!props?.fromChat && <Overview
       mercuryItinerary
       title={props.itinerary.name}
       itinerary={props?.itinerary}
@@ -999,8 +1068,8 @@ const SimpleTabsV2 = (props) => {
       handleEditRouteClick={props.handleEditRouteClick}
       showSettings={props.showSettings}
       setShowSettings={props.setShowSettings}
-    />
-              <Navigation
+    />}
+             {!props?.fromChat && <Navigation
                 items={items}
                 BarName="TabsName"
                 ClickHandler={(label) => {
@@ -1016,7 +1085,7 @@ const SimpleTabsV2 = (props) => {
                 }}
                 selectedItem={activeTab}
                 trackSectionViewed={trackSectionViewed}
-              />
+              />}
               <div
                 id={"Itenary"}
                 className={activeTab === "Itinerary" ? "block" : "hidden"}
@@ -1081,7 +1150,7 @@ const SimpleTabsV2 = (props) => {
                     )}
               </div>
 
-              <div
+              {!props?.fromChat && <div
                 id={"Booking"}
                 className={
                   activeTab === "Bookings" ? "block mb-[100px] max-w-[47vw]" : "hidden"
@@ -1282,7 +1351,7 @@ const SimpleTabsV2 = (props) => {
                     </div>
                   )
                 )}
-              </div>
+              </div>}
             </div>
           )}
           {!props?.mercuryItinerary ? (
@@ -1312,7 +1381,7 @@ const SimpleTabsV2 = (props) => {
                 _GetInTouch={() => _GetInTouch()}
               ></SummaryContainer>
             </div>
-          ) : props?.mercuryItinerary ? (
+          ) : props?.mercuryItinerary && !props?.fromChat ? (
             <>
               <div className="sticky top-[0rem] ml-5">
                 <ChatBot />

@@ -2,7 +2,7 @@ import * as actionTypes from "../actions/actionsTypes";
 
 // Define initial state
 const initialState = {
-  name: "Loading Itinerary",
+  name: "",
   images: ["null"],
 };
 

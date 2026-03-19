@@ -161,12 +161,12 @@ const DaybyDay = ({
             loadbookings={loadbookings}
             hotelName={startCity?.city_name}
             sourceGmaps={startCity?.gmaps_place_id}
-            destinationHotelName={stay?.[0]?.name ? stay[0]?.name : null}
+            destinationHotelName={stay?.[0]?.name ? stay?.[0]?.name : null}
             sourceLat={startCity?.latitude}
             sourceLong={startCity?.longitude}
-            destinationLat={stay?.[0] ? stay[0]?.lat : null}
-            destinationLong={stay?.[0] ? stay[0]?.long : null}
-            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id || itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
+            destinationLat={stay?.[0] ? stay?.[0]?.lat : null}
+            destinationLong={stay?.[0] ? stay?.[0]?.long : null}
+            destinationGmaps={stay?.[0] ? stay?.[0]?.city_gmaps_place_id || itineraryDaybyDay?.cities?.[0]?.city?.gmaps_place_id: itineraryDaybyDay?.cities?.[0]?.city?.gmaps_place_id}
             key={2}
             date_of_journey={Itinerary?.start_date}
             pinColour={getCityColor(index)}
@@ -321,14 +321,14 @@ const DaybyDay = ({
                       mercury
                       check_in={stay?.[index] ? stay?.[index]?.check_in : null}
                       check_out={stay?.[index] ? stay?.[index]?.check_out : null}
-                      hotelName={stay?.[index]?.name ? stay[index]?.name : null}
-                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
-                      sourceLat={stay?.[index] ? stay[index]?.lat : null}
-                      sourceLong={stay?.[index] ? stay[index]?.long : null}
-                      destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}
-                      destinationLong={stay?.[index + 1] ? stay[index + 1]?.long : null}
-                      destinationHotelName={stay?.[index + 1]?.name ? stay[index + 1]?.name : null}
+                      hotelName={stay?.[index]?.name ? stay?.[index]?.name : null}
+                      sourceGmaps={stay?.[index] ? stay?.[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay?.[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities?.[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities?.[index + 1]?.city?.gmaps_place_id}
+                      sourceLat={stay?.[index] ? stay?.[index]?.lat : null}
+                      sourceLong={stay?.[index] ? stay?.[index]?.long : null}
+                      destinationLat={stay?.[index + 1] ? stay?.[index + 1]?.lat : null}
+                      destinationLong={stay?.[index + 1] ? stay?.[index + 1]?.long : null}
+                      destinationHotelName={stay?.[index + 1]?.name ? stay?.[index + 1]?.name : null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -389,8 +389,8 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
-            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.name : null}
+            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
             sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
             sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
             destinationLat={endCity?.latitude}
@@ -401,7 +401,7 @@ const DaybyDay = ({
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>
                   booking?.is_airport_pickup &&
-                  booking?.check_in?.split(" ")[0] >=
+                  booking?.check_in?.split?.(" ")?.[0] >=
                   itineraryDaybyDay?.cities?.[
                     itineraryDaybyDay?.cities?.length - 1
                   ]?.start_date

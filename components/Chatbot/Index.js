@@ -12,9 +12,10 @@ const Container = styled.div`
   padding: ${(props) => (props.ispopup ? '0px 16px' : '20px')};
   // box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
   position: relative;
-  height: ${(props) => (props.ispopup ? '100vh' : '96vh')};
+  height: ${(props) => (props.ispopup ? '100vh' : '100vh')};
   // border-radius: 16px;
   overflow-y: hidden;
+  background: #FFFFFF;
   
   @media screen and (max-width: 767px) {
     height: 100vh;

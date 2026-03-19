@@ -135,7 +135,7 @@ const CityDay = (props) => {
       trackActivityCardClicked(router.query.id, itemType);
       router.push(
         {
-          pathname: `/itinerary/${router.query.id}`,
+          pathname: router.asPath.split('?')[0],
           query: {
             drawer: `showPoiDetail`,
             itinerary_city_id: props?.itinerary_city_id,

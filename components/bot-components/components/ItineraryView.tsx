@@ -17,17 +17,18 @@ const ItineraryView: React.FC<ExtendedItineraryViewProps> = ({
 }) => {
   return (
     <div className="flex-1 overflow-y-auto bg-white pb-[50px]">
-      {showShimmer ? (
-        <ItineraryShimmer />
-      ) : itineraryData ? (
-        <ItineraryContent 
-          itineraryData={itineraryData} 
-          transfers={transfers} 
-          onSendMessage={onSendMessage}
-        />
-      ) : (
-        <EmptyItinerary />
-      )}
+      {itineraryData ? (
+  <ItineraryContent
+    itineraryData={itineraryData}
+    transfers={transfers}
+    onSendMessage={onSendMessage}
+    isLoading={showShimmer}
+  />
+) : showShimmer ? (
+  <ItineraryShimmer />  
+) : (
+  <EmptyItinerary />
+)}
     </div>
   );
 };

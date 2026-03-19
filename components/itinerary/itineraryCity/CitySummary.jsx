@@ -165,7 +165,7 @@ const CitySummary = (props) => {
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: `/itinerary/${router?.query?.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {}, // remove "drawer"
       },
       undefined,
