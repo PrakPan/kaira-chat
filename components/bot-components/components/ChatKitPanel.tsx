@@ -324,6 +324,17 @@ export function ChatKitPanel({
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
           break;
+        case "start_itinerary_completion_process":
+  // Acknowledged — backend is processing the itinerary; no UI action needed here.
+  break;
+
+case "itinerary_completion_process_completed": {
+  const itineraryId = data.itinerary_id;
+  if (itineraryId && typeof itineraryId === "string") {
+    window.location.href = `/itinerary/${itineraryId}`;
+  }
+  break;
+}
         case "itinerary_entities": {
   const raw = (data.entities ?? {}) as Record<string, { name: string; type: string }>;
   setEntities(prev => ({ ...prev, ...raw }));
