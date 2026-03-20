@@ -1551,7 +1551,7 @@ const Details = (props) => {
     setShowDetailedPayment(false);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
       },
       undefined,
       { scroll: false },
@@ -2190,7 +2190,7 @@ const Details = (props) => {
     setShowPaymentDrawer(true);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}/`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "payment",
         },

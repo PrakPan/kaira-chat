@@ -57,9 +57,9 @@ const Container = styled.div`
   padding: 17px 16px 0 16px;
   max-width: 100vw;
   @media screen and (min-width: 768px) {
-    width: 95%;
-    margin: -5vh auto 0 3.5rem; !important
-    padding: 0;
+    width: ${props => props.fromChat ? '100%' : '95%'};
+    margin: ${props => props.fromChat ? '0' : '-0.2vh auto 0 1rem'};
+    padding: ${props => props.fromChat ? '0 0 80px 0' : '0'};
   }
   @media screen and (max-width: 639px) {
     overflow-x: hidden;
@@ -220,10 +220,7 @@ const ItineraryContainer = (props) => {
   const phone = useSelector((state) => state.Auth)?.phone;
   const { id } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const id = router.query.id;
-    dispatch(setItineraryId(id));
-  }, [router.query.id]);
+
 
   // Throttle function for performance optimization
   const throttle = (func, limit) => {
@@ -239,7 +236,7 @@ const ItineraryContainer = (props) => {
     };
   };
 
-  const [totalduration, setTotalduration] = useState(0);
+ const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
   const [booking, setBooking] = useState(null);
@@ -272,35 +269,50 @@ const ItineraryContainer = (props) => {
   const [editRoute, setEditRoute] = useState(false);
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
-  // const [cityTransferBookings, setCityTransferBookings] = useState(null);
   const [loadbookings, setLoadBookings] = useState(false);
   const [loadpricing, setLoadPricing] = useState(false);
-  const cityTransferBookings = useSelector(
-    (state) => state.TransferBookings
-  )?.transferBookings;
-
   const [polling, setPolling] = useState(true);
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
   const [oldOne, setOldOne] = useState(false);
-  const itinerarySuccessRef = useRef(false);
-  const pricingSuccessRef = useRef(false);
-  const transfersSuccessRef = useRef(false);
-  const hotelsSuccessRef = useRef(false);
   const [notes, setNotes] = useState(null);
   const [showNotesPopup, setShowNotesPopup] = useState(false);
   const [gallery, setGallery] = useState([]);
   const [isHotelsPresent, setIsHotelsPresent] = useState(true);
-  const { isOpen } = useSelector((state) => state.cloneItinerary);
   const [showSettings, setShowSettings] = useState(false);
 
-  useEffect(() => {
-    if (!router.isReady) return
+  // ── ALL useRef AFTER useState ─────────────────────────────────────────────
+  const itinerarySuccessRef = useRef(false);
+  const pricingSuccessRef = useRef(false);
+  const transfersSuccessRef = useRef(false);
+  const hotelsSuccessRef = useRef(false);
+  const fetchDataRef = useRef(null);
 
+   const cityTransferBookings = useSelector(
+    (state) => state.TransferBookings
+  )?.transferBookings;
+  const { isOpen } = useSelector((state) => state.cloneItinerary);
+
+  // ── craft-a-similar-trip query handler ────────────────────────────────────
+  useEffect(() => {
+    if (!router.isReady) return;
     if (router.query['craft-a-similar-trip'] === 'true') {
-      setShowSettings(true)
+      setShowSettings(true);
     }
-  }, [router.isReady, router.query])
+  }, [router.isReady, router.query]);
+
+    const resetRef = () => {
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
+    itinerarySuccessRef.current = false;
+    pricingSuccessRef.current = false;
+    transfersSuccessRef.current = false;
+    hotelsSuccessRef.current = false;
+  };
 
   const divideTravellers = (val) => {
     let distribution = [];
@@ -375,23 +387,21 @@ const ItineraryContainer = (props) => {
     }
   };
 
-  const resetRef = () => {
-    dispatch(setItineraryStatus("pricing_status", "PENDING"));
-    dispatch(setItineraryStatus("transfers_status", "PENDING"));
-    dispatch(setItineraryStatus("hotels_status", "PENDING"));
-    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
-    dispatch(setStays([]));
-    dispatch(setTransfersBookings(null));
-    itinerarySuccessRef.current = false;
-    pricingSuccessRef.current = false;
-    transfersSuccessRef.current = false;
-    hotelsSuccessRef.current = false;
-    
-  };
-
-  useEffect(() => {
+    useEffect(() => {
+    if (props.skipPolling) return;
     resetRef();
   }, []);
+
+
+
+  useEffect(() => {
+    if (!props.skipPolling) return;
+    setItineraryLoading(false);
+    setShowMercuryItinerary(true);
+    setCities(props.itinerary?.cities ?? []);
+  }, [props.skipPolling, props.itinerary?.cities]);
+
+
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -709,6 +719,10 @@ const ItineraryContainer = (props) => {
   }
 
   async function fetchData(poll) {
+      const currentId = props.id || router.query.id;
+  if (!currentId || currentId === "draft" || currentId === "undefined") {
+    return;  
+  }
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
@@ -910,6 +924,43 @@ const ItineraryContainer = (props) => {
       fetchStatus();
     }
   }
+
+  fetchDataRef.current = fetchData;
+
+// Then the effect uses the ref:
+useEffect(() => {
+  const currentId = props.id;
+  console.log("[ItineraryContainer] effect fired — id:", currentId, "skipPolling:", props.skipPolling);
+  if (!currentId || currentId === "draft" || currentId === "undefined") return;
+  if (props.skipPolling) return;
+
+  console.log("[ItineraryContainer] Starting real polling for:", currentId);
+  itinerarySuccessRef.current = false;
+  pricingSuccessRef.current = false;
+  transfersSuccessRef.current = false;
+  hotelsSuccessRef.current = false;
+  setItineraryLoading(true);
+  setShowMercuryItinerary(false);
+  setPolling(true);
+  fetchDataRef.current?.(true);
+}, [props.id, props.skipPolling]);
+
+
+    useEffect(() => {
+    if (props.skipPolling) return;
+    const currentId = props.id || router.query.id;
+    if (!currentId || currentId === "draft") return;
+
+    let interval;
+    if (polling) {
+      interval = setInterval(() => {
+        fetchDataRef.current?.(true);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [polling, props.skipPolling, props.id]);
+
+
   useEffect(() => {
     const start = Date.now();
     const fetchPaymentInfo = async () => {
@@ -941,43 +992,6 @@ const ItineraryContainer = (props) => {
   //   }
   // }, [props?.token]);
 
-  useEffect(() => {
-    fetchData(true);
-  }, [props.id]);
-
-  useEffect(() => {
-    let interval;
-
-    if (polling) {
-      fetchData(true);
-
-      interval = setInterval(() => {
-        const isAnyFailure =
-          itinerary_status === "FAILURE" ||
-          transfers_status === "FAILURE" ||
-          pricing_status === "FAILURE" ||
-          hotels_status === "FAILURE";
-
-        if (isAnyFailure) {
-          clearInterval(interval);
-          router.push("/thank-you");
-          return;
-        }
-
-        fetchData(true);
-      }, 5000);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [
-    polling,
-    itinerary_status,
-    transfers_status,
-    pricing_status,
-    hotels_status,
-  ]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
@@ -1481,8 +1495,8 @@ const ItineraryContainer = (props) => {
     setShowPoiModal(false);
   };
 
-  if (itineraryLoading) {
-    return <Spinner></Spinner>;
+  if (itineraryLoading && !props.skipPolling && !props.fromChat) {
+    return <Spinner />;
   }
 
   const shouldShowLoader = () => {
@@ -1499,7 +1513,7 @@ const ItineraryContainer = (props) => {
     // return !allStatusesCompleted;
   };
 
-  const fetchItineraryStatus = async (itineraryId = router.query.id) => {
+  const fetchItineraryStatus = async (itineraryId = props?.id || router.query.id) => {
     try {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
       const status = res.data?.celery;
@@ -1617,6 +1631,7 @@ const ItineraryContainer = (props) => {
         <div id="itinerary-anchor">
           <Menu
             mercuryItinerary
+            fromChat={props.fromChat}
             loadbookings={!loadbookings}
             resetRef={resetRef}
             loadpricing={!loadpricing}
@@ -1743,7 +1758,7 @@ const ItineraryContainer = (props) => {
             />
           </BottomModal>
         ) : null}
-        <ToastContainer />
+        {!props.fromChat && <ToastContainer />}
       </Container>
   );
 };

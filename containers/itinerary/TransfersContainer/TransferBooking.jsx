@@ -115,7 +115,7 @@ const TransferBooking = ({
     );
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "editTransfer",
           bookingId: booking?.id,
@@ -149,7 +149,7 @@ const TransferBooking = ({
 
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer:
             book?.transfer_type == "sightseeing" ? "SightSeeing" : "Intracity",
@@ -986,7 +986,7 @@ const FlightBooking = ({
     // }
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "Intracity",
           bookingId: booking_id || booking?.id || booking_id,

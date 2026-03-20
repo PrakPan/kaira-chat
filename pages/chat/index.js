@@ -1,4 +1,4 @@
-import BotApp from "../components/bot-components/BotApp";
+import BotApp from "../../components/bot-components/BotApp";
 
 const ChatPage = () => {
     return (

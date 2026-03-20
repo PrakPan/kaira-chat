@@ -27,6 +27,7 @@ import Drawer from "../../ui/Drawer";
 import BackArrow from "../../ui/BackArrow";
 import { TbArrowBack } from "react-icons/tb";
 import { useRouter } from "next/router";
+import { ro } from "date-fns/locale";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -635,7 +636,7 @@ const ClickHandler = (child) => {
     if (!drawer || !props?.showDrawer) return;
     router.push(
       {
-        pathname: `/itinerary/${id}`,
+        pathname: router.asPath.split('?')[0],
         query: {}, // remove "drawer"
       },
       undefined,

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 const SendIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -34,6 +34,7 @@ interface MessageInputBoxProps {
   placeholder?: string;
   /** Show the + attach button (default: true) */
   showAttach?: boolean;
+  rotatePlaceholders?: string[];
 }
 
 export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
@@ -45,8 +46,30 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   disabled = false,
   placeholder = "Ask me anything",
   showAttach = true,
+  rotatePlaceholders = [],
+  
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+const [placeholderIdx, setPlaceholderIdx] = useState(0);
+const [fadingOut, setFadingOut] = useState(false);
+
+useEffect(() => {
+  if (!rotatePlaceholders?.length) return;
+  const interval = setInterval(() => {
+    setFadingOut(true);
+    setTimeout(() => {
+      setPlaceholderIdx((i) => (i + 1) % rotatePlaceholders.length);
+      setFadingOut(false);
+    }, 400); // fade-out duration
+  }, 3000);
+  return () => clearInterval(interval);
+}, [rotatePlaceholders]);
+
+const activePlaceholder =
+  rotatePlaceholders?.length
+    ? rotatePlaceholders[placeholderIdx]
+    : placeholder;
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -77,28 +100,67 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Textarea */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        rows={1}
-        disabled={disabled && !isStreaming}
-        className="w-full bg-transparent resize-none outline-none placeholder-gray-400"
-        style={{
-          fontFamily: "'Inter', sans-serif",
-          fontSize: 16,
-          color: "#111827",
-          lineHeight: "22px",
-          minHeight: 24,
-          maxHeight: 120,
-          border: "none",
-          padding: 0,
-          marginBottom: 8,
-        }}
-      />
+      {/* Placeholder */}
+    <div style={{ position: "relative" }}>
+  <style>{`
+    @keyframes slideUpIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    @keyframes slideUpOut {
+      from { opacity: 1; transform: translateY(0);     }
+      to   { opacity: 0; transform: translateY(-10px); }
+    }
+    .ph-slide-in  { animation: slideUpIn  0.35s ease forwards; }
+    .ph-slide-out { animation: slideUpOut 0.35s ease forwards; }
+  `}</style>
+
+  <textarea
+    ref={textareaRef}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+    onKeyDown={handleKeyDown}
+    disabled={disabled && !isStreaming}
+    placeholder=""                       
+    rows={1}
+    className="w-full bg-transparent resize-none outline-none"
+    style={{
+      fontFamily: "'Inter', sans-serif",
+      fontSize: 16,
+      color: "#111827",
+      lineHeight: "22px",
+      minHeight: 24,
+      maxHeight: 120,
+      border: "none",
+      padding: 0,
+      marginBottom: 8,
+    }}
+  />
+
+  {/* Animated placeholder overlay — hidden once user types */}
+  {!value && (
+    <span
+      key={placeholderIdx}             
+      className={fadingOut ? "ph-slide-out" : "ph-slide-in"}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        pointerEvents: "none",
+        userSelect: "none",
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 16,
+        lineHeight: "22px",
+        color: "#9ca3af",               
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        maxWidth: "100%",
+      }}
+    >
+      {activePlaceholder}
+    </span>
+  )}
+</div>
 
       {/* Bottom action row */}
       <div className="flex items-center justify-between">
@@ -116,24 +178,24 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         )}
 
         {/* Right: waveform + send/stop */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="flex items-center justify-center"
-            title="Voice input"
-          >
-            <WaveformIcon />
+        <div className="flex items-center gap-2"> 
+          <button 
+            type="button" 
+            className="flex items-center justify-center" 
+            title="Voice input"  
+          > 
+            <WaveformIcon /> 
           </button>
 
-          {isStreaming ? (
-            <button
-              type="button"
-              onClick={onStop}
-              title="Stop generating"
-              className="flex items-center justify-center transition-all"
+          {isStreaming ? ( 
+            <button 
+              type="button" 
+              onClick={onStop} 
+              title="Stop generating" 
+              className="flex items-center justify-center transition-all" 
               style={{
-                width: 32,
-                height: 32,
+                width: 32, 
+                height: 32, 
                 borderRadius: "50%",
                 background: "#1c1917",
                 color: "#fff",

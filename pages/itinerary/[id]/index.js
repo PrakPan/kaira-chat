@@ -74,7 +74,7 @@ useEffect(() => {
       {router.query.id && (
         <>
           <ItineraryContainer
-            id={router.query.id}
+            // id={router.query.id}
             mercuryItinerary
           ></ItineraryContainer>
           {drawer == "showCityDetail" && cityId && <CityDetailsDrawer />}
