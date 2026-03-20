@@ -208,7 +208,14 @@ restoredThread,
    * Sent as session_id in every API request.
    * Also used as the URL segment: /chat/{sessionId}
    */
-  const sessionIdRef = useRef<string>(generateSessionId());
+ const sessionIdRef = useRef((() => {
+  const urlPath = window.location.pathname;
+  const stored = sessionStorage.getItem(`chatkit_session_${urlPath}`);
+  if (stored) return stored;
+  const newId = generateSessionId();
+  sessionStorage.setItem(`chatkit_session_${urlPath}`, newId);
+  return newId;
+})());
   const isFirstMessageRef = useRef(true);
 
   /**
@@ -242,12 +249,13 @@ restoredThread,
   // ── Session created ───────────────────────────────────────────────────────
   // Called by useChat after the first API response confirms the thread.
   // We use our own UUID (not the API thread_id) for the URL.
-  const handleSessionCreated = useCallback((ourSessionId: string) => {
-    if (hasUpdatedUrl.current) return;
-    hasUpdatedUrl.current = true;
-    // pushState changes the URL without remounting anything
-    window.history.pushState({}, "", `/chat/${ourSessionId}`);
-  }, []);
+const handleSessionCreated = useCallback((ourSessionId: string) => {
+  if (hasUpdatedUrl.current) return;
+  hasUpdatedUrl.current = true;
+  window.history.pushState({}, "", `/chat/${ourSessionId}`);
+  // Persist so a page reload at /chat/{id} reuses this session
+  sessionStorage.setItem(`chatkit_session_/chat/${ourSessionId}`, ourSessionId);
+}, []);
 
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
@@ -307,8 +315,8 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
         case "display_transfers": {
-          onItineraryReceived({ transfers: data.transfers, type: "transfers" });
-          break;
+          onItineraryReceived(data);
+  break;
         }
         case "route.lock":
         case "route.edit":

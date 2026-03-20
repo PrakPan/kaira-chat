@@ -98,7 +98,7 @@ const CityDay = (props) => {
     trackActivityBookingAdd(router.query.id, "day_by_day_collapse");
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.itinerary_city_id,

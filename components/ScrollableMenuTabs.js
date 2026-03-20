@@ -79,7 +79,7 @@ const ScrollableMenuTabs = ({
 
   if (itemId === 1) {
     router.push({
-      pathname: `/itinerary/${router.query.id}`,
+      pathname: router.asPath.split('?')[0],
       query: {
         drawer: 'handleEditRoute'
       }

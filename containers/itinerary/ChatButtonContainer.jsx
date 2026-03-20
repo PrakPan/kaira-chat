@@ -25,7 +25,7 @@ function ChatButtonContainer({ onOpenChat }) {
     onOpenChat();
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}/`,
+        pathname: router.asPath.split('?')[0],
         query: { ...router.query, drawer: "chat" },
       },
       undefined,

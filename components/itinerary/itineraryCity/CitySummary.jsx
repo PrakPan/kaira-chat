@@ -53,7 +53,7 @@ const CitySummary = (props) => {
     try {
       router.push(
         {
-          pathname: `/itinerary/${router.query.id}`,
+          pathname: router.asPath.split('?')[0],
           query: {
             drawer: "showPoiDetail",
             poi_id: poi,
@@ -94,7 +94,7 @@ const CitySummary = (props) => {
     setDayByDayIndex(index);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showPoiDetail",
           poi_id: poiData?.booking?.id
@@ -131,7 +131,7 @@ const CitySummary = (props) => {
     trackActivityBookingAdd(router.query.id,'day_by_day_collapse');
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.city?.id,
@@ -208,7 +208,7 @@ const CitySummary = (props) => {
     setHandleShowTaxi(true);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "SightSeeing",
           bookingId: id,

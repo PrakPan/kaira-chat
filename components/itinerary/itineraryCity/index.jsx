@@ -187,7 +187,7 @@ const ItineraryCity = (props) => {
 
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showHotelDetail",
           idx: props?.index,

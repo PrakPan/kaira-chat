@@ -231,7 +231,7 @@ const Activity = (props) => {
     }
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showPoiDetail",
           poi_id: poi?.booking?.id || poi?.poi,
