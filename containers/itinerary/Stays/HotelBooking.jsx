@@ -175,7 +175,7 @@ const HotelBooking = ({
 
     const isAuthenticated = requireAuth('view', () => {
       router.push({
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showHotelDetail",
           idx: index,
@@ -213,7 +213,7 @@ const HotelBooking = ({
     const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
       // This callback executes only if user is authenticated
       router.push({
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,
@@ -252,7 +252,7 @@ const HotelBooking = ({
   //   if (token) {
   //     router.push(
   //       {
-  //         pathname: `/itinerary/${router.query.id}`,
+  //         pathname: router.asPath.split('?')[0],
   //         query: {
   //           drawer: "changeHotelBooking",
   //           clickType: clickType,
@@ -376,7 +376,7 @@ const HotelBooking = ({
     setShowBookingModal(true);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,

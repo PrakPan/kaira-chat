@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useChat, generateSessionId, type UserLocationData } from "../hooks/useChat";
+import { useChat, generateSessionId, type UserLocationData, Message } from "../hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -63,6 +63,10 @@ interface ChatKitPanelProps {
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
   onSendReady?: (sendFn: (message: string) => void) => void;
+  onItineraryCompletionStart?: (itineraryId: string) => void;
+onItineraryCompletionDone?: (itineraryId: string) => void;
+onLoadRouteOnMap?: () => void;
+restoredThread?: any;
 }
 
 function useUserLocationData() {
@@ -174,6 +178,10 @@ export function ChatKitPanel({
   onItineraryIdChange,
   initialPrompt = null,
   onSendReady,
+  onItineraryCompletionStart,
+onItineraryCompletionDone,
+  onLoadRouteOnMap,
+restoredThread,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -200,7 +208,14 @@ export function ChatKitPanel({
    * Sent as session_id in every API request.
    * Also used as the URL segment: /chat/{sessionId}
    */
-  const sessionIdRef = useRef<string>(generateSessionId());
+ const sessionIdRef = useRef((() => {
+  const urlPath = window.location.pathname;
+  const stored = sessionStorage.getItem(`chatkit_session_${urlPath}`);
+  if (stored) return stored;
+  const newId = generateSessionId();
+  sessionStorage.setItem(`chatkit_session_${urlPath}`, newId);
+  return newId;
+})());
   const isFirstMessageRef = useRef(true);
 
   /**
@@ -234,12 +249,13 @@ export function ChatKitPanel({
   // ── Session created ───────────────────────────────────────────────────────
   // Called by useChat after the first API response confirms the thread.
   // We use our own UUID (not the API thread_id) for the URL.
-  const handleSessionCreated = useCallback((ourSessionId: string) => {
-    if (hasUpdatedUrl.current) return;
-    hasUpdatedUrl.current = true;
-    // pushState changes the URL without remounting anything
-    window.history.pushState({}, "", `/chat/${ourSessionId}`);
-  }, []);
+const handleSessionCreated = useCallback((ourSessionId: string) => {
+  if (hasUpdatedUrl.current) return;
+  hasUpdatedUrl.current = true;
+  window.history.pushState({}, "", `/chat/${ourSessionId}`);
+  // Persist so a page reload at /chat/{id} reuses this session
+  sessionStorage.setItem(`chatkit_session_/chat/${ourSessionId}`, ourSessionId);
+}, []);
 
   // ── useChat ───────────────────────────────────────────────────────────────
   const apiUrl =
@@ -256,15 +272,8 @@ export function ChatKitPanel({
     [], // empty deps: this wrapper never changes; handleEffectRef.current does
   );
 
-  const {
-    messages,
-    isStreaming,
-    error,
-    sendMessage: rawSendMessage,
-    sendWidgetAction,
-    clearMessages,
-    cancelStream,
-  } = useChat({
+const { messages, isStreaming, error, sendMessage: rawSendMessage,
+  sendWidgetAction, clearMessages, cancelStream, setMessages, threadIdRef }= useChat({
     apiUrl,
     domainKey: CHATKIT_DOMAIN_KEY,
     model: selectedModel,
@@ -288,56 +297,75 @@ export function ChatKitPanel({
     ({ name, data }: { name: string; data: Record<string, unknown> }) => {
       console.log("[Effect triggered]", name, data);
       switch (name) {
-        case "clear_map":
+        case "clear_map": {
           onNewQuery();
           break;
-        case "focus_on_map":
+        }
+        case "focus_on_map": {
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
           break;
-        case "focus_route":
+        }
+        case "focus_route": {
           if (data.data) onRouteReceived(data as { data: Location[] });
           break;
-        case "display_itinerary":
+        }
+        case "display_itinerary": {
           onItineraryReceived(data.itinerary);
           break;
-        case "display_transfers":
-          onItineraryReceived({ transfers: data.transfers, type: "transfers" });
-          break;
+        }
+        case "display_transfers": {
+          onItineraryReceived(data);
+  break;
+        }
         case "route.lock":
         case "route.edit":
         case "route.remove":
         case "route.reorder.start":
-        case "itinerary.lock":
+        case "itinerary.lock": {
           sendWidgetActionRef.current?.(name, data);
           break;
-        case "load_itinerary":
+        }
+        case "load_itinerary": {
           if (data.redirect_url && typeof data.redirect_url === "string") {
             window.location.href = data.redirect_url;
           }
           break;
-        case "prompt_login":
+        }
+        case "prompt_login": {
           setPendingMessage(input);
           setShowLoginPrompt(true);
           break;
-        case "display_pois_on_map":
+        }
+        case "display_pois_on_map": {
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
           break;
-        case "start_itinerary_completion_process":
-  // Acknowledged — backend is processing the itinerary; no UI action needed here.
-  break;
-
-case "itinerary_completion_process_completed": {
-  const itineraryId = data.itinerary_id;
-  if (itineraryId && typeof itineraryId === "string") {
-    window.location.href = `/itinerary/${itineraryId}`;
-  }
-  break;
-}
+        }
         case "itinerary_entities": {
   const raw = (data.entities ?? {}) as Record<string, { name: string; type: string }>;
   setEntities(prev => ({ ...prev, ...raw }));
+  break;
+}
+case "load_route_on_map": {
+  onLoadRouteOnMap?.();
+  break;
+}
+case "itinerary_completion_process_completed": {
+  const completedId = data.itinerary_id as string;
+  console.log("[itinerary_completion_process_completed] id:", completedId);
+  if (completedId) {
+    onItineraryCompletionDone?.(completedId);
+  }
+  break;
+}
+
+case "start_itinerary_completion_process": {
+  onItineraryCompletionStart?.("pending");
+  break;
+}
+case "shimmer_day_by_day": {
+  onItineraryReceived({ shimmer: true });
   break;
 }
         case "load_quick_replies": {
@@ -394,45 +422,90 @@ case "itinerary_completion_process_completed": {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    if (initialPrompt && !hasProcessedInitial.current && locationReady) {
-      hasProcessedInitial.current = true;
-      sendMessage(initialPrompt);
-    }
-  }, [initialPrompt, locationReady, sendMessage]);
+useEffect(() => {
+  if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    hasProcessedInitial.current = true;
+    sendMessage(initialPrompt);
+  }
+}, [initialPrompt, locationReady, sendMessage]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!isLoggedIn) {
-    // Reset guard when user logs out so a future login works again
     postLoginFiredRef.current = false;
+    setPostLoginLoading(false); // ← clear stuck loading on logout too
     return;
   }
 
-  // Guard: only execute the send logic once per login event
   if (postLoginFiredRef.current) return;
   postLoginFiredRef.current = true;
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
+  setPostLoginLoading(false); // ← always clear loading first
 
   if (pendingMessage) {
-    const msg = pendingMessage; 
-    setPendingMessage(null);    
-    setPostLoginLoading(true);
-    setTimeout(() => {
-      sendMessage(msg.trim());
-      setPostLoginLoading(false);
-    }, 800);
+    const msg = pendingMessage;
+    setPendingMessage(null);
+    sendMessage(msg.trim()); // ← no setTimeout, no separate loading toggle
   }
-}, [isLoggedIn]);
+}, [isLoggedIn, pendingMessage, sendMessage]);
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);
   }, [itineraryId]);
+
+  useEffect(() => {
+  if (!restoredThread || !setMessages) return;
+
+  const restored: Message[] = [];
+
+  for (const item of restoredThread.items?.data ?? []) {
+    if (item.type === "user_message") {
+      const text = item.content?.find((c: any) => c.type === "input_text")?.text ?? "";
+      if (text) restored.push({
+        id: item.id, role: "user", content: text,
+        timestamp: new Date(item.created_at),
+      });
+    } else if (item.type === "assistant_message") {
+      const text = item.content?.find((c: any) => c.type === "output_text")?.text ?? "";
+      if (text) restored.push({
+        id: item.id, role: "assistant", content: text,
+        timestamp: new Date(item.created_at), isStreaming: false,
+      });
+    } else if (item.type === "widget") {
+      restored.push({
+        id: item.id, role: "assistant", content: "",
+        timestamp: new Date(item.created_at),
+        type: "widget", widgetItem: { id: item.id, widget: item.widget },
+      });
+    }
+  }
+
+    const itineraryEffects: any[] = restoredThread.itinerary_effects ?? [];
+  
+  for (const effect of itineraryEffects) {
+    if (effect.name === "itinerary_entities" && effect.data?.entities) {
+      setEntities(prev => ({ ...prev, ...effect.data.entities }));
+    }
+  }
+
+  if (restored.length > 0) setMessages(restored);
+
+  // Restore thread_id so subsequent messages work
+  if (restoredThread.id) threadIdRef.current = restoredThread.id;
+
+  // Restore quick replies from itinerary_effects
+  const qrEffect = restoredThread.itinerary_effects?.find(
+    (e: any) => e.name === "load_quick_replies"
+  );
+  if (qrEffect?.data?.quick_replies) {
+    setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
+  }
+}, [restoredThread]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleShowLogin = useCallback(() => {
@@ -596,7 +669,7 @@ case "itinerary_completion_process_completed": {
       </div>
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
-      {quickReplies.length > 0 && (
+      {quickReplies.length > 0 && !isStreaming && (
         <div className="flex-shrink-0 px-6 pt-2 pb-1">
           <div className="max-w-2xl mx-auto">
             <div
@@ -668,7 +741,7 @@ case "itinerary_completion_process_completed": {
                 zIndex={"3300"}
                 message="Please login to continue"
                 onSuccess={async () => {
-                  setPostLoginLoading(true);
+                  // setPostLoginLoading(true);
                 }}
               />
             </div>

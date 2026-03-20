@@ -187,7 +187,7 @@ const ItineraryCity = (props) => {
 
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {
           drawer: "showHotelDetail",
           idx: props?.index,
@@ -237,7 +237,7 @@ const ItineraryCity = (props) => {
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: `/itinerary/${router?.query?.id}`,
+        pathname: router.asPath.split('?')[0],
         query: {}, // remove "drawer"
       },
       undefined,

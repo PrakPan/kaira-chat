@@ -89,6 +89,7 @@ export interface MapViewProps {
   currentRoute: Location[] | null;
   isLoadingLocation: boolean;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
+   isRoutePreparing?: boolean;
 }
 
 export interface ItineraryViewProps {

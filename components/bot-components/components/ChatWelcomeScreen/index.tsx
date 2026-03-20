@@ -20,11 +20,33 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({
     setInputValue("");
   };
 
-  const quickPrompts = [
-    "🏖️ Beach vacation ideas",
-    "🗺️ Weekend road trip",
-    "🏔️ Mountain hiking trip",
-    "🌍 Budget travel tips",
+  const handleChipClick = (prompt: string) => {
+    onSubmit?.(prompt);
+    onChatStart?.();
+  };
+
+  const promptChips = [
+    {
+      label: "✦  Plan a Bali trip, ₹1.2L for 2",
+      prompt:
+        "Plan a 7-day Bali trip for 2 people. Budget ₹1.2 lakh. Include beaches, temples, and at least one villa stay.",
+    },
+     {
+      label: "✦  Surprise me — 4 days, ₹80K",
+      prompt:
+        "Surprise me with an offbeat trip. 4 days, budget ₹80,000. I like experiences over touristy places.",
+    },
+    {
+      label: "✦  Rajasthan desert camp, 4 nights",
+      prompt:
+        "Plan a 4-night Rajasthan trip. Desert camp in Jaisalmer, camel safari at golden hour, heritage hotel stay.",
+    },
+    {
+      label: "✦  Best beaches in India this April",
+      prompt:
+        "What are the best beaches in India to visit in April? I prefer fewer crowds. Suggest itinerary options.",
+    },
+   
   ];
 
   return (
@@ -32,6 +54,21 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({
       className="flex flex-col items-center justify-center h-full bg-white px-8 pb-12"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
+      <style>{`
+        .chip-welcome {
+          transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s ease;
+        }
+        .chip-welcome:hover {
+          background: #fffbeb;
+          border-color: #fbbf24;
+          color: #92400e;
+          transform: translateY(-1px);
+        }
+        .chip-welcome:active {
+          transform: translateY(0);
+        }
+      `}</style>
+
       {/* Avatar */}
       <div className="w-28 h-28 rounded-full flex items-center justify-center mb-1">
         <img
@@ -52,32 +89,29 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({
           letterSpacing: "-0.4px",
         }}
       >
-        Planning a trip today?
+        Your next trip is one conversation away
       </h1>
 
       {/* Subtitle */}
       <p
-        className="text-center mb-6"
+        className="text-center mb-5"
         style={{ fontSize: 15, color: "#6e757a", lineHeight: "25px" }}
       >
-        I'm here to help you with anything related to travel!
+        Tell me where you want to go — I'll handle the rest.
       </p>
 
-      {/* Quick prompt chips */}
-      {/* <div className="flex flex-wrap gap-2 justify-center mb-6 max-w-sm">
-        {quickPrompts.map((prompt) => (
+      {/* Prompt chips */}
+      <div className="flex flex-wrap gap-2 justify-center mb-6 max-w-lg max-ph:hidden">
+        {promptChips.map((chip) => (
           <button
-            key={prompt}
-            onClick={() => {
-              onSubmit?.(prompt.slice(3)); // strip emoji prefix
-              onChatStart?.();
-            }}
-            className="px-3 py-1.5 rounded-full border border-slate-200 text-slate-600 text-[13px] hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-150"
+            key={chip.label}
+            onClick={() => handleChipClick(chip.prompt)}
+            className="chip-welcome px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600 text-[13px] font-medium"
           >
-            {prompt}
+            {chip.label}
           </button>
         ))}
-      </div> */}
+      </div>
 
       {/* Input */}
       <div className="w-full max-w-lg">
@@ -85,7 +119,12 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({
           value={inputValue}
           onChange={setInputValue}
           onSubmit={handleSubmit}
-          placeholder="Ask me anything"
+          rotatePlaceholders={[
+            "Try: Plan a 7-day Bali trip for 2, budget ₹1.2L",
+            "Try: Best hill stations near Bangalore this April",
+            "Try: Plan my Spain trip — La Tomatina festival",
+            "Try: Surprise me — 4 days, ₹80K, I like offbeat places",
+          ]}
           showAttach={true}
         />
       </div>

@@ -268,7 +268,7 @@ function ButtonNode({
     label, iconStart, variant = "solid",
     color = "default", pill, onClickAction, submit,
   } = node;
-  console.log("Rendering button with props:", { label, iconStart, variant, color, pill, onClickAction, submit });
+  // console.log("Rendering button with props:", { label, iconStart, variant, color, pill, onClickAction, submit });
 
   const handleClick = () => {
     // Form submit button — serialize form values as comma-separated string

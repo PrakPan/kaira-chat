@@ -9,6 +9,8 @@ import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
+import { ItineraryStatusLoader } from "../../containers/itinerary/ItineraryContainer";
+import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import type {
   Location,
   UserLocation,
@@ -18,9 +20,120 @@ import type {
   ViewMode,
   BotMode,
 } from "./types";
+import ItineraryShimmer from "./components/ItineraryShimmer";
+import { useDispatch } from "react-redux";
+import setItineraryIdAction from "../../store/actions/itineraryId";
+import setItineraryStatus from "../../store/actions/itineraryStatus";
+import axioslocationsinstance from "../../services/search/search";
+import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
+import setItinerary from "../../store/actions/itinerary";
+import setBreif from "../../store/actions/breif";
+import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
+import { setStays } from "../../store/actions/StayBookings";
+import ChatBot from "../Chatbot/Index";
 
 // Mobile panel type
 type MobilePanel = "map" | "chat";
+
+// Left panel display mode
+type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
+
+// CSS to hide sticky bottom bar and chatbot FAB when ItineraryContainer
+// is embedded inside the chat left panel (Option B — no prop drilling)
+// const EMBEDDED_ITINERARY_HIDE_CSS = `
+//   .embedded-itinerary-panel .desktop-view-cart-fixed {
+//     display: none !important;
+//   }
+//   .embedded-itinerary-panel .chatbot-fab {
+//     display: none !important;
+//   }
+//   .embedded-itinerary-panel .react-toastify,
+//   .embedded-itinerary-panel .Toastify {
+//     display: none !important;
+//   }
+// `;
+
+// Put this outside the component
+function transformDraftToItinerary(draft: any) {
+  const routes = draft?.routes ?? [];
+
+  const cities = routes.map((route: any) => {
+    const cityName = route.city?.name ?? "unknown";
+    // Give each city a stable draft ID based on its name if no real ID exists
+    const cityId = route.city?.id ?? `draft-city-${route.city?.name}`;
+
+    return {
+      id: cityId,
+      city: {
+        id: route.city?.id,
+        name: cityName,
+        latitude: null,
+        longitude: null,
+        gmaps_place_id: null,
+        image: [],
+        car_free_city: false,
+      },
+      start_date: null,
+      end_date: null,
+      duration: route.city?.duration ?? 0,
+      day_by_day: (route.day_by_day ?? []).map((day: any) => ({
+        day: day.day,
+        date: day.date ?? null,
+        day_summary: day.day_summary ?? "",
+        slab_id: null,
+        slab_elements: (day.slab_elements ?? []).map(
+          (el: any, idx: number) => ({
+            id: el.id ?? null,
+            icon: el.icon ?? null,
+            tags: el.tags ?? [],
+            time: el.time ?? "",
+            index: idx,
+            rating: el.rating ?? null,
+            heading: el.heading ?? el.name ?? "",
+            end_time: el.end_time ?? "",
+            start_time: el.start_time ?? "",
+            element_type: el.type ?? el.element_type ?? "poi",
+            user_ratings_total: el.user_ratings_total ?? 0,
+            latitude: el.latitude ?? null,
+            longitude: el.longitude ?? null,
+          }),
+        ),
+      })),
+      // Hotels: assign itinerary_city_id so stays filter correctly per city
+      hotels: route.hotels
+        ? [
+            {
+              id: route.hotels.id ?? `draft-hotel-${cityId}`,
+              name: route.hotels.name,
+              star_category: null,
+              images: [],
+              rating: null,
+              itinerary_city_id: cityId,
+            },
+          ]
+        : [],
+      activities: [],
+      transfers: { sightseeing: [], airport: [] },
+    };
+  });
+
+  return {
+    name: draft?.name ?? "Your Itinerary",
+    start_date: null,
+    end_date: null,
+    cities,
+    version: "v2",
+    celery: {
+      ITINERARY: "SUCCESS",
+      HOTELS: "PENDING",
+      TRANSFERS: "PENDING",
+      PRICING: "PENDING",
+      display_text: null,
+      notes: [],
+    },
+    status: "Draft",
+  };
+}
 
 export default function BotApp() {
   // Map state
@@ -31,6 +144,7 @@ export default function BotApp() {
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
+  const dispatch = useDispatch();
 
   // Location state
   const [locations, setLocations] = useState<Location[] | null>(null);
@@ -38,7 +152,9 @@ export default function BotApp() {
   const { userLocation, isLoadingLocation } = useUserLocation(setMapState);
 
   // Itinerary state
-  const [itineraryData, setItineraryData] = useState<ItineraryData | null>(null);
+  const [itineraryData, setItineraryData] = useState<ItineraryData | null>(
+    null,
+  );
   const [transfers, setTransfers] = useState<TransfersData | null>(null);
   const [showItineraryShimmer, setShowItineraryShimmer] = useState(false);
 
@@ -54,20 +170,141 @@ export default function BotApp() {
   const [isChatActive, setIsChatActive] = useState(false);
   const [isLeftPanelRevealing, setIsLeftPanelRevealing] = useState(false);
 
+  // ── Itinerary completion state ────────────────────────────────────────────
+  const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
+  const [completingItineraryId, setCompletingItineraryId] = useState<
+    string | null
+  >(null);
+  const [loaderDisplayText, setLoaderDisplayText] = useState<string | null>(
+    null,
+  );
+  const [isRoutePreparing, setIsRoutePreparing] = useState(false);
+
+  const [fullscreenItineraryId, setFullscreenItineraryId] = useState<
+    string | null
+  >(null);
+  const [showFullscreenShimmer, setShowFullscreenShimmer] = useState(false);
+
   // Mobile
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("chat");
-
+  const [activeItineraryId, setActiveItineraryId] = useState<string | null>(
+    null,
+  );
+  const [itineraryPollingEnabled, setItineraryPollingEnabled] = useState(false);
   // Ref to store initial prompt from welcome screen
   const initialPromptRef = useRef<string | null>(null);
+  const [showChatBot, setShowChatBot] = useState(false);
+
+  const [restoredThread, setRestoredThread] = useState<any>(null);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const currentItineraryRef = useRef<any>(null);
+  const [skeletonCities, setSkeletonCities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const match = window.location.pathname.match(/\/chat\/([a-f0-9-]+)/);
+    if (!match) return;
+    restoreLatestThread(match[1]);
+  }, []);
+
+  const restoreLatestThread = async (sessionId: string) => {
+    try {
+      const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "threads.list",
+          params: { limit: 9999, order: "desc" },
+          filter_session_id: sessionId,
+        }),
+      });
+      const listData = await listRes.json();
+      const threads = listData.data ?? [];
+      if (threads.length === 0) return;
+      await loadThread(threads[0].id);
+    } catch (err) {
+      console.error("Failed to restore session:", err);
+    }
+  };
 
   // Custom hook for map bounds adjustment
   useMapBounds(currentRoute, mapRef);
+
+ const handleItineraryCompletionStart = useCallback((_id?: string) => {
+  // Build skeleton from route cities so we show names + shimmer immediately
+  if (skeletonCities.length > 0) {
+    const skeletonItinerary = {
+      name: "Building your itinerary…",
+      start_date: null,
+      end_date: null,
+      cities: skeletonCities.map((c, i) => ({
+        id: `skeleton-city-${i}`,
+        city: { id: null, name: c.name, latitude: null, longitude: null, gmaps_place_id: null, image: [], car_free_city: false },
+        start_date: null,
+        end_date: null,
+        duration: c.duration,
+        day_by_day: Array.from({ length: c.duration }, (_, d) => ({
+          day: d + 1,
+          date: null,
+          day_summary: "",
+          slab_id: null,
+          slab_elements: [],  // empty = shimmer renders skeleton rows
+        })),
+        hotels: [],
+        activities: [],
+        transfers: { sightseeing: [], airport: [] },
+      })),
+      version: "v2",
+      celery: { ITINERARY: "PENDING", HOTELS: "PENDING", TRANSFERS: "PENDING", PRICING: "PENDING", display_text: null, notes: [] },
+      status: "Draft",
+    };
+    dispatch(setItinerary(skeletonItinerary));
+    dispatch(setItineraryDaybyDay(skeletonItinerary));
+    dispatch(setBreif(skeletonItinerary));
+  }
+
+  dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  dispatch(setItineraryStatus("transfers_status", "PENDING"));
+  dispatch(setItineraryStatus("pricing_status", "PENDING"));
+  dispatch(setItineraryStatus("hotels_status", "PENDING"));
+  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+  setShowItineraryShimmer(false);  // ensure no full-screen shimmer overlay
+  setActiveItineraryId("skeleton"); // mount ItineraryContainer with skeleton
+  setShowStartScreen(false);
+  setHasBotResponded(true);
+  setMobilePanel("map");
+  setViewMode("itinerary");
+}, [dispatch, skeletonCities]);
+
+  // In handleItineraryCompletionDone — hide shimmer, mount container:
+ const handleItineraryCompletionDone = useCallback((id: string) => {
+  if (!id || id === "undefined") return;
+  try {
+    setShowItineraryShimmer(false);
+    dispatch(setItineraryIdAction(id));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("finalized_status", "PENDING"));
+    dispatch(setItinerary({}));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
+    setSkeletonCities([]);         // clear skeleton
+    setActiveItineraryId(id);      // mount real ItineraryContainer with real ID
+    setItineraryPollingEnabled(true);
+    setShowChatBot(true);
+    setHasBotResponded(true);
+    setShowStartScreen(false);
+    setViewMode("itinerary");
+  } catch(e) {
+    console.error("handleItineraryCompletionDone error:", e);
+  }
+}, [dispatch]);
 
   // When a data event arrives, smoothly reveal the left panel
   const revealLeftPanel = useCallback(() => {
     if (!hasBotResponded) {
       setIsLeftPanelRevealing(true);
-      // Small delay so CSS transition looks intentional
       requestAnimationFrame(() => {
         setTimeout(() => {
           setShowStartScreen(false);
@@ -78,46 +315,147 @@ export default function BotApp() {
     }
   }, [hasBotResponded]);
 
-  const handleRouteReceived = useCallback(
-    (routeData: { data: Location[] }) => {
-      revealLeftPanel();
-      if (routeData.data && Array.isArray(routeData.data) && routeData.data.length > 0) {
-        setViewMode("map");
-        // On mobile, switch to map when we have route data
-        setMobilePanel("map");
-      }
-      if (routeData.data && Array.isArray(routeData.data)) {
-        setCurrentRoute(routeData.data);
-        setLocations((prev) => {
-          const newLocations = [...(prev || [])];
-          routeData.data.forEach((location) => {
-            const exists = newLocations.some((loc) => loc.id === location.id);
-            if (!exists) newLocations.push(location);
-          });
-          return newLocations;
+  const handleLoadRouteOnMap = useCallback(() => {
+    setIsRoutePreparing(true);
+    setViewMode("map");
+    setMobilePanel("map");
+    revealLeftPanel();
+  }, [revealLeftPanel]);
+
+ const handleRouteReceived = useCallback(
+  (routeData: { data: Location[] }) => {
+    setIsRoutePreparing(false);
+    revealLeftPanel();
+    if (routeData.data && Array.isArray(routeData.data) && routeData.data.length > 0) {
+      setViewMode("map");
+      setMobilePanel("map");
+      // Store cities for skeleton itinerary
+      setSkeletonCities(routeData.data.map((loc: any) => ({
+        name: loc.name,
+        duration: loc.duration ?? 1,
+      })));
+    }
+    if (routeData.data && Array.isArray(routeData.data)) {
+      setCurrentRoute(routeData.data);
+      setLocations((prev) => {
+        const newLocations = [...(prev || [])];
+        routeData.data.forEach((location) => {
+          const exists = newLocations.some((loc) => loc.id === location.id);
+          if (!exists) newLocations.push(location);
         });
-      }
-    },
-    [revealLeftPanel]
-  );
+        return newLocations;
+      });
+    }
+  },
+  [revealLeftPanel]
+);
 
   const handleItineraryReceived = useCallback(
     (data: any) => {
       revealLeftPanel();
-      if (data.shimmer) {
-        setShowItineraryShimmer(true);
-        setViewMode("itinerary");
-        setMobilePanel("map");
-      } else if (data.type === "transfers") {
-        setTransfers(data.transfers);
-      } else {
-        setShowItineraryShimmer(false);
-        setItineraryData(data);
-        setViewMode("itinerary");
-        setMobilePanel("map");
+
+      if (data?.shimmer) {
+  dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  setViewMode("itinerary");
+  setMobilePanel("map");
+  // No setShowItineraryShimmer, no setActiveItineraryId(null)
+  // ItineraryContainer handles its own shimmer via itinerary_status: PENDING
+  return;
+}
+
+      // Handle display_transfers
+      if (data?.transfers && !data?.itinerary && !data?.routes) {
+        const nameToId: Record<string, string> = {};
+        for (const c of currentItineraryRef.current?.cities ?? []) {
+          if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
+        }
+
+        const intercity: Record<string, any> = {};
+        (data.transfers ?? []).forEach((t: any, idx: number) => {
+          const fromId = nameToId[t.from_city] ?? `draft-city-${t.from_city}`;
+          const toId = nameToId[t.to_city] ?? `draft-city-${t.to_city}`;
+          const key = `${fromId}:${toId}`;
+          intercity[key] = {
+            id: `draft-transfer-${idx}`,
+            name: t.legs?.[0] ?? `${t.from_city} to ${t.to_city}`,
+            booking_type: t.legs?.[0]?.toLowerCase().includes("flight")
+              ? "Flight"
+              : t.legs?.[0]?.toLowerCase().includes("train")
+                ? "Train"
+                : "Taxi",
+            transfer_type: "intercity",
+            from_city: t.from_city,
+            to_city: t.to_city,
+            legs: t.legs,
+            is_draft: true,
+          };
+        });
+        dispatch(
+          setTransfersBookings({ intercity, airport: {}, intracity: {} }),
+        );
+        dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
+        return;
       }
+
+      // display_itinerary — real data arrived, hide shimmer
+      setShowItineraryShimmer(false); // ← THIS WAS MISSING
+
+      const draft = data?.itinerary ?? data;
+      const transformed = transformDraftToItinerary(draft);
+      currentItineraryRef.current = transformed;
+
+      // Build stays
+      const draftStays: any[] = [];
+      for (const city of transformed.cities ?? []) {
+        const hotels = city.hotels ?? [];
+        if (hotels.length === 0 || !hotels[0]?.name) {
+          draftStays.push({
+            itinerary_city_id: city.id,
+            city_name: city.city?.name,
+            city_id: city.city?.id,
+            city_gmaps_place_id: city.city?.gmaps_place_id ?? null,
+            trace_city_id: city.id,
+            duration: city.duration,
+            check_in: null,
+            check_out: null,
+          });
+        } else {
+          for (const hotel of hotels) {
+            draftStays.push({
+              ...hotel,
+              itinerary_city_id: city.id,
+              city_name: city.city?.name,
+              city_id: city.city?.id,
+              city_gmaps_place_id: city.city?.gmaps_place_id ?? null,
+              lat: hotel.latitude ?? null,
+              long: hotel.longitude ?? null,
+            });
+          }
+        }
+      }
+      dispatch(setStays(draftStays));
+
+      dispatch(setItinerary(transformed));
+      dispatch(setItineraryDaybyDay(transformed));
+      dispatch(setBreif(transformed));
+      dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
+
+      const hasHotels = transformed.cities?.some(
+        (c: any) => c.hotels?.length > 0 && c.hotels[0]?.name,
+      );
+      dispatch(
+        setItineraryStatus("hotels_status", hasHotels ? "SUCCESS" : "PENDING"),
+      );
+      dispatch(setItineraryStatus("transfers_status", "PENDING"));
+      dispatch(setItineraryStatus("pricing_status", "PENDING"));
+      dispatch(setItineraryStatus("finalized_status", "PENDING"));
+
+      setActiveItineraryId("draft");
+      setItineraryPollingEnabled(false);
+      setViewMode("itinerary");
+      setMobilePanel("map");
     },
-    [revealLeftPanel]
+    [revealLeftPanel, dispatch],
   );
 
   const handleLocationReceived = useCallback(
@@ -128,7 +466,7 @@ export default function BotApp() {
         setMobilePanel("map");
       }
     },
-    [revealLeftPanel]
+    [revealLeftPanel],
   );
 
   const handleNewQuery = useCallback(() => {
@@ -140,24 +478,131 @@ export default function BotApp() {
     setChatKey((prev) => prev + 1);
   };
 
+  const loadThread = useCallback(
+    async (threadId: string) => {
+      try {
+        const res = await fetch("https://chat.tarzanway.com/chatkit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: "threads.get_by_id",
+            params: { thread_id: threadId },
+          }),
+        });
+        const data = await res.json();
+        setRestoredThread(data);
+        setActiveThreadId(threadId);
+        setIsChatActive(true);
+
+        (data.map_effects ?? []).forEach((effect: any) => {
+          if (effect.name === "focus_route" && effect.data) {
+            handleRouteReceived({ data: effect.data });
+            setHasBotResponded(true);
+            setShowStartScreen(false);
+          } else if (effect.name === "focus_on_map" && effect.data) {
+            handleLocationReceived({ data: effect.data });
+            setHasBotResponded(true);
+            setShowStartScreen(false);
+          } else if (effect.name === "display_pois_on_map" && effect.data) {
+            handleLocationReceived({ data: effect.data });
+            setHasBotResponded(true);
+            setShowStartScreen(false);
+          }
+        });
+
+        const itineraryEffects: any[] = data.itinerary_effects ?? [];
+        for (const effect of itineraryEffects) {
+          switch (effect.name) {
+            case "display_itinerary":
+              handleItineraryReceived(effect.data);
+              break;
+            case "display_transfers":
+              handleItineraryReceived({ transfers: effect.data.transfers });
+              break;
+            case "start_itinerary_completion_process":
+              handleItineraryCompletionStart();
+              break;
+            case "itinerary_completion_process_completed": {
+              const completedId = effect.data?.itinerary_id;
+              if (completedId) handleItineraryCompletionDone(completedId);
+              break;
+            }
+            default:
+              break;
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load thread:", err);
+      }
+    },
+    [
+      handleRouteReceived,
+      handleLocationReceived,
+      handleItineraryReceived,
+      handleItineraryCompletionStart,
+      handleItineraryCompletionDone,
+    ],
+  );
+
+  // handleThreadSelect now depends on the stable loadThread
+const handleThreadSelect = useCallback(async (threadId: string) => {
+  setLocations([]);
+  setCurrentRoute(null);
+  setSkeletonCities([]);
+  setActiveItineraryId(null);
+  setItineraryPollingEnabled(false);
+  setShowItineraryShimmer(false);
+  setViewMode("map");
+  setHasBotResponded(false);
+  setShowStartScreen(false);
+  setIsChatActive(true);
+  currentItineraryRef.current = null;
+  dispatch(setItinerary({}));
+  dispatch(setStays([]));
+  dispatch(setTransfersBookings(null));
+  dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  dispatch(setItineraryStatus("transfers_status", "PENDING"));
+  dispatch(setItineraryStatus("hotels_status", "PENDING"));
+  dispatch(setItineraryStatus("pricing_status", "PENDING"));
+  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+  // ← DO NOT call setChatKey here — that remounts ChatKitPanel and causes double drawer
+  await loadThread(threadId);
+}, [loadThread, dispatch]);
+
   const handleNewChat = () => {
+    initialPromptRef.current = null;
+
     setLocations([]);
     setCurrentRoute(null);
     setItineraryData(null);
     setTransfers(null);
-    setShowItineraryShimmer(false);
     setViewMode("map");
     setShowStartScreen(true);
     setHasBotResponded(false);
     setIsChatActive(false);
     setMobilePanel("chat");
-    initialPromptRef.current = null;
-    setChatKey((prev) => prev + 1);
+    setLeftPanelMode("default");
+    setCompletingItineraryId(null);
+    setLoaderDisplayText(null);
+    setActiveItineraryId(null);
+    setItineraryPollingEnabled(false);
+    setShowChatBot(false);
+
+    dispatch(setItinerary({}));
+    dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+    dispatch(setItineraryStatus("transfers_status", "PENDING"));
+    dispatch(setItineraryStatus("pricing_status", "PENDING"));
+    dispatch(setItineraryStatus("hotels_status", "PENDING"));
+    dispatch(setItineraryStatus("finalized_status", "PENDING"));
+    dispatch(setStays([]));
+    dispatch(setTransfersBookings(null));
+
+    setChatKey((prev) => prev + 1); // last, after prompt cleared
+    window.location.href = "/chat";
   };
 
   const handlePromptSelect = (prompt: string) => {
     if (isChatActive && sendMessageRef.current) {
-      // Chat is already open — send directly into it
       sendMessageRef.current(prompt);
     } else {
       initialPromptRef.current = prompt;
@@ -165,21 +610,13 @@ export default function BotApp() {
     }
   };
 
-  // This function will be passed to ItineraryView to send messages to chat
   const handleSendMessage = useCallback((message: string) => {
-    console.log("BotApp: Received message from itinerary:", message);
     if (sendMessageRef.current) {
-      console.log("BotApp: Sending message to chat...");
       sendMessageRef.current(message);
-    } else {
-      console.log("BotApp: Chat send function not ready yet");
-      // Optionally store the message to send later
     }
   }, []);
 
-  // Handler for when chat panel is ready with send function
   const handleSendReady = useCallback((sendFn: (msg: string) => void) => {
-    console.log("BotApp: Chat send function received and stored");
     sendMessageRef.current = sendFn;
   }, []);
 
@@ -189,6 +626,65 @@ export default function BotApp() {
 
   const handleChatHistory = () => {
     console.log("Chat history clicked");
+  };
+
+  // ── Shared ChatKitPanel props (used in both desktop + mobile instances) ───
+  const sharedChatKitProps = {
+    onLocationReceived: handleLocationReceived,
+    onNewQuery: handleNewQuery,
+    onRouteReceived: handleRouteReceived,
+    onItineraryReceived: handleItineraryReceived,
+    onItineraryCompletionStart: handleItineraryCompletionStart,
+    onItineraryCompletionDone: handleItineraryCompletionDone,
+    botMode,
+    itineraryId,
+    onBotModeChange: setBotMode,
+    onItineraryIdChange: setItineraryId,
+    onSendReady: handleSendReady,
+    onLoadRouteOnMap: handleLoadRouteOnMap,
+    restoredThread,
+  };
+
+  // ── Left panel content renderer (shared between desktop + mobile) ─────────
+  // Returns the appropriate content based on leftPanelMode
+  const renderLeftPanelContent = (isMobile = false) => {
+    // 1. Itinerary fully ready — show embedded ItineraryContainer (left side only)
+    if (leftPanelMode === "itinerary-ready" && completingItineraryId) {
+      return (
+        <>
+          {/* <style>{EMBEDDED_ITINERARY_HIDE_CSS}</style> */}
+          <div
+            className="embedded-itinerary-panel h-full overflow-y-auto bg-white"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            <style>{`
+              .embedded-itinerary-panel::-webkit-scrollbar { display: none; }
+            `}</style>
+            <ItineraryContainer
+              id={completingItineraryId}
+              mercuryItinerary
+              skipPolling={true}
+              fromChat={true}
+            />
+          </div>
+        </>
+      );
+    }
+
+    // 2. Itinerary building — show status loader centered
+    if (leftPanelMode === "itinerary-loading") {
+      return (
+        <div className="flex flex-col items-center justify-center h-full bg-white gap-4">
+          <ItineraryStatusLoader
+            displayText={loaderDisplayText}
+            isVisible={true}
+          />
+        </div>
+      );
+    }
+
+    // 3. Default — show start screen + map/itinerary view
+    return null; // handled by existing markup below
   };
 
   return (
@@ -201,44 +697,50 @@ export default function BotApp() {
         {/* Sidebar */}
         <Sidebar
           onNewChat={handleNewChat}
-          onChatHistory={handleChatHistory}
           onToggle={handleToggleSidebar}
           isCollapsed={sidebarCollapsed}
+          onThreadSelect={handleThreadSelect}
+          activeThreadId={activeThreadId}
         />
 
-        {/* LEFT PANEL — map / start screen */}
+        {/* LEFT PANEL */}
         <div
           className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative"
           style={{ width: "50%", minWidth: 0 }}
         >
-          {/* Start screen — fades out when left panel reveals */}
+          {/* ── Layer: itinerary-ready / itinerary-loading ── */}
+          {leftPanelMode !== "default" && (
+            <div className="absolute inset-0 z-20 transition-opacity duration-500 ease-in-out">
+              {renderLeftPanelContent(false)}
+            </div>
+          )}
+
+          {/* ── Layer: Start screen — fades out when left panel reveals ── */}
           <div
             className={`absolute inset-0 z-10 transition-opacity duration-500 ease-in-out pointer-events-${
-              showStartScreen ? "auto" : "none"
+              showStartScreen && leftPanelMode === "default" ? "auto" : "none"
             }`}
-            style={{ opacity: showStartScreen ? 1 : 0 }}
+            style={{
+              opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
+            }}
           >
             <StartScreen onPromptSelect={handlePromptSelect} />
           </div>
 
-          {/* Map/Itinerary — fades in when bot has responded */}
-
-          <style>
-    {`
-      #chatContainer::-webkit-scrollbar {
-        display: none;
-      }
-    `}
-  </style>
+          {/* ── Layer: Map/Itinerary — fades in when bot has responded ── */}
+          <style>{`
+            #chatContainer::-webkit-scrollbar { display: none; }
+          `}</style>
           <div
             id="chatContainer"
-            className="flex flex-col h-full bg-white  border-slate-200 transition-opacity duration-500 ease-in-out"
+            className="flex flex-col h-full bg-white border-slate-200 transition-opacity duration-500 ease-in-out"
             style={{
-      opacity: hasBotResponded ? 1 : 0,
-      overflowY: "scroll",
-      scrollbarWidth: "none",   // Firefox
-      msOverflowStyle: "none",  // IE/Edge
-    }}
+              opacity: hasBotResponded && leftPanelMode === "default" ? 1 : 0,
+              pointerEvents: leftPanelMode === "default" ? "auto" : "none",
+              overflowY: "scroll",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
           >
             <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
             {viewMode === "map" ? (
@@ -249,65 +751,76 @@ export default function BotApp() {
                 currentRoute={currentRoute}
                 isLoadingLocation={isLoadingLocation}
                 mapRef={mapRef}
+                isRoutePreparing={isRoutePreparing}
               />
-            ) : (
-              <ItineraryView
-                itineraryData={itineraryData}
-                transfers={transfers}
-                showShimmer={showItineraryShimmer}
-                onSendMessage={handleSendMessage} // ✅ ADD THIS FOR DESKTOP
-              />
-            )}
+            ) : viewMode === "itinerary" ? (
+              <div
+                className="h-full overflow-y-auto bg-white"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+               {activeItineraryId ? (
+      <ItineraryContainer
+        id={activeItineraryId === "skeleton" || activeItineraryId === "draft"
+          ? null   // no API fetch for skeleton/draft
+          : activeItineraryId}
+        mercuryItinerary
+        fromChat={true}
+        skipPolling={!itineraryPollingEnabled}
+      />
+    ) : null}
+              </div>
+            ) : null}
           </div>
         </div>
 
-        {/* RIGHT PANEL — chat */}
+        {/* RIGHT PANEL */}
         <div
-          className="flex flex-col overflow-hidden min-h-0 h-full relative"
+          className="flex flex-col overflow-hidden min-h-0 h-full relative bg-white"
           style={{ width: "50%", minWidth: 0 }}
         >
-          {/* Welcome screen — slides/fades out when chat becomes active */}
-          <div
-            className={`absolute inset-0 z-10 bg-white  ease-in-out ${
-              isChatActive
-                ? "opacity-0 pointer-events-none translate-y-2"
-                : "opacity-100 pointer-events-auto translate-y-0"
-            }`}
-          >
-            <ChatWelcomeScreen
-              onSubmit={handlePromptSelect}
-              onChatStart={() => setIsChatActive(true)}
+          {showChatBot ? (
+            // After completion — show ChatBot directly, no welcome screen needed
+            <ChatBot
+              showAsPopup={false}
+              itineraryId={activeItineraryId} // ← pass real ID
             />
-          </div>
+          ) : (
+            <>
+              {/* Welcome screen */}
+              <div
+                className={`absolute inset-0 z-10 bg-white ease-in-out ${
+                  isChatActive
+                    ? "opacity-0 pointer-events-none translate-y-2"
+                    : "opacity-100 pointer-events-auto translate-y-0"
+                }`}
+              >
+                <ChatWelcomeScreen
+                  onSubmit={handlePromptSelect}
+                  onChatStart={() => setIsChatActive(true)}
+                />
+              </div>
 
-          {/* Chat panel — always mounted but invisible until chat is active */}
-          <div
-            className={`flex-1 overflow-hidden min-h-0  ease-in-out ${
-              isChatActive
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none"
-            }`}
-          >
-            <ChatKitPanel
-              key={`${botMode}-${itineraryId}-${chatKey}`}
-              onLocationReceived={handleLocationReceived}
-              onNewQuery={handleNewQuery}
-              onRouteReceived={handleRouteReceived}
-              onItineraryReceived={handleItineraryReceived}
-              botMode={botMode}
-              itineraryId={itineraryId}
-              onBotModeChange={setBotMode}
-              onItineraryIdChange={setItineraryId}
-              initialPrompt={initialPromptRef.current}
-              onSendReady={handleSendReady} 
-            />
-          </div>
+              {/* Chat panel */}
+              <div
+                className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
+                  isChatActive
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-2 pointer-events-none"
+                }`}
+              >
+                <ChatKitPanel
+                  key={`${botMode}-${itineraryId}-${chatKey}`}
+                  {...sharedChatKitProps}
+                  initialPrompt={initialPromptRef.current}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
       {/* ── Mobile layout ── */}
       <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
-        {/* Mobile panel content */}
         <div className="flex-1 overflow-hidden min-h-0 relative">
           {/* MAP PANEL */}
           <div
@@ -317,7 +830,10 @@ export default function BotApp() {
                 : "opacity-0 -translate-x-4 pointer-events-none"
             }`}
           >
-            {showStartScreen && !hasBotResponded ? (
+            {/* itinerary-ready or itinerary-loading take priority */}
+            {leftPanelMode !== "default" ? (
+              renderLeftPanelContent(true)
+            ) : showStartScreen && !hasBotResponded ? (
               <StartScreen onPromptSelect={handlePromptSelect} />
             ) : (
               <div className="flex flex-col h-full bg-white">
@@ -330,15 +846,25 @@ export default function BotApp() {
                     currentRoute={currentRoute}
                     isLoadingLocation={isLoadingLocation}
                     mapRef={mapRef}
+                    isRoutePreparing={isRoutePreparing}
                   />
-                ) : (
-                  <ItineraryView
-                    itineraryData={itineraryData}
-                    transfers={transfers}
-                    showShimmer={showItineraryShimmer}
-                    onSendMessage={handleSendMessage} // ✅ THIS WAS ALREADY HERE - GOOD!
-                  />
-                )}
+                ) : viewMode === "itinerary" ? (
+                  <div
+                    className="h-full overflow-y-auto bg-white"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {activeItineraryId ? (
+      <ItineraryContainer
+        id={activeItineraryId === "skeleton" || activeItineraryId === "draft"
+          ? null   // no API fetch for skeleton/draft
+          : activeItineraryId}
+        mercuryItinerary
+        fromChat={true}
+        skipPolling={!itineraryPollingEnabled}
+      />
+    ) : null}
+                  </div>
+                ) : null}
               </div>
             )}
           </div>
@@ -359,16 +885,8 @@ export default function BotApp() {
             ) : (
               <ChatKitPanel
                 key={`${botMode}-${chatKey}`}
-                onLocationReceived={handleLocationReceived}
-                onNewQuery={handleNewQuery}
-                onRouteReceived={handleRouteReceived}
-                onItineraryReceived={handleItineraryReceived}
-                botMode={botMode}
-                itineraryId={itineraryId}
-                onBotModeChange={setBotMode}
-                onItineraryIdChange={setItineraryId}
+                {...sharedChatKitProps}
                 initialPrompt={initialPromptRef.current}
-                onSendReady={handleSendReady} // ✅ ADD THIS FOR MOBILE TOO
               />
             )}
           </div>
@@ -380,15 +898,22 @@ export default function BotApp() {
             <button
               onClick={() => setMobilePanel("map")}
               className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "map"
-                  ? "text-amber-500"
-                  : "text-slate-400"
+                mobilePanel === "map" ? "text-amber-500" : "text-slate-400"
               }`}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-                <line x1="9" y1="3" x2="9" y2="18"/>
-                <line x1="15" y1="6" x2="15" y2="21"/>
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                <line x1="9" y1="3" x2="9" y2="18" />
+                <line x1="15" y1="6" x2="15" y2="21" />
               </svg>
               <span className="text-[10px] font-medium">Map</span>
               {mobilePanel === "map" && (
@@ -399,13 +924,20 @@ export default function BotApp() {
             <button
               onClick={() => setMobilePanel("chat")}
               className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "chat"
-                  ? "text-amber-500"
-                  : "text-slate-400"
+                mobilePanel === "chat" ? "text-amber-500" : "text-slate-400"
               }`}
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <span className="text-[10px] font-medium">Chat</span>
             </button>
@@ -414,9 +946,11 @@ export default function BotApp() {
       </div>
 
       {/* Full-width footer */}
-      <div className="max-ph:hidden flex-shrink-0 w-full">
-        <TrustIndicators />
-      </div>
+      {!activeItineraryId ? (
+        <div className="max-ph:hidden flex-shrink-0 w-full">
+          <TrustIndicators />
+        </div>
+      ) : null}
     </main>
   );
 }
