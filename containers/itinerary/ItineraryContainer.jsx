@@ -927,23 +927,23 @@ const ItineraryContainer = (props) => {
 
   fetchDataRef.current = fetchData;
 
-// Then the effect uses the ref:
 useEffect(() => {
   const currentId = props.id;
-  console.log("[ItineraryContainer] effect fired — id:", currentId, "skipPolling:", props.skipPolling);
   if (!currentId || currentId === "draft" || currentId === "undefined") return;
   if (props.skipPolling) return;
 
-  console.log("[ItineraryContainer] Starting real polling for:", currentId);
   itinerarySuccessRef.current = false;
   pricingSuccessRef.current = false;
   transfersSuccessRef.current = false;
   hotelsSuccessRef.current = false;
   setItineraryLoading(true);
-  setShowMercuryItinerary(false);
+  // Only collapse to blank if NOT in chat mode — in chat, skeleton stays visible
+  if (!props.fromChat) {
+    setShowMercuryItinerary(false);
+  }
   setPolling(true);
   fetchDataRef.current?.(true);
-}, [props.id, props.skipPolling]);
+}, [props.id, props.skipPolling, props.fromChat]);
 
 
     useEffect(() => {

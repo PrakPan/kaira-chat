@@ -66,6 +66,7 @@ import ChatButtonContainer from "./ChatButtonContainer.jsx";
 import CityDrawerView, { ItineraryCityWithDrawer } from "../../components/itinerary/CityDrawer.jsx";
 import Overview from "../newitinerary/overview/Index";
 import TrustFactor from "../../components/tailoredform/TrustFactor.js";
+import ConfirmationModal from "../../components/bot-components/components/ConfirmationModal.tsx";
 
 const NotificationDot = styled.div`
   position: absolute;
@@ -152,6 +153,7 @@ const SimpleTabsV2 = (props) => {
   const [selectedCityId, setSelectedCityId] = useState(null);
 
   const [isHovered, setIsHovered] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
 
@@ -571,6 +573,7 @@ const SimpleTabsV2 = (props) => {
     setShowPopup(true);
   };
   const itinearyId = router.query.id;
+  const isDraft = props.fromChat && !props.id && !router.query.id;
 
   return (
     <div className={classes.root}>
@@ -1501,7 +1504,25 @@ const SimpleTabsV2 = (props) => {
             : "z-10  fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
         }
       >
-        {props?.displayText ? (
+        {isDraft ? (
+  // Draft mode — show confirmation CTA, not cart
+  <div className="flex flex-row justify-between items-center">
+    <div className="flex flex-col">
+      {/* <div className="text-sm font-medium text-gray-800">
+        {props.itinerary?.name || "Your Itinerary"}
+      </div>
+      <div className="text-xs text-gray-500">
+        Draft · Confirm details to view pricing
+      </div> */}
+    </div>
+    <button
+      onClick={() => setShowConfirmationModal(true)}
+      className="px-4 py-2.5 bg-[#07213A] text-white font-medium rounded-lg text-sm"
+    >
+     Confirm Itinerary & View Prices →
+    </button>
+  </div>
+) : props?.displayText ? (
           <ItineraryStatusLoader
             displayText={props?.displayText}
             isVisible={props?.shouldShowLoader()}
@@ -1835,6 +1856,18 @@ const SimpleTabsV2 = (props) => {
 
        
       </div>
+
+      <ConfirmationModal
+  show={showConfirmationModal}
+  onHide={() => setShowConfirmationModal(false)}
+  itineraryName={props.itinerary?.name || "Your Itinerary"}
+  onConfirm={(details) => {
+    setShowConfirmationModal(false);
+    console.log("[ConfirmationModal] confirmed:", details);
+    // TODO: trigger pricing API call with details
+  }}
+/>
+
     </div>
   );
 };

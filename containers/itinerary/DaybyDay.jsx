@@ -155,6 +155,7 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
+            fromChat={props.fromChat}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
@@ -255,6 +256,7 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             getPaymentHandler={getPaymentHandler}
             firstCity={true}
+            fromChat={props.fromChat}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -374,6 +376,7 @@ const DaybyDay = ({
                       _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
+                      fromChat={props.fromChat}
                     />
                   </div>
                 )}
@@ -520,6 +523,7 @@ const DaybyDay = ({
             getPaymentHandler={getPaymentHandler}
             lastCity={true}
             date_of_journey={Itinerary?.end_date}
+            fromChat={props.fromChat}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
@@ -538,6 +542,7 @@ const DaybyDay = ({
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
             isLast={true}
+            fromChat={props.fromChat}
           />
         </div>
       </div>

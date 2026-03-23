@@ -1051,7 +1051,8 @@ const CityItem = ({
   isLast,
   check_in,
   check_out,
-  date_of_journey
+  date_of_journey,
+  fromChat
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1066,6 +1067,8 @@ const CityItem = ({
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
     router?.query;
+
+  const isDraftMode = fromChat && !router.query.id;
 
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
@@ -1684,7 +1687,8 @@ useEffect(() => {
         <>
           {/* NO BOOKING - Show both CTAs */}
           {/* First CTA: Add Transfer */}
-          {isPageWide ? (
+          { isDraftMode ? 
+          isPageWide ? (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1693,7 +1697,7 @@ useEffect(() => {
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
-          ) : (
+          ) :  (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1702,10 +1706,10 @@ useEffect(() => {
             >
               + Add Transfer
             </button>
-          )}
+          ) : null}
 
           {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
-          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
+          {!isDraftMode && transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}
