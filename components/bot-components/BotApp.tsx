@@ -60,12 +60,12 @@ function transformDraftToItinerary(draft: any) {
   const cities = routes.map((route: any) => {
     const cityName = route.city?.name ?? "unknown";
     // Give each city a stable draft ID based on its name if no real ID exists
-    const cityId = route.city?.id ?? `draft-city-${route.city?.name}`;
+const cityId = route.city?.id || `draft-city-${route.city?.name}`;
 
     return {
       id: cityId,
       city: {
-        id: route.city?.id,
+        id: route.city?.id || null,
         name: cityName,
         latitude: null,
         longitude: null,
@@ -103,7 +103,7 @@ function transformDraftToItinerary(draft: any) {
       hotels: route.hotels
         ? [
             {
-              id: route.hotels.id ?? `draft-hotel-${cityId}`,
+              id: route.hotels.id || `draft-hotel-${cityId}`,
               name: route.hotels.name,
               star_category: null,
               images: [],
@@ -199,6 +199,7 @@ export default function BotApp() {
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const currentItineraryRef = useRef<any>(null);
   const [skeletonCities, setSkeletonCities] = useState<any[]>([]);
+  const skeletonCitiesRef = useRef<any[]>([]);
 
   useEffect(() => {
     const match = window.location.pathname.match(/\/chat\/([a-f0-9-]+)/);
@@ -231,7 +232,7 @@ export default function BotApp() {
 
  const handleItineraryCompletionStart = useCallback((_id?: string) => {
   // Build skeleton from route cities so we show names + shimmer immediately
-  if (skeletonCities.length > 0) {
+  if (skeletonCitiesRef.current.length > 0) {
     const skeletonItinerary = {
       name: "Building your itinerary…",
       start_date: null,
@@ -276,21 +277,21 @@ export default function BotApp() {
 }, [dispatch, skeletonCities]);
 
   // In handleItineraryCompletionDone — hide shimmer, mount container:
- const handleItineraryCompletionDone = useCallback((id: string) => {
+const handleItineraryCompletionDone = useCallback((id: string) => {
   if (!id || id === "undefined") return;
   try {
     setShowItineraryShimmer(false);
     dispatch(setItineraryIdAction(id));
+    // Reset statuses to PENDING so polling flow works correctly
     dispatch(setItineraryStatus("itinerary_status", "PENDING"));
     dispatch(setItineraryStatus("transfers_status", "PENDING"));
     dispatch(setItineraryStatus("pricing_status", "PENDING"));
     dispatch(setItineraryStatus("hotels_status", "PENDING"));
     dispatch(setItineraryStatus("finalized_status", "PENDING"));
-    dispatch(setItinerary({}));
-    dispatch(setStays([]));
-    dispatch(setTransfersBookings(null));
-    setSkeletonCities([]);         // clear skeleton
-    setActiveItineraryId(id);      // mount real ItineraryContainer with real ID
+    // DO NOT clear itinerary/stays/transfers — skeleton stays visible until
+    // real polling data overwrites it, preventing the blank intermediate flash
+    setSkeletonCities([]);
+    setActiveItineraryId(id);
     setItineraryPollingEnabled(true);
     setShowChatBot(true);
     setHasBotResponded(true);
@@ -329,11 +330,13 @@ export default function BotApp() {
     if (routeData.data && Array.isArray(routeData.data) && routeData.data.length > 0) {
       setViewMode("map");
       setMobilePanel("map");
-      // Store cities for skeleton itinerary
-      setSkeletonCities(routeData.data.map((loc: any) => ({
-        name: loc.name,
-        duration: loc.duration ?? 1,
-      })));
+const cities = routeData.data.map((loc: any) => ({
+  name: loc.name,
+  duration: loc.duration ?? 1,
+}));
+setSkeletonCities(cities);
+skeletonCitiesRef.current = cities; 
+
     }
     if (routeData.data && Array.isArray(routeData.data)) {
       setCurrentRoute(routeData.data);
@@ -354,48 +357,99 @@ export default function BotApp() {
     (data: any) => {
       revealLeftPanel();
 
-      if (data?.shimmer) {
+   // In handleItineraryReceived, replace the shimmer block:
+if (data?.shimmer) {
   dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  dispatch(setItineraryStatus("transfers_status", "SUCCESS")); // no transfer loader for draft
   setViewMode("itinerary");
   setMobilePanel("map");
-  // No setShowItineraryShimmer, no setActiveItineraryId(null)
-  // ItineraryContainer handles its own shimmer via itinerary_status: PENDING
+  setShowStartScreen(false);
+  setHasBotResponded(true);
+
+  // Build skeleton from skeletonCities if available, else use a 1-city placeholder
+  const citiesToUse = skeletonCitiesRef.current.length > 0
+  ? skeletonCitiesRef.current
+  : [{ name: "Loading…", duration: 3 }];
+
+  const skeletonItinerary = {
+    name: "Building your itinerary…",
+    start_date: null,
+    end_date: null,
+    cities: citiesToUse.map((c, i) => ({
+      id: `skeleton-city-${i}`,
+      city: { id: null, name: c.name, latitude: null, longitude: null, gmaps_place_id: null, image: [], car_free_city: false },
+      start_date: null,
+      end_date: null,
+      duration: c.duration,
+      day_by_day: Array.from({ length: c.duration }, (_, d) => ({
+        day: d + 1,
+        date: null,
+        day_summary: "",
+        slab_id: null,
+        slab_elements: [],
+      })),
+      hotels: [],
+      activities: [],
+      transfers: { sightseeing: [], airport: [] },
+    })),
+    version: "v2",
+    celery: { ITINERARY: "PENDING", HOTELS: "PENDING", TRANSFERS: "SUCCESS", PRICING: "PENDING", display_text: null, notes: [] },
+    status: "Draft",
+  };
+
+  dispatch(setItinerary(skeletonItinerary));
+  dispatch(setItineraryDaybyDay(skeletonItinerary));
+  dispatch(setBreif(skeletonItinerary));
+
+  if (activeItineraryId !== "skeleton" && activeItineraryId !== "draft") {
+    setActiveItineraryId("skeleton");
+    setItineraryPollingEnabled(false);
+  }
   return;
 }
 
       // Handle display_transfers
-      if (data?.transfers && !data?.itinerary && !data?.routes) {
-        const nameToId: Record<string, string> = {};
-        for (const c of currentItineraryRef.current?.cities ?? []) {
-          if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
-        }
+      // REPLACE the entire display_transfers block with:
 
-        const intercity: Record<string, any> = {};
-        (data.transfers ?? []).forEach((t: any, idx: number) => {
-          const fromId = nameToId[t.from_city] ?? `draft-city-${t.from_city}`;
-          const toId = nameToId[t.to_city] ?? `draft-city-${t.to_city}`;
-          const key = `${fromId}:${toId}`;
-          intercity[key] = {
-            id: `draft-transfer-${idx}`,
-            name: t.legs?.[0] ?? `${t.from_city} to ${t.to_city}`,
-            booking_type: t.legs?.[0]?.toLowerCase().includes("flight")
-              ? "Flight"
-              : t.legs?.[0]?.toLowerCase().includes("train")
-                ? "Train"
-                : "Taxi",
-            transfer_type: "intercity",
-            from_city: t.from_city,
-            to_city: t.to_city,
-            legs: t.legs,
-            is_draft: true,
-          };
-        });
-        dispatch(
-          setTransfersBookings({ intercity, airport: {}, intracity: {} }),
-        );
-        dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
-        return;
-      }
+if (data?.transfers && !data?.itinerary && !data?.routes) {
+  const intercity: Record<string, any> = {};
+
+  (data.transfers ?? []).forEach((t: any, idx: number) => {
+    // Use canonical draft-city-{name} IDs — consistent with transformDraftToItinerary
+    // after the || fix. nameToId lookup kept as enhancement but || fallback is reliable.
+    const nameToId: Record<string, string> = {};
+    for (const c of currentItineraryRef.current?.cities ?? []) {
+      if (c.city?.name && c.id) nameToId[c.city.name] = String(c.id);
+    }
+
+    const fromId = nameToId[t.from_city] || `draft-city-${t.from_city}`;
+    const toId = nameToId[t.to_city] || `draft-city-${t.to_city}`;
+    const key = `${fromId}:${toId}`;
+
+    // Determine booking type from legs
+    const leg = t.legs?.[0] ?? "";
+    const bookingType = leg.toLowerCase().includes("flight")
+      ? "Flight"
+      : leg.toLowerCase().includes("train")
+      ? "Train"
+      : "Taxi";
+
+    intercity[key] = {
+      id: `draft-transfer-${idx}`,
+      name: t.legs?.join(" + ") ?? `${t.from_city} to ${t.to_city}`,
+      booking_type: bookingType,
+      transfer_type: "intercity",
+      from_city: t.from_city,
+      to_city: t.to_city,
+      legs: t.legs,
+      is_draft: true,
+    };
+  });
+
+  dispatch(setTransfersBookings({ intercity, airport: {}, intracity: {} }));
+  dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
+  return;
+}
 
       // display_itinerary — real data arrived, hide shimmer
       setShowItineraryShimmer(false); // ← THIS WAS MISSING
@@ -708,12 +762,6 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
           className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative"
           style={{ width: "50%", minWidth: 0 }}
         >
-          {/* ── Layer: itinerary-ready / itinerary-loading ── */}
-          {leftPanelMode !== "default" && (
-            <div className="absolute inset-0 z-20 transition-opacity duration-500 ease-in-out">
-              {renderLeftPanelContent(false)}
-            </div>
-          )}
 
           {/* ── Layer: Start screen — fades out when left panel reveals ── */}
           <div
@@ -831,9 +879,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
             }`}
           >
             {/* itinerary-ready or itinerary-loading take priority */}
-            {leftPanelMode !== "default" ? (
-              renderLeftPanelContent(true)
-            ) : showStartScreen && !hasBotResponded ? (
+            {showStartScreen && !hasBotResponded ? (
               <StartScreen onPromptSelect={handlePromptSelect} />
             ) : (
               <div className="flex flex-col h-full bg-white">
