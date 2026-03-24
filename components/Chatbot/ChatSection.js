@@ -48,7 +48,7 @@ const MessageWrapper = styled.div`
 `;
 
 const Message = styled.div`
-    background: ${(props) => (props.isUser ? '#fffaf5' : 'transparent')};
+    background: ${(props) => (props.isUser ? '#faf8fc' : 'transparent')};
     border-radius: ${(props) => (props.isUser ? '12px' : '0')};
     padding: ${(props) => (props.isUser ? '10px 16px' : '0')};
     font-family: Inter, sans-serif;

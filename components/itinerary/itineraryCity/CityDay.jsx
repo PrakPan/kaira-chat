@@ -397,70 +397,193 @@ useEffect(() => {
 );
   };
 
-  return (
-    <>
-      {/* Day Row - Tabular Format */}
-      <div className="flex border-b border-[#E8E8E8] hover:bg-[#FAFAFA] transition-colors">
-        <div className="w-20 md:w-24 px-2 md:px-4 py-3 md:py-4 border-r border-[#E8E8E8] flex items-start">
-          <span className="text-xs md:text-sm text-[#000]">
-            {formatDateLabel(props?.day?.date)}
-          </span>
-        </div>
-        <div className="flex-1 px-2 md:px-4 py-2 md:py-3 min-w-0">
-          {elements.length > 0 ? (
-  <div className="flex flex-col gap-2">
-    {displayItems.map((item, index) => renderActivityItem(item, index, false))}
-  </div>
-)  : props?.isLastDay ? (
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="flex-shrink-0">
-                <IoBagCheckOutline className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-xs md:text-sm  mt-1">
-                  Check out from {props?.city?.name}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <MdOutlineDownhillSkiing
-                size={16}
-                className="w-[30px] md:w-[40px] h-[20px] md:h-[27px]"
-              />
-              <span className="text-xs md:text-sm">No activity is added.</span>
-            </div>
-          )}
-        </div>
+
+  const renderTag = (item, extraClass = "") => {
+  if (item?.element_type === "activity") {
+    return (
+      <div className={`mt-[2px] ${extraClass}`}>
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-[#EBFFEF] text-[12px]">
+          <span className="w-[7px] h-[7px] rounded-full bg-[#22C55E] shrink-0" />
+          Activity
+        </span>
+      </div>
+    );
+  }
+
+  if (item?.element_type === "recommendation") {
+    return (
+      <div className={`mt-[2px] ${extraClass}`}>
+       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+  <path d="M4.10863 13.1971C3.78487 13.3051 3.45052 13.0641 3.45052 12.7228V8.76025C3.45052 8.66763 3.42479 8.57683 3.37621 8.49798L1.71635 5.80389C1.61723 5.64302 1.61727 5.44001 1.71646 5.27918L4.10611 1.40406C4.19716 1.25641 4.35823 1.1665 4.5317 1.1665H9.36934C9.54281 1.1665 9.70388 1.25641 9.79493 1.40406L12.1846 5.27918C12.2838 5.44001 12.2838 5.64302 12.1847 5.8039L10.5248 8.49798C10.4762 8.57683 10.4505 8.66763 10.4505 8.76025V12.7228C10.4505 13.0641 10.1162 13.3051 9.79241 13.1971L7.10863 12.3025C7.006 12.2683 6.89504 12.2683 6.79241 12.3025L4.10863 13.1971ZM4.61719 11.1054C4.61719 11.4463 4.95082 11.6872 5.27441 11.58L6.7933 11.0769C6.89539 11.0431 7.00566 11.0431 7.10774 11.0769L8.62663 11.58C8.95022 11.6872 9.28385 11.4463 9.28385 11.1054V10.4165C9.28385 10.1404 9.06 9.9165 8.78385 9.9165H5.11719C4.84104 9.9165 4.61719 10.1404 4.61719 10.4165V11.1054ZM5.18759 2.33317C5.01432 2.33317 4.8534 2.42288 4.76229 2.57026L3.08805 5.27859C2.98844 5.43972 2.98844 5.64329 3.08805 5.80442L4.76229 8.51275C4.8534 8.66013 5.01432 8.74984 5.18759 8.74984H8.71345C8.88672 8.74984 9.04764 8.66013 9.13875 8.51275L10.813 5.80441C10.9126 5.64329 10.9126 5.43972 10.813 5.27859L9.13875 2.57026C9.04764 2.42288 8.88672 2.33317 8.71345 2.33317H5.18759ZM6.69032 7.56472C6.49568 7.76023 6.17946 7.76114 5.98369 7.56675L4.62324 6.21589C4.4268 6.02083 4.42624 5.70328 4.62199 5.50753L4.74488 5.38464C4.94015 5.18938 5.25673 5.18938 5.45199 5.38464L5.98342 5.91607C6.17909 6.11174 6.49648 6.11127 6.69157 5.91503L8.45217 4.14401C8.64604 3.94899 8.96101 3.94713 9.15717 4.13985L9.27481 4.25542C9.47272 4.44986 9.47448 4.76825 9.27873 4.96486L6.69032 7.56472Z" fill="#AD5BE7"/>
+</svg>
+      </div>
+    );
+  }
+
+  if (item?.element_type === "restaurant") {
+    return (
+      <div className={`mt-[2px] ${extraClass}`}>
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px]">
+          <span className="w-[7px] h-[7px] rounded-full bg-[#3B82F6] shrink-0" />
+          Restaurant
+        </span>
+      </div>
+    );
+  }
+  if (item?.element_type === "poi" || (!item?.element_type && item?.poi)) {
+    return (
+      <div className={`mt-[2px] ${extraClass}`}>
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] ">
+          <span className="w-[7px] h-[7px] rounded-full bg-[#7C3AED] shrink-0" />
+          Self Exploration
+        </span>
+      </div>
+    );
+  }
+  return null;
+};
+
+ return (
+  <>
+    <div className="flex border-b border-[#E8E8E8] last:border-b-0 w-full">
+
+      {/* COL 1: Date */}
+      <div className="w-fit shrink-0 px-4 pt-6 pb-6">
+        <p className="text-[18px] font-[600]  m-0 leading-tight">
+          Day {props.index + 1}
+        </p>
+        <p className="text-[12px] text-[#9CA3AF] m-0 mt-2 leading-tight">
+          {props?.day?.date
+            ? new Date(props.day.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })
+            : ""}
+        </p>
       </div>
 
-      {drawer === "showAddActivity" &&
-        itinerary_city_id == props?.itinerary_city_id &&
-        idx == props?.index && !props?.isInDrawer && (
-          <ActivityAddDrawer
-            showDrawer={
-              itinerary_city_id == props?.itinerary_city_id &&
-              idx == props?.index
-            }
-            mercuryItinerary={props?.mercuryItinerary}
-            setShowDrawer={setShowDrawer}
-            cityName={props.city.name}
-            cityID={props.city.id}
-            date={date}
-            setItinerary={props?.setItinerary}
-            itinerary_city_id={props?.itinerary_city_id}
-            day={`Day ${idx + 1}`}
-            duration={props.duration}
-            start_date={props?.start_date}
-            day_slab_index={idx}
-            setShowLoginModal={props?.setShowLoginModal}
-            activityBookings={props?.activityBookings}
-            setActivityBookings={props?.setActivityBookings}
-            setShowSettings={props?.setShowSettings}
-          ></ActivityAddDrawer>
+      {/* COL 2: Content */}
+      <div className="flex-1 pr-4 pt-6 pb-6 min-w-0">
+        {elements.length > 0 ? (
+          (() => {
+            const ORDER = ["Morning", "Afternoon", "Evening", "Night"];
+            const groups = {};
+            elements.forEach((item) => {
+              const slot = item?.time
+                ? (getTimeOfDay(item.time) || "Morning")
+                : "Morning";
+              if (!groups[slot]) groups[slot] = [];
+              groups[slot].push(item);
+            });
+            const presentSlots = ORDER.filter((s) => groups[s]);
+
+            // Flatten all items into a single ordered list
+            const allItems = [];
+            presentSlots.forEach((slot) => {
+              groups[slot].forEach((item, idxInSlot) => {
+                allItems.push({ item, slot, idxInSlot });
+              });
+            });
+
+            const isFirstItem = (idx) => idx === 0;
+
+            return (
+              <div className="relative">
+                {/* Vertical line from first dot down to last slot — only if >1 item */}
+                {allItems.length > 1 && (
+                  <div
+                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
+                    style={{
+                      left: "3px",
+                      top: "8px",   // center of first dot
+                      bottom: "8px",
+                    }}
+                  />
+                )}
+
+                <div className="flex flex-col gap-2">
+                  {allItems.map(({ item, slot, idxInSlot }, globalIdx) => {
+                    const name = getItemName(item);
+                    const isFirst = isFirstItem(globalIdx);
+
+                    return (
+                      <div key={globalIdx}>
+                     
+                        
+                          <div>
+                            {/* Dot + bold slot label on same line */}
+                            <div className="flex items-center gap-3">
+                              <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
+                              <span className="text-[14px] font-[500] text-[#111]">
+                                {slot}
+                              </span>
+                            </div>
+                            {/* Activity name — indented under slot label */}
+                            <div className="ml-[22px] mt-[6px]">
+
+                              <span
+                                className="text-[13px] font-[400] font-inter leading-snug cursor-pointer hover:underline flex gap-1 items-center"
+                                onClick={() => handleItemClick(item)}
+                              >
+                               {item?.element_type == "recommendation" ? <div className="flex w-6 h-6 p-[7px] justify-center items-center gap-2.5 rounded-full bg-[#F7ECFF]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+  <path d="M4.10863 13.1971C3.78487 13.3051 3.45052 13.0641 3.45052 12.7228V8.76025C3.45052 8.66763 3.42479 8.57683 3.37621 8.49798L1.71635 5.80389C1.61723 5.64302 1.61727 5.44001 1.71646 5.27918L4.10611 1.40406C4.19716 1.25641 4.35823 1.1665 4.5317 1.1665H9.36934C9.54281 1.1665 9.70388 1.25641 9.79493 1.40406L12.1846 5.27918C12.2838 5.44001 12.2838 5.64302 12.1847 5.8039L10.5248 8.49798C10.4762 8.57683 10.4505 8.66763 10.4505 8.76025V12.7228C10.4505 13.0641 10.1162 13.3051 9.79241 13.1971L7.10863 12.3025C7.006 12.2683 6.89504 12.2683 6.79241 12.3025L4.10863 13.1971ZM4.61719 11.1054C4.61719 11.4463 4.95082 11.6872 5.27441 11.58L6.7933 11.0769C6.89539 11.0431 7.00566 11.0431 7.10774 11.0769L8.62663 11.58C8.95022 11.6872 9.28385 11.4463 9.28385 11.1054V10.4165C9.28385 10.1404 9.06 9.9165 8.78385 9.9165H5.11719C4.84104 9.9165 4.61719 10.1404 4.61719 10.4165V11.1054ZM5.18759 2.33317C5.01432 2.33317 4.8534 2.42288 4.76229 2.57026L3.08805 5.27859C2.98844 5.43972 2.98844 5.64329 3.08805 5.80442L4.76229 8.51275C4.8534 8.66013 5.01432 8.74984 5.18759 8.74984H8.71345C8.88672 8.74984 9.04764 8.66013 9.13875 8.51275L10.813 5.80441C10.9126 5.64329 10.9126 5.43972 10.813 5.27859L9.13875 2.57026C9.04764 2.42288 8.88672 2.33317 8.71345 2.33317H5.18759ZM6.69032 7.56472C6.49568 7.76023 6.17946 7.76114 5.98369 7.56675L4.62324 6.21589C4.4268 6.02083 4.42624 5.70328 4.62199 5.50753L4.74488 5.38464C4.94015 5.18938 5.25673 5.18938 5.45199 5.38464L5.98342 5.91607C6.17909 6.11174 6.49648 6.11127 6.69157 5.91503L8.45217 4.14401C8.64604 3.94899 8.96101 3.94713 9.15717 4.13985L9.27481 4.25542C9.47272 4.44986 9.47448 4.76825 9.27873 4.96486L6.69032 7.56472Z" fill="#AD5BE7"/>
+</svg> </div>: null} {name}
+                              </span>
+                              {/* Tag */}
+
+                              {(item?.element_type == "activity" || item?.element_type == "restaurant" || item?.element_type == "poi" ) ?renderTag(item) : null}
+                            </div>
+                          </div>
+                       
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()
+        ) : props?.isLastDay ? (
+          <div className="flex items-center gap-2">
+            <IoBagCheckOutline size={15} className="text-[#9CA3AF]" />
+            <span className="text-[13px] text-[#6B7280]">
+              Check out from {props?.city?.name}
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
+            <span className="text-[13px] text-[#6B7280]">No activity added.</span>
+          </div>
         )}
-    </>
-  );
+      </div>
+    </div>
+
+    {drawer === "showAddActivity" &&
+      itinerary_city_id == props?.itinerary_city_id &&
+      idx == props?.index &&
+      !props?.isInDrawer && (
+        <ActivityAddDrawer
+          showDrawer={itinerary_city_id == props?.itinerary_city_id && idx == props?.index}
+          mercuryItinerary={props?.mercuryItinerary}
+          setShowDrawer={setShowDrawer}
+          cityName={props.city.name}
+          cityID={props.city.id}
+          date={date}
+          setItinerary={props?.setItinerary}
+          itinerary_city_id={props?.itinerary_city_id}
+          day={`Day ${idx + 1}`}
+          duration={props.duration}
+          start_date={props?.start_date}
+          day_slab_index={idx}
+          setShowLoginModal={props?.setShowLoginModal}
+          activityBookings={props?.activityBookings}
+          setActivityBookings={props?.setActivityBookings}
+          setShowSettings={props?.setShowSettings}
+        />
+      )}
+  </>
+);
 };
 
 export default CityDay;

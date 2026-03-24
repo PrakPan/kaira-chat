@@ -27,44 +27,36 @@ const DayRowShimmer = () => (
 
 const CityDaybyDay = (props) => {
   const { itinerary_status } = useSelector((state) => state.ItineraryStatus);
-  const isShimmering = itinerary_status === "PENDING";
 
   return (
-    <div id="citydaybyday" className="bg-[#FBFBFB]">
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        {isShimmering ? (
-          // Show shimmer rows matching expected day count
-          <>
-            {[0, 1, 2, 3].map((i) => (
-              <DayRowShimmer key={i} />
-            ))}
-          </>
-        ) : (
-          props.city?.day_by_day.map((day, index) => (
-            <CityDay
-              mercuryItinerary={props?.mercuryItinerary}
-              key={day.slab_id}
-              index={index}
-              day={day}
-              cityId={props.city.city.id}
-              city={props.city.city}
-              setItinerary={props?.setItinerary}
-              itinerary_city_id={props?.city?.id}
-              duration={props.city.duration}
-              start_date={props?.city?.start_date}
-              setShowLoginModal={props?.setShowLoginModal}
-              activityBookings={props?.activityBookings}
-              setActivityBookings={props?.setActivityBookings}
-              intracityBookings={props?.intracityBookings}
-              getPaymentHandler={props?.getPaymentHandler}
-              nextCity={props?.nextCity}
-              isLastDay={index === props.city?.day_by_day.length - 1}
-              setShowCityDrawer={props?.setShowCityDrawer}
-              isInDrawer={true}
-            />
-          ))
-        )}
-      </div>
+    <div id="citydaybyday">
+      {itinerary_status === "PENDING" ? (
+        [0, 1, 2, 3].map((i) => <DayRowShimmer key={i} />)
+      ) : (
+        props.city?.day_by_day.map((day, index) => (
+          <CityDay
+            mercuryItinerary={props?.mercuryItinerary}
+            key={day.slab_id}
+            index={index}
+            day={day}
+            cityId={props.city.city.id}
+            city={props.city.city}
+            setItinerary={props?.setItinerary}
+            itinerary_city_id={props?.city?.id}
+            duration={props.city.duration}
+            start_date={props?.city?.start_date}
+            setShowLoginModal={props?.setShowLoginModal}
+            activityBookings={props?.activityBookings}
+            setActivityBookings={props?.setActivityBookings}
+            intracityBookings={props?.intracityBookings}
+            getPaymentHandler={props?.getPaymentHandler}
+            nextCity={props?.nextCity}
+            isLastDay={index === props.city?.day_by_day.length - 1}
+            setShowCityDrawer={props?.setShowCityDrawer}
+            isInDrawer={true}
+          />
+        ))
+      )}
     </div>
   );
 };

@@ -316,7 +316,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, onWidgetA
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16 }}>
         <div style={{
           maxWidth: "85%",
-          background: "#fffaf5",
+          background: "#f8fafc",
           color: "#0d0d0d",
           padding: "10px 16px",
           borderRadius: 12,

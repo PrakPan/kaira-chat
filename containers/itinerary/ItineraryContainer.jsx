@@ -1631,6 +1631,7 @@ useEffect(() => {
         <div id="itinerary-anchor">
           <Menu
             mercuryItinerary
+            onSendMessage={props?.onSendMessage}
             fromChat={props.fromChat}
             loadbookings={!loadbookings}
             resetRef={resetRef}

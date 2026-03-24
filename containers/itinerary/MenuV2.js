@@ -575,6 +575,21 @@ const SimpleTabsV2 = (props) => {
   const itinearyId = router.query.id;
   const isDraft = props.fromChat && !props.id && !router.query.id;
 
+  const { onSendMessage } = props;
+
+const handleConfirmItinerary = (details) => {
+  const message = `Yes confirm the itinerary. Here are my details:
+Start Date: ${details.startDate}
+Pax: ${details.adults} Adults, ${details.children} Children, ${details.infants} Infants
+Start Location: ${details.startLocation}`;
+
+  if (onSendMessage) {
+    onSendMessage(message);
+  }
+  
+  setShowConfirmationModal(false);
+};
+
   return (
     <div className={classes.root}>
       {imagesGallery && imagesGallery?.length > 0 ? (
@@ -1500,14 +1515,14 @@ const SimpleTabsV2 = (props) => {
       <div
         className={
           isPageWide
-            ? "z-10 fixed bottom-0 shadow-lg bg-white px-[16px] py-[12px] desktop-view-cart-fixed"
-            : "z-10  fixed bottom-0 left-0 right-0 shadow-lg bg-white p-md"
+            ? "z-10 fixed bottom-0 shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#e5e5e5] !bg-[#fffaf5]"
+            : "z-10  fixed bottom-0 left-0 right-0 shadow-lg !bg-[#fffaf5] p-md"
         }
       >
         {isDraft ? (
   // Draft mode — show confirmation CTA, not cart
-  <div className="flex flex-row justify-between items-center">
-    <div className="flex flex-col">
+  <div className="flex items-center justify-center">
+    <div className="">
       {/* <div className="text-sm font-medium text-gray-800">
         {props.itinerary?.name || "Your Itinerary"}
       </div>
@@ -1517,7 +1532,7 @@ const SimpleTabsV2 = (props) => {
     </div>
     <button
       onClick={() => setShowConfirmationModal(true)}
-      className="px-4 py-2.5 bg-[#07213A] text-white font-medium rounded-lg text-sm"
+      className="w-fit px-3 py-[12px] bg-[#f7e700] font-medium rounded-lg  transition-colors text-sm md:text-[14px]"
     >
      Confirm Itinerary & View Prices →
     </button>
@@ -1528,7 +1543,7 @@ const SimpleTabsV2 = (props) => {
             isVisible={props?.shouldShowLoader()}
           />
         ) : (
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-between items-center ">
             <div className="flex flex-col">
               <div className="flex justify-start items-center gap-2">
                 {pricing_status === "FAILURE" ? (
@@ -1659,7 +1674,7 @@ const SimpleTabsV2 = (props) => {
                         />
                       </svg>
                       <button
-                        className="ttw-btn-secondary-fill"
+                        className="ttw-btn-secondary-fill !bg-[#f7e700] text-black"
                         onClick={() => {
                           if (!props?.itinerary?.customer) {
                             requireAuth("view", () =>
@@ -1751,7 +1766,7 @@ const SimpleTabsV2 = (props) => {
           </div>
         )}
 
-        <div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
+        {/* {!isDraft && <div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
           <style jsx>{`
             .scrollbar-hide {
               -ms-overflow-style: none;
@@ -1779,7 +1794,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             </div>
           ))}
-        </div>
+        </div>} */}
       </div>
 
 
@@ -1861,11 +1876,7 @@ const SimpleTabsV2 = (props) => {
   show={showConfirmationModal}
   onHide={() => setShowConfirmationModal(false)}
   itineraryName={props.itinerary?.name || "Your Itinerary"}
-  onConfirm={(details) => {
-    setShowConfirmationModal(false);
-    console.log("[ConfirmationModal] confirmed:", details);
-    // TODO: trigger pricing API call with details
-  }}
+  onConfirm={handleConfirmItinerary}
 />
 
     </div>
