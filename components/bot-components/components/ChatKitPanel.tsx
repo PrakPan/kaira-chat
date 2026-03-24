@@ -534,7 +534,7 @@ useEffect(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className="flex flex-col h-full min-h-0 bg-white max-h-[94vh]"
+      className={`flex flex-col h-full min-h-0 bg-white max-h-[94vh]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
@@ -550,7 +550,7 @@ useEffect(() => {
             </span>
           )}
         </div>
-        <button
+        {/* <button
           onClick={() => setShowControls((v) => !v)}
           className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
         >
@@ -562,7 +562,7 @@ useEffect(() => {
             />
           </svg>
           Settings
-        </button>
+        </button> */}
       </div>
 
       {/* ── Settings panel ────────────────────────────────────────────────── */}
@@ -631,7 +631,7 @@ useEffect(() => {
             ))}
 
             {showError && (
-              <div className="mt-2 px-4 py-2.5 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 flex items-center gap-2">
+              <div className="mt-2 px-4 py-2.5 bg-[#f8fafc] border border-red-100 rounded-[24px] text-xs text-red-600 flex items-center gap-2">
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
                   <path
                     fillRule="evenodd"

@@ -1,11 +1,7 @@
 import BotApp from "../../components/bot-components/BotApp";
 
 const ChatPage = () => {
-    return (
-        <>
-          <BotApp/>
-        </>
-    );
-}
+  return <BotApp />;
+};
 
 export default ChatPage;

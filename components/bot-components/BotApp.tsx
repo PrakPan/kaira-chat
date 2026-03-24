@@ -135,7 +135,7 @@ const cityId = route.city?.id || `draft-city-${route.city?.name}`;
   };
 }
 
-export default function BotApp() {
+export default function BotApp({ sessionId }: { sessionId?: string }) {
   // Map state
   const [mapState, setMapState] = useState<MapState>({
     lat: 28.6139,
@@ -200,12 +200,14 @@ export default function BotApp() {
   const currentItineraryRef = useRef<any>(null);
   const [skeletonCities, setSkeletonCities] = useState<any[]>([]);
   const skeletonCitiesRef = useRef<any[]>([]);
+  const chatSendMessageRef = useRef<((msg: string) => void) | null>(null);
 
-  useEffect(() => {
-    const match = window.location.pathname.match(/\/chat\/([a-f0-9-]+)/);
-    if (!match) return;
-    restoreLatestThread(match[1]);
-  }, []);
+
+  const handleSendMessageReady = useCallback((sendFn: (msg: string) => void) => {
+  chatSendMessageRef.current = sendFn;
+}, []);
+
+
 
   const restoreLatestThread = async (sessionId: string) => {
     try {
@@ -598,6 +600,15 @@ if (data?.transfers && !data?.itinerary && !data?.routes) {
     ],
   );
 
+  const hasRestoredRef = useRef(false);
+
+useEffect(() => {
+  if (!sessionId) return;
+  if (hasRestoredRef.current) return; 
+  hasRestoredRef.current = true;
+  restoreLatestThread(sessionId);
+}, [sessionId, restoreLatestThread]);
+
   // handleThreadSelect now depends on the stable loadThread
 const handleThreadSelect = useCallback(async (threadId: string) => {
   setLocations([]);
@@ -719,6 +730,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
               mercuryItinerary
               skipPolling={true}
               fromChat={true}
+              onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
             />
           </div>
         </>
@@ -814,6 +826,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
         mercuryItinerary
         fromChat={true}
         skipPolling={!itineraryPollingEnabled}
+        onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
       />
     ) : null}
               </div>
@@ -860,6 +873,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
                   key={`${botMode}-${itineraryId}-${chatKey}`}
                   {...sharedChatKitProps}
                   initialPrompt={initialPromptRef.current}
+                  onSendReady={handleSendMessageReady}
                 />
               </div>
             </>
@@ -907,6 +921,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
         mercuryItinerary
         fromChat={true}
         skipPolling={!itineraryPollingEnabled}
+        onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
       />
     ) : null}
                   </div>
@@ -933,6 +948,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
                 key={`${botMode}-${chatKey}`}
                 {...sharedChatKitProps}
                 initialPrompt={initialPromptRef.current}
+                onSendReady={handleSendMessageReady}
               />
             )}
           </div>
