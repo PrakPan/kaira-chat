@@ -26,19 +26,19 @@ const LoginButton = styled.button`
 `;
 
 const SingleChips = styled.button`
-  border-radius: 50px;
+  border-radius: 6px;
   padding: 8px 12px;
   border: 1px solid #e0e0e0;
   font-family: Montserrat;
   font-weight: 500;
   font-size: 12px;
   background: #fff;
-  color: #1889ed;
+  color: #6E757A;
   white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
   &:hover {
-    background: #f0f7ff;
+    // background: #f0f7ff;
     border-color: #1889ed;
   }
   &:disabled {
