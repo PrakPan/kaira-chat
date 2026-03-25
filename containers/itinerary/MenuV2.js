@@ -1514,9 +1514,9 @@ Start Location: ${details.startLocation}`;
 
       <div
         className={
-          isPageWide
+          isPageWide && !isDraft
             ? "z-10 fixed bottom-0 shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#e5e5e5] !bg-[#fffaf5]"
-            : "z-10  fixed bottom-0 left-0 right-0 shadow-lg !bg-[#fffaf5] p-md"
+            : !isDraft ? "z-10  fixed bottom-0 left-0 right-0 shadow-lg !bg-[#fffaf5] p-md" : "z-10 fixed bottom-0 shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#fff] !bg-[#fff]"
         }
       >
         {isDraft ? (
@@ -1532,7 +1532,7 @@ Start Location: ${details.startLocation}`;
     </div>
     <button
       onClick={() => setShowConfirmationModal(true)}
-      className="w-fit px-3 py-[12px] bg-[#f7e700] font-medium rounded-lg  transition-colors text-sm md:text-[14px]"
+      className="w-fit px-3 py-[12px] bg-[#f7e700] font-[600] rounded-lg  transition-colors text-sm md:text-[14px]"
     >
      Confirm Itinerary & View Prices →
     </button>
@@ -1684,7 +1684,7 @@ Start Location: ${details.startLocation}`;
                         }}
                       >
                         View Cart{" "}
-                        <span className="ttw-btn-count-white">
+                        <span className="ttw-btn-count-indigo">
                           {" "}
                           {countCartItems}{" "}
                         </span>
@@ -1719,7 +1719,7 @@ Start Location: ${details.startLocation}`;
                         }}
                       >
                         View Cart{" "}
-                        <span className="ttw-btn-count-white">
+                        <span className="bg-">
                           {" "}
                           {countCartItems}{" "}
                         </span>
@@ -1766,7 +1766,7 @@ Start Location: ${details.startLocation}`;
           </div>
         )}
 
-        {/* {!isDraft && <div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
+        {<div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
           <style jsx>{`
             .scrollbar-hide {
               -ms-overflow-style: none;
@@ -1794,7 +1794,7 @@ Start Location: ${details.startLocation}`;
               </div>
             </div>
           ))}
-        </div>} */}
+        </div>}
       </div>
 
 

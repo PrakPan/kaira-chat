@@ -7,7 +7,7 @@ interface Location {
   lat: number;
   lng: number;
   duration?: number;
-  type?: string; 
+  type?: string;
   accent?: string;
 }
 
@@ -97,12 +97,17 @@ const mapStyles = [
   {
     featureType: "water",
     elementType: "all",
-    stylers: [{ color: "#46bcec" }, { visibility: "on" }],
+    stylers: [{ visibility: "on" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#e9f6f8" }],
   },
   {
     featureType: "water",
     elementType: "geometry.fill",
-    stylers: [{ color: "#c8d7d4" }],
+    stylers: [{ color: "#e9f6f8" }],
   },
   {
     featureType: "water",
@@ -116,10 +121,36 @@ const mapStyles = [
   },
 ];
 
+// Pink numbered pin using exact provided SVG shape
+function getNumberedPin(number: number): google.maps.Icon {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
+      <defs>
+        <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.30)"/>
+        </filter>
+      </defs>
+      <!-- exact pin shape with shadow -->
+      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
+      <!-- white filled circle over the hollow center -->
+      <circle cx="24" cy="23.9643" r="11.5" fill="white"/>
+      <!-- number -->
+      <text x="24" y="28.5" text-anchor="middle"
+        font-family="Inter, Arial, sans-serif"
+        font-size="13"
+        font-weight="700"
+        fill="#FD6D6C">${number}</text>
+    </svg>`;
 
+  return {
+    url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(36, 46),
+    anchor: new google.maps.Point(18, 46),
+  };
+}
 
-// Helper outside the component (or at top of file)
-function getMarkerIcon(type: string) {
+// Generic category marker (non-route stops)
+function getMarkerIcon(type: string): google.maps.Icon {
   const configs: Record<string, { bg: string; svg: string }> = {
     restaurant: {
       bg: "#2AB0FC",
@@ -139,7 +170,6 @@ function getMarkerIcon(type: string) {
     },
   };
 
-  // fallback to poi style
   const { bg, svg } = configs[type] ?? configs.poi;
   const viewBox = type === "activity" ? "0 0 22 22" : "0 0 20 20";
 
@@ -148,13 +178,10 @@ function getMarkerIcon(type: string) {
       "data:image/svg+xml;charset=UTF-8," +
       encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
-          <!-- drop shadow -->
           <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
             <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="rgba(124,121,121,0.25)"/>
           </filter>
-          <!-- circle -->
           <circle cx="18" cy="18" r="16" fill="${bg}" filter="url(#sh)"/>
-          <!-- icon centered: translate so 20x20 icon sits at (8,8) -->
           <g transform="translate(8, 8)">
             <svg width="20" height="20" viewBox="${viewBox}" fill="none" xmlns="http://www.w3.org/2000/svg">
               ${svg}
@@ -178,39 +205,40 @@ const MyMap: React.FC<MapProps> = ({
   const markersRef = useRef<google.maps.Marker[]>([]);
   const userMarkerRef = useRef<google.maps.Marker | null>(null);
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
-  const polylineRef = useRef<google.maps.Polyline | null>(null);
+  // One polyline per segment so we can draw arrows between consecutive stops
+  const polylinesRef = useRef<google.maps.Polyline[]>([]);
 
-// Initialize map with Snazzy Maps styling
-useEffect(() => {
-  if (!mapRef.current || mapInstance.current) return;
-
-  const initMap = () => {
+  // Initialize map
+  useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
-    mapInstance.current = new google.maps.Map(mapRef.current, {
-      center: { lat: state.lat, lng: state.lng },
-      zoom: state.zoom || 12,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: true,
-      styles: mapStyles,
-    });
-    infoWindowRef.current = new google.maps.InfoWindow();
-  };
 
-  if (typeof window !== "undefined" && window.google?.maps) {
-    initMap();
-  } else {
-    // Poll until the Google Maps script finishes loading
-    const interval = setInterval(() => {
-      if (window.google?.maps) {
-        clearInterval(interval);
-        initMap();
-      }
-    }, 100);
-    return () => clearInterval(interval);
-  }
-}, []);
+    const initMap = () => {
+      if (!mapRef.current || mapInstance.current) return;
+      mapInstance.current = new google.maps.Map(mapRef.current, {
+        center: { lat: state.lat, lng: state.lng },
+        zoom: state.zoom || 12,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true,
+        styles: mapStyles,
+      });
+      infoWindowRef.current = new google.maps.InfoWindow();
+    };
 
+    if (typeof window !== "undefined" && window.google?.maps) {
+      initMap();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google?.maps) {
+          clearInterval(interval);
+          initMap();
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  // Pan / zoom when state changes
   useEffect(() => {
     if (mapInstance.current) {
       mapInstance.current.setCenter({ lat: state.lat, lng: state.lng });
@@ -220,58 +248,99 @@ useEffect(() => {
     }
   }, [state.lat, state.lng, state.zoom]);
 
+  // Draw dashed route lines with arrowheads between consecutive stops
   useEffect(() => {
-    if (!mapInstance.current || !currentRoute || currentRoute.length < 2) {
-      if (polylineRef.current) {
-        polylineRef.current.setMap(null);
-        polylineRef.current = null;
+    // Clear old polylines
+    polylinesRef.current.forEach((p) => p.setMap(null));
+    polylinesRef.current = [];
+
+    if (!mapInstance.current || !currentRoute || currentRoute.length < 2) return;
+
+    // Quadratic bezier arc between two lat/lng points
+    const getCurvedPath = (
+      from: { lat: number; lng: number },
+      to: { lat: number; lng: number },
+      numPoints = 60,
+      direction = 1
+    ): google.maps.LatLngLiteral[] => {
+      const midLat = (from.lat + to.lat) / 2;
+      const midLng = (from.lng + to.lng) / 2;
+      const dLat = to.lat - from.lat;
+      const dLng = to.lng - from.lng;
+      const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+      const curvature = 0.25 * direction;
+      const perpLat = -dLng;
+      const perpLng = dLat;
+      const perpLen = Math.sqrt(perpLat * perpLat + perpLng * perpLng) || 1;
+      const controlLat = midLat + (perpLat / perpLen) * dist * curvature;
+      const controlLng = midLng + (perpLng / perpLen) * dist * curvature;
+      // Build path, stopping slightly before destination center
+      // so arrowhead at 100% lands right at the pin tip visually
+      const path: google.maps.LatLngLiteral[] = [];
+      const tMax = 0.93; // stop at 93% so arrow tip touches pin edge, not overshoots
+      for (let j = 0; j <= numPoints; j++) {
+        const t = (j / numPoints) * tMax;
+        const u = 1 - t;
+        path.push({
+          lat: u * u * from.lat + 2 * u * t * controlLat + t * t * to.lat,
+          lng: u * u * from.lng + 2 * u * t * controlLng + t * t * to.lng,
+        });
       }
-      return;
-    }
+      return path;
+    };
 
-    if (polylineRef.current) {
-      polylineRef.current.setMap(null);
-    }
-
-    const path = currentRoute.map((location) => ({
-      lat: location.lat,
-      lng: location.lng,
-    }));
-
-    polylineRef.current = new google.maps.Polyline({
-      path: path,
-      geodesic: true,
-      strokeOpacity: 0,
-      icons: [
-        {
-          icon: {
-            path: "M 0,-1 0,1",
-            strokeOpacity: 1,
-            strokeColor: "#4DB8FF",
-            scale: 3,
+    for (let i = 0; i < currentRoute.length - 1; i++) {
+      const from = currentRoute[i];
+      const to = currentRoute[i + 1];
+      // Alternate curve direction: odd segments curve one way, even the other
+      const direction = i % 2 === 0 ? 1 : -1;
+      const curvedPath = getCurvedPath(
+        { lat: from.lat, lng: from.lng },
+        { lat: to.lat, lng: to.lng },
+        60,
+        direction
+      );
+      const polyline = new google.maps.Polyline({
+        path: curvedPath,
+        geodesic: false,
+        strokeOpacity: 0,
+        icons: [
+          {
+            icon: {
+              path: "M 0,-1 0,1",
+              strokeOpacity: 1,
+              strokeColor: "#4DB8FF",
+              strokeWeight: 3,
+              scale: 3,
+            },
+            offset: "0",
+            repeat: "14px",
           },
-          offset: "0",
-          repeat: "15px",
-        },
-      ],
-    });
+          {
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              strokeOpacity: 1,
+              strokeColor: "#4DB8FF",
+              fillColor: "#4DB8FF",
+              fillOpacity: 1,
+              strokeWeight: 1,
+              scale: 4,
+            },
+            offset: "100%",
+          },
+        ],
+      });
+      polyline.setMap(mapInstance.current);
+      polylinesRef.current.push(polyline);
+    }
 
-    polylineRef.current.setMap(mapInstance.current);
-
+    // Fit map to route
     const bounds = new google.maps.LatLngBounds();
-    currentRoute.forEach((location) => {
-      bounds.extend({ lat: location.lat, lng: location.lng });
-    });
-
-    mapInstance.current.fitBounds(bounds, {
-      top: 80,
-      right: 60,
-      bottom: 80,
-      left: 60,
-    });
+    currentRoute.forEach((loc) => bounds.extend({ lat: loc.lat, lng: loc.lng }));
+    mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
   }, [currentRoute]);
 
-  // Add/update user location marker with custom pin design
+  // User location marker
   useEffect(() => {
     if (!mapInstance.current || !userLocation || !infoWindowRef.current) return;
 
@@ -279,7 +348,6 @@ useEffect(() => {
       userMarkerRef.current.setMap(null);
     }
 
-    // Custom blue pin with person icon for user location
     const userIcon = {
       url:
         "data:image/svg+xml;charset=UTF-8," +
@@ -317,120 +385,104 @@ useEffect(() => {
     });
   }, [userLocation]);
 
-  // Update markers when locations change
+  // Place / update location markers
   useEffect(() => {
     if (!mapInstance.current || !infoWindowRef.current) return;
 
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
 
-    locations?.forEach((location, index) => {
-      const isRouteStop = currentRoute?.some(
-        (routeLocation) => routeLocation.id === location.id,
-      );
-      const markerColor = isRouteStop ? "#4285F4" : "#EA4335";
-      const markerZIndex = isRouteStop ? 200 + index : 100 + index;
-
+    locations?.forEach((location) => {
       const loc = location as any;
-const accentColor = currentRoute?.[index]?.accent || markerColor;
 
-const markerIcon = loc.type
-  ? getMarkerIcon(loc.type)
-  : {
-      url:
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <circle cx="16" cy="16" r="16" fill="${accentColor}"/>
-            <g transform="translate(9.5, 7.5)">
-              <path d="M6.41667 0C2.86917 0 0 2.86917 0 6.41667C0 11.2292 6.41667 16.3333 6.41667 16.3333C6.41667 16.3333 12.8333 11.2292 12.8333 6.41667C12.8333 2.86917 9.96417 0 6.41667 0ZM6.41667 8.70833C5.15167 8.70833 4.125 7.68167 4.125 6.41667C4.125 5.15167 5.15167 4.125 6.41667 4.125C7.68167 4.125 8.70833 5.15167 8.70833 6.41667C8.70833 7.68167 7.68167 8.70833 6.41667 8.70833Z" fill="white"/>
-            </g>
-          </svg>
-        `),
-      scaledSize: new google.maps.Size(32, 32),
-      anchor: new google.maps.Point(16, 16),
-    };
+      // Determine if this location is a numbered route stop
+      const routeIndex = currentRoute?.findIndex((r) => r.id === location.id) ?? -1;
+      const isRouteStop = routeIndex !== -1;
+
+      let markerIcon: google.maps.Icon;
+      if (isRouteStop) {
+        // Numbered pink pin
+        markerIcon = getNumberedPin(routeIndex + 1);
+      } else if (loc.type) {
+        // Category icon
+        markerIcon = getMarkerIcon(loc.type);
+      } else {
+        // Generic pink location pin (no number) - same shape as numbered pin
+        const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
+            <defs>
+              <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.30)"/>
+              </filter>
+            </defs>
+            <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
+            <circle cx="24" cy="23.9643" r="8.5675" fill="white"/>
+          </svg>`;
+        markerIcon = {
+          url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+          scaledSize: new google.maps.Size(36, 46),
+          anchor: new google.maps.Point(18, 46),
+        };
+      }
 
       const marker = new google.maps.Marker({
         position: { lat: location.lat, lng: location.lng },
         map: mapInstance.current!,
         title: location.name,
         icon: markerIcon,
-        zIndex: markerZIndex,
+        zIndex: isRouteStop ? 200 + routeIndex : 100,
       });
 
-      // Add info window
-   marker.addListener("click", () => {
-  const loc = location as any;
-  const accentColor = currentRoute?.[index]?.accent || markerColor;
+      // Info window on click
+      marker.addListener("click", () => {
+        const accentColor = "#F06B72";
 
-  const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
+        const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
+        const descLine = location.description
+          ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
+          : "";
+        const cityLine = loc.city
+          ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
+              <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
+              </svg>
+              <span style="color:#888;">${loc.city}</span>
+             </div>`
+          : "";
+        const ratingLine = loc.rating
+          ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
+              ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
+             </div>`
+          : "";
+        const routeLine =
+          isRouteStop && currentRoute
+            ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee;display:flex;align-items:center;gap:5px;">
+                <div style="width:16px;height:16px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;flex-shrink:0;">${routeIndex + 1}</div>
+                <span style="color:${accentColor};font-size:11px;font-weight:500;">Stop ${routeIndex + 1} of ${currentRoute.length}</span>
+              </div>`
+            : "";
 
-  const descLine = location.description
-    ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
-    : "";
-
-  const cityLine = loc.city
-    ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
-        <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
-        </svg>
-        <span style="color:#888;">${loc.city}</span>
-       </div>`
-    : "";
-
-  const ratingLine = loc.rating
-    ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
-        ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
-       </div>`
-    : "";
-
-  const routeLine = isRouteStop && currentRoute
-    ? (() => {
-        const routeIndex = currentRoute.findIndex(r => r.id === location.id) + 1;
-        return `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee;display:flex;align-items:center;gap:5px;">
-          <div style="width:16px;height:16px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;flex-shrink:0;">${routeIndex}</div>
-          <span style="color:${accentColor};font-size:11px;font-weight:500;">Stop ${routeIndex} of ${currentRoute.length}</span>
-        </div>`;
-      })()
-    : "";
-
-  const content = `
-    <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
-      ${nameLine}${descLine}${cityLine}${ratingLine}${routeLine}
-    </div>`;
-
-  infoWindowRef.current!.setContent(content);
-  infoWindowRef.current!.open(mapInstance.current!, marker);
-});
+        infoWindowRef.current!.setContent(`
+          <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
+            ${nameLine}${descLine}${cityLine}${ratingLine}${routeLine}
+          </div>`);
+        infoWindowRef.current!.open(mapInstance.current!, marker);
+      });
 
       markersRef.current.push(marker);
     });
 
-    // Fit bounds logic
-    if (currentRoute && currentRoute.length > 0) {
-      return;
-    } else if (locations?.length > 0) {
+    // Fit bounds (only when no route — route fitting is handled separately)
+    if (currentRoute && currentRoute.length > 0) return;
+
+    if (locations?.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
-      locations?.forEach((location) => {
-        bounds.extend(
-          new window.google.maps.LatLng(location.lat, location.lng),
-        );
-      });
-
-      mapInstance.current.fitBounds(bounds);
-
-      mapInstance.current.fitBounds(bounds, {
-        top: 80,
-        right: 60,
-        bottom: 80,
-        left: 60,
-      });
+      locations.forEach((loc) =>
+        bounds.extend(new window.google.maps.LatLng(loc.lat, loc.lng))
+      );
+      mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
     } else if (userLocation) {
-      mapInstance.current.setCenter({
-        lat: userLocation.lat,
-        lng: userLocation.lng,
-      });
+      mapInstance.current.setCenter({ lat: userLocation.lat, lng: userLocation.lng });
       mapInstance.current.setZoom(13);
     }
   }, [locations, userLocation, currentRoute, mapInstance]);

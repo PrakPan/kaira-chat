@@ -402,7 +402,7 @@ useEffect(() => {
   if (item?.element_type === "activity") {
     return (
       <div className={`mt-[2px] ${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-[#EBFFEF] text-[12px]">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#5cba663b]  bg-[#EBFFEF] text-[12px] shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#22C55E] shrink-0" />
           Activity
         </span>
@@ -412,7 +412,7 @@ useEffect(() => {
 
   if (item?.element_type === "recommendation") {
     return (
-      <div className={`mt-[2px] ${extraClass}`}>
+      <div className={`mt-[2px] ${extraClass} `}>
        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
   <path d="M4.10863 13.1971C3.78487 13.3051 3.45052 13.0641 3.45052 12.7228V8.76025C3.45052 8.66763 3.42479 8.57683 3.37621 8.49798L1.71635 5.80389C1.61723 5.64302 1.61727 5.44001 1.71646 5.27918L4.10611 1.40406C4.19716 1.25641 4.35823 1.1665 4.5317 1.1665H9.36934C9.54281 1.1665 9.70388 1.25641 9.79493 1.40406L12.1846 5.27918C12.2838 5.44001 12.2838 5.64302 12.1847 5.8039L10.5248 8.49798C10.4762 8.57683 10.4505 8.66763 10.4505 8.76025V12.7228C10.4505 13.0641 10.1162 13.3051 9.79241 13.1971L7.10863 12.3025C7.006 12.2683 6.89504 12.2683 6.79241 12.3025L4.10863 13.1971ZM4.61719 11.1054C4.61719 11.4463 4.95082 11.6872 5.27441 11.58L6.7933 11.0769C6.89539 11.0431 7.00566 11.0431 7.10774 11.0769L8.62663 11.58C8.95022 11.6872 9.28385 11.4463 9.28385 11.1054V10.4165C9.28385 10.1404 9.06 9.9165 8.78385 9.9165H5.11719C4.84104 9.9165 4.61719 10.1404 4.61719 10.4165V11.1054ZM5.18759 2.33317C5.01432 2.33317 4.8534 2.42288 4.76229 2.57026L3.08805 5.27859C2.98844 5.43972 2.98844 5.64329 3.08805 5.80442L4.76229 8.51275C4.8534 8.66013 5.01432 8.74984 5.18759 8.74984H8.71345C8.88672 8.74984 9.04764 8.66013 9.13875 8.51275L10.813 5.80441C10.9126 5.64329 10.9126 5.43972 10.813 5.27859L9.13875 2.57026C9.04764 2.42288 8.88672 2.33317 8.71345 2.33317H5.18759ZM6.69032 7.56472C6.49568 7.76023 6.17946 7.76114 5.98369 7.56675L4.62324 6.21589C4.4268 6.02083 4.42624 5.70328 4.62199 5.50753L4.74488 5.38464C4.94015 5.18938 5.25673 5.18938 5.45199 5.38464L5.98342 5.91607C6.17909 6.11174 6.49648 6.11127 6.69157 5.91503L8.45217 4.14401C8.64604 3.94899 8.96101 3.94713 9.15717 4.13985L9.27481 4.25542C9.47272 4.44986 9.47448 4.76825 9.27873 4.96486L6.69032 7.56472Z" fill="#AD5BE7"/>
 </svg>
@@ -423,7 +423,7 @@ useEffect(() => {
   if (item?.element_type === "restaurant") {
     return (
       <div className={`mt-[2px] ${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px]">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#3B82F6] shrink-0" />
           Restaurant
         </span>
@@ -433,7 +433,7 @@ useEffect(() => {
   if (item?.element_type === "poi" || (!item?.element_type && item?.poi)) {
     return (
       <div className={`mt-[2px] ${extraClass}`}>
-        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] ">
+        <span className="inline-flex items-center gap-[5px] px-[7px] py-[1px] rounded-[6px] border border-[#D1D5DB] bg-white text-[12px] shadow-none">
           <span className="w-[7px] h-[7px] rounded-full bg-[#7C3AED] shrink-0" />
           Self Exploration
         </span>
