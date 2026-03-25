@@ -378,6 +378,20 @@ a.termsnavunderlinelink {
     font-weight: bold;
 }
 
+.ttw-btn-count-indigo{
+    background-color: var(--color-midnight-indigo);
+    color: var(--color-pure-white);
+    /* border: 2px solid var(--color-pure-white); */
+    border-radius: var(--border-radius-circle);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .ttw-btn-close {
     gap: 4px;
     padding: 8px 12px;
@@ -430,7 +444,7 @@ a.termsnavunderlinelink {
 }
 
 .desktop-view-cart-fixed {
-    width: 47vw;
+    width: 45.5vw;
     border-radius: var(--border-radius-md);
     border: 1px solid var(--color-spanish-grey);
     background: var(--color-pure-white);

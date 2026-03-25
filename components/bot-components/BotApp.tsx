@@ -874,6 +874,8 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
                   {...sharedChatKitProps}
                   initialPrompt={initialPromptRef.current}
                   onSendReady={handleSendMessageReady}
+
+
                 />
               </div>
             </>

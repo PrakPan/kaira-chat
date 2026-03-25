@@ -5,11 +5,11 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
   return (
     <div className="px-4 py-3 flex-shrink-0">
       <div
-        className="flex gap-1 p-1"
+        className="flex gap-1"
         style={{
           borderRadius: "18px",
           border: "1px solid #FFFACD",
-          background: "#FFFAF5",
+          background: "#fff",
           // boxShadow: "0 4px 34px 1px rgba(195, 195, 195, 0.25)",
         }}
       >
@@ -17,15 +17,15 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
           onClick={() => setViewMode("map")}
           className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
             viewMode === "map"
-              ? "text-black"
-              : "text-gray-500 hover:text-gray-700"
+              ? "text-white"
+              : "text-black"
           }`}
           style={
             viewMode === "map"
               ? {
                   borderRadius: "10px",
                   border: "1px solid #FFFACD",
-                  background: "#fff",
+                  background: "#07213A",
                   boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
                 }
               : { borderRadius: "10px" }
@@ -50,15 +50,15 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
           onClick={() => setViewMode("itinerary")}
           className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
             viewMode === "itinerary"
-              ? "text-black"
-              : "text-gray-500 hover:text-gray-700"
+              ? "text-white"
+              : "text-black"
           }`}
           style={
             viewMode === "itinerary"
               ? {
                   borderRadius: "10px",
                   border: "1px solid #FFFACD",
-                  background: "#fff",
+                  background: "#07213A",
                   boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
                 }
               : { borderRadius: "10px" }
