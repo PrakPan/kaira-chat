@@ -95,7 +95,7 @@ const NotificationDot = styled.div`
 const useStyles = {
   root: `
     flex-grow-1
-    pb-[30px]
+    pb-[60px]
     `,
 };
 
@@ -600,6 +600,7 @@ Start Location: ${details.startLocation}`;
         ></FullScreenGallery>
       ) : null}
       {/* <div id={"Brief"}> */}
+      
       {props?.mercuryItinerary && citydatadone && !props?.fromChat ? (
         <Breif
           mercuryItinerary={props?.mercuryItinerary}
@@ -950,7 +951,6 @@ Start Location: ${details.startLocation}`;
           
         </>
       )}
-
       {isPageWide ? 
       props.fromChat ? (
     <div className="mb-4 w-full">
@@ -992,7 +992,11 @@ Start Location: ${details.startLocation}`;
                         setShowLoginModal={setShowLoginModal}
                         _GetInTouch={_GetInTouch}
                         setShowCityDrawer={handleShowCityDrawer}
+                        isDraft={isDraft}
+                        showPins={props?.showPins}
+                       
                       />
+                 
                     )
                   : props?.itinerary && (
                       <NewItenaryMain
@@ -1058,7 +1062,7 @@ Start Location: ${details.startLocation}`;
           ) : (
             <div className="mb-4">
                 
-                {!props?.fromChat && <Overview
+                {<Overview
       mercuryItinerary
       title={props.itinerary.name}
       itinerary={props?.itinerary}
@@ -1109,7 +1113,7 @@ Start Location: ${details.startLocation}`;
                 className={activeTab === "Itinerary" ? "block" : "hidden"}
               >
                 {props.mercuryItinerary
-                  ? props?.itineraryDaybyDay && (
+                  ? props?.itinerary && (
                       <DaybyDay
                         mercuryItinerary={props?.mercuryItinerary}
                         activityBookings={props?.activityBookings}
@@ -1512,31 +1516,27 @@ Start Location: ${details.startLocation}`;
       )}
       {/* </Modal> */}
 
-      <div
+     { !props?.fromChat && <div
         className={
           isPageWide && !isDraft
-            ? "z-10 fixed bottom-0 shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#e5e5e5] !bg-[#fffaf5]"
-            : !isDraft ? "z-10  fixed bottom-0 left-0 right-0 shadow-lg !bg-[#fffaf5] p-md" : "z-10 fixed bottom-0 shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#fff] !bg-[#fff]"
+            ? "z-10 fixed bottom-[4.2rem] shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#e5e5e5] !bg-[#fffaf5]"
+            : !isDraft ? "z-10  fixed bottom-0 left-0 right-0 shadow-lg !bg-[#fffaf5] p-md" : "z-10 fixed bottom-[4.2rem] shadow-lg  px-[16px] py-[12px] desktop-view-cart-fixed border-1 border-[#fff] !bg-[#fff] w-full"
         }
       >
         {isDraft ? (
   // Draft mode — show confirmation CTA, not cart
-  <div className="flex items-center justify-center">
-    <div className="">
-      {/* <div className="text-sm font-medium text-gray-800">
-        {props.itinerary?.name || "Your Itinerary"}
-      </div>
-      <div className="text-xs text-gray-500">
-        Draft · Confirm details to view pricing
-      </div> */}
-    </div>
-    <button
-      onClick={() => setShowConfirmationModal(true)}
-      className="w-fit px-3 py-[12px] bg-[#f7e700] font-[600] rounded-lg  transition-colors text-sm md:text-[14px]"
-    >
-     Confirm Itinerary & View Prices →
-    </button>
+ <div className="flex items-center justify-center p-2">
+  <div className="">
+    {/* optional content */}
   </div>
+
+  <button
+    onClick={() => setShowConfirmationModal(true)}
+    className="flex items-center justify-center h-[40px] px-4 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-sm md:text-[14px] transition-colors font-inter"
+  >
+    Confirm Itinerary & View Prices →
+  </button>
+</div>
 ) : props?.displayText ? (
           <ItineraryStatusLoader
             displayText={props?.displayText}
@@ -1766,7 +1766,7 @@ Start Location: ${details.startLocation}`;
           </div>
         )}
 
-        {<div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
+        {/* {<div className="flex overflow-x-auto md:grid md:[grid-template-columns:1.3fr_0.8fr_1fr_1fr] gap-3 mt-2 pt-2 border-t border-gray-200 scrollbar-hide">
           <style jsx>{`
             .scrollbar-hide {
               -ms-overflow-style: none;
@@ -1794,8 +1794,8 @@ Start Location: ${details.startLocation}`;
               </div>
             </div>
           ))}
-        </div>}
-      </div>
+        </div>} */}
+      </div>}
 
 
 

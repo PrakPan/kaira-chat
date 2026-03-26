@@ -64,9 +64,10 @@ interface ChatKitPanelProps {
   initialPrompt?: string | null;
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
-onItineraryCompletionDone?: (itineraryId: string) => void;
+onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onLoadRouteOnMap?: () => void;
 restoredThread?: any;
+onInitialPromptConsumed?: () => void;
 }
 
 function useUserLocationData() {
@@ -182,6 +183,7 @@ export function ChatKitPanel({
 onItineraryCompletionDone,
   onLoadRouteOnMap,
 restoredThread,
+onInitialPromptConsumed,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -208,14 +210,7 @@ restoredThread,
    * Sent as session_id in every API request.
    * Also used as the URL segment: /chat/{sessionId}
    */
- const sessionIdRef = useRef((() => {
-  const urlPath = window.location.pathname;
-  const stored = sessionStorage.getItem(`chatkit_session_${urlPath}`);
-  if (stored) return stored;
-  const newId = generateSessionId();
-  sessionStorage.setItem(`chatkit_session_${urlPath}`, newId);
-  return newId;
-})());
+const sessionIdRef = useRef(generateSessionId());
   const isFirstMessageRef = useRef(true);
 
   /**
@@ -252,8 +247,13 @@ restoredThread,
 const handleSessionCreated = useCallback((ourSessionId: string) => {
   if (hasUpdatedUrl.current) return;
   hasUpdatedUrl.current = true;
-  window.history.pushState({}, "", `/chat/${ourSessionId}`);
-  // Persist so a page reload at /chat/{id} reuses this session
+
+  // Only push if we're not already on this URL
+  const target = `/chat/${ourSessionId}`;
+  if (window.location.pathname !== target) {
+    window.history.pushState({}, "", target);
+  }
+
   sessionStorage.setItem(`chatkit_session_/chat/${ourSessionId}`, ourSessionId);
 }, []);
 
@@ -353,9 +353,9 @@ case "load_route_on_map": {
 }
 case "itinerary_completion_process_completed": {
   const completedId = data.itinerary_id as string;
-  console.log("[itinerary_completion_process_completed] id:", completedId);
+  const summary = (data.summary as string) ?? "";
   if (completedId) {
-    onItineraryCompletionDone?.(completedId);
+    onItineraryCompletionDone?.(completedId, summary);
   }
   break;
 }
@@ -426,8 +426,9 @@ useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
     hasProcessedInitial.current = true;
     sendMessage(initialPrompt);
+    onInitialPromptConsumed?.();  // ← tells BotApp to set initialPrompt back to null
   }
-}, [initialPrompt, locationReady, sendMessage]);
+}, [initialPrompt, locationReady, sendMessage, onInitialPromptConsumed]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);
@@ -534,7 +535,7 @@ useEffect(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white max-h-[94vh]`}
+      className={`flex flex-col h-full min-h-0 bg-white max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
@@ -543,7 +544,7 @@ useEffect(() => {
           <div className="w-7 h-7 rounded-full flex items-center justify-center">
             <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
           </div>
-          <span className="text-sm font-semibold text-gray-800">Kaira</span>
+          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Kaira <span className="font-normal">- Your Travel buddy</span></span>
           {isLoadingLocation && (
             <span className="text-[11px] text-gray-400 flex items-center gap-1">
               <Spinner size={10} /> locating…
@@ -615,9 +616,7 @@ useEffect(() => {
 
       {/* ── Messages ──────────────────────────────────────────────────────── */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth">
-        {messages.length === 0 ? (
-          <WelcomeState />
-        ) : (
+       
           <div className="max-w-2xl mx-auto">
             {messages.map((msg) => (
               <MessageBubble
@@ -665,7 +664,6 @@ useEffect(() => {
 
             <div ref={messagesEndRef} />
           </div>
-        )}
       </div>
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
@@ -691,7 +689,7 @@ useEffect(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-6 pt-3 pb-4 bg-white">
+      <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white">
         <div className="max-w-2xl mx-auto">
           <MessageInputBox
             value={input}

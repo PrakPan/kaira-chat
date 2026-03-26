@@ -184,13 +184,13 @@ React.useEffect(() => {
     <div className="w-7 h-7 rounded-full flex items-center justify-center">
       <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
     </div>
-    <span className="text-sm font-semibold text-gray-800">Kaira</span>
+     <span className="text-sm md:text-[14px] font-semibold text-gray-800">Kaira <span className="font-normal">- Your Travel buddy</span></span>
   </div>
 
   {/* History & New Chat icons — replacing Settings */}
   <div className="flex items-center gap-2">
     {/* New Chat */}
-    <div className="relative icon-button-wrapper">
+    {/* <div className="relative icon-button-wrapper">
       <IconButton
         onClick={(e) => {
           newSessionStart();
@@ -218,10 +218,10 @@ React.useEffect(() => {
       >
         New chat
       </div>
-    </div>
+    </div> */}
 
     {/* History */}
-    <div className="relative icon-button-wrapper">
+    {/* <div className="relative icon-button-wrapper">
       <IconButton
         onClick={(e) => {
           handleOpenChatHistory();
@@ -249,7 +249,7 @@ React.useEffect(() => {
       >
         History
       </div>
-    </div>
+    </div> */}
   </div>
 </div>: null}
 

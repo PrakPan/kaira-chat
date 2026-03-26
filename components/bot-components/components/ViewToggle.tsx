@@ -15,7 +15,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
       >
         <button
           onClick={() => setViewMode("map")}
-          className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+          className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
             viewMode === "map"
               ? "text-white"
               : "text-black"
@@ -48,7 +48,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
         </button>
         <button
           onClick={() => setViewMode("itinerary")}
-          className={`flex-1 px-4 py-1 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+          className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
             viewMode === "itinerary"
               ? "text-white"
               : "text-black"

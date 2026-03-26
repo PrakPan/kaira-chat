@@ -62,6 +62,34 @@ const BackContainer = styled.div`
   }
 `;
 
+/* ─── Reusable SVG sub-components ──────────────────────────────────────── */
+const PlusCircleIcon = ({ id }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="none">
+    <g clipPath={`url(#${id})`}>
+      <path d="M13.2022 9.89942C13.2021 9.74474 13.1407 9.5964 13.0313 9.48703C12.9219 9.37765 12.7736 9.3162 12.6189 9.31617L10.4856 9.31618L10.4856 7.18284C10.4829 7.02991 10.4203 6.88414 10.3112 6.77693C10.2021 6.66972 10.0553 6.60964 9.90233 6.60964C9.74937 6.60964 9.60254 6.66972 9.49345 6.77693C9.38436 6.88414 9.32174 7.02991 9.31908 7.18284L9.31908 9.31618L7.18574 9.31618C7.03281 9.31884 6.88704 9.38146 6.77983 9.49055C6.67262 9.59964 6.61254 9.74647 6.61254 9.89942C6.61254 10.0524 6.67262 10.1992 6.77983 10.3083C6.88704 10.4174 7.03281 10.48 7.18574 10.4827L9.31908 10.4827L9.31908 12.616C9.32174 12.7689 9.38435 12.9147 9.49344 13.0219C9.60253 13.1291 9.74937 13.1892 9.90232 13.1892C10.0553 13.1892 10.2021 13.1291 10.3112 13.0219C10.4203 12.9147 10.4829 12.7689 10.4856 12.616L10.4856 10.4827L12.6189 10.4827C12.7736 10.4826 12.9219 10.4212 13.0313 10.3118C13.1407 10.2024 13.2021 10.0541 13.2022 9.89942Z" fill="#07213A" />
+      <path d="M14.8492 4.94975C13.8703 3.97078 12.623 3.3041 11.2651 3.034C9.90726 2.7639 8.4998 2.90253 7.22071 3.43234C5.94163 3.96215 4.84838 4.85936 4.07921 6.01051C3.31004 7.16165 2.8995 8.51503 2.8995 9.8995C2.8995 11.284 3.31004 12.6373 4.07921 13.7885C4.84838 14.9396 5.94163 15.8368 7.22071 16.3667C8.4998 16.8965 9.90726 17.0351 11.2651 16.765C12.623 16.4949 13.8703 15.8282 14.8492 14.8492C16.1601 13.5355 16.8964 11.7554 16.8964 9.8995C16.8964 8.0436 16.1601 6.26349 14.8492 4.94975ZM5.77471 14.0243C4.9589 13.2085 4.40333 12.1691 4.17825 11.0375C3.95317 9.90597 4.06869 8.73308 4.5102 7.66718C4.95171 6.60128 5.69938 5.69023 6.65867 5.04926C7.61796 4.40828 8.74577 4.06616 9.8995 4.06616C11.0532 4.06616 12.181 4.40828 13.1403 5.04926C14.0996 5.69023 14.8473 6.60128 15.2888 7.66718C15.7303 8.73308 15.8458 9.90597 15.6207 11.0375C15.3957 12.1691 14.8401 13.2085 14.0243 14.0243C12.9295 15.1167 11.4461 15.7302 9.8995 15.7302C8.35292 15.7302 6.8695 15.1167 5.77471 14.0243Z" fill="#07213A" />
+    </g>
+    <defs>
+      <clipPath id={id}>
+        <rect width="14" height="14" fill="white" transform="translate(9.8995) rotate(45)" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+const StarIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 14 13" fill="none">
+  <path d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z" fill="#F7E700" stroke="#C1A51B" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+);
+
+const EditIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 14 14" fill="none">
+    <path d="M9.917 1.75L12.25 4.083M1.75 12.25l.583-2.333 7-7 2.334 2.333-7 7-2.917.583z" stroke="#111827" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/* ─── Main component ────────────────────────────────────────────────────── */
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(true);
   const { token } = useSelector((state) => state.auth);
@@ -72,11 +100,9 @@ const ItineraryCity = (props) => {
     (state) => state.ItineraryStatus,
   );
 
-  // State for POI drawer data
   const [dayByDay, setDayByDay] = useState(null);
   const [dayByDayIndex, setDayByDayIndex] = useState(0);
 
-  // State for Sightseeing/Taxi drawer
   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
   const [taxiData, setTaxiData] = useState(null);
   const [taxiLoading, setTaxiLoading] = useState(false);
@@ -107,7 +133,6 @@ const ItineraryCity = (props) => {
     city_id,
   } = router?.query;
 
-  // Use cityHotels and totalDuration from props instead of calculating locally
   const multiHotelStays =
     props.cityHotels ||
     stay?.filter((hotel) => {
@@ -126,7 +151,6 @@ const ItineraryCity = (props) => {
     setImages(images);
   };
 
-  // Initialize dayByDay data from city prop
   useEffect(() => {
     let dayByDayArray = [];
     var idx = 0;
@@ -142,7 +166,6 @@ const ItineraryCity = (props) => {
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
-  // Update dayByDayIndex when poi_id changes
   useEffect(() => {
     if (
       drawer === "showPoiDetail" &&
@@ -152,17 +175,14 @@ const ItineraryCity = (props) => {
       String(itinerary_city_id) === String(props.city.id)
     ) {
       const foundIndex = dayByDay.findIndex((item) => {
-        // For activities with bookings, match against booking.id
         if (item?.booking?.id) {
           return String(item.booking.id) === String(poi_id);
         }
-        // For POIs or activities without bookings, match against poi or activity id
         return (
           String(item?.poi) === String(poi_id) ||
           String(item?.activity) === String(poi_id)
         );
       });
-
       if (foundIndex !== -1) {
         setDayByDayIndex(foundIndex);
       }
@@ -174,20 +194,13 @@ const ItineraryCity = (props) => {
       props?.setShowLoginModal(true);
       return;
     }
-    // if(id != customer){
-    //     dispatch(setCloneItineraryDrawer(true));
-    //     return;
-    // }
-
     setShowDetails(true);
     setLoading(true);
-
     const targetHotelId =
       hotelId || stay?.[props?.index]?.id || multiHotelStays?.[0]?.id;
-
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: router.asPath.split("?")[0],
         query: {
           drawer: "showHotelDetail",
           idx: props?.index,
@@ -196,21 +209,14 @@ const ItineraryCity = (props) => {
         },
       },
       undefined,
-      {
-        scroll: false,
-      },
+      { scroll: false },
     );
-
     setLoading(false);
   };
 
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
     if (token) {
-      // if(id != customer){
-      //   dispatch(setCloneItineraryDrawer(true));
-      //   return;
-      // }
       const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
       props?.handleClickAc(
         index !== -1 ? index : props?.index,
@@ -237,8 +243,8 @@ const ItineraryCity = (props) => {
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
-        query: {}, // remove "drawer"
+        pathname: router.asPath.split("?")[0],
+        query: {},
       },
       undefined,
       { scroll: false },
@@ -251,7 +257,6 @@ const ItineraryCity = (props) => {
     }
   }, []);
 
-  // Handle delete for taxi/sightseeing booking
   const handleDeleteTaxi = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
@@ -272,12 +277,10 @@ const ItineraryCity = (props) => {
           },
         },
       );
-
       if (response.status === 204) {
         dispatch(updateTransferBookings(dataPassed?.id));
         setTaxiLoading(false);
         props?.getPaymentHandler();
-
         setHandleShowTaxi(false);
         handleCloseDrawer();
         dispatch(
@@ -304,7 +307,6 @@ const ItineraryCity = (props) => {
     }
   };
 
-  // Activity data for POI drawer
   const activityData = {
     id: poi_id,
     type: type,
@@ -312,171 +314,131 @@ const ItineraryCity = (props) => {
     index: index,
   };
 
+  // Derived: hotel row is visible
+  const hotelExists =
+    multiHotelStays &&
+    multiHotelStays.length > 0 &&
+    hotels_status === "SUCCESS" &&
+    !!multiHotelStays?.[0]?.id;
+
   return (
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="rounded-lg flex flex-col w-full bg-white border border-[#E5E7EB]"
+      className="rounded-lg flex flex-col w-full bg-white border-[0.5px] border-[#e5e5e5]"
     >
-      <div className="flex items-start justify-between px-4 pt-4 pb-3 w-full border-b border-[#EBEBEB]">
-        <div className="space-y-1 font-inter w-full">
-          <div className={`md:text-[18px] font-semibold leading-0`}>
-            {props?.city?.city?.name}
-            {" - "}
-            {multiHotelDuration} {multiHotelDuration > 1 ? "Nights" : "Night"}{" "}
-            {props?.city?.duration === 0 ? "(Transit City)" : ""}
-          </div>
-          {hotels_status === "PENDING" ? (
-            <div className="flex flex-col animate-pulse">
-              <div className="flex flex-col gap-1 ">
-                <div className="flex items-center gap-2">
-                  <SkeletonCard
-                    width="100px"
-                    height="25px"
-                    borderRadius="8px"
-                    variant="default"
-                  />
-                  <SkeletonCard
-                    width="20px"
-                    height="15px"
-                    borderRadius="8px"
-                    variant="default"
-                  />
-                  <SkeletonCard
-                    width="100px"
-                    height="25px"
-                    borderRadius="8px"
-                    variant="default"
-                  />
-                </div>
-                <div className="flex flex-row items-center mt-2 gap-2">
-                  <SkeletonCard
-                    width="30px"
-                    height="15px"
-                    borderRadius="50%"
-                    variant="default"
-                  />
-                  <SkeletonCard
-                    width="150px"
-                    height="15px"
-                    borderRadius="8px"
-                    variant="default"
-                  />
-                </div>
-              </div>
-            </div>
-          ) : multiHotelStays &&
-            multiHotelStays.length > 0 &&
-            hotels_status === "SUCCESS" &&
-            multiHotelStays?.[0]?.id ? (
-            <div className="flex justify-between"></div>
-          ) : (
-            <button
-              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
-              onClick={(e) =>
-                handleStay(e, "Add", props.city.city.name, "Add", null)
-              }
-            >
-              + Add Stay in {props?.city?.city?.name}
-            </button>
-          )}
-          <div className="flex flex-col gap-2">
-            {multiHotelStays?.map((hotel, hotelIndex) => {
-              return (
-                <div key={hotel.id} className="flex flex-col gap-1">
-                  <div className="flex flex-row">
-                    {hotel?.name && (
-                      <>
-                        <div className="flex gap-2 pr-[8px] ">
-                          {/* <Image
-                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
-                        height={22}
-                        width={22}
-                        className="object-contain"
-                        alt="Hotel Icon"
-                      /> */}
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="21"
-                            height="21"
-                            viewBox="0 0 21 21"
-                            fill="none"
-                          >
-                            <g opacity="0.3">
-                              <path
-                                d="M19.25 18.25V1.25C19.25 0.984784 19.1446 0.73043 18.9571 0.542893C18.7696 0.355357 18.5152 0.25 18.25 0.25H8.25C7.98478 0.25 7.73043 0.355357 7.54289 0.542893C7.35536 0.73043 7.25 0.984784 7.25 1.25V18.25H4.25V14.25H5.25C5.51522 14.25 5.76957 14.1446 5.95711 13.9571C6.14464 13.7696 6.25 13.5152 6.25 13.25V8.25C6.25 7.98478 6.14464 7.73043 5.95711 7.54289C5.76957 7.35536 5.51522 7.25 5.25 7.25H1.25C0.984784 7.25 0.73043 7.35536 0.542893 7.54289C0.355357 7.73043 0.25 7.98478 0.25 8.25V13.25C0.25 13.5152 0.355357 13.7696 0.542893 13.9571C0.73043 14.1446 0.984784 14.25 1.25 14.25H2.25V18.25H1.25C0.984784 18.25 0.73043 18.3554 0.542893 18.5429C0.355357 18.7304 0.25 18.9848 0.25 19.25C0.25 19.5152 0.355357 19.7696 0.542893 19.9571C0.73043 20.1446 0.984784 20.25 1.25 20.25H19.25C19.5152 20.25 19.7696 20.1446 19.9571 19.9571C20.1446 19.7696 20.25 19.5152 20.25 19.25C20.25 18.9848 20.1446 18.7304 19.9571 18.5429C19.7696 18.3554 19.5152 18.25 19.25 18.25ZM2.25 9.25H4.25V12.25H2.25V9.25ZM12.25 18.25V15.25C12.25 14.9848 12.3554 14.7304 12.5429 14.5429C12.7304 14.3554 12.9848 14.25 13.25 14.25C13.5152 14.25 13.7696 14.3554 13.9571 14.5429C14.1446 14.7304 14.25 14.9848 14.25 15.25V18.25H12.25ZM16.25 18.25V15.25C16.25 14.4544 15.9339 13.6913 15.3713 13.1287C14.8087 12.5661 14.0456 12.25 13.25 12.25C12.4544 12.25 11.6913 12.5661 11.1287 13.1287C10.5661 13.6913 10.25 14.4544 10.25 15.25V18.25H9.25V2.25H17.25V18.25H16.25Z"
-                                fill="black"
-                                stroke="white"
-                                stroke-width="0.5"
-                              />
-                              <path
-                                d="M12.25 4.25H10.25V6.25H12.25V4.25Z"
-                                fill="black"
-                              />
-                              <path
-                                d="M16.25 4.25H14.25V6.25H16.25V4.25Z"
-                                fill="black"
-                              />
-                              <path
-                                d="M12.25 8.25H10.25V10.25H12.25V8.25Z"
-                                fill="black"
-                              />
-                              <path
-                                d="M16.25 8.25H14.25V10.25H16.25V8.25Z"
-                                fill="black"
-                              />
-                            </g>
-                          </svg>
+      {/* ── Card header ─────────────────────────────────────────────────── */}
+      <div className="px-4 pt-4 pb-3 w-full border-b border-[#EBEBEB] font-inter">
 
-                          <div
-                            className="text-[14px] font-400 leading-0  cursor-pointer"
-                            onClick={() => fetchDetails(hotel.id)}
-                          >
-                            {hotel?.name}
-                          </div>
-                        </div>
-                        <div className="flex flex-row items-center pl-[8px] ">
-                          <div className="text-[#000] text-[12px] ml-1 mr-1 font-[500]">
-                            {hotel?.rating && hotel?.rating !== 0
-                              ? hotel?.rating
-                              : null}{" "}
-                          </div>
-                          {hotel?.rating && hotel?.rating !== 0 ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                            >
-                              <g clip-path="url(#clip0_7525_2497)">
-                                <path
-                                  d="M9.944 6.4L8 0L6.056 6.4H0L4.944 9.928L3.064 16L8 12.248L12.944 16L11.064 9.928L16 6.4H9.944Z"
-                                  fill="#F7E700"
-                                />
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_7525_2497">
-                                  <rect width="16" height="16" fill="white" />
-                                </clipPath>
-                              </defs>
-                            </svg>
-                          ) : null}{" "}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+        {/*
+          Row 1
+          LEFT : City name (bold, truncated)
+          RIGHT: [+ Activity] [+ Taxi] — always aligned to city name baseline
+        */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="md:text-[18px] text-[16px] font-semibold leading-snug truncate min-w-0">
+            {props?.city?.city?.name}
+            {props?.city?.duration === 0 ? " (Transit City)" : ""}
           </div>
+
+          {!(itineraryDaybyDay.status == "Draft") && <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => console.log("Add Activity clicked")}
+              className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
+            >
+              <PlusCircleIcon id="act_ic" />
+              Activity
+            </button>
+            <button
+              onClick={() => console.log("Add Taxi clicked")}
+              className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
+            >
+              <PlusCircleIcon id="taxi_ic" />
+              Taxi
+            </button>
+          </div>}
         </div>
 
-        <button
-          onClick={() => setViewMore((prev) => !prev)}
-          className="flex items-center text-sm font-semibold"
-        ></button>
+        {/*
+          Row 2
+          LEFT : Hotel name (truncated) • X Days, Y Night • rating ★
+          RIGHT: ✏ Change Hotel — aligned to the same row as hotel info
+        */}
+        <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
+
+          {/* Left side */}
+          <div className="flex items-center min-w-0 flex-1 overflow-hidden">
+
+            {hotels_status === "PENDING" ? (
+              <div className="flex items-center gap-2 animate-pulse">
+                <SkeletonCard width="110px" height="14px" borderRadius="6px" variant="default" />
+                <SkeletonCard width="80px"  height="14px" borderRadius="6px" variant="default" />
+                <SkeletonCard width="36px"  height="14px" borderRadius="6px" variant="default" />
+              </div>
+
+            ) : hotelExists ? (
+              <div className="flex flex-col gap-1 min-w-0 w-full">
+                {multiHotelStays.map((hotel) => (
+                  <div key={hotel.id} className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0">
+
+                    {/* Hotel name — truncated, full name on title tooltip */}
+                    <span
+                      className="underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
+                      onClick={() => fetchDetails(hotel.id)}
+                      title={hotel?.name}
+                    >
+                      {hotel?.name}
+                    </span>
+
+                    <span className="text-[#6B7280] shrink-0">•</span>
+
+                    {/* Duration — never wraps */}
+                    <span className="shrink-0 whitespace-nowrap">
+                      {multiHotelDuration + 1}{" "}
+                      {multiHotelDuration + 1 > 1 ? "Days" : "Day"},{" "}
+                      {multiHotelDuration}{" "}
+                      {multiHotelDuration > 1 ? "Nights" : "Night"}
+                    </span>
+
+                    {/* Rating + star */}
+                    {hotel?.rating && hotel?.rating !== 0 ? (
+                      <>
+                        <span className="text-[#6B7280] shrink-0">•</span>
+                        <span className="font-[500] shrink-0">{hotel.rating}</span>
+                        <StarIcon />
+                      </>
+                    ) : null}
+
+                  </div>
+                ))}
+              </div>
+
+            ) : (
+              !(itineraryDaybyDay.status == "Draft") && <button
+                className="text-blue cursor-pointer text-[14px] font-medium hover:underline whitespace-nowrap"
+                onClick={(e) =>
+                  handleStay(e, "Add", props.city.city.name, "Add", null)
+                }
+              >
+                + Add Stay in {props?.city?.city?.name}
+              </button>
+            )}
+          </div>
+
+          {/* Right side: Change Hotel — only when hotel row is visible */}
+          {hotelExists && !(itineraryDaybyDay.status == "Draft") && (
+            <button
+              onClick={() => console.log("Change Hotel clicked")}
+              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+            >
+              <EditIcon />
+              Change Hotel
+            </button>
+          )}
+        </div>
+
       </div>
+      {/* ── End header ──────────────────────────────────────────────────── */}
 
       {viewMore ? (
         <>
@@ -490,6 +452,7 @@ const ItineraryCity = (props) => {
             intracityBookings={props?.intracityBookings}
             nextCity={props?.nextCity}
             setShowCityDrawer={props?.setShowCityDrawer}
+            isDraft={props?.isDraft}
           />
         </>
       ) : (
@@ -510,14 +473,7 @@ const ItineraryCity = (props) => {
         />
       )}
 
-      {/* <div className={`${isDesktop ? "pl-[34px] pr-[17px]" : "px-[10px]"}  pb-[24px]  bg-[#FBFBFB]`}>
-       <div className="p-[10px] bg-white flex gap-[10px] items-center rounded-[8px] shadow-sm">
-            <Image src="/checkout.png" alt="checkout" height={47} width={71}/>
-            <div className="Body2M_14">This is your check out day in {props?.city?.city?.name}, take a {transferBookings?.intercity?.[`${props?.city?.id}:${props?.nextCity?.id || props?.nextCity?.gmaps_place_id}`]?.booking_type || "transfer"} to {props?.nextCity?.city?.name || itineraryDaybyDay?.end_city?.name}.</div>
-          </div>
-      </div> */}
-
-      {/* POI Details Drawer - Only render for matching city */}
+      {/* POI Details Drawer */}
       {drawer === "showPoiDetail" &&
         String(itinerary_city_id) === String(props.city.id) &&
         dayByDay &&
@@ -548,7 +504,7 @@ const ItineraryCity = (props) => {
           />
         )}
 
-      {/* Sightseeing/Taxi Drawer - Only render for matching city */}
+      {/* Sightseeing/Taxi Drawer */}
       {drawer === "SightSeeing" &&
         String(itinerary_city_id) === String(props.city.id) &&
         bookingId && (

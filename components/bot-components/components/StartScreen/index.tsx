@@ -255,10 +255,8 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[250px] aspect-[200/217]"
       style={{
-        width: "220px",
-        height: "260px",
         animation: mounted
           ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
           : "none",
@@ -338,10 +336,8 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[250px] aspect-[200/217]"
       style={{
-        width: "220px",
-        height: "260px",
         animation: mounted
           ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
           : "none",
@@ -371,17 +367,16 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
         }}
       />
 
-      {/* Urgency badge — top right */}
-      <div
-        className="absolute top-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-semibold"
-        style={{
-          background: "rgba(251,191,36,0.92)",
-          color: "#1c1917",
-          backdropFilter: "blur(4px)",
-        }}
-      >
-        {trip.sublabel}
-      </div>
+    <div
+  className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[6px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
+  style={{
+    background: "#F7E700",
+    color: "#07213A",
+    fontFamily: "Inter",
+  }}
+>
+  {trip.sublabel}
+</div>
 
       <div className="absolute bottom-3 left-3 right-3 text-left">
         <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">

@@ -114,7 +114,7 @@ const activePlaceholder =
   return (
     <div
       style={{
-        borderRadius: 14,
+        borderRadius: 24,
         border: "1.5px solid #e5e7eb",
         background: "#fff",
         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
