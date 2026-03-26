@@ -87,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       <div
         className="absolute left-0 top-0 h-full flex flex-col bg-white overflow-visible pb-[50px] z-[160] shadow-md flex-shrink-0 transition-all duration-300 ease-in-out"
-        style={{ width: isCollapsed ? 64 : "14rem" }}
+        style={{ width: isCollapsed ? 64 : "14rem"}}
       >
         {/* Logo + Toggle */}
         <div
@@ -144,7 +144,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+       <nav
+  className={`flex-1 px-3 py-4 ${
+    isCollapsed ? "overflow-hidden" : "overflow-y-auto"
+  }`}
+>
           {/* New Chat */}
           <button
             onClick={onNewChat}

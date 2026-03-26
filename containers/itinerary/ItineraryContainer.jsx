@@ -56,6 +56,7 @@ const Container = styled.div`
   width: 100%;
   padding: 17px 16px 0 16px;
   max-width: 100vw;
+
   @media screen and (min-width: 768px) {
     width: ${props => props.fromChat ? '100%' : '95%'};
     margin: ${props => props.fromChat ? '0' : '-0.2vh auto 0 1rem'};
@@ -287,11 +288,13 @@ const ItineraryContainer = (props) => {
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
   const fetchDataRef = useRef(null);
+  const instanceIdRef = useRef(0);
 
    const cityTransferBookings = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
   const { isOpen } = useSelector((state) => state.cloneItinerary);
+  const Itinerary= useSelector(state=>state.Itinerary);
 
   // ── craft-a-similar-trip query handler ────────────────────────────────────
   useEffect(() => {
@@ -718,7 +721,7 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-  async function fetchData(poll) {
+  async function fetchData(poll, instanceId) {
       const currentId = props.id || router.query.id;
   if (!currentId || currentId === "draft" || currentId === "undefined") {
     return;  
@@ -726,94 +729,81 @@ const ItineraryContainer = (props) => {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
-    const fetchStatus = async () => {
-      try {
-        const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
-        const status = res.data?.celery;
+const fetchStatus = async () => {
 
-        setDisplayText(status?.display_text || null);
-        setConsecutiveErrors(0);
+  if (instanceId !== undefined && instanceId !== instanceIdRef.current) return;
 
-        if (status?.PRICING === "FAILURE") {
-          dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-          dispatch(setCurrency("INR"));
-        }
-        if (status?.TRANSFERS === "FAILURE") {
-          dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-        }
-        if (status?.HOTELS === "FAILURE") {
-          dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-        }
+  try {
 
-        const itineraryFailure = status?.ITINERARY === "FAILURE";
-        // const notPrepared = res.data?.status == "Not Prepared";
 
-        if (itineraryFailure) {
-          setPolling(false);
-          router.push("/thank-you");
-          return;
-        }
+    const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+    const status = res.data?.celery;
 
-        const allStatusesCompleted = [
-          "ITINERARY",
-          "TRANSFERS",
-          "PRICING",
-          "HOTELS",
-        ].every(
-          (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
-        );
+     if (instanceId !== undefined && instanceId !== instanceIdRef.current) return;
 
-        if (allStatusesCompleted) {
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-          dispatch(setItineraryStatus("final_status", res?.data?.status));
-          ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].forEach((key) => {
-            const statusValue = status?.[key];
-            const statusField = `${key.toLowerCase()}_status`;
-            dispatch(setItineraryStatus(statusField, statusValue));
-          });
-          if (props.id) {
-            fetchGallery();
-          }
+    setDisplayText(status?.display_text || null);
+    setConsecutiveErrors(0);
 
-          setPolling(false);
-          if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
-            setNotes(res.data.celery.notes);
-            setShowNotesPopup(true);
-          }
-        } else {
-          setPolling(true);
-        }
-
-        fetchItinerary(
-          status?.ITINERARY,
-          status?.HOTELS,
-          status?.TRANSFERS,
-          status?.PRICING
-        );
-      } catch (err) {
-        console.error(
-          "[ERROR]: axiosGetItineraryStatus: ",
-          err.message,
-          err.response?.status
-        );
-
-        if (
-          err.response?.data?.errors?.[0]?.message?.[0]?.includes(
-            "Itinerary matching query does not exist"
-          )
-        ) {
-          setPolling(false);
-          setItineraryLoading(false);
-          setOldOne(true);
-
-          // router.push(`/itinerary/v1/${props.id}`);
-
-          return;
-        }
-
-        handleApiError();
-      }
+    // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
+    const statusMap = {
+      itinerary_status: status?.ITINERARY,
+      hotels_status:    status?.HOTELS,
+      transfers_status: status?.TRANSFERS,
+      pricing_status:   status?.PRICING,
     };
+    Object.entries(statusMap).forEach(([key, val]) => {
+      if (val) dispatch(setItineraryStatus(key, val));
+    });
+    // ─────────────────────────────────────────────────────────────────────────
+
+    const itineraryFailure = status?.ITINERARY === "FAILURE";
+    if (itineraryFailure) {
+      setPolling(false);
+      router.push("/thank-you");
+      return;
+    }
+
+    const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
+      (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+    );
+
+    if (allStatusesCompleted) {
+      dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+      dispatch(setItineraryStatus("final_status", res?.data?.status));
+      if (props.id) fetchGallery();
+      setPolling(false);
+      if (res.data?.celery?.notes && res.data.celery?.notes.length > 0) {
+        setNotes(res.data.celery.notes);
+        setShowNotesPopup(true);
+      }
+    } else {
+      setPolling(true);
+    }
+
+    // ── 3. fetchItinerary now runs with redux already reflecting real status ─
+    fetchItinerary(
+      status?.ITINERARY,
+      status?.HOTELS,
+      status?.TRANSFERS,
+      status?.PRICING
+    );
+  } catch (err) {
+    console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
+
+    if (
+      err.response?.data?.errors?.[0]?.message?.[0]?.includes(
+        "Itinerary matching query does not exist"
+      )
+    ) {
+      setPolling(false);
+      setItineraryLoading(false);
+      setOldOne(true);
+      return;
+    }
+
+    handleApiError();
+  }
+};
 
     const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
       try {
@@ -932,33 +922,47 @@ useEffect(() => {
   if (!currentId || currentId === "draft" || currentId === "undefined") return;
   if (props.skipPolling) return;
 
+  // Bump instance ID — any in-flight poll with a stale ID will bail out
+  const thisInstance = ++instanceIdRef.current;
+
+  // Reset refs
   itinerarySuccessRef.current = false;
   pricingSuccessRef.current = false;
   transfersSuccessRef.current = false;
   hotelsSuccessRef.current = false;
+
+  // Wipe redux ONCE here, not inside the poll loop
+  dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+  dispatch(setItineraryStatus("hotels_status", "PENDING"));
+  dispatch(setItineraryStatus("transfers_status", "PENDING"));
+  dispatch(setItineraryStatus("pricing_status", "PENDING"));
+  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+  dispatch(setStays([]));
+  dispatch(setTransfersBookings(null));
+  dispatch(setItinerary({}));
+
   setItineraryLoading(true);
-  // Only collapse to blank if NOT in chat mode — in chat, skeleton stays visible
   if (!props.fromChat) {
     setShowMercuryItinerary(false);
   }
   setPolling(true);
-  fetchDataRef.current?.(true);
-}, [props.id, props.skipPolling, props.fromChat]);
+  fetchDataRef.current?.(true, thisInstance);
+}, [props.id, props.skipPolling]); // ← fromChat removed from deps
 
 
-    useEffect(() => {
-    if (props.skipPolling) return;
-    const currentId = props.id || router.query.id;
-    if (!currentId || currentId === "draft") return;
+useEffect(() => {
+  if (props.skipPolling) return;
+  const currentId = props.id || router.query.id;
+  if (!currentId || currentId === "draft") return;
 
-    let interval;
-    if (polling) {
-      interval = setInterval(() => {
-        fetchDataRef.current?.(true);
-      }, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [polling, props.skipPolling, props.id]);
+  let interval;
+  if (polling) {
+    interval = setInterval(() => {
+      fetchDataRef.current?.(true, instanceIdRef.current); // ← pass current instance
+    }, 5000);
+  }
+  return () => clearInterval(interval);
+}, [polling, props.skipPolling, props.id]);
 
 
   useEffect(() => {
@@ -1705,7 +1709,7 @@ useEffect(() => {
             setEditRoute={setEditRoute}
             getPaymentInfo={getPaymentInfo}
             cities={cities}
-            itinerary={props?.itinerary}
+            itinerary={Itinerary}
             setStayBookings={setStayBookings}
             setActivityBookings={setActivityBookings}
             shouldShowLoader={shouldShowLoader}
@@ -1719,6 +1723,7 @@ useEffect(() => {
             handlePaymentComponentClick={handlePaymentComponentClick}
             handleTransferComponentClick={handleTransferComponentClick}
             setShowSettings={setShowSettings}
+            showPins={props?.showPins}
           ></Menu>
         </div>
 

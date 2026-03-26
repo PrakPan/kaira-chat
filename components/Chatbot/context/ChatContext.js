@@ -27,7 +27,7 @@ const ChatContext = createContext();
 const localStorageKeyForSessionIds = "chatbotSessionIds";
 const localStorageKeyForceNewSession = "chatbotForceNewSession";
 
-export const ChatProvider = ({ itinearyId, children }) => {
+export const ChatProvider = ({ itinearyId, children, initialBotMessage }) => {
   const [conversations, setConversations] = useState([]);
   const [quickReplies, setQuickReplies] = useState([]);
   const [lastProductSliderPosition, setLastProductSliderPosition] = useState(0);
@@ -58,6 +58,13 @@ export const ChatProvider = ({ itinearyId, children }) => {
   const chatState = useSelector((state) => state.chatState);
 
 
+ useEffect(() => {
+  if (initialBotMessage?.trim()) {
+    // setConversations([{ message: initialBotMessage, is_bot: true }]);
+    setIsInitialized(true);
+    connect(null); 
+  }
+}, []);
 
   useEffect(() => {
     if (chatState?.shouldResetSession && chatState?.resetTimestamp) {

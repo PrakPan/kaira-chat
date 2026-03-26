@@ -9,10 +9,11 @@ import useChat from './hook/UseChat';
 
 
 const Container = styled.div`
-  padding: ${(props) => (props.ispopup ? '0px 16px' : '20px')};
+  padding: ${(props) => (props.ispopup ? '0px 16px' : '8px 14px')};
   // box-shadow: ${(props) => (props.ispopup ? 'none' : '0px 4px 24px 0px #B9B2B240')};
   position: relative;
-  height: ${(props) => (props.ispopup ? '100vh' : '100vh')};
+  border-left: 1px;
+  height: ${(props) => (props.ispopup ? '100vh' : '94vh')};
   // border-radius: 16px;
   overflow-y: hidden;
   background: #FFFFFF;
@@ -30,15 +31,12 @@ const Container = styled.div`
 // Outer wrapper
 function ChatBot(props) {
   const router = useRouter();
-  const itinearyId = router.query.id;
+  const itinearyId = props.itineraryId ?? router.query.id;
 
   return (
-
-
-      <ChatProvider itinearyId={itinearyId}>
+    <ChatProvider itinearyId={itinearyId} initialBotMessage={props.initialBotMessage}>
       <ChatBotContent ispopup={props.showAsPopup} hideDrawer={props?.hideDrawer} />
-      </ChatProvider>
-      
+    </ChatProvider>
   );
 }
 

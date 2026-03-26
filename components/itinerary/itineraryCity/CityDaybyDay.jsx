@@ -54,6 +54,7 @@ const CityDaybyDay = (props) => {
             isLastDay={index === props.city?.day_by_day.length - 1}
             setShowCityDrawer={props?.setShowCityDrawer}
             isInDrawer={true}
+            isDraft={props?.isDraft}
           />
         ))
       )}

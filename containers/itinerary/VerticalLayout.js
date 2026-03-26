@@ -1052,7 +1052,9 @@ const CityItem = ({
   check_in,
   check_out,
   date_of_journey,
-  fromChat
+  fromChat,
+  isDraft,
+  showPins
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -1161,6 +1163,8 @@ const CityItem = ({
       setTransferType(null);
     }
   }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
+
+  const Itinerary = useSelector(state =>state.Itinerary)
 
 useEffect(() => {
   const isDrawerClosed = !drawer;
@@ -1531,20 +1535,24 @@ useEffect(() => {
   ) || [];
 
 
-
   return (
     <Container className={`${isLast && "mb-[60px]"}`}>
-       <PinWrapper>
-  {upPresent && <VerticalLine height={"50px"} gradient="top" />}
+    {!(Itinerary.status == "Draft") ?  <PinWrapper>
+  {upPresent &&  <VerticalLine height={"50px"} gradient="top" />}
   {upPresent && downPresent ? (
     <div className="flex items-center justify-center">
       {/* {correctIcon(booking_type)} */}
     </div>
   ) : (
-    <Pin length={length} pinColour={"black"} inner={true} />
+   <Pin length={length} pinColour={"black"} inner={true} />
   )}
   {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
-</PinWrapper>
+</PinWrapper> :  <PinWrapper>
+ { upPresent && downPresent && !firstCity && !lastCity &&
+    <div className="flex items-center justify-center m-2 py-2">
+      <VerticalLine height={"50px"} gradient="top" />
+    </div>}
+</PinWrapper>}
      
 
       <div
@@ -1558,7 +1566,7 @@ useEffect(() => {
         >
           {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
 
-          {transfers_status === "PENDING" ? (
+          {transfers_status === "PENDING" && !(Itinerary.status == "Draft")  ? (
   upPresent && downPresent ? (
     <TransferSkeleton />
   ) : (
@@ -1608,9 +1616,11 @@ useEffect(() => {
                   upPresent && downPresent ? "group hover:cursor-pointer" : ""
                 }`}
                 onClick={() => {
+                  if(!(Itinerary.status == "Draft")){
                   upPresent &&
                     downPresent &&
                     handleEdit(transfer_type === "combo", booking);
+                  }
                 }}
               >
                 <div
@@ -1620,7 +1630,7 @@ useEffect(() => {
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
-                {upPresent && downPresent && (
+                {upPresent && downPresent && !(Itinerary.status == "Draft") && (
                   <div className="">
                     <FaPen
                       size={12}
@@ -1687,7 +1697,7 @@ useEffect(() => {
         <>
           {/* NO BOOKING - Show both CTAs */}
           {/* First CTA: Add Transfer */}
-          { isDraftMode ? 
+          { !(Itinerary.status == "Draft")  ? 
           isPageWide ? (
             <button
               onClick={handleAddTransfer}

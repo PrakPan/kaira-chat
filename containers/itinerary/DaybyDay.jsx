@@ -55,6 +55,8 @@ const DaybyDay = ({
   index,
   setShowSettings,
   setShowCityDrawer,
+  isDraft,
+  showPins,
   ...props
 }) => {
   const router = useRouter()
@@ -156,9 +158,12 @@ const DaybyDay = ({
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
             fromChat={props.fromChat}
+            isDraft={isDraft}
+            showPins={showPins}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
+            showPins={showPins}
             loadbookings={loadbookings}
             hotelName={startCity?.city_name}
             sourceGmaps={startCity?.gmaps_place_id}
@@ -257,6 +262,7 @@ const DaybyDay = ({
             getPaymentHandler={getPaymentHandler}
             firstCity={true}
             fromChat={props.fromChat}
+            isDraft={isDraft}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -315,6 +321,7 @@ const DaybyDay = ({
                   getPaymentHandler={getPaymentHandler}
                   setShowSettings={setShowSettings}
                   setShowCityDrawer={setShowCityDrawer}
+                  isDraft={isDraft}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
@@ -524,6 +531,8 @@ const DaybyDay = ({
             lastCity={true}
             date_of_journey={Itinerary?.end_date}
             fromChat={props.fromChat}
+            isDraft={isDraft}
+            showPins={showPins}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
@@ -543,6 +552,8 @@ const DaybyDay = ({
             getPaymentHandler={getPaymentHandler}
             isLast={true}
             fromChat={props.fromChat}
+            isDraft={isDraft}
+            showPins={showPins}
           />
         </div>
       </div>
