@@ -78,7 +78,7 @@ export interface TransfersData {
 }
 
 // UI Types
-export type ViewMode = "map" | "itinerary";
+export type ViewMode = "map" | "itinerary" | "routes" | "bookings";
 export type BotMode = "p1" | "p2";
 
 // Component Props Types

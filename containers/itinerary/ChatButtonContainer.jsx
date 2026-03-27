@@ -38,7 +38,7 @@ function ChatButtonContainer({ onOpenChat }) {
     <div className="relative">
       <Button borderWidth="0px" onclick={handleClick}>
         <Image
-          src={"/assets/chatbot/chatbot-avaatar.svg"}
+          src={"/KairaInsta.png"}
           alt="ticket"
           width={80}
           height={80}

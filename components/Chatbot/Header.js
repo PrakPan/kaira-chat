@@ -47,7 +47,7 @@ const ButtonWrapper = styled.div`
 
 function Header(props) {
   const cachedAvatar = useCachedImage(
-    "/assets/chatbot/chatbot-avaatar.svg",
+    "/KairaInsta.png",
     "chatbot-avatar",
     24 * 60 * 60 * 1000
   );
@@ -182,9 +182,9 @@ React.useEffect(() => {
         <div className="flex-shrink-0 flex items-center justify-between py-1 bg-white/80 backdrop-blur-sm border-b  border-gray-200">
   <div className="flex items-center gap-2">
     <div className="w-7 h-7 rounded-full flex items-center justify-center">
-      <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
+      <img src="/KairaInsta.png" alt="Kaira" />
     </div>
-     <span className="text-sm md:text-[14px] font-semibold text-gray-800">Kaira <span className="font-normal">- Your Travel buddy</span></span>
+     <span className="text-sm md:text-[14px] font-semibold text-gray-800">Chat with Kaira  <span className="font-normal">- Your AI Trip Planner</span></span>
   </div>
 
   {/* History & New Chat icons — replacing Settings */}
