@@ -939,12 +939,12 @@ useEffect(() => {
   dispatch(setItineraryStatus("finalized_status", "PENDING"));
   dispatch(setStays([]));
   dispatch(setTransfersBookings(null));
-  dispatch(setItinerary({}));
+  // dispatch(setItinerary({}));
 
   setItineraryLoading(true);
-  if (!props.fromChat) {
-    setShowMercuryItinerary(false);
-  }
+  // if (!props.fromChat) {
+  //   setShowMercuryItinerary(false);
+  // }
   setPolling(true);
   fetchDataRef.current?.(true, thisInstance);
 }, [props.id, props.skipPolling]); // ← fromChat removed from deps

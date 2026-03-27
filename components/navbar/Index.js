@@ -53,7 +53,6 @@ const Navbar = ((props) => {
     setScrollbarInstance(newScrollbarInstance);
   }, [isPageWide, props.overflow]);
 
-  console.log("show login is: ",props.showLogin)
 
   useEffect(() => {
     let prevScroll = window.pageYOffset;
