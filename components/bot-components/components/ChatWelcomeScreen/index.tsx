@@ -74,7 +74,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
       {/* Avatar */}
       <img
-        src="/assets/chatbot/chatbot-avaatar.svg"
+        src="/KairaInsta.png"
         alt="Kaira"
         width="112"
         height="112"

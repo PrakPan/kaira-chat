@@ -60,7 +60,7 @@ export const ChatProvider = ({ itinearyId, children, initialBotMessage }) => {
 
  useEffect(() => {
   if (initialBotMessage?.trim()) {
-    // setConversations([{ message: initialBotMessage, is_bot: true }]);
+    setConversations([{ message: initialBotMessage, is_bot: true }]);
     setIsInitialized(true);
     connect(null); 
   }

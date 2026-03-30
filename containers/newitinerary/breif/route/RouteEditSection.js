@@ -764,14 +764,18 @@ const handleRouteTabClick = (label) => {
     },
   });
 };
-  return (
-    <>
-      <div
-        onClick={(e) => handleOutsideClick(e)}
-        className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
-      >
+ return (
+  <>
+    <div
+      onClick={(e) => handleOutsideClick(e)}
+      className={
+        props.fromChat
+          ? "flex flex-col items-center w-full h-full overflow-y-auto"
+          : "inset-0 flex flex-col items-center bg-white"
+      }
+    >
         {/* {loading && <Loader />} */}
-        <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
+        {/* <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
         <Header
           setEdit={props.setEdit}
           title={props?.itinerary.name}
@@ -818,11 +822,11 @@ const handleRouteTabClick = (label) => {
           selectedItem={activeRouteTab}
           trackSectionViewed={trackSectionViewed}
         />
-      </div>
+      </div> */}
 
 
         {itineraryLoading && <Spinner isEdit={true} />}
-        {!isDesktop && (
+        {!props.fromChat && !isDesktop && (
           <>
             <div
               className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}
@@ -868,7 +872,7 @@ const handleRouteTabClick = (label) => {
                   setLocationsLatLong={props.setLocationsLatLong}
                   setDestinationChanges={setDestinationChanges}
                 />
-                {isDesktop && (
+                {!props.fromChat &&  isDesktop && (
                   <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
                     {props.children}
 
@@ -2780,7 +2784,7 @@ export const ActionPanel = (props) => {
         color="white"
         disabled={!destinationChanges}
         style={{
-          maxWidth: isDesktop ? "500px" : "50%",
+          maxWidth: isDesktop ? "200px" : "50%",
           width: "100%",
           fontSize: isDesktop ? "1rem" : "0.8rem"
         }}

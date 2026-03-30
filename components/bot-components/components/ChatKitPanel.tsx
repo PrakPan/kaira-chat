@@ -542,9 +542,9 @@ useEffect(() => {
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full flex items-center justify-center">
-            <img src="/assets/chatbot/chatbot-avaatar.svg" alt="Kaira" />
+            <img src="/KairaInsta.png" alt="Kaira" />
           </div>
-          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Kaira <span className="font-normal">- Your Travel buddy</span></span>
+          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Chat with Kaira <span className="font-normal">- Your AI Trip Planner</span></span>
           {isLoadingLocation && (
             <span className="text-[11px] text-gray-400 flex items-center gap-1">
               <Spinner size={10} /> locating…
