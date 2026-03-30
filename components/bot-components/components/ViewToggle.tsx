@@ -35,6 +35,29 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
         >
           Map
         </button>
+
+         {!(itinerary?.status == "Draft") &&  <button
+          onClick={() => setViewMode("routes")}
+          className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+            viewMode === "routes"
+              ? "text-white"
+              : "text-black"
+          }`}
+          style={
+            viewMode === "routes"
+              ? {
+                  borderRadius: "10px",
+                  border: "1px solid #FFFACD",
+                  background: "#07213A",
+                  boxShadow: "0 2px 8px rgba(195, 195, 195, 0.35)",
+                }
+              : { borderRadius: "10px" }
+          }
+        >
+
+          Routes
+        </button>}
+        
         <button
           onClick={() => setViewMode("itinerary")}
           className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
@@ -57,7 +80,10 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
           Itinerary
         </button>
 
-        { !(itinerary?.status == "Draft") && <><button
+       
+
+        { !(itinerary?.status == "Draft") && <>
+        {/* <button
           onClick={() => setViewMode("routes")}
           className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
             viewMode === "routes"
@@ -77,7 +103,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode }) => {
         >
 
           Routes
-        </button>
+        </button> */}
         <button
           onClick={() => setViewMode("bookings")}
           className={`flex-1 px-4 py-2 text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 ${

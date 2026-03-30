@@ -101,28 +101,110 @@ function resolveEntityTokens(
 
 // ─── ProgressLoader ───────────────────────────────────────────────────────────
 
-const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "8px 0" }}>
-    {steps.map((step, i) => (
-      <div key={i} style={{
-        display: "flex", alignItems: "center", gap: 8,
-        fontFamily: "'Inter', sans-serif", fontSize: 13,
-        color: step.done ? "#9ca3af" : "#374151",
+const ProgressLoader: React.FC<{ steps: ProgressStep[] }> = ({ steps }) => {
+  const [expanded, setExpanded] = useState(false);
+  const allDone = steps.length > 0 && steps.every((s) => s.done);
+  const latest = steps[steps.length - 1];
+  if (!latest) return null;
+
+  // ── In-progress: bordered card with bulb + current message ──
+  if (!allDone) {
+    return (
+      <div style={{
+        marginBottom: 12,
+        borderRadius: 12,
+        border: "1px solid #e5e7eb",
+        background: "#ffffff",
+        padding: "10px 14px 12px",
+        fontFamily: "'Inter', sans-serif",
       }}>
-        {step.done ? (
-          <svg width="14" height="14" viewBox="0 0 20 20" fill="#10b981">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21h6M12 3a6 6 0 0 1 6 6c0 2.22-1.21 4.16-3 5.2V17a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.8C7.21 13.16 6 11.22 6 9a6 6 0 0 1 6-6z" />
           </svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin" style={{ color: "#6b7280" }}>
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="60" strokeDashoffset="20" />
+          <span style={{ fontSize: 14, color: "#6b7280", fontWeight: 500 }}>Thinking</span>
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="#9ca3af">
+            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
           </svg>
-        )}
-        <span>{step.text}</span>
+        </div>
+
+        <div key={latest.text} style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: "#374151",
+          paddingLeft: 2,
+          animation: "thinkFadeIn 0.15s ease-out",
+        }}>
+          {latest.text}
+        </div>
+
+        <style>{`
+          @keyframes thinkFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
-    ))}
-  </div>
-);
+    );
+  }
+
+  // ── Done: no card, collapsible toggle ──
+  return (
+    <div style={{ marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        style={{
+          display: "flex", alignItems: "center", gap: 6,
+          background: "none", border: "none", cursor: "pointer",
+          padding: 0, marginBottom: expanded ? 12 : 0,
+        }}
+      >
+        <span style={{ fontSize: 14, color: "#374151", fontWeight: 400 }}>
+          Searched {steps.length} {steps.length === 1 ? "query" : "queries"}
+        </span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="#9ca3af"
+          style={{ transform: expanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </svg>
+      </button>
+
+      {expanded && (
+        <div style={{ paddingLeft: 2 }}>
+          {steps.map((step, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, flexShrink: 0 }}>
+                <div style={{
+                  width: 14, height: 14, borderRadius: "50%",
+                  border: "1.5px solid #d1d5db", background: "#fff",
+                  flexShrink: 0, marginTop: 2,
+                }} />
+                {i < steps.length - 1 && (
+                  <div style={{ width: 1, flex: 1, background: "#e5e7eb", minHeight: 16 }} />
+                )}
+              </div>
+              <div style={{
+                fontSize: 14, color: "#9ca3af", paddingLeft: 10,
+                paddingBottom: i < steps.length - 1 ? 12 : 0, lineHeight: "20px",
+              }}>
+                {step.text}
+              </div>
+            </div>
+          ))}
+
+          <div style={{ display: "flex", alignItems: "center", marginTop: 7 }}>
+            <div style={{ width: 20, display: "flex", justifyContent: "center" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span style={{ fontSize: 14, color: "#9ca3af", paddingLeft: 10 }}>Done</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ─── ThinkingBlock ────────────────────────────────────────────────────────────
 // Driven by workflow thought tasks from the SSE stream.

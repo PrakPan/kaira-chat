@@ -1144,7 +1144,7 @@ export const EditDestinations = (props) => {
   }
 
   return (
-    <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
+    <div className="w-full flex flex-col items-center justify-center pb-[150px] gap-3">
       <div className="w-full flex flex-row justify-between">
         <div className="text-[20px] pb-3 text-black">Route</div>
 

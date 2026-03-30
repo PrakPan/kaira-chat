@@ -585,6 +585,7 @@ const itineraryMeta = useSelector((state: any) => state.Itinerary);
   }, [sessionId]);
 
 const handleThreadSelect = useCallback(async (threadId: string) => {
+  clearStaleChatSessions();  
   userSelectedThreadRef.current = true;
 
   setRestoredThread(null);
@@ -616,6 +617,7 @@ const handleThreadSelect = useCallback(async (threadId: string) => {
 }, [loadThread, dispatch]);
 
 const handleNewChat = () => {
+  clearStaleChatSessions(); 
   initialPromptRef.current = null;
   userSelectedThreadRef.current = false;
   hasRestoredRef.current = false;
@@ -816,6 +818,22 @@ const BottomCTABar = () => {
 };
 
 const [imagesGallery, setImagesGallery] = useState(null);
+
+const clearStaleChatSessions = () => {
+  try {
+    const keysToRemove = Object.keys(localStorage).filter((k) =>
+      k.startsWith("chatkit_session_")
+    );
+    // Keep only the 3 most recent by removing everything else
+    if (keysToRemove.length > 3) {
+      keysToRemove.slice(0, keysToRemove.length - 3).forEach((k) => {
+        localStorage.removeItem(k);
+      });
+    }
+  } catch (e) {
+    console.warn("Error clearing chat sessions:", e);
+  }
+};
 
 const fetchGallery = async () => {
   try {
