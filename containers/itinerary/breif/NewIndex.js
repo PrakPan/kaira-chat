@@ -111,19 +111,17 @@ const Details = (props) => {
             postion?.duration !== "0"
           ) {
             Locationlatlong.push({
-              // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              dayId: "12",
-              cityData: postion,
-              id: postion?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY",
-              city_id: postion.city?.id || postion?.gmaps_place_id,
-              lat: postion.city?.latitude,
-              long: postion.city?.longitude,
-              name: postion.city?.name || postion?.city_name,
-              duration: postion.duration,
-              color: color,
-              // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              date: postion.start_date,
-            });
+  dayId: "12",
+  cityData: postion,
+  id: postion?.gmaps_place_id || postion?.city?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY",
+  city_id: postion.city?.id || postion?.city_id || postion?.gmaps_place_id,
+  lat: postion?.lat ?? postion?.city?.latitude ?? postion?.latitude,
+  long: postion?.long ?? postion?.city?.longitude ?? postion?.longitude,
+  name: postion?.name || postion.city?.name || postion?.city_name,
+  duration: postion.duration,
+  color: postion?.color || color,
+  date: postion?.date || postion?.start_date,
+});
           }
         }
       }
@@ -184,7 +182,7 @@ const Details = (props) => {
   return (
     <div id="brief" className="mb-2xl mt-lg max-ph:mt-xl max-ph:mb-xl">
 
-      {router.query.drawer === "handleEditRoute" && (
+      {/* {router.query.drawer === "handleEditRoute" && ( */}
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
@@ -200,17 +198,18 @@ const Details = (props) => {
           setLocationsLatLong={setLocationsLatLong}
           resetRef={props?.resetRef}
           setActiveTab={props?.setActiveTab}
+          fromChat={props.fromChat}
         >
-          {isDesktop ? (
+          {/* {isDesktop ? (
             <RoutesMap
               locations={locationsLatLong}
               setShowDrawer={setShowDrawer}
               setShowDrawerData={setShowDrawerData}
               setEditRoute={props.setEditRoute}
             />
-          ) : null}
+          ) : null} */}
         </RouteEditSection>
-      )}
+      {/* )} */}
 
       {props.traveleritinerary ? (
         <DesktopBanner

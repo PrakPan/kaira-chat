@@ -34,6 +34,9 @@ import ChatBot from "../Chatbot/Index";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
+import axios from "axios";
+import { MERCURY_HOST } from "../../services/constants";
+import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 
 type MobilePanel = "map" | "chat";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -166,7 +169,11 @@ const payment = useSelector((state: any) => state.Itinerary); // payment comes v
 const pricingStatus = useSelector((state: any) => state.ItineraryStatus?.pricing_status);
 const currency = useSelector((state: any) => state.currency);
 const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
-const itineraryReduxName = useSelector((state: any) => state.Itinerary?.name);
+const itineraryRedux = useSelector((state: any) => state.Itinerary);
+const itineraryReduxName = itineraryRedux?.name;
+const itineraryMeta = useSelector((state: any) => state.Itinerary);
+// itineraryMeta already available via itineraryReduxName — same object, reuse it
+// Access: itineraryMeta.start_date, .end_date, .group_type, .number_of_adults, .number_of_children
 
 
 
@@ -755,6 +762,8 @@ const BottomCTABar = () => {
     : currency?.currency === "EUR" ? "€"
     : "₹";
 
+
+
   return (
     <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
       <div className="flex flex-col">
@@ -792,7 +801,7 @@ const BottomCTABar = () => {
                       </svg>
         <button
           onClick={() => setShowPaymentDrawer(true)}
-          className="flex items-center gap-2 h-[40px] px-3.5 rounded-[8px] bg-[#F7E700] text-[14px] font-inter"
+          className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-sm md:text-[16px] font-inter"
         >
           View Cart
           {countCartItems > 0 && (
@@ -806,6 +815,18 @@ const BottomCTABar = () => {
   );
 };
 
+const [imagesGallery, setImagesGallery] = useState(null);
+
+const fetchGallery = async () => {
+  try {
+    const response = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/gallery/`
+    );
+    setImagesGallery(response.data);
+  } catch (err) {
+    console.error("Error fetching gallery:", err);
+  }
+};
 
   return (
     <main
@@ -849,55 +870,128 @@ const BottomCTABar = () => {
             }}
           >
             <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-            {viewMode === "map" ? (
-              <MapView
-                mapState={mapState}
-                locations={locations}
-                userLocation={userLocation}
-                currentRoute={currentRoute}
-                isLoadingLocation={isLoadingLocation}
-                mapRef={mapRef}
-                isRoutePreparing={isRoutePreparing}
-              />
-            ) : viewMode === "itinerary" ? (
-              <>
-              <div className="bg-white h-18 flex justify-between px-3 font-inter font-semibold text-lg">
-                <p>{itineraryReduxName || currentItineraryRef?.current?.name || ""}</p>
+            {/* MAP tab */}
+<div style={{ display: viewMode === "map" ? "flex" : "none", flex: 1, minHeight: 0 }}>
+  <MapView
+    mapState={mapState}
+    locations={locations}
+    userLocation={userLocation}
+    currentRoute={currentRoute}
+    isLoadingLocation={isLoadingLocation}
+    mapRef={mapRef}
+    isRoutePreparing={isRoutePreparing}
+  />
+</div>
 
-               { !(currentItineraryRef?.current?.status == "Draft") && <div className="flex gap-3 items-center">
-         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-  <path d="M1.33333 10.6667H2.28333L8.8 4.15L7.85 3.2L1.33333 9.71667V10.6667ZM0 12V9.16667L8.8 0.383333C8.93333 0.261111 9.08056 0.166667 9.24167 0.1C9.40278 0.0333333 9.57222 0 9.75 0C9.92778 0 10.1 0.0333333 10.2667 0.1C10.4333 0.166667 10.5778 0.266667 10.7 0.4L11.6167 1.33333C11.75 1.45556 11.8472 1.6 11.9083 1.76667C11.9694 1.93333 12 2.1 12 2.26667C12 2.44444 11.9694 2.61389 11.9083 2.775C11.8472 2.93611 11.75 3.08333 11.6167 3.21667L2.83333 12H0ZM8.31667 3.68333L7.85 3.2L8.8 4.15L8.31667 3.68333Z" fill="#1D1B20"/>
-</svg>
-
-<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-  <path d="M4.5 16.5C4.0875 16.5 3.73437 16.3531 3.44062 16.0594C3.14687 15.7656 3 15.4125 3 15V7.5C3 7.0875 3.14687 6.73438 3.44062 6.44063C3.73437 6.14688 4.0875 6 4.5 6H6.75V7.5H4.5V15H13.5V7.5H11.25V6H13.5C13.9125 6 14.2656 6.14688 14.5594 6.44063C14.8531 6.73438 15 7.0875 15 7.5V15C15 15.4125 14.8531 15.7656 14.5594 16.0594C14.2656 16.3531 13.9125 16.5 13.5 16.5H4.5ZM8.25 12V3.61875L7.05 4.81875L6 3.75L9 0.75L12 3.75L10.95 4.81875L9.75 3.61875V12H8.25Z" fill="#1F1F1F"/>
-</svg>
-</div>}
-              </div>
-              <div
-                className="h-full overflow-y-auto bg-[#fafafa]"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                
-                {activeItineraryId ? (
-  <div className="flex flex-col h-full overflow-hidden">
-    <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-      <ItineraryContainer
-        id={activeItineraryId === "skeleton" || activeItineraryId === "draft" ? null : activeItineraryId}
-        mercuryItinerary
-        fromChat={true}
-        skipPolling={!itineraryPollingEnabled}
-        onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
-      />
+{/* ITINERARY + BOOKINGS + ROUTES — single mounted instance, tab-controlled */}
+<div
+  style={{
+    display: viewMode === "itinerary" || viewMode === "bookings" || viewMode === "routes"
+      ? "flex"
+      : "none",
+    flexDirection: "column",
+    flex: 1,
+    minHeight: 0,
+    overflow: "hidden",
+  }}
+>
+  {/* Header strip */}
+  <div className="bg-white flex flex-col px-3 py-3 border-b border-slate-100">
+    <div className="flex justify-between items-start">
+      <p className="font-inter font-semibold text-lg leading-tight">
+        {itineraryReduxName || currentItineraryRef?.current?.name || ""}
+      </p>
+      {!isDraft && (
+        <div className="flex gap-3 items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M1.33333 10.6667H2.28333L8.8 4.15L7.85 3.2L1.33333 9.71667V10.6667ZM0 12V9.16667L8.8 0.383333C8.93333 0.261111 9.08056 0.166667 9.24167 0.1C9.40278 0.0333333 9.57222 0 9.75 0C9.92778 0 10.1 0.0333333 10.2667 0.1C10.4333 0.166667 10.5778 0.266667 10.7 0.4L11.6167 1.33333C11.75 1.45556 11.8472 1.6 11.9083 1.76667C11.9694 1.93333 12 2.1 12 2.26667C12 2.44444 11.9694 2.61389 11.9083 2.775C11.8472 2.93611 11.75 3.08333 11.6167 3.21667L2.83333 12H0ZM8.31667 3.68333L7.85 3.2L8.8 4.15L8.31667 3.68333Z" fill="#1D1B20"/>
+          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M4.5 16.5C4.0875 16.5 3.73437 16.3531 3.44062 16.0594C3.14687 15.7656 3 15.4125 3 15V7.5C3 7.0875 3.14687 6.73438 3.44062 6.44063C3.73437 6.14688 4.0875 6 4.5 6H6.75V7.5H4.5V15H13.5V7.5H11.25V6H13.5C13.9125 6 14.2656 6.14688 14.5594 6.44063C14.8531 6.73438 15 7.0875 15 7.5V15C15 15.4125 14.8531 15.7656 14.5594 16.0594C14.2656 16.3531 13.9125 16.5 13.5 16.5H4.5ZM8.25 12V3.61875L7.05 4.81875L6 3.75L9 0.75L12 3.75L10.95 4.81875L9.75 3.61875V12H8.25Z" fill="#1F1F1F"/>
+          </svg>
+        </div>
+      )}
     </div>
 
-    {/* Bottom CTA bar */}
-   <BottomCTABar />
-  </div>
-) : null}
+    {!isDraft && (
+      <div className="flex flex-col gap-1.5 mt-1.5">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4 flex-wrap">
+            {itineraryMeta?.group_type && (
+              <div className="flex flex-col">
+                <span className="text-[10px] font-inter uppercase tracking-wide">Traveller Type</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  <span className="text-[12px] text-gray-700 font-inter font-medium">
+                    {itineraryMeta.group_type}
+                    {itineraryMeta.number_of_adults ? ` (${itineraryMeta.number_of_adults} Adult${itineraryMeta.number_of_adults > 1 ? "s" : ""})` : ""}
+                    {itineraryMeta.number_of_children > 0 ? `, ${itineraryMeta.number_of_children} Child${itineraryMeta.number_of_children > 1 ? "ren" : ""}` : ""}
+                  </span>
+                </div>
               </div>
-              </>
-            ) : null}
+            )}
+            {itineraryMeta?.start_date && itineraryMeta?.end_date && (
+              <div className="flex flex-col">
+                <span className="text-[10px] font-inter uppercase tracking-wide">Date of Travelling</span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <span className="text-[12px] text-gray-700 font-inter font-medium">
+                    {new Date(itineraryMeta.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    {" – "}
+                    {new Date(itineraryMeta.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+          {itineraryMeta?.images?.length > 0 && (
+            <SmallGallery
+              maxShow={Math.min(3, itineraryMeta.images.length)}
+              images={itineraryMeta.images}
+            />
+          )}
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Body — ItineraryContainer stays mounted, activeTab prop controls sections */}
+  <div className="flex-1 overflow-hidden flex flex-col">
+    {activeItineraryId ? (
+      <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          <ItineraryContainer
+            id={
+              activeItineraryId === "skeleton" || activeItineraryId === "draft"
+                ? null
+                : activeItineraryId
+            }
+            mercuryItinerary
+            fromChat={true}
+            skipPolling={!itineraryPollingEnabled}
+            onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
+            activeTab={
+              viewMode === "bookings" ? "Bookings"
+              : viewMode === "routes" ? "Route"
+              : "Itinerary"
+            }
+          />
+        </div>
+        <BottomCTABar />
+      </div>
+    ) : null}
+  </div>
+</div>
           </div>
         </div>
 
@@ -952,39 +1046,55 @@ const BottomCTABar = () => {
             ) : (
               <div className="flex flex-col h-full bg-white">
                 <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-                {viewMode === "map" ? (
-                  <MapView
-                    mapState={mapState}
-                    locations={locations}
-                    userLocation={userLocation}
-                    currentRoute={currentRoute}
-                    isLoadingLocation={isLoadingLocation}
-                    mapRef={mapRef}
-                    isRoutePreparing={isRoutePreparing}
-                  />
-                ) : viewMode === "itinerary" ? (
-                  <div
-                    className="h-full overflow-y-auto bg-white"
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                  >
-                   {activeItineraryId ? (
-  <div className="flex flex-col h-full overflow-hidden">
-    <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-      <ItineraryContainer
-        id={activeItineraryId === "skeleton" || activeItineraryId === "draft" ? null : activeItineraryId}
-        mercuryItinerary
-        fromChat={true}
-        skipPolling={!itineraryPollingEnabled}
-        onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
-      />
-    </div>
+              {/* Mobile: Map tab */}
+<div style={{ display: viewMode === "map" ? "flex" : "none", flex: 1, minHeight: 0 }}>
+  <MapView
+    mapState={mapState}
+    locations={locations}
+    userLocation={userLocation}
+    currentRoute={currentRoute}
+    isLoadingLocation={isLoadingLocation}
+    mapRef={mapRef}
+    isRoutePreparing={isRoutePreparing}
+  />
+</div>
 
-    {/* Bottom CTA bar */}
-   <BottomCTABar />
-  </div>
-) : null}
-                  </div>
-                ) : null}
+{/* Mobile: Itinerary + Bookings + Routes — single mounted instance */}
+<div
+  style={{
+    display: viewMode === "itinerary" || viewMode === "bookings" || viewMode === "routes"
+      ? "flex"
+      : "none",
+    flexDirection: "column",
+    flex: 1,
+    minHeight: 0,
+    overflow: "hidden",
+  }}
+>
+  {activeItineraryId ? (
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+        <ItineraryContainer
+          id={
+            activeItineraryId === "skeleton" || activeItineraryId === "draft"
+              ? null
+              : activeItineraryId
+          }
+          mercuryItinerary
+          fromChat={true}
+          skipPolling={!itineraryPollingEnabled}
+          onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
+          activeTab={
+            viewMode === "bookings" ? "Bookings"
+            : viewMode === "routes" ? "Route"
+            : "Itinerary"
+          }
+        />
+      </div>
+      <BottomCTABar />
+    </div>
+  ) : null}
+</div>
               </div>
             )}
           </div>
@@ -1057,6 +1167,14 @@ const BottomCTABar = () => {
   itineraryName="Your Itinerary"
   onConfirm={handleConfirmItinerary}
 />
+
+{/* {imagesGallery && imagesGallery.length > 0 && (
+  <FullScreenGallery
+    mercury={false}
+    closeGalleryHandler={() => setImagesGallery(null)}
+    images={imagesGallery}
+  />
+)} */}
     </main>
   );
 }

@@ -1637,6 +1637,7 @@ useEffect(() => {
             mercuryItinerary
             onSendMessage={props?.onSendMessage}
             fromChat={props.fromChat}
+            activeTab={props.activeTab} 
             loadbookings={!loadbookings}
             resetRef={resetRef}
             loadpricing={!loadpricing}
