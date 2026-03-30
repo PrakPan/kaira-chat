@@ -862,7 +862,7 @@ const handleRouteTabClick = (label) => {
         {isDesktop && (
           <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
             {editDestination && !itineraryLoading ? (
-              <div className="w-full flex flex-row justify-center gap-5">
+              <div className="w-full flex flex-row  gap-5">
                 <EditDestinations
                   destinations={destinations}
                   setDestinations={setDestinations}
