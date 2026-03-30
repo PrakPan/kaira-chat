@@ -860,7 +860,7 @@ const handleRouteTabClick = (label) => {
           </>
         )}
         {isDesktop && (
-          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+          <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
             {editDestination && !itineraryLoading ? (
               <div className="w-full flex flex-row justify-center gap-5">
                 <EditDestinations
@@ -872,7 +872,7 @@ const handleRouteTabClick = (label) => {
                   setLocationsLatLong={props.setLocationsLatLong}
                   setDestinationChanges={setDestinationChanges}
                 />
-                {!props.fromChat &&  isDesktop && (
+                {/* {!props.fromChat &&  isDesktop && (
                   <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
                     {props.children}
 
@@ -883,7 +883,7 @@ const handleRouteTabClick = (label) => {
                       </div>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
             ) : (
               // <EditDates
