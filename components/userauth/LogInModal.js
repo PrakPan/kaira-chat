@@ -474,7 +474,7 @@ const LogIn = React.memo((props) => {
           : "pt-[12px] pb-[13px] px-[16px] h-full"
       } h-max`}
     >
-      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full">
+      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full pb-[12px]">
         {!isPageWide && (
           <div className="flex justify-end">
             <RxCross2

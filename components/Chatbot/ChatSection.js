@@ -76,8 +76,8 @@ const SingleChips = styled.button`
 `;
 
 const LoginButton = styled.button`
-  width: 131px;
-  height: 40px;
+  width: 136px;
+  height: 44px;
   background: #f7e700;
   padding: 10px 16px;
   border-radius: 8px;

@@ -12,8 +12,8 @@ import { createPortal } from "react-dom";
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
 const LoginButton = styled.button`
-  width: 131px;
-  height: 40px;
+  width: 136px;
+  height: 44px;
   background: #f7e700;
   padding: 10px 16px;
   border-radius: 8px;
@@ -202,6 +202,7 @@ onInitialPromptConsumed,
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
+  const pendingPostLoginMsg = useRef<string | null>(null);
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -332,11 +333,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           }
           break;
         }
-        case "prompt_login": {
-          setPendingMessage(input);
-          setShowLoginPrompt(true);
-          break;
-        }
+       case "prompt_login": {
+  setPendingMessage(input);
+  pendingPostLoginMsg.current = input; // ← add this line
+  setShowLoginPrompt(true);
+  break;
+}
         case "display_pois_on_map": {
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
@@ -434,10 +436,11 @@ useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
 
+// Effect 1: detect login, stash pending message, clear UI
 useEffect(() => {
   if (!isLoggedIn) {
     postLoginFiredRef.current = false;
-    setPostLoginLoading(false); // ← clear stuck loading on logout too
+    setPostLoginLoading(false);
     return;
   }
 
@@ -446,14 +449,21 @@ useEffect(() => {
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
-  setPostLoginLoading(false); // ← always clear loading first
+  setPostLoginLoading(false);
 
   if (pendingMessage) {
-    const msg = pendingMessage;
+    pendingPostLoginMsg.current = pendingMessage;
     setPendingMessage(null);
-    sendMessage(msg.trim()); // ← no setTimeout, no separate loading toggle
   }
-}, [isLoggedIn, pendingMessage, sendMessage]);
+}, [isLoggedIn, pendingMessage]);
+
+// Effect 2: fire the message only after authToken is live in scope
+useEffect(() => {
+  if (!authToken || !pendingPostLoginMsg.current) return;
+  const msg = pendingPostLoginMsg.current;
+  pendingPostLoginMsg.current = null;
+  sendMessage(msg.trim());
+}, [authToken, sendMessage]); // authToken changing = useChat now has the token
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);
