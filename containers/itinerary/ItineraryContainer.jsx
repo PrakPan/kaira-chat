@@ -390,10 +390,10 @@ const ItineraryContainer = (props) => {
     }
   };
 
-    useEffect(() => {
-    if (props.skipPolling) return;
-    resetRef();
-  }, []);
+  //   useEffect(() => {
+  //   if (props.skipPolling) return;
+  //   resetRef();
+  // }, []);
 
 
 

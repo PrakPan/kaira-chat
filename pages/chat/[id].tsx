@@ -6,7 +6,7 @@ const ChatSessionPage = () => {
 
   if (!router.isReady) return null; // wait for hydration
 
-  const sessionId = router.query.sessionId as string;
+  const sessionId = router.query.id as string;
   return <BotApp sessionId={sessionId} />;
 };
 
