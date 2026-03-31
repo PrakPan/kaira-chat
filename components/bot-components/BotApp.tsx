@@ -37,6 +37,10 @@ import setCart from "../../store/actions/Cart";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
+import Image from "next/image";
+import ModalWithBackdrop from "../ui/ModalWithBackdrop";
+import Settings from "../settings/Index";
+import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
 
 type MobilePanel = "map" | "chat";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -174,6 +178,9 @@ const itineraryReduxName = itineraryRedux?.name;
 const itineraryMeta = useSelector((state: any) => state.Itinerary);
 // itineraryMeta already available via itineraryReduxName — same object, reuse it
 // Access: itineraryMeta.start_date, .end_date, .group_type, .number_of_adults, .number_of_children
+const [showShare, setShowShare] = useState(false);
+const [showSettings, setShowSettings] = useState(false);
+const [isHotelsPresent, setIsHotelsPresent] = useState(false);
 
 
 
@@ -867,11 +874,11 @@ const fetchGallery = async () => {
           style={{ width: "50%", minWidth: 0 }}
         >
           <div
-            className={`absolute inset-0 z-10 transition-opacity duration-500 ease-in-out pointer-events-${
-              showStartScreen && leftPanelMode === "default" ? "auto" : "none"
-            }`}
-            style={{ opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0 }}
-          >
+  className={`absolute inset-0 z-10 overflow-y-auto transition-opacity duration-500 ease-in-out pointer-events-${
+    showStartScreen && leftPanelMode === "default" ? "auto" : "none"
+  }`}
+  style={{ opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0 }}
+>
             <StartScreen onPromptSelect={handlePromptSelect} />
           </div>
 
@@ -919,16 +926,31 @@ const fetchGallery = async () => {
       <p className="font-inter font-semibold text-lg leading-tight">
         {itineraryReduxName || currentItineraryRef?.current?.name || ""}
       </p>
-      {!isDraft && (
-        <div className="flex gap-3 items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1.33333 10.6667H2.28333L8.8 4.15L7.85 3.2L1.33333 9.71667V10.6667ZM0 12V9.16667L8.8 0.383333C8.93333 0.261111 9.08056 0.166667 9.24167 0.1C9.40278 0.0333333 9.57222 0 9.75 0C9.92778 0 10.1 0.0333333 10.2667 0.1C10.4333 0.166667 10.5778 0.266667 10.7 0.4L11.6167 1.33333C11.75 1.45556 11.8472 1.6 11.9083 1.76667C11.9694 1.93333 12 2.1 12 2.26667C12 2.44444 11.9694 2.61389 11.9083 2.775C11.8472 2.93611 11.75 3.08333 11.6167 3.21667L2.83333 12H0ZM8.31667 3.68333L7.85 3.2L8.8 4.15L8.31667 3.68333Z" fill="#1D1B20"/>
-          </svg>
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M4.5 16.5C4.0875 16.5 3.73437 16.3531 3.44062 16.0594C3.14687 15.7656 3 15.4125 3 15V7.5C3 7.0875 3.14687 6.73438 3.44062 6.44063C3.73437 6.14688 4.0875 6 4.5 6H6.75V7.5H4.5V15H13.5V7.5H11.25V6H13.5C13.9125 6 14.2656 6.14688 14.5594 6.44063C14.8531 6.73438 15 7.0875 15 7.5V15C15 15.4125 14.8531 15.7656 14.5594 16.0594C14.2656 16.3531 13.9125 16.5 13.5 16.5H4.5ZM8.25 12V3.61875L7.05 4.81875L6 3.75L9 0.75L12 3.75L10.95 4.81875L9.75 3.61875V12H8.25Z" fill="#1F1F1F"/>
-          </svg>
-        </div>
-      )}
+    {!isDraft && (
+  <div className="flex gap-3 items-center">
+    {/* Settings icon */}
+    <button
+      className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+      onClick={() => {
+        axios
+          .get(`${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`)
+          .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
+          .catch(() => setIsHotelsPresent(false))
+          .finally(() => setShowSettings(true));
+      }}
+    >
+      <Image src="/settings.svg" height={22} width={22} alt="Settings" />
+    </button>
+
+    {/* Share icon */}
+    <button
+      className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
+      onClick={() => setShowShare(true)}
+    >
+      <Image src="/share.svg" height={22} width={22} alt="Share" />
+    </button>
+  </div>
+)}
     </div>
 
     {!isDraft && (
@@ -939,13 +961,13 @@ const fetchGallery = async () => {
               <div className="flex flex-col">
                 <span className="text-[10px] font-inter uppercase tracking-wide">Traveller Type</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                  <span className="text-[12px] text-gray-700 font-inter font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12" viewBox="0 0 16 12" fill="none">
+    <path d="M11.1133 6.75342C12.0266 7.37342 12.6666 8.21342 12.6666 9.33342V11.3334H15.3333V9.33342C15.3333 7.88008 12.9533 7.02008 11.1133 6.75342Z" fill="#ACACAC" />
+    <path d="M9.99995 6.00008C11.4733 6.00008 12.6666 4.80675 12.6666 3.33341C12.6666 1.86008 11.4733 0.666748 9.99995 0.666748C9.68661 0.666748 9.39328 0.733415 9.11328 0.826748C9.66661 1.51341 9.99995 2.38675 9.99995 3.33341C9.99995 4.28008 9.66661 5.15341 9.11328 5.84008C9.39328 5.93341 9.68661 6.00008 9.99995 6.00008Z" fill="#ACACAC" />
+    <path d="M6.00065 6.00008C7.47398 6.00008 8.66732 4.80675 8.66732 3.33341C8.66732 1.86008 7.47398 0.666748 6.00065 0.666748C4.52732 0.666748 3.33398 1.86008 3.33398 3.33341C3.33398 4.80675 4.52732 6.00008 6.00065 6.00008ZM6.00065 2.00008C6.73398 2.00008 7.33398 2.60008 7.33398 3.33341C7.33398 4.06675 6.73398 4.66675 6.00065 4.66675C5.26732 4.66675 4.66732 4.06675 4.66732 3.33341C4.66732 2.60008 5.26732 2.00008 6.00065 2.00008Z" fill="#ACACAC" />
+    <path d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z" fill="#ACACAC" />
+  </svg>
+                  <span className="text-[12px] font-inter font-medium">
                     {itineraryMeta.group_type}
                     {itineraryMeta.number_of_adults ? ` (${itineraryMeta.number_of_adults} Adult${itineraryMeta.number_of_adults > 1 ? "s" : ""})` : ""}
                     {itineraryMeta.number_of_children > 0 ? `, ${itineraryMeta.number_of_children} Child${itineraryMeta.number_of_children > 1 ? "ren" : ""}` : ""}
@@ -957,13 +979,10 @@ const fetchGallery = async () => {
               <div className="flex flex-col">
                 <span className="text-[10px] font-inter uppercase tracking-wide">Date of Travelling</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                  <span className="text-[12px] text-gray-700 font-inter font-medium">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z" fill="#ACACAC" />
+  </svg>
+                  <span className="text-[12px]  font-inter font-medium">
                     {new Date(itineraryMeta.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     {" – "}
                     {new Date(itineraryMeta.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
@@ -1185,6 +1204,40 @@ const fetchGallery = async () => {
   itineraryName="Your Itinerary"
   onConfirm={handleConfirmItinerary}
 />
+
+{/* Share modal */}
+{showShare && (
+  <>
+    <div
+      className="fixed inset-0 bg-black/40 z-[1999] backdrop-blur-[1px]"
+      onClick={() => setShowShare(false)}
+    />
+    <SocialShareDesktop
+      social_title={itineraryRedux?.social_title}
+      social_description={itineraryRedux?.social_description}
+      itineraryName={itineraryReduxName}
+      itineraryImage={itineraryRedux?.images?.[0]}
+      share={showShare}
+      setShare={setShowShare}
+    />
+  </>
+)}
+
+{/* Settings modal */}
+{showSettings && (
+  <ModalWithBackdrop onClose={() => setShowSettings(false)}>
+    <Settings
+      setShowSettings={setShowSettings}
+      isHotelsPresent={isHotelsPresent}
+      handleApply={async (req) => {
+        await axios.patch(
+          `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/update/`,
+          req
+        );
+      }}
+    />
+  </ModalWithBackdrop>
+)}
 
 {/* {imagesGallery && imagesGallery.length > 0 && (
   <FullScreenGallery

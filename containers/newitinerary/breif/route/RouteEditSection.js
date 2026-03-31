@@ -840,7 +840,7 @@ const handleRouteTabClick = (label) => {
                 </div>
               )}
             </div>
-            <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+            <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
               {editDestination && !itineraryLoading ? (
                 <div className="w-full relative flex flex-row justify-center gap-5 px-3">
                   <EditDestinations
@@ -902,7 +902,7 @@ const handleRouteTabClick = (label) => {
         )}
 
         {!itineraryLoading && (
-          <div className={`w-full md:w-[85%] ${isDesktop ? "" : "px-3"}`}>
+          <div className={`w-full  ${isDesktop ? "" : "px-3"}`}>
             <ActionPanel
               setEdit={props.setEdit}
               editDestination={editDestination}
@@ -1040,7 +1040,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
   }
 
   return (
-    <div className="w-full md:w-[85%] pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
+    <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
           onClick={() => handleEditPanel()}
@@ -2749,7 +2749,7 @@ export const ActionPanel = (props) => {
       className={`${!isDesktop && "gap-2"}`}
     >
    
-<button
+{/* <button
   className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
   onClick={() => {
     if (editDestination) {
@@ -2769,28 +2769,30 @@ export const ActionPanel = (props) => {
   }}
 >
   {editDestination ? "Cancel" : "Back"}
-</button>
-      <Button
-        fontSize="1rem"
-        padding="0.5rem 2rem"
-        fontWeight="500"
-        margin="1rem 0"
-        borderRadius="5px"
-        borderWidth={destinationChanges ? "1px" : "0px"}
-        bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
-        zIndex={9999}
-        onclick={handleSaveButton}
-        height="50px"
-        color="white"
-        disabled={!destinationChanges}
-        style={{
-          maxWidth: isDesktop ? "200px" : "50%",
-          width: "100%",
-          fontSize: isDesktop ? "1rem" : "0.8rem"
-        }}
-      >
-        Update Route
-      </Button>
+</button> */}
+     {destinationChanges ? <div className="z-20 fixed w-[47.5%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
+  <Button
+    fontSize="1rem"
+    padding="0.5rem 2rem"
+    fontWeight="500"
+    margin="0"
+    borderRadius="5px"
+    borderWidth={destinationChanges ? "1px" : "0px"}
+    bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
+    zIndex={9999}
+    onclick={handleSaveButton}
+    height="50px"
+    color="white"
+    disabled={!destinationChanges}
+    style={{
+      maxWidth: isDesktop ? "200px" : "50%",
+      width: "100%",
+      fontSize: isDesktop ? "1rem" : "0.8rem"
+    }}
+  >
+    Update Route
+  </Button>
+</div> : null}
     </div>
   );
 };

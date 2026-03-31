@@ -133,9 +133,9 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
 
   return (
     <div
-      className="flex-1 h-full overflow-y-auto bg-white"
-      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-    >
+  className="flex-1 h-full overflow-y-auto bg-white pb-16"
+  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+>
       <style>{`
         .start-screen-scroll::-webkit-scrollbar { display: none; }
         @keyframes fadeSlideUp {
