@@ -254,7 +254,16 @@ const MyMap: React.FC<MapProps> = ({
     polylinesRef.current.forEach((p) => p.setMap(null));
     polylinesRef.current = [];
 
-    if (!mapInstance.current || !currentRoute || currentRoute.length < 2) return;
+    if (!mapInstance.current || !currentRoute || currentRoute.length === 0) return;
+
+  // ↓ Single city — just fit bounds to it, no polyline needed
+  if (currentRoute.length === 1) {
+    const { lat, lng } = currentRoute[0];
+    mapInstance.current.setCenter({ lat, lng });
+    mapInstance.current.setZoom(11);
+    return;
+  }
+
 
     // Quadratic bezier arc between two lat/lng points
     const getCurvedPath = (

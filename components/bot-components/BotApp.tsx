@@ -870,7 +870,7 @@ const fetchGallery = async () => {
 
         {/* LEFT PANEL */}
         <div
-          className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative"
+          className="flex flex-col overflow-hidden transition-all duration-500 ease-in-out relative bg-white"
           style={{ width: "50%", minWidth: 0 }}
         >
           <div
