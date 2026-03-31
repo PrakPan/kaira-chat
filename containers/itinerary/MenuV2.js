@@ -607,13 +607,6 @@ Start Location: ${details.startLocation}`;
         ></FullScreenGallery>
       ) : null}
       {/* <div id={"Brief"}> */}
-      {props?.fromChat && console.log("DEBUG ROUTE TAB:", {
-  citydatadone,
-  activeTab,
-  mercuryItinerary: props?.mercuryItinerary,
-  citiesLength: props?.cities?.length,
-  breif: !!props?.breif,
-})}
      {props?.mercuryItinerary && citydatadone && !props?.fromChat ? (
   <Breif
     mercuryItinerary={props?.mercuryItinerary}

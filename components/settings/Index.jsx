@@ -171,7 +171,7 @@ const handleUpdate = () => {
   }
 
   return (
-    <div className={`flex flex-col gap-[24px] md:max-w-[537px]`}>
+    <div className={`flex flex-col gap-[24px] md:max-w-[537px] z-[9999]`}>
       <div className="Heading1SB font-semibold">Update Your Trip Preferences</div>
 
       <DateComponent 

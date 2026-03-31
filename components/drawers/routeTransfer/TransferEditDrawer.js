@@ -307,12 +307,13 @@ const TransferEditDrawer = (props) => {
       number_of_travellers:
         number_of_adults + number_of_children + number_of_infants,
     };
+    
 
     {
       mercury || props?.isMercury
         ? fetchMulticityRoundtrip
             .get(
-              `/${router.query.id}/?currency=${currency?.currency || "INR"}`,
+              `/${router.query.id || router.query.sessionId}/?currency=${currency?.currency || "INR"}`,
               // multiCityRoundtripRequestData
             )
             .then((response) => {

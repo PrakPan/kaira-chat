@@ -131,7 +131,7 @@ const TransferDrawer = ({
       setLoading(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
+          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${
             combo ? `combo` : booking_type?.toLowerCase()
           }/${booking_id}/`,
         );

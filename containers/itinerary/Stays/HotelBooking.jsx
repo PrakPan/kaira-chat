@@ -923,7 +923,7 @@ const HotelBooking = ({
               if (!drawer || itineraryCityId != itinerary_city_id) return;
               router.push(
                 {
-                  pathname: `/itinerary/${router?.query?.id}`,
+                  pathname: `/chat/${router?.query?.id}`,
                   query: {}, // remove "drawer"
                 },
                 undefined,

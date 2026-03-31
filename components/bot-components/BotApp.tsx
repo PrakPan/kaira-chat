@@ -169,15 +169,13 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   // Add this state near the top of BotApp
 const [showConfirmModal, setShowConfirmModal] = useState(false);
 const cart = useSelector((state: any) => state.Cart);
-const payment = useSelector((state: any) => state.Itinerary); // payment comes via cart
 const pricingStatus = useSelector((state: any) => state.ItineraryStatus?.pricing_status);
 const currency = useSelector((state: any) => state.currency);
 const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
 const itineraryRedux = useSelector((state: any) => state.Itinerary);
 const itineraryReduxName = itineraryRedux?.name;
-const itineraryMeta = useSelector((state: any) => state.Itinerary);
-// itineraryMeta already available via itineraryReduxName — same object, reuse it
-// Access: itineraryMeta.start_date, .end_date, .group_type, .number_of_adults, .number_of_children
+// itineraryRedux already available via itineraryReduxName — same object, reuse it
+// Access: itineraryRedux.start_date, .end_date, .group_type, .number_of_adults, .number_of_children
 const [showShare, setShowShare] = useState(false);
 const [showSettings, setShowSettings] = useState(false);
 const [isHotelsPresent, setIsHotelsPresent] = useState(false);
@@ -729,100 +727,12 @@ Start Location: ${details.startLocation}`;
   setInitialPrompt(null);
 }, []);
 
-const isDraft = activeItineraryId === "draft" || activeItineraryId === "skeleton" || (!activeItineraryId && viewMode === "itinerary");
-
-const BottomCTABar = () => {
-  if (viewMode !== "itinerary" || (!activeItineraryId && !showItineraryShimmer)) return null;
-
-  // Draft state — real itinerary not created yet
-  if (isDraft) {
-    return (
-      <div className="z-20 fixed w-[47.5%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
-        <button
-          onClick={() => setShowConfirmModal(true)}
-          className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
-        >
-          Confirm Itinerary & View Prices →
-        </button>
-      </div>
-    );
-  }
-
-  // Real itinerary — pricing not ready yet (also covers the cart-cleared state)
-  const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
-
-  if (!hasFreshPricing) {
-    return (
-      <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
-        <ItineraryStatusLoader
-          displayText={loaderDisplayText || "Calculating best prices for you…"}
-          isVisible={true}
-        />
-      </div>
-    );
-  }
-
-  // Pricing ready — show cart
-  const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
-  const cost = perPerson
-    ? Math.round(cart?.per_person_discounted_cost)
-    : Math.round(cart?.discounted_cost);
-  const currencySymbol = currency?.currency === "USD" ? "$"
-    : currency?.currency === "EUR" ? "€"
-    : "₹";
+const isDraft = useMemo(
+  () => activeItineraryId === "draft" || activeItineraryId === "skeleton" || (!activeItineraryId && viewMode === "itinerary"),
+  [activeItineraryId, viewMode]
+);
 
 
-
-  return (
-    <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
-      <div className="flex flex-col">
-        <span className="text-[11px] text-[#6E757A]">
-          {perPerson ? "Per Person" : cart?.is_estimated_price && cost > 0 ? "Estimated Price" : "Total Cost"}
-        </span>
-        <span className="font-bold text-[16px]">
-          {currencySymbol} {cost?.toLocaleString("en-IN")}/-
-        </span>
-      </div>
-      <div className="flex gap-3 items-center">
-        <div style={popupStyle} className="z-50 absolute -top-11 text-sm text-center flex flex-col gap-2 bg-white">
-          <div className="relative">
-            <div className="text-nowrap font-normal text-black text-sm">
-              No Hidden Charges,<br />Includes taxes
-            </div>
-          </div>
-        </div>
-         <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="23"
-                        height="30"
-                        viewBox="0 0 23 30"
-                        fill="none"
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                      >
-                        <path
-                          d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
-                          fill="#AD5BE7"
-                          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
-                          // onMouseEnter={() => setIsHovered(true)}
-                          // onMouseLeave={() => setIsHovered(false)}
-                        />
-                      </svg>
-        <button
-          onClick={() => setShowPaymentDrawer(true)}
-          className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-sm md:text-[16px] font-inter"
-        >
-          View Cart
-          {countCartItems > 0 && (
-            <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {countCartItems}
-            </span>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};
 
 const [imagesGallery, setImagesGallery] = useState(null);
 
@@ -852,6 +762,21 @@ const fetchGallery = async () => {
     console.error("Error fetching gallery:", err);
   }
 };
+
+const handleItineraryContainerSendMessage = useCallback((msg: string) => {
+  chatSendMessageRef.current?.(msg);
+}, []); 
+
+const activeTab = useMemo(() => {
+  if (viewMode === "bookings") return "Bookings";
+  if (viewMode === "routes") return "Route";
+  return "Itinerary";
+}, [viewMode]);
+
+const itineraryContainerId = useMemo(() => {
+  if (activeItineraryId === "skeleton" || activeItineraryId === "draft") return null;
+  return activeItineraryId;
+}, [activeItineraryId]);
 
   return (
     <main
@@ -957,7 +882,7 @@ const fetchGallery = async () => {
       <div className="flex flex-col gap-1.5 mt-1.5">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-4 flex-wrap">
-            {itineraryMeta?.group_type && (
+            {itineraryRedux?.group_type && (
               <div className="flex flex-col">
                 <span className="text-[10px] font-inter uppercase tracking-wide">Traveller Type</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
@@ -968,14 +893,14 @@ const fetchGallery = async () => {
     <path d="M6.00033 6.66675C4.22033 6.66675 0.666992 7.56008 0.666992 9.33341V11.3334H11.3337V9.33341C11.3337 7.56008 7.78032 6.66675 6.00033 6.66675ZM10.0003 10.0001H2.00033V9.34008C2.13366 8.86008 4.20033 8.00008 6.00033 8.00008C7.80032 8.00008 9.86699 8.86008 10.0003 9.33341V10.0001Z" fill="#ACACAC" />
   </svg>
                   <span className="text-[12px] font-inter font-medium">
-                    {itineraryMeta.group_type}
-                    {itineraryMeta.number_of_adults ? ` (${itineraryMeta.number_of_adults} Adult${itineraryMeta.number_of_adults > 1 ? "s" : ""})` : ""}
-                    {itineraryMeta.number_of_children > 0 ? `, ${itineraryMeta.number_of_children} Child${itineraryMeta.number_of_children > 1 ? "ren" : ""}` : ""}
+                    {itineraryRedux.group_type}
+                    {itineraryRedux.number_of_adults ? ` (${itineraryRedux.number_of_adults} Adult${itineraryRedux.number_of_adults > 1 ? "s" : ""})` : ""}
+                    {itineraryRedux.number_of_children > 0 ? `, ${itineraryRedux.number_of_children} Child${itineraryRedux.number_of_children > 1 ? "ren" : ""}` : ""}
                   </span>
                 </div>
               </div>
             )}
-            {itineraryMeta?.start_date && itineraryMeta?.end_date && (
+            {itineraryRedux?.start_date && itineraryRedux?.end_date && (
               <div className="flex flex-col">
                 <span className="text-[10px] font-inter uppercase tracking-wide">Date of Travelling</span>
                 <div className="flex items-center gap-1.5 mt-0.5">
@@ -983,18 +908,18 @@ const fetchGallery = async () => {
     <path d="M3.33333 14.6666C2.96667 14.6666 2.65267 14.5361 2.39133 14.2753C2.13044 14.0139 2 13.6999 2 13.3333V3.99992C2 3.63325 2.13044 3.31947 2.39133 3.05859C2.65267 2.79725 2.96667 2.66659 3.33333 2.66659H4V1.33325H5.33333V2.66659H10.6667V1.33325H12V2.66659H12.6667C13.0333 2.66659 13.3473 2.79725 13.6087 3.05859C13.8696 3.31947 14 3.63325 14 3.99992V13.3333C14 13.6999 13.8696 14.0139 13.6087 14.2753C13.3473 14.5361 13.0333 14.6666 12.6667 14.6666H3.33333ZM3.33333 13.3333H12.6667V6.66659H3.33333V13.3333ZM3.33333 5.33325H12.6667V3.99992H3.33333V5.33325ZM3.33333 5.33325V3.99992V5.33325Z" fill="#ACACAC" />
   </svg>
                   <span className="text-[12px]  font-inter font-medium">
-                    {new Date(itineraryMeta.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    {new Date(itineraryRedux.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     {" – "}
-                    {new Date(itineraryMeta.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    {new Date(itineraryRedux.end_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
               </div>
             )}
           </div>
-          {itineraryMeta?.images?.length > 0 && (
+          {itineraryRedux?.images?.length > 0 && (
             <SmallGallery
-              maxShow={Math.min(3, itineraryMeta.images.length)}
-              images={itineraryMeta.images}
+              maxShow={Math.min(3, itineraryRedux.images.length)}
+              images={itineraryRedux.images}
             />
           )}
         </div>
@@ -1008,23 +933,30 @@ const fetchGallery = async () => {
       <div className="flex flex-col h-full overflow-hidden">
         <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
           <ItineraryContainer
-            id={
-              activeItineraryId === "skeleton" || activeItineraryId === "draft"
-                ? null
-                : activeItineraryId
-            }
-            mercuryItinerary
-            fromChat={true}
-            skipPolling={!itineraryPollingEnabled}
-            onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
-            activeTab={
-              viewMode === "bookings" ? "Bookings"
-              : viewMode === "routes" ? "Route"
-              : "Itinerary"
-            }
-          />
+  id={itineraryContainerId}
+  mercuryItinerary
+  fromChat={true}
+  skipPolling={!itineraryPollingEnabled}
+  onSendMessage={handleItineraryContainerSendMessage}
+  activeTab={activeTab}
+/>
         </div>
-        <BottomCTABar />
+        <BottomCTABar
+  viewMode={viewMode}
+  activeItineraryId={activeItineraryId}
+  showItineraryShimmer={showItineraryShimmer}
+  isDraft={isDraft}
+  cart={cart}
+  pricingStatus={pricingStatus}
+  loaderDisplayText={loaderDisplayText}
+  currency={currency}
+  countCartItems={countCartItems}
+  isHovered={isHovered}
+  setIsHovered={setIsHovered}
+  popupStyle={popupStyle}
+  onConfirm={() => setShowConfirmModal(true)}
+  onViewCart={() => setShowPaymentDrawer(true)}
+/>
       </div>
     ) : null}
   </div>
@@ -1112,23 +1044,30 @@ const fetchGallery = async () => {
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
         <ItineraryContainer
-          id={
-            activeItineraryId === "skeleton" || activeItineraryId === "draft"
-              ? null
-              : activeItineraryId
-          }
-          mercuryItinerary
-          fromChat={true}
-          skipPolling={!itineraryPollingEnabled}
-          onSendMessage={(msg) => chatSendMessageRef.current?.(msg)}
-          activeTab={
-            viewMode === "bookings" ? "Bookings"
-            : viewMode === "routes" ? "Route"
-            : "Itinerary"
-          }
-        />
+  id={itineraryContainerId}
+  mercuryItinerary
+  fromChat={true}
+  skipPolling={!itineraryPollingEnabled}
+  onSendMessage={handleItineraryContainerSendMessage}
+  activeTab={activeTab}
+/>
       </div>
-      <BottomCTABar />
+    <BottomCTABar
+  viewMode={viewMode}
+  activeItineraryId={activeItineraryId}
+  showItineraryShimmer={showItineraryShimmer}
+  isDraft={isDraft}
+  cart={cart}
+  pricingStatus={pricingStatus}
+  loaderDisplayText={loaderDisplayText}
+  currency={currency}
+  countCartItems={countCartItems}
+  isHovered={isHovered}
+  setIsHovered={setIsHovered}
+  popupStyle={popupStyle}
+  onConfirm={() => setShowConfirmModal(true)}
+  onViewCart={() => setShowPaymentDrawer(true)}
+/>
     </div>
   ) : null}
 </div>
@@ -1249,3 +1188,125 @@ const fetchGallery = async () => {
     </main>
   );
 }
+
+
+
+
+// Outside BotApp, at module level
+interface BottomCTABarProps {
+  viewMode: ViewMode;
+  activeItineraryId: string | null;
+  showItineraryShimmer: boolean;
+  isDraft: boolean;
+  cart: any;
+  pricingStatus: string;
+  loaderDisplayText: string | null;
+  currency: any;
+  countCartItems: number;
+  isHovered: boolean;
+  setIsHovered: (v: boolean) => void;
+  popupStyle: React.CSSProperties;
+  onConfirm: () => void;
+  onViewCart: () => void;
+}
+
+const BottomCTABar = React.memo(({
+  viewMode,
+  activeItineraryId,
+  showItineraryShimmer,
+  isDraft,
+  cart,
+  pricingStatus,
+  loaderDisplayText,
+  currency,
+  countCartItems,
+  isHovered,
+  setIsHovered,
+  popupStyle,
+  onConfirm,
+  onViewCart,
+}: BottomCTABarProps) => {
+  if (viewMode !== "itinerary" || (!activeItineraryId && !showItineraryShimmer)) return null;
+
+  if (isDraft) {
+    return (
+      <div className="z-20 fixed w-[47.5%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <button
+          onClick={onConfirm}
+          className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
+        >
+          Confirm Itinerary & View Prices →
+        </button>
+      </div>
+    );
+  }
+
+  const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
+
+  if (!hasFreshPricing) {
+    return (
+      <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
+        <ItineraryStatusLoader
+          displayText={loaderDisplayText || "Calculating best prices for you…"}
+          isVisible={true}
+        />
+      </div>
+    );
+  }
+
+  const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
+  const cost = perPerson
+    ? Math.round(cart?.per_person_discounted_cost)
+    : Math.round(cart?.discounted_cost);
+  const currencySymbol = currency?.currency === "USD" ? "$"
+    : currency?.currency === "EUR" ? "€" : "₹";
+
+  return (
+    <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="flex flex-col">
+        <span className="text-[11px] text-[#6E757A]">
+          {perPerson ? "Per Person" : cart?.is_estimated_price && cost > 0 ? "Estimated Price" : "Total Cost"}
+        </span>
+        <span className="font-bold text-[16px]">
+          {currencySymbol} {cost?.toLocaleString("en-IN")}/-
+        </span>
+      </div>
+      <div className="flex gap-3 items-center">
+        <div style={popupStyle} className="z-50 absolute -top-11 text-sm text-center flex flex-col gap-2 bg-white">
+          <div className="text-nowrap font-normal text-black text-sm">
+            No Hidden Charges,<br />Includes taxes
+          </div>
+        </div>
+         <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="23"
+                        height="30"
+                        viewBox="0 0 23 30"
+                        fill="none"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                      >
+                        <path
+                          d="M11.3333 29.75L1.13333 22.1C0.779167 21.8403 0.501736 21.5097 0.301042 21.1083C0.100347 20.7069 0 20.2819 0 19.8333V2.83333C0 2.05417 0.277431 1.38715 0.832292 0.832292C1.38715 0.277431 2.05417 0 2.83333 0H19.8333C20.6125 0 21.2795 0.277431 21.8344 0.832292C22.3892 1.38715 22.6667 2.05417 22.6667 2.83333V19.8333C22.6667 20.2819 22.5663 20.7069 22.3656 21.1083C22.1649 21.5097 21.8875 21.8403 21.5333 22.1L11.3333 29.75ZM11.3333 26.2083L19.8333 19.8333V2.83333H2.83333V19.8333L11.3333 26.2083ZM9.84583 18.4167L17.85 10.4125L15.8667 8.35833L9.84583 14.3792L6.87083 11.4042L4.81667 13.3875L9.84583 18.4167ZM11.3333 2.83333H2.83333H19.8333H11.3333Z"
+                          fill="#AD5BE7"
+                          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+                          // onMouseEnter={() => setIsHovered(true)}
+                          // onMouseLeave={() => setIsHovered(false)}
+                        />
+                      </svg>
+        <button
+          onClick={onViewCart}
+          className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-sm md:text-[16px] font-inter"
+        >
+          View Cart
+          {countCartItems > 0 && (
+            <span className="bg-[#07213A] text-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {countCartItems}
+            </span>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+});
+BottomCTABar.displayName = "BottomCTABar";
