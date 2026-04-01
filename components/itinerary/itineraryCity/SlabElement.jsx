@@ -53,13 +53,12 @@ const SlabElement = (props) => {
     trackPoiCardClicked,
   } = useAnalytics();
 
-  const { id } = useSelector((state) => state.auth);
-  const { customer } = useSelector((state) => state.Itinerary);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   return (
     <div className="w-[95%] mx-auto">
-      {props.element.element_type === "activity" ||
-      props.element.element_type === "poi" ? (
+      {props.element.element_type === "activity"  || props.element.element_type === "poi" ? (
         <Activity
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -73,8 +72,7 @@ const SlabElement = (props) => {
           cityName={props?.cityName}
           totalElements={props.totalElements}
         />
-      ) : props.element.element_type === "recommendation" ||
-        props.element.element_type === "restaurant" ? (
+      ) : props.element.element_type === "recommendation" || props.element.element_type === "restaurant" ? (
         <Recommendation
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -102,9 +100,10 @@ const handleMoveElementCommonly = async (
   heading,
   setShowLoginModal,
   id,
-  customer,
+  customer
 ) => {
   const token = localStorage.getItem("access_token");
+  
 
   if (!token) {
     if (setShowLoginModal) {
@@ -130,19 +129,19 @@ const handleMoveElementCommonly = async (
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-      },
+      }
     );
 
     const newItinerary = JSON.parse(JSON.stringify(itinerary));
     let itineraryCities = [];
     if (res?.status === 200) {
-      const updatedDayByDay = res.data;
-
-      itineraryCities = newItinerary.cities.map((city) =>
-        city.id === itinerary_city_id
-          ? { ...city, day_by_day: updatedDayByDay }
-          : city,
-      );
+     const updatedDayByDay = res.data;
+  
+  itineraryCities = newItinerary.cities.map((city) => 
+    city.id === itinerary_city_id 
+      ? { ...city, day_by_day: updatedDayByDay }
+      : city
+  );
     }
 
     newItinerary.cities = itineraryCities;
@@ -153,7 +152,7 @@ const handleMoveElementCommonly = async (
         type: "success",
         text: `${heading} has been moved successfully.`,
         heading: "Success!",
-      }),
+      })
     );
   } catch (error) {
     // handleCloseMenue();
@@ -167,7 +166,7 @@ const handleMoveElementCommonly = async (
         type: "error",
         text: errorMsg,
         heading: "Error!",
-      }),
+      })
     );
   }
 };
@@ -180,19 +179,8 @@ const Activity = (props) => {
   const open = Boolean(anchorEl);
   const itinerary = useSelector((state) => state.Itinerary);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const { id } = useSelector((state) => state.auth);
-  const { customer } = useSelector((state) => state.Itinerary);
-  const cart = useSelector((state) => state.Cart);
-
-  const isIncluded =
-    cart?.summary &&
-    Object.values(cart.summary)?.some((category) =>
-      category?.bookings?.some(
-        (booking) =>
-          booking?.id === props?.element?.booking?.id &&
-          booking?.selected === true,
-      ),
-    );
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
@@ -218,7 +206,7 @@ const Activity = (props) => {
         query: {}, // remove "drawer"
       },
       undefined,
-      { scroll: false },
+      { scroll: false }
     );
   };
 
@@ -231,14 +219,14 @@ const Activity = (props) => {
       props?.trackActivityCardClicked(
         router.query.id,
         poi?.booking?.id || poi?.id,
-        "day_by_day_ellapse",
+        "day_by_day_ellapse"
       );
     }
     if (type === "poi") {
       props?.trackPoiCardClicked(
         router.query.id,
         poi?.booking?.id || poi?.id,
-        "day_by_day_ellapse",
+        "day_by_day_ellapse"
       );
     }
     router.push(
@@ -254,7 +242,7 @@ const Activity = (props) => {
       undefined,
       {
         scroll: false,
-      },
+      }
     );
 
     logEvent({
@@ -290,7 +278,7 @@ const Activity = (props) => {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          },
+          }
         );
       } else {
         res = await axios.delete(
@@ -299,7 +287,7 @@ const Activity = (props) => {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          },
+          }
         );
       }
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
@@ -317,7 +305,7 @@ const Activity = (props) => {
             if (city.id === props?.itinerary_city_id) {
               cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
                 props?.slabIndex,
-                1,
+                1
               );
             }
             return cityTemp;
@@ -328,13 +316,13 @@ const Activity = (props) => {
               city.day_by_day.forEach((day, index) => {
                 if (day?.slab_elements) {
                   day.slab_elements = day.slab_elements.filter(
-                    (item) => item?.booking?.id !== props?.element?.booking?.id,
+                    (item) => item?.booking?.id !== props?.element?.booking?.id
                   );
                 }
               });
 
               city.activities = city.activities?.filter(
-                (item) => item?.id !== props?.element?.booking?.id,
+                (item) => item?.id !== props?.element?.booking?.id
               );
             }
             return city;
@@ -350,7 +338,7 @@ const Activity = (props) => {
           type: "success",
           text: `${props.element.heading} has been removed from your itinerary`,
           heading: "Success!",
-        }),
+        })
       );
     } catch (error) {
       handleCloseMenue();
@@ -364,7 +352,7 @@ const Activity = (props) => {
           type: "error",
           text: errorMsg,
           heading: "Error!",
-        }),
+        })
       );
     }
     // setLoading(false);
@@ -382,7 +370,7 @@ const Activity = (props) => {
       props.element.heading,
       props?.setShowLoginModal,
       id,
-      customer,
+      customer
     );
     handleCloseMenue();
   };
@@ -397,7 +385,7 @@ const Activity = (props) => {
                 props?.element,
                 props?.element?.element_type === "poi"
                   ? "poi"
-                  : props?.element?.element_type,
+                  : props?.element?.element_type
               )
             }
             className="cursor-pointer"
@@ -419,7 +407,7 @@ const Activity = (props) => {
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type === "poi" ? "poi" : "activity",
+                  props?.element?.element_type === "poi" ? "poi" : "activity"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
@@ -440,9 +428,7 @@ const Activity = (props) => {
                   />
                 ) : null}
                 <div className="text-[#6E757A] Body3R_12">
-                  {props?.element?.element_type === "poi"
-                    ? "Self Exploration"
-                    : ""}
+                  {props?.element?.element_type === "poi" ? "Self Exploration" : ""}
                 </div>
                 {props?.element?.element_type != "poi" ? (
                   <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
@@ -458,7 +444,7 @@ const Activity = (props) => {
                 <div className="w-full flex  mt-2 gap-2 sm:gap-3">
                   {props.element?.time && (
                     <div className="Body3M_12 text-[#6E757A]">
-                      {props.element?.time}
+                       {props.element?.time}
                       {/* {props.element?.start_time &&
                         formatTime(props.element.start_time)}
                       {props.element?.start_time &&
@@ -517,7 +503,7 @@ const Activity = (props) => {
               )}
             </div>
 
-            {!(props?.element?.element_type === "poi") && isIncluded ? (
+            {!(props?.element?.element_type === "poi") ? (
               <div className="flex flex-row gap-xs flex-wrap ">
                 {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
                 <div
@@ -594,7 +580,7 @@ const Activity = (props) => {
                 e.stopPropagation();
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type == "poi" ? "poi" : "activity",
+                  props?.element?.element_type == "poi" ? "poi" : "activity"
                 );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
@@ -610,15 +596,13 @@ const Activity = (props) => {
           String(
             props?.element?.booking?.id ||
               props.element?.id ||
-              props.element?.activity,
+              props.element?.activity
           ) && (
           <POIDetailsDrawer
             itineraryDrawer
             show={true}
             iconId={
-              props.element?.element_type === "poi"
-                ? props.element?.id
-                : props.element?.id
+              props.element?.element_type === "poi" ? props.element?.id : props.element?.id
             }
             handleCloseDrawer={handleCloseDrawer}
             name={props.element.heading}
@@ -654,8 +638,8 @@ const Recommendation = (props) => {
   });
 
   const [anchorEl, setAnchorEl] = useState(null);
-  const { id } = useSelector((state) => state.auth);
-  const { customer } = useSelector((state) => state.Itinerary);
+  const {id} = useSelector(state=>state.auth);
+  const {customer} = useSelector(state=>state.Itinerary)
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -717,7 +701,7 @@ const Recommendation = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        },
+        }
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
@@ -732,7 +716,7 @@ const Recommendation = (props) => {
           if (city.id === props?.itinerary_city_id) {
             cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
               props?.slabIndex,
-              1,
+              1
             );
           }
           return cityTemp;
@@ -747,7 +731,7 @@ const Recommendation = (props) => {
           type: "success",
           text: `${props.element.heading} has been removed from your itinerary`,
           heading: "Success!",
-        }),
+        })
       );
     } catch (error) {
       handleCloseMenue();
@@ -761,7 +745,7 @@ const Recommendation = (props) => {
           type: "error",
           text: errorMsg,
           heading: "Error!",
-        }),
+        })
       );
     }
     // setLoading(false);
@@ -779,7 +763,7 @@ const Recommendation = (props) => {
       props.element.heading,
       props?.setShowLoginModal,
       id,
-      customer,
+      customer
     );
     handleCloseMenue();
   };
@@ -794,7 +778,9 @@ const Recommendation = (props) => {
       <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
         <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
-            onClick={() => handleActivity(props?.element?.id, "restaurant")}
+            onClick={() =>
+              handleActivity(props?.element?.id, "restaurant")
+            }
             className="cursor-pointer"
           >
             <ImageLoader
@@ -811,7 +797,12 @@ const Recommendation = (props) => {
 
           <div className="flex flex-col max-ph:mb-sm gap-xxs-md max-ph:gap-xs">
             <div
-              onClick={() => handleActivity(props?.element?.id, "restaurant")}
+              onClick={() =>
+                handleActivity(
+                  props?.element?.id,
+                  "restaurant"
+                )
+              }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
               {props.element.heading}
@@ -832,7 +823,7 @@ const Recommendation = (props) => {
               <div className="w-full flex gap-2 sm:gap-3  mt-2">
                 {props.element?.time && (
                   <div className="Body3M_12 text-[#6E757A]">
-                    {props.element?.time}
+                      {props.element?.time}
                     {/* {props.element?.start_time &&
                       formatTime(props.element?.start_time)}
                     {props.element?.start_time &&
@@ -929,7 +920,10 @@ const Recommendation = (props) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleActivity(props?.element?.id, "restaurant");
+                handleActivity(
+                  props?.element?.id,
+                  "restaurant"
+                );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
             >
