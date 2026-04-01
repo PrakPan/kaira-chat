@@ -68,7 +68,6 @@ const POIDetailsDrawer = (props) => {
 
   const fetchData = async () => {
     setLoading(true);
-    setError(null);
 
     try {
       if (props?.activityData?.type == "activity") {
@@ -100,7 +99,7 @@ const POIDetailsDrawer = (props) => {
         setLoading(false);
       } else if (props?.activityData?.type == "restaurant") {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+          `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/`
         );
         setData(res?.data?.data?.restaurant);
         setLoading(false);

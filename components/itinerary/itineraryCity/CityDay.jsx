@@ -88,7 +88,7 @@ const CityDay = (props) => {
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {
-      if (["activity", "restaurant","poi"].includes(elem.element_type)) {
+      if (["activity", "recommendation"].includes(elem.element_type)) {
         elements.push(elem);
       }
     }
@@ -112,8 +112,6 @@ const CityDay = (props) => {
       return allDates.includes(dayDate);
     }
   );
-
-  console.log("Slab Elements for the day:", props.day.slab_elements, elements);
 
   const formattedTaxiDetails = matchingIntracityBookings?.map(
     (booking, index) => {

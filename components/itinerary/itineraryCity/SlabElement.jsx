@@ -58,7 +58,7 @@ const SlabElement = (props) => {
 
   return (
     <div className="w-[95%] mx-auto">
-      {props.element.element_type === "activity"  || props.element.element_type === "poi" ? (
+      {props.element.element_type === "activity" ? (
         <Activity
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -72,7 +72,7 @@ const SlabElement = (props) => {
           cityName={props?.cityName}
           totalElements={props.totalElements}
         />
-      ) : props.element.element_type === "recommendation" || props.element.element_type === "restaurant" ? (
+      ) : props.element.element_type === "recommendation" ? (
         <Recommendation
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -182,6 +182,14 @@ const Activity = (props) => {
   const {id} = useSelector(state=>state.auth);
   const {customer} = useSelector(state=>state.Itinerary)
 
+  const cart = useSelector((state) => state.Cart);
+
+const isIncluded = cart?.summary && Object.values(cart.summary).some(
+   (category) => category?.bookings?.some(
+     (booking) => booking?.id === props?.element?.booking?.id && booking?.selected === true
+   )
+ );
+
   const handleClick = (event) => {
     document.documentElement.style.overflow = "hidden";
     document.body.style.setProperty("overflow", "visible", "important");
@@ -218,14 +226,14 @@ const Activity = (props) => {
     if (type === "activity") {
       props?.trackActivityCardClicked(
         router.query.id,
-        poi?.booking?.id || poi?.id,
+        poi?.booking?.id || poi?.poi,
         "day_by_day_ellapse"
       );
     }
     if (type === "poi") {
       props?.trackPoiCardClicked(
         router.query.id,
-        poi?.booking?.id || poi?.id,
+        poi?.booking?.id || poi?.poi,
         "day_by_day_ellapse"
       );
     }
@@ -234,7 +242,7 @@ const Activity = (props) => {
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: "showPoiDetail",
-          poi_id: poi?.booking?.id || poi?.id,
+          poi_id: poi?.booking?.id || poi?.poi,
           type: type,
           dayIndex: props?.dayIndex,
         },
@@ -383,7 +391,7 @@ const Activity = (props) => {
             onClick={() =>
               handleActivity(
                 props?.element,
-                props?.element?.element_type === "poi"
+                props?.element?.poi != "undefined"
                   ? "poi"
                   : props?.element?.element_type
               )
@@ -407,7 +415,7 @@ const Activity = (props) => {
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type === "poi" ? "poi" : "activity"
+                  props?.element?.poi != null ? "poi" : "activity"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
@@ -428,9 +436,9 @@ const Activity = (props) => {
                   />
                 ) : null}
                 <div className="text-[#6E757A] Body3R_12">
-                  {props?.element?.element_type === "poi" ? "Self Exploration" : ""}
+                  {props?.element?.poi ? "Self Exploration" : ""}
                 </div>
-                {props?.element?.element_type != "poi" ? (
+                {!props?.element?.poi ? (
                   <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
                     Activity
                   </div>
@@ -440,18 +448,17 @@ const Activity = (props) => {
               </div>
 
               {/* For POIs (Self Exploration) - timings and ratings on new line */}
-              {props?.element?.element_type === "poi" ? (
+              {props?.element?.poi ? (
                 <div className="w-full flex  mt-2 gap-2 sm:gap-3">
-                  {props.element?.time && (
+                  {(props.element?.start_time || props.element?.end_time) && (
                     <div className="Body3M_12 text-[#6E757A]">
-                       {props.element?.time}
-                      {/* {props.element?.start_time &&
+                      {props.element?.start_time &&
                         formatTime(props.element.start_time)}
                       {props.element?.start_time &&
                         props.element?.end_time &&
                         " - "}
                       {props.element?.end_time &&
-                        formatTime(props.element.end_time)} */}
+                        formatTime(props.element.end_time)}
                     </div>
                   )}
                   {props.element?.rating && (
@@ -503,7 +510,7 @@ const Activity = (props) => {
               )}
             </div>
 
-            {!(props?.element?.element_type === "poi") ? (
+            {!props?.element?.poi && isIncluded ? (
               <div className="flex flex-row gap-xs flex-wrap ">
                 {/* {props?.element?.tags && props.element.tags.map((item, i) => ( */}
                 <div
@@ -580,7 +587,7 @@ const Activity = (props) => {
                 e.stopPropagation();
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type == "poi" ? "poi" : "activity"
+                  props?.element?.poi != null ? "poi" : "activity"
                 );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
@@ -595,14 +602,14 @@ const Activity = (props) => {
         String(poi_id) ===
           String(
             props?.element?.booking?.id ||
-              props.element?.id ||
+              props.element?.poi ||
               props.element?.activity
           ) && (
           <POIDetailsDrawer
             itineraryDrawer
             show={true}
             iconId={
-              props.element?.element_type === "poi" ? props.element?.id : props.element?.id
+              props.element?.poi ? props.element?.poi : props.element?.activity
             }
             handleCloseDrawer={handleCloseDrawer}
             name={props.element.heading}
@@ -772,14 +779,13 @@ const Recommendation = (props) => {
     return <MealRecommendation element={props.element} />;
   }
 
-  console.log("Rendering Recommendation for:", props.element);
   return (
     <>
       <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
         <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
-              handleActivity(props?.element?.id, "restaurant")
+              handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
             }
             className="cursor-pointer"
           >
@@ -799,13 +805,13 @@ const Recommendation = (props) => {
             <div
               onClick={() =>
                 handleActivity(
-                  props?.element?.id,
+                  props?.element?.restaurants?.[0]?.id,
                   "restaurant"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
             >
-              {props.element.heading}
+              {props.element.heading || props.element?.restaurants?.[0]?.name}
             </div>
 
             <div className="flex flex-wrap items-center text-sm">
@@ -821,22 +827,21 @@ const Recommendation = (props) => {
 
               {/* For Restaurants - timings and ratings on new line */}
               <div className="w-full flex gap-2 sm:gap-3  mt-2">
-                {props.element?.time && (
+                {(props.element?.start_time || props.element?.end_time) && (
                   <div className="Body3M_12 text-[#6E757A]">
-                      {props.element?.time}
-                    {/* {props.element?.start_time &&
+                    {props.element?.start_time &&
                       formatTime(props.element?.start_time)}
                     {props.element?.start_time &&
                       props.element?.end_time &&
                       " - "}
                     {props.element?.end_time &&
-                      formatTime(props.element?.end_time)} */}
+                      formatTime(props.element?.end_time)}
                   </div>
                 )}
-                {props.element?.rating && (
+                {props.element?.restaurants?.[0]?.rating && (
                   <div className="flex items-center border-l pl-[8px] border-[#BFBFBF] font-normal text-[#6E757A]">
                     <div className="Body3M_12">
-                      {props.element?.rating}&nbsp;
+                      {props.element?.restaurants?.[0]?.rating}&nbsp;
                     </div>
                     <div className="flex items-center text-primary-stars">
                       <Image
@@ -921,7 +926,7 @@ const Recommendation = (props) => {
               onClick={(e) => {
                 e.stopPropagation();
                 handleActivity(
-                  props?.element?.id,
+                  props?.element?.restaurants?.[0]?.id,
                   "restaurant"
                 );
               }}
@@ -936,7 +941,7 @@ const Recommendation = (props) => {
       <POIDetailsDrawer
         itineraryDrawer
         show={showDrawer}
-        iconId={props.element?.id}
+        iconId={props.element?.restaurants?.[0]?.id}
         handleCloseDrawer={handleCloseDrawer}
         name={props.element.heading}
         image={props.element.icon}
