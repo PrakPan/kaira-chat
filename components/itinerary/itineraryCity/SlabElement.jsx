@@ -58,7 +58,7 @@ const SlabElement = (props) => {
 
   return (
     <div className="w-[95%] mx-auto">
-      {props.element.element_type === "activity" ? (
+      {props.element.element_type === "activity" || props?.element?.element_type === "poi" ? (
         <Activity
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -72,7 +72,7 @@ const SlabElement = (props) => {
           cityName={props?.cityName}
           totalElements={props.totalElements}
         />
-      ) : props.element.element_type === "recommendation" ? (
+      ) : props.element.element_type === "recommendation" || props.element.element_type === "restaurant"? (
         <Recommendation
           element={props.element}
           dayIndex={props?.dayIndex}
@@ -669,6 +669,8 @@ const Recommendation = (props) => {
     //   dispatch(setCloneItineraryDrawer(true));
     //   return;
     // }
+
+    console.log("activity data is:", poi);
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -779,13 +781,15 @@ const Recommendation = (props) => {
     return <MealRecommendation element={props.element} />;
   }
 
+  console.log("Rendering restaurant recommendation with element:", props.element);
+
   return (
     <>
       <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
         <div className="w-full flex flex-row items-stretch  gap-sm-md bg-white">
           <div
             onClick={() =>
-              handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
+              handleActivity(props?.element?.restaurants?.[0]?.id || props.element?.id, "restaurant")
             }
             className="cursor-pointer"
           >
@@ -805,7 +809,7 @@ const Recommendation = (props) => {
             <div
               onClick={() =>
                 handleActivity(
-                  props?.element?.restaurants?.[0]?.id,
+                  props?.element?.restaurants?.[0]?.id || props.element?.id,
                   "restaurant"
                 )
               }
@@ -926,7 +930,7 @@ const Recommendation = (props) => {
               onClick={(e) => {
                 e.stopPropagation();
                 handleActivity(
-                  props?.element?.restaurants?.[0]?.id,
+                  props?.element?.restaurants?.[0]?.id || props.element?.id,
                   "restaurant"
                 );
               }}

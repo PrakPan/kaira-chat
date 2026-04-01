@@ -85,16 +85,20 @@ const CityDay = (props) => {
       }
     );
   };
-  useEffect(() => {
-    let elements = [];
-    for (let elem of props.day.slab_elements) {
-      if (["activity", "recommendation"].includes(elem.element_type)) {
-        elements.push(elem);
-      }
+useEffect(() => {
+  let elements = [];
+  for (let elem of props.day.slab_elements) {
+    if (["activity", "poi", "restaurant"].includes(elem.element_type)) {
+      elements.push(elem);
+    } else if (
+      elem.element_type === "recommendation" &&
+      elem.restaurants?.length > 0
+    ) {
+      elements.push(elem);
     }
-
-    setElements(elements);
-  }, [props.day?.slab_elements]);
+  }
+  setElements(elements);
+}, [props.day?.slab_elements]);
 
   useEffect(() => {
     if (props?.index === 0) {
