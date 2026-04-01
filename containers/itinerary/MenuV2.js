@@ -192,15 +192,15 @@ const SimpleTabsV2 = (props) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (!props.token && props.itinerary && finalized_status == "SUCCESS") {
-      const timeout = setTimeout(()=>{
+useEffect(() => {
+  if (!props.token && props.itinerary?.id && finalized_status === "SUCCESS") {
+    const timeout = setTimeout(() => {
       setLoginModalMessage("Login to view details");
       setShowLoginModal(true);
-      },30000)
-       return () => clearTimeout(timeout);
-    }
-  }, [props.itinerary?.id]);
+    }, 30000);
+    return () => clearTimeout(timeout);
+  }
+}, [props.itinerary?.id]);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
