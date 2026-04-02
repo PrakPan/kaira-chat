@@ -296,10 +296,10 @@ const DaybyDay = ({
 
 
             return (
-              <>
+              <div key={city.id}>    
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
-                  key={city.id}
+                  key={`itinerary-city-${city.id}`}
                   nextCity={ itineraryDaybyDay?.cities?.[index + 1]}
                   city={city}
                   cityRefs={cityRefs}
@@ -387,7 +387,7 @@ const DaybyDay = ({
                     />
                   </div>
                 )}
-              </>
+              </div>
             );
           })}
           <CityItem

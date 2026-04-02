@@ -1205,7 +1205,7 @@ Start Location: ${details.startLocation}`;
         </div>
 
         {/* Mobile bottom nav */}
-        <div className="flex-shrink-0 bg-white border-t border-slate-200 safe-area-pb">
+        {/* <div className="flex-shrink-0 bg-white border-t border-slate-200 safe-area-pb">
           <div className="flex items-center justify-around px-4 py-2">
             <button
               onClick={() => setMobilePanel("map")}
@@ -1235,7 +1235,7 @@ Start Location: ${details.startLocation}`;
               <span className="text-[10px] font-medium">Chat</span>
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="max-ph:hidden flex-shrink-0 w-full">
@@ -1324,7 +1324,7 @@ const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div className="z-20 fixed w-[47.5%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div className="z-20 fixed w-full md:w-[47.5%] bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
@@ -1356,7 +1356,7 @@ const BottomCTABar = React.memo(
       currency?.currency === "USD" ? "$" : currency?.currency === "EUR" ? "€" : "₹";
 
     return (
-      <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-[11px] text-[#6E757A]">
             {perPerson

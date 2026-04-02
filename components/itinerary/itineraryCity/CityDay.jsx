@@ -390,26 +390,19 @@ const CityDay = (props) => {
 
   return (
     <>
-      <div className="flex border-b border-[#E8E8E8] last:border-b-0 w-full">
+     <div className="flex sm:flex-row flex-col border-b border-[#E8E8E8] last:border-b-0 w-full justify-center">
 
         {/* COL 1: Date label */}
-        <div className="w-fit shrink-0 px-4 pt-6 pb-6">
-          <p className="text-[18px] font-[600] m-0 leading-tight">
-            Day {props.index + 1}
-          </p>
-          <p className="text-[12px] text-[#9CA3AF] m-0 mt-2 leading-tight">
-            {props?.day?.date
-              ? new Date(props.day.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "short",
-                  year: "numeric",
-                })
-              : ""}
-          </p>
-        </div>
+        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2">
+  <p className="text-[18px] font-[600] m-0 leading-tight">Day {props.index + 1}</p>
+  <span className="sm:hidden text-[#9CA3AF] text-[14px]">·</span>
+  <p className="text-[12px] sm:text-[12px] md:text-[14px] text-[#9CA3AF] m-0 sm:mt-2 mt-0 leading-tight">
+    {/* date */}
+  </p>
+</div>
 
         {/* COL 2: Content */}
-        <div className="flex-1 pr-4 pt-6 pb-6 min-w-0">
+        <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {elements.length > 0 ? (
             <div className="relative">
