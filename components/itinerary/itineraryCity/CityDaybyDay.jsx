@@ -36,7 +36,7 @@ const CityDaybyDay = (props) => {
         props.city?.day_by_day.map((day, index) => (
           <CityDay
             mercuryItinerary={props?.mercuryItinerary}
-            key={day.slab_id}
+            key={day.slab_id ?? `day-fallback-${index}`}
             index={index}
             day={day}
             cityId={props.city.city.id}
