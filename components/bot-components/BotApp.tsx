@@ -193,6 +193,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const chatBotInjectedMessageRef = useRef<string | null>(null);
   const isLoadingThreadRef = useRef(false);
 
+  const [activeChatSessionId, setActiveChatSessionId] = useState<string | undefined>(
+  sessionId ?? undefined
+);
+
   // ── Mobile breakpoint — single source of truth so only ONE ItineraryContainer
   //    is ever rendered in the DOM at a time ─────────────────────────────────
   const [isMobile, setIsMobile] = useState(false);
@@ -439,6 +443,12 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     [revealLeftPanel],
   );
 
+  const sessionIdFromUrl = useMemo(() => {
+  if (typeof window === "undefined") return null;
+  const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+  return match ? match[1] : null;
+}, []);
+
   const handleItineraryReceived = useCallback(
     (data: any) => {
       revealLeftPanel();
@@ -580,6 +590,16 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           }),
         });
         const data = await res.json();
+
+      const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
+if (threadSessionId) {
+  const target = `/chat/${threadSessionId}`;
+  if (window.location.pathname !== target) {
+    window.history.pushState({}, "", target);
+  }
+  sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
+  setActiveChatSessionId(threadSessionId); // ← add this
+}
         setRestoredThread(data);
         setActiveThreadId(threadId);
         setIsChatActive(true);
@@ -778,8 +798,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     dispatch(setItineraryStatus("hotels_status", "PENDING"));
     dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
+
     setChatKey((prev) => prev + 1);
     if (window.location.pathname !== "/chat") {
+      setActiveChatSessionId(undefined);
       window.history.pushState({}, "", "/chat");
     }
   };
@@ -811,6 +833,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
     botMode,
+    sessionId: activeChatSessionId, 
     itineraryId,
     onBotModeChange: setBotMode,
     onItineraryIdChange: setItineraryId,
@@ -1324,7 +1347,7 @@ const BottomCTABar = React.memo(
 
     if (isDraft) {
       return (
-        <div className="z-20 fixed w-full md:w-[47.5%] bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
+        <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button
             onClick={onConfirm}
             className="flex items-center justify-center h-[40px] px-5 gap-2 rounded-[8px] bg-[#F7E700] font-semibold text-[14px] font-inter"
@@ -1356,7 +1379,7 @@ const BottomCTABar = React.memo(
       currency?.currency === "USD" ? "$" : currency?.currency === "EUR" ? "€" : "₹";
 
     return (
-      <div className="z-20 fixed w-full md:w-[48%] bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
+      <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-[11px] text-[#6E757A]">
             {perPerson

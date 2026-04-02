@@ -12,6 +12,7 @@ import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import { FaTaxi } from "react-icons/fa6";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { getDate } from "../../../helper/ConvertDateFormat";
+import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 
 // ─── Styled components ────────────────────────────────────────────────────────
 
@@ -209,9 +210,46 @@ const CityDay = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  const [showActivityDetails, setShowActivityDetails] = useState({ show: false });
+const [activityLoading, setActivityLoading] = useState(false);
+const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
   const router = useRouter();
   const { drawer, idx, itinerary_city_id, date } = router?.query;
+
+  const handleDraftActivityClick = async (item) => {
+  const resolvedType = resolveElementType(item);
+  if (resolvedType !== "activity") return;
+
+  const activityId = item?.booking?.id || item?.id;
+  if (!activityId) return;
+
+  try {
+    setActivityLoading(true);
+    const response = await fetch(
+      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+        body: JSON.stringify({
+          start_date: props?.day?.date || props?.start_date,
+          number_of_adults: props?.pax?.adults || 2,
+          number_of_children: props?.pax?.children || 0,
+          children_ages: props?.pax?.children_ages || [],
+        }),
+      }
+    );
+    const data = await response.json();
+    setShowActivityDetails({ show: true, data, id: activityId });
+  } catch (err) {
+    console.error("Failed to fetch activity details", err);
+  } finally {
+    setActivityLoading(false);
+  }
+};
 
   // ── Sync elements from props ─────────────────────────────────────────────────
   useEffect(() => {
@@ -245,30 +283,37 @@ const CityDay = (props) => {
     );
   };
 
-  const handleItemClick = (item) => {
-    if (!item) return;
+ const handleItemClick = (item) => {
+  if (!item) return;
 
-    const resolvedType = resolveElementType(item);
-    const itemId = getItemId(item, resolvedType);
+  const resolvedType = resolveElementType(item);
+  const itemId = getItemId(item, resolvedType);
 
-    // Pure recommendations (no restaurant backing) are not clickable
-    if (!resolvedType || !itemId || resolvedType === "recommendation") return;
+  if (!resolvedType || !itemId || resolvedType === "recommendation") return;
 
-    trackActivityCardClicked(router.query.id, resolvedType);
-    router.push(
-      {
-        pathname: router.asPath.split("?")[0],
-        query: {
-          drawer: "showPoiDetail",
-          itinerary_city_id: props?.itinerary_city_id,
-          poi_id: itemId,
-          type: resolvedType,
-        },
+  // Draft itinerary: activities open ActivityDetailsDrawer via API
+
+  console.log("Item clicked:", { item, resolvedType, itemId, isDraft });
+  if (isDraft && resolvedType === "activity") {
+    handleDraftActivityClick(item);
+    return;
+  }
+
+  trackActivityCardClicked(router.query.id, resolvedType);
+  router.push(
+    {
+      pathname: router.asPath.split("?")[0],
+      query: {
+        drawer: "showPoiDetail",
+        itinerary_city_id: props?.itinerary_city_id,
+        poi_id: itemId,
+        type: resolvedType,
       },
-      undefined,
-      { scroll: false }
-    );
-  };
+    },
+    undefined,
+    { scroll: false }
+  );
+};
 
   // ── Intracity / taxi bookings ─────────────────────────────────────────────────
 
@@ -482,6 +527,35 @@ const CityDay = (props) => {
             setShowSettings={props?.setShowSettings}
           />
         )}
+
+
+        {showActivityDetails.show && (
+  <ActivityDetailsDrawer
+    itineraryDrawer
+    date={props?.day?.date}
+    show={showActivityDetails.show}
+    setShowDetails={setShowActivityDetails}
+    activityId={showActivityDetails.id}
+    handleCloseDrawer={() =>
+      setShowActivityDetails({ show: false })
+    }
+    Topheading={"Select Our Activity"}
+    getAccommodationAndActivitiesHandler={
+      props?.getAccommodationAndActivitiesHandler
+    }
+    cityId={props?.city?.id}
+    itinerary_city_id={props?.itinerary_city_id}
+    setActivities={props?.setActivities}
+    activities={props?.activities}
+    setItinerary={props?.setItinerary}
+    activityBookings={props?.activityBookings}
+    setActivityBookings={props?.setActivityBookings}
+    setShowLoginModal={props?.setLoginModal}
+    pax={props?.pax}
+    setShowDrawer={props?.setShowDrawer}
+    showPackages={false}
+  />
+)}
     </>
   );
 };
