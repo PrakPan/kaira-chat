@@ -26,6 +26,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [threads, setThreads] = useState<Thread[]>([]);
 
   const fetchThreads = async (sessionId: string) => {
+    const currentMatch = window.location.pathname.match(/\/chat\/([a-f0-9-]+)/);
+  if (currentMatch) {
+    window.history.replaceState({}, "", `/chat/${sessionId}`);
+  } else {
+    window.history.pushState({}, "", `/chat/${sessionId}`);
+  }
+
     try {
       const res = await fetch(CHATKIT_API_URL, {
         method: "POST",

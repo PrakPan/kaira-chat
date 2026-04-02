@@ -23,8 +23,7 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
-import AccommodationModal from "../../modals/accommodation/Index";
-import { MERCURY_HOST } from "../../../services/constants";
+import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -176,47 +175,11 @@ const ItineraryCity = (props) => {
     city_id,
   } = router?.query;
 
+  const [draftHotelDrawer, setDraftHotelDrawer] = useState({ show: false, id: null });
 
-  const [draftHotelId, setDraftHotelId] = useState(null);
-const [showAccommodationModal, setShowAccommodationModal] = useState(false);
-const [accommodationData, setAccommodationData] = useState(null);
-const [accommodationLoading, setAccommodationLoading] = useState(false);
-
-
-const handleDraftHotelClick = async (hotelId) => {
-  if (!token) {
-    props?.setShowLoginModal(true);
-    return;
-  }
-  try {
-    setAccommodationLoading(true);
-    setDraftHotelId(hotelId);
-    const response = await fetch(
-      `${MERCURY_HOST}/api/v1/hotels/accommodation/${hotelId}/`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
-    );
-    const data = await response.json();
-    console.log(
-    "Rendering ItineraryCity for city: ",
-    data
-  );
-    setAccommodationData(data?.data?.accommodation);
-    setShowAccommodationModal(true);
-  } catch (err) {
-    dispatch(
-      openNotification({
-        type: "error",
-        text: err?.message || "Failed to load hotel details",
-        heading: "Error!",
-      })
-    );
-  } finally {
-    setAccommodationLoading(false);
-  }
+  const handleDraftHotelClick = (hotelId) => {
+  if (!localStorage?.getItem("access_token")) { props?.setShowLoginModal(true); return; }
+  setDraftHotelDrawer({ show: true, id: hotelId });
 };
 
   const multiHotelStays =
@@ -274,7 +237,7 @@ const handleDraftHotelClick = async (hotelId) => {
   }, [drawer, poi_id, dayByDay, itinerary_city_id, props.city.id]);
 
   const fetchDetails = async (hotelId = null) => {
-    if (!token) {
+    if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
       return;
     }
@@ -300,7 +263,7 @@ const handleDraftHotelClick = async (hotelId) => {
 
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
-    if (token) {
+    if (!localStorage?.getItem("access_token")) {
       const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
       props?.handleClickAc(
         index !== -1 ? index : props?.index,
@@ -405,8 +368,6 @@ const handleDraftHotelClick = async (hotelId) => {
     hotels_status === "SUCCESS" &&
     !!multiHotelStays?.[0]?.id;
 
-  
-
   return (
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
@@ -483,17 +444,17 @@ const handleDraftHotelClick = async (hotelId) => {
                     className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0"
                   >
                     {/* Hotel name — truncated, full name on title tooltip */}
-                   <span
-  className="underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
-  onClick={() =>
-    itineraryDaybyDay.status === "Draft"
-      ? handleDraftHotelClick(hotel.id)
-      : fetchDetails(hotel.id)
-  }
-  title={hotel?.name}
->
-  {hotel?.name}
-</span>
+                    <span
+                      className="underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
+                     onClick={() =>
+  itineraryDaybyDay.status === "Draft"
+    ? handleDraftHotelClick(hotel.id)
+    : fetchDetails(hotel.id)
+}
+                      title={hotel?.name}
+                    >
+                      {hotel?.name}
+                    </span>
 
                     <span className="text-[#6B7280] shrink-0">•</span>
 
@@ -641,38 +602,17 @@ const handleDraftHotelClick = async (hotelId) => {
         )}
 
 
-        {showAccommodationModal && accommodationData && (
-  <AccommodationModal
-    mercury
-    _setImagesHandler={_setImagesHandler}
-    onHide={() => {
-      setShowAccommodationModal(false);
-      setAccommodationData(null);
-    }}
-    setImages={setImages}
-    id={draftHotelId}
-    currentBooking={accommodationData}
-    check_in={accommodationData?.check_in}
-    check_out={accommodationData?.check_out}
-    show={showAccommodationModal}
-    payment={null}
-    plan={multiHotelStays}
-    BookingButton={false}
-    bookingFunData={null}
-    handleClickAc={props?.handleClickAc}
-    index={props?.index}
-    booking={accommodationData}
-    city_id={props?.city?.city?.id}
-    provider={accommodationData?.source}
-    setStayBookings={() => {}}
-    // show={showAccommodationModal}
-    setShowDetails={setShowAccommodationModal}
-    CityData={props?.city}
-    handleCloseDrawer={() => {
-      setShowAccommodationModal(false);
-      setAccommodationData(null);
+        {draftHotelDrawer.show && (
+  <AccommodationDetailDrawer
+    show={draftHotelDrawer.show}
+    onHide={() => setDraftHotelDrawer({ show: false, id: null })}
+    accommodationId={draftHotelDrawer.id}
+    onChangeHotel={() => {
+      setDraftHotelDrawer({ show: false, id: null });
+      props?.handleClickAc(props?.index, props?.city, props?.city?.city?.id, props?.city?.id, "Change");
     }}
     setShowLoginModal={props?.setShowLoginModal}
+    _setImagesHandler={_setImagesHandler}
   />
 )}
     </div>

@@ -37,6 +37,7 @@ export default function ActivityDetails(props) {
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const currency = useSelector((state) => state.currency);
+  const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
   useEffect(() => {
     if (props.data?.prices?.length > 0) {
@@ -600,11 +601,13 @@ export default function ActivityDetails(props) {
             )}
           </>
 
-          <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
-            Add to Itinerary
-          </button>
+          {!isDraft && (
+            <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
+              Add to Itinerary
+            </button>
+          )}
         </div>
-        <div className={`flex justify-between items-center`}>
+        {!isDraft && <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">
             {" "}
             for {props?.filterState.adults + props?.filterState?.children}{" "}
@@ -613,7 +616,7 @@ export default function ActivityDetails(props) {
           <div className="text-[14px] sm:text-[16px]">
             on {dateFormat(props?.date)}
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

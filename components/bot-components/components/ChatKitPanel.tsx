@@ -68,6 +68,7 @@ onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
+sessionId?: string; 
 }
 
 function useUserLocationData() {
@@ -184,6 +185,7 @@ onItineraryCompletionDone,
   onLoadRouteOnMap,
 restoredThread,
 onInitialPromptConsumed,
+sessionId: propSessionId,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -202,7 +204,12 @@ onInitialPromptConsumed,
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
+  const loginFlowArmedRef = useRef(false);
   const pendingPostLoginMsg = useRef<string | null>(null);
+  const inputRef = useRef(input);
+useEffect(() => { inputRef.current = input; }, [input]);
+const prevAuthTokenRef = useRef<string | null>(null);
+const lastSentMessageRef = useRef<string>("");
 
   /**
    * Frontend-generated UUID for this chat session.
@@ -211,7 +218,15 @@ onInitialPromptConsumed,
    * Sent as session_id in every API request.
    * Also used as the URL segment: /chat/{sessionId}
    */
-const sessionIdRef = useRef(generateSessionId());
+const sessionIdRef = useRef<string>((() => {
+    if (propSessionId) return propSessionId;
+    // 2. Fall back to URL
+    const match = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+    if (match) return match[1];
+    // 3. Generate new (only for fresh /chat)
+    return generateSessionId();
+  })());
+
   const isFirstMessageRef = useRef(true);
 
   /**
@@ -247,15 +262,18 @@ const sessionIdRef = useRef(generateSessionId());
   // We use our own UUID (not the API thread_id) for the URL.
 const handleSessionCreated = useCallback((ourSessionId: string) => {
   if (hasUpdatedUrl.current) return;
-  hasUpdatedUrl.current = true;
 
-  // Only push if we're not already on this URL
-  const target = `/chat/${ourSessionId}`;
-  if (window.location.pathname !== target) {
-    window.history.pushState({}, "", target);
+  // Don't overwrite if URL already has a valid session ID
+  const alreadyInUrl = window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/);
+  if (alreadyInUrl) {
+    hasUpdatedUrl.current = true;
+    return;
   }
 
-  sessionStorage.setItem(`chatkit_session_/chat/${ourSessionId}`, ourSessionId);
+  hasUpdatedUrl.current = true;
+  const target = `/chat/${ourSessionId}`;
+  window.history.pushState({}, "", target);
+  sessionStorage.setItem(`chatkit_session_${target}`, ourSessionId);
 }, []);
 
   // ── useChat ───────────────────────────────────────────────────────────────
@@ -333,9 +351,10 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           }
           break;
         }
-       case "prompt_login": {
-  setPendingMessage(input);
-  pendingPostLoginMsg.current = input; // ← add this line
+case "prompt_login": {
+  console.log("[prompt_login] storing pending from lastSent:", lastSentMessageRef.current);
+  pendingPostLoginMsg.current = lastSentMessageRef.current || null;
+  loginFlowArmedRef.current = true;
   setShowLoginPrompt(true);
   break;
 }
@@ -400,16 +419,16 @@ case "shimmer_day_by_day": {
   handleEffectRef.current = handleEffect;
 
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
- const sendMessage = useCallback(
+const sendMessage = useCallback(
   (text: string) => {
     setQuickReplies([]);
+    lastSentMessageRef.current = text; 
 
-    // Only pass userLocation on the first message, then clear it
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
       rawSendMessage(text, userLocationData ?? undefined);
     } else {
-      rawSendMessage(text); // no location
+      rawSendMessage(text);
     }
   },
   [rawSendMessage, userLocationData],
@@ -436,34 +455,40 @@ useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
 
-// Effect 1: detect login, stash pending message, clear UI
-useEffect(() => {
-  if (!isLoggedIn) {
-    postLoginFiredRef.current = false;
-    setPostLoginLoading(false);
-    return;
-  }
 
+useEffect(() => {
+  const tokenJustArrived =
+    !!authToken && !prevAuthTokenRef.current;
+  prevAuthTokenRef.current = authToken ?? null;
+
+  if (!tokenJustArrived) return;                    // only fire on login transition
   if (postLoginFiredRef.current) return;
+
+  const msg = pendingPostLoginMsg.current;
+  if (!msg) return;
+
   postLoginFiredRef.current = true;
+  pendingPostLoginMsg.current = null;
 
   setShowLoginModal(false);
   setShowLoginPrompt(false);
   setPostLoginLoading(false);
+  setInput("");
 
-  if (pendingMessage) {
-    pendingPostLoginMsg.current = pendingMessage;
-    setPendingMessage(null);
-  }
-}, [isLoggedIn, pendingMessage]);
+  // One tick defer — lets useChat re-render with new authToken before sending
+  setTimeout(() => {
+    sendMessage(msg);
+  }, 100);
+}, [authToken, sendMessage]);
 
-// Effect 2: fire the message only after authToken is live in scope
+// ── Reset on logout ───────────────────────────────────────────────────────
 useEffect(() => {
-  if (!authToken || !pendingPostLoginMsg.current) return;
-  const msg = pendingPostLoginMsg.current;
-  pendingPostLoginMsg.current = null;
-  sendMessage(msg.trim());
-}, [authToken, sendMessage]); // authToken changing = useChat now has the token
+  if (!isLoggedIn) {
+    postLoginFiredRef.current = false;
+    prevAuthTokenRef.current = null;
+    setPostLoginLoading(false);
+  }
+}, [isLoggedIn]);
 
   useEffect(() => {
     setLocalItineraryId(itineraryId);
@@ -519,10 +544,14 @@ useEffect(() => {
 }, [restoredThread]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
-  const handleShowLogin = useCallback(() => {
-    if (input.trim()) setPendingMessage(input.trim());
-    setShowLoginModal(true);
-  }, [input]);
+const handleShowLogin = useCallback(() => {
+  const currentInput = inputRef.current.trim();
+  const msg = currentInput || lastSentMessageRef.current;
+  console.log("[handleShowLogin] storing pending:", msg);
+  pendingPostLoginMsg.current = msg || null;
+  loginFlowArmedRef.current = true;
+  setShowLoginModal(true);
+}, []);
 
   const handleSubmit = useCallback(() => {
     setShowLoginPrompt(false);
@@ -660,7 +689,22 @@ useEffect(() => {
             )}
 
             {showLoginPrompt && !isLoggedIn && (
-              <div className="mt-[24px]">
+              <div className="mt-[24px] p-4">
+                 <div
+          style={{
+            maxWidth: "100%",
+            // background: "#f8fafc",
+            color: "#0d0d0d",
+            padding: "12px 0px",
+            borderRadius: 12,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 16,
+            lineHeight: "24px",
+            fontWeight: 400,
+          }}
+        >
+                  I see you’re not logged in. Please login to continue chatting and unlock the best experience!
+                </div>
                 <LoginButton onClick={handleShowLogin}>Login/Signup</LoginButton>
               </div>
             )}
