@@ -720,7 +720,9 @@ if (threadSessionId) {
     if (hasRestoredRef.current) return;
     if (userSelectedThreadRef.current) return;
     hasRestoredRef.current = true;
+    if(window.location.pathname.match(/\/chat\/([a-f0-9-]{36})/)){
     restoreLatestThread(sessionId);
+    }
   }, [sessionId, restoreLatestThread]);
 
   const handleThreadSelect = useCallback(
