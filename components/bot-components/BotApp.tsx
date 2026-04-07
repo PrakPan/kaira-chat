@@ -152,7 +152,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   // ── Init showStartScreen/isChatActive from sessionId to prevent flicker on reload ──
   const [showStartScreen, setShowStartScreen] = useState(!sessionId);
   const [isChatActive, setIsChatActive] = useState(!!sessionId);
-  const [hasBotResponded, setHasBotResponded] = useState(false);
+  // When reloading with a sessionId, mark hasBotResponded true so the left panel is visible
+  // while we restore the thread data. It will be properly set by the restore flow.
+  const [hasBotResponded, setHasBotResponded] = useState(!!sessionId);
   const [isLeftPanelRevealing, setIsLeftPanelRevealing] = useState(false);
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
@@ -591,18 +593,25 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
         const data = await res.json();
 
-      const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
-if (threadSessionId) {
-  const target = `/chat/${threadSessionId}`;
-  if (window.location.pathname !== target) {
-    window.history.pushState({}, "", target);
-  }
-  sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
-  setActiveChatSessionId(threadSessionId); // ← add this
-}
+        const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
+        if (threadSessionId) {
+          const target = `/chat/${threadSessionId}`;
+          if (window.location.pathname !== target) {
+            window.history.pushState({}, "", target);
+          }
+          sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
+          setActiveChatSessionId(threadSessionId);
+        }
         setRestoredThread(data);
         setActiveThreadId(threadId);
         setIsChatActive(true);
+
+        // If the thread has any chat items (messages), reveal the chat panel
+        const hasItems = (data.items?.data ?? []).length > 0;
+        if (hasItems) {
+          setHasBotResponded(true);
+          setShowStartScreen(false);
+        }
 
         (data.map_effects ?? []).forEach((effect: any) => {
           if (effect.name === "focus_route" && effect.data) {
@@ -655,7 +664,12 @@ if (threadSessionId) {
         }
 
         // No completed itinerary in effects at all — this is an old itinerary
-        // Fall back to direct status API load using sessionId as itinerary ID
+        // Fall back to direct status API load. Use threadSessionId if available,
+        // otherwise fall back to the URL sessionId prop.
+        // IMPORTANT: only do this if the thread has NO chat messages — if it has
+        // messages it is a valid chatkit thread, not an old itinerary, and calling
+        // restoreItineraryDirectly with a chat UUID will fail and reset the UI to
+        // the start/welcome screen.
         const hasCompletedEffect = itineraryEffects.some(
           (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
         );
@@ -663,8 +677,9 @@ if (threadSessionId) {
           ["display_itinerary", "start_itinerary_completion_process"].includes(e.name),
         );
 
-        if (!hasCompletedEffect && !hasAnyItineraryEffect && sessionId) {
-          await restoreItineraryDirectly(sessionId);
+        const fallbackSessionId = threadSessionId ?? sessionId;
+        if (!hasCompletedEffect && !hasAnyItineraryEffect && !hasItems && fallbackSessionId) {
+          await restoreItineraryDirectly(fallbackSessionId);
         }
       } catch (err) {
         console.error("Failed to load thread:", err);
@@ -726,11 +741,23 @@ if (threadSessionId) {
   }, [sessionId, restoreLatestThread]);
 
   const handleThreadSelect = useCallback(
-    async (threadId: string) => {
+    async (threadId: string, knownSessionId?: string) => {
       // Reset load guard so the new thread can load
       isLoadingThreadRef.current = false;
       clearStaleChatSessions();
       userSelectedThreadRef.current = true;
+
+      // If we already know the session_id from the thread list, update the URL
+      // and activeChatSessionId immediately — before the async loadThread call —
+      // so ChatKitPanel remounts with the correct session ID straight away.
+      if (knownSessionId) {
+        const target = `/chat/${knownSessionId}`;
+        if (window.location.pathname !== target) {
+          window.history.pushState({}, "", target);
+        }
+        sessionStorage.setItem(`chatkit_session_${target}`, knownSessionId);
+        setActiveChatSessionId(knownSessionId);
+      }
 
       setRestoredThread(null);
       setLocations([]);
@@ -756,8 +783,10 @@ if (threadSessionId) {
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
-      setChatKey((prev) => prev + 1);
+      // Load thread (will also update URL/sessionId if API returns session_id),
+      // then remount ChatKitPanel with the correct session.
       await loadThread(threadId);
+      setChatKey((prev) => prev + 1);
     },
     [loadThread, dispatch],
   );
@@ -1090,7 +1119,7 @@ Start Location: ${details.startLocation}`;
               msOverflowStyle: "none",
             }}
           >
-            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} hasItineraryActivity={!!activeItineraryId} />
 
             {/* MAP tab */}
             <div
@@ -1162,57 +1191,32 @@ Start Location: ${details.startLocation}`;
         </div>
       </div>
 
-      {/* ── Mobile layout ── */}
+      {/* ── Mobile layout — Figma design: full-screen views + top tab bar ── */}
       <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
-        <div className="flex-1 overflow-hidden min-h-0 relative">
-          {/* Map panel */}
-          <div
-            className={`absolute inset-0 transition-all duration-400 ease-in-out ${
-              mobilePanel === "map"
-                ? "opacity-100 translate-x-0 pointer-events-auto"
-                : "opacity-0 -translate-x-4 pointer-events-none"
-            }`}
-          >
-            {showStartScreen && !hasBotResponded ? (
-              <StartScreen onPromptSelect={handlePromptSelect} />
-            ) : (
-              <div className="flex flex-col h-full bg-white">
-                <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-
-                {/* MAP tab */}
-                <div
-                  style={{
-                    display: viewMode === "map" ? "flex" : "none",
-                    flex: 1,
-                    minHeight: 0,
-                  }}
-                >
-                  <MapView
-                    mapState={mapState}
-                    locations={locations}
-                    userLocation={userLocation}
-                    currentRoute={currentRoute}
-                    isLoadingLocation={isLoadingLocation}
-                    mapRef={mapRef}
-                    isRoutePreparing={isRoutePreparing}
-                  />
-                </div>
-
-                {/* ITINERARY / BOOKINGS / ROUTES — mobile only renders when isMobile */}
-                {isMobile && itineraryPanel}
-              </div>
-            )}
-          </div>
-
-          {/* Chat panel */}
-          <div
-            className={`absolute inset-0 transition-all duration-400 ease-in-out ${
-              mobilePanel === "chat"
-                ? "opacity-100 translate-x-0 pointer-events-auto"
-                : "opacity-0 translate-x-4 pointer-events-none"
-            }`}
-          >
-            {!isChatActive ? (
+        <MobileLayout
+          showStartScreen={showStartScreen}
+          hasBotResponded={hasBotResponded}
+          isChatActive={isChatActive}
+          hasItineraryActivity={!!activeItineraryId}
+          isComplete={activeItineraryId !== "skeleton" && activeItineraryId !== "draft" && !!activeItineraryId}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          mobilePanel={mobilePanel}
+          setMobilePanel={setMobilePanel}
+          mapContent={
+            <MapView
+              mapState={mapState}
+              locations={locations}
+              userLocation={userLocation}
+              currentRoute={currentRoute}
+              isLoadingLocation={isLoadingLocation}
+              mapRef={mapRef}
+              isRoutePreparing={isRoutePreparing}
+            />
+          }
+          startContent={<StartScreen onPromptSelect={handlePromptSelect} />}
+          chatContent={
+            !isChatActive ? (
               <ChatWelcomeScreen
                 onSubmit={handlePromptSelect}
                 onChatStart={() => setIsChatActive(true)}
@@ -1225,42 +1229,10 @@ Start Location: ${details.startLocation}`;
                 onInitialPromptConsumed={handleInitialPromptConsumed}
                 onSendReady={handleSendMessageReady}
               />
-            )}
-          </div>
-        </div>
-
-        {/* Mobile bottom nav */}
-        {/* <div className="flex-shrink-0 bg-white border-t border-slate-200 safe-area-pb">
-          <div className="flex items-center justify-around px-4 py-2">
-            <button
-              onClick={() => setMobilePanel("map")}
-              className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "map" ? "text-amber-500" : "text-slate-400"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                <line x1="9" y1="3" x2="9" y2="18" />
-                <line x1="15" y1="6" x2="15" y2="21" />
-              </svg>
-              <span className="text-[10px] font-medium">Map</span>
-              {mobilePanel === "map" && (
-                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-amber-500" />
-              )}
-            </button>
-            <button
-              onClick={() => setMobilePanel("chat")}
-              className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "chat" ? "text-amber-500" : "text-slate-400"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              <span className="text-[10px] font-medium">Chat</span>
-            </button>
-          </div>
-        </div> */}
+            )
+          }
+          itineraryContent={isMobile ? itineraryPanel : null}
+        />
       </div>
 
       <div className="max-ph:hidden flex-shrink-0 w-full">
@@ -1364,7 +1336,7 @@ const BottomCTABar = React.memo(
 
     if (!hasFreshPricing) {
       return (
-        <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
+        <div className="z-20 fixed w-full md:w-[48%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
           <ItineraryStatusLoader
             displayText={loaderDisplayText || "Calculating best prices for you…"}
             isVisible={true}
@@ -1436,3 +1408,229 @@ const BottomCTABar = React.memo(
   },
 );
 BottomCTABar.displayName = "BottomCTABar";
+
+// ── MobileLayout — Figma-accurate full-screen views with top tab bar ─────────
+// Screens:
+//   "chat"      — full screen chat (welcome or ChatKitPanel)
+//   "map"       — full screen map with ← Go Back header
+//   "itinerary" — full screen itinerary with top tab bar
+//   "routes"    — same container, different tab selected
+//   "bookings"  — same container, different tab selected
+type MobileTab = "chat" | "map" | "itinerary" | "routes" | "bookings";
+
+interface MobileLayoutProps {
+  showStartScreen: boolean;
+  hasBotResponded: boolean;
+  isChatActive: boolean;
+  hasItineraryActivity: boolean;
+  isComplete: boolean;
+  viewMode: ViewMode;
+  setViewMode: (v: ViewMode) => void;
+  mobilePanel: MobilePanel;
+  setMobilePanel: (p: MobilePanel) => void;
+  mapContent: React.ReactNode;
+  startContent: React.ReactNode;
+  chatContent: React.ReactNode;
+  itineraryContent: React.ReactNode;
+}
+
+const MobileLayout = React.memo(({
+  showStartScreen,
+  hasBotResponded,
+  isChatActive,
+  hasItineraryActivity,
+  isComplete,
+  viewMode,
+  setViewMode,
+  mobilePanel,
+  setMobilePanel,
+  mapContent,
+  startContent,
+  chatContent,
+  itineraryContent,
+}: MobileLayoutProps) => {
+  const [activeTab, setActiveTab] = React.useState<MobileTab>("chat");
+
+  // When itinerary activity starts, keep user on chat but map tab becomes accessible
+  React.useEffect(() => {
+    if (hasItineraryActivity && activeTab === "map") {
+      // If they were on map, keep them there
+    }
+  }, [hasItineraryActivity]);
+
+  // Sync mobilePanel (legacy) so BotApp state stays consistent
+  React.useEffect(() => {
+    setMobilePanel(activeTab === "chat" ? "chat" : "map");
+  }, [activeTab, setMobilePanel]);
+
+  const handleTabClick = (tab: MobileTab) => {
+    setActiveTab(tab);
+    if (tab === "itinerary") setViewMode("itinerary");
+    else if (tab === "routes") setViewMode("routes");
+    else if (tab === "bookings") setViewMode("bookings");
+    else if (tab === "map") setViewMode("map");
+  };
+
+  // Top tab bar definition — only shows when itinerary activity exists
+  const tabs: { key: MobileTab; label: string; show: boolean }[] = [
+    { key: "map", label: "Map", show: hasItineraryActivity },
+    { key: "itinerary", label: "Itinerary", show: hasItineraryActivity },
+    { key: "routes", label: "Route", show: isComplete },
+    { key: "bookings", label: "Bookings", show: isComplete },
+  ];
+  const visibleTabs = tabs.filter(t => t.show);
+
+  // Active tab style from Figma: dark navy bg, white text; inactive: transparent, gray text
+  const activeTabStyle: React.CSSProperties = {
+    background: "#07213A",
+    color: "#fff",
+    borderRadius: "10px",
+    border: "1px solid #FFFACD",
+    boxShadow: "0 2px 8px rgba(195,195,195,0.35)",
+  };
+  const inactiveTabStyle: React.CSSProperties = {
+    borderRadius: "10px",
+    color: "#6E757A",
+  };
+
+  const isShowingItineraryView = ["itinerary", "routes", "bookings", "map"].includes(activeTab) && hasItineraryActivity;
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+
+      {/* ── Top tab bar (Figma screen 4/5) — only when itinerary is active ── */}
+      {hasItineraryActivity && visibleTabs.length > 0 && (
+        <div className="flex-shrink-0 px-4 py-3 bg-white border-b border-gray-100">
+          <div
+            className="flex gap-1 p-[3px]"
+            style={{
+              borderRadius: "10px",
+              border: "1px solid #E5E5E5",
+              background: "#fff",
+            }}
+          >
+            {visibleTabs.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabClick(tab.key)}
+                className="flex-1 px-3 py-2 text-[13px] font-medium transition-all duration-200"
+                style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Content area — full remaining height ── */}
+      <div className="flex-1 min-h-0 overflow-hidden relative">
+
+        {/* CHAT view — full screen, shown when activeTab === "chat" OR no itinerary yet */}
+        <div
+          className="absolute inset-0 transition-opacity duration-200"
+          style={{
+            opacity: activeTab === "chat" ? 1 : 0,
+            pointerEvents: activeTab === "chat" ? "auto" : "none",
+            zIndex: activeTab === "chat" ? 2 : 1,
+          }}
+        >
+          {showStartScreen && !hasBotResponded && !isChatActive
+            ? startContent
+            : chatContent}
+        </div>
+
+        {/* MAP view — shown when activeTab === "map" (inside itinerary flow) */}
+        {hasItineraryActivity && (
+          <div
+            className="absolute inset-0 transition-opacity duration-200"
+            style={{
+              opacity: activeTab === "map" ? 1 : 0,
+              pointerEvents: activeTab === "map" ? "auto" : "none",
+              zIndex: activeTab === "map" ? 2 : 1,
+            }}
+          >
+            {/* Go Back header */}
+            <div className="flex flex-col h-full">
+              <div
+                className="flex-shrink-0 flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100"
+              >
+                <button
+                  onClick={() => setActiveTab("itinerary")}
+                  className="flex items-center gap-2 text-[14px] font-medium text-gray-800"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                  </svg>
+                  Go Back
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                {mapContent}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ITINERARY / ROUTES / BOOKINGS view */}
+        {hasItineraryActivity && (
+          <div
+            className="absolute inset-0 transition-opacity duration-200 overflow-y-auto"
+            style={{
+              opacity: ["itinerary", "routes", "bookings"].includes(activeTab) ? 1 : 0,
+              pointerEvents: ["itinerary", "routes", "bookings"].includes(activeTab) ? "auto" : "none",
+              zIndex: ["itinerary", "routes", "bookings"].includes(activeTab) ? 2 : 1,
+            }}
+          >
+            {itineraryContent}
+          </div>
+        )}
+      </div>
+
+      {/* ── Bottom chat tab button — visible when on itinerary/map views ── */}
+      {hasItineraryActivity && activeTab !== "chat" && (
+        <div className="flex-shrink-0 px-4 py-2 bg-white border-t border-gray-100">
+          <button
+            onClick={() => setActiveTab("chat")}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#07213A] text-white text-[13px] font-medium"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Chat with Kaira
+          </button>
+        </div>
+      )}
+
+      {/* ── Map / Itinerary quick-access when chat is active and itinerary exists ── */}
+      {hasItineraryActivity && activeTab === "chat" && (
+        <div className="flex-shrink-0 px-4 py-2 bg-white border-t border-gray-100 flex gap-2">
+          <button
+            onClick={() => handleTabClick("map")}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-600"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+              <line x1="9" y1="3" x2="9" y2="18" />
+              <line x1="15" y1="6" x2="15" y2="21" />
+            </svg>
+            Map
+          </button>
+          <button
+            onClick={() => handleTabClick("itinerary")}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-gray-200 text-[12px] font-medium text-gray-600"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            Itinerary
+          </button>
+        </div>
+      )}
+    </div>
+  );
+});
+MobileLayout.displayName = "MobileLayout";

@@ -539,7 +539,7 @@ const ItineraryLeftPanel: React.FC<ItineraryLeftPanelProps> = ({
     return (
       <div className="flex flex-col h-full bg-white">
         {viewMode && setViewMode && (
-          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+          <ViewToggle viewMode={viewMode} setViewMode={setViewMode} hasItineraryActivity={true} />
         )}
         {itineraryData ? (
           <ItineraryContent
@@ -559,7 +559,7 @@ const ItineraryLeftPanel: React.FC<ItineraryLeftPanelProps> = ({
   return (
     <div className="flex flex-col h-full bg-white">
       {viewMode && setViewMode && (
-        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+        <ViewToggle viewMode={viewMode} setViewMode={setViewMode} hasItineraryActivity={true} />
       )}
       <MapView
         mapState={mapState!}

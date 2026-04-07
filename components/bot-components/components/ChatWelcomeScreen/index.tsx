@@ -50,7 +50,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   return (
     // ↓ Remove justify-center, add overflow-y-auto so it scrolls on short screens
     <div
-      className="flex flex-col h-full overflow-y-auto bg-white pb-8"
+      className="flex flex-col h-full overflow-y-auto bg-white pb-8 "
       style={{ fontFamily: "'Inter', sans-serif", scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <style>{`
@@ -90,12 +90,12 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         </p>
 
         {/* Prompt chips */}
-        <div className="w-full max-w-sm flex flex-col gap-2.5 mb-6">
+        <div className="w-full max-w-sm flex flex-col gap-2.5 mb-6 shadow-none ">
           {promptChips.map((chip) => (
             <button
               key={chip.label}
               onClick={() => handleChipClick(chip.prompt)}
-              className="welcome-chip w-full flex items-center gap-3 p-[10px] rounded-xl border border-gray-200 bg-white text-left"
+              className="welcome-chip w-full flex items-center gap-3 p-[10px] rounded-xl border-[0.9px] shadow-none bg-white text-left"
             >
               <span className="text-lg flex-shrink-0">{chip.icon}</span>
               <div className="flex flex-col leading-tight min-w-0">

@@ -1,8 +1,16 @@
+import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { connect } from "react-redux";
 import BotApp from "../../components/bot-components/BotApp";
+import * as authaction from "../../store/actions/auth";
 
-const ChatSessionPage = () => {
+const ChatSessionPage = ({ checkAuthState }: { checkAuthState: () => void }) => {
   const router = useRouter();
+
+  // Rehydrate auth from localStorage on every page load — same as /chat/index.js
+  useEffect(() => {
+    checkAuthState();
+  }, []);
 
   if (!router.isReady) return null; // wait for hydration
 
@@ -10,4 +18,8 @@ const ChatSessionPage = () => {
   return <BotApp sessionId={sessionId} />;
 };
 
-export default ChatSessionPage;
+const mapDispatchToProps = (dispatch: any) => ({
+  checkAuthState: () => dispatch(authaction.checkAuthState()),
+});
+
+export default connect(null, mapDispatchToProps)(ChatSessionPage);
