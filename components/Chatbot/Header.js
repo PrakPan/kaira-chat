@@ -91,7 +91,7 @@ React.useEffect(() => {
 
   return (
     <>
-     {!isDesktop ? 
+     {/* {!isDesktop ? 
       <div className="sticky top-0 bg-white z-[30] border-b border-gray-100 shrink-0">
          <div className="flex justify-between flex-row-reverse px-3 py-1">
           <div className="flex gap-3">
@@ -163,8 +163,8 @@ React.useEffect(() => {
               className="absolute top-1/2 -translate-y-1/2 left-full ml-2 z-9999"
             >
               {/* <span className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-[6px] border-solid border-transparent border-b-[#2b2b2a]"></span> */}
-              History
-            </div>
+              {/* History */}
+            {/* </div>
           </div>
           </div>
           <div onClick={()=>{ console.log("Clicked",props?.hideDrawer); props?.hideDrawer()}}>
@@ -174,10 +174,10 @@ React.useEffect(() => {
 </div>
 </div>
           
-          </div> : null}
+          </div> : null} */} 
       <Container>
        
-        {isDesktop ?
+        
         
         <div className="flex-shrink-0 flex items-center justify-between py-1 bg-white/80 backdrop-blur-sm border-b  border-gray-200">
   <div className="flex items-center gap-2">
@@ -251,7 +251,7 @@ React.useEffect(() => {
       </div>
     </div> */}
   </div>
-</div>: null}
+</div>
 
        {/* {isDesktop ? <ButtonWrapper className="float-right"> */}
           {/* New Chat Icon - Popup on right */}
