@@ -574,7 +574,7 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100vh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}

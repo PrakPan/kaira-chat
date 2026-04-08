@@ -56,6 +56,7 @@ const Container = styled.div`
   width: 100%;
   padding: 17px 16px 0 16px;
   max-width: 100vw;
+  background-color: white;
 
   @media screen and (min-width: 768px) {
     width: ${props => props.fromChat ? '100%' : '95%'};
@@ -74,7 +75,7 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
 
   return (
     <div className="">
-      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg max-w-sm">
+      <div className="bg-[#fefad8] border border-yellow-200 rounded-lg px-4 py-3 shadow-lg w-full md:max-w-sm ">
         <div className="flex items-center gap-3">
           {/* Rotating Hourglass Timer Icon */}
           <div className="flex-shrink-0">

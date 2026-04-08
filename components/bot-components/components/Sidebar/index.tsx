@@ -11,13 +11,15 @@ interface Thread {
   id: string;
   title: string;
   created_at: string;
+  session_id?: string;
+  filter_session_id?: string;
 }
 
 interface SidebarProps {
   onNewChat?: () => void;
   onToggle?: () => void;
   isCollapsed?: boolean;
-  onThreadSelect?: (threadId: string) => void;
+  onThreadSelect?: (threadId: string, sessionId?: string) => void;
   activeThreadId?: string | null;
 }
 
@@ -59,7 +61,7 @@ const ChatHistoryDrawer: React.FC<{
   onClose: () => void;
   threads: Thread[];
   activeThreadId?: string | null;
-  onThreadSelect?: (id: string) => void;
+  onThreadSelect?: (id: string, sessionId?: string) => void;
   loading: boolean;
 }> = ({ open, onClose, threads, activeThreadId, onThreadSelect, loading }) => {
   return (
@@ -98,7 +100,7 @@ const ChatHistoryDrawer: React.FC<{
               {threads.map((thread) => (
                 <button
                   key={thread.id}
-                  onClick={() => { onThreadSelect?.(thread.id); onClose(); }}
+                  onClick={() => { onThreadSelect?.(thread.id, thread.session_id ?? thread.filter_session_id); onClose(); }}
                   className={`w-full text-left px-3 py-2.5 rounded-lg text-[13.5px] transition-colors truncate flex items-center gap-2.5 ${
                     activeThreadId === thread.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                   }`}
@@ -396,6 +398,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 overflow-visible">
+
+          <div className="mt-1">
+            <SidebarProfile isCollapsed={isCollapsed} />
+          </div>
+          
           {isCollapsed ? (
             <SidebarTooltip label="New Chat">
               <button onClick={onNewChat} className="w-full flex items-center justify-center py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors mb-1">
@@ -420,9 +427,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           )}
 
-          <div className="mt-1">
-            <SidebarProfile isCollapsed={isCollapsed} />
-          </div>
+          
         </nav>
       </div>
 

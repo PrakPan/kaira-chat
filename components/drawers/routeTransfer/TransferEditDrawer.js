@@ -209,6 +209,7 @@ const TransferEditDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
+  const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
@@ -311,23 +312,27 @@ const TransferEditDrawer = (props) => {
 
     {
       mercury || props?.isMercury
-        ? fetchMulticityRoundtrip
-            .get(
-              `/${router.query.id || router.query.sessionId}/?currency=${currency?.currency || "INR"}`,
-              // multiCityRoundtripRequestData
-            )
-            .then((response) => {
-              setMultiCitySuggestions(response?.data?.suggestions?.[0]);
-              setMulticityRoundtripTraceId(response?.data?.trace_id);
-              setRoundTripSuggestions(response?.data?.suggestions?.[1]);
-              setLoadingMulticityTransfers(false);
-              setLoadingTransfers(false);
-            })
-            .catch((error) => {
-              setLoadingTransfers(false);
-              setLoadingMulticityTransfers(false);
-              console.error("Error::Fetching Multicity Round Trip");
-            })
+        ? (() => {
+            const cityId = origin_itinerary_city_id || destination_itinerary_city_id;
+            const multicityUrl = `/${router.query.id || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}`;
+            return fetchMulticityRoundtrip
+              .get(multicityUrl)
+              .then((response) => {
+                setMultiCitySuggestions(response?.data?.suggestions?.[0]);
+                setMulticityRoundtripTraceId(response?.data?.trace_id);
+                setRoundTripSuggestions(response?.data?.suggestions?.[1]);
+                if (cityId && response?.data?.suggestions?.[2]) {
+                  setSightseeingSuggestions(response?.data?.suggestions?.[2]);
+                }
+                setLoadingMulticityTransfers(false);
+                setLoadingTransfers(false);
+              })
+              .catch((error) => {
+                setLoadingTransfers(false);
+                setLoadingMulticityTransfers(false);
+                console.error("Error::Fetching Multicity Round Trip");
+              });
+          })()
         : null;
     }
     {
@@ -1416,6 +1421,20 @@ const TransferEditDrawer = (props) => {
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
+                      selectedCab={selectedCab}
+                      setSelectedCab={setSelectedCab}
+                      selectedTripType={selectedTripType}
+                      setSelectedTripType={setSelectedTripType}
+                    />
+                  </div>
+                )}
+
+                {sightseeingSuggestions && (
+                  <div className="w-full mt-2">
+                    <div className="px-1 pt-3 pb-1 text-sm font-semibold text-gray-700">Sightseeing</div>
+                    <MultiCityTripSuggestion
+                      handleRoundTripSelect={handleMultiCitySelect}
+                      multiCitySuggestions={sightseeingSuggestions}
                       selectedCab={selectedCab}
                       setSelectedCab={setSelectedCab}
                       selectedTripType={selectedTripType}

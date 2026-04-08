@@ -101,4 +101,6 @@ export interface ItineraryViewProps {
 export interface ViewToggleProps {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
+  /** True when the bot has started building an itinerary (shimmer, draft, or complete) */
+  hasItineraryActivity: boolean;
 }

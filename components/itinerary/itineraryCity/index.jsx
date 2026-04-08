@@ -24,6 +24,8 @@ import { updateTransferBookings } from "../../../store/actions/transferBookingsS
 import SkeletonCard from "../../ui/SkeletonCard";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
+import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
+import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -176,6 +178,7 @@ const ItineraryCity = (props) => {
   } = router?.query;
 
   const [draftHotelDrawer, setDraftHotelDrawer] = useState({ show: false, id: null });
+  const [showActivityDrawer, setShowActivityDrawer] = useState(false);
 
   const handleDraftHotelClick = (hotelId) => {
   if (!localStorage?.getItem("access_token")) { props?.setShowLoginModal(true); return; }
@@ -390,14 +393,40 @@ const ItineraryCity = (props) => {
           {!(itineraryDaybyDay.status == "Draft") && (
             <div className="flex items-center gap-2 shrink-0">
               <button
-                onClick={() => console.log("Add Activity clicked")}
+                onClick={() => {
+                  setShowActivityDrawer(true);
+                  router.push(
+                    {
+                      pathname: router.asPath.split("?")[0],
+                      query: {
+                        drawer: "activity",
+                        itinerary_city_id: props?.city?.id,
+                        city_id: props?.city?.city?.id,
+                      },
+                    },
+                    undefined,
+                    { scroll: false },
+                  );
+                }}
                 className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
               >
                 <PlusCircleIcon id="act_ic" />
                 Activity
               </button>
               <button
-                onClick={() => console.log("Add Taxi clicked")}
+                onClick={() => {
+                  router.push(
+                    {
+                      pathname: router.asPath.split("?")[0],
+                      query: {
+                        drawer: "addCityTaxi",
+                        itinerary_city_id: props?.city?.id,
+                      },
+                    },
+                    undefined,
+                    { scroll: false },
+                  );
+                }}
                 className="flex h-7 items-center justify-center gap-1 px-3.5 py-2 rounded-[8px] border border-black text-[13px] whitespace-nowrap"
               >
                 <PlusCircleIcon id="taxi_ic" />
@@ -496,7 +525,27 @@ const ItineraryCity = (props) => {
           {/* Right side: Change Hotel — only when hotel row is visible */}
           {hotelExists && !(itineraryDaybyDay.status == "Draft") && (
             <button
-              onClick={() => console.log("Change Hotel clicked")}
+              onClick={() => {
+                router.push(
+                  {
+                    pathname: router.asPath.split("?")[0],
+                    query: {
+                      drawer: "changeHotelBooking",
+                      itinerary_city_id: props?.city?.id,
+                      city_id: props?.city?.city?.id,
+                    },
+                  },
+                  undefined,
+                  { scroll: false },
+                );
+                props?.handleClickAc?.(
+                  props?.index,
+                  props?.city,
+                  props?.city?.city?.id,
+                  props?.city?.id,
+                  "Change",
+                );
+              }}
               className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
             >
               <EditIcon />
@@ -615,6 +664,51 @@ const ItineraryCity = (props) => {
     _setImagesHandler={_setImagesHandler}
   />
 )}
+
+      {/* Activity Add Drawer */}
+      {showActivityDrawer && (
+        <ActivityAddDrawer
+          showDrawer={showActivityDrawer}
+          setShowDrawer={(val) => {
+            setShowActivityDrawer(val);
+            if (!val) handleCloseDrawer();
+          }}
+          cityName={props?.city?.city?.name}
+          cityID={props?.city?.city?.id}
+          date={props?.city?.day_by_day?.[0]?.date}
+          itinerary_id={router?.query?.id}
+          day_slab_index={0}
+          getPaymentHandler={props?.getPaymentHandler}
+          getAccommodationAndActivitiesHandler={props?.getAccommodationAndActivitiesHandler}
+          setShowLoginModal={props?.setShowLoginModal}
+          setItinerary={props?.setItinerary}
+          _GetInTouch={props?._GetInTouch}
+        />
+      )}
+
+      {/* Add City Taxi / Sightseeing Drawer */}
+      {drawer === "addCityTaxi" &&
+        String(itinerary_city_id) === String(props?.city?.id) && (
+          <TransferEditDrawer
+            mercury
+            isMercury
+            showDrawer={true}
+            origin_itinerary_city_id={props?.city?.id}
+            destination_itinerary_city_id={props?.city?.id}
+            originCityId={props?.city?.city?.id}
+            destinationCityId={props?.city?.city?.id}
+            city={props?.city?.city?.name}
+            dcity={props?.city?.city?.name}
+            oCityData={props?.city}
+            dCityData={props?.city}
+            getPaymentHandler={props?.getPaymentHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+            setShowLoginModal={props?.setShowLoginModal}
+            _GetInTouch={props?._GetInTouch}
+          />
+        )}
     </div>
   );
 };

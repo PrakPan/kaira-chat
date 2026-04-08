@@ -36,9 +36,11 @@ import ChatBot from "../Chatbot/Index";
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
+import { setUnreadMessages } from "../../store/actions/chatState";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
+import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
 import Image from "next/image";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import Settings from "../settings/Index";
@@ -152,7 +154,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   // ── Init showStartScreen/isChatActive from sessionId to prevent flicker on reload ──
   const [showStartScreen, setShowStartScreen] = useState(!sessionId);
   const [isChatActive, setIsChatActive] = useState(!!sessionId);
-  const [hasBotResponded, setHasBotResponded] = useState(false);
+  // When reloading with a sessionId, mark hasBotResponded true so the left panel is visible
+  // while we restore the thread data. It will be properly set by the restore flow.
+  const [hasBotResponded, setHasBotResponded] = useState(!!sessionId);
   const [isLeftPanelRevealing, setIsLeftPanelRevealing] = useState(false);
 
   const [leftPanelMode, setLeftPanelMode] = useState<LeftPanelMode>("default");
@@ -180,7 +184,73 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const cart = useSelector((state: any) => state.Cart);
   const pricingStatus = useSelector((state: any) => state.ItineraryStatus?.pricing_status);
   const currency = useSelector((state: any) => state.currency);
-  const [showPaymentDrawer, setShowPaymentDrawer] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+  // Payment drawer — persists via ?drawer=payment in URL
+  const [showPaymentDrawer, setShowPaymentDrawer] = useState(() => {
+    if (typeof window !== "undefined") {
+      return new URLSearchParams(window.location.search).get("drawer") === "payment";
+    }
+    return false;
+  });
+  const [paymentData, setPaymentData] = useState<any>(null);
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentDrawerKey, setPaymentDrawerKey] = useState(0);
+
+  const fetchPaymentData = useCallback(async (itinId: string) => {
+    if (!itinId) return;
+    setPaymentLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const res = await axios.get(`${MERCURY_HOST}/api/v1/itinerary/${itinId}/cart/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPaymentData(res.data);
+      dispatch(setCart(res.data));
+    } catch (e) {
+      console.error("Failed to fetch payment data", e);
+    } finally {
+      setPaymentLoading(false);
+    }
+  }, [dispatch]);
+
+  // Ref so MobileLayout can expose its tab-switch fn; used by openPaymentDrawer on mobile
+  const mobileTabSwitchRef = useRef<((tab: string) => void) | null>(null);
+  const handleRegisterMobileTabSwitch = useCallback((fn: ((tab: string) => void) | null) => {
+    mobileTabSwitchRef.current = fn;
+  }, []);
+
+  // Sync ?drawer=payment in URL when drawer opens / closes
+  // On mobile, View Cart switches to itinerary tab instead of opening the sheet
+  const openPaymentDrawer = React.useCallback(() => {
+    if (activeItineraryId && activeItineraryId !== "skeleton" && activeItineraryId !== "draft") {
+      fetchPaymentData(activeItineraryId);
+    }
+    setPaymentDrawerKey((k) => k + 1);
+    setShowPaymentDrawer(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("drawer", "payment");
+    window.history.pushState({}, "", url.toString());
+  }, [activeItineraryId, fetchPaymentData]);
+  const closePaymentDrawer = React.useCallback(() => {
+    setShowPaymentDrawer(false);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("drawer");
+    window.history.pushState({}, "", url.toString());
+  }, []);
+
+  // When drawer is open (e.g. after refresh with ?drawer=payment) and the itinerary ID
+  // becomes available, fetch the payment data automatically.
+  useEffect(() => {
+    if (
+      showPaymentDrawer &&
+      activeItineraryId &&
+      activeItineraryId !== "skeleton" &&
+      activeItineraryId !== "draft"
+    ) {
+      fetchPaymentData(activeItineraryId);
+    }
+  }, [showPaymentDrawer, activeItineraryId, fetchPaymentData]);
+
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const itineraryReduxName = itineraryRedux?.name;
   const [showShare, setShowShare] = useState(false);
@@ -199,7 +269,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   // ── Mobile breakpoint — single source of truth so only ONE ItineraryContainer
   //    is ever rendered in the DOM at a time ─────────────────────────────────
-  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -591,18 +661,25 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
         const data = await res.json();
 
-      const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
-if (threadSessionId) {
-  const target = `/chat/${threadSessionId}`;
-  if (window.location.pathname !== target) {
-    window.history.pushState({}, "", target);
-  }
-  sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
-  setActiveChatSessionId(threadSessionId); // ← add this
-}
+        const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
+        if (threadSessionId) {
+          const target = `/chat/${threadSessionId}`;
+          if (window.location.pathname !== target) {
+            window.history.pushState({}, "", target);
+          }
+          sessionStorage.setItem(`chatkit_session_${target}`, threadSessionId);
+          setActiveChatSessionId(threadSessionId);
+        }
         setRestoredThread(data);
         setActiveThreadId(threadId);
         setIsChatActive(true);
+
+        // If the thread has any chat items (messages), reveal the chat panel
+        const hasItems = (data.items?.data ?? []).length > 0;
+        if (hasItems) {
+          setHasBotResponded(true);
+          setShowStartScreen(false);
+        }
 
         (data.map_effects ?? []).forEach((effect: any) => {
           if (effect.name === "focus_route" && effect.data) {
@@ -655,7 +732,12 @@ if (threadSessionId) {
         }
 
         // No completed itinerary in effects at all — this is an old itinerary
-        // Fall back to direct status API load using sessionId as itinerary ID
+        // Fall back to direct status API load. Use threadSessionId if available,
+        // otherwise fall back to the URL sessionId prop.
+        // IMPORTANT: only do this if the thread has NO chat messages — if it has
+        // messages it is a valid chatkit thread, not an old itinerary, and calling
+        // restoreItineraryDirectly with a chat UUID will fail and reset the UI to
+        // the start/welcome screen.
         const hasCompletedEffect = itineraryEffects.some(
           (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
         );
@@ -663,8 +745,9 @@ if (threadSessionId) {
           ["display_itinerary", "start_itinerary_completion_process"].includes(e.name),
         );
 
-        if (!hasCompletedEffect && !hasAnyItineraryEffect && sessionId) {
-          await restoreItineraryDirectly(sessionId);
+        const fallbackSessionId = threadSessionId ?? sessionId;
+        if (!hasCompletedEffect && !hasAnyItineraryEffect && !hasItems && fallbackSessionId) {
+          await restoreItineraryDirectly(fallbackSessionId);
         }
       } catch (err) {
         console.error("Failed to load thread:", err);
@@ -726,11 +809,23 @@ if (threadSessionId) {
   }, [sessionId, restoreLatestThread]);
 
   const handleThreadSelect = useCallback(
-    async (threadId: string) => {
+    async (threadId: string, knownSessionId?: string) => {
       // Reset load guard so the new thread can load
       isLoadingThreadRef.current = false;
       clearStaleChatSessions();
       userSelectedThreadRef.current = true;
+
+      // If we already know the session_id from the thread list, update the URL
+      // and activeChatSessionId immediately — before the async loadThread call —
+      // so ChatKitPanel remounts with the correct session ID straight away.
+      if (knownSessionId) {
+        const target = `/chat/${knownSessionId}`;
+        if (window.location.pathname !== target) {
+          window.history.pushState({}, "", target);
+        }
+        sessionStorage.setItem(`chatkit_session_${target}`, knownSessionId);
+        setActiveChatSessionId(knownSessionId);
+      }
 
       setRestoredThread(null);
       setLocations([]);
@@ -756,8 +851,10 @@ if (threadSessionId) {
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
-      setChatKey((prev) => prev + 1);
+      // Load thread (will also update URL/sessionId if API returns session_id),
+      // then remount ChatKitPanel with the correct session.
       await loadThread(threadId);
+      setChatKey((prev) => prev + 1);
     },
     [loadThread, dispatch],
   );
@@ -809,8 +906,10 @@ if (threadSessionId) {
   };
 
   const handlePromptSelect = (prompt: string) => {
-    if (isChatActive && sendMessageRef.current) {
-      sendMessageRef.current(prompt);
+    // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
+    const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
+    if (isChatActive && sendFn) {
+      sendFn(prompt);
     } else {
       setInitialPrompt(prompt);
       setIsChatActive(true);
@@ -1039,7 +1138,7 @@ Start Location: ${details.startLocation}`;
               setIsHovered={setIsHovered}
               popupStyle={popupStyle}
               onConfirm={() => setShowConfirmModal(true)}
-              onViewCart={() => setShowPaymentDrawer(true)}
+              onViewCart={openPaymentDrawer}
             />
           </div>
         ) : null}
@@ -1090,7 +1189,7 @@ Start Location: ${details.startLocation}`;
               msOverflowStyle: "none",
             }}
           >
-            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
+            <ViewToggle viewMode={viewMode} setViewMode={setViewMode} hasItineraryActivity={!!activeItineraryId} />
 
             {/* MAP tab */}
             <div
@@ -1162,105 +1261,83 @@ Start Location: ${details.startLocation}`;
         </div>
       </div>
 
-      {/* ── Mobile layout ── */}
+      {/* ── Mobile layout — full-screen views + top tab bar ── */}
       <div className="flex md:hidden flex-col flex-1 overflow-hidden min-h-0">
-        <div className="flex-1 overflow-hidden min-h-0 relative">
-          {/* Map panel */}
-          <div
-            className={`absolute inset-0 transition-all duration-400 ease-in-out ${
-              mobilePanel === "map"
-                ? "opacity-100 translate-x-0 pointer-events-auto"
-                : "opacity-0 -translate-x-4 pointer-events-none"
-            }`}
-          >
-            {showStartScreen && !hasBotResponded ? (
-              <StartScreen onPromptSelect={handlePromptSelect} />
+        <MobileLayout
+          showStartScreen={showStartScreen}
+          hasBotResponded={hasBotResponded}
+          isChatActive={isChatActive}
+          hasItineraryActivity={!!activeItineraryId}
+          isComplete={activeItineraryId !== "skeleton" && activeItineraryId !== "draft" && !!activeItineraryId}
+          showChatBot={showChatBot}
+          chatBotItineraryId={chatBotItineraryId}
+          chatBotInjectedMessage={chatBotInjectedMessageRef.current}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          mobilePanel={mobilePanel}
+          setMobilePanel={setMobilePanel}
+          onNewChat={handleNewChat}
+          onThreadSelect={handleThreadSelect}
+          activeThreadId={activeThreadId}
+          onRegisterTabSwitch={handleRegisterMobileTabSwitch}
+          mapContent={
+            <MapView
+              mapState={mapState}
+              locations={locations}
+              userLocation={userLocation}
+              currentRoute={currentRoute}
+              isLoadingLocation={isLoadingLocation}
+              mapRef={mapRef}
+              isRoutePreparing={isRoutePreparing}
+            />
+          }
+          chatContent={
+            showChatBot ? (
+              // Once itinerary is fully done, swap ChatKitPanel for the full ChatBot experience
+              <ChatBot
+                key={chatBotItineraryId}
+                showAsPopup={false}
+                itineraryId={chatBotItineraryId}
+                initialBotMessage={chatBotInjectedMessageRef.current}
+                hideDrawer
+              />
             ) : (
-              <div className="flex flex-col h-full bg-white">
-                <ViewToggle viewMode={viewMode} setViewMode={setViewMode} />
-
-                {/* MAP tab */}
+              // Render both welcome + ChatKitPanel; CSS hides/shows so panel warms up early
+              <div className="relative h-full w-full">
                 <div
+                  className="absolute inset-0 transition-opacity duration-200"
                   style={{
-                    display: viewMode === "map" ? "flex" : "none",
-                    flex: 1,
-                    minHeight: 0,
+                    opacity: isChatActive ? 0 : 1,
+                    pointerEvents: isChatActive ? "none" : "auto",
+                    zIndex: isChatActive ? 0 : 1,
                   }}
                 >
-                  <MapView
-                    mapState={mapState}
-                    locations={locations}
-                    userLocation={userLocation}
-                    currentRoute={currentRoute}
-                    isLoadingLocation={isLoadingLocation}
-                    mapRef={mapRef}
-                    isRoutePreparing={isRoutePreparing}
+                  <ChatWelcomeScreen
+                    onSubmit={handlePromptSelect}
+                    onChatStart={() => setIsChatActive(true)}
                   />
                 </div>
-
-                {/* ITINERARY / BOOKINGS / ROUTES — mobile only renders when isMobile */}
-                {isMobile && itineraryPanel}
+                <div
+                  className="absolute inset-0 transition-opacity duration-200"
+                  style={{
+                    opacity: isChatActive ? 1 : 0,
+                    pointerEvents: isChatActive ? "auto" : "none",
+                    zIndex: isChatActive ? 1 : 0,
+                  }}
+                >
+                  <ChatKitPanel
+                    key={`${botMode}-${chatKey}`}
+                    {...sharedChatKitProps}
+                    initialPrompt={initialPrompt}
+                    onInitialPromptConsumed={handleInitialPromptConsumed}
+                    onSendReady={handleSendMessageReady}
+                  />
+                </div>
               </div>
-            )}
-          </div>
-
-          {/* Chat panel */}
-          <div
-            className={`absolute inset-0 transition-all duration-400 ease-in-out ${
-              mobilePanel === "chat"
-                ? "opacity-100 translate-x-0 pointer-events-auto"
-                : "opacity-0 translate-x-4 pointer-events-none"
-            }`}
-          >
-            {!isChatActive ? (
-              <ChatWelcomeScreen
-                onSubmit={handlePromptSelect}
-                onChatStart={() => setIsChatActive(true)}
-              />
-            ) : (
-              <ChatKitPanel
-                key={`${botMode}-${chatKey}`}
-                {...sharedChatKitProps}
-                initialPrompt={initialPrompt}
-                onInitialPromptConsumed={handleInitialPromptConsumed}
-                onSendReady={handleSendMessageReady}
-              />
-            )}
-          </div>
-        </div>
-
-        {/* Mobile bottom nav */}
-        {/* <div className="flex-shrink-0 bg-white border-t border-slate-200 safe-area-pb">
-          <div className="flex items-center justify-around px-4 py-2">
-            <button
-              onClick={() => setMobilePanel("map")}
-              className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "map" ? "text-amber-500" : "text-slate-400"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                <line x1="9" y1="3" x2="9" y2="18" />
-                <line x1="15" y1="6" x2="15" y2="21" />
-              </svg>
-              <span className="text-[10px] font-medium">Map</span>
-              {mobilePanel === "map" && (
-                <span className="absolute bottom-1 w-1 h-1 rounded-full bg-amber-500" />
-              )}
-            </button>
-            <button
-              onClick={() => setMobilePanel("chat")}
-              className={`flex flex-col items-center gap-1 px-6 py-2 rounded-xl transition-all duration-200 ${
-                mobilePanel === "chat" ? "text-amber-500" : "text-slate-400"
-              }`}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              <span className="text-[10px] font-medium">Chat</span>
-            </button>
-          </div>
-        </div> */}
+            )
+          }
+          itineraryContent={isMobile ? itineraryPanel : null}
+        />
       </div>
 
       <div className="max-ph:hidden flex-shrink-0 w-full">
@@ -1304,6 +1381,30 @@ Start Location: ${details.startLocation}`;
             }}
           />
         </ModalWithBackdrop>
+      )}
+
+      {/* ── Payment — mounts NewSummaryContainers which portals its own full-screen Drawer ── */}
+      {showPaymentDrawer && (
+        <div key={paymentDrawerKey} style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
+          <NewSummaryContainers
+            payment={paymentData}
+            plan={itineraryRedux}
+            id={activeItineraryId}
+            itinerary={itineraryRedux}
+            mercuryItinerary={true}
+            loadpricing={false}
+            setLoadPricing={() => {}}
+            getPaymentHandler={() => activeItineraryId && fetchPaymentData(activeItineraryId)}
+            setShowLoginModal={() => {}}
+            setShowFooterBannerMobile={() => {}}
+            fetchData={() => {}}
+            itineraryName={itineraryReduxName}
+            itineraryImage={itineraryRedux?.images?.[0]}
+            social_title={itineraryRedux?.social_title}
+            social_description={itineraryRedux?.social_description}
+            openPaymentDrawer={true}
+          />
+        </div>
       )}
     </main>
   );
@@ -1364,7 +1465,7 @@ const BottomCTABar = React.memo(
 
     if (!hasFreshPricing) {
       return (
-        <div className="z-20 fixed w-[48%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
+        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
           <ItineraryStatusLoader
             displayText={loaderDisplayText || "Calculating best prices for you…"}
             isVisible={true}
@@ -1436,3 +1537,414 @@ const BottomCTABar = React.memo(
   },
 );
 BottomCTABar.displayName = "BottomCTABar";
+
+// ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
+type MobileTab = "chat" | "map" | "itinerary" | "routes" | "bookings";
+
+const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
+
+// ── MobileHeader ──────────────────────────────────────────────────────────────
+const MobileHeader = React.memo(({
+  onNewChat,
+  onThreadSelect,
+  activeThreadId,
+}: {
+  onNewChat: () => void;
+  onThreadSelect: (id: string, sessionId?: string) => void;
+  activeThreadId: string | null;
+}) => {
+  const userId = (useSelector as any)((s: any) => s.auth?.id);
+  const token = (useSelector as any)((s: any) => s.auth?.token);
+  const name = (useSelector as any)((s: any) => s.auth?.name);
+  const image = (useSelector as any)((s: any) => s.auth?.image);
+  const dispatch = useDispatch();
+
+  const [historyOpen, setHistoryOpen] = React.useState(false);
+  const [threads, setThreads] = React.useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const [showLogin, setShowLogin] = React.useState(false);
+  const profileRef = React.useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown on outside click
+  React.useEffect(() => {
+    const h = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
+
+  // Close login modal when token arrives
+  React.useEffect(() => { if (token && showLogin) setShowLogin(false); }, [token]);
+
+  const fetchThreads = async () => {
+    if (!userId) return;
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(CHATKIT_API_URL_MOBILE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId) }),
+      });
+      const data = await res.json();
+      setThreads(data.data ?? []);
+    } catch { /* ignore */ } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const handleHistoryClick = () => { fetchThreads(); setHistoryOpen(true); };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("access_token");
+    try { dispatch({ type: "AUTH_LOGOUT" }); } catch { /* ignore */ }
+    setProfileOpen(false);
+  };
+
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const localImg = typeof window !== "undefined" ? localStorage.getItem("user_image") : null;
+  const avatarSrc =
+    image && image !== "null" ? imgUrlEndPoint + image
+    : localImg && localImg !== "null" ? imgUrlEndPoint + localImg
+    : null;
+  const initials = name ? name.trim().split(/\s+/).slice(0, 2).map((w: string) => w[0]?.toUpperCase() ?? "").join("") : "T";
+
+  return (
+    <>
+      {/* Chat history slide-in drawer */}
+      {historyOpen && <div className="fixed inset-0 z-[350] bg-black/20" onClick={() => setHistoryOpen(false)} />}
+      <div
+        className="fixed top-0 left-0 h-full z-[400] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out"
+        style={{ width: "85vw", maxWidth: 320, transform: historyOpen ? "translateX(0)" : "translateX(-110%)" }}
+      >
+        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 flex-shrink-0">
+          <span className="font-semibold text-gray-800 text-[15px]">Chat History</span>
+          <button onClick={() => setHistoryOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-3 py-3">
+          {historyLoading ? (
+            <div className="flex flex-col gap-2">{[...Array(5)].map((_, i) => <div key={i} className="h-10 rounded-lg bg-gray-100 animate-pulse" />)}</div>
+          ) : threads.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center py-12 gap-3">
+              <p className="text-sm text-gray-500">No chats yet</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-0.5">
+              {threads.map((t: any) => (
+                <button
+                  key={t.id}
+                  onClick={() => { onThreadSelect(t.id, t.session_id ?? t.filter_session_id); setHistoryOpen(false); }}
+                  className={`w-full text-left px-3 py-2.5 rounded-lg text-[13px] truncate ${activeThreadId === t.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50"}`}
+                  title={t.title || "Untitled"}
+                >
+                  {t.title || "Untitled"}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Login modal */}
+      {showLogin && typeof document !== "undefined" && (
+        <div className="fixed inset-0 z-[3000]">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowLogin(false)} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "#fff", borderRadius: 16, width: "min(480px,95vw)", maxHeight: "90vh", overflowY: "auto", zIndex: 3001, boxShadow: "0 25px 60px rgba(0,0,0,.3)" }}>
+            {/* Inline placeholder — LogInModal needs the portal pattern */}
+            <div className="p-6 text-center">
+              <p className="font-semibold text-lg mb-2">Login / Signup</p>
+              <p className="text-sm text-gray-500">Please login to continue</p>
+              <button onClick={() => setShowLogin(false)} className="mt-4 px-6 py-2 rounded-xl bg-[#07213A] text-white text-sm">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header bar */}
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logoblack.svg" height={22} width={22} alt="logo" />
+          <span className="font-semibold text-gray-800 text-sm">thetarzanway</span>
+        </div>
+
+        {/* Right icons */}
+        <div className="flex items-center gap-1">
+          {/* Chat history */}
+          <button onClick={handleHistoryClick} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600" aria-label="Chat history">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 21 21" fill="none">
+              <path d="M10.0306 11.7021C9.57231 11.7004 9.18067 11.5357 8.85572 11.2079C8.53022 10.8806 8.36828 10.4878 8.36991 10.0295C8.37154 9.57114 8.53626 9.17923 8.86409 8.85372C9.19136 8.52877 9.58416 8.36711 10.0425 8.36874C10.5008 8.37037 10.8927 8.53482 11.2182 8.86209C11.5432 9.18991 11.7048 9.58299 11.7032 10.0413C11.7016 10.4996 11.5371 10.8913 11.2099 11.2162C10.882 11.5417 10.489 11.7037 10.0306 11.7021ZM10.0099 17.5353C8.07937 17.5285 6.40802 16.887 4.99588 15.6109C3.58374 14.3353 2.77689 12.7457 2.57532 10.8422L4.28364 10.8483C4.47295 12.2934 5.11092 13.4901 6.19756 14.4384C7.28475 15.3868 8.55751 15.8635 10.0158 15.8687C11.6408 15.8745 13.0212 15.3133 14.1568 14.1851C15.2931 13.0574 15.8641 11.6811 15.8699 10.0561C15.8756 8.43114 15.3144 7.05052 14.1862 5.91428C13.0586 4.7786 11.6823 4.20787 10.0573 4.2021C9.09897 4.19869 8.20235 4.41773 7.36744 4.85921C6.53254 5.30069 5.82898 5.90931 5.25677 6.68505L7.54843 6.6932L7.5425 8.35985L2.54254 8.34209L2.5603 3.34212L4.22696 3.34804L4.22 5.30636C4.93149 4.42 5.79865 3.73557 6.82148 3.25309C7.84376 2.77061 8.92434 2.5314 10.0632 2.53544C11.1049 2.53915 12.08 2.74039 12.9886 3.13918C13.8966 3.53852 14.6864 4.07605 15.3579 4.75177C16.0288 5.42805 16.5607 6.22161 16.9536 7.13246C17.3459 8.04386 17.5402 9.02039 17.5365 10.0621C17.5328 11.1037 17.3316 12.0786 16.9328 12.9866C16.5334 13.8952 15.9959 14.6849 15.3202 15.3559C14.6439 16.0274 13.8503 16.5595 12.9395 16.9524C12.0281 17.3447 11.0516 17.5391 10.0099 17.5353Z" fill="#07213A"/>
+            </svg>
+          </button>
+
+          {/* New chat */}
+          <button onClick={onNewChat} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-600" aria-label="New chat">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+              <path d="M8.30612 1.52887L6.80613 1.52354C3.05615 1.51021 1.55083 3.00487 1.5375 6.75485L1.52151 11.2548C1.50818 15.0048 3.00284 16.5101 6.75282 16.5234L11.2528 16.5394C15.0028 16.5528 16.5081 15.0581 16.5214 11.3081L16.5267 9.80814" stroke="#07213A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M6.15411 8.19642C5.92831 8.42062 5.70174 8.86231 5.6556 9.18465L5.32508 11.441C5.20217 12.2581 5.77764 12.8301 6.59554 12.7205L8.85417 12.406C9.16933 12.3622 9.61262 12.1387 9.84592 11.9146L15.7769 6.0256C16.8005 5.00923 17.2847 3.82595 15.7901 2.32063C14.2954 0.815305 13.1087 1.29109 12.0851 2.30746L6.15411 8.19642Z" stroke="#07213A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M11.2358 3.15234C11.732 4.94662 13.1295 6.35409 14.9277 6.87049" stroke="#07213A" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          {/* Profile avatar */}
+          <div ref={profileRef} className="relative ml-1">
+            <button
+              onClick={() => setProfileOpen(v => !v)}
+              className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-200 bg-gray-100"
+              aria-label="Profile"
+            >
+              {avatarSrc
+                // eslint-disable-next-line @next/next/no-img-element
+                ? <img src={avatarSrc} alt={name || "Profile"} className="w-full h-full object-cover" />
+                : <span className="text-[11px] font-bold text-gray-600">{initials}</span>
+              }
+            </button>
+            {profileOpen && (
+              <div className="absolute right-0 top-10 z-[500] bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden" style={{ minWidth: 180 }}>
+                {!token ? (
+                  <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50" onClick={() => { setProfileOpen(false); setShowLogin(true); }}>
+                    Login / Signup
+                  </button>
+                ) : (
+                  <>
+                    <a href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">My Trips</a>
+                    <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50" onClick={handleLogout}>Logout</button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+MobileHeader.displayName = "MobileHeader";
+
+interface MobileLayoutProps {
+  showStartScreen: boolean;
+  hasBotResponded: boolean;
+  isChatActive: boolean;
+  hasItineraryActivity: boolean;
+  isComplete: boolean;
+  showChatBot: boolean;
+  chatBotItineraryId: string | null;
+  chatBotInjectedMessage: string | null;
+  viewMode: ViewMode;
+  setViewMode: (v: ViewMode) => void;
+  mobilePanel: MobilePanel;
+  setMobilePanel: (p: MobilePanel) => void;
+  onNewChat: () => void;
+  onThreadSelect: (id: string, sessionId?: string) => void;
+  activeThreadId: string | null;
+  onRegisterTabSwitch: (fn: ((tab: string) => void) | null) => void;
+  mapContent: React.ReactNode;
+  chatContent: React.ReactNode;
+  itineraryContent: React.ReactNode;
+}
+
+const MobileLayout = React.memo(({
+  showStartScreen,
+  hasBotResponded,
+  isChatActive,
+  hasItineraryActivity,
+  isComplete,
+  showChatBot,
+  chatBotItineraryId,
+  chatBotInjectedMessage,
+  viewMode,
+  setViewMode,
+  mobilePanel,
+  setMobilePanel,
+  onNewChat,
+  onThreadSelect,
+  activeThreadId,
+  onRegisterTabSwitch,
+  mapContent,
+  chatContent,
+  itineraryContent,
+}: MobileLayoutProps) => {
+  const [activeTab, setActiveTab] = React.useState<MobileTab>("chat");
+  const hasUnread = (useSelector as any)((s: any) => !!s.chatState?.unreadMessages);
+  const dispatchLayout = useDispatch();
+
+  // Sync mobilePanel (legacy) so BotApp state stays consistent
+  React.useEffect(() => {
+    setMobilePanel(activeTab === "chat" ? "chat" : "map");
+  }, [activeTab, setMobilePanel]);
+
+  // Clear unread flag when user switches to chat tab
+  React.useEffect(() => {
+    if (activeTab === "chat" && hasUnread) {
+      dispatchLayout(setUnreadMessages(false));
+    }
+  }, [activeTab, hasUnread, dispatchLayout]);
+
+  const handleTabClick = (tab: MobileTab) => {
+    setActiveTab(tab);
+    if (tab === "itinerary") setViewMode("itinerary");
+    else if (tab === "routes") setViewMode("routes");
+    else if (tab === "bookings") setViewMode("bookings");
+    else if (tab === "map") setViewMode("map");
+    else if (tab === "chat") setViewMode("map");
+  };
+
+  // Register handleTabClick with BotApp so openPaymentDrawer can switch tabs on mobile
+  React.useEffect(() => {
+    onRegisterTabSwitch(handleTabClick as (tab: string) => void);
+    return () => onRegisterTabSwitch(null as any); // clear on unmount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onRegisterTabSwitch]);
+
+  // Reset to chat tab when new chat is started (isChatActive goes false → true false again)
+  const prevIsChatActiveRef = React.useRef(isChatActive);
+  React.useEffect(() => {
+    if (prevIsChatActiveRef.current && !isChatActive) {
+      setActiveTab("chat");
+    }
+    prevIsChatActiveRef.current = isChatActive;
+  }, [isChatActive]);
+
+  // When itinerary activity starts, auto-move off the chat tab so the tab bar
+  // has a highlighted entry (Chat tab no longer exists in the bar)
+  const prevHasActivityRef = React.useRef(hasItineraryActivity);
+  React.useEffect(() => {
+    if (!prevHasActivityRef.current && hasItineraryActivity && activeTab === "chat") {
+      setActiveTab("map");
+    }
+    prevHasActivityRef.current = hasItineraryActivity;
+  }, [hasItineraryActivity, activeTab]);
+
+  // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
+  const tabs: { key: MobileTab; label: string; show: boolean }[] = [
+    { key: "map", label: "Map", show: hasItineraryActivity },
+    { key: "itinerary", label: "Itinerary", show: hasItineraryActivity },
+    { key: "routes", label: "Route", show: isComplete },
+    { key: "bookings", label: "Bookings", show: isComplete },
+  ];
+  const visibleTabs = tabs.filter(t => t.show);
+
+  const activeTabStyle: React.CSSProperties = {
+    background: "#07213A",
+    color: "#fff",
+    borderRadius: "10px",
+    border: "1px solid #FFFACD",
+    boxShadow: "0 2px 8px rgba(195,195,195,0.35)",
+  };
+  const inactiveTabStyle: React.CSSProperties = {
+    borderRadius: "10px",
+    color: "#6E757A",
+  };
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+
+      {/* ── Mobile header — always visible ── */}
+      <MobileHeader
+        onNewChat={onNewChat}
+        onThreadSelect={onThreadSelect}
+        activeThreadId={activeThreadId}
+      />
+
+      {/* ── Top tab bar — only when itinerary is active ── */}
+      {hasItineraryActivity && visibleTabs.length > 0 && (
+        <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-100">
+          <div
+            className="flex gap-1 p-[3px]"
+            style={{ borderRadius: "10px", border: "1px solid #E5E5E5", background: "#fff" }}
+          >
+            {visibleTabs.map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabClick(tab.key)}
+                className="flex-1 px-2 py-1.5 text-[12px] font-medium transition-all duration-200 whitespace-nowrap"
+                style={activeTab === tab.key ? activeTabStyle : inactiveTabStyle}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Content area — full remaining height ── */}
+      <div className="flex-1 min-h-0 overflow-hidden relative">
+
+        {/* CHAT view */}
+        <div
+          className="absolute inset-0"
+          style={{
+            opacity: activeTab === "chat" ? 1 : 0,
+            pointerEvents: activeTab === "chat" ? "auto" : "none",
+            zIndex: activeTab === "chat" ? 2 : 1,
+          }}
+        >
+          {chatContent}
+        </div>
+
+        {/* MAP view */}
+        <div
+          className="absolute inset-0 flex flex-col"
+          style={{
+            opacity: activeTab === "map" ? 1 : 0,
+            pointerEvents: activeTab === "map" ? "auto" : "none",
+            zIndex: activeTab === "map" ? 2 : 1,
+          }}
+        >
+          <div className="flex-1 min-h-0 flex flex-col">
+            {mapContent}
+          </div>
+        </div>
+
+        {/* ITINERARY / ROUTES / BOOKINGS view */}
+        {hasItineraryActivity && (
+          <div
+            className="absolute inset-0 overflow-y-auto"
+            style={{
+              opacity: ["itinerary", "routes", "bookings"].includes(activeTab) ? 1 : 0,
+              pointerEvents: ["itinerary", "routes", "bookings"].includes(activeTab) ? "auto" : "none",
+              zIndex: ["itinerary", "routes", "bookings"].includes(activeTab) ? 2 : 1,
+            }}
+          >
+            {itineraryContent}
+          </div>
+        )}
+      </div>
+
+      {/* ── Floating Kaira icon — go back to Chat when on itinerary/map views ── */}
+      {hasItineraryActivity && activeTab !== "chat" && (
+        <div
+          className="fixed z-[100]"
+          style={{ bottom: 80, right: 20 }}
+        >
+          <button
+            onClick={() => handleTabClick("chat")}
+            className="relative w-14 h-14 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
+            aria-label="Chat with Kaira"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/KairaInsta.png" alt="Kaira" className="w-full h-full object-cover" />
+            {/* Pulse ring */}
+            <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-[#07213A]" />
+          </button>
+          {/* Unread message red dot */}
+          {hasUnread && (
+            <span
+              className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white"
+              style={{ zIndex: 1 }}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+MobileLayout.displayName = "MobileLayout";

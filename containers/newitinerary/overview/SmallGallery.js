@@ -16,7 +16,11 @@ const Container = styled.div`
 
 const SingleImage = styled.div`
 position: relative;
-overflow: hidden
+overflow: hidden;
+width: 44px;
+height: 44px;
+border-radius: 50%;
+flex-shrink: 0;
 `
 
 const MoreImageOverlay = styled.div`
