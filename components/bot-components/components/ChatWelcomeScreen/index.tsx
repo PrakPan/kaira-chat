@@ -47,14 +47,27 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
     },
   ];
 
+  const inputBox = (
+    <MessageInputBox
+      value={inputValue}
+      onChange={setInputValue}
+      onSubmit={handleSubmit}
+      rotatePlaceholders={[
+        "Try:  Plan a Bali Trip",
+        "Try:  Best hill stations near Bangalore",
+        "Try:  La Tomatina trip from India",
+        "Try:  Surprise me — 4 days, ₹80K",
+      ]}
+      showAttach={true}
+    />
+  );
+
   return (
-    // ↓ Remove justify-center, add overflow-y-auto so it scrolls on short screens
     <div
-      className="flex flex-col h-full overflow-y-auto bg-white pb-8 "
-      style={{ fontFamily: "'Inter', sans-serif", scrollbarWidth: "none", msOverflowStyle: "none" }}
+      className="flex flex-col h-full bg-white"
+      style={{ fontFamily: "'Inter', sans-serif" }}
     >
       <style>{`
-        .welcome-screen-inner::-webkit-scrollbar { display: none; }
         .welcome-chip {
           transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
         }
@@ -66,10 +79,12 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         .welcome-chip:active { transform: translateY(0); }
       `}</style>
 
-      {/* ↓ Inner wrapper: auto top margin collapses on short screens, padding gives breathing room */}
-      <div className="flex flex-col items-center w-full px-8 py-6 my-auto">
-
-        {/* Avatar — smaller on short screens */}
+      {/* Scrollable content — top-aligned on mobile, centered on desktop */}
+      <div
+        className="flex-1 overflow-y-auto flex flex-col items-center w-full px-6 py-6 md:justify-center"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {/* Avatar */}
         <img
           src="/KairaInsta.png"
           alt="Kaira"
@@ -89,17 +104,17 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
           Tell me where you want to go — I'll handle the rest.
         </p>
 
-        {/* Prompt chips */}
-        <div className="w-full max-w-sm flex flex-col gap-2.5 mb-6 shadow-none ">
+        {/* Prompt chips — 2-col grid on mobile, 1-col on desktop */}
+        <div className="w-full max-w-sm grid grid-cols-2 md:grid-cols-1 gap-2.5 mb-4 md:mb-6">
           {promptChips.map((chip) => (
             <button
               key={chip.label}
               onClick={() => handleChipClick(chip.prompt)}
-              className="welcome-chip w-full flex items-center gap-3 p-[10px] rounded-xl border-[0.9px] shadow-none bg-white text-left"
+              className="welcome-chip flex flex-col md:flex-row items-start md:items-center gap-1.5 md:gap-3 p-3 md:p-[10px] rounded-xl border-[0.9px] bg-white text-left"
             >
-              <span className="text-lg flex-shrink-0">{chip.icon}</span>
+              <span className="text-xl md:text-lg flex-shrink-0">{chip.icon}</span>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-sm font-medium truncate">{chip.label}</span>
+                <span className="text-sm font-semibold md:font-medium text-gray-900 line-clamp-2 md:truncate">{chip.label}</span>
                 {chip.sublabel && (
                   <span className="text-xs text-gray-400 mt-0.5">{chip.sublabel}</span>
                 )}
@@ -108,21 +123,15 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
           ))}
         </div>
 
-        {/* Input */}
-        <div className="w-full max-w-[32rem]">
-          <MessageInputBox
-            value={inputValue}
-            onChange={setInputValue}
-            onSubmit={handleSubmit}
-            rotatePlaceholders={[
-              "Try:  Plan a Bali Trip",
-              "Try:  Best hill stations near Bangalore",
-              "Try:  La Tomatina trip from India",
-              "Try:  Surprise me — 4 days, ₹80K",
-            ]}
-            showAttach={true}
-          />
+        {/* Input — desktop only inside scroll area (vertically centered with content) */}
+        <div className="hidden md:block w-full max-w-[32rem]">
+          {inputBox}
         </div>
+      </div>
+
+      {/* Input — mobile only, pinned at bottom */}
+      <div className="md:hidden flex-shrink-0 px-4 pb-4 pt-2 bg-white">
+        {inputBox}
       </div>
     </div>
   );
