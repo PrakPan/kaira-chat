@@ -124,7 +124,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         </div>
 
         {/* Input — desktop only inside scroll area (vertically centered with content) */}
-        <div className="hidden md:block w-full max-w-[32rem]">
+        <div className=" md:block max-ph:hidden w-full max-w-[32rem]">
           {inputBox}
         </div>
       </div>

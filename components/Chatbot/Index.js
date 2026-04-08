@@ -47,7 +47,7 @@ function ChatBotContent({ ispopup, hideDrawer }) {
 
   return (
     <Container ref={chatBotContainerRef} ispopup={ispopup}>
-      {/* <Header hideDrawer={hideDrawer}/> */}
+      <Header hideDrawer={hideDrawer}/>
       <ChatSection />
       <AskQuery />
       <HistoryList />
