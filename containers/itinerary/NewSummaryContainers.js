@@ -298,7 +298,7 @@ const NewSummaryContainer = (props) => {
           setShowLoginModal={props?.setShowLoginModal}
           social_title={props?.social_title}
           social_description={props?.social_description}
-          itineraryName={props.itinerary.name}
+          itineraryName={props?.itinerary?.name}
           itineraryImage={props?.itinerary?.images?.[0]}
           openPaymentDrawer={props.openPaymentDrawer}
         />

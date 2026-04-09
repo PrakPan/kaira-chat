@@ -114,6 +114,11 @@ function buildAuthFields(opts: {
 
 // ─── Request bodies ───────────────────────────────────────────────────────────
 
+function getPlatform(): "mobile" | "desktop" {
+  if (typeof window !== "undefined" && window.innerWidth < 768) return "mobile";
+  return "desktop";
+}
+
 function buildFirstMessageBody(
   text: string,
   opts: {
@@ -133,6 +138,7 @@ function buildFirstMessageBody(
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
+    platform: getPlatform(),
     ...buildAuthFields(opts),
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;
@@ -159,6 +165,7 @@ function buildSubsequentMessageBody(
     model: opts.model,
     // user_location: opts.userLocation,
     domain_key: opts.domainKey,
+    platform: getPlatform(),
     ...buildAuthFields(opts),
   };
   if (opts.botMode === "p2" && opts.itineraryId) body.itinerary_id = opts.itineraryId;

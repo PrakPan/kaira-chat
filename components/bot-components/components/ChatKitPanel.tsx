@@ -56,6 +56,7 @@ interface ChatKitPanelProps {
   onLocationReceived: (locationData: { data: Location[] }) => void;
   onRouteReceived: (routeData: { data: Location[] }) => void;
   onNewQuery: () => void;
+  onClearMap?: (data?: Record<string, unknown>) => void;
   onItineraryReceived: (itineraryData: unknown) => void;
   botMode?: BotMode;
   itineraryId?: string;
@@ -68,7 +69,7 @@ onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
 onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
-sessionId?: string; 
+sessionId?: string;
 }
 
 function useUserLocationData() {
@@ -172,6 +173,7 @@ const WelcomeState = () => (
 export function ChatKitPanel({
   onLocationReceived,
   onNewQuery,
+  onClearMap,
   onRouteReceived,
   onItineraryReceived,
   botMode = "p1",
@@ -317,7 +319,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
       console.log("[Effect triggered]", name, data);
       switch (name) {
         case "clear_map": {
-          onNewQuery();
+          onClearMap?.(data);
           break;
         }
         case "focus_on_map": {
@@ -358,7 +360,8 @@ case "prompt_login": {
   setShowLoginPrompt(true);
   break;
 }
-        case "display_pois_on_map": {
+        case "display_pois_on_map":
+        case "show_attraction_on_map": {
           onNewQuery();
           if (data.data) onLocationReceived(data as { data: Location[] });
           break;
@@ -412,7 +415,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onRouteReceived, onItineraryReceived, input],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up

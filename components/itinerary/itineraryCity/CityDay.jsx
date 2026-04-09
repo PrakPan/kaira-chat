@@ -90,8 +90,10 @@ const getItemName = (item) => {
 // ─── Helper: get image URL ────────────────────────────────────────────────────
 const getItemImage = (item) => {
   // For old-format restaurants stored under restaurants[0]
-  const icon = item?.icon || item?.restaurants?.[0]?.icon;
-  if (!icon)
+  let icon = item?.icon || item?.restaurants?.[0]?.icon;
+  // Handle array-type icon fields (some API responses return an array)
+  if (Array.isArray(icon)) icon = icon[0] || null;
+  if (!icon || typeof icon !== "string")
     return "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=800&auto=format&fit=crop";
   if (icon.startsWith("http")) return icon;
   return imgUrlEndPoint + icon;
@@ -433,26 +435,47 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   const groups = buildSlotGroups();
   const presentSlots = TIME_ORDER.filter((s) => groups[s]);
 
+  const isDesktop = useMediaQuery("(min-width:767px)");
+
   return (
     <>
      <div className="flex sm:flex-row flex-col border-b border-[#E8E8E8] last:border-b-0 w-full justify-center">
 
         {/* COL 1: Date label */}
-        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2">
-  <p className="text-[18px] font-[600] m-0 leading-tight">Day {props.index + 1}</p>
-  <span className="sm:hidden text-[#9CA3AF] text-[14px]">·</span>
-  <p className="text-[12px] sm:text-[12px] md:text-[14px] text-[#9CA3AF] m-0 sm:mt-2 mt-0 leading-tight">
-    {/* date */}
-  </p>
-</div>
+        <div className="sm:w-fit w-full shrink-0 px-4 sm:pt-6 pt-4 sm:pb-6 pb-2 flex sm:flex-col flex-row sm:items-start items-baseline gap-2 sm:min-w-[90px]">
+          <div className="flex flex-col items-baseline sm:items-start gap-2 shrink-0">
+            <p className="text-[18px] font-[600] m-0 leading-tight whitespace-nowrap">Day {props.index + 1} 
+              {/* {isDesktop ? "": props.day?.day_summary && <span className="text-[12px] text-[#9CA3AF]">- {props.day?.day_summary}</span>} */}
+              </p>
+            {props.day?.date && (
+              <p className="text-[12px] text-[#9CA3AF] m-0 sm:mt-1 mt-0 leading-tight whitespace-nowrap">
+                {getDate(props.day.date)}
+              </p>
+            )}
+          </div>
+          {/* {props.day?.day_summary && (
+            <p
+              className="text-[12px] text-[#6B7280] m-0 sm:mt-1 mt-0 leading-tight hidden sm:block"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                maxWidth: "160px",
+              }}
+            >
+              {props.day.day_summary}
+            </p>
+          )} */}
+        </div>
 
         {/* COL 2: Content */}
         <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {elements.length > 0 ? (
             <div className="relative">
-              {/* Vertical timeline line — only when multiple slots exist */}
-              {presentSlots.length > 1 && (
+              {/* Vertical timeline line — shown when there are slots to connect */}
+              {(presentSlots.length > 1 || elements.length > 1) && (
                 <div
                   className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
                   style={{ left: "3px", top: "8px", bottom: "8px" }}

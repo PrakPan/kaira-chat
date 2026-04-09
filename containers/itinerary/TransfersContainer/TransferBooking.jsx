@@ -23,23 +23,22 @@ const LineContainer = styled.div`
   left: 11px;
   bottom: 0;
   right: -25px;
-  width: 1px;
-  z-index: -1;
+  width: 2px;
+  z-index: 0;
   display: flex;
   flex-direction: column;
 `;
 
 const HalfLine = styled.div`
   flex: ${(props) => props.flex || 1};
-  width: 100%;
+  width: 2px;
   background-image: repeating-linear-gradient(
     to bottom,
-    ${(props) => props.color || "black"},
-    ${(props) => props.color || "black"} 4px,
+    ${(props) => props.color || "#AAAAAA"},
+    ${(props) => props.color || "#AAAAAA"} 4px,
     transparent 4px,
     transparent 8px
   );
-  background-repeat: repeat-y;
 `;
 
 const Container = styled.div`
