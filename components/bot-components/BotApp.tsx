@@ -45,6 +45,7 @@ import Image from "next/image";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
+import NotificationPopup from "../ui/NotificationPopup";
 
 type MobilePanel = "map" | "chat";
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
@@ -184,7 +185,13 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const cart = useSelector((state: any) => state.Cart);
   const pricingStatus = useSelector((state: any) => state.ItineraryStatus?.pricing_status);
   const currency = useSelector((state: any) => state.currency);
-    const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
+  const [mobileEffectPopup, setMobileEffectPopup] = useState<{ type: "map" | "itinerary"; label: string } | null>(null);
+  const mobileEffectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Only show the "Back to Map" popup once (first focus_route)
+  const hasShownMapPopupRef = useRef(false);
+
   // Payment drawer — persists via ?drawer=payment in URL
   const [showPaymentDrawer, setShowPaymentDrawer] = useState(() => {
     if (typeof window !== "undefined") {
@@ -477,6 +484,20 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     }
   }, [hasBotResponded]);
 
+  // Trigger a 10-second "Back to Map" popup — shown in chat view when map updates
+  // Only fires once (first focus_route). Itinerary popup is removed per UX revision.
+  const triggerMobileEffectPopup = useCallback((type: "map" | "itinerary") => {
+    if (!isMobile) return;
+    // Only show "Back to Map" popup; silently ignore itinerary triggers
+    if (type !== "map") return;
+    // Show only on the very first focus_route event
+    if (hasShownMapPopupRef.current) return;
+    hasShownMapPopupRef.current = true;
+    setMobileEffectPopup({ type: "map", label: "Back to Map" });
+    if (mobileEffectTimerRef.current) clearTimeout(mobileEffectTimerRef.current);
+    mobileEffectTimerRef.current = setTimeout(() => setMobileEffectPopup(null), 10000);
+  }, [isMobile]);
+
   const handleLoadRouteOnMap = useCallback(() => {
     setIsRoutePreparing(true);
     setViewMode("map");
@@ -497,6 +518,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         }));
         setSkeletonCities(cities);
         skeletonCitiesRef.current = cities;
+        // On mobile: show "Back to Map" popup so user knows the map has updated
+        triggerMobileEffectPopup("map");
       }
       if (routeData.data && Array.isArray(routeData.data)) {
         setCurrentRoute(routeData.data);
@@ -510,7 +533,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
       }
     },
-    [revealLeftPanel],
+    [revealLeftPanel, triggerMobileEffectPopup],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -540,6 +563,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           setActiveItineraryId("skeleton");
           setItineraryPollingEnabled(false);
         }
+        // On mobile: show "Back to Itinerary" popup
+        triggerMobileEffectPopup("itinerary");
         return;
       }
 
@@ -627,8 +652,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       setItineraryPollingEnabled(false);
       setViewMode("itinerary");
       setMobilePanel("map");
+      // On mobile: show "Back to Itinerary" popup when itinerary data arrives
+      triggerMobileEffectPopup("itinerary");
     },
-    [revealLeftPanel, dispatch, buildSkeletonItinerary, activeItineraryId],
+    [revealLeftPanel, dispatch, buildSkeletonItinerary, activeItineraryId, triggerMobileEffectPopup],
   );
 
   const handleLocationReceived = useCallback(
@@ -644,6 +671,15 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const handleNewQuery = useCallback(() => {
     setLocations([]);
+  }, []);
+
+  const handleClearMap = useCallback((data?: Record<string, unknown>) => {
+    setLocations([]);
+    setCurrentRoute(null);
+    // If the effect includes a new location to pan to, display it
+    if (data?.data && Array.isArray(data.data) && (data.data as any[]).length > 0) {
+      setLocations(data.data as Location[]);
+    }
   }, []);
 
   const loadThread = useCallback(
@@ -687,12 +723,14 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
             setHasBotResponded(true);
             setShowStartScreen(false);
           } else if (
-            (effect.name === "focus_on_map" || effect.name === "display_pois_on_map") &&
+            (effect.name === "focus_on_map" || effect.name === "display_pois_on_map" || effect.name === "show_attraction_on_map") &&
             effect.data
           ) {
             handleLocationReceived({ data: effect.data });
             setHasBotResponded(true);
             setShowStartScreen(false);
+          } else if (effect.name === "clear_map") {
+            handleClearMap(effect.data);
           }
         });
 
@@ -840,6 +878,11 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       setShowStartScreen(false);
       setIsChatActive(true);
       currentItineraryRef.current = null;
+      // Close payment drawer from previous itinerary
+      setShowPaymentDrawer(false);
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("drawer");
+      window.history.replaceState({}, "", cleanUrl.toString());
 
       dispatch(setItinerary({}));
       dispatch(setCart({}));
@@ -886,6 +929,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     setSkeletonCities([]);
     skeletonCitiesRef.current = [];
     currentItineraryRef.current = null;
+    setShowPaymentDrawer(false);
+    const cleanUrl2 = new URL(window.location.href);
+    cleanUrl2.searchParams.delete("drawer");
+    window.history.replaceState({}, "", cleanUrl2.toString());
 
     dispatch(setItinerary({}));
     dispatch(setCart({}));
@@ -929,6 +976,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const sharedChatKitProps = {
     onLocationReceived: handleLocationReceived,
     onNewQuery: handleNewQuery,
+    onClearMap: handleClearMap,
     onRouteReceived: handleRouteReceived,
     onItineraryReceived: handleItineraryReceived,
     onItineraryCompletionStart: handleItineraryCompletionStart,
@@ -944,7 +992,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   };
 
   const handleConfirmItinerary = (details: any) => {
-    const message = `Yes confirm the itinerary. Here are my details:
+    const message = `Yes, I confirm the itinerary! Here are my details:
 Start Date: ${details.startDate}
 Pax: ${details.adults} Adults, ${details.children} Children, ${details.infants} Infants
 Start Location: ${details.startLocation}`;
@@ -1159,6 +1207,7 @@ Start Location: ${details.startLocation}`;
           isCollapsed={sidebarCollapsed}
           onThreadSelect={handleThreadSelect}
           activeThreadId={activeThreadId}
+          isComplete={activeItineraryId !== "skeleton" && activeItineraryId !== "draft" && !!activeItineraryId}
         />
 
         {/* LEFT PANEL */}
@@ -1337,6 +1386,16 @@ Start Location: ${details.startLocation}`;
             )
           }
           itineraryContent={isMobile ? itineraryPanel : null}
+          mobileEffectPopup={mobileEffectPopup}
+          onDismissMobileEffectPopup={() => setMobileEffectPopup(null)}
+          onSettingsClick={() => {
+            if (!activeItineraryId) return;
+            axios
+              .get(`${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/bookings/hotels/?fields=no_of_hotels`)
+              .then((res) => setIsHotelsPresent(res.data.no_of_hotels > 0))
+              .catch(() => setIsHotelsPresent(false))
+              .finally(() => setShowSettings(true));
+          }}
         />
       </div>
 
@@ -1369,7 +1428,7 @@ Start Location: ${details.startLocation}`;
       )}
 
       {showSettings && (
-        <ModalWithBackdrop onClose={() => setShowSettings(false)}>
+        <ModalWithBackdrop show={true} onHide={() => setShowSettings(false)}>
           <Settings
             setShowSettings={setShowSettings}
             isHotelsPresent={isHotelsPresent}
@@ -1383,8 +1442,12 @@ Start Location: ${details.startLocation}`;
         </ModalWithBackdrop>
       )}
 
+      {/* Toaster notifications — portal to modal-portal div */}
+      <NotificationPopup />
+
       {/* ── Payment — mounts NewSummaryContainers which portals its own full-screen Drawer ── */}
-      {showPaymentDrawer && (
+
+      {showPaymentDrawer && activeItineraryId && itineraryRedux && (
         <div key={paymentDrawerKey} style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
           <NewSummaryContainers
             payment={paymentData}
@@ -1445,7 +1508,7 @@ const BottomCTABar = React.memo(
     onConfirm,
     onViewCart,
   }: BottomCTABarProps) => {
-    if (viewMode !== "itinerary" || (!activeItineraryId && !showItineraryShimmer))
+    if (!["itinerary", "bookings"].includes(viewMode) || (!activeItineraryId && !showItineraryShimmer))
       return null;
 
     if (isDraft) {
@@ -1522,7 +1585,7 @@ const BottomCTABar = React.memo(
           </svg>
           <button
             onClick={onViewCart}
-            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-sm md:text-[16px] font-inter"
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
           >
             View Cart
             {countCartItems > 0 && (
@@ -1548,10 +1611,12 @@ const MobileHeader = React.memo(({
   onNewChat,
   onThreadSelect,
   activeThreadId,
+  isComplete,
 }: {
   onNewChat: () => void;
   onThreadSelect: (id: string, sessionId?: string) => void;
   activeThreadId: string | null;
+  isComplete?: boolean;
 }) => {
   const userId = (useSelector as any)((s: any) => s.auth?.id);
   const token = (useSelector as any)((s: any) => s.auth?.token);
@@ -1585,7 +1650,7 @@ const MobileHeader = React.memo(({
       const res = await fetch(CHATKIT_API_URL_MOBILE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId) }),
+        body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId), filter_bot: isComplete ? "P2" : "P1" }),
       });
       const data = await res.json();
       setThreads(data.data ?? []);
@@ -1749,6 +1814,9 @@ interface MobileLayoutProps {
   mapContent: React.ReactNode;
   chatContent: React.ReactNode;
   itineraryContent: React.ReactNode;
+  mobileEffectPopup?: { type: "map" | "itinerary"; label: string } | null;
+  onDismissMobileEffectPopup?: () => void;
+  onSettingsClick?: () => void;
 }
 
 const MobileLayout = React.memo(({
@@ -1771,6 +1839,9 @@ const MobileLayout = React.memo(({
   mapContent,
   chatContent,
   itineraryContent,
+  mobileEffectPopup,
+  onDismissMobileEffectPopup,
+  onSettingsClick,
 }: MobileLayoutProps) => {
   const [activeTab, setActiveTab] = React.useState<MobileTab>("chat");
   const hasUnread = (useSelector as any)((s: any) => !!s.chatState?.unreadMessages);
@@ -1845,20 +1916,21 @@ const MobileLayout = React.memo(({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden relative">
 
       {/* ── Mobile header — always visible ── */}
       <MobileHeader
         onNewChat={onNewChat}
         onThreadSelect={onThreadSelect}
         activeThreadId={activeThreadId}
+        isComplete={isComplete}
       />
 
       {/* ── Top tab bar — only when itinerary is active ── */}
       {hasItineraryActivity && visibleTabs.length > 0 && (
-        <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-100">
+        <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-100 flex items-center gap-2">
           <div
-            className="flex gap-1 p-[3px]"
+            className="flex flex-1 gap-1 p-[3px]"
             style={{ borderRadius: "10px", border: "1px solid #E5E5E5", background: "#fff" }}
           >
             {visibleTabs.map(tab => (
@@ -1872,6 +1944,19 @@ const MobileLayout = React.memo(({
               </button>
             ))}
           </div>
+          {/* Settings icon — only when itinerary is fully created */}
+          {isComplete && onSettingsClick && (
+            <button
+              onClick={onSettingsClick}
+              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              aria-label="Settings"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#07213A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </button>
+          )}
         </div>
       )}
 
@@ -1919,15 +2004,15 @@ const MobileLayout = React.memo(({
         )}
       </div>
 
-      {/* ── Floating Kaira icon — go back to Chat when on itinerary/map views ── */}
-      {hasItineraryActivity && activeTab !== "chat" && (
+      {/* ── Floating Kaira icon — go back to Chat when on itinerary/routes/bookings views ── */}
+      {hasItineraryActivity && ["itinerary", "routes", "bookings"].includes(activeTab) && (
         <div
           className="fixed z-[100]"
-          style={{ bottom: 80, right: 20 }}
+          style={{ bottom: 80, right: 16 }}
         >
           <button
             onClick={() => handleTabClick("chat")}
-            className="relative w-14 h-14 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
+            className="relative w-20 h-20 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
             aria-label="Chat with Kaira"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1938,10 +2023,45 @@ const MobileLayout = React.memo(({
           {/* Unread message red dot */}
           {hasUnread && (
             <span
-              className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white"
+              className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-white"
               style={{ zIndex: 1 }}
             />
           )}
+        </div>
+      )}
+
+      {/* ── "Back to Map" popup — above message input, shown for 10s on first focus_route ── */}
+      {mobileEffectPopup && activeTab === "chat" && (
+        <div className="fixed z-[300] left-0 right-0 flex justify-center px-4" style={{ bottom: 72 }}>
+          <button
+            onClick={() => {
+              handleTabClick("map");
+              onDismissMobileEffectPopup?.();
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-2xl active:scale-95 transition-transform"
+            style={{ whiteSpace: "nowrap" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+            </svg>
+            Back to Map
+          </button>
+        </div>
+      )}
+
+      {/* ── "Back to Chat" pill — always visible on map tab when itinerary active ── */}
+      {hasItineraryActivity && activeTab === "map" && (
+        <div className="fixed z-[300] left-0 right-0 flex justify-center px-4" style={{ bottom: 72 }}>
+          <button
+            onClick={() => handleTabClick("chat")}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-xl active:scale-95 transition-transform"
+            style={{ whiteSpace: "nowrap" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Back to Chat
+          </button>
         </div>
       )}
     </div>

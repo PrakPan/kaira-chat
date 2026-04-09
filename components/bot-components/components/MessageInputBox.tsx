@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
+// @ts-ignore — JS component
+import Dictate from "../../Chatbot/Dictate";
 
 const SendIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -8,20 +10,6 @@ const SendIcon = () => (
   <defs>
     <clipPath id="clip0_9587_10060">
       <rect width="16" height="16" fill="white"/>
-    </clipPath>
-  </defs>
-</svg>
-);
-
-const WaveformIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-  <g clip-path="url(#clip0_9587_10057)">
-    <path d="M10.0026 16.6667C11.7701 16.6647 13.4646 15.9617 14.7145 14.7119C15.9643 13.462 16.6673 11.7675 16.6693 10V6.66667C16.6693 4.89856 15.9669 3.20286 14.7166 1.95262C13.4664 0.702379 11.7707 0 10.0026 0C8.23449 0 6.5388 0.702379 5.28856 1.95262C4.03832 3.20286 3.33594 4.89856 3.33594 6.66667V10C3.33792 11.7675 4.04094 13.462 5.29075 14.7119C6.54056 15.9617 8.2351 16.6647 10.0026 16.6667ZM10.0026 1.66667C11.1831 1.66886 12.3248 2.08822 13.226 2.85066C14.1272 3.61311 14.7299 4.66955 14.9276 5.83333H12.5026C12.2816 5.83333 12.0696 5.92113 11.9133 6.07741C11.7571 6.23369 11.6693 6.44565 11.6693 6.66667C11.6693 6.88768 11.7571 7.09964 11.9133 7.25592C12.0696 7.4122 12.2816 7.5 12.5026 7.5H15.0026V9.16667H12.5026C12.2816 9.16667 12.0696 9.25446 11.9133 9.41074C11.7571 9.56702 11.6693 9.77899 11.6693 10C11.6693 10.221 11.7571 10.433 11.9133 10.5893C12.0696 10.7455 12.2816 10.8333 12.5026 10.8333H14.9276C14.7317 11.9979 14.1295 13.0554 13.2279 13.8181C12.3263 14.5807 11.1835 14.9992 10.0026 14.9992C8.82167 14.9992 7.67895 14.5807 6.77731 13.8181C5.87567 13.0554 5.27347 11.9979 5.0776 10.8333H7.5026C7.72362 10.8333 7.93558 10.7455 8.09186 10.5893C8.24814 10.433 8.33594 10.221 8.33594 10C8.33594 9.77899 8.24814 9.56702 8.09186 9.41074C7.93558 9.25446 7.72362 9.16667 7.5026 9.16667H5.0026V7.5H7.5026C7.72362 7.5 7.93558 7.4122 8.09186 7.25592C8.24814 7.09964 8.33594 6.88768 8.33594 6.66667C8.33594 6.44565 8.24814 6.23369 8.09186 6.07741C7.93558 5.92113 7.72362 5.83333 7.5026 5.83333H5.0776C5.27533 4.66955 5.87804 3.61311 6.77925 2.85066C7.68045 2.08822 8.82214 1.66886 10.0026 1.66667Z" fill="#374957"/>
-    <path d="M19.1667 10C18.9457 10 18.7337 10.0878 18.5774 10.2441C18.4211 10.4004 18.3333 10.6123 18.3333 10.8333C18.3311 12.8218 17.5402 14.7282 16.1342 16.1342C14.7282 17.5402 12.8218 18.3311 10.8333 18.3333H9.16667C7.17829 18.3309 5.27204 17.54 3.86604 16.134C2.46005 14.728 1.66909 12.8217 1.66667 10.8333C1.66667 10.6123 1.57887 10.4004 1.42259 10.2441C1.26631 10.0878 1.05435 10 0.833333 10C0.61232 10 0.400358 10.0878 0.244078 10.2441C0.0877974 10.4004 0 10.6123 0 10.8333C0.00286706 13.2636 0.969559 15.5935 2.68802 17.312C4.40648 19.0304 6.7364 19.9971 9.16667 20H10.8333C13.2636 19.9971 15.5935 19.0304 17.312 17.312C19.0304 15.5935 19.9971 13.2636 20 10.8333C20 10.6123 19.9122 10.4004 19.7559 10.2441C19.5996 10.0878 19.3877 10 19.1667 10Z" fill="#374957"/>
-  </g>
-  <defs>
-    <clipPath id="clip0_9587_10057">
-      <rect width="20" height="20" fill="white"/>
     </clipPath>
   </defs>
 </svg>
@@ -69,29 +57,32 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   placeholder = "Ask me anything",
   showAttach = true,
   rotatePlaceholders = [],
-  
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dictateRef = useRef<any>(null);
 
-const [placeholderIdx, setPlaceholderIdx] = useState(0);
-const [fadingOut, setFadingOut] = useState(false);
+  // Tracks what the user manually typed (base for appending transcript)
+  const [trackTyped, setTrackTyped] = useState("");
 
-useEffect(() => {
-  if (!rotatePlaceholders?.length) return;
-  const interval = setInterval(() => {
-    setFadingOut(true);
-    setTimeout(() => {
-      setPlaceholderIdx((i) => (i + 1) % rotatePlaceholders.length);
-      setFadingOut(false);
-    }, 400); // fade-out duration
-  }, 3000);
-  return () => clearInterval(interval);
-}, [rotatePlaceholders]);
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  const [fadingOut, setFadingOut] = useState(false);
 
-const activePlaceholder =
-  rotatePlaceholders?.length
-    ? rotatePlaceholders[placeholderIdx]
-    : placeholder;
+  useEffect(() => {
+    if (!rotatePlaceholders?.length) return;
+    const interval = setInterval(() => {
+      setFadingOut(true);
+      setTimeout(() => {
+        setPlaceholderIdx((i) => (i + 1) % rotatePlaceholders.length);
+        setFadingOut(false);
+      }, 400);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [rotatePlaceholders]);
+
+  const activePlaceholder =
+    rotatePlaceholders?.length
+      ? rotatePlaceholders[placeholderIdx]
+      : placeholder;
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -102,14 +93,33 @@ const activePlaceholder =
 
   const canSend = value.trim().length > 0 && !isStreaming;
 
+  // When user manually types, keep trackTyped in sync
+  const handleChange = (text: string) => {
+    setTrackTyped(text);
+    onChange(text);
+  };
+
+  // Dictate callbacks — same pattern as AskQuery.js
+  const handleTranscriptChange = (transcript: string) => {
+    const combined = `${trackTyped}${trackTyped ? " " : ""}${transcript}`;
+    onChange(combined);
+  };
+  const stopDictation = () => {
+    // Snapshot current value so next transcript starts from here
+    setTrackTyped(value);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (canSend) onSubmit();
+      if (canSend) handleSubmitInternal();
     }
   };
 
-  
+  const handleSubmitInternal = () => {
+    dictateRef.current?.stop();
+    onSubmit();
+  };
 
   return (
     <div
@@ -122,67 +132,67 @@ const activePlaceholder =
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* Placeholder */}
-    <div style={{ position: "relative" }}>
-  <style>{`
-    @keyframes slideUpIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0);    }
-    }
-    @keyframes slideUpOut {
-      from { opacity: 1; transform: translateY(0);     }
-      to   { opacity: 0; transform: translateY(-10px); }
-    }
-    .ph-slide-in  { animation: slideUpIn  0.35s ease forwards; }
-    .ph-slide-out { animation: slideUpOut 0.35s ease forwards; }
-  `}</style>
+      {/* Textarea + animated placeholder */}
+      <div style={{ position: "relative" }}>
+        <style>{`
+          @keyframes slideUpIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0);    }
+          }
+          @keyframes slideUpOut {
+            from { opacity: 1; transform: translateY(0);     }
+            to   { opacity: 0; transform: translateY(-10px); }
+          }
+          .ph-slide-in  { animation: slideUpIn  0.35s ease forwards; }
+          .ph-slide-out { animation: slideUpOut 0.35s ease forwards; }
+        `}</style>
 
-  <textarea
-    ref={textareaRef}
-    value={value}
-    onChange={(e) => onChange(e.target.value)}
-    onKeyDown={handleKeyDown}
-    disabled={disabled && !isStreaming}
-    placeholder=""                       
-    rows={1}
-    className="w-full bg-transparent resize-none outline-none"
-    style={{
-      fontFamily: "'Inter', sans-serif",
-      fontSize: 16,
-      color: "#111827",
-      lineHeight: "22px",
-      minHeight: 24,
-      maxHeight: 120,
-      border: "none",
-      padding: 0,
-      marginBottom: 8,
-    }}
-  />
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => handleChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled && !isStreaming}
+          placeholder=""
+          rows={1}
+          className="w-full bg-transparent resize-none outline-none"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 16,
+            color: "#111827",
+            lineHeight: "22px",
+            minHeight: 24,
+            maxHeight: 120,
+            border: "none",
+            padding: 0,
+            marginBottom: 8,
+          }}
+        />
 
-  {/* Animated placeholder overlay — hidden once user types */}
-  {!value && (
-    <span
-      key={placeholderIdx}             
-      className={fadingOut ? "ph-slide-out" : "ph-slide-in"}
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        pointerEvents: "none",
-        userSelect: "none",
-        fontFamily: "'Inter', sans-serif",
-        fontSize: 16,
-        lineHeight: "22px",
-        color: "#9ca3af",               
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        maxWidth: "100%",
-      }}
-    >
-      {activePlaceholder}
-    </span>
-  )}
-</div>
+        {/* Animated placeholder overlay */}
+        {!value && (
+          <span
+            key={placeholderIdx}
+            className={fadingOut ? "ph-slide-out" : "ph-slide-in"}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              pointerEvents: "none",
+              userSelect: "none",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 16,
+              lineHeight: "22px",
+              color: "#9ca3af",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              maxWidth: "100%",
+            }}
+          >
+            {activePlaceholder}
+          </span>
+        )}
+      </div>
 
       {/* Bottom action row */}
       <div className="flex items-center justify-between">
@@ -199,25 +209,25 @@ const activePlaceholder =
           <div />
         )}
 
-        {/* Right: waveform + send/stop */}
-        <div className="flex items-center gap-2"> 
-          <button 
-            type="button" 
-            className="flex items-center justify-center" 
-            title="Voice input"  
-          > 
-            <WaveformIcon /> 
-          </button>
+        {/* Right: mic (Dictate) + send/stop */}
+        <div className="flex items-center gap-2">
+          {/* Dictate component handles mic button + recording state */}
+          <Dictate
+            ref={dictateRef}
+            stopDictation={stopDictation}
+            onTranscriptChange={handleTranscriptChange}
+            disabled={disabled && !isStreaming}
+          />
 
-          {isStreaming ? ( 
-            <button 
-              type="button" 
-              onClick={onStop} 
-              title="Stop generating" 
-              className="flex items-center justify-center transition-all" 
+          {isStreaming ? (
+            <button
+              type="button"
+              onClick={onStop}
+              title="Stop generating"
+              className="flex items-center justify-center transition-all"
               style={{
-                width: 32, 
-                height: 32, 
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
                 background: "#1c1917",
                 color: "#fff",
@@ -230,7 +240,7 @@ const activePlaceholder =
           ) : (
             <button
               type="button"
-              onClick={onSubmit}
+              onClick={handleSubmitInternal}
               disabled={!canSend}
               title="Send"
               className="flex items-center justify-center transition-all"
@@ -242,7 +252,6 @@ const activePlaceholder =
                 color: "#1c1917",
                 border: "none",
                 cursor: canSend ? "pointer" : "not-allowed",
-                // opacity: canSend ? 1 : 0.5,
                 boxShadow: canSend ? "0 2px 8px rgba(251,191,36,0.35)" : "none",
               }}
             >

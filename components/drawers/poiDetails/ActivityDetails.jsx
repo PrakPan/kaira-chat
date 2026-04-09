@@ -176,6 +176,7 @@ const ActivityDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description,
   );
   const itinerary = useSelector((state) => state.Itinerary);
+  const isDraft = useSelector((state) => state.Itinerary?.status === "Draft");
   const token = useSelector((state) => state.auth.token);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -915,7 +916,7 @@ const ActivityDetails = (props) => {
                 // )
                 <>
                   {" "}
-                  {props?.removeDelete == false && (
+                  {props?.removeDelete == false && !isDraft && (
                     <button
                       className="ttw-btn-fill-error"
                       onClick={handleDelete}

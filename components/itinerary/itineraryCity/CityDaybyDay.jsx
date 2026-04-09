@@ -27,6 +27,8 @@ const DayRowShimmer = () => (
 
 const CityDaybyDay = (props) => {
   const { itinerary_status } = useSelector((state) => state.ItineraryStatus);
+  // dayOffset: how many days came before this city across all previous cities
+  const dayOffset = props.dayOffset ?? 0;
 
   return (
     <div id="citydaybyday">
@@ -37,7 +39,7 @@ const CityDaybyDay = (props) => {
           <CityDay
             mercuryItinerary={props?.mercuryItinerary}
             key={day.slab_id ?? `day-fallback-${index}`}
-            index={index}
+            index={dayOffset + index}
             day={day}
             cityId={props.city.city.id}
             city={props.city.city}

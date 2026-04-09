@@ -343,11 +343,21 @@ const CitySection: React.FC<{ route: Route }> = ({ route }) => (
     <div className="flex items-start justify-between p-3 rounded-t-lg w-full border-1 border-[#FBEAC7]">
       <div className="space-y-1 font-inter w-full">
         <div className="md:text-[18px] font-semibold leading-0">
-          {route.city.name}
-          {" - "}
-          {route.city.duration}{" "}
-          {route.city.duration > 1 ? "Nights" : "Night"}
-          {route.city.duration === 0 ? " (Transit City)" : ""}
+          {/* Desktop: full format */}
+          <span className="hidden md:inline">
+            {route.city.name}
+            {" - "}
+            {route.city.duration}{" "}
+            {route.city.duration > 1 ? "Nights" : "Night"}
+            {route.city.duration === 0 ? " (Transit City)" : ""}
+          </span>
+          {/* Mobile: truncate city name + short night count */}
+          <span className="md:hidden flex items-center gap-1 min-w-0">
+            <span className="truncate">{route.city.name}</span>
+            <span className="flex-shrink-0 text-[13px]">
+              {route.city.duration === 0 ? "(Transit)" : `${route.city.duration}N`}
+            </span>
+          </span>
         </div>
         <div className="flex flex-col gap-2">
           <HotelRow hotels={route.hotels} />
@@ -439,7 +449,7 @@ const ItineraryContent: React.FC<{
   const transferList = normaliseTransfers(transfers);
 
   const handleConfirmItinerary = (details: ConfirmationDetails) => {
-    const message = `Yes confirm the itinerary. Here are my details:
+    const message = `Yes, I confirm the itinerary! Here are my details:
 Start Date: ${details.startDate}
 Pax: ${details.adults} Adults, ${details.children} Children, ${details.infants} Infants
 Start Location: ${details.startLocation}`;

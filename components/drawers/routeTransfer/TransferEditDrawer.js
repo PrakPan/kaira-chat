@@ -318,12 +318,14 @@ const TransferEditDrawer = (props) => {
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
-                setMultiCitySuggestions(response?.data?.suggestions?.[0]);
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
-                setRoundTripSuggestions(response?.data?.suggestions?.[1]);
-                if (cityId && response?.data?.suggestions?.[2]) {
-                  setSightseeingSuggestions(response?.data?.suggestions?.[2]);
-                }
+                const suggestions = response?.data?.suggestions || [];
+                // Categorize by type: "multicity" → multiCitySuggestions, everything else → roundTripSuggestions array
+                const multicitySuggs = suggestions.filter(s => s.type === "multicity");
+                const otherSuggs = suggestions.filter(s => s.type !== "multicity");
+                setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
+                setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
+                setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
                 setLoadingMulticityTransfers(false);
                 setLoadingTransfers(false);
               })
@@ -776,7 +778,7 @@ const TransferEditDrawer = (props) => {
                 </div>
               ) : (
                 <div className="text-xl font-600 leading-2xl">
-                  Changing Transfer
+                  {(drawerType === "multicity" || booking_type === "multicity") ? "Add Taxi" : "Changing Transfer"}
                 </div>
               )}
 
@@ -1400,24 +1402,17 @@ const TransferEditDrawer = (props) => {
               </>
             ) : transferType === "MULTICITYROUNDTRIP" ? (
               <div className="w-full flex flex-col items-center gap-4">
-                {roundTripSuggestions && (
-                  <div className="w-full">
-                    {/* <h3 className="text-lg font-semibold mb-3">Round Trip</h3> */}
-                    <RoundTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      roundTripSuggestions={roundTripSuggestions}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                )}
-
+                {/* Multicity suggestions */}
                 {multiCitySuggestions && (
                   <div className="w-full">
-                    {/* <h3 className="text-lg font-semibold mb-3"></h3> */}
-
+                    {multiCitySuggestions?.data?.duration?.text && (
+                      <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <span>{multiCitySuggestions.name}</span>
+                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
+                          {multiCitySuggestions.data.duration.text}
+                        </span>
+                      </div>
+                    )}
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={multiCitySuggestions}
@@ -1429,12 +1424,34 @@ const TransferEditDrawer = (props) => {
                   </div>
                 )}
 
-                {sightseeingSuggestions && (
-                  <div className="w-full mt-2">
-                    <div className="px-1 pt-3 pb-1 text-sm font-semibold text-gray-700">Sightseeing</div>
+                {/* Non-multicity suggestions (sightseeing, pickup_drop etc) — now an array */}
+                {Array.isArray(roundTripSuggestions) && roundTripSuggestions.map((sugg, idx) => (
+                  <div key={idx} className="w-full">
+                    <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
+                      <span>{sugg.name}</span>
+                      {sugg?.data?.duration?.text && (
+                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
+                          {sugg.data.duration.text}
+                        </span>
+                      )}
+                    </div>
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
-                      multiCitySuggestions={sightseeingSuggestions}
+                      multiCitySuggestions={sugg}
+                      selectedCab={selectedCab}
+                      setSelectedCab={setSelectedCab}
+                      selectedTripType={selectedTripType}
+                      setSelectedTripType={setSelectedTripType}
+                    />
+                  </div>
+                ))}
+
+                {/* Backward-compat: single roundTripSuggestions object (non-array) */}
+                {roundTripSuggestions && !Array.isArray(roundTripSuggestions) && (
+                  <div className="w-full">
+                    <RoundTripSuggestion
+                      handleRoundTripSelect={handleMultiCitySelect}
+                      roundTripSuggestions={roundTripSuggestions}
                       selectedCab={selectedCab}
                       setSelectedCab={setSelectedCab}
                       selectedTripType={selectedTripType}

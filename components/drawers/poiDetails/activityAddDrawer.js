@@ -126,7 +126,51 @@ const ActivityAddDrawer = (props) => {
   const [recommended, setRecommended] = useState(false);
   const [nearby, setNearby] = useState(false);
   const [changed, setChanged] = useState(false);
-  const [startDate, setStartDate] = useState(props?.date);
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+
+  // Resolve effective start date — prefer prop.date, then city start_date,
+  // then itinerary-level start_date, then today as last resort.
+  const resolveEffectiveDate = () => {
+    // Try props.date (from URL query)
+    if (props?.date) {
+      const d = new Date(props.date);
+      if (!isNaN(d.getTime())) return props.date;
+    }
+    // Try city start_date passed directly
+    if (props?.start_date) {
+      const d = new Date(props.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    // Try itinerary-level start_date from Redux
+    if (itinerary?.start_date) {
+      const d = new Date(itinerary.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    // Fallback: today
+    const today = new Date();
+    return `${pad(today.getDate())}/${pad(today.getMonth() + 1)}/${today.getFullYear()}`;
+  };
+
+  const effectiveDate = resolveEffectiveDate();
+
+  // Resolve city duration: prop → itinerary Redux city lookup → 0
+  const resolvedCityDuration = (() => {
+    const direct = Number(props.duration);
+    if (direct > 0) return direct;
+    if (props?.itinerary_city_id && itinerary?.cities) {
+      const match = itinerary.cities.find(
+        (c) => String(c.id) === String(props.itinerary_city_id)
+      );
+      if (match?.duration > 0) return Number(match.duration);
+    }
+    return 0;
+  })();
+
+  const [startDate, setStartDate] = useState(effectiveDate);
   const [showCalender, setShowCalender] = useState(false);
 
   const filtersRef = useRef(null);
@@ -138,15 +182,7 @@ const ActivityAddDrawer = (props) => {
   const [error, setError] = useState(null);
   const currency = useSelector((state) => state.currency);
 
-  const dateObj = new Date(props.date);
-
-  const pad = (n) => (n < 10 ? `0${n}` : n);
-  const formattedDate =
-    pad(dateObj.getDate()) +
-    "/" +
-    pad(dateObj.getMonth() + 1) +
-    "/" +
-    dateObj.getFullYear();
+  const formattedDate = effectiveDate;
 
   useEffect(() => {
     const updateHeight = () => setHeight(window.innerHeight);
@@ -705,13 +741,21 @@ const ClickHandler = (child) => {
                 <select
                   className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-sm:hidden"
                   onChange={(e) => setStartDate(e.target.value)}
-                  defaultValue={formattedDate}
+                  value={startDate}
                 >
-                  {[...Array(Math.max(0, Number(props.duration) || 0) + 1)].map(
+                  {[...Array(Math.max(0, resolvedCityDuration) + 1)].map(
                     (_, i) => {
-                      const baseDateStr = props?.mercuryItinerary
-                        ? props?.start_date
-                        : convertToISODate(props?.start_date);
+                      // Resolve base date: city start_date → city day-1 date → itinerary.start_date → effectiveDate
+                      const cityStartRaw = props?.start_date || props?.date || null;
+                      let baseDateStr = props?.mercuryItinerary
+                        ? (cityStartRaw || itinerary?.start_date || null)
+                        : convertToISODate(cityStartRaw || itinerary?.start_date || null);
+
+                      // Last resort: parse effectiveDate (DD/MM/YYYY)
+                      if (!baseDateStr && effectiveDate) {
+                        const [dd, mm, yyyy] = effectiveDate.split("/");
+                        baseDateStr = `${yyyy}-${mm}-${dd}`;
+                      }
 
                       const baseDate = new Date(baseDateStr);
                       if (isNaN(baseDate.getTime())) return null;
@@ -722,11 +766,11 @@ const ClickHandler = (child) => {
                       const isoDate = `${pad(currentDate.getDate())}/${pad(
                         currentDate.getMonth() + 1,
                       )}/${currentDate.getFullYear()}`;
-                      const formattedDate = getHumanDate(isoDate);
+                      const humanDate = getHumanDate(isoDate);
 
                       return (
                         <option key={i} value={isoDate}>
-                          {formattedDate} | Day {i + 1}
+                          {humanDate} | Day {i + 1}
                         </option>
                       );
                     },
@@ -992,10 +1036,11 @@ const ClickHandler = (child) => {
               ref={calendarRef}
             >
               <div className="font-medium text-[14px]">Select Days</div>
-              {[...Array(props.duration)].map((_, i) => {
+              {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
+                const cityStartRaw = props?.start_date || props?.date || null;
                 const baseDateStr = props?.mercuryItinerary
-                  ? props?.date
-                  : convertToISODate(props?.date);
+                  ? (cityStartRaw || itinerary?.start_date || null)
+                  : convertToISODate(cityStartRaw || itinerary?.start_date || null);
 
                 const baseDate = new Date(baseDateStr);
                 const currentDate = new Date(baseDate);

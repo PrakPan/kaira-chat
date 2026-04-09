@@ -21,6 +21,8 @@ interface SidebarProps {
   isCollapsed?: boolean;
   onThreadSelect?: (threadId: string, sessionId?: string) => void;
   activeThreadId?: string | null;
+  /** True when itinerary is fully created (P2), false/undefined = P1 */
+  isComplete?: boolean;
 }
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
@@ -68,7 +70,7 @@ const ChatHistoryDrawer: React.FC<{
     <>
       {open && <div className="fixed inset-0 z-[300] bg-black/20 backdrop-blur-[1px]" onClick={onClose} />}
       <div
-        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-1/2"
+        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[52%]"
         style={{ transform: open ? "translateX(0)" : "translateX(-110%)" }}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
@@ -310,6 +312,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = true,
   onThreadSelect,
   activeThreadId,
+  isComplete,
 }) => {
   const [threads, setThreads] = useState<Thread[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -327,6 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           type: "threads.list",
           params: { limit: 9999, order: "desc" },
           filter_user_id: String(userId),
+          filter_bot: isComplete ? "P2" : "P1",
         }),
       });
       const data = await res.json();

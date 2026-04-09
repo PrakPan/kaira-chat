@@ -2127,11 +2127,19 @@ const Details = (props) => {
               </div>
             </div>
 
+            {/* Mobile-only: LivePriceTimer right below back button */}
+            {!(pricing_status === "PENDING" || props?.loadpricing) &&
+              !(final_status == "Paid" || final_status == "Released") && (
+              <div className="block md:hidden mb-2 -mx-[12px]">
+                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+              </div>
+            )}
+
             {/* Updated row with proper overflow handling */}
             <div className="row py-md bg-text-white">
               {/* Left column - Scrollable content */}
               <div
-                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pr-md"
+                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pb-[80px] md:pb-0 pr-md"
                 style={{
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -2404,7 +2412,7 @@ const Details = (props) => {
               </div>
 
               {/* Right column - Fixed/Sticky pricing section */}
-              <div className="col-md-4">
+              <div className="col-md-4 pb-[70px] md:pb-0">
                 <div
                   className="md:sticky md:top-4 md:max-h-[calc(100vh-120px)] md:overflow-y-auto"
                   style={{
@@ -2417,7 +2425,7 @@ const Details = (props) => {
                       <PricingSkeleton />
                     </div>
                   ) : (
-                    <div>
+                    <div className="hidden md:block">
                       {!(
                         final_status == "Paid" || final_status == "Released"
                       ) && (
@@ -2535,12 +2543,14 @@ const Details = (props) => {
                         </div>
                       </>
                     ) : (
-                      <PaymentButton
-                        amount={calculateFilteredTotal()}
-                        isLoading={paymentLoading}
-                        paymentType={"full"}
-                        onClick={() => handlePayNow("full")}
-                      />
+                      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-2 pb-4 z-[100] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] md:static md:bg-transparent md:px-0 md:pt-0 md:pb-0 md:z-auto md:shadow-none">
+                        <PaymentButton
+                          amount={calculateFilteredTotal()}
+                          isLoading={paymentLoading}
+                          paymentType={"full"}
+                          onClick={() => handlePayNow("full")}
+                        />
+                      </div>
                     )}
 
                     {/* WhatsApp Button */}

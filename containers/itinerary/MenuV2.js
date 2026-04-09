@@ -585,7 +585,7 @@ const setActiveTab = (tab) => {
   const { onSendMessage } = props;
 
 const handleConfirmItinerary = (details) => {
-  const message = `Yes confirm the itinerary. Here are my details:
+  const message = `Yes, I confirm the itinerary! Here are my details:
 Start Date: ${details.startDate}
 Pax: ${details.adults} Adults, ${details.children} Children, ${details.infants} Infants
 Start Location: ${details.startLocation}`;

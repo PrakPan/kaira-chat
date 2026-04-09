@@ -162,6 +162,11 @@ const ItineraryCity = (props) => {
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
 
+  // Compute how many days precede this city so CityDay can show a continuous day index
+  const dayOffset = (itineraryDaybyDay?.cities || [])
+    .slice(0, props.index)
+    .reduce((sum, c) => sum + (c.day_by_day?.length || c.duration || 0), 0);
+
   const [images, setImages] = useState(null);
 
   const {
@@ -307,6 +312,13 @@ const ItineraryCity = (props) => {
     }
   }, []);
 
+  // Close activity drawer when URL back-navigation removes the drawer query
+  useEffect(() => {
+    if (showActivityDrawer && drawer !== "activity") {
+      setShowActivityDrawer(false);
+    }
+  }, [drawer]);
+
   const handleDeleteTaxi = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
@@ -385,9 +397,16 @@ const ItineraryCity = (props) => {
           RIGHT: [+ Activity] [+ Taxi] — always aligned to city name baseline
         */}
         <div className="flex items-center justify-between gap-3">
-          <div className="md:text-[18px] text-[16px] font-semibold leading-snug truncate min-w-0">
-            {props?.city?.city?.name}
-            {props?.city?.duration === 0 ? " (Transit City)" : ""}
+          <div className="md:text-[18px] text-[16px] font-semibold leading-snug min-w-0 flex items-center gap-1 overflow-hidden">
+            <span className="truncate">{props?.city?.city?.name}</span>
+            {props?.city?.duration === 0 ? (
+              <span className="shrink-0"> (Transit City)</span>
+            ) : props?.city?.duration > 0 ? (
+              <>
+                <span className="max-ph:hidden md:inline shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration} {props?.city?.duration > 1 ? "Nights" : "Night"}</span>
+                <span className="md:hidden shrink-0 md:text-[18px] text-[16px] font-semibold leading-snug"> - {props?.city?.duration}N</span>
+              </>
+            ) : null}
           </div>
 
           {!(itineraryDaybyDay.status == "Draft") && (
@@ -485,16 +504,6 @@ const ItineraryCity = (props) => {
                       {hotel?.name}
                     </span>
 
-                    <span className="text-[#6B7280] shrink-0">•</span>
-
-                    {/* Duration — never wraps */}
-                    <span className="shrink-0 whitespace-nowrap">
-                      {/* {multiHotelDuration + 1}{" "} */}
-                      {/* {multiHotelDuration + 1 > 1 ? "Days" : "Day"},{" "} */}
-                      {multiHotelDuration}{" "}
-                      {multiHotelDuration > 1 ? "Nights" : "Night"}
-                    </span>
-
                     {/* Rating + star */}
                     {hotel?.rating && hotel?.rating !== 0 ? (
                       <>
@@ -561,6 +570,7 @@ const ItineraryCity = (props) => {
           <CityDaybyDay
             mercuryItinerary={props?.mercuryItinerary}
             city={props.city}
+            dayOffset={dayOffset}
             setItinerary={props?.setItinerary}
             setShowLoginModal={props?.setShowLoginModal}
             activityBookings={props?.activityBookings}
@@ -676,6 +686,10 @@ const ItineraryCity = (props) => {
           cityName={props?.city?.city?.name}
           cityID={props?.city?.city?.id}
           date={props?.city?.day_by_day?.[0]?.date}
+          start_date={props?.city?.start_date || props?.city?.day_by_day?.[0]?.date}
+          duration={props?.city?.duration}
+          itinerary_city_id={props?.city?.id}
+          mercuryItinerary={props?.mercuryItinerary}
           itinerary_id={router?.query?.id}
           day_slab_index={0}
           getPaymentHandler={props?.getPaymentHandler}
@@ -693,6 +707,8 @@ const ItineraryCity = (props) => {
             mercury
             isMercury
             showDrawer={true}
+            drawerType="multicity"
+            booking_type="multicity"
             origin_itinerary_city_id={props?.city?.id}
             destination_itinerary_city_id={props?.city?.id}
             originCityId={props?.city?.city?.id}

@@ -2770,7 +2770,7 @@ export const ActionPanel = (props) => {
 >
   {editDestination ? "Cancel" : "Back"}
 </button> */}
-     {destinationChanges ? <div className="z-20 fixed w-[47.5%] bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
+     {destinationChanges ? <div className="z-20 fixed w-[98%] md:w-[47.5%] max-ph:bottom-0 bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
   <Button
     fontSize="1rem"
     padding="0.5rem 2rem"
