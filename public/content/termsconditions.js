@@ -1,75 +1,92 @@
 const content = [
   {
     subheading: "General Terms & Conditions",
-
     content: [
       {
-        text: "Prices mentioned in the itineraries are inclusive of selected bookings - transportation, accommodations & stays as mentioned in the respective sections in the itinerary.",
+        text: "Prices Mentioned In The Itineraries Are Inclusive Of Selected Bookings — Transportation, Accommodations & Stays as mentioned in the respective sections. Anything not specifically mentioned is excluded.",
       },
       {
-        text: " TTW will offer a highly tailor-made travel plan, all bookings as required, a price-match guarantee for all bookings, and 24/7 live support.",
+        text: "In-case of unavailability due to any reason, The Tarzan Way will offer alternate Similar Activities/Transfers.",
       },
       {
-        text: "There might be some changes in case the weather conditions are rough, and we try our best to find similar activities/transfers in such cases.",
+        text: "The Tarzan Way Is Not Liable For Any Mishaps At The Accommodation, Transportation or Activities, Though Will Be Providing Live Customer Support For the Same.",
       },
       {
-        text: "The Tarzan Way is not liable for any mishaps at the accommodation or transportation though will be providing live customer support for the same.",
+        text: "Any Cost Or Cancellation Charge Arising Out Of Unforeseen Circumstances Is Not Included.",
       },
       {
-        text: "Any cost or cancellation charge arising out of unforeseen circumstances is not included.",
+        text: "Travellers Are Requested To Take Care Of Their Belongings And TTW Is Not Liable For The Loss Or Theft Of The Belongings.",
       },
       {
-        text: "Travellers are requested to take care of their belongings and TTW is not liable for the loss or theft of the belongings.",
+        text: "Early check in is subject to hotel policies and may be chargeable.",
       },
       {
-        text: "Note that the paid amount is only refundable according to the cancellation policy as mentioned below.",
+        text: "Hotels may require a refundable security deposit.",
       },
       {
-        text: "To ensure the best experience possible, we offer a 24/7 live concierge and support service.",
+        text: "In-case city tax is applicable, it shall be payable at the time of check in as per applicable laws.",
+      },
+      {
+        text: "Charges for seat selection, meals and excess baggage shall be applicable as per airline policy.",
+      },
+      {
+        text: "Visa Disclaimer: The Tarzan Way acts solely as an intermediary for your visa application submissions. The grant or refusal of the visa is at the discretion of the respective Embassy. We are neither liable nor responsible for any delays in processing, granting, or rejection of visa applications. Additionally, embassies may request extra documents, supporting materials, or additional fees at any time, for which The Tarzan Way is not responsible. We must comply with any new regulations or requirements to process visa applications for specific countries.",
       },
     ],
   },
   {
     subheading: "Bookings & Cancellations",
-
     content: [
-      {
-        text: "50% of the payments are expected within 2 days of receiving the invoice.",
-      },
-      {
-        text: "Remaining payment is expected 5 days before the start of the experience.",
-      },
       {
         subheading: "Cancellation fees -",
         content: [
           {
-            text: "0% of the total experience fees if canceled 10 days before the experience.",
+            text: "Cancellation for flights will be as per airline policy.",
           },
           {
-            text: "25% of the total experience fees is canceled 7 days before the experience.",
+            text: "For the land package, the following cancellation policy shall apply unless stated otherwise:",
           },
           {
-            text: "50% of the total experience fees 3 days before the experience.",
+            text: "0% of the total experience fees if canceled 45 days before the experience.",
           },
           {
-            text: "100% of the total experience fees if canceled 1 day before the experience.",
+            text: "25% of the total experience fees if canceled 30 days before the experience.",
+          },
+          {
+            text: "50% of the total experience fees if canceled 15 days before the experience.",
+          },
+          {
+            text: "100% of the total experience fees if canceled 10 days before the experience.",
           },
         ],
       },
+    ],
+  },
+  {
+    subheading: "Force Majeure",
+    content: [
       {
-        text: "Please note that if there's a lockdown, clients will receive a refund apart from the advances given to the hotels.",
+        text: "Neither The Tarzan Way nor its service partners shall be held liable for any failure, delay, interruption, or cancellation of travel services caused by events beyond reasonable control, including but not limited to: natural disasters such as floods, earthquakes, severe weather, or other environmental catastrophes; war, armed conflict, terrorism, civil unrest, riots, or political instability; government actions, regulatory changes, travel bans, border closures, or sanctions; pandemics, epidemics, public health emergencies, or quarantine requirements; airline groundings, air traffic disruptions, transport strikes, or infrastructure failures; or any unforeseen event that could not be prevented with reasonable care.",
+      },
+      {
+        text: "In case of a Force Majeure event, The Tarzan Way will make all reasonable efforts to inform end users at the earliest about the situation and its impact, provide alternative arrangements, rescheduling, or service modifications where possible, and facilitate refunds (if any) from third-party suppliers such as airlines, hotels, or activity providers, as per their individual policies.",
+      },
+      {
+        text: "Refunds in such cases are strictly subject to the respective supplier's Force Majeure and cancellation policies and not The Tarzan Way's standard policy.",
+      },
+      {
+        text: "The Tarzan Way's liability in Force Majeure situations is limited to the amount recovered from third-party suppliers on behalf of the customer.",
+      },
+      {
+        text: "No additional compensation shall be payable by The Tarzan Way under such circumstances.",
       },
     ],
   },
   {
     subheading: "Flight Booking Terms",
-
     content: [
       {
         text: "Check-in shall be as per the airline standards, ideally 2 hours prior for domestic flights.",
-      },
-      {
-        text: "All travellers are expected to have COVID-19 RT-PCR test 48 hours prior to the travel dates.",
       },
       {
         text: "Booking & Cancellation Policy completely as per the policies of different airlines booked.",
@@ -81,9 +98,7 @@ const content = [
   },
   {
     subheading: "Payment Terms",
-
     content: [
-
       {
         subheading: 'All amounts are payable to "TARZAN WAY TRAVELS PVT LTD".',
         content: [
@@ -102,11 +117,12 @@ const content = [
       },
       {
         text: "Paid amount is non-refundable.",
-        },
-        {
-          text : "We wish you have an amazing journey and we're glad that you put your faith in The Tarzan Way."
-      }
-      ],
+      },
+      {
+        text: "We wish you have an amazing journey and we're glad that you put your faith in The Tarzan Way.",
+      },
+    ],
   },
 ];
+
 export default content;
