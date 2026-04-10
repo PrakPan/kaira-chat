@@ -2037,6 +2037,13 @@ const NewMultiModeContainer = ({
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
+
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState({});
+  const [loadingMore, setLoadingMore] = useState({});
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState({});
+  const ALL_ABOARD_LIMIT = 5;
+
   const { trackTransferBookingAdd } = useAnalytics();
   const { intercity } = useSelector(
     (state) => state.TransferBookings,
@@ -2396,7 +2403,13 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         number_of_infants: paxData.infants,
       };
 
-      const response = await loadOtherTransfers.post(`/search/`, requestBody, {
+      // Add limit & offset for Train mode (AllAboard source)
+      let searchUrl = `/search/`;
+      if (option?.mode === "Train") {
+        searchUrl += `?limit=${ALL_ABOARD_LIMIT}&offset=0`;
+      }
+
+      const response = await loadOtherTransfers.post(searchUrl, requestBody, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -2418,6 +2431,24 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
           delete newErrors[transferKey];
           return newErrors;
         });
+
+        // Track AllAboard pagination state
+        if (
+          option?.mode === "Train" &&
+          data.data.booking_source === "AllAboard"
+        ) {
+          setAllAboardOffset((prev) => ({ ...prev, [transferKey]: 0 }));
+          const resultCount = data.data.results?.length || 0;
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: resultCount >= ALL_ABOARD_LIMIT,
+          }));
+        } else {
+          setHasMoreAllAboard((prev) => ({
+            ...prev,
+            [transferKey]: false,
+          }));
+        }
       }
     } catch (error) {
       setTransferErrors((prev) => ({
@@ -2431,6 +2462,67 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       console.error("Error loading transfers:", error);
     } finally {
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+    }
+  };
+
+  // Load more AllAboard results for Train mode (multi-mode container)
+  const loadMoreAllAboardResults = async (option, paxData, departureDateTime) => {
+    const transferKey = `${option.id}-${currentStep}`;
+    if (loadingMore[transferKey]) return;
+
+    const currentOffset = allAboardOffset[transferKey] || 0;
+    const newOffset = currentOffset + ALL_ABOARD_LIMIT;
+    setLoadingMore((prev) => ({ ...prev, [transferKey]: true }));
+
+    try {
+      const requestBody = {
+        edge_id: option?.id,
+        start_datetime: departureDateTime,
+        number_of_adults: paxData.adults,
+        number_of_children: paxData.children,
+        number_of_infants: paxData.infants,
+      };
+
+      const searchUrl = `/search/?limit=${ALL_ABOARD_LIMIT}&offset=${newOffset}`;
+
+      const response = await loadOtherTransfers.post(searchUrl, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = response.data;
+
+      if (data.success && data.data) {
+        const newResults = data.data.results || [];
+
+        // Append new results to existing dynamic transfer data
+        setDynamicTransferData((prev) => {
+          const existing = prev[transferKey];
+          if (!existing) return prev;
+          return {
+            ...prev,
+            [transferKey]: {
+              ...existing,
+              results: [...(existing.results || []), ...newResults],
+            },
+          };
+        });
+
+        setAllAboardOffset((prev) => ({ ...prev, [transferKey]: newOffset }));
+        setHasMoreAllAboard((prev) => ({
+          ...prev,
+          [transferKey]: newResults.length >= ALL_ABOARD_LIMIT,
+        }));
+      } else {
+        setHasMoreAllAboard((prev) => ({ ...prev, [transferKey]: false }));
+      }
+    } catch (error) {
+      console.error("Error loading more AllAboard results:", error);
+      setHasMoreAllAboard((prev) => ({ ...prev, [transferKey]: false }));
+    } finally {
+      setLoadingMore((prev) => ({ ...prev, [transferKey]: false }));
     }
   };
 
@@ -3435,7 +3527,7 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                               currentTransferData.results.length > 0;
 
                             if (hasOmioResults) {
-  return currentTransferData.results.map(
+  const omioRendered = currentTransferData.results.flatMap(
     (result, resultIndex) => {
       const resultPrices = result.prices || [];
       return resultPrices.map(
@@ -3830,6 +3922,48 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       );
     },
   );
+
+  // AllAboard "Load More" button for Train mode
+  const isAllAboard = currentTransferData.booking_source === "AllAboard";
+  if (isAllAboard && hasMoreAllAboard[transferKey]) {
+    omioRendered.push(
+      <div key="load-more-allaboard" className="flex justify-center mt-4 mb-2">
+        <button
+          onClick={() => {
+            const paxData = {
+              adults: pax?.adults || 1,
+              children: pax?.children || 0,
+              infants: pax?.infants || 0,
+            };
+            const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
+            loadMoreAllAboardResults(
+              currentTransferData,
+              paxData,
+              departureDateTime,
+            );
+          }}
+          disabled={loadingMore[transferKey]}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#07213A] text-white text-sm font-medium rounded-full hover:bg-[#07213A]/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loadingMore[transferKey] ? (
+            <>
+              <PulseLoader size={8} speedMultiplier={0.6} color="#ffffff" />
+              {/* <span>Loading...</span> */}
+            </>
+          ) : (
+            <>
+              <span>Load More Trains</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  return omioRendered;
 }
 
                             return currentTransferData.prices.map(
@@ -4933,6 +5067,12 @@ const OtherTransfer = ({
   const [loadingRequestKey, setLoadingRequestKey] = useState(null);
   const abortControllerRef = useRef(null);
 
+  // AllAboard pagination state for Train mode
+  const [allAboardOffset, setAllAboardOffset] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
+  const ALL_ABOARD_LIMIT = 5;
+
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -5080,8 +5220,14 @@ const toggleTransferDetails = (priceOptionId) => {
           number_of_infants: paxData.infants,
         };
 
+        // Build query params - add limit & offset for AllAboard Train results
+        let searchUrl = `/search/?currency=${currency?.currency || "INR"}`;
+        if (transferData.mode === "Train") {
+          searchUrl += `&limit=${ALL_ABOARD_LIMIT}&offset=0`;
+        }
+
         const response = await loadOtherTransfers.post(
-          `/search/?currency=${currency?.currency || "INR"}`,
+          searchUrl,
           requestBody,
           {
             headers: {
@@ -5102,6 +5248,19 @@ const toggleTransferDetails = (priceOptionId) => {
           }));
           setOtherTransfer(data.data);
           setError(null);
+
+          // Track AllAboard pagination state
+          if (
+            transferData.mode === "Train" &&
+            data.data.booking_source === "AllAboard"
+          ) {
+            setAllAboardOffset(0);
+            // If we got exactly ALL_ABOARD_LIMIT results, there may be more
+            const resultCount = data.data.results?.length || 0;
+            setHasMoreAllAboard(resultCount >= ALL_ABOARD_LIMIT);
+          } else {
+            setHasMoreAllAboard(false);
+          }
         } else {
           const errorMessage =
             data?.errors?.[0]?.message?.[0] ||
@@ -5140,6 +5299,75 @@ const toggleTransferDetails = (priceOptionId) => {
       }
     },
     [token, currentStep],
+  );
+
+  // Load more AllAboard results (Train mode pagination)
+  const loadMoreAllAboardResults = useCallback(
+    async (transferData, paxData, departureDateTime) => {
+      if (!transferData?.id || loadingMore) return;
+
+      const newOffset = allAboardOffset + ALL_ABOARD_LIMIT;
+      setLoadingMore(true);
+
+      try {
+        const requestBody = {
+          edge_id: transferData.id,
+          start_datetime: departureDateTime,
+          number_of_adults: paxData.adults,
+          number_of_children: paxData.children,
+          number_of_infants: paxData.infants,
+        };
+
+        const searchUrl = `/search/?currency=${currency?.currency || "INR"}&limit=${ALL_ABOARD_LIMIT}&offset=${newOffset}`;
+
+        const response = await loadOtherTransfers.post(searchUrl, requestBody, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = response.data;
+
+        if (data.success && data.data) {
+          const newResults = data.data.results || [];
+
+          // Append new results to existing otherTransfer
+          setOtherTransfer((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              results: [...(prev.results || []), ...newResults],
+            };
+          });
+
+          // Also update dynamicTransferData
+          const transferKey = `${transferData.id}-${currentStep}`;
+          setDynamicTransferData((prev) => {
+            const existing = prev[transferKey];
+            if (!existing) return prev;
+            return {
+              ...prev,
+              [transferKey]: {
+                ...existing,
+                results: [...(existing.results || []), ...newResults],
+              },
+            };
+          });
+
+          setAllAboardOffset(newOffset);
+          setHasMoreAllAboard(newResults.length >= ALL_ABOARD_LIMIT);
+        } else {
+          setHasMoreAllAboard(false);
+        }
+      } catch (error) {
+        console.error("Error loading more AllAboard results:", error);
+        setHasMoreAllAboard(false);
+      } finally {
+        setLoadingMore(false);
+      }
+    },
+    [token, currentStep, allAboardOffset, loadingMore, currency],
   );
 
   useEffect(() => {
@@ -6010,7 +6238,7 @@ const toggleTransferDetails = (priceOptionId) => {
 
       if (hasOmioResults) {
   // ─── OMIO RESULTS RENDERING ───
-  return otherTransfer.results.map((result, resultIndex) => {
+  const omioRendered = otherTransfer.results.flatMap((result, resultIndex) => {
     const resultPrices = result.prices || [];
     return resultPrices.map((priceOption, priceIndex) => {
       const price = priceOption.price || 0;
@@ -6348,6 +6576,48 @@ const toggleTransferDetails = (priceOptionId) => {
       );
     });
   });
+
+  // AllAboard "Load More" button for Train mode
+  const isAllAboard = otherTransfer.booking_source === "AllAboard";
+  if (isAllAboard && hasMoreAllAboard) {
+    omioRendered.push(
+      <div key="load-more-allaboard" className="flex justify-center mt-4 mb-2">
+        <button
+          onClick={() => {
+            const paxData = {
+              adults: pax?.adults || 1,
+              children: pax?.children || 0,
+              infants: pax?.infants || 0,
+            };
+            const departureDateTime = `${departureDate}T${departureTime || "00:00"}:00`;
+            loadMoreAllAboardResults(
+              otherTransfer,
+              paxData,
+              departureDateTime,
+            );
+          }}
+          disabled={loadingMore}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#07213A] text-white text-sm font-medium rounded-full hover:bg-[#07213A]/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loadingMore ? (
+            <>
+              <PulseLoader size={8} speedMultiplier={0.6} color="#ffffff" />
+              {/* <span>Loading...</span> */}
+            </>
+          ) : (
+            <>
+              <span>Load More Trains</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </>
+          )}
+        </button>
+      </div>
+    );
+  }
+
+  return omioRendered;
 }
 
           // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───
