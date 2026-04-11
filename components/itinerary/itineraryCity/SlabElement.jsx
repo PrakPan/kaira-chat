@@ -242,7 +242,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
         pathname: `/itinerary/${router.query.id}`,
         query: {
           drawer: "showPoiDetail",
-          poi_id: poi?.booking?.id || poi?.poi,
+          poi_id: poi?.booking?.id || poi?.poi || poi?.id,
           type: type,
           dayIndex: props?.dayIndex,
         },
@@ -391,7 +391,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
             onClick={() =>
               handleActivity(
                 props?.element,
-                props?.element?.poi != "undefined"
+                props?.element?.poi != "undefined"  || props?.element?.element_type === "poi"
                   ? "poi"
                   : props?.element?.element_type
               )
@@ -415,7 +415,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.poi != null ? "poi" : "activity"
+                  props?.element?.poi != null || props?.element?.element_type == "poi"? "poi" : "activity"
                 )
               }
               className={`${isPageWide ? "Body2M_14" : "Body3M_12"}`}
@@ -587,7 +587,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
                 e.stopPropagation();
                 handleActivity(
                   props?.element,
-                  props?.element?.poi != null ? "poi" : "activity"
+                  props?.element?.poi != null || props?.element?.element_type === "poi" ? "poi" : "activity"
                 );
               }}
               className="IndigoOutlinedButton !w-[78px] Body2M_14"
@@ -602,7 +602,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
         String(poi_id) ===
           String(
             props?.element?.booking?.id ||
-              props.element?.poi ||
+              props.element?.poi || props?.element?.id ||
               props.element?.activity
           ) && (
           <POIDetailsDrawer
