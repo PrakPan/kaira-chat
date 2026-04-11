@@ -47,7 +47,7 @@ import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
 import NotificationPopup from "../ui/NotificationPopup";
 
-type MobilePanel = "map" | "chat";
+type MobilePanel = "map" | "chat" | "itinerary" ;
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
 
 function transformDraftToItinerary(draft: any) {
@@ -260,6 +260,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const itineraryReduxName = itineraryRedux?.name;
+  const isV1 = useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
+  const statusDisplayText = useSelector((state: any) => state.ItineraryStatus?.display_text);
+  const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
@@ -330,6 +333,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
         dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
         dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
+        dispatch(setItineraryStatus("display_text", status.display_text || null));
+        dispatch(setItineraryStatus("notes", status.notes || []));
+        dispatch(setItineraryStatus("version", statusRes.data?.version || null));
 
         const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
           (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
@@ -1179,7 +1185,7 @@ Start Location: ${details.startLocation}`;
               isDraft={isDraft}
               cart={cart}
               pricingStatus={pricingStatus}
-              loaderDisplayText={loaderDisplayText}
+              loaderDisplayText={statusDisplayText || loaderDisplayText}
               currency={currency}
               countCartItems={countCartItems}
               isHovered={isHovered}
@@ -1187,12 +1193,28 @@ Start Location: ${details.startLocation}`;
               popupStyle={popupStyle}
               onConfirm={() => setShowConfirmModal(true)}
               onViewCart={openPaymentDrawer}
+              notes={statusNotes}
+              onGetInTouch={() => {
+                if (!activeItineraryId) return;
+                const token = localStorage.getItem("access_token");
+                axios
+                  .get(`${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  })
+                  .then(() => alert("Request received. Our team will get in touch with you shortly!"))
+                  .catch(() => alert("Something went wrong. Please try again."));
+              }}
             />
           </div>
         ) : null}
       </div>
     </div>
   );
+
+  // v1 itineraries — render only the itinerary component, no chatbot/sidebar/toggle
+  if (isV1) {
+    return <ItineraryContainer id={activeItineraryId} />;
+  }
 
   return (
     <main
@@ -1297,13 +1319,15 @@ Start Location: ${details.startLocation}`;
                     : "opacity-0 translate-y-2 pointer-events-none"
                 }`}
               >
-                <ChatKitPanel
-                  key={`${botMode}-${itineraryId}-${chatKey}`}
-                  {...sharedChatKitProps}
-                  initialPrompt={initialPrompt}
-                  onInitialPromptConsumed={handleInitialPromptConsumed}
-                  onSendReady={handleSendMessageReady}
-                />
+                {!isMobile && (
+                  <ChatKitPanel
+                    key={`${botMode}-${itineraryId}-${chatKey}`}
+                    {...sharedChatKitProps}
+                    initialPrompt={initialPrompt}
+                    onInitialPromptConsumed={handleInitialPromptConsumed}
+                    onSendReady={handleSendMessageReady}
+                  />
+                )}
               </div>
             </>
           )}
@@ -1374,13 +1398,15 @@ Start Location: ${details.startLocation}`;
                     zIndex: isChatActive ? 1 : 0,
                   }}
                 >
-                  <ChatKitPanel
-                    key={`${botMode}-${chatKey}`}
-                    {...sharedChatKitProps}
-                    initialPrompt={initialPrompt}
-                    onInitialPromptConsumed={handleInitialPromptConsumed}
-                    onSendReady={handleSendMessageReady}
-                  />
+                  {isMobile && (
+                    <ChatKitPanel
+                      key={`${botMode}-${chatKey}`}
+                      {...sharedChatKitProps}
+                      initialPrompt={initialPrompt}
+                      onInitialPromptConsumed={handleInitialPromptConsumed}
+                      onSendReady={handleSendMessageReady}
+                    />
+                  )}
                 </div>
               </div>
             )
@@ -1489,6 +1515,8 @@ interface BottomCTABarProps {
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
+  onGetInTouch?: () => void;
+  notes?: any[];
 }
 
 const BottomCTABar = React.memo(
@@ -1507,6 +1535,8 @@ const BottomCTABar = React.memo(
     popupStyle,
     onConfirm,
     onViewCart,
+    onGetInTouch,
+    notes,
   }: BottomCTABarProps) => {
     if (!["itinerary", "bookings"].includes(viewMode) || (!activeItineraryId && !showItineraryShimmer))
       return null;
@@ -1525,6 +1555,21 @@ const BottomCTABar = React.memo(
     }
 
     const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
+    const isPricingFailedWithEmptyNotes = pricingStatus === "FAILURE" && (!notes || notes.length === 0);
+
+    if (isPricingFailedWithEmptyNotes) {
+      return (
+        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+          <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p>
+          <button
+            onClick={onGetInTouch}
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+          >
+            Get in touch!
+          </button>
+        </div>
+      );
+    }
 
     if (!hasFreshPricing) {
       return (
@@ -1602,7 +1647,7 @@ const BottomCTABar = React.memo(
 BottomCTABar.displayName = "BottomCTABar";
 
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
-type MobileTab = "chat" | "map" | "itinerary" | "routes" | "bookings";
+type MobileTab = "chat" | "map" | "routes" | "itinerary"  | "bookings";
 
 const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
 
@@ -1849,7 +1894,7 @@ const MobileLayout = React.memo(({
 
   // Sync mobilePanel (legacy) so BotApp state stays consistent
   React.useEffect(() => {
-    setMobilePanel(activeTab === "chat" ? "chat" : "map");
+    setMobilePanel(activeTab === "chat" ? "chat" : "itinerary");
   }, [activeTab, setMobilePanel]);
 
   // Clear unread flag when user switches to chat tab
@@ -1897,8 +1942,9 @@ const MobileLayout = React.memo(({
   // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
   const tabs: { key: MobileTab; label: string; show: boolean }[] = [
     { key: "map", label: "Map", show: hasItineraryActivity },
+     { key: "routes", label: "Route", show: isComplete },
     { key: "itinerary", label: "Itinerary", show: hasItineraryActivity },
-    { key: "routes", label: "Route", show: isComplete },
+   
     { key: "bookings", label: "Bookings", show: isComplete },
   ];
   const visibleTabs = tabs.filter(t => t.show);
@@ -1945,7 +1991,7 @@ const MobileLayout = React.memo(({
             ))}
           </div>
           {/* Settings icon — only when itinerary is fully created */}
-          {isComplete && onSettingsClick && (
+          {/* {isComplete && onSettingsClick && (
             <button
               onClick={onSettingsClick}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -1956,7 +2002,7 @@ const MobileLayout = React.memo(({
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
               </svg>
             </button>
-          )}
+          )} */}
         </div>
       )}
 

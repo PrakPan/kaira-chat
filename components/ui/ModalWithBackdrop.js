@@ -77,6 +77,7 @@ const ModalWithBackdrop = ({
               top: paddingY,
               right: paddingY,
             }}
+             className="p-2 mt-1"
           >
             <RxCross2
               style={{
@@ -84,6 +85,7 @@ const ModalWithBackdrop = ({
                 cursor: "pointer",
                 zIndex: 999,
               }}
+             
             />
           </button>
         )}
