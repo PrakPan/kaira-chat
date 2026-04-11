@@ -436,9 +436,9 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
                   />
                 ) : null}
                 <div className="text-[#6E757A] Body3R_12">
-                  {props?.element?.poi ? "Self Exploration" : ""}
+                  {props?.element?.poi || props?.element?.element_type === "poi" ? "Self Exploration" : ""}
                 </div>
-                {!props?.element?.poi ? (
+                {(props?.element?.element_type === "activity") && !(props?.element?.poi) ? (
                   <div className="w-max items-center bg-[#F5FFF7] text-[#10A317] text-[12px] rounded-sm">
                     Activity
                   </div>
