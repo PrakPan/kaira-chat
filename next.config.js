@@ -18,6 +18,10 @@ const nextConfig = {
         hostname: "d31aoa0ehgvjdi.cloudfront.net",
       },
       {
+        protocol: "http",
+        hostname: "d31aoa0ehgvjdi.cloudfront.net",
+      },
+      {
         protocol: "https",
         hostname: "q-xx.bstatic.com",
       },

@@ -4973,6 +4973,11 @@ const OtherTransfer = ({
 
   const [expandedTransfers, setExpandedTransfers] = useState({});
 
+  // Pagination state for AllAboard results
+  const [allAboardOffset, setAllAboardOffset] = useState(0);
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
 const toggleTransferDetails = (priceOptionId) => {
   setExpandedTransfers(prev => ({
     ...prev,
@@ -4992,6 +4997,9 @@ const toggleTransferDetails = (priceOptionId) => {
         setIsResultSelected(false);
         setLocalSelectedData([]);
         setLoadingRequestKey(null);
+        setAllAboardOffset(0);
+        setHasMoreAllAboard(false);
+        setLoadingMore(false);
       }
     }
   }, [selectedResult?.transfer?.id, otherTransfer?.id]);
@@ -5044,31 +5052,39 @@ const toggleTransferDetails = (priceOptionId) => {
 
   // FIXED: Add request deduplication and abort previous requests
   const loadTransfers = useCallback(
-    async (transferData, paxData, departureDateTime) => {
+    async (transferData, paxData, departureDateTime, { isLoadMore = false, currentOffset = 0 } = {}) => {
       if (!transferData?.id) return;
 
       const transferKey = `${transferData.id}-${currentStep}`;
       const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(
         paxData,
-      )}`;
+      )}${isLoadMore ? `-offset-${currentOffset}` : ''}`;
 
-      // Prevent duplicate requests
-      if (loadingRequestKey === requestKey) {
+      // Prevent duplicate requests (skip for load more)
+      if (!isLoadMore && loadingRequestKey === requestKey) {
         return;
       }
 
-      // Abort previous request if still pending
-      if (abortControllerRef.current) {
+      // Abort previous request if still pending (not for load more)
+      if (!isLoadMore && abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
 
       // Create new abort controller
       abortControllerRef.current = new AbortController();
 
-      setOtherTransfer(null);
+      if (!isLoadMore) {
+        setOtherTransfer(null);
+        setAllAboardOffset(0);
+        setHasMoreAllAboard(false);
+      } else {
+        setLoadingMore(true);
+      }
 
-      setLoadingRequestKey(requestKey);
-      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+      if (!isLoadMore) {
+        setLoadingRequestKey(requestKey);
+        setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+      }
       setError(null);
 
       try {
@@ -5079,6 +5095,12 @@ const toggleTransferDetails = (priceOptionId) => {
           number_of_children: paxData.children,
           number_of_infants: paxData.infants,
         };
+
+        // Add limit/offset for pagination
+        if (isLoadMore || currentOffset > 0) {
+          requestBody.limit = 5;
+          requestBody.offset = currentOffset;
+        }
 
         const response = await loadOtherTransfers.post(
           `/search/?currency=${currency?.currency || "INR"}`,
@@ -5096,24 +5118,63 @@ const toggleTransferDetails = (priceOptionId) => {
 
         if (data.success && data.data) {
           setTraceId(data.trace_id);
-          setDynamicTransferData((prev) => ({
-            ...prev,
-            [transferKey]: data.data,
-          }));
-          setOtherTransfer(data.data);
+
+          if (isLoadMore && otherTransfer) {
+            // Append new results to existing ones
+            const newResults = data.data.results || [];
+            const isAllAboardSource = data.data.booking_source === "AllAboard";
+
+            const mergedData = {
+              ...otherTransfer,
+              results: [...(otherTransfer.results || []), ...newResults],
+            };
+
+            // Hide load more if: not AllAboard source, or results < 5
+            const shouldShowMore = isAllAboardSource && newResults.length === 5;
+            setHasMoreAllAboard(shouldShowMore);
+            setAllAboardOffset(currentOffset + 5);
+
+            setDynamicTransferData((prev) => ({
+              ...prev,
+              [transferKey]: mergedData,
+            }));
+            setOtherTransfer(mergedData);
+          } else {
+            // Initial load - check if booking_source is AllAboard
+            const results = data.data.results || [];
+            const isAllAboardSource = data.data.booking_source === "AllAboard";
+
+            // Show load more only if source is AllAboard and results count >= 5
+            const shouldShowMore = isAllAboardSource && results.length === 5;
+            setHasMoreAllAboard(shouldShowMore);
+            if (shouldShowMore) {
+              setAllAboardOffset(5);
+            }
+
+            setDynamicTransferData((prev) => ({
+              ...prev,
+              [transferKey]: data.data,
+            }));
+            setOtherTransfer(data.data);
+          }
           setError(null);
         } else {
-          const errorMessage =
-            data?.errors?.[0]?.message?.[0] ||
-            data?.message ||
-            "No transfer options available";
-          setError(errorMessage);
+          if (isLoadMore) {
+            // No more results on load more - just hide the button
+            setHasMoreAllAboard(false);
+          } else {
+            const errorMessage =
+              data?.errors?.[0]?.message?.[0] ||
+              data?.message ||
+              "No transfer options available";
+            setError(errorMessage);
 
-          setDynamicTransferData((prev) => {
-            const newData = { ...prev };
-            delete newData[transferKey];
-            return newData;
-          });
+            setDynamicTransferData((prev) => {
+              const newData = { ...prev };
+              delete newData[transferKey];
+              return newData;
+            });
+          }
         }
       } catch (error) {
         if (error.name === "AbortError") {
@@ -5127,19 +5188,27 @@ const toggleTransferDetails = (priceOptionId) => {
           error?.response?.data?.error ||
           error?.message ||
           "Failed to load transfer options";
-        setError(errorMsg);
 
-        setDynamicTransferData((prev) => {
-          const newData = { ...prev };
-          delete newData[transferKey];
-          return newData;
-        });
+        if (!isLoadMore) {
+          setError(errorMsg);
+          setDynamicTransferData((prev) => {
+            const newData = { ...prev };
+            delete newData[transferKey];
+            return newData;
+          });
+        } else {
+          // On load more error, just hide load more
+          setHasMoreAllAboard(false);
+        }
       } finally {
-        setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
-        setLoadingRequestKey(null);
+        if (!isLoadMore) {
+          setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+          setLoadingRequestKey(null);
+        }
+        setLoadingMore(false);
       }
     },
-    [token, currentStep],
+    [token, currentStep, otherTransfer],
   );
 
   useEffect(() => {
@@ -5764,6 +5833,18 @@ const toggleTransferDetails = (priceOptionId) => {
     setIsProcessingBooking(false);
   };
 
+  const handleLoadMore = () => {
+    if (loadingMore || !otherTransfer || !selectedResult?.transfer) return;
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+    if (!finalDate || !finalTime) return;
+    const departureDateTime = `${finalDate}T${finalTime}:00`;
+    loadTransfers(selectedResult.transfer, pax, departureDateTime, {
+      isLoadMore: true,
+      currentOffset: allAboardOffset,
+    });
+  };
+
   const formatTimeForDisplay = (timeValue) => {
     if (!timeValue) return "";
 
@@ -6010,7 +6091,8 @@ const toggleTransferDetails = (priceOptionId) => {
 
       if (hasOmioResults) {
   // ─── OMIO RESULTS RENDERING ───
-  return otherTransfer.results.map((result, resultIndex) => {
+  return (<>
+  {otherTransfer.results.map((result, resultIndex) => {
     const resultPrices = result.prices || [];
     return resultPrices.map((priceOption, priceIndex) => {
       const price = priceOption.price || 0;
@@ -6347,7 +6429,28 @@ const toggleTransferDetails = (priceOptionId) => {
         </div>
       );
     });
-  });
+  })}
+
+  {/* Load More button for AllAboard pagination */}
+  {hasMoreAllAboard && (
+    <div className="flex justify-center mt-md">
+      <button
+        onClick={handleLoadMore}
+        disabled={loadingMore}
+        className="px-6 py-2 bg-[#07213A] text-white rounded-lg hover:bg-[#0a2942] transition-colors cursor-pointer text-sm font-500 disabled:opacity-50"
+      >
+        {loadingMore ? "Loading..." : "Load More"}
+      </button>
+    </div>
+  )}
+
+  {/* Loading indicator for load more */}
+  {loadingMore && (
+    <div className="flex justify-center items-center py-4">
+      <PulseLoader size={8} speedMultiplier={0.8} color="#3B82F6" />
+    </div>
+  )}
+  </>);
 }
 
           // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───

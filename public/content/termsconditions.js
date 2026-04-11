@@ -109,10 +109,13 @@ const content = [
       {
         subheading: "Account Details",
         content: [
-          { text: "Account Name: Tarzan Way Travels Pvt Ltd." },
-          { text: "Account Number: 0412953581" },
-          { text: "IFSC: KKBK0004600" },
-          { text: "SWIFT Code: KKBKINBB" },
+          { text: "Account Name: TARZAN WAY TRAVELS PRIVATE LIMITED" },
+          { text: "Account Number: 50200107379417" },
+          { text: "IFSC: HDFC0000032" },
+          { text: "Bank Name: HDFC Bank" },
+          { text: "Branch: SAFARDARJANG MARKET" },
+          { text: "Account Type: Current" },
+         
         ],
       },
       {
