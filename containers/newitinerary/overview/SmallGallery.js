@@ -96,7 +96,6 @@ function SmallGallery(props) {
 
     useEffect(() => {
         const newArr = props.images.slice(0, props.maxShow).filter((item) => item != "");
-        console.log('new array is: ', newArr)
         setRenderImages(newArr);
     }, [])
     return (

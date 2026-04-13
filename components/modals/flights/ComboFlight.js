@@ -200,7 +200,7 @@ const ComboFlight = (props) => {
     useAnalytics();
   const { intercity } = useSelector(
     (state) => state.TransferBookings,
-  )?.transferBookings;
+  )?.transferBookings || {};
 
   //for flight search
   const [sourceInput, setSourceInput] = useState({

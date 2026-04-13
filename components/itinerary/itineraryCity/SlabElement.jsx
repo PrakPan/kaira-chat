@@ -781,8 +781,6 @@ const Recommendation = (props) => {
     return <MealRecommendation element={props.element} />;
   }
 
-  console.log("Rendering restaurant recommendation with element:", props.element);
-
   return (
     <>
       <div className="flex gap-3 flex-row justify-between bg-white border-radius-10 p-xs-md border-1">
