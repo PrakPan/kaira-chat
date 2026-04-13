@@ -1060,6 +1060,7 @@ const CityItem = ({
   const dispatch = useDispatch();
   const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -1070,7 +1071,9 @@ const CityItem = ({
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
     router?.query;
 
-  const isDraftMode = fromChat && !router.query.id;
+  // Use Redux ItineraryId as the canonical ID (works on /chat/[sessionId] pages too)
+  const currentItineraryId = router.query.id || reduxItineraryId;
+  const isDraftMode = fromChat && !currentItineraryId;
 
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
@@ -1225,6 +1228,7 @@ useEffect(() => {
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "Intracity",
           bookingId: book?.id,
           transferType: bookingType,
@@ -1244,6 +1248,7 @@ useEffect(() => {
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "addPickupDrop",
           drawerType: drawerType,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -1261,15 +1266,12 @@ useEffect(() => {
 
   const handleAddTransfer = () => {
     if(localStorage.getItem("access_token")){
-    // if( id != customer){
-    //   dispatch(setCloneItineraryDrawer(true));
-    //   return;
-    // }
-    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
+    trackTransferBookingChange(currentItineraryId, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,

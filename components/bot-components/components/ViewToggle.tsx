@@ -81,7 +81,7 @@ const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, setViewMode, hasItine
 
         {/* Routes — only when itinerary is fully complete (not draft/building) */}
         {isComplete &&
-          tabBtn("Routes", "routes", () => setViewMode("routes"))}
+          tabBtn("Route", "routes", () => setViewMode("routes"))}
 
         {/* Itinerary — visible whenever activity is present */}
         {tabBtn("Itinerary", "itinerary", () => setViewMode("itinerary"))}

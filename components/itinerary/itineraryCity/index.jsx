@@ -161,6 +161,8 @@ const ItineraryCity = (props) => {
   const dispatch = useDispatch();
   const { id } = useSelector((state) => state.auth);
   const { customer } = useSelector((state) => state.Itinerary);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
 
   // Compute how many days precede this city so CityDay can show a continuous day index
   const dayOffset = (itineraryDaybyDay?.cities || [])
@@ -257,6 +259,7 @@ const ItineraryCity = (props) => {
       {
         pathname: router.asPath.split("?")[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "showHotelDetail",
           idx: props?.index,
           booking_id: targetHotelId,
@@ -418,6 +421,7 @@ const ItineraryCity = (props) => {
                     {
                       pathname: router.asPath.split("?")[0],
                       query: {
+                        ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "activity",
                         itinerary_city_id: props?.city?.id,
                         city_id: props?.city?.city?.id,
@@ -438,6 +442,7 @@ const ItineraryCity = (props) => {
                     {
                       pathname: router.asPath.split("?")[0],
                       query: {
+                        ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "addCityTaxi",
                         itinerary_city_id: props?.city?.id,
                       },
@@ -539,6 +544,7 @@ const ItineraryCity = (props) => {
                   {
                     pathname: router.asPath.split("?")[0],
                     query: {
+                      ...(currentItineraryId ? { id: currentItineraryId } : {}),
                       drawer: "changeHotelBooking",
                       itinerary_city_id: props?.city?.id,
                       city_id: props?.city?.city?.id,

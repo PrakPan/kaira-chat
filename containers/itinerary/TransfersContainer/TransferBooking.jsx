@@ -87,6 +87,8 @@ const TransferBooking = ({
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
   const {
     trackTransferBookingAdd,
     trackTransferBookingChange,
@@ -107,7 +109,7 @@ const TransferBooking = ({
 
   const handleAddTransfer = () => {
     trackTransferBookingChange(
-      router.query.id,
+      currentItineraryId,
       transferId,
       oCityData?.name || oCityData?.city_name,
       dCityData?.name || dCityData?.city_name
@@ -116,6 +118,7 @@ const TransferBooking = ({
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -131,25 +134,19 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
-    // if( id != customer){
-    //   dispatch(setCloneItineraryDrawer(true));
-    //   return;
-    // }
     trackTransferCardClicked(
-      router.query.id,
+      currentItineraryId,
       book?.id || booking_id,
       "transfer_section",
       oCityData?.name || oCityData?.city_name,
       dCityData?.name || dCityData?.city_name
     );
-    // if(isAirport){
-    //   setAirportBookingId(book?.id)
-    // }
 
     router.push(
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer:
             book?.transfer_type == "sightseeing" ? "SightSeeing" : "Intracity",
           bookingId: book?.id || booking_id,

@@ -86,6 +86,8 @@ const HotelBooking = ({
   const { id } = useSelector(state => state.auth);
   const { customer } = useSelector(state => state.Itinerary)
   const dispatch = useDispatch();
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
 
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -177,6 +179,7 @@ const HotelBooking = ({
       router.push({
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "showHotelDetail",
           idx: index,
           booking_id: booking.id,
@@ -215,6 +218,7 @@ const HotelBooking = ({
       router.push({
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "changeHotelBooking",
           clickType: clickType,
           itineraryCityId: itinerary_city_id,

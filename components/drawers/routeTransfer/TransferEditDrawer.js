@@ -311,31 +311,53 @@ const TransferEditDrawer = (props) => {
     
 
     {
-      mercury || props?.isMercury
+      (booking_type == "multicity" || drawerType == "multicity") && (mercury || props?.isMercury)
         ? (() => {
             const cityId = origin_itinerary_city_id || destination_itinerary_city_id;
-            const multicityUrl = `/${router.query.id || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}`;
+            const multicityUrl = `/${router.query.id || ItineraryId || router.query.sessionId}/?currency=${currency?.currency || "INR"}${cityId ? `&itinerary_city_id=${cityId}` : ""}`;
             return fetchMulticityRoundtrip
               .get(multicityUrl)
               .then((response) => {
+                // Handle API returning success: false
+                if (response?.data?.success === false) {
+                  const errorMsg = response?.data?.errors?.[0]?.message?.[0]
+                    || response?.data?.errors?.[0]?.message
+                    || "No taxi options available for this route.";
+                  setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route.");
+                  setLoadingMulticityTransfers(false);
+                  setLoadingTransfers(false);
+                  return;
+                }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
                 // Categorize by type: "multicity" → multiCitySuggestions, everything else → roundTripSuggestions array
+                // Filter out pickup_drop type suggestions
                 const multicitySuggs = suggestions.filter(s => s.type === "multicity");
-                const otherSuggs = suggestions.filter(s => s.type !== "multicity");
+                const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
                 setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
                 setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
                 setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
                 setLoadingMulticityTransfers(false);
                 setLoadingTransfers(false);
+                // If no suggestions found at all, show a message
+                if (suggestions.length === 0) {
+                  setTransfersError("No taxi options available for this route. Please get in touch with us!");
+                }
               })
               .catch((error) => {
                 setLoadingTransfers(false);
                 setLoadingMulticityTransfers(false);
-                console.error("Error::Fetching Multicity Round Trip");
+                const errorMsg = error?.response?.data?.errors?.[0]?.message?.[0]
+                  || error?.response?.data?.errors?.[0]?.message
+                  || "No taxi options available for this route. Please get in touch with us!";
+                setTransfersError(typeof errorMsg === 'string' ? errorMsg : Array.isArray(errorMsg) ? errorMsg[0] : "No taxi options available for this route. Please get in touch with us!");
+                console.error("Error::Fetching Multicity Round Trip", error);
               });
           })()
-        : null;
+        : (() => {
+            // Not from + Add Taxi — skip multicity API
+            setLoadingMulticityTransfers(false);
+          })();
     }
     {
       booking_type != "multicity" && (mercury || props?.isMercury)
@@ -917,26 +939,6 @@ const TransferEditDrawer = (props) => {
             {currentStep === 0 && (
               <>
                 <div className="w-full flex flex-col items-center ">
-                  <div className="w-full flex flex-row gap-4 whitespace-nowrap overflow-x-auto hide-scrollbar">
-                    {booking_type != "multicity" && (
-                      <RadioButton
-                        name={TRANSFER_TYPES.ONEWAYTRIP.name}
-                        label={TRANSFER_TYPES.ONEWAYTRIP.label}
-                        transferType={transferType}
-                        handleTransferType={handleTransferType}
-                      />
-                    )}
-                    {(booking_type == "multicity" ||
-                      roundTripSuggestions ||
-                      multiCitySuggestions) && (
-                      <RadioButton
-                        name="MULTICITYROUNDTRIP"
-                        label="Multi-City/Round Trip Taxi"
-                        transferType={transferType}
-                        handleTransferType={handleTransferType}
-                      />
-                    )}
-                  </div>
                   <hr className="my-lg w-100" />
                 </div>
               </>
@@ -1457,6 +1459,21 @@ const TransferEditDrawer = (props) => {
                       selectedTripType={selectedTripType}
                       setSelectedTripType={setSelectedTripType}
                     />
+                  </div>
+                )}
+
+                {/* No suggestions available message */}
+                {!multiCitySuggestions && !roundTripSuggestions && !loadingMulticityTransfers && (
+                  <div className="w-full flex flex-col items-center justify-center py-8">
+                    <div className="text-center text-gray-500 text-sm">
+                      {transfersError ? (
+                        <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
+                          {transfersError}
+                        </div>
+                      ) : (
+                        <p>No taxi options available for this route. Please get in touch with us!</p>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
