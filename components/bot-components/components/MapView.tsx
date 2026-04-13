@@ -31,7 +31,7 @@ const MapView: React.FC<MapViewProps> = ({
         transform: revealed ? "scale(1)" : "scale(0.98)",
       }}
     >
-      {isLoadingLocation && <LoadingOverlay />}
+      {isLoadingLocation && !currentRoute?.length && <LoadingOverlay />}
 
       <MyMap
         state={mapState}

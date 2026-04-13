@@ -205,14 +205,16 @@ export default function ActivityDetails(props) {
               </div>
             </div>
 
-           
-            <Pax
-              pax={{
-                ...props?.filterState,
-                childAges: props?.filterState?.childAges || [],
-              }}
-              setPax={handlePaxChange}
-            />
+
+            {!isDraft && (
+              <Pax
+                pax={{
+                  ...props?.filterState,
+                  childAges: props?.filterState?.childAges || [],
+                }}
+                setPax={handlePaxChange}
+              />
+            )}
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
