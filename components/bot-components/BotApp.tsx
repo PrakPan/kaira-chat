@@ -32,7 +32,7 @@ import setItinerary from "../../store/actions/itinerary";
 import setBreif from "../../store/actions/breif";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
-import ChatBot from "../Chatbot/Index";
+// ChatBot removed — only ChatKitPanel is used now
 import ConfirmationModal from "./components/ConfirmationModal";
 import { useSelector } from "react-redux";
 import setCart from "../../store/actions/Cart";
@@ -46,8 +46,10 @@ import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
 import NotificationPopup from "../ui/NotificationPopup";
+import LogInModal from "../userauth/LogInModal";
+import { createPortal } from "react-dom";
 
-type MobilePanel = "map" | "chat";
+type MobilePanel = "map" | "chat" | "itinerary" ;
 type LeftPanelMode = "default" | "itinerary-loading" | "itinerary-ready";
 
 function transformDraftToItinerary(draft: any) {
@@ -165,7 +167,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const [loaderDisplayText, setLoaderDisplayText] = useState<string | null>(null);
   const [isRoutePreparing, setIsRoutePreparing] = useState(false);
 
-  const [mobilePanel, setMobilePanel] = useState<MobilePanel>("chat");
+  const [mobilePanel, setMobilePanel] = useState<MobilePanel>(sessionId ? "itinerary" : "chat");
   const [activeItineraryId, setActiveItineraryId] = useState<string | null>(null);
   const [itineraryPollingEnabled, setItineraryPollingEnabled] = useState(false);
   const initialPromptRef = useRef<string | null>(null);
@@ -260,6 +262,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const itineraryReduxName = itineraryRedux?.name;
+  const isV1 = useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
+  const statusDisplayText = useSelector((state: any) => state.ItineraryStatus?.display_text);
+  const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
   const [showShare, setShowShare] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isHotelsPresent, setIsHotelsPresent] = useState(false);
@@ -330,6 +335,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
         dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
         dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
+        dispatch(setItineraryStatus("display_text", status.display_text || null));
+        dispatch(setItineraryStatus("notes", status.notes || []));
+        dispatch(setItineraryStatus("version", statusRes.data?.version || null));
 
         const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
           (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
@@ -1065,7 +1073,7 @@ Start Location: ${details.startLocation}`;
         flexDirection: "column",
         flex: 1,
         minHeight: 0,
-        overflow: "hidden",
+        overflow: isMobile ? "visible" : "hidden",
       }}
     >
       {/* Header strip */}
@@ -1179,7 +1187,7 @@ Start Location: ${details.startLocation}`;
               isDraft={isDraft}
               cart={cart}
               pricingStatus={pricingStatus}
-              loaderDisplayText={loaderDisplayText}
+              loaderDisplayText={statusDisplayText || loaderDisplayText}
               currency={currency}
               countCartItems={countCartItems}
               isHovered={isHovered}
@@ -1187,12 +1195,28 @@ Start Location: ${details.startLocation}`;
               popupStyle={popupStyle}
               onConfirm={() => setShowConfirmModal(true)}
               onViewCart={openPaymentDrawer}
+              notes={statusNotes}
+              onGetInTouch={() => {
+                if (!activeItineraryId) return;
+                const token = localStorage.getItem("access_token");
+                axios
+                  .get(`${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  })
+                  .then(() => alert("Request received. Our team will get in touch with you shortly!"))
+                  .catch(() => alert("Something went wrong. Please try again."));
+              }}
             />
           </div>
         ) : null}
       </div>
     </div>
   );
+
+  // v1 itineraries — render only the itinerary component, no chatbot/sidebar/toggle
+  if (isV1) {
+    return <ItineraryContainer id={activeItineraryId} />;
+  }
 
   return (
     <main
@@ -1264,49 +1288,40 @@ Start Location: ${details.startLocation}`;
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
+        {/* RIGHT PANEL — always ChatKitPanel */}
         <div
           className="flex flex-col overflow-hidden min-h-0 h-full relative bg-white"
           style={{ width: "50%", minWidth: 0 }}
         >
-          {showChatBot ? (
-            <ChatBot
-              key={chatBotItineraryId}              // stable key — never remounts
-              showAsPopup={false}
-              itineraryId={chatBotItineraryId}
-              initialBotMessage={chatBotInjectedMessageRef.current}
+          <div
+            className={`absolute inset-0 z-10 bg-white ease-in-out ${
+              isChatActive
+                ? "opacity-0 pointer-events-none translate-y-2"
+                : "opacity-100 pointer-events-auto translate-y-0"
+            }`}
+          >
+            <ChatWelcomeScreen
+              onSubmit={handlePromptSelect}
+              onChatStart={() => setIsChatActive(true)}
             />
-          ) : (
-            <>
-              <div
-                className={`absolute inset-0 z-10 bg-white ease-in-out ${
-                  isChatActive
-                    ? "opacity-0 pointer-events-none translate-y-2"
-                    : "opacity-100 pointer-events-auto translate-y-0"
-                }`}
-              >
-                <ChatWelcomeScreen
-                  onSubmit={handlePromptSelect}
-                  onChatStart={() => setIsChatActive(true)}
-                />
-              </div>
-              <div
-                className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
-                  isChatActive
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-2 pointer-events-none"
-                }`}
-              >
-                <ChatKitPanel
-                  key={`${botMode}-${itineraryId}-${chatKey}`}
-                  {...sharedChatKitProps}
-                  initialPrompt={initialPrompt}
-                  onInitialPromptConsumed={handleInitialPromptConsumed}
-                  onSendReady={handleSendMessageReady}
-                />
-              </div>
-            </>
-          )}
+          </div>
+          <div
+            className={`flex-1 overflow-hidden min-h-0 ease-in-out ${
+              isChatActive
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2 pointer-events-none"
+            }`}
+          >
+            {!isMobile && (
+              <ChatKitPanel
+                key={`${botMode}-${itineraryId}-${chatKey}`}
+                {...sharedChatKitProps}
+                initialPrompt={initialPrompt}
+                onInitialPromptConsumed={handleInitialPromptConsumed}
+                onSendReady={handleSendMessageReady}
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -1341,39 +1356,30 @@ Start Location: ${details.startLocation}`;
             />
           }
           chatContent={
-            showChatBot ? (
-              // Once itinerary is fully done, swap ChatKitPanel for the full ChatBot experience
-              <ChatBot
-                key={chatBotItineraryId}
-                showAsPopup={false}
-                itineraryId={chatBotItineraryId}
-                initialBotMessage={chatBotInjectedMessageRef.current}
-                hideDrawer
-              />
-            ) : (
-              // Render both welcome + ChatKitPanel; CSS hides/shows so panel warms up early
-              <div className="relative h-full w-full">
-                <div
-                  className="absolute inset-0 transition-opacity duration-200"
-                  style={{
-                    opacity: isChatActive ? 0 : 1,
-                    pointerEvents: isChatActive ? "none" : "auto",
-                    zIndex: isChatActive ? 0 : 1,
-                  }}
-                >
-                  <ChatWelcomeScreen
-                    onSubmit={handlePromptSelect}
-                    onChatStart={() => setIsChatActive(true)}
-                  />
-                </div>
-                <div
-                  className="absolute inset-0 transition-opacity duration-200"
-                  style={{
-                    opacity: isChatActive ? 1 : 0,
-                    pointerEvents: isChatActive ? "auto" : "none",
-                    zIndex: isChatActive ? 1 : 0,
-                  }}
-                >
+            // Always use ChatKitPanel — render both welcome + ChatKitPanel; CSS hides/shows
+            <div className="relative h-full w-full">
+              <div
+                className="absolute inset-0 transition-opacity duration-200"
+                style={{
+                  opacity: isChatActive ? 0 : 1,
+                  pointerEvents: isChatActive ? "none" : "auto",
+                  zIndex: isChatActive ? 0 : 1,
+                }}
+              >
+                <ChatWelcomeScreen
+                  onSubmit={handlePromptSelect}
+                  onChatStart={() => setIsChatActive(true)}
+                />
+              </div>
+              <div
+                className="absolute inset-0 transition-opacity duration-200"
+                style={{
+                  opacity: isChatActive ? 1 : 0,
+                  pointerEvents: isChatActive ? "auto" : "none",
+                  zIndex: isChatActive ? 1 : 0,
+                }}
+              >
+                {isMobile && (
                   <ChatKitPanel
                     key={`${botMode}-${chatKey}`}
                     {...sharedChatKitProps}
@@ -1381,13 +1387,40 @@ Start Location: ${details.startLocation}`;
                     onInitialPromptConsumed={handleInitialPromptConsumed}
                     onSendReady={handleSendMessageReady}
                   />
-                </div>
+                )}
               </div>
-            )
+            </div>
           }
           itineraryContent={isMobile ? itineraryPanel : null}
           mobileEffectPopup={mobileEffectPopup}
           onDismissMobileEffectPopup={() => setMobileEffectPopup(null)}
+          bottomCTABarProps={{
+            viewMode,
+            activeItineraryId,
+            showItineraryShimmer,
+            isDraft,
+            cart,
+            pricingStatus,
+            loaderDisplayText: statusDisplayText || loaderDisplayText,
+            currency,
+            countCartItems,
+            isHovered,
+            setIsHovered,
+            popupStyle,
+            onConfirm: () => setShowConfirmModal(true),
+            onViewCart: openPaymentDrawer,
+            notes: statusNotes,
+            onGetInTouch: () => {
+              if (!activeItineraryId) return;
+              const token = localStorage.getItem("access_token");
+              axios
+                .get(`${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/get_in_touch/`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                })
+                .then(() => alert("Request received. Our team will get in touch with you shortly!"))
+                .catch(() => alert("Something went wrong. Please try again."));
+            },
+          }}
           onSettingsClick={() => {
             if (!activeItineraryId) return;
             axios
@@ -1489,6 +1522,8 @@ interface BottomCTABarProps {
   popupStyle: React.CSSProperties;
   onConfirm: () => void;
   onViewCart: () => void;
+  onGetInTouch?: () => void;
+  notes?: any[];
 }
 
 const BottomCTABar = React.memo(
@@ -1507,6 +1542,8 @@ const BottomCTABar = React.memo(
     popupStyle,
     onConfirm,
     onViewCart,
+    onGetInTouch,
+    notes,
   }: BottomCTABarProps) => {
     if (!["itinerary", "bookings"].includes(viewMode) || (!activeItineraryId && !showItineraryShimmer))
       return null;
@@ -1525,8 +1562,26 @@ const BottomCTABar = React.memo(
     }
 
     const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
+    const isPricingFailedWithEmptyNotes = pricingStatus === "FAILURE" && (!notes || notes.length === 0);
+
+    if (isPricingFailedWithEmptyNotes) {
+      return (
+        <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-between">
+          <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p>
+          <button
+            onClick={onGetInTouch}
+            className="flex items-center gap-2 h-[44px] px-4 rounded-[8px] bg-[#F7E700] text-[16px] font-inter font-semibold"
+          >
+            Get in touch!
+          </button>
+        </div>
+      );
+    }
 
     if (!hasFreshPricing) {
+      // Only show the pricing loader when notes array has data (status API returned notes)
+      const hasNotes = notes && notes.length > 0;
+      if (!hasNotes && !loaderDisplayText) return null;
       return (
         <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
           <ItineraryStatusLoader
@@ -1602,9 +1657,18 @@ const BottomCTABar = React.memo(
 BottomCTABar.displayName = "BottomCTABar";
 
 // ── MobileLayout — full-screen views with top tab bar + mobile header ─────────
-type MobileTab = "chat" | "map" | "itinerary" | "routes" | "bookings";
+type MobileTab = "chat" | "map" | "routes" | "itinerary"  | "bookings";
 
 const CHATKIT_API_URL_MOBILE = "https://chat.tarzanway.com/chatkit";
+
+function getAuthToken(): string | null {
+  return (
+    localStorage.getItem("token") ??
+    localStorage.getItem("authToken") ??
+    localStorage.getItem("access_token") ??
+    null
+  );
+}
 
 // ── MobileHeader ──────────────────────────────────────────────────────────────
 const MobileHeader = React.memo(({
@@ -1630,6 +1694,11 @@ const MobileHeader = React.memo(({
   const [profileOpen, setProfileOpen] = React.useState(false);
   const [showLogin, setShowLogin] = React.useState(false);
   const profileRef = React.useRef<HTMLDivElement>(null);
+    const reduxToken = useSelector((state: any) => state.auth.token);
+
+
+    const authToken = reduxToken ?? getAuthToken();
+  const isLoggedIn = !!authToken;
 
   // Close profile dropdown on outside click
   React.useEffect(() => {
@@ -1717,20 +1786,6 @@ const MobileHeader = React.memo(({
         </div>
       </div>
 
-      {/* Login modal */}
-      {showLogin && typeof document !== "undefined" && (
-        <div className="fixed inset-0 z-[3000]">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowLogin(false)} />
-          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", background: "#fff", borderRadius: 16, width: "min(480px,95vw)", maxHeight: "90vh", overflowY: "auto", zIndex: 3001, boxShadow: "0 25px 60px rgba(0,0,0,.3)" }}>
-            {/* Inline placeholder — LogInModal needs the portal pattern */}
-            <div className="p-6 text-center">
-              <p className="font-semibold text-lg mb-2">Login / Signup</p>
-              <p className="text-sm text-gray-500">Please login to continue</p>
-              <button onClick={() => setShowLogin(false)} className="mt-4 px-6 py-2 rounded-xl bg-[#07213A] text-white text-sm">Close</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Header bar */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 z-10">
@@ -1789,6 +1844,49 @@ const MobileHeader = React.memo(({
           </div>
         </div>
       </div>
+
+      {showLogin &&
+              !isLoggedIn &&
+              createPortal(
+                <>
+                  <div
+                    onClick={() => setShowLogin(false)}
+                    style={{
+                      position: "fixed",
+                      inset: 0,
+                      background: "rgba(0,0,0,0.5)",
+                      zIndex: 3299,
+                    }}
+                  />
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: "fixed",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      background: "#fff",
+                      borderRadius: 16,
+                      width: "min(480px, 95vw)",
+                      maxHeight: "90vh",
+                      overflowY: "auto",
+                      zIndex: 3300,
+                      boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+                    }}
+                  >
+                    <LogInModal
+                      show={showLogin}
+                      onhide={() => setShowLogin(false)}
+                      zIndex={"3300"}
+                      message="Please login to continue"
+                      onSuccess={async () => {
+                        // setPostLoginLoading(true);
+                      }}
+                    />
+                  </div>
+                </>,
+                document.body,
+              )}
     </>
   );
 });
@@ -1816,6 +1914,7 @@ interface MobileLayoutProps {
   itineraryContent: React.ReactNode;
   mobileEffectPopup?: { type: "map" | "itinerary"; label: string } | null;
   onDismissMobileEffectPopup?: () => void;
+  bottomCTABarProps?: BottomCTABarProps;
   onSettingsClick?: () => void;
 }
 
@@ -1841,15 +1940,17 @@ const MobileLayout = React.memo(({
   itineraryContent,
   mobileEffectPopup,
   onDismissMobileEffectPopup,
+  bottomCTABarProps,
   onSettingsClick,
 }: MobileLayoutProps) => {
-  const [activeTab, setActiveTab] = React.useState<MobileTab>("chat");
+  const [activeTab, setActiveTab] = React.useState<MobileTab>(hasItineraryActivity ? "itinerary" : "chat");
   const hasUnread = (useSelector as any)((s: any) => !!s.chatState?.unreadMessages);
   const dispatchLayout = useDispatch();
+  const [showChatBanner, setShowChatBanner] = React.useState(true);
 
   // Sync mobilePanel (legacy) so BotApp state stays consistent
   React.useEffect(() => {
-    setMobilePanel(activeTab === "chat" ? "chat" : "map");
+    setMobilePanel(activeTab === "chat" ? "chat" : "itinerary");
   }, [activeTab, setMobilePanel]);
 
   // Clear unread flag when user switches to chat tab
@@ -1884,21 +1985,22 @@ const MobileLayout = React.memo(({
     prevIsChatActiveRef.current = isChatActive;
   }, [isChatActive]);
 
-  // When itinerary activity starts, auto-move off the chat tab so the tab bar
-  // has a highlighted entry (Chat tab no longer exists in the bar)
+  // When itinerary activity starts, auto-move to itinerary tab so user sees content
   const prevHasActivityRef = React.useRef(hasItineraryActivity);
   React.useEffect(() => {
     if (!prevHasActivityRef.current && hasItineraryActivity && activeTab === "chat") {
-      setActiveTab("map");
+      setActiveTab("itinerary");
+      setViewMode("itinerary");
     }
     prevHasActivityRef.current = hasItineraryActivity;
-  }, [hasItineraryActivity, activeTab]);
+  }, [hasItineraryActivity, activeTab, setViewMode]);
 
   // Top tab bar — Chat + Map + Itinerary + Route + Bookings when itinerary is active
   const tabs: { key: MobileTab; label: string; show: boolean }[] = [
     { key: "map", label: "Map", show: hasItineraryActivity },
+     { key: "routes", label: "Route", show: isComplete },
     { key: "itinerary", label: "Itinerary", show: hasItineraryActivity },
-    { key: "routes", label: "Route", show: isComplete },
+   
     { key: "bookings", label: "Bookings", show: isComplete },
   ];
   const visibleTabs = tabs.filter(t => t.show);
@@ -1928,7 +2030,7 @@ const MobileLayout = React.memo(({
 
       {/* ── Top tab bar — only when itinerary is active ── */}
       {hasItineraryActivity && visibleTabs.length > 0 && (
-        <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-gray-100 flex items-center gap-2">
+        <div className="flex-shrink-0  bg-white border-b border-gray-100 flex items-center gap-2">
           <div
             className="flex flex-1 gap-1 p-[3px]"
             style={{ borderRadius: "10px", border: "1px solid #E5E5E5", background: "#fff" }}
@@ -1945,7 +2047,7 @@ const MobileLayout = React.memo(({
             ))}
           </div>
           {/* Settings icon — only when itinerary is fully created */}
-          {isComplete && onSettingsClick && (
+          {/* {isComplete && onSettingsClick && (
             <button
               onClick={onSettingsClick}
               className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -1956,12 +2058,12 @@ const MobileLayout = React.memo(({
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
               </svg>
             </button>
-          )}
+          )} */}
         </div>
       )}
 
       {/* ── Content area — full remaining height ── */}
-      <div className="flex-1 min-h-0 overflow-hidden relative">
+      <div className="flex-1 min-h-0 overflow-hidden relative bg-white">
 
         {/* CHAT view */}
         <div
@@ -1987,12 +2089,16 @@ const MobileLayout = React.memo(({
           <div className="flex-1 min-h-0 flex flex-col">
             {mapContent}
           </div>
+          {/* View Cart bar on map tab */}
+          {bottomCTABarProps && hasItineraryActivity && (
+            <BottomCTABar {...bottomCTABarProps} viewMode="itinerary" />
+          )}
         </div>
 
         {/* ITINERARY / ROUTES / BOOKINGS view */}
         {hasItineraryActivity && (
           <div
-            className="absolute inset-0 overflow-y-auto"
+            className="absolute inset-0 overflow-y-auto bg-white"
             style={{
               opacity: ["itinerary", "routes", "bookings"].includes(activeTab) ? 1 : 0,
               pointerEvents: ["itinerary", "routes", "bookings"].includes(activeTab) ? "auto" : "none",
@@ -2004,35 +2110,54 @@ const MobileLayout = React.memo(({
         )}
       </div>
 
-      {/* ── Floating Kaira icon — go back to Chat when on itinerary/routes/bookings views ── */}
+      {/* ── Floating Kaira icon + chat banner — on itinerary/routes/bookings views ── */}
       {hasItineraryActivity && ["itinerary", "routes", "bookings"].includes(activeTab) && (
         <div
-          className="fixed z-[100]"
+          className="fixed z-[100] flex flex-col items-end gap-2"
           style={{ bottom: 80, right: 16 }}
         >
-          <button
-            onClick={() => handleTabClick("chat")}
-            className="relative w-20 h-20 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
-            aria-label="Chat with Kaira"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/KairaInsta.png" alt="Kaira" className="w-full h-full object-cover" />
-            {/* Pulse ring */}
-            <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-[#07213A]" />
-          </button>
-          {/* Unread message red dot */}
-          {hasUnread && (
+          {/* Chat Banner */}
+          {showChatBanner && (
+            <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+              <button
+                onClick={() => setShowChatBanner(false)}
+                className="absolute top-2 right-2 text-black hover:text-gray-700"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <p className="text-[14px] pr-6 mb-0">
+                Hi, I am Kaira Your travel partner
+              </p>
+              {/* Speech bubble arrow */}
+              <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
+            </div>
+          )}
+          <div className="relative">
+            <button
+              onClick={() => {
+                handleTabClick("chat");
+                setShowChatBanner(false);
+              }}
+              className="relative w-16 h-16 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
+              aria-label="Chat with Kaira"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/KairaInsta.png" alt="Kaira" className="w-full h-full object-cover" />
+            </button>
+            {/* Red notification dot */}
             <span
-              className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-white"
+              className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white"
               style={{ zIndex: 1 }}
             />
-          )}
+          </div>
         </div>
       )}
 
       {/* ── "Back to Map" popup — above message input, shown for 10s on first focus_route ── */}
       {mobileEffectPopup && activeTab === "chat" && (
-        <div className="fixed z-[300] left-0 right-0 flex justify-center px-4" style={{ bottom: 72 }}>
+        <div className="fixed z-[300] left-0 right-0 flex justify-center px-4" style={{ bottom: 80 }}>
           <button
             onClick={() => {
               handleTabClick("map");
@@ -2049,19 +2174,47 @@ const MobileLayout = React.memo(({
         </div>
       )}
 
-      {/* ── "Back to Chat" pill — always visible on map tab when itinerary active ── */}
+      {/* ── Floating Kaira icon + chat banner on map tab ── */}
       {hasItineraryActivity && activeTab === "map" && (
-        <div className="fixed z-[300] left-0 right-0 flex justify-center px-4" style={{ bottom: 72 }}>
-          <button
-            onClick={() => handleTabClick("chat")}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#07213A] text-white text-[13px] font-semibold shadow-xl active:scale-95 transition-transform"
-            style={{ whiteSpace: "nowrap" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            Back to Chat
-          </button>
+        <div
+          className="fixed z-[100] flex flex-col items-end gap-2"
+          style={{ bottom: 70, right: 16 }}
+        >
+          {/* Chat Banner */}
+          {showChatBanner && (
+            <div className="relative bg-[#F7E700] text-black px-4 py-2 rounded-[12px] shadow-lg max-w-[290px] animate-slideIn">
+              <button
+                onClick={() => setShowChatBanner(false)}
+                className="absolute top-2 right-2 text-black hover:text-gray-700"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <p className="text-[14px] pr-6 mb-0">
+                Hi, I am Kaira Your travel partner
+              </p>
+              <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
+            </div>
+          )}
+          <div className="relative">
+            <button
+              onClick={() => {
+                handleTabClick("chat");
+                setShowChatBanner(false);
+              }}
+              className="relative w-16 h-16 rounded-full shadow-2xl overflow-hidden border-2 border-white focus:outline-none active:scale-95 transition-transform"
+              aria-label="Chat with Kaira"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/KairaInsta.png" alt="Kaira" className="w-full h-full object-cover" />
+            </button>
+            {/* Red notification dot */}
+            <span
+              className="absolute top-0 right-0 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white"
+              style={{ zIndex: 1 }}
+            />
+          </div>
         </div>
       )}
     </div>

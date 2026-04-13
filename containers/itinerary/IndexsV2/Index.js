@@ -25,13 +25,15 @@ import axiosPaymentInstance from "../../../services/itinerary/payment";
 import axiosBookingsInstance from "../../../services/itinerary/bookings";
 import axiosPlanInstance from "../../../services/itinerary/plan";
 import { ChatProvider } from "../../../components/Chatbot/context/ChatContext";
+import NavBar from "../../../components/navbar/Index";
+import NavigationMenu from "../../../components/revamp/home/NavigationMenu";
 
 const Container = styled.div`
   width: 90%;
   margin: 5vh auto 0 auto;
   @media screen and (min-width: 768px) {
     width: 85%;
-    margin: -5vh auto 0 auto;
+    margin: 0vh auto 0 auto;
   }
 `;
 
@@ -85,8 +87,8 @@ const Itinerary = (props) => {
 
   const getItineraryActivities = () => {
     let itenaryActivities = [];
-    props.itinerary?.day_slabs.map((day_slab, index) => {
-      day_slab?.slab_elements.map((element, index) => {
+    props.itinerary?.day_slabs?.map((day_slab, index) => {
+      day_slab?.slab_elements?.map((element, index) => {
         if (element.element_type === "activity") {
           itenaryActivities.push({ activity: element, date: day_slab.slab });
         }
@@ -667,10 +669,14 @@ const Itinerary = (props) => {
     setShowPoiModal(false);
   };
 
+  console.log("Itinerary Props", props.itinerary);
+
   if (props.breif && !itineraryLoading)
     return (
       <ChatProvider itinearyId={router.query.id}>
-      <Container>
+         <NavigationMenu/>
+      <Container className="mt-2">
+       
         <Overview
           title={props.itinerary.name}
           itinerary={props?.itinerary}

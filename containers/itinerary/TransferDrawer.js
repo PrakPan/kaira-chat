@@ -71,6 +71,8 @@ const TransferDrawer = ({
   const dispatch = useDispatch();
   const router = useRouter();
   const [error, setError] = useState(false);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -94,6 +96,7 @@ const TransferDrawer = ({
       {
         pathname: router.asPath.split('?')[0],
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer:
             data?.is_airport_drop || data?.is_airport_pickup
               ? "addPickupDrop"

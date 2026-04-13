@@ -743,6 +743,9 @@ const fetchStatus = async () => {
      if (instanceId !== undefined && instanceId !== instanceIdRef.current) return;
 
     setDisplayText(status?.display_text || null);
+    dispatch(setItineraryStatus("display_text", status?.display_text || null));
+    dispatch(setItineraryStatus("notes", status?.notes || []));
+    dispatch(setItineraryStatus("version", res.data?.version || null));
     setConsecutiveErrors(0);
 
     // ── 2. Immediately dispatch real statuses so fetchItinerary sees them ────
@@ -1552,7 +1555,7 @@ useEffect(() => {
   if (oldOne) {
     return (
       <>
-        <ItineraryContainerOld id={router.query.id} />
+        <ItineraryContainerOld id={router.query.id} itinerary={Itinerary} />
       </>
     );
   }
