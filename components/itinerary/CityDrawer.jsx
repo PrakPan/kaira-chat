@@ -85,7 +85,7 @@ const CityDrawerView = ({
 
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: newQuery,
       },
       undefined,
@@ -109,7 +109,7 @@ const CityDrawerView = ({
 
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: newQuery,
       },
       undefined,
@@ -378,7 +378,7 @@ export const ItineraryCityWithDrawer = (props) => {
 
             router.push(
               {
-                pathname: router.asPath.split('?')[0],
+                pathname: window.location.pathname,
                 query: newQuery,
               },
               undefined,
@@ -458,7 +458,7 @@ const DayCardExpanded = ({ day, dayIndex, index, ...props }) => {
   const handleItemClick = () => {
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.city?.id,
@@ -632,7 +632,7 @@ const ActivityCardExpanded = ({
 
       router.push(
         {
-          pathname: router.asPath.split('?')[0],
+          pathname: window.location.pathname,
           query: newQuery,
         },
         undefined,

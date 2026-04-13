@@ -96,7 +96,7 @@ const DaybyDay = ({
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,

@@ -177,7 +177,7 @@ const HotelBooking = ({
 
     const isAuthenticated = requireAuth('view', () => {
       router.push({
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "showHotelDetail",
@@ -216,7 +216,7 @@ const HotelBooking = ({
     const isAuthenticated = requireAuth(clickType === 'Add' ? 'add' : 'change', () => {
       // This callback executes only if user is authenticated
       router.push({
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "changeHotelBooking",
@@ -256,7 +256,7 @@ const HotelBooking = ({
   //   if (token) {
   //     router.push(
   //       {
-  //         pathname: router.asPath.split('?')[0],
+  //         pathname: window.location.pathname,
   //         query: {
   //           drawer: "changeHotelBooking",
   //           clickType: clickType,
@@ -380,7 +380,7 @@ const HotelBooking = ({
     setShowBookingModal(true);
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,

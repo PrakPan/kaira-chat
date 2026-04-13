@@ -272,7 +272,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
     trackActivityBookingAdd(router.query.id, "day_by_day_collapse");
     router.push(
       {
-        pathname: router.asPath.split("?")[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "showAddActivity",
           itinerary_city_id: props?.itinerary_city_id,
@@ -304,7 +304,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   trackActivityCardClicked(router.query.id, resolvedType);
   router.push(
     {
-      pathname: router.asPath.split("?")[0],
+      pathname: window.location.pathname,
       query: {
         drawer: "showPoiDetail",
         itinerary_city_id: props?.itinerary_city_id,

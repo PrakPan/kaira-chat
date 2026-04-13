@@ -94,7 +94,7 @@ const TransferDrawer = ({
   const handleEditRoute = (data = null) => {
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer:
