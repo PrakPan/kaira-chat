@@ -9,6 +9,9 @@ interface Location {
   duration?: number;
   type?: string;
   accent?: string;
+  one_liner_description?: string;
+  image?: string;
+  tags?: string[];
 }
 
 interface UserLocation {
@@ -194,6 +197,23 @@ function getMarkerIcon(type: string): google.maps.Icon {
   };
 }
 
+// Accent name → hex color
+const ACCENT_COLORS: Record<string, string> = {
+  blue: "#3b82f6",
+  green: "#22c55e",
+  red: "#ef4444",
+  orange: "#f97316",
+  purple: "#a855f7",
+  pink: "#ec4899",
+  cyan: "#06b6d4",
+  yellow: "#eab308",
+};
+
+function resolveAccent(accent?: string): string {
+  if (!accent) return "#FD6D6C";
+  return ACCENT_COLORS[accent.toLowerCase()] ?? "#FD6D6C";
+}
+
 const MyMap: React.FC<MapProps> = ({
   state,
   locations,
@@ -349,13 +369,18 @@ const MyMap: React.FC<MapProps> = ({
     mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
   }, [currentRoute]);
 
-  // User location marker
+  // User location marker — hide when an itinerary route is loaded
   useEffect(() => {
-    if (!mapInstance.current || !userLocation || !infoWindowRef.current) return;
+    if (!mapInstance.current || !infoWindowRef.current) return;
 
+    // Remove existing user marker
     if (userMarkerRef.current) {
       userMarkerRef.current.setMap(null);
+      userMarkerRef.current = null;
     }
+
+    // Don't show user location when a route is active
+    if (!userLocation || (currentRoute && currentRoute.length > 0)) return;
 
     const userIcon = {
       url:
@@ -392,7 +417,7 @@ const MyMap: React.FC<MapProps> = ({
     `);
       infoWindowRef.current!.open(mapInstance.current!, userMarkerRef.current!);
     });
-  }, [userLocation]);
+  }, [userLocation, currentRoute]);
 
   // Place / update location markers
   useEffect(() => {
@@ -444,37 +469,73 @@ const MyMap: React.FC<MapProps> = ({
 
       // Info window on click
       marker.addListener("click", () => {
-        const accentColor = "#F06B72";
+        const accentColor = resolveAccent(loc.accent);
 
-        const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
-        const descLine = location.description
-          ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
-          : "";
-        const cityLine = loc.city
-          ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
-              <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
-              </svg>
-              <span style="color:#888;">${loc.city}</span>
-             </div>`
-          : "";
-        const ratingLine = loc.rating
-          ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
-              ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
-             </div>`
-          : "";
-        const routeLine =
-          isRouteStop && currentRoute
-            ? `<div style="margin-top:6px;padding-top:6px;border-top:1px solid #eee;display:flex;align-items:center;gap:5px;">
-                <div style="width:16px;height:16px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;flex-shrink:0;">${routeIndex + 1}</div>
-                <span style="color:${accentColor};font-size:11px;font-weight:500;">Stop ${routeIndex + 1} of ${currentRoute.length}</span>
-              </div>`
+        // Route stop popup — rich city card
+        if (isRouteStop && currentRoute) {
+          const imageLine = loc.image
+            ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
+                <img src="${loc.image}" alt="${location.name}" style="width:100%;height:100%;object-fit:cover;" />
+               </div>`
             : "";
 
-        infoWindowRef.current!.setContent(`
-          <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
-            ${nameLine}${descLine}${cityLine}${ratingLine}${routeLine}
-          </div>`);
+          const oneLiner = loc.one_liner_description
+            ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.one_liner_description}</p>`
+            : loc.description
+              ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.description}</p>`
+              : "";
+
+          const durationBadge = loc.duration
+  ? `<span style="font-size:10px;">⏱ ${loc.duration} ${loc.duration === 1 ? "night" : "nights"}</span>`
+  : "";
+
+         const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+
+const tagsLine = loc.tags?.length
+  ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+      ${loc.tags.map((t: string, i: number) => `<span style="padding:2px 8px;background:${colors[i % colors.length]};border-radius:9999px;font-size:9px;font-weight:500;">${t}</span>`).join("")}
+     </div>`
+  : "";
+
+          const stopBadge = `<div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+            <div style="width:18px;height:18px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">${routeIndex + 1}</div>
+            <span style="font-size:10px;color:${accentColor};font-weight:600;">Stop ${routeIndex + 1} of ${currentRoute.length}</span>
+          </div>`;
+
+          infoWindowRef.current!.setContent(`
+            <div style="padding:10px 12px;min-width:220px;max-width:280px;font-family:Inter,sans-serif;">
+              ${imageLine}
+              <h4 style="font-weight:700;margin:0 0 4px 0;color:#111827;font-size:14px;line-height:1.3;">${location.name}</h4>
+              ${oneLiner}
+              ${durationBadge}
+              ${tagsLine}
+            </div>`);
+        } else {
+          // Non-route location — compact popup
+          const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
+          const descLine = location.description
+            ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
+            : "";
+          const cityLine = loc.city
+            ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
+                <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
+                </svg>
+                <span style="color:#888;">${loc.city}</span>
+               </div>`
+            : "";
+          const ratingLine = loc.rating
+            ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
+                ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
+               </div>`
+            : "";
+
+          infoWindowRef.current!.setContent(`
+            <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
+              ${nameLine}${descLine}${cityLine}${ratingLine}
+            </div>`);
+        }
+
         infoWindowRef.current!.open(mapInstance.current!, marker);
       });
 
@@ -492,7 +553,7 @@ const MyMap: React.FC<MapProps> = ({
       mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
     } else if (userLocation) {
       mapInstance.current.setCenter({ lat: userLocation.lat, lng: userLocation.lng });
-      mapInstance.current.setZoom(13);
+      mapInstance.current.setZoom(4);
     }
   }, [locations, userLocation, currentRoute, mapInstance]);
 

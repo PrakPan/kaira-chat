@@ -131,9 +131,9 @@ function transformDraftToItinerary(draft: any) {
 
 export default function BotApp({ sessionId }: { sessionId?: string }) {
   const [mapState, setMapState] = useState<MapState>({
-    lat: 28.6139,
-    lng: 77.2088,
-    zoom: 12,
+    lat: 20,
+    lng: 78,
+    zoom: 4,
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);

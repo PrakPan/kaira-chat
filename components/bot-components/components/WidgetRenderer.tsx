@@ -29,6 +29,17 @@ function useFormContext() {
   return useContext(FormContext);
 }
 
+// ─── Route Item Context ──────────────────────────────────────────────────────
+// Passes index / isLast from ListViewNode → BoxNode so the numbered pin &
+// connector line can render correctly.
+
+interface RouteItemContextValue {
+  index: number;
+  isLast: boolean;
+}
+
+const RouteItemContext = createContext<RouteItemContextValue | null>(null);
+
 // ─── Color map ────────────────────────────────────────────────────────────────
 
 const BG_COLORS: Record<string, string> = {
@@ -395,8 +406,81 @@ function ButtonNode({
 }
 
 
+// Numbered map-pin matching the map markers (pink teardrop with white circle + number)
+function NumberedMapPin({ number }: { number: number }) {
+  return (
+    <svg width="24" height="30" viewBox="0 0 48 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id={`sh-w-${number}`} x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.25)" />
+        </filter>
+      </defs>
+      <path
+        d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z"
+        fill="#FD6D6C"
+        filter={`url(#sh-w-${number})`}
+      />
+      <circle cx="24" cy="23.9643" r="11.5" fill="white" />
+      <text
+        x="24"
+        y="28.5"
+        textAnchor="middle"
+        fontFamily="Inter, Arial, sans-serif"
+        fontSize="13"
+        fontWeight="700"
+        fill="#FD6D6C"
+      >
+        {number}
+      </text>
+    </svg>
+  );
+}
+
 function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const { size, width, height, background, radius, children, align, justify } = node;
+  const routeCtx = useContext(RouteItemContext);
+
+  // Detect route pin dot: small circle (size <= 10) with full radius and accent/colored bg
+  const isRoutePinDot =
+    radius === "full" &&
+    size != null && (size as number) <= 10 &&
+    background != null;
+
+  if (isRoutePinDot && routeCtx) {
+    return (
+      <div style={{
+        width: "24px",
+        height: "30px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}>
+        <NumberedMapPin number={routeCtx.index + 1} />
+      </div>
+    );
+  }
+
+  // Detect vertical connector line: narrow box (width <= 3) with height, used between pins
+  const isConnectorLine =
+    width != null && (width as number) <= 3 &&
+    height != null &&
+    background != null &&
+    !children;
+
+  if (isConnectorLine) {
+    // Hide connector for the last route item
+    if (routeCtx?.isLast) return null;
+
+    return (
+      <div style={{
+        width: 0,
+        height: typeof height === "string" ? height : `${height as number}px`,
+        borderLeft: "2px dashed #d1d5db",
+        flexShrink: 0,
+      }} />
+    );
+  }
 
   const pxWidth  = width != null ? `${width as number}px` : size != null ? `${size as number}px` : undefined;
   const pxHeight = height != null
@@ -429,6 +513,7 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
 
 function TextNode({ node }: { node: WidgetNode }) {
   const { value, size = "md", weight = "normal", type } = node;
+  const routeCtx = useContext(RouteItemContext);
   const fsMap: Record<string, number> = { xs: 11, sm: 13, md: 14, lg: 16, xl: 19 };
   const fwMap: Record<string, number> = { normal: 400, medium: 500, semibold: 600, bold: 700 };
   return (
@@ -437,7 +522,7 @@ function TextNode({ node }: { node: WidgetNode }) {
       fontWeight: fwMap[weight as string] ?? 400,
       color: type === "Caption" ? "#9ca3af" : "#111827",
       fontFamily: "'Inter', sans-serif",
-      lineHeight: 1.4,
+      lineHeight: routeCtx ? "30px" : 1.4,
     }}>
       {value as string}
     </span>
@@ -516,17 +601,19 @@ function IconNode({ node }: { node: WidgetNode }) {
   const colorMap: Record<string, string> = { secondary: "#9ca3af", primary: "#111827" };
   const color = colorMap[node.color as string] ?? "#9ca3af";
   if (node.name === "dots-horizontal") {
-    return <span style={{ color, display: "flex" }}><DotsHorizontalIcon /></span>;
+    return <span style={{ color, display: "flex", marginTop: "4px" }}><DotsHorizontalIcon /></span>;
   }
   return null;
 }
 
-function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"]; isLast?: boolean }) {
+function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  const routeCtx = useContext(RouteItemContext);
   const children = (node.children ?? []) as WidgetNode[];
   return (
     <div style={{
-      display: "flex", flexDirection: "row", alignItems: "center",
-      gap: node.gap != null ? `${(node.gap as number) * 4}px` : "8px", // gap={3} → 12px
+      display: "flex", flexDirection: "row",
+      alignItems: routeCtx ? "flex-start" : "center",
+      gap: node.gap != null ? `${(node.gap as number) * 4}px` : "8px",
       padding: "2px 0",
     }}>
       {children.map((child, i) => (
@@ -536,13 +623,47 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
   );
 }
 
+// Detect if a ListView contains route items (ListViewItems with a Col holding
+// a small full-radius Box = pin dot pattern)
+function isRouteListView(children: WidgetNode[]): boolean {
+  if (children.length < 2) return false;
+  return children.some((item) => {
+    const kids = (item.children ?? []) as WidgetNode[];
+    return kids.some(
+      (k) =>
+        k.type === "Col" &&
+        Array.isArray(k.children) &&
+        (k.children as WidgetNode[]).some(
+          (c) => c.type === "Box" && c.radius === "full" && c.size != null && (c.size as number) <= 10
+        )
+    );
+  });
+}
+
 function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const children = (node.children ?? []) as WidgetNode[];
+  const isRoute = isRouteListView(children);
+
   return (
     <div style={{ display: "inline-flex", flexDirection: "column", fontFamily: "'Inter', sans-serif" }}>
-      {children.map((item, idx) => (
-        <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
-      ))}
+      {children.map((item, idx) => {
+        const content = (
+          <ListViewItemNode key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+        );
+
+        if (isRoute) {
+          return (
+            <RouteItemContext.Provider
+              key={(item.key as string) ?? idx}
+              value={{ index: idx, isLast: idx === children.length - 1 }}
+            >
+              {content}
+            </RouteItemContext.Provider>
+          );
+        }
+
+        return content;
+      })}
     </div>
   );
 }
