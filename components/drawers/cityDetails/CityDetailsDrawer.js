@@ -70,7 +70,7 @@ const CityDetailsDrawer = (props) => {
       onHide={() => {
         router.push(
           {
-            pathname: router.asPath.split('?')[0],
+            pathname: window.location.pathname,
           },
           undefined,
           { scroll: false }
@@ -82,7 +82,7 @@ const CityDetailsDrawer = (props) => {
           onClick={() =>
             router.push(
               {
-                pathname: router.asPath.split('?')[0],
+                pathname: window.location.pathname,
               },
               undefined,
               { scroll: false }
@@ -105,7 +105,7 @@ const CityDetailsDrawer = (props) => {
             data={data}
             onHide={() =>
               router.push({
-                pathname: router.asPath.split('?')[0],
+                pathname: window.location.pathname,
               })
             }
             dayId={dayId}
@@ -121,7 +121,7 @@ const CityDetailsDrawer = (props) => {
               onClick={() => {
                 router.push(
                   {
-                    pathname: router.asPath.split('?')[0],
+                    pathname: window.location.pathname,
                   },
                   undefined,
                   { scroll: false }

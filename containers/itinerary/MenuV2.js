@@ -1488,7 +1488,7 @@ props.fromChat ? (
                 ClickHandler={(label) => {
                   if (label == "Route") {
                     router.push({
-                      pathname: router.asPath.split('?')[0],
+                      pathname: window.location.pathname,
                       query: {
                         drawer: "handleEditRoute",
                       },

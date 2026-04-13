@@ -672,7 +672,7 @@ const ClickHandler = (child) => {
     if (!drawer || !props?.showDrawer) return;
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {}, // remove "drawer"
       },
       undefined,

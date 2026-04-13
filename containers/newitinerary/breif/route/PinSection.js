@@ -39,7 +39,7 @@ const PinSection = (props) => {
   const handleClick = () => {
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "showCityDetail",
           city_id: props?.cityId

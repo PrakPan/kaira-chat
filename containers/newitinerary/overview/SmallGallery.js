@@ -59,7 +59,7 @@ function SmallGallery(props) {
     const handleOpenGallery = (index = 0, imageId = null, value = null) => {
         router.push(
             {
-                pathname: router.asPath.split('?')[0],
+                pathname: window.location.pathname,
                 query: {
                     gallery: "true"
                 },
@@ -87,7 +87,7 @@ function SmallGallery(props) {
 
         router.push(
             {
-                pathname: router.asPath.split('?')[0],
+                pathname: window.location.pathname,
                 query: {},
             },
             undefined,

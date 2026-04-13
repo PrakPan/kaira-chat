@@ -89,7 +89,7 @@ const Route = (props) => {
   const handleEditRoute = () => {
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query:{
           drawer:"handleEditRoute"
         }

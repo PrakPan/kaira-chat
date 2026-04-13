@@ -1191,7 +1191,7 @@ useEffect(() => {
   //   setLoading(true);
   //   router.push(
   //     {
-  //       pathname: router.asPath.split('?')[0],
+  //       pathname: window.location.pathname,
   //       query: {
   //         drawer: "Intracity",
   //         bookingId: book?.id,
@@ -1226,7 +1226,7 @@ useEffect(() => {
     // Navigate to the URL with bookingId and transferType
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "Intracity",
@@ -1246,7 +1246,7 @@ useEffect(() => {
   const handlePickupDropDrawer = (drawerType) => {
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "addPickupDrop",
@@ -1269,7 +1269,7 @@ useEffect(() => {
     trackTransferBookingChange(currentItineraryId, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
@@ -1389,7 +1389,7 @@ useEffect(() => {
   //   if (transferType !== null && airportBookingId) {
   //     router.push(
   //       {
-  //         pathname: router.asPath.split('?')[0],
+  //         pathname: window.location.pathname,
   //         query: {
   //           drawer: "Intracity",
   //           bookingId: airportBookingId,

@@ -121,7 +121,7 @@ const MidSectionV2 = (props) => {
     trackTransferCardClicked(router.query.id,props?.transferId,'route_section',props?.oCityData?.name || props?.oCityData?.city_name,props?.dCityData?.name || props?.dCityData?.city_name);
     router.push(
       {
-        pathname: router.asPath.split('?')[0],
+        pathname: window.location.pathname,
         query: {
           drawer: "editTransfer",
           bookingId: props?.cityTransferBookings?.id,

@@ -1636,8 +1636,8 @@ const Details = (props) => {
   // setBookingSummary();
 
   function getURL() {
-    const url = router.asPath.split("?")[0];
-    const searchParams = new URLSearchParams(router.asPath.split("?")[1]);
+    const url = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
     searchParams.delete("t");
     const newPath =
       url + (searchParams.toString() ? `?${searchParams.toString()}` : "");

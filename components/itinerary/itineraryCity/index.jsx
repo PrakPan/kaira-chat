@@ -257,7 +257,7 @@ const ItineraryCity = (props) => {
       hotelId || stay?.[props?.index]?.id || multiHotelStays?.[0]?.id;
     router.push(
       {
-        pathname: router.asPath.split("?")[0],
+        pathname: window.location.pathname,
         query: {
           ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "showHotelDetail",
@@ -301,7 +301,7 @@ const ItineraryCity = (props) => {
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: router.asPath.split("?")[0],
+        pathname: window.location.pathname,
         query: {},
       },
       undefined,
@@ -419,7 +419,7 @@ const ItineraryCity = (props) => {
                   setShowActivityDrawer(true);
                   router.push(
                     {
-                      pathname: router.asPath.split("?")[0],
+                      pathname: window.location.pathname,
                       query: {
                         ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "activity",
@@ -440,7 +440,7 @@ const ItineraryCity = (props) => {
                 onClick={() => {
                   router.push(
                     {
-                      pathname: router.asPath.split("?")[0],
+                      pathname: window.location.pathname,
                       query: {
                         ...(currentItineraryId ? { id: currentItineraryId } : {}),
                         drawer: "addCityTaxi",
@@ -542,7 +542,7 @@ const ItineraryCity = (props) => {
               onClick={() => {
                 router.push(
                   {
-                    pathname: router.asPath.split("?")[0],
+                    pathname: window.location.pathname,
                     query: {
                       ...(currentItineraryId ? { id: currentItineraryId } : {}),
                       drawer: "changeHotelBooking",
