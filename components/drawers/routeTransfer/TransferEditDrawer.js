@@ -778,7 +778,7 @@ const TransferEditDrawer = (props) => {
                 </div>
               ) : (
                 <div className="text-xl font-600 leading-2xl">
-                  {(drawerType === "multicity" || booking_type === "multicity") ? "Add Taxi" : "Changing Transfer"}
+                  {(drawerType === "multicity" || booking_type === "multicity") ? `Add Taxi in ${city || mercuryTransfer?.source?.city_name}` : "Changing Transfer"}
                 </div>
               )}
 
@@ -1427,14 +1427,14 @@ const TransferEditDrawer = (props) => {
                 {/* Non-multicity suggestions (sightseeing, pickup_drop etc) — now an array */}
                 {Array.isArray(roundTripSuggestions) && roundTripSuggestions.map((sugg, idx) => (
                   <div key={idx} className="w-full">
-                    <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    {/* <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
                       <span>{sugg.name}</span>
                       {sugg?.data?.duration?.text && (
                         <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
                           {sugg.data.duration.text}
                         </span>
                       )}
-                    </div>
+                    </div> */}
                     <MultiCityTripSuggestion
                       handleRoundTripSelect={handleMultiCitySelect}
                       multiCitySuggestions={sugg}
@@ -4654,6 +4654,9 @@ const MultiCityTripSuggestion = ({
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
               Distance: {multiCitySuggestions?.data?.distance?.value} Kms
+            </div>
+            <div className="text-[#7A7A7A] text-[14px] font-normal">
+              Duration: {multiCitySuggestions?.data?.duration?.text}
             </div>
           </div>
         </div>
