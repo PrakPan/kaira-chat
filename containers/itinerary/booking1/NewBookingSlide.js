@@ -874,6 +874,7 @@ const ItineraryInclusions = ({
     Transfers: true,
     Flights: true,
     Activities: true,
+     "Activities & Ancillaries": true,
   });
   const { currency } = useSelector((state) => state.currency);
 

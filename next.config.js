@@ -11,7 +11,7 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
-    domains:[''],
+    // domains:[''],
     remotePatterns: [
       {
         protocol: "https",
@@ -44,7 +44,7 @@ const nextConfig = {
       {
         protocol:"https",
         hostname:"maps.googleapis.com"
-      }
+      },
     ],
   },
 

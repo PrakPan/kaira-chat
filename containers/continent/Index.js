@@ -164,9 +164,6 @@ const Index = (props) => {
             `Your ${convertDbNameToCapitalFirst(
               props.data.slug
             )} Trip, Designed Around You`,
-            // `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
-            //   props.data.slug
-            // )} now!`,
             9,
             `Craft a trip to ${props.data.destination} now!`
           )}

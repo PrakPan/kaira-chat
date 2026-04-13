@@ -183,7 +183,6 @@ const Index = (props) => {
         <HeroSection
           title={validateTextSize(
             `Your ${props.data.name} Trip, Designed Around You`,
-            // `Craft a personalized itinerary to ${props.data.name} now!`,
             9,
             `Craft a trip to ${props.data.name} now!`
           )}

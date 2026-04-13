@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import {
   ANIMATION_CONFIG,
   createEntranceAnimation,
@@ -23,11 +23,15 @@ const HeroSection = ({ title, subtitle, image, slug=null,setShowTailoredModal}) 
   const [animationStarted, setAnimationStarted] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
-
   // Use prop image if provided (single or array), otherwise use default heroImages
-  const imagesToUse = image 
+  const imagesToUse = image
     ? (Array.isArray(image) ? image : [image])
     : null;
+
+  // Reset animation state when image prop changes (navigation) — keep refs intact to avoid flicker
+  useEffect(() => {
+    setAnimationStarted(false);
+  }, [image]);
 
   // Track image loading
   const handleImageLoad = useCallback(() => {
@@ -64,7 +68,7 @@ useGSAP(
 
     setAnimationStarted(true);
   },
-  { scope: containerRef, dependencies: [allImagesLoaded, animationStarted] }
+  { scope: containerRef, dependencies: [allImagesLoaded, animationStarted, image] }
 );
 
  const trustFactors = [
