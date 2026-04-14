@@ -11,6 +11,17 @@ import { createPortal } from "react-dom";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
+export interface AttachmentFile {
+  /** Temporary local ID (before server responds) or server-assigned ID */
+  id: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  /** uploading → uploaded → error */
+  status: "uploading" | "uploaded" | "error";
+  file: File;
+}
+
 const LoginButton = styled.button`
   width: 136px;
   height: 44px;
@@ -200,6 +211,7 @@ sessionId: propSessionId,
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
+  const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -423,18 +435,16 @@ case "shimmer_day_by_day": {
 
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
-  (text: string) => {
+  (text: string, attachmentIds?: string[]) => {
     setQuickReplies([]);
-    lastSentMessageRef.current = text; 
+    lastSentMessageRef.current = text;
 
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
-      rawSendMessage(text, userLocationData ?? undefined);
-    } else {
-      rawSendMessage(text);
     }
+    rawSendMessage(text, attachmentIds);
   },
-  [rawSendMessage, userLocationData],
+  [rawSendMessage],
 );
 
   // ── Side-effects ──────────────────────────────────────────────────────────
@@ -556,13 +566,101 @@ const handleShowLogin = useCallback(() => {
   setShowLoginModal(true);
 }, []);
 
+  // ── Attachment handlers ─────────────────────────────────────────────────
+  const handleFilesSelected = useCallback(
+    async (files: File[]) => {
+      for (const file of files) {
+        const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const entry: AttachmentFile = {
+          id: tempId,
+          name: file.name,
+          size: file.size,
+          mimeType: file.type || "application/octet-stream",
+          status: "uploading",
+          file,
+        };
+        setAttachments((prev) => [...prev, entry]);
+
+        try {
+          // Step 1: Create attachment record
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          };
+          const createBody: Record<string, unknown> = {
+            type: "attachments.create",
+            params: {
+              name: file.name,
+              size: file.size,
+              mime_type: file.type || "application/octet-stream",
+            },
+            model: selectedModel,
+            user_location: userLocationData,
+            platform:
+              typeof window !== "undefined" && window.innerWidth < 768
+                ? "mobile"
+                : "desktop",
+            session_id: sessionIdRef.current,
+            ...(authToken ? { access_token: authToken } : {}),
+            ...(reduxUserId != null ? { user_id: reduxUserId } : {}),
+          };
+
+          const createRes = await fetch(CHATKIT_API_URL, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(createBody),
+          });
+          if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
+          const createData = await createRes.json();
+          console.log("[Attachment create response]", createData);
+          const serverId: string = createData.id;
+          const uploadUrl: string = createData.upload_descriptor?.url;
+
+          if (!uploadUrl) throw new Error("No upload URL returned");
+
+          // Step 2: Upload file
+          const formData = new FormData();
+          formData.append("file", file);
+          const uploadRes = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData,
+          });
+          if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
+
+          // Replace temp entry with server ID and mark uploaded
+          setAttachments((prev) =>
+            prev.map((a) =>
+              a.id === tempId ? { ...a, id: serverId, status: "uploaded" as const } : a,
+            ),
+          );
+        } catch (err) {
+          console.error("[Attachment upload error]", err);
+          setAttachments((prev) =>
+            prev.map((a) =>
+              a.id === tempId ? { ...a, status: "error" as const } : a,
+            ),
+          );
+        }
+      }
+    },
+    [authToken, selectedModel, userLocationData, reduxUserId],
+  );
+
+  const handleRemoveAttachment = useCallback((id: string) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+  }, []);
+
   const handleSubmit = useCallback(() => {
     setShowLoginPrompt(false);
-    if (!input.trim() || isStreaming) return;
+    const hasText = !!input.trim();
+    const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
+    if ((!hasText && uploadedAttachments.length === 0) || isStreaming) return;
     setErrorDismissed(true);
-    sendMessage(input.trim());
+    const attachmentIds = uploadedAttachments.map((a) => a.id);
+    sendMessage(input.trim(), attachmentIds.length > 0 ? attachmentIds : undefined);
     setInput("");
-  }, [input, isStreaming, sendMessage]);
+    setAttachments([]);
+  }, [input, isStreaming, sendMessage, attachments]);
 
   const handleQuickReply = useCallback(
     (reply: QuickReply) => {
@@ -756,6 +854,9 @@ const handleShowLogin = useCallback(() => {
             isStreaming={isStreaming}
             placeholder="Ask me anything"
             showAttach={true}
+            onFilesSelected={handleFilesSelected}
+            attachments={attachments}
+            onRemoveAttachment={handleRemoveAttachment}
           />
         </div>
       </div>

@@ -87,11 +87,11 @@ export function generateSessionId(): string {
 
 // ─── Shared input shape ───────────────────────────────────────────────────────
 
-function buildInput(text: string) {
+function buildInput(text: string, attachmentIds: string[] = []) {
   return {
     content: [{ type: "input_text", text }],
     quoted_text: "",
-    attachments: [],
+    attachments: attachmentIds,
     inference_options: {},
   };
 }
@@ -130,11 +130,12 @@ function buildFirstMessageBody(
     authToken?: string;
     userId?: string | number;
     sessionId: string;
+    attachmentIds?: string[];
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.create",
-    params: { input: buildInput(text) },
+    params: { input: buildInput(text, opts.attachmentIds) },
     model: opts.model,
     user_location: opts.userLocation,
     domain_key: opts.domainKey,
@@ -157,11 +158,12 @@ function buildSubsequentMessageBody(
     authToken?: string;
     userId?: string | number;
     sessionId: string;
+    attachmentIds?: string[];
   }
 ): Record<string, unknown> {
   const body: Record<string, unknown> = {
     type: "threads.add_user_message",
-    params: { input: buildInput(text), thread_id: opts.threadId },
+    params: { input: buildInput(text, opts.attachmentIds), thread_id: opts.threadId },
     model: opts.model,
     // user_location: opts.userLocation,
     domain_key: opts.domainKey,
@@ -547,7 +549,7 @@ export function useChat({
   // ─── sendMessage ──────────────────────────────────────────────────────────
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, attachmentIds?: string[]) => {
       const trimmed = content.trim();
       if (!trimmed || isStreaming) return;
 
@@ -588,6 +590,7 @@ export function useChat({
         authToken: authTokenRef.current,
         userId: userIdRef.current,
         sessionId: sessionIdRef.current,
+        attachmentIds,
       };
 
       const body = threadIdRef.current

@@ -478,7 +478,7 @@ export default function ActivityDetails(props) {
             </div>
           ) : null}
 
-          {props?.data?.prices && props?.data?.prices?.length && (
+          {!isDraft && props?.data?.prices && props?.data?.prices?.length && (
             <div className="mb-4">
               <h3 className="font-medium text-base mb-3">Package Options</h3>
 
@@ -583,7 +583,7 @@ export default function ActivityDetails(props) {
         )}
       </div>
 
-      <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
+      {!isDraft && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
           <>
             {selectedPackage?.total_price && (
@@ -619,7 +619,7 @@ export default function ActivityDetails(props) {
             on {dateFormat(props?.date)}
           </div>
         </div>}
-      </div>
+      </div>}
     </div>
   );
 }

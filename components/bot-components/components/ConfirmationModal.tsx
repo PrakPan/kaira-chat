@@ -6,12 +6,24 @@ import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
 import BottomModal from "../../../components/ui/LowerModal";
 import { useDispatch } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
+import {
+  PassengerRow,
+  HeaderRow,
+  PassengerLabel,
+  CounterBox,
+  CounterButton,
+  CounterValue,
+  ApplyButton,
+  Section,
+} from "../../../components/tailoredform/slidetwo/EnterPassenger";
 
 interface ConfirmationModalProps {
   show: boolean;
   onHide: () => void;
   itineraryName: string;
   onConfirm: (details: ConfirmationDetails) => void;
+  isLoading?: boolean;
+  onMobileChatSwitch?: () => void;
 }
 
 export interface ConfirmationDetails {
@@ -143,6 +155,118 @@ const SimpleDatePicker = ({
   );
 };
 
+// ─── Skeleton Loader ─────────────────────────────────────────────────────────
+const ConfirmationSkeleton = () => (
+  <div className="p-6 animate-pulse">
+    <div className="flex justify-between items-center mb-5">
+      <div className="h-5 w-48 bg-gray-200 rounded" />
+      <div className="h-6 w-6 bg-gray-200 rounded-full" />
+    </div>
+    <div className="mb-4">
+      <div className="h-3 w-24 bg-gray-200 rounded mb-2" />
+      <div className="h-10 w-full bg-gray-200 rounded-xl" />
+    </div>
+    <div className="mb-4">
+      <div className="h-3 w-20 bg-gray-200 rounded mb-2" />
+      <div className="h-10 w-full bg-gray-200 rounded-xl" />
+    </div>
+    <div className="mb-5">
+      <div className="h-3 w-16 bg-gray-200 rounded mb-2" />
+      <div className="h-10 w-full bg-gray-200 rounded-xl" />
+    </div>
+    <div className="flex gap-2.5">
+      <div className="flex-1 h-10 bg-gray-200 rounded-xl" />
+      <div className="flex-1 h-10 bg-gray-200 rounded-xl" />
+    </div>
+  </div>
+);
+
+// ─── Passenger Popup (uses EnterPassenger styled components) ─────────────────
+interface PassengerPopupProps {
+  adults: number;
+  children: number;
+  infants: number;
+  onApply: (adults: number, children: number, infants: number) => void;
+  onClose: () => void;
+}
+
+const PassengerPopup: React.FC<PassengerPopupProps> = ({
+  adults: initialAdults,
+  children: initialChildren,
+  infants: initialInfants,
+  onApply,
+  onClose,
+}) => {
+  const [adults, setAdults] = useState(initialAdults);
+  const [children, setChildren] = useState(initialChildren);
+  const [infants, setInfants] = useState(initialInfants);
+
+  const handleApply = () => {
+    onApply(adults, children, infants);
+    onClose();
+  };
+
+  return (
+    <div className="flex flex-col justify-between items-center h-[436px] overflow-y-auto">
+      <FaX
+        size={14}
+        className="text-black self-end mb-2 cursor-pointer hover:bg-gray-100 rounded-full transition-colors"
+        onClick={onClose}
+      />
+      <HeaderRow>
+        <div className="Heading2SB">Who&apos;s Going?</div> 
+        <div className="Body2R_14">{adults + children + infants} Travelers</div>
+      </HeaderRow>
+
+      <Section className="w-full">
+        {/* Adults */}
+        <PassengerRow className="!w-[100%]">
+          <PassengerLabel>
+            <div className="Body2M_14">Adults</div>
+            <div className="subtitle">Ages 13 or above</div>
+          </PassengerLabel>
+          <CounterBox>
+            <CounterButton onClick={() => setAdults((p: number) => p - 1)} disabled={adults <= 1}>−</CounterButton>
+            <CounterValue>{adults}</CounterValue>
+            <CounterButton onClick={() => setAdults((p: number) => p + 1)}>+</CounterButton>
+          </CounterBox>
+        </PassengerRow>
+
+        {/* Children */}
+        <PassengerRow className="!w-[100%]">
+          <PassengerLabel>
+            <div className="Body2M_14">Children</div>
+            <div className="subtitle">Ages 2 to 12</div>
+          </PassengerLabel>
+          <CounterBox>
+            <CounterButton onClick={() => setChildren((p: number) => p - 1)} disabled={children <= 0}>−</CounterButton>
+            <CounterValue>{children}</CounterValue>
+            <CounterButton onClick={() => setChildren((p: number) => p + 1)}>+</CounterButton>
+          </CounterBox>
+        </PassengerRow>
+
+        {/* Infants */}
+        <PassengerRow className="!w-[100%]">
+          <PassengerLabel>
+            <div className="Body2M_14">Infants</div>
+            <div className="subtitle">Under age 2</div>
+          </PassengerLabel>
+          <CounterBox>
+            <CounterButton onClick={() => setInfants((p: number) => p - 1)} disabled={infants <= 0}>−</CounterButton>
+            <CounterValue>{infants}</CounterValue>
+            <CounterButton onClick={() => setInfants((p: number) => p + 1)}>+</CounterButton>
+          </CounterBox>
+        </PassengerRow>
+      </Section>
+
+      {/* Buttons */}
+      <div className="flex justify-end w-full gap-2">
+        <ApplyButton className="w-1/2" onClick={handleApply}>Apply</ApplyButton>
+      </div>
+    </div>
+  );
+};
+
 // ─── ModalContent defined OUTSIDE ConfirmationModal ──────────────────────────
 interface ModalContentProps {
   itineraryName: string;
@@ -152,8 +276,8 @@ interface ModalContentProps {
   onHide: () => void;
   onConfirm: () => void;
   onOpenDatePicker: () => void;
-  handleIncrement: (field: keyof Pick<ConfirmationDetails, "adults" | "children" | "infants">) => void;
-  handleDecrement: (field: keyof Pick<ConfirmationDetails, "adults" | "children" | "infants">) => void;
+  onOpenPassengerPicker: () => void;
+  totalTravelers: number;
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -164,28 +288,22 @@ const ModalContent: React.FC<ModalContentProps> = ({
   onHide,
   onConfirm,
   onOpenDatePicker,
-  handleIncrement,
-  handleDecrement,
+  onOpenPassengerPicker,
+  totalTravelers,
 }) => {
-  const paxConfig = [
-    { field: "adults" as const, label: "Adults", subtitle: "Age 12+", icon: "👤" },
-    { field: "children" as const, label: "Children", subtitle: "Age 2–12", icon: "🧒" },
-    { field: "infants" as const, label: "Infants", subtitle: "Under 2", icon: "👶" },
-  ];
-
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-3">
         <h2 className="text-lg font-semibold text-gray-800">Confirm Itinerary Details</h2>
         <button onClick={onHide} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
-          <FaX size={14} className="text-gray-400 max-ph:hidden" />
+          <FaX size={14} className="text-black max-ph:hidden" />
         </button>
       </div>
 
       {/* Start Location */}
       <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
           Start Location <span className="text-red-400">*</span>
         </label>
         <div className="relative">
@@ -195,7 +313,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             value={location}
             onChange={onLocationChange}
             placeholder="e.g., New Delhi"
-            className="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#07213A]/15 focus:border-[#07213A]/30 text-sm transition-all placeholder:text-gray-400"
+            className="w-full pl-9 pr-3 py-2.5 border rounded-[8px] bg-white focus:outline-none text-sm transition-all placeholder:text-gray-400"
             autoComplete="off"
             spellCheck={false}
           />
@@ -204,12 +322,12 @@ const ModalContent: React.FC<ModalContentProps> = ({
 
       {/* Start Date */}
       <div className="mb-4">
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
           Start Date <span className="text-red-400">*</span>
         </label>
         <div
           onClick={onOpenDatePicker}
-          className="w-full border border-gray-200 rounded-xl bg-white p-2.5 cursor-pointer flex items-center justify-between hover:border-[#07213A]/30 hover:ring-2 hover:ring-[#07213A]/10 transition-all"
+          className="w-full border rounded-[8px] bg-white p-2.5 cursor-pointer flex items-center justify-between transition-all"
         >
           <span className={`text-sm ${details.startDate ? "text-gray-800 font-medium" : "text-gray-400"}`}>
             {details.startDate || "Select start date"}
@@ -218,50 +336,19 @@ const ModalContent: React.FC<ModalContentProps> = ({
         </div>
       </div>
 
-      {/* Pax Information */}
+      {/* Travelers - simple display with Change CTA */}
       <div className="mb-5">
-        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+        <label className="block text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
           Travelers
         </label>
-        <div className="space-y-0 border border-gray-200 rounded-xl overflow-hidden">
-          {paxConfig.map(({ field, label, subtitle, icon }, idx) => (
-            <div
-              key={field}
-              className={`flex items-center justify-between px-3.5 py-3 bg-white ${
-                idx < paxConfig.length - 1 ? "border-b border-gray-100" : ""
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <span className="text-base">{icon}</span>
-                <div>
-                  <span className="text-sm font-medium text-gray-800">{label}</span>
-                  <span className="text-[11px] text-gray-400 block leading-tight">{subtitle}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => handleDecrement(field)}
-                  disabled={details[field] === 0}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-medium transition-all
-                    ${details[field] === 0
-                      ? "bg-gray-50 text-gray-300 cursor-not-allowed"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200 active:scale-95"
-                    }`}
-                >
-                  −
-                </button>
-                <span className="w-6 text-center text-sm font-semibold text-gray-800 tabular-nums">
-                  {details[field]}
-                </span>
-                <button
-                  onClick={() => handleIncrement(field)}
-                  className="w-8 h-8 rounded-lg bg-[#07213A] text-white flex items-center justify-center text-lg font-medium hover:bg-[#07213A]/90 active:scale-95 transition-all"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
+        <div
+          className="w-full border rounded-[8px] bg-white p-2.5 cursor-pointer flex items-center justify-between transition-all"
+          onClick={onOpenPassengerPicker}
+        >
+          <span className="text-sm text-gray-800 font-medium">
+            {totalTravelers} {totalTravelers === 1 ? "Traveler" : "Travelers"}
+          </span>
+          <span className="text-sm font-medium text-blue underline">Change</span>
         </div>
       </div>
 
@@ -290,18 +377,21 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onHide,
   itineraryName,
   onConfirm,
+  isLoading,
+  onMobileChatSwitch,
 }) => {
   const dispatch = useDispatch();
   const [isMobile, setIsMobile] = useState(false);
   const [details, setDetails] = useState<ConfirmationDetails>({
     startDate: "",
-    adults: 2,
+    adults: 1,
     children: 0,
     infants: 0,
     startLocation: "",
   });
   const [location, setLocation] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showPassengerPicker, setShowPassengerPicker] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
@@ -314,15 +404,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     setLocation(e.target.value);
   };
 
-  const handleIncrement = (field: keyof Pick<ConfirmationDetails, "adults" | "children" | "infants">) => {
-    setDetails((prev) => ({ ...prev, [field]: prev[field] + 1 }));
+  const handlePassengerApply = (adults: number, children: number, infants: number) => {
+    setDetails((prev) => ({ ...prev, adults, children, infants }));
   };
 
-  const handleDecrement = (field: keyof Pick<ConfirmationDetails, "adults" | "children" | "infants">) => {
-    if (details[field] > 0) {
-      setDetails((prev) => ({ ...prev, [field]: prev[field] - 1 }));
-    }
-  };
+  const totalTravelers = details.adults + details.children + details.infants;
 
   const handleConfirm = () => {
     if (!details.startDate) {
@@ -335,6 +421,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     }
     onConfirm({ ...details, startLocation: location });
     onHide();
+    // On mobile, switch to chat view
+    if (isMobile && onMobileChatSwitch) {
+      onMobileChatSwitch();
+    }
   };
 
   const modalContentProps: ModalContentProps = {
@@ -345,8 +435,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onHide,
     onConfirm: handleConfirm,
     onOpenDatePicker: () => setShowDatePicker(true),
-    handleIncrement,
-    handleDecrement,
+    onOpenPassengerPicker: () => setShowPassengerPicker(true),
+    totalTravelers,
+  };
+
+  const renderContent = () => {
+    if (isLoading) return <ConfirmationSkeleton />;
+    return <ModalContent {...modalContentProps} />;
   };
 
   return (
@@ -361,7 +456,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         paddingY="0"
         width="500px"
       >
-        <ModalContent {...modalContentProps} />
+        {renderContent()}
       </ModalWithBackdrop>
 
       <BottomModal
@@ -372,7 +467,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         paddingX="0"
         paddingY="0"
       >
-        <ModalContent {...modalContentProps} />
+        {renderContent()}
       </BottomModal>
 
       {/* Date Picker Modal */}
@@ -404,6 +499,42 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           onSelect={(date) => setDetails((prev) => ({ ...prev, startDate: date }))}
           onClose={() => setShowDatePicker(false)}
           currentDate={details.startDate}
+        />
+      </BottomModal>
+
+      {/* Passenger Picker Modal */}
+      <ModalWithBackdrop
+        closeIcon={false}
+        show={showPassengerPicker && !isMobile}
+        onHide={() => setShowPassengerPicker(false)}
+        borderRadius="12px"
+        paddingX="20px"
+        paddingY="20px"
+        width="400px"
+      >
+        <PassengerPopup
+          adults={details.adults}
+          children={details.children}
+          infants={details.infants}
+          onApply={handlePassengerApply}
+          onClose={() => setShowPassengerPicker(false)}
+        />
+      </ModalWithBackdrop>
+
+      <BottomModal
+        show={showPassengerPicker && isMobile}
+        onHide={() => setShowPassengerPicker(false)}
+        width="100%"
+        height="max-content"
+        paddingX="20px"
+        paddingY="20px"
+      >
+        <PassengerPopup
+          adults={details.adults}
+          children={details.children}
+          infants={details.infants}
+          onApply={handlePassengerApply}
+          onClose={() => setShowPassengerPicker(false)}
         />
       </BottomModal>
     </>

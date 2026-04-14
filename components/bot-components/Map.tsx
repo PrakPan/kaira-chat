@@ -237,10 +237,21 @@ const MyMap: React.FC<MapProps> = ({
       mapInstance.current = new google.maps.Map(mapRef.current, {
         center: { lat: state.lat, lng: state.lng },
         zoom: state.zoom || 12,
+        minZoom: 2,
+        maxZoom: 18,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: true,
         styles: mapStyles,
+        restriction: {
+          latLngBounds: {
+            north: 85,
+            south: -85,
+            west: -180,
+            east: 180,
+          },
+          strictBounds: true,
+        },
       });
       infoWindowRef.current = new google.maps.InfoWindow();
     };
