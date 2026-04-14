@@ -302,19 +302,9 @@ function ButtonNode({
     }
   };
 
-  // ── ··· reorder handle ──
+  // ── ··· reorder handle — hidden, space reclaimed ──
   if (iconStart === "dots-horizontal") {
-    return (
-      <button onClick={handleClick} style={{
-        width: 36, height: 36, borderRadius: "50%",
-        border: "1.5px solid #d1d5db",
-         background: "transparent",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        color: "#6b7280", cursor: "pointer", flexShrink: 0, outline: "none",
-      }}>
-        <DotsHorizontalIcon />
-      </button>
-    );
+    return null;
   }
 
   // ── notebook-pencil edit ──
@@ -406,36 +396,6 @@ function ButtonNode({
 }
 
 
-// Numbered map-pin matching the map markers (pink teardrop with white circle + number)
-function NumberedMapPin({ number }: { number: number }) {
-  return (
-    <svg width="24" height="30" viewBox="0 0 48 61" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id={`sh-w-${number}`} x="-40%" y="-40%" width="180%" height="180%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="rgba(0,0,0,0.25)" />
-        </filter>
-      </defs>
-      <path
-        d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z"
-        fill="#FD6D6C"
-        filter={`url(#sh-w-${number})`}
-      />
-      <circle cx="24" cy="23.9643" r="11.5" fill="white" />
-      <text
-        x="24"
-        y="28.5"
-        textAnchor="middle"
-        fontFamily="Inter, Arial, sans-serif"
-        fontSize="13"
-        fontWeight="700"
-        fill="#FD6D6C"
-      >
-        {number}
-      </text>
-    </svg>
-  );
-}
-
 function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const { size, width, height, background, radius, children, align, justify } = node;
   const routeCtx = useContext(RouteItemContext);
@@ -447,17 +407,15 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
     background != null;
 
   if (isRoutePinDot && routeCtx) {
+    const dotColor = resolveBg(background as string | undefined);
     return (
       <div style={{
-        width: "24px",
-        height: "30px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        width: 10,
+        height: 10,
+        borderRadius: "50%",
+        background: dotColor,
         flexShrink: 0,
-      }}>
-        <NumberedMapPin number={routeCtx.index + 1} />
-      </div>
+      }} />
     );
   }
 
@@ -474,11 +432,17 @@ function BoxNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
 
     return (
       <div style={{
-        width: 0,
-        height: typeof height === "string" ? height : `${height as number}px`,
-        borderLeft: "2px dashed #d1d5db",
+        width: 10,
+        display: "flex",
+        justifyContent: "center",
         flexShrink: 0,
-      }} />
+      }}>
+        <div style={{
+          width: 0,
+          height: typeof height === "string" ? height : `${height as number}px`,
+          borderLeft: "2px dashed #d1d5db",
+        }} />
+      </div>
     );
   }
 
@@ -516,17 +480,32 @@ function TextNode({ node }: { node: WidgetNode }) {
   const routeCtx = useContext(RouteItemContext);
   const fsMap: Record<string, number> = { xs: 11, sm: 13, md: 14, lg: 16, xl: 19 };
   const fwMap: Record<string, number> = { normal: 400, medium: 500, semibold: 600, bold: 700 };
-  return (
+  const textEl = (
     <span style={{
       fontSize: fsMap[size as string] ?? 14,
       fontWeight: fwMap[weight as string] ?? 400,
       color: type === "Caption" ? "#9ca3af" : "#111827",
       fontFamily: "'Inter', sans-serif",
-      lineHeight: routeCtx ? "30px" : 1.4,
+      lineHeight: 1.4,
     }}>
       {value as string}
     </span>
   );
+
+  // In route context, wrap text so it aligns vertically with the 10px dot
+  if (routeCtx) {
+    return (
+      <div style={{
+        height: 10,
+        display: "flex",
+        alignItems: "center",
+      }}>
+        {textEl}
+      </div>
+    );
+  }
+
+  return textEl;
 }
 
 function LabelNode({ node }: { node: WidgetNode }) {
@@ -562,18 +541,24 @@ const JUSTIFY_MAP: Record<string, string> = {
   between: "space-between", around: "space-around",
 };
 
+function isDotsHorizontalNode(n: WidgetNode): boolean {
+  return (n.type === "Button" && n.iconStart === "dots-horizontal") ||
+         (n.type === "Icon" && n.name === "dots-horizontal");
+}
+
 function RowNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const { children = [], gap, align, justify } = node;
+  const filtered = (children as WidgetNode[]).filter((c) => !isDotsHorizontalNode(c));
   return (
     <div style={{
       display: "flex",
       flexDirection: "row",
       gap: resolveGap(gap as number | undefined),
-      alignItems: ALIGN_MAP[align as string] ?? "center", // ← center by default
+      alignItems: ALIGN_MAP[align as string] ?? "center",
       justifyContent: JUSTIFY_MAP[justify as string] ?? "flex-start",
-      width: "auto", // ← don't force 100%
+      width: "auto",
     }}>
-      {(children as WidgetNode[]).map((child, i) => (
+      {filtered.map((child, i) => (
         <NodeRenderer key={i} node={child} onAction={onAction} />
       ))}
     </div>
@@ -598,17 +583,15 @@ function ColNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
 }
 
 function IconNode({ node }: { node: WidgetNode }) {
-  const colorMap: Record<string, string> = { secondary: "#9ca3af", primary: "#111827" };
-  const color = colorMap[node.color as string] ?? "#9ca3af";
-  if (node.name === "dots-horizontal") {
-    return <span style={{ color, display: "flex", marginTop: "4px" }}><DotsHorizontalIcon /></span>;
-  }
+  // dots-horizontal icon removed — space reclaimed by route items
+  if (node.name === "dots-horizontal") return null;
   return null;
 }
 
 function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const routeCtx = useContext(RouteItemContext);
   const children = (node.children ?? []) as WidgetNode[];
+  const filtered = children.filter((c) => !isDotsHorizontalNode(c));
   return (
     <div style={{
       display: "flex", flexDirection: "row",
@@ -616,7 +599,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
       gap: node.gap != null ? `${(node.gap as number) * 4}px` : "8px",
       padding: "2px 0",
     }}>
-      {children.map((child, i) => (
+      {filtered.map((child, i) => (
         <NodeRenderer key={i} node={child} onAction={onAction} />
       ))}
     </div>

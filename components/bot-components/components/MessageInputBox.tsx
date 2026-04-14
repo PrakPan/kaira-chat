@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 // @ts-ignore — JS component
 import Dictate from "../../Chatbot/Dictate";
+import type { AttachmentFile } from "./ChatKitPanel";
 
 const SendIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -34,6 +35,22 @@ const StopIcon = () => (
   </svg>
 );
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fileIcon(mimeType: string): string {
+  if (mimeType.startsWith("image/")) return "\u{1F5BC}";
+  if (mimeType === "application/pdf") return "\u{1F4C4}";
+  return "\u{1F4CE}";
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
 interface MessageInputBoxProps {
   value: string;
   onChange: (value: string) => void;
@@ -45,6 +62,12 @@ interface MessageInputBoxProps {
   /** Show the + attach button (default: true) */
   showAttach?: boolean;
   rotatePlaceholders?: string[];
+  /** Called when user selects or drops files */
+  onFilesSelected?: (files: File[]) => void;
+  /** Currently attached files (managed by parent) */
+  attachments?: AttachmentFile[];
+  /** Remove an attachment by id */
+  onRemoveAttachment?: (id: string) => void;
 }
 
 export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
@@ -57,12 +80,18 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   placeholder = "Ask me anything",
   showAttach = true,
   rotatePlaceholders = [],
+  onFilesSelected,
+  attachments = [],
+  onRemoveAttachment,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dictateRef = useRef<any>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tracks what the user manually typed (base for appending transcript)
   const [trackTyped, setTrackTyped] = useState("");
+  const [isDragOver, setIsDragOver] = useState(false);
+  const dragCounterRef = useRef(0);
 
   const [placeholderIdx, setPlaceholderIdx] = useState(0);
   const [fadingOut, setFadingOut] = useState(false);
@@ -91,7 +120,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
     el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
   }, [value]);
 
-  const canSend = value.trim().length > 0 && !isStreaming;
+  const hasUploadedAttachments = attachments.some((a) => a.status === "uploaded");
+  const canSend = (value.trim().length > 0 || hasUploadedAttachments) && !isStreaming;
 
   // When user manually types, keep trackTyped in sync
   const handleChange = (text: string) => {
@@ -121,17 +151,190 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
     onSubmit();
   };
 
+  // ── File selection ──────────────────────────────────────────────────────
+  const handleAttachClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (files && files.length > 0) {
+        onFilesSelected?.(Array.from(files));
+      }
+      // Reset so same file can be re-selected
+      e.target.value = "";
+    },
+    [onFilesSelected],
+  );
+
+  // ── Drag-and-drop ──────────────────────────────────────────────────────
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current += 1;
+    if (e.dataTransfer.types.includes("Files")) {
+      setIsDragOver(true);
+    }
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current -= 1;
+    if (dragCounterRef.current === 0) {
+      setIsDragOver(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounterRef.current = 0;
+      setIsDragOver(false);
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        onFilesSelected?.(Array.from(files));
+      }
+    },
+    [onFilesSelected],
+  );
+
   return (
     <div
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       style={{
         borderRadius: 24,
-        border: "1.5px solid #e5e7eb",
-        background: "#fff",
+        border: isDragOver
+          ? "1.5px solid #3b82f6"
+          : "1.5px solid #e5e7eb",
+        background: isDragOver ? "#eff6ff" : "#fff",
         boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
         padding: "14px 14px",
         fontFamily: "'Inter', sans-serif",
+        transition: "border-color 0.15s, background 0.15s",
       }}
     >
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        style={{ display: "none" }}
+        onChange={handleFileInputChange}
+      />
+
+      {/* Drag-over overlay hint */}
+      {isDragOver && (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "8px 0",
+            color: "#3b82f6",
+            fontSize: 13,
+            fontWeight: 500,
+          }}
+        >
+          Drop files here
+        </div>
+      )}
+
+      {/* Attachment pills */}
+      {attachments.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
+            marginBottom: 8,
+          }}
+        >
+          {attachments.map((att) => (
+            <div
+              key={att.id}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "4px 10px",
+                borderRadius: 16,
+                background:
+                  att.status === "error" ? "#fef2f2" : "#f3f4f6",
+                border:
+                  att.status === "error"
+                    ? "1px solid #fca5a5"
+                    : "1px solid #e5e7eb",
+                fontSize: 12,
+                color: att.status === "error" ? "#dc2626" : "#374957",
+                maxWidth: 220,
+              }}
+            >
+              <span>{fileIcon(att.mimeType)}</span>
+              <span
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: 120,
+                }}
+                title={att.name}
+              >
+                {att.name}
+              </span>
+              <span style={{ color: "#9ca3af", fontSize: 11 }}>
+                {formatFileSize(att.size)}
+              </span>
+              {att.status === "uploading" && (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="animate-spin"
+                  style={{ flexShrink: 0 }}
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="#9ca3af"
+                    strokeWidth="3"
+                    strokeDasharray="60"
+                    strokeDashoffset="20"
+                  />
+                </svg>
+              )}
+              <button
+                type="button"
+                onClick={() => onRemoveAttachment?.(att.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  lineHeight: 1,
+                  fontSize: 14,
+                  color: "#9ca3af",
+                  flexShrink: 0,
+                }}
+                title="Remove"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Textarea + animated placeholder */}
       <div style={{ position: "relative" }}>
         <style>{`
@@ -200,6 +403,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         {showAttach ? (
           <button
             type="button"
+            onClick={handleAttachClick}
             className="flex items-center justify-center transition-colors hover:bg-gray-100 rounded-full"
             title="Attach"
           >

@@ -471,6 +471,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         setHasBotResponded(true);
         setShowStartScreen(false);
         setViewMode("itinerary");
+        // Switch to p2 mode so subsequent messages use /chatkit/p2
+        setBotMode("p2");
+        setItineraryId(id);
         if (summary) chatBotInjectedMessageRef.current = summary;
       } catch (e) {
         console.error("handleItineraryCompletionDone error:", e);
@@ -1441,6 +1444,8 @@ Start Location: ${details.startLocation}`;
         onHide={() => setShowConfirmModal(false)}
         itineraryName="Your Itinerary"
         onConfirm={handleConfirmItinerary}
+        isLoading={showItineraryShimmer}
+        onMobileChatSwitch={() => mobileTabSwitchRef.current?.("chat")}
       />
 
       {showShare && (
@@ -2127,7 +2132,7 @@ const MobileLayout = React.memo(({
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
-              <p className="text-[14px] pr-6 mb-0">
+              <p className="text-[14px] pr-3 mb-0">
                 Hi, I am Kaira Your travel partner
               </p>
               {/* Speech bubble arrow */}
@@ -2191,7 +2196,7 @@ const MobileLayout = React.memo(({
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
-              <p className="text-[14px] pr-6 mb-0">
+              <p className="text-[14px] pr-3 mb-0">
                 Hi, I am Kaira Your travel partner
               </p>
               <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#F7E700]" />
