@@ -330,7 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           type: "threads.list",
           params: { limit: 9999, order: "desc" },
           filter_user_id: String(userId),
-          filter_bot: isComplete ? "P2" : "P1",
+          // filter_bot: isComplete ? "P2" : "P1",
         }),
       });
       const data = await res.json();
