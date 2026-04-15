@@ -83,7 +83,7 @@ const ActivitiesBookings = (props) => {
                   </span>
                 )} */}
               </div>
-              <div className="flex items-start lg:items-center justify-start lg:justify-end w-full lg:w-auto">
+              <div className="flex items-start lg:items-center justify-end lg:justify-end w-full lg:w-auto">
                 {ancillary.visa?.checklist_file && (
                   <a
                     href={ancillary.visa.checklist_file}
@@ -92,7 +92,7 @@ const ActivitiesBookings = (props) => {
                     className="text-black no-underline"
                   >
                     <button className="ttw-btn-secondary w-full sm:w-auto ">
-                      Download
+                      Download Checklist
                     </button>
                   </a>
                 )}
