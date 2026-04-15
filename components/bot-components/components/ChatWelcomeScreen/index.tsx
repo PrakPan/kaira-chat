@@ -1,24 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { MessageInputBox } from "../MessageInputBox";
+import type { AttachmentFile } from "../ChatKitPanel";
+import { useSelector } from "react-redux";
+
+const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+
+function getAuthToken(): string | null {
+  return (
+    localStorage.getItem("token") ??
+    localStorage.getItem("authToken") ??
+    localStorage.getItem("access_token") ??
+    null
+  );
+}
 
 interface ChatWelcomeScreenProps {
-  onSubmit?: (message: string) => void;
+  onSubmit?: (message: string, attachmentIds?: string[]) => void;
   onChatStart?: () => void;
 }
 
 const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart }) => {
   const [inputValue, setInputValue] = useState("");
+  const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+
+  const reduxToken = useSelector((state: any) => state.auth.token);
+  const reduxUserId = useSelector((state: any) => state.auth.id);
+  const authToken = reduxToken ?? getAuthToken();
 
   const handleSubmit = () => {
     const val = inputValue.trim();
-    if (!val) return;
-    onSubmit?.(val);
+    const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
+    if (!val && uploadedAttachments.length === 0) return;
+    const attachmentIds = uploadedAttachments.map((a) => a.id);
+    onSubmit?.(val, attachmentIds.length > 0 ? attachmentIds : undefined);
     setInputValue("");
+    setAttachments([]);
   };
 
   const handleChipClick = (prompt: string) => {
     onSubmit?.(prompt);
   };
+
+  // ── Attachment upload logic ──────────────────────────────────────────────
+  const handleFilesSelected = useCallback(
+    async (files: File[]) => {
+      for (const file of files) {
+        const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const entry: AttachmentFile = {
+          id: tempId,
+          name: file.name,
+          size: file.size,
+          mimeType: file.type || "application/octet-stream",
+          status: "uploading",
+          file,
+        };
+        setAttachments((prev) => [...prev, entry]);
+
+        try {
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          };
+          const createBody: Record<string, unknown> = {
+            type: "attachments.create",
+            params: {
+              name: file.name,
+              size: file.size,
+              mime_type: file.type || "application/octet-stream",
+            },
+            model: "high",
+            platform:
+              typeof window !== "undefined" && window.innerWidth < 768
+                ? "mobile"
+                : "desktop",
+            ...(authToken ? { access_token: authToken } : {}),
+            ...(reduxUserId != null ? { user_id: reduxUserId } : {}),
+          };
+
+          const createRes = await fetch(CHATKIT_API_URL, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(createBody),
+          });
+          if (!createRes.ok) throw new Error(`Create failed: ${createRes.status}`);
+          const createData = await createRes.json();
+          const serverId: string = createData.id;
+          const uploadUrl: string = createData.upload_descriptor?.url;
+
+          if (!uploadUrl) throw new Error("No upload URL returned");
+
+          const formData = new FormData();
+          formData.append("file", file);
+          const uploadRes = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData,
+          });
+          if (!uploadRes.ok) throw new Error(`Upload failed: ${uploadRes.status}`);
+
+          setAttachments((prev) =>
+            prev.map((a) =>
+              a.id === tempId ? { ...a, id: serverId, status: "uploaded" as const } : a,
+            ),
+          );
+        } catch (err) {
+          console.error("[Welcome Attachment upload error]", err);
+          setAttachments((prev) =>
+            prev.map((a) =>
+              a.id === tempId ? { ...a, status: "error" as const } : a,
+            ),
+          );
+        }
+      }
+    },
+    [authToken, reduxUserId],
+  );
+
+  const handleRemoveAttachment = useCallback((id: string) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+  }, []);
 
   const promptChips = [
     {
@@ -59,6 +158,9 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         "Try:  Surprise me — 4 days, ₹80K",
       ]}
       showAttach={true}
+      onFilesSelected={handleFilesSelected}
+      attachments={attachments}
+      onRemoveAttachment={handleRemoveAttachment}
     />
   );
 
@@ -124,13 +226,13 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
         </div>
 
         {/* Input — desktop only inside scroll area (vertically centered with content) */}
-        <div className=" md:block max-ph:hidden w-full max-w-[32rem]">
+        <div className="md:block max-ph:hidden w-full max-w-[32rem] flex flex-col justify-end">
           {inputBox}
         </div>
       </div>
 
       {/* Input — mobile only, pinned at bottom */}
-      <div className="md:hidden flex-shrink-0 px-4 pb-4 pt-2 bg-white">
+      <div className="md:hidden flex-shrink-0 px-4 pb-4 pt-2 bg-white flex flex-col justify-end">
         {inputBox}
       </div>
     </div>

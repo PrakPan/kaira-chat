@@ -43,11 +43,197 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function fileIcon(mimeType: string): string {
-  if (mimeType.startsWith("image/")) return "\u{1F5BC}";
-  if (mimeType === "application/pdf") return "\u{1F4C4}";
-  return "\u{1F4CE}";
+function fileExtension(name: string): string {
+  const dot = name.lastIndexOf(".");
+  return dot > 0 ? name.slice(dot + 1).toUpperCase() : "FILE";
 }
+
+function fileTypeColor(mimeType: string): { bg: string; fg: string } {
+  if (mimeType.startsWith("image/")) return { bg: "#dbeafe", fg: "#2563eb" };
+  if (mimeType === "application/pdf") return { bg: "#fee2e2", fg: "#dc2626" };
+  if (mimeType.includes("spreadsheet") || mimeType.includes("excel"))
+    return { bg: "#dcfce7", fg: "#16a34a" };
+  if (mimeType.includes("word") || mimeType.includes("document"))
+    return { bg: "#dbeafe", fg: "#2563eb" };
+  return { bg: "#f3f4f6", fg: "#6b7280" };
+}
+
+/** Generates a local object URL for image previews */
+function useImagePreview(file: File, mimeType: string): string | null {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    if (!mimeType.startsWith("image/")) return;
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file, mimeType]);
+  return url;
+}
+
+/** Single attachment card */
+const AttachmentCard: React.FC<{
+  att: AttachmentFile;
+  onRemove?: (id: string) => void;
+}> = ({ att, onRemove }) => {
+  const isImage = att.mimeType.startsWith("image/");
+  const previewUrl = useImagePreview(att.file, att.mimeType);
+  const colors = fileTypeColor(att.mimeType);
+  const ext = fileExtension(att.name);
+  const isUploading = att.status === "uploading";
+  const isError = att.status === "error";
+
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: isImage ? 80 : undefined,
+        minWidth: isImage ? 80 : 160,
+        maxWidth: isImage ? 80 : 220,
+        height: isImage ? 80 : undefined,
+        borderRadius: 12,
+        overflow: "hidden",
+        border: isError ? "1.5px solid #fca5a5" : "1px solid #e5e7eb",
+        background: isError ? "#fef2f2" : "#fff",
+        flexShrink: 0,
+        transition: "border-color 0.15s",
+      }}
+    >
+      {/* Uploading overlay */}
+      {isUploading && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(255,255,255,0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2,
+            borderRadius: 12,
+          }}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="animate-spin"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="#9ca3af"
+              strokeWidth="3"
+              strokeDasharray="60"
+              strokeDashoffset="20"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* Remove button */}
+      <button
+        type="button"
+        onClick={() => onRemove?.(att.id)}
+        style={{
+          position: "absolute",
+          top: 4,
+          right: 4,
+          width: 20,
+          height: 20,
+          borderRadius: "50%",
+          background: "rgba(0,0,0,0.55)",
+          color: "#fff",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 12,
+          lineHeight: 1,
+          zIndex: 3,
+          padding: 0,
+        }}
+        title="Remove"
+      >
+        &times;
+      </button>
+
+      {isImage && previewUrl ? (
+        /* Image thumbnail */
+        <img
+          src={previewUrl}
+          alt={att.name}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      ) : (
+        /* File card */
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 12px",
+            height: "100%",
+          }}
+        >
+          {/* Extension badge */}
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              background: colors.bg,
+              color: colors.fg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 10,
+              fontWeight: 700,
+              flexShrink: 0,
+              letterSpacing: 0.5,
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {ext.slice(0, 4)}
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: isError ? "#dc2626" : "#1f2937",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                fontFamily: "'Inter', sans-serif",
+              }}
+              title={att.name}
+            >
+              {att.name}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: isError ? "#f87171" : "#9ca3af",
+                marginTop: 2,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {isError ? "Upload failed" : formatFileSize(att.size)}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -248,89 +434,25 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
         </div>
       )}
 
-      {/* Attachment pills */}
+      {/* Attachment cards */}
       {attachments.length > 0 && (
         <div
           style={{
             display: "flex",
-            flexWrap: "wrap",
-            gap: 6,
-            marginBottom: 8,
+            gap: 8,
+            marginBottom: 10,
+            overflowX: "auto",
+            paddingBottom: 2,
+            scrollbarWidth: "none",
+            msOverflowStyle: "none" as any,
           }}
         >
           {attachments.map((att) => (
-            <div
+            <AttachmentCard
               key={att.id}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "4px 10px",
-                borderRadius: 16,
-                background:
-                  att.status === "error" ? "#fef2f2" : "#f3f4f6",
-                border:
-                  att.status === "error"
-                    ? "1px solid #fca5a5"
-                    : "1px solid #e5e7eb",
-                fontSize: 12,
-                color: att.status === "error" ? "#dc2626" : "#374957",
-                maxWidth: 220,
-              }}
-            >
-              <span>{fileIcon(att.mimeType)}</span>
-              <span
-                style={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  maxWidth: 120,
-                }}
-                title={att.name}
-              >
-                {att.name}
-              </span>
-              <span style={{ color: "#9ca3af", fontSize: 11 }}>
-                {formatFileSize(att.size)}
-              </span>
-              {att.status === "uploading" && (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="animate-spin"
-                  style={{ flexShrink: 0 }}
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="#9ca3af"
-                    strokeWidth="3"
-                    strokeDasharray="60"
-                    strokeDashoffset="20"
-                  />
-                </svg>
-              )}
-              <button
-                type="button"
-                onClick={() => onRemoveAttachment?.(att.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                  lineHeight: 1,
-                  fontSize: 14,
-                  color: "#9ca3af",
-                  flexShrink: 0,
-                }}
-                title="Remove"
-              >
-                &times;
-              </button>
-            </div>
+              att={att}
+              onRemove={onRemoveAttachment}
+            />
           ))}
         </div>
       )}
