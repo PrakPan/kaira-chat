@@ -74,6 +74,7 @@ interface ChatKitPanelProps {
   onBotModeChange?: (mode: BotMode) => void;
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
+  initialAttachmentIds?: string[];
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
@@ -192,6 +193,7 @@ export function ChatKitPanel({
   onBotModeChange,
   onItineraryIdChange,
   initialPrompt = null,
+  initialAttachmentIds,
   onSendReady,
   onItineraryCompletionStart,
 onItineraryCompletionDone,
@@ -459,10 +461,10 @@ const sendMessage = useCallback(
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
     hasProcessedInitial.current = true;
-    sendMessage(initialPrompt);
-    onInitialPromptConsumed?.();  // ← tells BotApp to set initialPrompt back to null
+    sendMessage(initialPrompt, initialAttachmentIds);
+    onInitialPromptConsumed?.();
   }
-}, [initialPrompt, locationReady, sendMessage, onInitialPromptConsumed]);
+}, [initialPrompt, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);

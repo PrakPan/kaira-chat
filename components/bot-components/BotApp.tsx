@@ -137,6 +137,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
+  const [initialAttachmentIds, setInitialAttachmentIds] = useState<string[] | undefined>(undefined);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
   const dispatch = useDispatch();
 
@@ -963,13 +964,14 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     }
   };
 
-  const handlePromptSelect = (prompt: string) => {
+  const handlePromptSelect = (prompt: string, attachmentIds?: string[]) => {
     // chatSendMessageRef is set by both desktop and mobile ChatKitPanel onSendReady
     const sendFn = sendMessageRef.current ?? chatSendMessageRef.current;
     if (isChatActive && sendFn) {
       sendFn(prompt);
     } else {
       setInitialPrompt(prompt);
+      setInitialAttachmentIds(attachmentIds);
       setIsChatActive(true);
     }
   };
@@ -993,13 +995,14 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
     botMode,
-    sessionId: activeChatSessionId, 
+    sessionId: activeChatSessionId,
     itineraryId,
     onBotModeChange: setBotMode,
     onItineraryIdChange: setItineraryId,
     onSendReady: handleSendReady,
     onLoadRouteOnMap: handleLoadRouteOnMap,
     restoredThread,
+    initialAttachmentIds,
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -1023,6 +1026,7 @@ Start Location: ${details.startLocation}`;
 
   const handleInitialPromptConsumed = useCallback(() => {
     setInitialPrompt(null);
+    setInitialAttachmentIds(undefined);
   }, []);
 
   const isDraft = useMemo(

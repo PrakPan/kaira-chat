@@ -1,4 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+} from "react";
 
 interface Location {
   id: string;
@@ -214,209 +221,305 @@ function resolveAccent(accent?: string): string {
   return ACCENT_COLORS[accent.toLowerCase()] ?? "#FD6D6C";
 }
 
-const MyMap: React.FC<MapProps> = ({
-  state,
-  locations,
-  userLocation,
-  currentRoute,
-}) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const userMarkerRef = useRef<google.maps.Marker | null>(null);
-  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
-  // One polyline per segment so we can draw arrows between consecutive stops
-  const polylinesRef = useRef<google.maps.Polyline[]>([]);
+const MyMap = forwardRef<google.maps.Map | null, MapProps>(
+  ({ state, locations, userLocation, currentRoute }, ref) => {
+    const mapRef = useRef<HTMLDivElement>(null);
+    const mapInstance = useRef<google.maps.Map | null>(null);
+    const markersRef = useRef<google.maps.Marker[]>([]);
+    const userMarkerRef = useRef<google.maps.Marker | null>(null);
+    const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+    // One polyline per segment so we can draw arrows between consecutive stops
+    const polylinesRef = useRef<google.maps.Polyline[]>([]);
+    const [mapReady, setMapReady] = useState(false);
 
-  // Initialize map
-  useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return;
+    // Expose the map instance to parent via ref
+    useImperativeHandle(ref, () => mapInstance.current!, [mapReady]);
 
-    const initMap = () => {
+    // Initialize map
+    useEffect(() => {
       if (!mapRef.current || mapInstance.current) return;
-      mapInstance.current = new google.maps.Map(mapRef.current, {
-        center: { lat: state.lat, lng: state.lng },
-        zoom: state.zoom || 12,
-        minZoom: 2,
-        maxZoom: 18,
-        mapTypeControl: false,
-        streetViewControl: false,
-        fullscreenControl: true,
-        styles: mapStyles,
-        restriction: {
-          latLngBounds: {
-            north: 85,
-            south: -85,
-            west: -180,
-            east: 180,
+
+      const initMap = () => {
+        if (!mapRef.current || mapInstance.current) return;
+        mapInstance.current = new google.maps.Map(mapRef.current, {
+          center: { lat: state.lat, lng: state.lng },
+          zoom: state.zoom || 12,
+          minZoom: 2,
+          maxZoom: 18,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+          styles: mapStyles,
+          restriction: {
+            latLngBounds: {
+              north: 85,
+              south: -85,
+              west: -180,
+              east: 180,
+            },
+            strictBounds: true,
           },
-          strictBounds: true,
-        },
-      });
-      infoWindowRef.current = new google.maps.InfoWindow();
-    };
+        });
+        infoWindowRef.current = new google.maps.InfoWindow();
 
-    if (typeof window !== "undefined" && window.google?.maps) {
-      initMap();
-    } else {
-      const interval = setInterval(() => {
-        if (window.google?.maps) {
-          clearInterval(interval);
-          initMap();
+        // After tiles load (map fully rendered), re-fit bounds if data arrived
+        // before the map was ready — common on page refresh.
+        google.maps.event.addListenerOnce(mapInstance.current, "idle", () => {
+          setMapReady(true);
+        });
+      };
+
+      if (typeof window !== "undefined" && window.google?.maps) {
+        initMap();
+      } else {
+        const interval = setInterval(() => {
+          if (window.google?.maps) {
+            clearInterval(interval);
+            initMap();
+          }
+        }, 100);
+        return () => clearInterval(interval);
+      }
+    }, []);
+
+    // Reusable fitBounds helper — triggers resize first so Google Maps
+    // computes bounds against the actual container dimensions.
+    const fitToCurrentElements = useCallback(() => {
+      if (!mapInstance.current) return;
+      const hasRoute = currentRoute && currentRoute.length > 0;
+      const hasLocations = locations && locations.length > 0;
+      if (!hasRoute && !hasLocations) return;
+
+      // Ensure Maps knows the true container size before fitting
+      google.maps.event.trigger(mapInstance.current, "resize");
+
+      if (hasRoute) {
+        if (currentRoute.length === 1) {
+          mapInstance.current.setCenter({
+            lat: currentRoute[0].lat,
+            lng: currentRoute[0].lng,
+          });
+          mapInstance.current.setZoom(11);
+        } else {
+          const bounds = new google.maps.LatLngBounds();
+          currentRoute.forEach((loc) =>
+            bounds.extend({ lat: loc.lat, lng: loc.lng }),
+          );
+          mapInstance.current.fitBounds(bounds, {
+            top: 80,
+            right: 60,
+            bottom: 80,
+            left: 60,
+          });
         }
-      }, 100);
-      return () => clearInterval(interval);
-    }
-  }, []);
+      } else if (hasLocations) {
+        const bounds = new google.maps.LatLngBounds();
+        locations.forEach((loc) =>
+          bounds.extend({ lat: loc.lat, lng: loc.lng }),
+        );
+        mapInstance.current.fitBounds(bounds, {
+          top: 80,
+          right: 60,
+          bottom: 80,
+          left: 60,
+        });
+      }
+    }, [currentRoute, locations]);
 
-  // Pan / zoom when state changes
-  useEffect(() => {
-    if (mapInstance.current) {
+    // Once the map tiles have loaded, re-fit to any existing route/location
+    // data. Handles the page-reload race where data arrives before the map
+    // container has its final pixel dimensions.
+    useEffect(() => {
+      if (!mapReady) return;
+      setTimeout(() => {
+        if (mapInstance.current) {
+          google.maps.event.trigger(mapInstance.current, "resize");
+          fitToCurrentElements();
+        }
+      }, 150);
+    }, [mapReady, fitToCurrentElements]);
+
+    // Pan / zoom when state changes — but only when there are no active
+    // routes or locations (fitBounds handles those). This prevents a late
+    // mapState update (e.g. user location resolving) from overriding fitBounds.
+    useEffect(() => {
+      if (!mapInstance.current) return;
+      const hasRoute = currentRoute && currentRoute.length > 0;
+      const hasLocations = locations && locations.length > 0;
+      if (hasRoute || hasLocations) return;
+
       mapInstance.current.setCenter({ lat: state.lat, lng: state.lng });
       if (state.zoom) {
         mapInstance.current.setZoom(state.zoom);
       }
-    }
-  }, [state.lat, state.lng, state.zoom]);
+    }, [state.lat, state.lng, state.zoom, currentRoute, locations]);
 
-  // Draw dashed route lines with arrowheads between consecutive stops
-  useEffect(() => {
-    // Clear old polylines
-    polylinesRef.current.forEach((p) => p.setMap(null));
-    polylinesRef.current = [];
+    // Re-fit bounds when the browser tab becomes visible again (handles tab switching)
+    useEffect(() => {
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          setTimeout(() => {
+            if (mapInstance.current) {
+              google.maps.event.trigger(mapInstance.current, "resize");
+              fitToCurrentElements();
+            }
+          }, 150);
+        }
+      };
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+      return () =>
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange,
+        );
+    }, [fitToCurrentElements]);
 
-    if (!mapInstance.current || !currentRoute || currentRoute.length === 0) return;
+    // Draw dashed route lines with arrowheads between consecutive stops
+    useEffect(() => {
+      // Clear old polylines
+      polylinesRef.current.forEach((p) => p.setMap(null));
+      polylinesRef.current = [];
 
-  // ↓ Single city — just fit bounds to it, no polyline needed
-  if (currentRoute.length === 1) {
-    const { lat, lng } = currentRoute[0];
-    mapInstance.current.setCenter({ lat, lng });
-    mapInstance.current.setZoom(11);
-    return;
-  }
+      if (!mapInstance.current || !currentRoute || currentRoute.length === 0)
+        return;
 
-
-    // Quadratic bezier arc between two lat/lng points
-    const getCurvedPath = (
-      from: { lat: number; lng: number },
-      to: { lat: number; lng: number },
-      numPoints = 60,
-      direction = 1
-    ): google.maps.LatLngLiteral[] => {
-      const midLat = (from.lat + to.lat) / 2;
-      const midLng = (from.lng + to.lng) / 2;
-      const dLat = to.lat - from.lat;
-      const dLng = to.lng - from.lng;
-      const dist = Math.sqrt(dLat * dLat + dLng * dLng);
-      const curvature = 0.25 * direction;
-      const perpLat = -dLng;
-      const perpLng = dLat;
-      const perpLen = Math.sqrt(perpLat * perpLat + perpLng * perpLng) || 1;
-      const controlLat = midLat + (perpLat / perpLen) * dist * curvature;
-      const controlLng = midLng + (perpLng / perpLen) * dist * curvature;
-      // Build path, stopping slightly before destination center
-      // so arrowhead at 100% lands right at the pin tip visually
-      const path: google.maps.LatLngLiteral[] = [];
-      const tMax = 0.93; // stop at 93% so arrow tip touches pin edge, not overshoots
-      for (let j = 0; j <= numPoints; j++) {
-        const t = (j / numPoints) * tMax;
-        const u = 1 - t;
-        path.push({
-          lat: u * u * from.lat + 2 * u * t * controlLat + t * t * to.lat,
-          lng: u * u * from.lng + 2 * u * t * controlLng + t * t * to.lng,
-        });
+      // ↓ Single city — just fit bounds to it, no polyline needed
+      if (currentRoute.length === 1) {
+        const { lat, lng } = currentRoute[0];
+        mapInstance.current.setCenter({ lat, lng });
+        mapInstance.current.setZoom(11);
+        return;
       }
-      return path;
-    };
 
-    for (let i = 0; i < currentRoute.length - 1; i++) {
-      const from = currentRoute[i];
-      const to = currentRoute[i + 1];
-      // Alternate curve direction: odd segments curve one way, even the other
-      const direction = i % 2 === 0 ? 1 : -1;
-      const curvedPath = getCurvedPath(
-        { lat: from.lat, lng: from.lng },
-        { lat: to.lat, lng: to.lng },
-        60,
-        direction
+      // Quadratic bezier arc between two lat/lng points
+      const getCurvedPath = (
+        from: { lat: number; lng: number },
+        to: { lat: number; lng: number },
+        numPoints = 60,
+        direction = 1,
+      ): google.maps.LatLngLiteral[] => {
+        const midLat = (from.lat + to.lat) / 2;
+        const midLng = (from.lng + to.lng) / 2;
+        const dLat = to.lat - from.lat;
+        const dLng = to.lng - from.lng;
+        const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+        const curvature = 0.25 * direction;
+        const perpLat = -dLng;
+        const perpLng = dLat;
+        const perpLen = Math.sqrt(perpLat * perpLat + perpLng * perpLng) || 1;
+        const controlLat = midLat + (perpLat / perpLen) * dist * curvature;
+        const controlLng = midLng + (perpLng / perpLen) * dist * curvature;
+        // Build path, stopping slightly before destination center
+        // so arrowhead at 100% lands right at the pin tip visually
+        const path: google.maps.LatLngLiteral[] = [];
+        const tMax = 0.93; // stop at 93% so arrow tip touches pin edge, not overshoots
+        for (let j = 0; j <= numPoints; j++) {
+          const t = (j / numPoints) * tMax;
+          const u = 1 - t;
+          path.push({
+            lat: u * u * from.lat + 2 * u * t * controlLat + t * t * to.lat,
+            lng: u * u * from.lng + 2 * u * t * controlLng + t * t * to.lng,
+          });
+        }
+        return path;
+      };
+
+      for (let i = 0; i < currentRoute.length - 1; i++) {
+        const from = currentRoute[i];
+        const to = currentRoute[i + 1];
+        // Alternate curve direction: odd segments curve one way, even the other
+        const direction = i % 2 === 0 ? 1 : -1;
+        const curvedPath = getCurvedPath(
+          { lat: from.lat, lng: from.lng },
+          { lat: to.lat, lng: to.lng },
+          60,
+          direction,
+        );
+        const polyline = new google.maps.Polyline({
+          path: curvedPath,
+          geodesic: false,
+          strokeOpacity: 0,
+          icons: [
+            {
+              icon: {
+                path: "M 0,-1 0,1",
+                strokeOpacity: 1,
+                strokeColor: "#4DB8FF",
+                strokeWeight: 3,
+                scale: 3,
+              },
+              offset: "0",
+              repeat: "14px",
+            },
+            {
+              icon: {
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                strokeOpacity: 1,
+                strokeColor: "#4DB8FF",
+                fillColor: "#4DB8FF",
+                fillOpacity: 1,
+                strokeWeight: 1,
+                scale: 4,
+              },
+              offset: "100%",
+            },
+          ],
+        });
+        polyline.setMap(mapInstance.current);
+        polylinesRef.current.push(polyline);
+      }
+
+      // Fit map to route — trigger resize first so bounds use correct container size
+      google.maps.event.trigger(mapInstance.current, "resize");
+      const bounds = new google.maps.LatLngBounds();
+      currentRoute.forEach((loc) =>
+        bounds.extend({ lat: loc.lat, lng: loc.lng }),
       );
-      const polyline = new google.maps.Polyline({
-        path: curvedPath,
-        geodesic: false,
-        strokeOpacity: 0,
-        icons: [
-          {
-            icon: {
-              path: "M 0,-1 0,1",
-              strokeOpacity: 1,
-              strokeColor: "#4DB8FF",
-              strokeWeight: 3,
-              scale: 3,
-            },
-            offset: "0",
-            repeat: "14px",
-          },
-          {
-            icon: {
-              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-              strokeOpacity: 1,
-              strokeColor: "#4DB8FF",
-              fillColor: "#4DB8FF",
-              fillOpacity: 1,
-              strokeWeight: 1,
-              scale: 4,
-            },
-            offset: "100%",
-          },
-        ],
+      mapInstance.current.fitBounds(bounds, {
+        top: 80,
+        right: 60,
+        bottom: 80,
+        left: 60,
       });
-      polyline.setMap(mapInstance.current);
-      polylinesRef.current.push(polyline);
-    }
+    }, [currentRoute]);
 
-    // Fit map to route
-    const bounds = new google.maps.LatLngBounds();
-    currentRoute.forEach((loc) => bounds.extend({ lat: loc.lat, lng: loc.lng }));
-    mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
-  }, [currentRoute]);
+    // User location marker — hide when an itinerary route is loaded
+    useEffect(() => {
+      if (!mapInstance.current || !infoWindowRef.current) return;
 
-  // User location marker — hide when an itinerary route is loaded
-  useEffect(() => {
-    if (!mapInstance.current || !infoWindowRef.current) return;
+      // Remove existing user marker
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setMap(null);
+        userMarkerRef.current = null;
+      }
 
-    // Remove existing user marker
-    if (userMarkerRef.current) {
-      userMarkerRef.current.setMap(null);
-      userMarkerRef.current = null;
-    }
+      // Don't show user location when a route is active
+      if (!userLocation || (currentRoute && currentRoute.length > 0)) return;
 
-    // Don't show user location when a route is active
-    if (!userLocation || (currentRoute && currentRoute.length > 0)) return;
-
-    const userIcon = {
-      url:
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(`
+      const userIcon = {
+        url:
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(`
       <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50">
         <path d="M20 0C11.163 0 4 7.163 4 16c0 12 16 34 16 34s16-22 16-34c0-8.837-7.163-16-16-16z" fill="#4285F4"/>
         <circle cx="20" cy="16" r="10" fill="white"/>
         <path d="M20 10c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2c.828 0 1.5.672 1.5 1.5S20.828 15 20 15s-1.5-.672-1.5-1.5S19.172 12 20 12zm0 8c-1.657 0-3-1.343-3-3 0-.414.336-.75.75-.75h4.5c.414 0 .75.336.75.75 0 1.657-1.343 3-3 3z" fill="#4285F4"/>
       </svg>
     `),
-      scaledSize: new google.maps.Size(40, 50),
-      anchor: new google.maps.Point(20, 50),
-    };
+        scaledSize: new google.maps.Size(40, 50),
+        anchor: new google.maps.Point(20, 50),
+      };
 
-    userMarkerRef.current = new google.maps.Marker({
-      position: { lat: userLocation.lat, lng: userLocation.lng },
-      map: mapInstance.current,
-      title: "Your Location",
-      icon: userIcon,
-      zIndex: 1000,
-    });
+      userMarkerRef.current = new google.maps.Marker({
+        position: { lat: userLocation.lat, lng: userLocation.lng },
+        map: mapInstance.current,
+        title: "Your Location",
+        icon: userIcon,
+        zIndex: 1000,
+      });
 
-    userMarkerRef.current.addListener("click", () => {
-      infoWindowRef.current!.setContent(`
+      userMarkerRef.current.addListener("click", () => {
+        infoWindowRef.current!.setContent(`
       <div style="padding: 12px; min-width: 220px;">
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
           <div style="font-size: 20px;">📍</div>
@@ -426,34 +529,38 @@ const MyMap: React.FC<MapProps> = ({
         <p style="color: #666; font-size: 12px; margin: 4px 0;">${userLocation.country}</p>
       </div>
     `);
-      infoWindowRef.current!.open(mapInstance.current!, userMarkerRef.current!);
-    });
-  }, [userLocation, currentRoute]);
+        infoWindowRef.current!.open(
+          mapInstance.current!,
+          userMarkerRef.current!,
+        );
+      });
+    }, [userLocation, currentRoute]);
 
-  // Place / update location markers
-  useEffect(() => {
-    if (!mapInstance.current || !infoWindowRef.current) return;
+    // Place / update location markers
+    useEffect(() => {
+      if (!mapInstance.current || !infoWindowRef.current) return;
 
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    markersRef.current = [];
+      markersRef.current.forEach((marker) => marker.setMap(null));
+      markersRef.current = [];
 
-    locations?.forEach((location) => {
-      const loc = location as any;
+      locations?.forEach((location) => {
+        const loc = location as any;
 
-      // Determine if this location is a numbered route stop
-      const routeIndex = currentRoute?.findIndex((r) => r.id === location.id) ?? -1;
-      const isRouteStop = routeIndex !== -1;
+        // Determine if this location is a numbered route stop
+        const routeIndex =
+          currentRoute?.findIndex((r) => r.id === location.id) ?? -1;
+        const isRouteStop = routeIndex !== -1;
 
-      let markerIcon: google.maps.Icon;
-      if (isRouteStop) {
-        // Numbered pink pin
-        markerIcon = getNumberedPin(routeIndex + 1);
-      } else if (loc.type) {
-        // Category icon
-        markerIcon = getMarkerIcon(loc.type);
-      } else {
-        // Generic pink location pin (no number) - same shape as numbered pin
-        const svg = `
+        let markerIcon: google.maps.Icon;
+        if (isRouteStop) {
+          // Numbered pink pin
+          markerIcon = getNumberedPin(routeIndex + 1);
+        } else if (loc.type) {
+          // Category icon
+          markerIcon = getMarkerIcon(loc.type);
+        } else {
+          // Generic pink location pin (no number) - same shape as numbered pin
+          const svg = `
           <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
             <defs>
               <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
@@ -463,57 +570,57 @@ const MyMap: React.FC<MapProps> = ({
             <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0ZM24 32.523C19.2686 32.523 15.4286 28.6887 15.4286 23.9643C15.4286 19.2399 19.2686 15.4056 24 15.4056C28.7314 15.4056 32.5714 19.2399 32.5714 23.9643C32.5714 28.6887 28.7314 32.523 24 32.523Z" fill="#FD6D6C" filter="url(#sh)"/>
             <circle cx="24" cy="23.9643" r="8.5675" fill="white"/>
           </svg>`;
-        markerIcon = {
-          url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
-          scaledSize: new google.maps.Size(36, 46),
-          anchor: new google.maps.Point(18, 46),
-        };
-      }
+          markerIcon = {
+            url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+            scaledSize: new google.maps.Size(36, 46),
+            anchor: new google.maps.Point(18, 46),
+          };
+        }
 
-      const marker = new google.maps.Marker({
-        position: { lat: location.lat, lng: location.lng },
-        map: mapInstance.current!,
-        title: location.name,
-        icon: markerIcon,
-        zIndex: isRouteStop ? 200 + routeIndex : 100,
-      });
+        const marker = new google.maps.Marker({
+          position: { lat: location.lat, lng: location.lng },
+          map: mapInstance.current!,
+          title: location.name,
+          icon: markerIcon,
+          zIndex: isRouteStop ? 200 + routeIndex : 100,
+        });
 
-      // Info window on click
-      marker.addListener("click", () => {
-        const accentColor = resolveAccent(loc.accent);
+        // Info window on click
+        marker.addListener("click", () => {
+          const accentColor = resolveAccent(loc.accent);
 
-        // Route stop popup — rich city card
-        if (isRouteStop && currentRoute) {
-          const imageLine = loc.image
-            ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
+          // Route stop popup — rich city card
+          if (isRouteStop && currentRoute) {
+            const imageLine = loc.image
+              ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
                 <img src="${loc.image}" alt="${location.name}" style="width:100%;height:100%;object-fit:cover;" />
                </div>`
-            : "";
-
-          const oneLiner = loc.one_liner_description
-            ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.one_liner_description}</p>`
-            : loc.description
-              ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.description}</p>`
               : "";
 
-          const durationBadge = loc.duration
-  ? `<span style="font-size:10px;">⏱ ${loc.duration} ${loc.duration === 1 ? "night" : "nights"}</span>`
-  : "";
+            const oneLiner = loc.one_liner_description
+              ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.one_liner_description}</p>`
+              : loc.description
+                ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.description}</p>`
+                : "";
 
-         const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+            const durationBadge = loc.duration
+              ? `<span style="font-size:10px;">⏱ ${loc.duration} ${loc.duration === 1 ? "night" : "nights"}</span>`
+              : "";
 
-const tagsLine = loc.tags?.length
-  ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+            const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
+
+            const tagsLine = loc.tags?.length
+              ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
       ${loc.tags.map((t: string, i: number) => `<span style="padding:2px 8px;background:${colors[i % colors.length]};border-radius:9999px;font-size:9px;font-weight:500;">${t}</span>`).join("")}
      </div>`
-  : "";
+              : "";
 
-          const stopBadge = `<div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+            const stopBadge = `<div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
             <div style="width:18px;height:18px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">${routeIndex + 1}</div>
             <span style="font-size:10px;color:${accentColor};font-weight:600;">Stop ${routeIndex + 1} of ${currentRoute.length}</span>
           </div>`;
 
-          infoWindowRef.current!.setContent(`
+            infoWindowRef.current!.setContent(`
             <div style="padding:10px 12px;min-width:220px;max-width:280px;font-family:Inter,sans-serif;">
               ${imageLine}
               <h4 style="font-weight:700;margin:0 0 4px 0;color:#111827;font-size:14px;line-height:1.3;">${location.name}</h4>
@@ -521,54 +628,64 @@ const tagsLine = loc.tags?.length
               ${durationBadge}
               ${tagsLine}
             </div>`);
-        } else {
-          // Non-route location — compact popup
-          const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
-          const descLine = location.description
-            ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
-            : "";
-          const cityLine = loc.city
-            ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
+          } else {
+            // Non-route location — compact popup
+            const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
+            const descLine = location.description
+              ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
+              : "";
+            const cityLine = loc.city
+              ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
                 <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
                 </svg>
                 <span style="color:#888;">${loc.city}</span>
                </div>`
-            : "";
-          const ratingLine = loc.rating
-            ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
+              : "";
+            const ratingLine = loc.rating
+              ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
                 ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
                </div>`
-            : "";
+              : "";
 
-          infoWindowRef.current!.setContent(`
+            infoWindowRef.current!.setContent(`
             <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
               ${nameLine}${descLine}${cityLine}${ratingLine}
             </div>`);
-        }
+          }
 
-        infoWindowRef.current!.open(mapInstance.current!, marker);
+          infoWindowRef.current!.open(mapInstance.current!, marker);
+        });
+
+        markersRef.current.push(marker);
       });
 
-      markersRef.current.push(marker);
-    });
+      // Fit bounds (only when no route — route fitting is handled separately)
+      if (currentRoute && currentRoute.length > 0) return;
 
-    // Fit bounds (only when no route — route fitting is handled separately)
-    if (currentRoute && currentRoute.length > 0) return;
+      if (locations?.length > 0) {
+        google.maps.event.trigger(mapInstance.current, "resize");
+        const bounds = new window.google.maps.LatLngBounds();
+        locations.forEach((loc) =>
+          bounds.extend(new window.google.maps.LatLng(loc.lat, loc.lng)),
+        );
+        mapInstance.current.fitBounds(bounds, {
+          top: 80,
+          right: 60,
+          bottom: 80,
+          left: 60,
+        });
+      } else if (userLocation) {
+        mapInstance.current.setCenter({
+          lat: userLocation.lat,
+          lng: userLocation.lng,
+        });
+        mapInstance.current.setZoom(4);
+      }
+    }, [locations, userLocation, currentRoute, mapInstance]);
 
-    if (locations?.length > 0) {
-      const bounds = new window.google.maps.LatLngBounds();
-      locations.forEach((loc) =>
-        bounds.extend(new window.google.maps.LatLng(loc.lat, loc.lng))
-      );
-      mapInstance.current.fitBounds(bounds, { top: 80, right: 60, bottom: 80, left: 60 });
-    } else if (userLocation) {
-      mapInstance.current.setCenter({ lat: userLocation.lat, lng: userLocation.lng });
-      mapInstance.current.setZoom(4);
-    }
-  }, [locations, userLocation, currentRoute, mapInstance]);
-
-  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
-};
+    return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+  },
+);
 
 export default MyMap;
