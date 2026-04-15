@@ -4,8 +4,7 @@ import ActivitiesSummary from "../../../components/Activities/ActivitiesSummary"
 
 const ActivitiesBookings = (props) => {
   const [showActivities, setShowActivities] = useState(false);
-  const cart = useSelector((state) => state.Cart);
-  const ancillaries = cart?.summary?.Ancillaries?.bookings || [];
+  const ancillaries = useSelector((state) => state.AncillaryBookings) || [];
 
   return (
     <div id="activities" className="w-full  md:w-auto mb-[80px] md:mb-0">
@@ -49,34 +48,54 @@ const ActivitiesBookings = (props) => {
                 <span className="font-semibold text-[#262626] text-base">
                   {ancillary.name}
                 </span>
-                <span className="text-sm text-gray-500">
-                  {new Date(ancillary.check_in).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}{" "}
-                  –{" "}
-                  {new Date(ancillary.check_out).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-                <span className="text-xs text-gray-400">
-                  {ancillary.pax?.number_of_adults} Adult
-                  {ancillary.pax?.number_of_adults !== 1 ? "s" : ""}
-                </span>
+                {ancillary.booking_type && (
+                  <span className="text-sm text-gray-500">
+                    {ancillary.booking_type}
+                  </span>
+                )}
+                {ancillary.check_in && ancillary.check_out && (
+                  <span className="text-sm text-gray-500">
+                    {new Date(ancillary.check_in).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}{" "}
+                    –{" "}
+                    {new Date(ancillary.check_out).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                )}
+                {/* {ancillary.number_of_adults > 0 && (
+                  <span className="text-xs text-gray-400">
+                    {ancillary.number_of_adults} Adult
+                    {ancillary.number_of_adults !== 1 ? "s" : ""}
+                    {ancillary.number_of_children > 0 &&
+                      `, ${ancillary.number_of_children} Child${ancillary.number_of_children !== 1 ? "ren" : ""}`}
+                  </span>
+                )} */}
+                {/* {ancillary.currency && ancillary.total_booking_cost > 0 && (
+                  <span className="text-sm font-medium text-[#262626]">
+                    {ancillary.currency}{" "}
+                    {ancillary.total_booking_cost.toLocaleString()}
+                  </span>
+                )} */}
               </div>
-              <div className="flex flex-col items-end gap-1">
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    ancillary.status === "Quoted"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-green-100 text-green-700"
-                  }`}
-                >
-                  {ancillary.status}
-                </span>
+              <div className="flex items-start lg:items-center justify-start lg:justify-end w-full lg:w-auto">
+                {ancillary.visa?.checklist_file && (
+                  <a
+                    href={ancillary.visa.checklist_file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-black no-underline"
+                  >
+                    <button className="ttw-btn-secondary w-full sm:w-auto ">
+                      Download
+                    </button>
+                  </a>
+                )}
               </div>
             </div>
           ))}

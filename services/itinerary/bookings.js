@@ -22,3 +22,7 @@ export const axiosGetAllStays = axios.create({
 export const axiosDeleteBooking = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })
+
+export const axiosGetAncillaryBookings = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})

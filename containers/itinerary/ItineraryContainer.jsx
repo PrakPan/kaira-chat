@@ -32,6 +32,7 @@ import axiosPaymentInstance, {
 import axiosBookingsInstance, {
   axiosGetAllStays,
   axiosGetTransfers,
+  axiosGetAncillaryBookings,
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
@@ -51,6 +52,7 @@ import BottomModal from "../../components/ui/LowerModal";
 import ModalWithBackdrop from "../../components/ui/ModalWithBackdrop";
 import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
+import { setAncillaryBookings } from "../../store/actions/ancillaryBookings";
 
 const Container = styled.div`
   width: 100%;
@@ -382,6 +384,7 @@ const ItineraryContainer = (props) => {
     dispatch(setItineraryStatus("itinerary_status", "PENDING"));
     dispatch(setStays([]));
     dispatch(setTransfersBookings(null));
+    dispatch(setAncillaryBookings([]));
     itinerarySuccessRef.current = false;
     pricingSuccessRef.current = false;
     transfersSuccessRef.current = false;
@@ -561,6 +564,17 @@ const ItineraryContainer = (props) => {
       });
     } catch (error) {
       console.log("ERROR[HotelBookingInfo][Itinerary]", error);
+    }
+  };
+
+  const getAncillaryBookings = async () => {
+    try {
+      const res = await axiosGetAncillaryBookings.get(
+        props.id + "/bookings/?booking_type=ancillary"
+      );
+      dispatch(setAncillaryBookings(res.data?.ancillary_bookings || []));
+    } catch (error) {
+      console.log("ERROR[AncillaryBookings][Itinerary]", error);
     }
   };
 
@@ -832,6 +846,7 @@ const ItineraryContainer = (props) => {
           let activities = getItineraryActivities();
           props.setItineraryActivities(activities);
           setItineraryLoading(false);
+          getAncillaryBookings();
           // dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
         }
 
