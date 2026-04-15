@@ -938,6 +938,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     // Do NOT reset chatBotItineraryId here — ChatBot must not remount on new chat
     setRestoredThread(null);
     setActiveThreadId(null);
+    setBotMode("p1");
+    setItineraryId("");
     setSkeletonCities([]);
     skeletonCitiesRef.current = [];
     currentItineraryRef.current = null;
@@ -1321,7 +1323,7 @@ Start Location: ${details.startLocation}`;
           >
             {!isMobile && (
               <ChatKitPanel
-                key={`${botMode}-${itineraryId}-${chatKey}`}
+                key={chatKey}
                 {...sharedChatKitProps}
                 initialPrompt={initialPrompt}
                 onInitialPromptConsumed={handleInitialPromptConsumed}
@@ -1388,7 +1390,7 @@ Start Location: ${details.startLocation}`;
               >
                 {isMobile && (
                   <ChatKitPanel
-                    key={`${botMode}-${chatKey}`}
+                    key={`${chatKey}`}
                     {...sharedChatKitProps}
                     initialPrompt={initialPrompt}
                     onInitialPromptConsumed={handleInitialPromptConsumed}
@@ -1728,7 +1730,9 @@ const MobileHeader = React.memo(({
       const res = await fetch(CHATKIT_API_URL_MOBILE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId), filter_bot: isComplete ? "P2" : "P1" }),
+        body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId),
+        //  filter_bot: isComplete ? "P2" : "P1" 
+        }),
       });
       const data = await res.json();
       setThreads(data.data ?? []);

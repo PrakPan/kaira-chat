@@ -282,6 +282,16 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       }
     }, []);
 
+    // Clamp zoom after fitBounds — avoids being too zoomed out on wide desktop containers.
+    // Min zoom 5 (continent-level), max zoom 14 (street-level).
+    const clampZoomAfterFit = useCallback((map: google.maps.Map) => {
+      google.maps.event.addListenerOnce(map, "idle", () => {
+        const z = map.getZoom();
+        if (z !== undefined && z < 5) map.setZoom(5);
+        else if (z !== undefined && z > 14) map.setZoom(14);
+      });
+    }, []);
+
     // Reusable fitBounds helper — triggers resize first so Google Maps
     // computes bounds against the actual container dimensions.
     const fitToCurrentElements = useCallback(() => {
@@ -311,6 +321,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
             bottom: 80,
             left: 60,
           });
+          clampZoomAfterFit(mapInstance.current);
         }
       } else if (hasLocations) {
         const bounds = new google.maps.LatLngBounds();
@@ -323,8 +334,9 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           bottom: 80,
           left: 60,
         });
+        clampZoomAfterFit(mapInstance.current);
       }
-    }, [currentRoute, locations]);
+    }, [currentRoute, locations, clampZoomAfterFit]);
 
     // Once the map tiles have loaded, re-fit to any existing route/location
     // data. Handles the page-reload race where data arrives before the map
@@ -481,7 +493,8 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         bottom: 80,
         left: 60,
       });
-    }, [currentRoute]);
+      clampZoomAfterFit(mapInstance.current);
+    }, [currentRoute, clampZoomAfterFit]);
 
     // User location marker — hide when an itinerary route is loaded
     useEffect(() => {
@@ -675,6 +688,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           bottom: 80,
           left: 60,
         });
+        clampZoomAfterFit(mapInstance.current);
       } else if (userLocation) {
         mapInstance.current.setCenter({
           lat: userLocation.lat,
@@ -682,7 +696,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         });
         mapInstance.current.setZoom(4);
       }
-    }, [locations, userLocation, currentRoute, mapInstance]);
+    }, [locations, userLocation, currentRoute, mapInstance, clampZoomAfterFit]);
 
     return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
   },
