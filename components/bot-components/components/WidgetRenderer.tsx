@@ -1,4 +1,5 @@
 import React, { useState, useContext, createContext } from "react";
+import { PiAirplaneTakeoff } from "react-icons/pi";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -114,6 +115,344 @@ function CheckCircleIcon() {
     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
     </svg>
+  );
+}
+
+// ─── NEW: Transport Card Icons ────────────────────────────────────────────────
+
+const TRANSPORT_ICONS: Record<string, React.ReactNode> = {
+  flight: (
+   <PiAirplaneTakeoff className="text-gray-600 flex-shrink-0" size={16} />
+  ),
+  taxi: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+  <path d="M15.3332 7.33333C15.51 7.33333 15.6796 7.2631 15.8046 7.13807C15.9296 7.01305 15.9998 6.84348 15.9998 6.66667C15.9998 6.48986 15.9296 6.32029 15.8046 6.19526C15.6796 6.07024 15.51 6 15.3332 6H14.3998L13.8865 4.346C13.6991 3.7364 13.3395 3.19393 12.851 2.78388C12.3626 2.37383 11.766 2.11366 11.1332 2.03467C10.8802 1.43277 10.4555 0.918761 9.91213 0.556883C9.36872 0.195005 8.73071 0.00130781 8.07784 0L7.92184 0C7.26896 0.00130781 6.63095 0.195005 6.08754 0.556883C5.54413 0.918761 5.11942 1.43277 4.8665 2.03467C4.23397 2.11385 3.63776 2.37403 3.14956 2.78394C2.66136 3.19385 2.30194 3.73604 2.1145 4.34533L1.59983 6H0.666501C0.48969 6 0.320121 6.07024 0.195097 6.19526C0.0700723 6.32029 -0.000165635 6.48986 -0.000165635 6.66667C-0.000165635 6.84348 0.0700723 7.01305 0.195097 7.13807C0.320121 7.2631 0.48969 7.33333 0.666501 7.33333H1.18717L0.710501 8.86667C0.438148 9.15788 0.235333 9.50704 0.117296 9.88789C-0.000740876 10.2687 -0.0309309 10.6714 0.0289944 11.0656C0.0889197 11.4598 0.237402 11.8353 0.463285 12.1639C0.689168 12.4924 0.986578 12.7655 1.33317 12.9627V14C1.33317 14.5304 1.54388 15.0391 1.91895 15.4142C2.29403 15.7893 2.80274 16 3.33317 16C3.8636 16 4.37231 15.7893 4.74738 15.4142C5.12245 15.0391 5.33317 14.5304 5.33317 14V13.3333H10.6665V14C10.6665 14.5304 10.8772 15.0391 11.2523 15.4142C11.6274 15.7893 12.1361 16 12.6665 16C13.1969 16 13.7056 15.7893 14.0807 15.4142C14.4558 15.0391 14.6665 14.5304 14.6665 14V12.9627C15.0129 12.7655 15.3101 12.4924 15.5358 12.164C15.7615 11.8355 15.9099 11.4602 15.9698 11.0662C16.0298 10.6722 15.9996 10.2697 15.8818 9.88898C15.7639 9.50827 15.5613 9.15921 15.2892 8.868L14.8125 7.33333H15.3332ZM7.92184 1.33333H8.07784C8.35816 1.3339 8.63521 1.39357 8.89092 1.50844C9.14662 1.62331 9.37523 1.79081 9.56184 2H6.43783C6.62435 1.79071 6.85295 1.62314 7.10867 1.50826C7.3644 1.39338 7.64149 1.33377 7.92184 1.33333ZM3.3885 4.74C3.51378 4.33175 3.76702 3.9746 4.11083 3.72131C4.45464 3.46801 4.8708 3.33199 5.29783 3.33333H10.7018C11.1291 3.33189 11.5454 3.46794 11.8894 3.72138C12.2333 3.97481 12.4866 4.33218 12.6118 4.74067L13.6332 8.03C13.5338 8.01427 13.4337 8.00425 13.3332 8H2.6665C2.56601 8.00425 2.46584 8.01427 2.3665 8.03L3.3885 4.74ZM3.99984 14C3.99984 14.1768 3.9296 14.3464 3.80457 14.4714C3.67955 14.5964 3.50998 14.6667 3.33317 14.6667C3.15636 14.6667 2.98679 14.5964 2.86176 14.4714C2.73674 14.3464 2.6665 14.1768 2.6665 14V13.3333H3.99984V14ZM13.3332 14C13.3332 14.1768 13.2629 14.3464 13.1379 14.4714C13.0129 14.5964 12.8433 14.6667 12.6665 14.6667C12.4897 14.6667 12.3201 14.5964 12.1951 14.4714C12.0701 14.3464 11.9998 14.1768 11.9998 14V13.3333H13.3332V14ZM13.3332 12H2.6665C2.31288 12 1.97374 11.8595 1.72369 11.6095C1.47364 11.3594 1.33317 11.0203 1.33317 10.6667C1.33317 10.313 1.47364 9.97391 1.72369 9.72386C1.97374 9.47381 2.31288 9.33333 2.6665 9.33333V10C2.6665 10.1768 2.73674 10.3464 2.86176 10.4714C2.98679 10.5964 3.15636 10.6667 3.33317 10.6667C3.50998 10.6667 3.67955 10.5964 3.80457 10.4714C3.9296 10.3464 3.99984 10.1768 3.99984 10V9.33333H11.9998V10C11.9998 10.1768 12.0701 10.3464 12.1951 10.4714C12.3201 10.5964 12.4897 10.6667 12.6665 10.6667C12.8433 10.6667 13.0129 10.5964 13.1379 10.4714C13.2629 10.3464 13.3332 10.1768 13.3332 10V9.33333C13.6868 9.33333 14.0259 9.47381 14.276 9.72386C14.526 9.97391 14.6665 10.313 14.6665 10.6667C14.6665 11.0203 14.526 11.3594 14.276 11.6095C14.0259 11.8595 13.6868 12 13.3332 12Z" fill="#07213A"/>
+</svg>
+  ),
+  train: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16" fill="none">
+  <path d="M8.00246 3.33333C8.00246 3.51014 7.93222 3.67971 7.80719 3.80474C7.68217 3.92976 7.5126 4 7.33579 4H4.66912C4.49231 4 4.32274 3.92976 4.19772 3.80474C4.07269 3.67971 4.00246 3.51014 4.00246 3.33333C4.00246 3.15652 4.07269 2.98695 4.19772 2.86193C4.32274 2.7369 4.49231 2.66667 4.66912 2.66667H7.33579C7.5126 2.66667 7.68217 2.7369 7.80719 2.86193C7.93222 2.98695 8.00246 3.15652 8.00246 3.33333ZM12.0025 3.81333V10.7847C12.0022 11.6223 11.6866 12.4292 11.1185 13.0447L11.9518 15.0807C11.9849 15.1617 12.0018 15.2485 12.0014 15.3361C12.001 15.4237 11.9833 15.5103 11.9494 15.5911C11.9155 15.6719 11.866 15.7451 11.8038 15.8068C11.7416 15.8684 11.6679 15.9172 11.5868 15.9503C11.5057 15.9835 11.4189 16.0003 11.3313 15.9999C11.2438 15.9995 11.1571 15.9818 11.0764 15.9479C10.9956 15.9141 10.9223 15.8646 10.8607 15.8024C10.799 15.7402 10.7503 15.6664 10.7171 15.5853L10.0025 13.83C8.75037 14.4103 7.38214 14.6964 6.00246 14.6667C4.62279 14.6962 3.25462 14.41 2.00246 13.83L1.28712 15.5853C1.25481 15.6675 1.2065 15.7425 1.14498 15.8058C1.08345 15.8692 1.00996 15.9197 0.928752 15.9544C0.847547 15.9892 0.760253 16.0074 0.671939 16.0081C0.583626 16.0088 0.496054 15.9919 0.41431 15.9585C0.332565 15.9251 0.258278 15.8757 0.195763 15.8134C0.133248 15.751 0.0837507 15.6768 0.0501463 15.5951C0.0165419 15.5134 -0.000499713 15.4259 1.11547e-05 15.3376C0.000522023 15.2493 0.0185753 15.1619 0.0531222 15.0807L0.885789 13.0447C0.31787 12.4291 0.00251179 11.6222 0.00245558 10.7847V3.81333C0.00027218 3.10629 0.223778 2.41701 0.640446 1.84578C1.05711 1.27455 1.6452 0.851203 2.31912 0.637333C3.50705 0.237628 4.7493 0.0226791 6.00246 0C7.25569 0.0224934 8.498 0.237678 9.68579 0.638C10.3598 0.85156 10.948 1.27474 11.3647 1.84589C11.7814 2.41705 12.0048 3.10633 12.0025 3.81333V3.81333ZM10.6691 7.82467C9.63379 9.37667 8.03579 10.6667 6.00246 10.6667C3.96912 10.6667 2.37112 9.37667 1.33579 7.82467V10.7847C1.33263 11.1381 1.42452 11.4859 1.60185 11.7917C1.77918 12.0974 2.03543 12.3499 2.34379 12.5227C3.4759 13.0959 4.73417 13.3747 6.00246 13.3333C7.27055 13.3749 8.52865 13.0961 9.66046 12.5227C9.96898 12.35 10.2254 12.0976 10.4029 11.7918C10.5803 11.4861 10.6723 11.1382 10.6691 10.7847V7.82467ZM10.6691 4V3.81333C10.6706 3.38929 10.5367 2.97585 10.2869 2.63316C10.0372 2.29047 9.68458 2.03643 9.28046 1.908C8.22361 1.54993 7.11808 1.35612 6.00246 1.33333C4.8869 1.35628 3.78143 1.54985 2.72446 1.90733C2.32033 2.03598 1.96777 2.29017 1.71803 2.63295C1.46829 2.97573 1.33439 3.38923 1.33579 3.81333V4C1.33579 5.62867 3.09912 9.33333 6.00246 9.33333C8.90579 9.33333 10.6691 5.62867 10.6691 4ZM6.00246 11.3333C5.8706 11.3333 5.74171 11.3724 5.63208 11.4457C5.52244 11.5189 5.43699 11.6231 5.38654 11.7449C5.33608 11.8667 5.32288 12.0007 5.3486 12.1301C5.37432 12.2594 5.43782 12.3782 5.53105 12.4714C5.62429 12.5646 5.74307 12.6281 5.8724 12.6539C6.00172 12.6796 6.13576 12.6664 6.25758 12.6159C6.3794 12.5655 6.48351 12.48 6.55677 12.3704C6.63002 12.2607 6.66912 12.1319 6.66912 12C6.66912 11.8232 6.59888 11.6536 6.47386 11.5286C6.34884 11.4036 6.17927 11.3333 6.00246 11.3333Z" fill="#374957"/>
+</svg>
+  ),
+  bus: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="13" rx="2" />
+      <path d="M3 9h18M8 4v5M16 4v5M7 17l-1 3M17 17l1 3" />
+      <circle cx="8" cy="17" r="1.5" />
+      <circle cx="16" cy="17" r="1.5" />
+    </svg>
+  ),
+};
+
+// ─── NEW: Badge color map for transport cards ─────────────────────────────────
+
+const TRANSPORT_BADGE_STYLES: Record<string, React.CSSProperties> = {
+  flight:  { background: "#e0f7fa", color: "#00838f" },
+  taxi:    { background: "#e0f7fa", color: "#00838f" },
+  train:   { background: "#ede7f6", color: "#5e35b1" },
+  bus:     { background: "#fff3e0", color: "#e65100" },
+  cheaper: { background: "#e8f5e9", color: "#2e7d32" },
+  fastest: { background: "#e3f2fd", color: "#1565c0" },
+  popular: { background: "#fce4ec", color: "#880e4f" },
+  info:    { background: "#e0f7fa", color: "#00838f" },
+};
+
+function getTransportBadgeStyle(label: string, color?: string): React.CSSProperties {
+  const key = label.toLowerCase();
+  if (TRANSPORT_BADGE_STYLES[key]) return TRANSPORT_BADGE_STYLES[key];
+  if (color === "info") return TRANSPORT_BADGE_STYLES.info;
+  return { background: "#f3f4f6", color: "#374151" };
+}
+
+// ─── NEW: Helpers to detect and parse transport ListViewItems ─────────────────
+
+function extractAllTexts(node: WidgetNode): string[] {
+  const texts: string[] = [];
+  if (node.value && typeof node.value === "string") texts.push(node.value);
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    texts.push(...extractAllTexts(child));
+  }
+  return texts;
+}
+
+function extractAllBadges(node: WidgetNode): WidgetNode[] {
+  const badges: WidgetNode[] = [];
+  if (node.type === "Badge") badges.push(node);
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    badges.push(...extractAllBadges(child));
+  }
+  return badges;
+}
+
+/**
+ * A ListView is a "transport list" when at least one item has a Caption
+ * matching the pattern "NNN km • Xh Ym"
+ */
+function isTransportListView(children: WidgetNode[]): boolean {
+  return children.some((item) => {
+    const texts = extractAllTexts(item);
+    return texts.some((t) => /\d+\s*km\s*[•·]/.test(t));
+  });
+}
+
+// ─── NEW: TransportCard – renders one ListViewItem as the new card design ─────
+
+function TransportCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const texts  = extractAllTexts(node);
+  const badges = extractAllBadges(node);
+
+  // "501 km • 1h 5m"
+  const metaText  = texts.find((t) => /\d+\s*km\s*[•·]/.test(t)) ?? "";
+  const metaParts = metaText.split(/\s*[•·]\s*/);
+  const distance  = metaParts[0]?.trim() ?? "";
+  const duration  = metaParts[1]?.trim() ?? "";
+
+  // "Flight • Apr 24, 2026"
+  const typeAndDate = texts.find((t) => /[•·]/.test(t) && !/km/.test(t)) ?? "";
+  const tdParts     = typeAndDate.split(/\s*[•·]\s*/);
+  const typeRaw     = tdParts[0]?.trim() ?? "";
+  const date        = tdParts[1]?.trim() ?? "";
+
+  const typeKey = typeRaw.toLowerCase();
+  const icon    = TRANSPORT_ICONS[typeKey] ?? TRANSPORT_ICONS.taxi;
+
+  const clickAction = node.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+
+  const handleClick = () => {
+    if (clickAction) onAction?.(clickAction);
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      style={{
+        background: "#ffffff",
+        border: "0.5px solid #e5e7eb",
+        borderRadius: 16,
+        padding: "16px 18px",
+        cursor: clickAction ? "pointer" : "default",
+        transition: "border-color 0.15s",
+        boxSizing: "border-box",
+        width: "100%",
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#d1d5db"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb"; }}
+      className="w-full md:max-w-[500px]"
+    >
+      {/* Header: icon + name + badges */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+        {/* Icon circle */}
+        <div style={{
+          width: 44, height: 44, borderRadius: "50%",
+          background: "#fafafa",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, color: "#374151",
+          border: "1px solid #f0f0f0",
+        }}>
+          {icon}
+        </div>
+
+        {/* Name + subtitle */}
+        <div style={{ flex: 1 }}>
+          <div style={{
+            fontSize: 18, fontWeight: 500,
+            color: "#111827", fontFamily: "'Inter', sans-serif",
+            lineHeight: 1.2, marginBottom: 2,
+          }}>
+            {typeRaw || "Transfer"}
+          </div>
+          <div style={{
+            fontSize: 13, color: "#9ca3af",
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            Non Stop
+          </div>
+        </div>
+
+        {/* Badges */}
+        <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          {badges.map((b, i) => {
+            const label = (b.label ?? b.value ?? "") as string;
+            const color = b.color as string | undefined;
+            const style = getTransportBadgeStyle(label, color);
+            return (
+              <span key={i} style={{
+                ...style,
+                padding: "2px 10px",
+                borderRadius: 9999,
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: "'Inter', sans-serif",
+                whiteSpace: "nowrap",
+                border: `1px solid ${color || "#e0e0e0"}`,
+              }}>
+                {label}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <hr style={{ border: "none", borderTop: "1px solid grey", margin: "0 0 14px" }} />
+
+      {/* Meta grid: Distance / Time / Date */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 8,
+      }}>
+        {[
+          { label: "Distance", value: distance },
+          { label: "Time",     value: duration },
+          { label: "Date",     value: date },
+        ].map(({ label, value }) => (
+          <div key={label}>
+            <div style={{
+              fontSize: 13, color: "#111827",
+              fontFamily: "'Inter', sans-serif", marginBottom: 2,
+            }}>
+              {label}
+            </div>
+            <div style={{
+              fontSize: 13, color: "#9ca3af",
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              {value || "—"}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── NEW: TransportListView – renders transport items as stacked cards ─────────
+
+function TransportListView({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const children = (node.children ?? []) as WidgetNode[];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {children.map((item, idx) => (
+        <TransportCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
+    </div>
+  );
+}
+
+
+function isActivityListView(children: WidgetNode[]): boolean {
+  return children.some((item) => {
+    const texts = extractAllTexts(item);
+    // Activity items have a price text like "₹5740.0" or "$200" and an image
+    const hasPrice = texts.some((t) => /[₹$€£]\s*[\d,]+/.test(t));
+    const hasImage = JSON.stringify(item).includes('"Image"');
+    return hasPrice && hasImage;
+  });
+}
+
+function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  const raw = JSON.stringify(node);
+  const imgMatch = raw.match(/"src"\s*:\s*"([^"]+)"/);
+  const imgSrc = imgMatch?.[1] ?? "";
+  const imgAltMatch = raw.match(/"alt"\s*:\s*"([^"]+)"/);
+  const imgAlt = imgAltMatch?.[1] ?? "";
+
+  const texts = extractAllTexts(node);
+  const title = texts.find((t) => t.length > 20 && !/[₹$€£]/.test(t) && !/[•·]/.test(t)) ?? "";
+  const category = texts.find((t) => t.length > 2 && t.length < 30 && !/[₹$€£\d★]/.test(t) && t !== title) ?? "";
+  const ratingText = texts.find((t) => /^\d\.\d+/.test(t)) ?? "";
+  const rating = parseFloat(ratingText) || 0;
+  const priceText = texts.find((t) => /[₹$€£]\s*[\d,]+/.test(t)) ?? "";
+  const priceClean = priceText.replace(/\.0$/, "");
+  const description = texts.find((t) => t.length > 50 && t !== title && !/[₹$€£]/.test(t)) ?? "";
+  const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? "★" : "☆").join("");
+  const clickAction = node.onClickAction as { type: string; payload?: Record<string, unknown> } | undefined;
+
+  return (
+    <div
+      onClick={() => clickAction && onAction?.(clickAction)}
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        padding: "14px 16px",
+        cursor: clickAction ? "pointer" : "default",
+        width: "100%",
+        marginBottom: 12,
+        // transition: "border-color 0.15s",
+      }}
+      // onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--color-border-secondary)"; }}
+      // onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--color-border-tertiary)"; }}
+    >
+      {/* Header */}
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 16, fontWeight: 500, color: "var(--color-text-primary)", lineHeight: 1.3, marginBottom: 5, fontFamily: "'Inter', sans-serif" }}>
+          {title}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {category && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{category}</span>}
+          {category && <span style={{ fontSize: 12, color: "var(--color-border-secondary)" }}>|</span>}
+          <span style={{ color: "#f59e0b", fontSize: 14, letterSpacing: 1 }}>{stars}</span>
+          {rating > 0 && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{rating.toFixed(2)}</span>}
+        </div>
+      </div>
+
+      {/* Horizontal divider */}
+      <div style={{ height: "0.5px", background: "#e5e5e5", marginBottom: 10 }} />
+
+      {/* Body: description + image */}
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
+        <p style={{ flex: 1, fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden", margin: 0, fontFamily: "'Inter', sans-serif" }}>
+          {description}
+        </p>
+        {imgSrc && (
+          <div style={{ flexShrink: 0, width: 110, height: 90, borderRadius: 10, overflow: "hidden" }}>
+            <img src={imgSrc} alt={imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          </div>
+        )}
+      </div>
+
+      {/* Price */}
+      {priceClean && (
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>{priceClean}</span>
+          <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>/ person</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ActivityListView({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const children = (node.children ?? []) as WidgetNode[];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {children.map((item, idx) => (
+        <ActivityCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
+    </div>
   );
 }
 
@@ -279,7 +618,6 @@ function ButtonNode({
     label, iconStart, variant = "solid",
     color = "default", pill, onClickAction, submit,
   } = node;
-  // console.log("Rendering button with props:", { label, iconStart, variant, color, pill, onClickAction, submit });
 
   const handleClick = () => {
     // Form submit button — serialize form values as comma-separated string
@@ -348,32 +686,32 @@ function ButtonNode({
 
   // ── Primary solid ──
   if (color === "primary") {
-  return (
-    <button
-      onClick={handleClick}
-      style={{
-        padding: "12px 20px",
-        borderRadius: "8px",
-        borderWidth: "2px",
-        border: variant === "outline" ? "2px solid #111" : "none",
-        background: variant === "solid" ? "#f7e700" : "transparent",
-        backgroundColor: variant === "solid" ? "#f7e700" : "transparent",
-        color: "#111",
-        fontSize: "0.85rem",
-        fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
-        cursor: "pointer",
-        outline: "none",
-      }}
-    >
-      {label as string}
-    </button>
-  );
-}
+    return (
+      <button
+        onClick={handleClick}
+        style={{
+          padding: "12px 20px",
+          borderRadius: "8px",
+          borderWidth: "2px",
+          border: variant === "outline" ? "2px solid #111" : "none",
+          background: variant === "solid" ? "#f7e700" : "transparent",
+          backgroundColor: variant === "solid" ? "#f7e700" : "transparent",
+          color: "#111",
+          fontSize: "0.85rem",
+          fontWeight: 600,
+          fontFamily: "'Inter', sans-serif",
+          cursor: "pointer",
+          outline: "none",
+        }}
+      >
+        {label as string}
+      </button>
+    );
+  }
 
   // ── Generic fallback ──
   return (
-     <button
+    <button
       onClick={handleClick}
       style={{
         padding: "12px 20px",
@@ -564,9 +902,13 @@ function RowNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRender
     </div>
   );
 }
+
 // ─── Col ──────────────────────────────────────────────────────────────────────
+
 function ColNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const { children = [], gap, align, width } = node;
+
+
   return (
     <div style={{
       display: "flex", flexDirection: "column",
@@ -592,6 +934,17 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
   const routeCtx = useContext(RouteItemContext);
   const children = (node.children ?? []) as WidgetNode[];
   const filtered = children.filter((c) => !isDotsHorizontalNode(c));
+
+  if (isActivityListView(children)) {
+    return <ActivityListView node={node} onAction={onAction} />;
+  }
+
+  // Transport cards (distance + duration items)
+  if (isTransportListView(children)) {
+    return <TransportListView node={node} onAction={onAction} />;
+  }
+
+
   return (
     <div style={{
       display: "flex", flexDirection: "row",
@@ -623,8 +976,16 @@ function isRouteListView(children: WidgetNode[]): boolean {
   });
 }
 
+// ─── ListView – routes to TransportListView when applicable ──────────────────
+
 function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const children = (node.children ?? []) as WidgetNode[];
+
+  // NEW: delegate to transport card design when items contain transport data
+  if (isTransportListView(children)) {
+    return <TransportListView node={node} onAction={onAction} />;
+  }
+
   const isRoute = isRouteListView(children);
 
   return (
@@ -722,7 +1083,7 @@ function NodeRenderer({
 
 export function WidgetRenderer({ widget, onAction }: WidgetRendererProps) {
   return (
-    <div style={{ width: "fit-content", maxWidth: 320, paddingBottom: 4 }}>
+    <div style={{ paddingBottom: 4 }} className="w-full">
       <NodeRenderer node={widget as WidgetNode} onAction={onAction} />
     </div>
   );
