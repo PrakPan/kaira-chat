@@ -63,7 +63,7 @@ const ExperienceCard = (props) => {
       },
     });
     if (props.PW) router.push("/itinerary/physicswallah/" + props.id);
-    else router.push("/itinerary/" + props.id);
+    else router.push("/chat/" + props.id);
   };
 
   const FONT_SIZES_DESKTOP = ["20px"];
