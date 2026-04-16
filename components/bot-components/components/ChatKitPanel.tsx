@@ -82,6 +82,8 @@ onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
 sessionId?: string;
+isItineraryCompleting?: boolean;
+itineraryCompleted?: boolean;
 }
 
 function useUserLocationData() {
@@ -157,6 +159,15 @@ const Spinner = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const TripPlanningLoader = () => (
+  <div className="flex items-start gap-2 mb-4">
+    <div className="flex items-center gap-2">
+      <Spinner size={14} />
+      <span className="text-sm text-black">Your trip is being planned</span>
+    </div>
+  </div>
+);
+
 const WelcomeState = () => (
   <div className="flex flex-col items-center justify-center h-full px-6 pb-20 select-none">
     <div
@@ -201,6 +212,8 @@ onItineraryCompletionDone,
 restoredThread,
 onInitialPromptConsumed,
 sessionId: propSessionId,
+isItineraryCompleting = false,
+itineraryCompleted = false,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -222,6 +235,7 @@ sessionId: propSessionId,
   const postLoginFiredRef = useRef(false);
   const loginFlowArmedRef = useRef(false);
   const pendingPostLoginMsg = useRef<string | null>(null);
+  const hasInjectedContextRef = useRef(false);
   const inputRef = useRef(input);
 useEffect(() => { inputRef.current = input; }, [input]);
 const prevAuthTokenRef = useRef<string | null>(null);
@@ -399,7 +413,12 @@ case "itinerary_completion_process_completed": {
 }
 
 case "start_itinerary_completion_process": {
-  onItineraryCompletionStart?.("pending");
+  const startId = data.itinerary_id as string;
+  onItineraryCompletionStart?.(startId ?? "pending");
+  // The itinerary ID arrives with this effect — set up polling with the real ID
+  if (startId) {
+    onItineraryCompletionDone?.(startId);
+  }
   break;
 }
 case "shimmer_day_by_day": {
@@ -470,6 +489,13 @@ useEffect(() => {
     onSendReady?.(sendMessage);
   }, [onSendReady, sendMessage]);
 
+  // ── Inject context when itinerary is fully completed ──────────────────────
+  useEffect(() => {
+    if (itineraryCompleted && !hasInjectedContextRef.current && !isStreaming) {
+      hasInjectedContextRef.current = true;
+      sendWidgetAction("inject.context", { message: "Provide short overview of the trip" });
+    }
+  }, [itineraryCompleted, isStreaming, sendWidgetAction]);
 
 useEffect(() => {
   const tokenJustArrived =
@@ -818,6 +844,8 @@ const handleShowLogin = useCallback(() => {
                 <span>Sending your message…</span>
               </div>
             )}
+
+            {isItineraryCompleting && !isStreaming && <TripPlanningLoader />}
 
             <div ref={messagesEndRef} />
           </div>
