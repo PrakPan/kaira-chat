@@ -185,8 +185,12 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const chatSendMessageRef = useRef<((msg: string) => void) | null>(null);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isItineraryCompleting, setIsItineraryCompleting] = useState(false);
+  // true only when itinerary was created in this session (not restored on reload)
+  const itineraryCreatedInSessionRef = useRef(false);
   const cart = useSelector((state: any) => state.Cart);
   const pricingStatus = useSelector((state: any) => state.ItineraryStatus?.pricing_status);
+  const finalizedStatus = useSelector((state: any) => state.ItineraryStatus?.finalized_status);
   const currency = useSelector((state: any) => state.currency);
   const [isMobile, setIsMobile] = useState(false);
   // Mobile effect popup — shown for 10s when focus_route / itinerary effects fire
@@ -290,6 +294,13 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // ── Watch finalized_status to clear itinerary-completing loader ───────────
+  useEffect(() => {
+    if (finalizedStatus === "SUCCESS" && isItineraryCompleting) {
+      setIsItineraryCompleting(false);
+    }
+  }, [finalizedStatus, isItineraryCompleting]);
+
   const handleSendMessageReady = useCallback(
     (sendFn: (msg: string) => void) => {
       chatSendMessageRef.current = sendFn;
@@ -343,7 +354,11 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
           (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
         );
-        if (allDone) dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+        if (allDone) {
+          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+          setBotMode("p2");
+          setItineraryId(itineraryId);
+        }
 
         dispatch(setCart({}));
         dispatch(setItineraryIdAction(itineraryId));
@@ -427,6 +442,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const handleItineraryCompletionStart = useCallback(
     (_id?: string) => {
+      setIsItineraryCompleting(true);
+      itineraryCreatedInSessionRef.current = true;
       dispatch(setCart({}));
       dispatch(setStays([]));
       dispatch(setTransfersBookings(null));
@@ -695,7 +712,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   }, []);
 
   const loadThread = useCallback(
-    async (threadId: string) => {
+    async (threadId: string, sessionIdOverride?: string) => {
       if (isLoadingThreadRef.current) return;
       isLoadingThreadRef.current = true;
       try {
@@ -709,7 +726,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
         const data = await res.json();
 
-        const threadSessionId = data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
+        const threadSessionId = sessionIdOverride ?? data.session_id ?? data.filter_session_id ?? data.metadata?.session_id;
         if (threadSessionId) {
           const target = `/chat/${threadSessionId}`;
           if (window.location.pathname !== target) {
@@ -748,6 +765,17 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
         const itineraryEffects: any[] = data.itinerary_effects ?? [];
         let completedIdFromEffects: string | null = null;
+        let startedIdFromEffects: string | null = null;
+
+        console.log("[loadThread] itinerary_effects:", JSON.stringify(itineraryEffects.map((e: any) => ({ name: e.name, id: e.data?.itinerary_id, dataKeys: Object.keys(e.data ?? {}) }))));
+        console.log("[loadThread] hasItems:", hasItems, "threadSessionId:", threadSessionId);
+        const displayItEffect = itineraryEffects.find((e: any) => e.name === "display_itinerary");
+        if (displayItEffect) console.log("[loadThread] display_itinerary data:", JSON.stringify(displayItEffect.data).slice(0, 500));
+
+        // Check if a completed effect exists so we can skip the skeleton build
+        const hasCompletedEffectInLoop = itineraryEffects.some(
+          (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
+        );
 
         for (const effect of itineraryEffects) {
           switch (effect.name) {
@@ -758,12 +786,15 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
               handleItineraryReceived({ transfers: effect.data.transfers });
               break;
             case "start_itinerary_completion_process":
-              handleItineraryCompletionStart();
+              startedIdFromEffects = (effect.data?.itinerary_id as string) ?? null;
+              // Skip skeleton build on restore — we'll check status directly
+              if (!hasCompletedEffectInLoop) {
+                // Don't build skeleton; instead we'll check status below
+              }
               break;
             case "itinerary_completion_process_completed": {
               const completedId = effect.data?.itinerary_id;
               completedIdFromEffects = completedId ?? null;
-              if (completedId) handleItineraryCompletionDone(completedId);
               break;
             }
             default:
@@ -771,32 +802,88 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           }
         }
 
-        // If we have a completed itinerary from effects, ensure polling + ChatBot are on
-        if (completedIdFromEffects) {
-          setActiveItineraryId(completedIdFromEffects);
-          setItineraryPollingEnabled(true);
+        // Determine the itinerary ID from effects or fall back to sessionId
+        // when display_itinerary exists (itinerary was created but start/completed effects missing)
+        const hasDisplayItinerary = itineraryEffects.some((e) => e.name === "display_itinerary");
+        const effectItineraryId = completedIdFromEffects ?? startedIdFromEffects;
+        const restoredItineraryId = effectItineraryId ?? (hasDisplayItinerary ? (threadSessionId ?? sessionId) : null);
+        console.log("[loadThread] restoredItineraryId:", restoredItineraryId, "completedId:", completedIdFromEffects, "startedId:", startedIdFromEffects, "fromDisplayItinerary:", hasDisplayItinerary && !effectItineraryId);
+
+        if (restoredItineraryId) {
+          // Check status immediately to determine the actual state
+          let statusCheckFailed = false;
+          try {
+            const { axiosGetItineraryStatus } = await import(
+              "../../services/itinerary/daybyday/preview"
+            );
+            const statusRes = await axiosGetItineraryStatus.get(
+              `/${restoredItineraryId}/status/`,
+            );
+            const status = statusRes.data?.celery;
+            console.log("[loadThread] status API response:", JSON.stringify(status));
+            if (status) {
+              dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
+              dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
+              dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
+              dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
+              dispatch(setItineraryStatus("display_text", status.display_text || null));
+              dispatch(setItineraryStatus("notes", status.notes || []));
+
+              const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
+                (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
+              );
+              console.log("[loadThread] allDone:", allDone);
+              if (allDone) {
+                dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+                setBotMode("p2");
+                setItineraryId(restoredItineraryId);
+              } else {
+                // Still in progress — set up polling
+                dispatch(setItineraryStatus("finalized_status", "PENDING"));
+                setIsItineraryCompleting(true);
+              }
+            }
+          } catch (e) {
+            // Status API failed — stay on p1, just show whatever the thread has
+            console.warn("Status check on restore failed, staying on p1:", e);
+            setBotMode("p1");
+            setItineraryId("");
+            statusCheckFailed = true;
+          }
+
+          setShowItineraryShimmer(false);
+          dispatch(setCart({}));
+          if (statusCheckFailed) {
+            // Status API failed — treat as draft so CTA shows, settings/share hide
+            // Don't override activeItineraryId if display_itinerary already set it to "draft"
+            if (!hasDisplayItinerary) {
+              setActiveItineraryId("draft");
+            }
+            setItineraryPollingEnabled(false);
+          } else {
+            // Status API succeeded — use the real ID
+            dispatch(setItineraryIdAction(restoredItineraryId));
+            setActiveItineraryId(restoredItineraryId);
+            setItineraryPollingEnabled(true);
+          }
           setShowChatBot(true);
-          setChatBotIdOnce(completedIdFromEffects);
+          setChatBotIdOnce(restoredItineraryId);
           setShowStartScreen(false);
           setHasBotResponded(true);
+          setViewMode("itinerary");
+          setMobilePanel("map");
         }
 
-        // No completed itinerary in effects at all — this is an old itinerary
-        // Fall back to direct status API load. Use threadSessionId if available,
-        // otherwise fall back to the URL sessionId prop.
-        // IMPORTANT: only do this if the thread has NO chat messages — if it has
-        // messages it is a valid chatkit thread, not an old itinerary, and calling
-        // restoreItineraryDirectly with a chat UUID will fail and reset the UI to
-        // the start/welcome screen.
-        const hasCompletedEffect = itineraryEffects.some(
-          (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
-        );
+        // No itinerary effects at all — this is an old itinerary
+        // Fall back to direct status API load.
         const hasAnyItineraryEffect = itineraryEffects.some((e) =>
-          ["display_itinerary", "start_itinerary_completion_process"].includes(e.name),
+          ["display_itinerary", "start_itinerary_completion_process", "itinerary_completion_process_completed"].includes(e.name),
         );
 
         const fallbackSessionId = threadSessionId ?? sessionId;
-        if (!hasCompletedEffect && !hasAnyItineraryEffect && !hasItems && fallbackSessionId) {
+        console.log("[loadThread] fallback check:", { restoredItineraryId, hasAnyItineraryEffect, hasItems, fallbackSessionId });
+        if (!restoredItineraryId && !hasAnyItineraryEffect && !hasItems && fallbackSessionId) {
+          console.log("[loadThread] falling back to restoreItineraryDirectly with:", fallbackSessionId);
           await restoreItineraryDirectly(fallbackSessionId);
         }
       } catch (err) {
@@ -809,8 +896,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       handleRouteReceived,
       handleLocationReceived,
       handleItineraryReceived,
-      handleItineraryCompletionStart,
-      handleItineraryCompletionDone,
+      dispatch,
       restoreItineraryDirectly,
       setChatBotIdOnce,
       sessionId,
@@ -832,12 +918,15 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         const listData = await listRes.json();
         const threads = listData.data ?? [];
 
+        console.log("[restoreLatestThread] threads found:", threads.length, "sid:", sid);
         if (threads.length === 0) {
           // No chatkit threads → old itinerary, load directly
+          console.log("[restoreLatestThread] no threads, falling back to restoreItineraryDirectly");
           await restoreItineraryDirectly(sid);
           return;
         }
 
+        console.log("[restoreLatestThread] loading thread:", threads[0].id);
         await loadThread(threads[0].id);
       } catch (err) {
         console.error("Failed to restore session:", err);
@@ -885,6 +974,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       setActiveItineraryId(null);
       setItineraryPollingEnabled(false);
       setShowItineraryShimmer(false);
+      setIsItineraryCompleting(false);
+      itineraryCreatedInSessionRef.current = false;
+      setBotMode("p1");
+      setItineraryId("");
       setViewMode("map");
       setHasBotResponded(false);
       setShowStartScreen(false);
@@ -908,7 +1001,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
       // Load thread (will also update URL/sessionId if API returns session_id),
       // then remount ChatKitPanel with the correct session.
-      await loadThread(threadId);
+      await loadThread(threadId, knownSessionId);
       setChatKey((prev) => prev + 1);
     },
     [loadThread, dispatch],
@@ -919,6 +1012,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     initialPromptRef.current = null;
     userSelectedThreadRef.current = false;
     hasRestoredRef.current = false;
+    setIsItineraryCompleting(false);
+    itineraryCreatedInSessionRef.current = false;
     setInitialPrompt(null);
     setLocations([]);
     setCurrentRoute(null);
@@ -1005,6 +1100,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     onLoadRouteOnMap: handleLoadRouteOnMap,
     restoredThread,
     initialAttachmentIds,
+    isItineraryCompleting,
+    itineraryCompleted: finalizedStatus === "SUCCESS" && botMode === "p2" && itineraryCreatedInSessionRef.current,
   };
 
   const handleConfirmItinerary = (details: any) => {
