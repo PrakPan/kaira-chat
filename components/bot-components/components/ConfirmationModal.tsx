@@ -98,16 +98,16 @@ const SimpleDatePicker = ({
     const isToday = today.toDateString() === new Date(year, month, day).toDateString();
     const isPast = isPastDate(year, month, day);
 
+
     days.push(
       <button
         key={day}
-        disabled={isPast}
+        disabled={isPast || isToday}
         onClick={() => { if (!isPast) { onSelect(dateStr); onClose(); } }}
         className={`aspect-square flex items-center justify-center rounded-full text-sm transition-all
-          ${isPast ? "text-gray-300 cursor-not-allowed" : ""}
+          ${isPast || isToday ? "text-gray-300 cursor-not-allowed" : ""}
           ${isSelected ? "bg-[#07213A] text-white font-semibold shadow-sm" : ""}
-          ${!isSelected && !isPast ? "hover:bg-[#07213A]/10 text-gray-700" : ""}
-          ${isToday && !isSelected ? "ring-1 ring-[#07213A] font-medium" : ""}
+          ${!isSelected && !isPast && !isToday ? "hover:bg-[#07213A]/10 text-gray-700" : ""}
         `}
       >
         {day}

@@ -216,6 +216,14 @@ const ACCENT_COLORS: Record<string, string> = {
   yellow: "#eab308",
 };
 
+const getImageUrl = (img) => {
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  if (!img) return "";
+  return img.startsWith("http://") || img.startsWith("https://")
+    ? img
+    : imgUrlEndPoint + img;
+};
+
 function resolveAccent(accent?: string): string {
   if (!accent) return "#FD6D6C";
   return ACCENT_COLORS[accent.toLowerCase()] ?? "#FD6D6C";
@@ -604,11 +612,17 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
 
           // Route stop popup — rich city card
           if (isRouteStop && currentRoute) {
-            const imageLine = loc.image
-              ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
-                <img src="${loc.image}" alt="${location.name}" style="width:100%;height:100%;object-fit:cover;" />
-               </div>`
-              : "";
+             const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+
+const imageLine = loc.image
+  ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
+      <img 
+        src="${getImageUrl(loc.image)}" 
+        alt="${location.name}" 
+        style="width:100%;height:100%;object-fit:cover;" 
+      />
+     </div>`
+  : "";
 
             const oneLiner = loc.one_liner_description
               ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.one_liner_description}</p>`

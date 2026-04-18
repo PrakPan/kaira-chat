@@ -80,6 +80,7 @@ const PinSection = (props) => {
           pinColour={props.pinColour}
           index={props?.index}
           length={props?.length}
+          className='ml-[2px]'
         ></Pin>
       )}
       <Heading

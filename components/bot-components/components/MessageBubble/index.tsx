@@ -606,29 +606,85 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   }
 
   if (isUser) {
+    const hasAttachments = (message.attachments?.length ?? 0) > 0;
     return (
       <div
         style={{
           display: "flex",
-          justifyContent: "flex-end",
+          flexDirection: "column",
+          alignItems: "flex-end",
           marginBottom: 16,
+          gap: 6,
         }}
       >
-        <div
-          style={{
-            maxWidth: "85%",
-            background: "#f8fafc",
-            color: "#0d0d0d",
-            padding: "10px 16px",
-            borderRadius: 12,
-            fontFamily: "'Inter', sans-serif",
-            fontSize: 16,
-            lineHeight: "24px",
-            fontWeight: 400,
-          }}
-        >
-          {message.content}
-        </div>
+        {hasAttachments && (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "flex-end",
+              gap: 6,
+              maxWidth: "85%",
+            }}
+          >
+            {message.attachments!.map((att) => {
+              const isImage = att.mimeType?.startsWith("image/");
+              if (isImage && att.previewUrl) {
+                return (
+                  <img
+                    key={att.id}
+                    src={att.previewUrl}
+                    alt={att.name ?? "attachment"}
+                    style={{
+                      width: 140,
+                      height: 140,
+                      objectFit: "cover",
+                      borderRadius: 12,
+                      border: "1px solid #e5e7eb",
+                    }}
+                  />
+                );
+              }
+              return (
+                <div
+                  key={att.id}
+                  style={{
+                    padding: "8px 12px",
+                    background: "#f3f4f6",
+                    borderRadius: 8,
+                    fontSize: 13,
+                    color: "#374151",
+                    fontFamily: "'Inter', sans-serif",
+                    maxWidth: 220,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                  title={att.name}
+                >
+                  📎 {att.name ?? "Attachment"}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {message.content && (
+          <div
+            style={{
+              maxWidth: "85%",
+              background: "#f8fafc",
+              color: "#0d0d0d",
+              padding: "10px 16px",
+              borderRadius: 12,
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 16,
+              lineHeight: "24px",
+              fontWeight: 400,
+            }}
+          >
+            {message.content}
+          </div>
+        )}
       </div>
     );
   }

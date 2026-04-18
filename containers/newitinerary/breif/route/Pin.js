@@ -29,7 +29,7 @@ const InnerContainer = styled.div`
 const Pin = (props) => {
   return (
     <Container
-      className="center-div "
+      className={`center-div ${props.className ? props.className : ""}`}
       pinColour={props.pinColour}
       index={props?.index}
       length={props?.length}

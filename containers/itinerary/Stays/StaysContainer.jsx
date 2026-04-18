@@ -14,7 +14,7 @@ const StaysContainer = (props) => {
         className="text-xl font-bold cursor-pointer group transition duration-300 max-w-fit md:min-w-[51vw]"
       >
         Stays
-        <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+        <span className="block max-w-0 group-hover:max-w-[65px] transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
 
       <div className="mt-4 space-y-6">

@@ -57,6 +57,7 @@ const DaybyDay = ({
   setShowCityDrawer,
   isDraft,
   showPins,
+  onSendMessage,
   ...props
 }) => {
   const router = useRouter()
@@ -322,6 +323,7 @@ const DaybyDay = ({
                   setShowSettings={setShowSettings}
                   setShowCityDrawer={setShowCityDrawer}
                   isDraft={isDraft}
+                  onSendMessage={onSendMessage}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>

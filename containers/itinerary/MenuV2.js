@@ -734,6 +734,7 @@ Start Location: ${details.startLocation}`;
               setShowCityDrawer={handleShowCityDrawer}
               isDraft={isDraft}
               showPins={props?.showPins}
+              onSendMessage={onSendMessage}
             />
           )
         : props?.itinerary && (
@@ -1239,6 +1240,7 @@ props.fromChat ? (
               setShowCityDrawer={handleShowCityDrawer}
               isDraft={isDraft}
               showPins={props?.showPins}
+              onSendMessage={onSendMessage}
             />
           )
         : props?.itinerary && (

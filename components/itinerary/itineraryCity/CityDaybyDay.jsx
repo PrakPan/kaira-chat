@@ -9,7 +9,7 @@ const DayRowShimmer = () => (
     </div>
     {/* Activities column */}
     <div className="flex-1 px-2 md:px-4 py-2 md:py-3 flex flex-col gap-3">
-      {[0, 1, 2].map((i) => (
+      {[0].map((i) => (
         <div key={i} className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 flex-shrink-0" />
           <div className="flex flex-col gap-1.5 flex-1">
@@ -39,7 +39,7 @@ const CityDaybyDay = (props) => {
           <CityDay
             mercuryItinerary={props?.mercuryItinerary}
             key={day.slab_id ?? `day-fallback-${index}`}
-            index={dayOffset + index}
+            index={dayOffset + index}x
             day={day}
             cityId={props.city.city.id}
             city={props.city.city}

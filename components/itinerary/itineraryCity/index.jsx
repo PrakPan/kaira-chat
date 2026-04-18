@@ -171,6 +171,9 @@ const ItineraryCity = (props) => {
 
   const [images, setImages] = useState(null);
 
+  const hasIntracityTransfer =
+    Array.isArray(props?.intracityBookings) && props.intracityBookings.length > 0;
+
   const {
     drawer,
     poi_id,
@@ -197,6 +200,8 @@ const ItineraryCity = (props) => {
     stay?.filter((hotel) => {
       return hotel?.itinerary_city_id === props?.itinerary_city_id;
     });
+
+console.log("multiHotelStays", multiHotelStays);
 
   const multiHotelDuration =
     props.totalDuration ||
@@ -412,7 +417,7 @@ const ItineraryCity = (props) => {
             ) : null}
           </div>
 
-          {!(itineraryDaybyDay.status == "Draft") && (
+          {!(itineraryDaybyDay.status == "Draft") ? (
             <div className="flex items-center gap-2 shrink-0">
               <button
                 onClick={() => {
@@ -457,7 +462,7 @@ const ItineraryCity = (props) => {
                 Taxi
               </button>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/*
@@ -491,26 +496,32 @@ const ItineraryCity = (props) => {
               </div>
             ) : hotelExists ? (
               <div className="flex flex-col gap-1 min-w-0 w-full">
-                {multiHotelStays.map((hotel) => (
+                {multiHotelStays.map((hotel) => {
+                  const isDraftStage = itineraryDaybyDay.status === "Draft";
+                  return (
                   <div
                     key={hotel.id}
-                    className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0"
+                    className="flex items-center gap-1 text-[14px] text-[#111827] min-w-0 flex-wrap"
                   >
-                    {/* Hotel name — truncated, full name on title tooltip */}
+                    {/* Hotel name — truncated in p2, full text in p1 (Draft) */}
                     <span
-                      className="underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
-                     onClick={() =>
-  itineraryDaybyDay.status === "Draft"
-    ? handleDraftHotelClick(hotel.id)
-    : fetchDetails(hotel.id)
-}
+                      className={
+                        isDraftStage
+                          ? "underline cursor-pointer break-words"
+                          : "underline cursor-pointer truncate shrink min-w-0 max-w-[130px] md:max-w-[200px]"
+                      }
+                      onClick={() =>
+                        isDraftStage
+                          ? handleDraftHotelClick(hotel.id)
+                          : fetchDetails(hotel.id)
+                      }
                       title={hotel?.name}
                     >
                       {hotel?.name}
                     </span>
 
                     {/* Rating + star */}
-                    {hotel?.rating && hotel?.rating !== 0 ? (
+                    {(hotel?.rating && hotel?.rating !== 0) || (hotel.star_category && hotel?.star_category !== 0) ? (
                       <>
                         <span className="text-[#6B7280] shrink-0">•</span>
                         <span className="font-[500] shrink-0">
@@ -520,7 +531,8 @@ const ItineraryCity = (props) => {
                       </>
                     ) : null}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               !(itineraryDaybyDay.status == "Draft") && (
@@ -567,7 +579,41 @@ const ItineraryCity = (props) => {
               Change Hotel
             </button>
           )}
+
+          {/* Right side (Draft/p1): Change Hotel — sends message to bot */}
+          {hotelExists && itineraryDaybyDay.status == "Draft" && (
+            <button
+              onClick={() =>
+                props?.onSendMessage?.(
+                  `change hotel in ${props?.city?.city?.name}`,
+                )
+              }
+              className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+            >
+              <EditIcon />
+              Change Hotel
+            </button>
+          )}
         </div>
+
+        {/* Draft/p1: Change Transfer CTA — sends message to bot */}
+        {itineraryDaybyDay.status == "Draft" &&
+          hasIntracityTransfer && (
+            <div className="flex items-center justify-between gap-3 mt-1 min-w-0">
+              <div className="text-[14px] text-[#111827]">Transfer</div>
+              <button
+                onClick={() =>
+                  props?.onSendMessage?.(
+                    `change transfer in ${props?.city?.city?.name}`,
+                  )
+                }
+                className="flex items-center gap-[5px] shrink-0 bg-[#fafafa] px-2 py-1.5 rounded-[8px] font-medium text-[#111827] hover:underline whitespace-nowrap text-[13px]"
+              >
+                <EditIcon />
+                Change Transfer
+              </button>
+            </div>
+          )}
       </div>
       {/* ── End header ──────────────────────────────────────────────────── */}
 
@@ -680,6 +726,15 @@ const ItineraryCity = (props) => {
     _setImagesHandler={_setImagesHandler}
   />
 )}
+
+      {/* Full-screen gallery for city / hotel thumbnail images (p1 city gallery and p1 hotel drawer) */}
+      {images && images.length > 0 && (
+        <FullScreenGallery
+          mercury={false}
+          closeGalleryHandler={() => setImages(null)}
+          images={images}
+        />
+      )}
 
       {/* Activity Add Drawer */}
       {showActivityDrawer && (

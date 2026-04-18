@@ -1546,7 +1546,7 @@ useEffect(() => {
       {/* {correctIcon(booking_type)} */}
     </div>
   ) : (
-   <Pin length={length} pinColour={"black"} inner={true} />
+   <Pin length={length} pinColour={"black"} inner={true} className="-ml-[8.5px]" />
   )}
   {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
 </PinWrapper> :  <PinWrapper>
