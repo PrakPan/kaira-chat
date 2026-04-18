@@ -303,7 +303,7 @@ const TransferEditDrawer = (props) => {
         dCityData?.start_date ??
         (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : dayjs(selectedBooking.check_in).format("YYYY-MM-DD")),
+          : dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")),
       start_time: `00:00`,
       number_of_travellers:
         number_of_adults + number_of_children + number_of_infants,

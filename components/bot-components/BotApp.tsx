@@ -266,6 +266,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   }, [showPaymentDrawer, activeItineraryId, fetchPaymentData]);
 
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
+  const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
   const isV1 = useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
   const statusDisplayText = useSelector((state: any) => state.ItineraryStatus?.display_text);
@@ -1136,6 +1137,35 @@ Start Location: ${details.startLocation}`;
     [activeItineraryId, viewMode],
   );
 
+  // Collect up to 3 unique images across all cities' day_by_day slab elements.
+  // Shown in the header in Draft (p1) stage in place of the Settings icon.
+  const draftCityImages = useMemo(() => {
+    const imgs: { image: string }[] = [];
+    const seen = new Set<string>();
+    const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+    const resolve = (icon: any): string | null => {
+      if (Array.isArray(icon)) icon = icon[0];
+      if (!icon || typeof icon !== "string") return null;
+      return icon.startsWith("http") ? icon : imgUrlEndPoint + icon;
+    };
+    for (const city of itineraryRedux?.cities || []) {
+      for (const day of city?.day_by_day || []) {
+        for (const el of day?.slab_elements || []) {
+          const candidate = el?.icon || el?.restaurants?.[0]?.icon;
+          const url = resolve(candidate);
+          if (url && !seen.has(url)) {
+            seen.add(url);
+            imgs.push({ image: url });
+          }
+          if (imgs.length >= 3) break;
+        }
+        if (imgs.length >= 3) break;
+      }
+      if (imgs.length >= 3) break;
+    }
+    return imgs;
+  }, [itineraryRedux?.cities]);
+
   const handleItineraryContainerSendMessage = useCallback((msg: string) => {
     chatSendMessageRef.current?.(msg);
   }, []);
@@ -1188,9 +1218,9 @@ Start Location: ${details.startLocation}`;
           <p className="font-inter font-semibold text-lg leading-tight">
             {itineraryReduxName || currentItineraryRef?.current?.name || ""}
           </p>
-          {!isDraft && (
+           
             <div className="flex gap-3 items-center">
-              <button
+              {!isDraft && !isMobile && <button
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => {
                   axios
@@ -1203,7 +1233,14 @@ Start Location: ${details.startLocation}`;
                 }}
               >
                 <Image src="/settings.svg" height={22} width={22} alt="Settings" />
-              </button>
+              </button>}
+              {isDraft && draftCityImages.length > 0 && !isMobile && (
+                <SmallGallery
+                  maxShow={Math.min(3, draftCityImages.length)}
+                  images={draftCityImages}
+                  isDraft={true}
+                />
+              )}
               <button
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200"
                 onClick={() => setShowShare(true)}
@@ -1211,7 +1248,7 @@ Start Location: ${details.startLocation}`;
                 <Image src="/share.svg" height={22} width={22} alt="Share" />
               </button>
             </div>
-          )}
+          
         </div>
 
         {!isDraft && (
@@ -1270,8 +1307,8 @@ Start Location: ${details.startLocation}`;
               </div>
               {itineraryRedux?.images?.length > 0 && (
                 <SmallGallery
-                  maxShow={Math.min(3, itineraryRedux.images.length)}
-                  images={itineraryRedux.images}
+                  maxShow={Math.min(3, galleryImages.images.length)}
+                  images={galleryImages.images}
                 />
               )}
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useChat, generateSessionId, type UserLocationData, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -8,8 +8,11 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import LogInModal from "../../userauth/LogInModal";
 import { createPortal } from "react-dom";
+import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
+import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
+const PAGINATION_SCROLL_THRESHOLD = 80;
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -228,8 +231,34 @@ itineraryCompleted = false,
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
 
+  // ── Detail Drawer State ─────────────────────────────────────────────────
+  const [activityDrawer, setActivityDrawer] = useState<{
+    show: boolean;
+    activityId?: string;
+    date?: string;
+    itinerary_city_id?: string;
+  }>({ show: false });
+
+  const [transferDrawer, setTransferDrawer] = useState<{
+    show: boolean;
+    origin?: any;
+    destination?: any;
+    check_in?: string;
+    routeId?: string;
+    booking_type?: string;
+    origin_itinerary_city_id?: string;
+    destination_itinerary_city_id?: string;
+  }>({ show: false });
+
+  // ── Pagination state ─────────────────────────────────────────────────────
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const hasMoreRef = useRef(false);
+  const beforeCursorRef = useRef<string | null>(null);
+  const isFetchingMoreRef = useRef(false);
+
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesScrollRef = useRef<HTMLDivElement>(null);
   const hasProcessedInitial = useRef(false);
   const hasUpdatedUrl = useRef(false);
   const postLoginFiredRef = useRef(false);
@@ -456,14 +485,14 @@ case "shimmer_day_by_day": {
 
   // ── Wrap sendMessage to clear quick replies ───────────────────────────────
 const sendMessage = useCallback(
-  (text: string, attachmentIds?: string[]) => {
+  (text: string, attachmentIds?: string[], attachmentMeta?: MessageAttachment[]) => {
     setQuickReplies([]);
     lastSentMessageRef.current = text;
 
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
     }
-    rawSendMessage(text, attachmentIds);
+    rawSendMessage(text, attachmentIds, attachmentMeta);
   },
   [rawSendMessage],
 );
@@ -474,6 +503,8 @@ const sendMessage = useCallback(
   }, [error]);
 
   useEffect(() => {
+    // Don't auto-scroll to bottom when older messages are being prepended
+    if (isFetchingMoreRef.current) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -535,35 +566,73 @@ useEffect(() => {
     setLocalItineraryId(itineraryId);
   }, [itineraryId]);
 
+  // Convert raw thread items (from threads.get_by_id payloads) into Message[]
+  const parseThreadItems = useCallback((items: any[]): Message[] => {
+    const out: Message[] = [];
+    for (const item of items ?? []) {
+      if (item.type === "user_message") {
+        const text = item.content?.find((c: any) => c.type === "input_text")?.text ?? "";
+
+        // Extract attachments — server may return them as a sibling array of
+        // {id, name, mime_type, url, ...} objects, as plain id strings, or as
+        // input_image / input_file content parts. Handle all shapes.
+        const attachmentObjs: MessageAttachment[] = [];
+        if (Array.isArray(item.attachments)) {
+          for (const a of item.attachments) {
+            if (typeof a === "string") {
+              attachmentObjs.push({ id: a });
+            } else if (a && typeof a === "object") {
+              attachmentObjs.push({
+                id: a.id,
+                name: a.name,
+                mimeType: a.mime_type ?? a.mimeType,
+                previewUrl: a.url ?? a.preview_url ?? a.download_url,
+              });
+            }
+          }
+        }
+        if (Array.isArray(item.content)) {
+          for (const c of item.content) {
+            if (c?.type === "input_image" || c?.type === "input_file") {
+              attachmentObjs.push({
+                id: c.attachment_id ?? c.id ?? "",
+                name: c.name,
+                mimeType: c.mime_type ?? c.mimeType,
+                previewUrl: c.url ?? c.image_url,
+              });
+            }
+          }
+        }
+
+        if (text || attachmentObjs.length > 0) out.push({
+          id: item.id, role: "user", content: text,
+          timestamp: new Date(item.created_at),
+          ...(attachmentObjs.length > 0 ? { attachments: attachmentObjs } : {}),
+        });
+      } else if (item.type === "assistant_message") {
+        const text = item.content?.find((c: any) => c.type === "output_text")?.text ?? "";
+        if (text) out.push({
+          id: item.id, role: "assistant", content: text,
+          timestamp: new Date(item.created_at), isStreaming: false,
+        });
+      } else if (item.type === "widget") {
+        out.push({
+          id: item.id, role: "assistant", content: "",
+          timestamp: new Date(item.created_at),
+          type: "widget", widgetItem: { id: item.id, widget: item.widget },
+        });
+      }
+    }
+    return out;
+  }, []);
+
   useEffect(() => {
   if (!restoredThread || !setMessages) return;
 
-  const restored: Message[] = [];
-
-  for (const item of restoredThread.items?.data ?? []) {
-    if (item.type === "user_message") {
-      const text = item.content?.find((c: any) => c.type === "input_text")?.text ?? "";
-      if (text) restored.push({
-        id: item.id, role: "user", content: text,
-        timestamp: new Date(item.created_at),
-      });
-    } else if (item.type === "assistant_message") {
-      const text = item.content?.find((c: any) => c.type === "output_text")?.text ?? "";
-      if (text) restored.push({
-        id: item.id, role: "assistant", content: text,
-        timestamp: new Date(item.created_at), isStreaming: false,
-      });
-    } else if (item.type === "widget") {
-      restored.push({
-        id: item.id, role: "assistant", content: "",
-        timestamp: new Date(item.created_at),
-        type: "widget", widgetItem: { id: item.id, widget: item.widget },
-      });
-    }
-  }
+  const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
     const itineraryEffects: any[] = restoredThread.itinerary_effects ?? [];
-  
+
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
       setEntities(prev => ({ ...prev, ...effect.data.entities }));
@@ -575,6 +644,13 @@ useEffect(() => {
   // Restore thread_id so subsequent messages work
   if (restoredThread.id) threadIdRef.current = restoredThread.id;
 
+  // Capture pagination cursor + has_more from items envelope
+  hasMoreRef.current = !!restoredThread.items?.has_more;
+  // Use the API-supplied `before` cursor if present, else fall back to oldest msg id
+  beforeCursorRef.current =
+    (restoredThread.items?.before as string | null) ??
+    (restored.length > 0 ? restored[0].id : null);
+
   // Restore quick replies from itinerary_effects
   const qrEffect = restoredThread.itinerary_effects?.find(
     (e: any) => e.name === "load_quick_replies"
@@ -582,7 +658,75 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread]);
+}, [restoredThread, parseThreadItems]);
+
+  // ── Pagination: fetch older messages ──────────────────────────────────────
+  const fetchOlderMessages = useCallback(async () => {
+    if (isFetchingMoreRef.current) return;
+    if (!hasMoreRef.current) return;
+    const threadId = threadIdRef.current;
+    if (!threadId) return;
+    const beforeId = beforeCursorRef.current;
+    if (!beforeId) return;
+
+    isFetchingMoreRef.current = true;
+    setIsLoadingMore(true);
+
+    // Preserve scroll position so the visible window doesn't jump
+    const container = messagesScrollRef.current;
+    const prevScrollHeight = container?.scrollHeight ?? 0;
+    const prevScrollTop = container?.scrollTop ?? 0;
+
+    try {
+      const res = await fetch(CHATKIT_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        },
+        body: JSON.stringify({
+          type: "threads.get_by_id",
+          params: { thread_id: threadId, before: beforeId },
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
+
+      const olderItems = data.items?.data ?? [];
+      const older = parseThreadItems(olderItems);
+
+      hasMoreRef.current = !!data.items?.has_more;
+      beforeCursorRef.current =
+        (data.items?.before as string | null) ??
+        (older.length > 0 ? older[0].id : null);
+
+      if (older.length > 0) {
+        setMessages((prev) => [...older, ...prev]);
+
+        // After DOM updates, restore scroll offset relative to new content height
+        requestAnimationFrame(() => {
+          const c = messagesScrollRef.current;
+          if (!c) return;
+          const newScrollHeight = c.scrollHeight;
+          c.scrollTop = newScrollHeight - prevScrollHeight + prevScrollTop;
+        });
+      }
+    } catch (err) {
+      console.error("[fetchOlderMessages]", err);
+    } finally {
+      isFetchingMoreRef.current = false;
+      setIsLoadingMore(false);
+    }
+  }, [authToken, parseThreadItems, setMessages]);
+
+  // Detect scroll near top → load more
+  const handleMessagesScroll = useCallback(() => {
+    const c = messagesScrollRef.current;
+    if (!c) return;
+    if (c.scrollTop <= PAGINATION_SCROLL_THRESHOLD) {
+      fetchOlderMessages();
+    }
+  }, [fetchOlderMessages]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
@@ -674,9 +818,46 @@ const handleShowLogin = useCallback(() => {
     [authToken, selectedModel, userLocationData, reduxUserId],
   );
 
-  const handleRemoveAttachment = useCallback((id: string) => {
-    setAttachments((prev) => prev.filter((a) => a.id !== id));
-  }, []);
+  const handleRemoveAttachment = useCallback(
+    async (id: string) => {
+      const target = attachments.find((a) => a.id === id);
+      // Always remove from local state immediately for snappy UX
+      setAttachments((prev) => prev.filter((a) => a.id !== id));
+
+      // Skip server delete for entries that never got a server-assigned id
+      if (!target || target.status !== "uploaded" || id.startsWith("temp-")) return;
+
+      try {
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        };
+        const body: Record<string, unknown> = {
+          type: "attachments.delete",
+          params: { attachment_id: id },
+          model: selectedModel,
+          user_location: userLocationData,
+          platform:
+            typeof window !== "undefined" && window.innerWidth < 768
+              ? "mobile"
+              : "desktop",
+          ...(localItineraryId ? { itinerary_id: localItineraryId } : {}),
+          session_id: sessionIdRef.current,
+          ...(authToken ? { access_token: authToken } : {}),
+          ...(reduxUserId != null ? { user_id: reduxUserId } : {}),
+        };
+        const res = await fetch(CHATKIT_API_URL, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+      } catch (err) {
+        console.error("[Attachment delete error]", err);
+      }
+    },
+    [attachments, authToken, selectedModel, userLocationData, localItineraryId, reduxUserId],
+  );
 
   const handleSubmit = useCallback(() => {
     setShowLoginPrompt(false);
@@ -685,7 +866,21 @@ const handleShowLogin = useCallback(() => {
     if ((!hasText && uploadedAttachments.length === 0) || isStreaming) return;
     setErrorDismissed(true);
     const attachmentIds = uploadedAttachments.map((a) => a.id);
-    sendMessage(input.trim(), attachmentIds.length > 0 ? attachmentIds : undefined);
+    // Build attachment metadata with persistent object URLs for inline preview
+    // in the just-sent user message bubble
+    const attachmentMeta: MessageAttachment[] = uploadedAttachments.map((a) => ({
+      id: a.id,
+      name: a.name,
+      mimeType: a.mimeType,
+      previewUrl: a.mimeType.startsWith("image/")
+        ? URL.createObjectURL(a.file)
+        : undefined,
+    }));
+    sendMessage(
+      input.trim(),
+      attachmentIds.length > 0 ? attachmentIds : undefined,
+      attachmentMeta.length > 0 ? attachmentMeta : undefined,
+    );
     setInput("");
     setAttachments([]);
   }, [input, isStreaming, sendMessage, attachments]);
@@ -783,16 +978,50 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Messages ──────────────────────────────────────────────────────── */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth">
-       
+      <div
+        ref={messagesScrollRef}
+        onScroll={handleMessagesScroll}
+        className="flex-1 min-h-0 overflow-y-auto px-4 py-4 scroll-smooth"
+      >
+
           <div className="max-w-2xl mx-auto">
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-3">
+                <Spinner size={16} />
+                <span className="ml-2 text-xs text-gray-400">Loading older messages…</span>
+              </div>
+            )}
             {messages.map((msg) => (
               <MessageBubble
                 key={msg.id}
                 message={msg}
                 entities={entities}
                 onWidgetAction={(action) => {
-                  sendWidgetAction(action.type, action.payload ?? {});
+                  const payload = action.payload ?? {};
+
+                  // Intercept activity detail actions → open drawer
+                  if (action.type === "place.view") {
+                    setActivityDrawer({
+                      show: true,
+                      activityId: (payload.activity_id ?? payload.id) as string,
+                      date: payload.date as string,
+                      itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string,
+                    });
+                    return;
+                  }
+
+                  // Intercept transfer detail actions → open drawer
+                  if (action.type === "transfer.select") {
+                    setTransferDrawer({
+                      show: true,
+                      routeId: (payload.route_id ?? payload.id) as string,
+                      check_in: (payload.check_in ?? payload.date) as string,
+                      booking_type: (payload.booking_type ?? payload.type ?? "Taxi") as string,
+                    });
+                    return;
+                  }
+
+                  sendWidgetAction(action.type, payload);
                 }}
               />
             ))}
@@ -934,6 +1163,33 @@ const handleShowLogin = useCallback(() => {
           </>,
           document.body,
         )}
+
+      {/* ── Activity Detail Drawer ──────────────────────────────────────── */}
+      {activityDrawer.show && (
+        <ActivityDetailsDrawer
+          show={activityDrawer.show}
+          activityId={activityDrawer.activityId}
+          date={activityDrawer.date}
+          handleCloseDrawer={() => setActivityDrawer({ show: false })}
+          setShowDetails={() => setActivityDrawer({ show: false })}
+          setShowLoginModal={setShowLoginModal}
+          Topheading="Activity Details"
+          showPackages={false}
+          itinerary_city_id={activityDrawer.itinerary_city_id}
+        />
+      )}
+
+      {/* ── Transfer Detail Drawer ──────────────────────────────────────── */}
+      {transferDrawer.show && (
+        <TransferEditDrawer
+          showDrawer={transferDrawer.show}
+          check_in={transferDrawer.check_in}
+          routeId={transferDrawer.routeId}
+          booking_id={transferDrawer.routeId}
+          booking_type={transferDrawer.booking_type}
+          setShowLoginModal={setShowLoginModal}
+        />
+      )}
     </div>
   );
 }

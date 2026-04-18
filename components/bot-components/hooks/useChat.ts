@@ -12,6 +12,13 @@ export interface ThinkingTask {
   done: boolean;
 }
 
+export interface MessageAttachment {
+  id: string;
+  name?: string;
+  mimeType?: string;
+  previewUrl?: string;
+}
+
 export interface Message {
   id: string;
   role: "user" | "assistant";
@@ -25,6 +32,7 @@ export interface Message {
   };
   progressSteps?: ProgressStep[];
   thinkingTasks?: ThinkingTask[];
+  attachments?: MessageAttachment[];
 }
 
 export interface UserLocationData {
@@ -549,9 +557,13 @@ export function useChat({
   // ─── sendMessage ──────────────────────────────────────────────────────────
 
   const sendMessage = useCallback(
-    async (content: string, attachmentIds?: string[]) => {
+    async (
+      content: string,
+      attachmentIds?: string[],
+      attachments?: MessageAttachment[],
+    ) => {
       const trimmed = content.trim();
-      if (!trimmed || isStreaming) return;
+      if ((!trimmed && (!attachmentIds || attachmentIds.length === 0)) || isStreaming) return;
 
       cancelStream();
       setError(null);
@@ -561,7 +573,13 @@ export function useChat({
 
       setMessages((prev) => [
         ...prev,
-        { id: userMsgId, role: "user", content: trimmed, timestamp: new Date() },
+        {
+          id: userMsgId,
+          role: "user",
+          content: trimmed,
+          timestamp: new Date(),
+          ...(attachments && attachments.length > 0 ? { attachments } : {}),
+        },
         {
           id: assistantMsgId,
           role: "assistant",

@@ -51,6 +51,8 @@ import BottomModal from "../../components/ui/LowerModal";
 import ModalWithBackdrop from "../../components/ui/ModalWithBackdrop";
 import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
+import { set } from "nprogress";
+import { setGalleryImages } from "../../store/actions/galleryImages";
 
 const Container = styled.div`
   width: 100%;
@@ -312,6 +314,7 @@ const ItineraryContainer = (props) => {
     dispatch(setItineraryStatus("itinerary_status", "PENDING"));
     dispatch(setStays([]));
     dispatch(setTransfersBookings(null));
+    dispatch(setGalleryImages([]));
     itinerarySuccessRef.current = false;
     pricingSuccessRef.current = false;
     transfersSuccessRef.current = false;
@@ -385,6 +388,7 @@ const ItineraryContainer = (props) => {
         `${MERCURY_HOST}/api/v1/itinerary/${props.id}/gallery/`
       );
       setGallery(response.data);
+      dispatch(setGalleryImages(response.data));
     } catch (err) {
       console.error("Error fetching gallery:", err);
     } finally {

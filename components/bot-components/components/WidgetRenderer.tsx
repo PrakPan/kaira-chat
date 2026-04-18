@@ -381,7 +381,26 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   const priceText = texts.find((t) => /[₹$€£]\s*[\d,]+/.test(t)) ?? "";
   const priceClean = priceText.replace(/\.0$/, "");
   const description = texts.find((t) => t.length > 50 && t !== title && !/[₹$€£]/.test(t)) ?? "";
-  const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(rating) ? "★" : "☆").join("");
+  const stars = Array.from({ length: 5 }, (_, i) =>
+  i < Math.round(rating) ? (
+    <svg
+      key={i}
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="13"
+      viewBox="0 0 14 13"
+      fill="none"
+    >
+      <path
+        d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z"
+        fill="#F7E700"
+        stroke="#C1A51B"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  ) : null
+);
   const clickAction = node.onClickAction as { type: string; payload?: Record<string, unknown> } | undefined;
 
   return (
@@ -408,7 +427,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {category && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{category}</span>}
           {category && <span style={{ fontSize: 12, color: "var(--color-border-secondary)" }}>|</span>}
-          <span style={{ color: "#f59e0b", fontSize: 14, letterSpacing: 1 }}>{stars}</span>
+          <span style={{ color: "#f59e0b", fontSize: 14, letterSpacing: 1 }} className="flex">{stars}</span>
           {rating > 0 && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{rating.toFixed(2)}</span>}
         </div>
       </div>
@@ -432,7 +451,7 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
       {priceClean && (
         <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
           <span style={{ fontSize: 15, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>{priceClean}</span>
-          <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>/ person</span>
+          <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>/ per person</span>
         </div>
       )}
     </div>
@@ -935,10 +954,6 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
   const children = (node.children ?? []) as WidgetNode[];
   const filtered = children.filter((c) => !isDotsHorizontalNode(c));
 
-  if (isActivityListView(children)) {
-    return <ActivityListView node={node} onAction={onAction} />;
-  }
-
   // Transport cards (distance + duration items)
   if (isTransportListView(children)) {
     return <TransportListView node={node} onAction={onAction} />;
@@ -962,7 +977,7 @@ function ListViewItemNode({ node, onAction }: { node: WidgetNode; onAction?: Wid
 // Detect if a ListView contains route items (ListViewItems with a Col holding
 // a small full-radius Box = pin dot pattern)
 function isRouteListView(children: WidgetNode[]): boolean {
-  if (children.length < 2) return false;
+  if (children.length < 1) return false;
   return children.some((item) => {
     const kids = (item.children ?? []) as WidgetNode[];
     return kids.some(
@@ -981,7 +996,12 @@ function isRouteListView(children: WidgetNode[]): boolean {
 function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const children = (node.children ?? []) as WidgetNode[];
 
-  // NEW: delegate to transport card design when items contain transport data
+  // Delegate to activity card design when items contain activity data (price + image)
+  if (isActivityListView(children)) {
+    return <ActivityListView node={node} onAction={onAction} />;
+  }
+
+  // Delegate to transport card design when items contain transport data
   if (isTransportListView(children)) {
     return <TransportListView node={node} onAction={onAction} />;
   }

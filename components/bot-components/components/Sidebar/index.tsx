@@ -4,6 +4,7 @@ import * as authaction from "../../../../store/actions/auth";
 import Link from "next/link";
 import LogInModal from "../../../userauth/LogInModal";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
@@ -70,7 +71,7 @@ const ChatHistoryDrawer: React.FC<{
     <>
       {open && <div className="fixed inset-0 z-[300] bg-black/20 backdrop-blur-[1px]" onClick={onClose} />}
       <div
-        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[52%]"
+        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[40%]"
         style={{ transform: open ? "translateX(0)" : "translateX(-110%)" }}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
@@ -185,7 +186,13 @@ const SidebarProfile: React.FC<{ isCollapsed: boolean }> = ({ isCollapsed }) => 
     >
       {avatarSrc
         // eslint-disable-next-line @next/next/no-img-element
-        ? <img src={avatarSrc} alt={name || "Profile"} className="w-full h-full object-cover" />
+        ? <Image
+  src={avatarSrc}
+  alt={name || "Profile"}
+  width={32}
+  height={32}
+  className="object-cover"
+/>
         : <span className="text-[11px] font-bold text-gray-600 select-none">{initials}</span>
       }
     </button>
