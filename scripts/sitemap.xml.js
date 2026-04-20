@@ -7,8 +7,8 @@ require('dotenv').config();
 
 
 const generateSitemap = async () => {
-  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
-  const PROD_BASE_URL=  "https://thetarzanway.com";
+  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST || "https://dev.mercury.tarzanway.com";
+  const PROD_BASE_URL=  "https://dev.thetarzanway.com";
 
   const allowedCountries = ["india", "thailand", "vietnam", "indonesia"];
 

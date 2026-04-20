@@ -359,6 +359,36 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       }, 150);
     }, [mapReady, fitToCurrentElements]);
 
+    // Watch the container size. When the map is hidden (display:none, e.g. on
+    // p2 reload where viewMode = "itinerary"), fitBounds is computed against a
+    // 0x0 container, which leaves the map zoomed out. As soon as the container
+    // gains real dimensions (user switches to map tab), refit so the pins land
+    // inside the visible viewport at a reasonable zoom.
+    useEffect(() => {
+      if (!mapRef.current) return;
+      const el = mapRef.current;
+      let lastW = el.clientWidth;
+      let lastH = el.clientHeight;
+      const observer = new ResizeObserver(() => {
+        const w = el.clientWidth;
+        const h = el.clientHeight;
+        const wasHidden = lastW === 0 || lastH === 0;
+        const isVisible = w > 0 && h > 0;
+        lastW = w;
+        lastH = h;
+        if (wasHidden && isVisible && mapInstance.current) {
+          // Small timer so the browser has settled before we measure inside fitBounds
+          setTimeout(() => {
+            if (!mapInstance.current) return;
+            google.maps.event.trigger(mapInstance.current, "resize");
+            fitToCurrentElements();
+          }, 80);
+        }
+      });
+      observer.observe(el);
+      return () => observer.disconnect();
+    }, [fitToCurrentElements]);
+
     // Pan / zoom when state changes — but only when there are no active
     // routes or locations (fitBounds handles those). This prevents a late
     // mapState update (e.g. user location resolving) from overriding fitBounds.
@@ -396,11 +426,13 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
 
     // Draw dashed route lines with arrowheads between consecutive stops
     useEffect(() => {
-      // Clear old polylines
+      // Clear old polylines — runs on every currentRoute change, including
+      // when it transitions to null (e.g. clear_map effect). This guarantees
+      // the route polylines are removed from the map.
       polylinesRef.current.forEach((p) => p.setMap(null));
       polylinesRef.current = [];
 
-      if (!mapInstance.current || !currentRoute || currentRoute.length === 0)
+      if (!mapReady || !mapInstance.current || !currentRoute || currentRoute.length === 0)
         return;
 
       // ↓ Single city — just fit bounds to it, no polyline needed
@@ -502,11 +534,11 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         left: 60,
       });
       clampZoomAfterFit(mapInstance.current);
-    }, [currentRoute, clampZoomAfterFit]);
+    }, [currentRoute, clampZoomAfterFit, mapReady]);
 
     // User location marker — hide when an itinerary route is loaded
     useEffect(() => {
-      if (!mapInstance.current || !infoWindowRef.current) return;
+      if (!mapReady || !mapInstance.current || !infoWindowRef.current) return;
 
       // Remove existing user marker
       if (userMarkerRef.current) {
@@ -555,11 +587,11 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           userMarkerRef.current!,
         );
       });
-    }, [userLocation, currentRoute]);
+    }, [userLocation, currentRoute, mapReady]);
 
     // Place / update location markers
     useEffect(() => {
-      if (!mapInstance.current || !infoWindowRef.current) return;
+      if (!mapReady || !mapInstance.current || !infoWindowRef.current) return;
 
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
@@ -708,9 +740,11 @@ const imageLine = loc.image
           lat: userLocation.lat,
           lng: userLocation.lng,
         });
-        mapInstance.current.setZoom(4);
+        // Use the caller-provided zoom (set by clear_map etc.) when available,
+        // falling back to a sensible country-level zoom instead of world-level.
+        mapInstance.current.setZoom(state.zoom ?? 6);
       }
-    }, [locations, userLocation, currentRoute, mapInstance, clampZoomAfterFit]);
+    }, [locations, userLocation, currentRoute, mapInstance, clampZoomAfterFit, state.zoom, mapReady]);
 
     return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
   },

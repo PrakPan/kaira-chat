@@ -45,7 +45,7 @@ const ModalWithBackdrop = ({
     >
       <div
         className={`bg-white relative shadow-lg ${
-          animation ? "transition-all duration-300 ease-in-out transform scale-100" : ""
+          animation ? "transition-all duration-300 ease-in-out" : ""
         }`}
         style={{
           width: responsiveWidth.base,

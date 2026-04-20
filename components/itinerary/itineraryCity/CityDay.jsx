@@ -229,7 +229,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -505,7 +505,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
             </div>
 
           ) : props?.isLastDay ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <IoBagCheckOutline size={15} />
               <span className="text-[13px]">
                 Check out from {props?.city?.name}

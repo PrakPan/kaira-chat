@@ -632,10 +632,46 @@ useEffect(() => {
   const restored = parseThreadItems(restoredThread.items?.data ?? []);
 
     const itineraryEffects: any[] = restoredThread.itinerary_effects ?? [];
+    const mapEffects: any[] = restoredThread.map_effects ?? [];
 
   for (const effect of itineraryEffects) {
     if (effect.name === "itinerary_entities" && effect.data?.entities) {
       setEntities(prev => ({ ...prev, ...effect.data.entities }));
+    }
+  }
+
+  // ── Replay map effects so city pins + POI pins render on thread reload ──
+  for (const effect of mapEffects) {
+    if (!effect?.data) continue;
+    switch (effect.name) {
+      case "focus_route": {
+        // Route can be either { data: [...] } or a raw array — normalise
+        const routeData = Array.isArray(effect.data)
+          ? { data: effect.data }
+          : effect.data;
+        onRouteReceived(routeData as { data: Location[] });
+        break;
+      }
+      case "display_pois_on_map":
+      case "show_attraction_on_map":
+      case "focus_on_map": {
+        const poiData = Array.isArray(effect.data)
+          ? { data: effect.data }
+          : effect.data;
+        onLocationReceived(poiData as { data: Location[] });
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  // ── Replay itinerary + transfers so the right panel re-populates on reload ─
+  for (const effect of itineraryEffects) {
+    if (effect.name === "display_itinerary" && effect.data?.itinerary) {
+      onItineraryReceived(effect.data.itinerary);
+    } else if (effect.name === "display_transfers" && effect.data) {
+      onItineraryReceived(effect.data);
     }
   }
 
@@ -651,14 +687,16 @@ useEffect(() => {
     (restoredThread.items?.before as string | null) ??
     (restored.length > 0 ? restored[0].id : null);
 
-  // Restore quick replies from itinerary_effects
-  const qrEffect = restoredThread.itinerary_effects?.find(
+  // Restore quick replies — use the LAST load_quick_replies effect so the
+  // most recent set of suggestions is shown (effects are appended in order).
+  const qrEffects = (restoredThread.itinerary_effects ?? []).filter(
     (e: any) => e.name === "load_quick_replies"
   );
+  const qrEffect = qrEffects.length > 0 ? qrEffects[qrEffects.length - 1] : null;
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, parseThreadItems]);
+}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -863,6 +901,8 @@ const handleShowLogin = useCallback(() => {
     setShowLoginPrompt(false);
     const hasText = !!input.trim();
     const uploadedAttachments = attachments.filter((a) => a.status === "uploaded");
+    // Block sending while itinerary creation is in progress
+    if (isItineraryCompleting) return;
     if ((!hasText && uploadedAttachments.length === 0) || isStreaming) return;
     setErrorDismissed(true);
     const attachmentIds = uploadedAttachments.map((a) => a.id);
@@ -883,14 +923,16 @@ const handleShowLogin = useCallback(() => {
     );
     setInput("");
     setAttachments([]);
-  }, [input, isStreaming, sendMessage, attachments]);
+  }, [input, isStreaming, sendMessage, attachments, isItineraryCompleting]);
 
   const handleQuickReply = useCallback(
     (reply: QuickReply) => {
       if (isStreaming) return;
+      // Block quick replies while itinerary creation is in progress
+      if (isItineraryCompleting) return;
       sendMessage(reply.value ?? reply.label);
     },
-    [isStreaming, sendMessage],
+    [isStreaming, sendMessage, isItineraryCompleting],
   );
 
   const showError = !!error && !errorDismissed;
@@ -1081,7 +1123,8 @@ const handleShowLogin = useCallback(() => {
       </div>
 
       {/* ── Quick reply chips ─────────────────────────────────────────────── */}
-      {quickReplies.length > 0 && !isStreaming && (
+      {/* Hidden while itinerary creation is in progress — no quick replies/CTAs allowed */}
+      {quickReplies.length > 0 && !isStreaming && !isItineraryCompleting && (
         <div className="flex-shrink-0 px-6 pt-2 pb-1">
           <div className="max-w-2xl mx-auto">
             <div
@@ -1092,7 +1135,7 @@ const handleShowLogin = useCallback(() => {
                 <SingleChips
                   key={idx}
                   onClick={() => handleQuickReply(reply)}
-                  disabled={isStreaming}
+                  disabled={isStreaming || isItineraryCompleting}
                 >
                   {reply.label}
                 </SingleChips>
@@ -1103,7 +1146,7 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Composer ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white">
+      <div className="flex-shrink-0 px-6 pt-3 pb-1 bg-white relative">
         <div className="max-w-2xl mx-auto">
           <MessageInputBox
             value={input}
@@ -1111,13 +1154,22 @@ const handleShowLogin = useCallback(() => {
             onSubmit={handleSubmit}
             onStop={cancelStream}
             isStreaming={isStreaming}
-            placeholder="Ask me anything"
-            showAttach={true}
+            disabled={isItineraryCompleting}
+            placeholder={isItineraryCompleting ? "Planning your trip…" : "Ask me anything"}
+            showAttach={!isItineraryCompleting}
             onFilesSelected={handleFilesSelected}
             attachments={attachments}
             onRemoveAttachment={handleRemoveAttachment}
           />
         </div>
+        {/* Overlay blocks all typing/interaction while itinerary creation is in progress */}
+        {isItineraryCompleting && (
+          <div
+            className="absolute inset-0 cursor-not-allowed"
+            style={{ background: "rgba(255,255,255,0.55)", zIndex: 5 }}
+            aria-hidden="true"
+          />
+        )}
       </div>
 
       {/* ── Login modal portal ────────────────────────────────────────────── */}

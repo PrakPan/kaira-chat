@@ -324,6 +324,7 @@ const TransferBooking = ({
                                           ?.taxi_category?.image
                                       }
                                       leftalign
+                                      noLazy
                                       height={
                                         booking?.image?.includes("gozo")
                                           ? "3rem"
@@ -667,6 +668,7 @@ const TransferBooking = ({
                                     ?.image
                                 }
                                 leftalign
+                                noLazy
                                 height={
                                   book?.image?.includes("gozo")
                                     ? "3rem"

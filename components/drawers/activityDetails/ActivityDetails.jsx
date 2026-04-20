@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { getHumanDate } from "../../../services/getHumanDate";
 import { dateFormat } from "../../../helper/DateUtils";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
@@ -37,7 +38,97 @@ export default function ActivityDetails(props) {
   const [loading, setLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const currency = useSelector((state) => state.currency);
+  const itinerary = useSelector((state) => state.Itinerary);
   const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+
+  const pad = (n) => (n < 10 ? `0${n}` : n);
+
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return;
+    const [day, month, year] = dateStr?.split("/");
+    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
+  };
+
+  // Resolve effective start date — prefer prop.date, then city start_date,
+  // then itinerary-level start_date, then today.
+  const resolveEffectiveDate = () => {
+    if (props?.date) {
+      const d = new Date(props.date);
+      if (!isNaN(d.getTime())) return props.date;
+    }
+    if (props?.start_date) {
+      const d = new Date(props.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    if (itinerary?.start_date) {
+      const d = new Date(itinerary.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    const today = new Date();
+    return `${pad(today.getDate())}/${pad(today.getMonth() + 1)}/${today.getFullYear()}`;
+  };
+
+  const effectiveDate = resolveEffectiveDate();
+
+  // Resolve city duration: prop → itinerary Redux city lookup → 0
+  const resolvedCityDuration = (() => {
+    const direct = Number(props.duration);
+    if (direct > 0) return direct;
+    if (props?.itinerary_city_id && itinerary?.cities) {
+      const match = itinerary.cities.find(
+        (c) => String(c.id) === String(props.itinerary_city_id)
+      );
+      if (match?.duration > 0) return Number(match.duration);
+    }
+    return 0;
+  })();
+
+  const [startDate, setStartDate] = useState(effectiveDate);
+  const [showCalender, setShowCalender] = useState(false);
+  const calendarRef = useRef(null);
+  // FIX: separate ref for the date box trigger so outside-click doesn't
+  // immediately close the dropdown right after it opens
+  const dateBoxRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Only close if the click is outside BOTH the dropdown AND the trigger box
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target) &&
+        dateBoxRef.current &&
+        !dateBoxRef.current.contains(event.target)
+      ) {
+        setShowCalender(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Compute the selected day number (Day 1..N) from the startDate
+  const selectedDayNumber = (() => {
+    const cityStartRaw = props?.start_date || props?.date || null;
+    const baseDateStr = props?.mercuryItinerary
+      ? (cityStartRaw || itinerary?.start_date || null)
+      : convertToISODate(cityStartRaw || itinerary?.start_date || null);
+    const baseDate = baseDateStr ? new Date(baseDateStr) : null;
+    if (!baseDate || isNaN(baseDate.getTime())) return 1;
+    const [d, m, y] = (startDate || "").split("/");
+    if (!d || !m || !y) return 1;
+    const selected = new Date(`${y}-${m}-${d}`);
+    if (isNaN(selected.getTime())) return 1;
+    const diff = Math.round(
+      (selected.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return diff >= 0 ? diff + 1 : 1;
+  })();
 
   useEffect(() => {
     if (props.data?.prices?.length > 0) {
@@ -96,6 +187,9 @@ export default function ActivityDetails(props) {
     const bookingData = {
       ...e,
       result_index: selectedPackage?.result_index,
+      date: startDate,
+      start_date: convertToISODate(startDate),
+      day: selectedDayNumber,
     };
 
     props.updatedActivityBooking(bookingData).then(() => {
@@ -117,6 +211,51 @@ export default function ActivityDetails(props) {
       amenities: amenities.map((amenity) => amenity?.id),
     });
   };
+
+  // Shared day list content rendered inside both mobile and desktop dropdowns
+  const DayListContent = () => (
+    <>
+      {/* <div className="font-medium text-[14px]">Select Days</div> */}
+      {[...Array(Math.max(0, resolvedCityDuration) + 1)].map((_, i) => {
+        const cityStartRaw = props?.start_date || props?.date || null;
+        const baseDateStr = props?.mercuryItinerary
+          ? cityStartRaw || itinerary?.start_date || null
+          : convertToISODate(
+              cityStartRaw || itinerary?.start_date || null,
+            );
+
+        const baseDate = new Date(baseDateStr);
+        if (isNaN(baseDate.getTime())) return null;
+
+        const currentDate = new Date(baseDate);
+        currentDate.setDate(currentDate.getDate() + i);
+
+        const year = currentDate.getFullYear();
+        const month = pad(currentDate.getMonth() + 1);
+        const day = pad(currentDate.getDate());
+        const dateString = `${day}/${month}/${year}`;
+        const displayDate = getHumanDate(dateString);
+
+        return (
+          <div
+            key={i}
+            className={`cursor-pointer ${
+              startDate === dateString ? "text-black font-semibold" : "text-[#4a4a4a]"
+            }`}
+            onClick={() => {
+              setStartDate(dateString);
+              setShowCalender(false);
+            }}
+          >
+            <span className="font-bold text-[14px]">
+              {displayDate + " | "}
+            </span>
+            <span>Day {i + 1}</span>
+          </div>
+        );
+      })}
+    </>
+  );
 
   return (
     <div className="h-[100vh] overflow-y-auto px-4">
@@ -205,16 +344,50 @@ export default function ActivityDetails(props) {
               </div>
             </div>
 
+            <div className="flex gap-2">
+              {!isDraft && (
+                <Pax
+                  pax={{
+                    ...props?.filterState,
+                    childAges: props?.filterState?.childAges || [],
+                  }}
+                  setPax={handlePaxChange}
+                />
+              )}
 
-            {!isDraft && (
-              <Pax
-                pax={{
-                  ...props?.filterState,
-                  childAges: props?.filterState?.childAges || [],
-                }}
-                setPax={handlePaxChange}
-              />
-            )}
+              {/* FIX: wrap trigger + dropdown in a relative container so
+                  the desktop dropdown can be positioned with absolute top-full */}
+              <div className="relative">
+                {/* Date box trigger */}
+                <div
+                  ref={dateBoxRef}
+                  className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
+                  onClick={() => setShowCalender((prev) => !prev)}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-[14px]">
+                      {getHumanDate(startDate) + " | "}
+                    </span>
+                    <span>Day {selectedDayNumber}</span>
+                  </div>
+                  <IoIosArrowDown
+                    className={`transition-transform ml-2 ${
+                      showCalender ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+
+                {/* Desktop dropdown — positioned absolutely below the trigger */}
+                {showCalender && (
+                  <div
+                    ref={calendarRef}
+                    className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                  >
+                    <DayListContent />
+                  </div>
+                )}
+              </div>
+            </div>
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -583,6 +756,16 @@ export default function ActivityDetails(props) {
         )}
       </div>
 
+      {/* Mobile bottom sheet — hidden on md+ screens */}
+      {showCalender && (
+        <div
+          className="fixed bottom-0 left-0 right-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-t-xl space-y-5 text-sm z-[1091] max-h-[60vh] overflow-y-auto md:hidden"
+          ref={calendarRef}
+        >
+          <DayListContent />
+        </div>
+      )}
+
       {!isDraft && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
           <>
@@ -612,11 +795,11 @@ export default function ActivityDetails(props) {
         {!isDraft && <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">
             {" "}
-            for {props?.filterState.adults + props?.filterState?.children}{" "}
+            for { (props?.filterState.adults + props?.filterState?.children) || (itinerary?.number_of_adults + itinerary?.number_of_children)}{" "}
             people{" "}
           </span>
           <div className="text-[14px] sm:text-[16px]">
-            on {dateFormat(props?.date)}
+            on {getHumanDate(startDate) || dateFormat(props?.date)}
           </div>
         </div>}
       </div>}
@@ -672,10 +855,10 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
           {amenity.name}
         </div>
         <div className="text-[14px]">{amenity.description}</div>
-        <div className="flex text-[12px] font-medium">
+        {travelers ? <div className="flex text-[12px] font-medium">
           <Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67} />
           {travelers} tickets
-        </div>
+        </div> : null}
       </div>
 
       {amenity.price == 0 ? (

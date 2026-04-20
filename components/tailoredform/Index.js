@@ -625,7 +625,7 @@ const Enquiry = (props) => {
             return;
           }
           hasNavigated = true;
-          router.push(`/itinerary/${itineraryId}`);
+          router.push(`/chat/${itineraryId}`);
         };
 
         if (hasGtag) {
