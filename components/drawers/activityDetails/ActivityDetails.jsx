@@ -49,12 +49,25 @@ export default function ActivityDetails(props) {
     return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
   };
 
-  // Resolve effective start date — prefer prop.date, then city start_date,
-  // then itinerary-level start_date, then today.
+  // Resolve effective start date — prefer prop.date, then city check_in,
+  // then city start_date, then itinerary-level start_date as last resort, then today.
+  // (When opened through chatkitpanel, city-level check_in should win over
+  // itinerary.start_date so the default reflects the city the activity belongs to.)
   const resolveEffectiveDate = () => {
     if (props?.date) {
       const d = new Date(props.date);
       if (!isNaN(d.getTime())) return props.date;
+    }
+    const cityCheckIn =
+      props?.check_in ||
+      props?.city?.check_in ||
+      props?.city?.checkIn ||
+      null;
+    if (cityCheckIn) {
+      const d = new Date(cityCheckIn);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
     }
     if (props?.start_date) {
       const d = new Date(props.start_date);
@@ -62,6 +75,13 @@ export default function ActivityDetails(props) {
         return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
       }
     }
+    if (props?.city?.start_date) {
+      const d = new Date(props.city.start_date);
+      if (!isNaN(d.getTime())) {
+        return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      }
+    }
+    // Fall back to itinerary-level start_date only if nothing city-specific is available
     if (itinerary?.start_date) {
       const d = new Date(itinerary.start_date);
       if (!isNaN(d.getTime())) {
@@ -74,18 +94,54 @@ export default function ActivityDetails(props) {
 
   const effectiveDate = resolveEffectiveDate();
 
-  // Resolve city duration: prop → itinerary Redux city lookup → 0
+  // Resolve city duration: prop → city object → derived from check_in/check_out
+  // → itinerary Redux city lookup → 0. The extra fallbacks cover the chatkitpanel
+  // entry point where props.duration / itinerary.cities may not be populated.
   const resolvedCityDuration = (() => {
     const direct = Number(props.duration);
     if (direct > 0) return direct;
+
+    const fromCityObj = Number(
+      props?.city?.duration ?? props?.city?.nights ?? props?.cityDuration,
+    );
+    if (fromCityObj > 0) return fromCityObj;
+
+    const ci = props?.check_in || props?.city?.check_in || props?.city?.checkIn;
+    const co = props?.check_out || props?.city?.check_out || props?.city?.checkOut;
+    if (ci && co) {
+      const d1 = new Date(ci);
+      const d2 = new Date(co);
+      if (!isNaN(d1.getTime()) && !isNaN(d2.getTime())) {
+        const diffDays = Math.round(
+          (d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24),
+        );
+        if (diffDays > 0) return diffDays;
+      }
+    }
+
     if (props?.itinerary_city_id && itinerary?.cities) {
       const match = itinerary.cities.find(
-        (c) => String(c.id) === String(props.itinerary_city_id)
+        (c) => String(c.id) === String(props.itinerary_city_id),
       );
       if (match?.duration > 0) return Number(match.duration);
     }
     return 0;
   })();
+
+  // Total day options available in the dropdown (Day 1..N+1). "N" is the
+  // number of nights; the +1 accounts for the checkout day, so a 1-night stay
+  // still surfaces two options (arrival + checkout) and a 3-night stay shows
+  // four. The picker is always rendered — even a 1-day option is informational.
+  const totalDayOptions = Math.max(0, resolvedCityDuration) + 1;
+
+  // Currency-aware number formatting. INR uses Indian grouping (1,23,456);
+  // other currencies use international grouping (123,456).
+  const formatAmount = (amount) => {
+    if (amount == null || isNaN(Number(amount))) return amount;
+    const rounded = Math.round(Number(amount));
+    const isIndian = !currency?.currency || currency.currency === "INR";
+    return isIndian ? getIndianPrice(rounded) : rounded.toLocaleString("en-US");
+  };
 
   const [startDate, setStartDate] = useState(effectiveDate);
   const [showCalender, setShowCalender] = useState(false);
@@ -356,7 +412,9 @@ export default function ActivityDetails(props) {
               )}
 
               {/* FIX: wrap trigger + dropdown in a relative container so
-                  the desktop dropdown can be positioned with absolute top-full */}
+                  the desktop dropdown can be positioned with absolute top-full.
+                  Always rendered — a 1-night stay still has 2 options (arrival
+                  + checkout), and even a single-day option is informational. */}
               <div className="relative">
                 {/* Date box trigger */}
                 <div
@@ -708,9 +766,7 @@ export default function ActivityDetails(props) {
                                   ? currencySymbols?.[currency?.currency]
                                   : "₹"
                               }`}
-                              {getIndianPrice(
-                                Math.round(packageItem.total_price)
-                              )}
+                              {formatAmount(packageItem.total_price)}
                             </div>
                           </div>
                         </div>
@@ -779,7 +835,7 @@ export default function ActivityDetails(props) {
                   }`}
                   {selectedPackage?.total_price &&
                   selectedPackage?.total_price > 0
-                    ? getIndianPrice(Math.round(selectedPackage.total_price))
+                    ? formatAmount(selectedPackage.total_price)
                     : selectedPackage.total_price}
                 </span>
               </div>
@@ -871,7 +927,13 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
             {`${
               currency?.currency ? currencySymbols?.[currency?.currency] : "₹"
             }`}
-            {getIndianPrice(amenity.price)}{" "}
+            {(() => {
+              const rounded = Math.round(Number(amenity.price));
+              const isIndian = !currency?.currency || currency.currency === "INR";
+              return isIndian
+                ? getIndianPrice(rounded)
+                : rounded.toLocaleString("en-US");
+            })()}{" "}
             <span className="text-[14px] font-normal">per person*</span>
           </div>
 

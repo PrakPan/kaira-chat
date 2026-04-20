@@ -10,6 +10,7 @@ import LogInModal from "../../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
+import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -248,6 +249,20 @@ itineraryCompleted = false,
     booking_type?: string;
     origin_itinerary_city_id?: string;
     destination_itinerary_city_id?: string;
+  }>({ show: false });
+
+  // Hotel detail drawer (opened from "hotel.view" widget actions).
+  // The server currently emits only { id } in the payload, which is enough
+  // for AccommodationDetailDrawer to fetch its own data. Change-hotel
+  // context (check_in / check_out / itinerary_city_id / pax) is not part
+  // of the widget payload today — if/when the server starts including it,
+  // pipe it through here so the "Change Hotel" button can swap in place.
+  const [hotelDrawer, setHotelDrawer] = useState<{
+    show: boolean;
+    accommodationId?: string;
+    itinerary_city_id?: string;
+    check_in?: string;
+    check_out?: string;
   }>({ show: false });
 
   // ── Pagination state ─────────────────────────────────────────────────────
@@ -1063,6 +1078,18 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
+                  // Intercept hotel detail actions → open AccommodationDetailDrawer
+                  if (action.type === "hotel.view") {
+                    setHotelDrawer({
+                      show: true,
+                      accommodationId: (payload.accommodation_id ?? payload.hotel_id ?? payload.id) as string,
+                      itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string | undefined,
+                      check_in: (payload.check_in ?? payload.date) as string | undefined,
+                      check_out: (payload.check_out) as string | undefined,
+                    });
+                    return;
+                  }
+
                   sendWidgetAction(action.type, payload);
                 }}
               />
@@ -1239,6 +1266,36 @@ const handleShowLogin = useCallback(() => {
           routeId={transferDrawer.routeId}
           booking_id={transferDrawer.routeId}
           booking_type={transferDrawer.booking_type}
+          setShowLoginModal={setShowLoginModal}
+        />
+      )}
+
+      {/* ── Hotel Detail Drawer ─────────────────────────────────────────── */}
+      {/* Opened by "hotel.view" widget actions. AccommodationDetailDrawer
+          fetches its own data given accommodationId. onChangeHotel currently
+          routes the intent back to the server via sendWidgetAction so the
+          assistant can offer the swap flow; if/when a client-side change-hotel
+          UI is wired up, replace the callback below. */}
+      {hotelDrawer.show && hotelDrawer.accommodationId && (
+        <AccommodationDetailDrawer
+          show={hotelDrawer.show}
+          accommodationId={hotelDrawer.accommodationId}
+          onHide={() => setHotelDrawer({ show: false })}
+          onChangeHotel={() => {
+            sendWidgetAction("hotel.change", {
+              id: hotelDrawer.accommodationId,
+              itinerary_city_id: hotelDrawer.itinerary_city_id,
+              check_in: hotelDrawer.check_in,
+              check_out: hotelDrawer.check_out,
+            });
+            setHotelDrawer({ show: false });
+          }}
+          // Context required for the p2-stage "Add / Change" CTA. If the
+          // server doesn't include these in the hotel.view payload yet they'll
+          // be undefined and the drawer falls back to any existing booking.
+          itinerary_city_id={hotelDrawer.itinerary_city_id}
+          check_in={hotelDrawer.check_in}
+          check_out={hotelDrawer.check_out}
           setShowLoginModal={setShowLoginModal}
         />
       )}
