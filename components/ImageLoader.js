@@ -289,20 +289,15 @@ const ImageLoader = (props) => {
           <SmallImage
             src={
               is_url
-                ? props.url
+                ? error
+                  ? transparentImageUrl
+                  : props.url
                 : error
                 ? transparentImageUrl
                 : isPageLoaded
                 ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                 : transparentImageUrl
             }
-            // src={
-            //   !is_url
-            //     ? isPageLoaded
-            //       ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-            //       : transparentImageUrl
-            //     : props.url
-            // }
             style={{
               height: isTransparent
                 ? "100%"
@@ -319,7 +314,9 @@ const ImageLoader = (props) => {
           <FullImage
             src={
               is_url
-                ? props.url
+                ? error
+                  ? transparentImageUrl
+                  : props.url
                 : isPageLoaded
                 ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                 : transparentImageUrl
@@ -367,6 +364,8 @@ const ImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : transparentImageUrl
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             style={{
@@ -390,6 +389,8 @@ const ImageLoader = (props) => {
                   : isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             transparent={isTransparent}
@@ -437,6 +438,8 @@ const ImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : transparentImageUrl
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             style={{
@@ -460,6 +463,8 @@ const ImageLoader = (props) => {
                   : isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
                   : transparentImageUrl
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -507,6 +512,8 @@ const ImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : transparentImageUrl
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             style={{
@@ -529,6 +536,8 @@ const ImageLoader = (props) => {
                   : isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                   : transparentImageUrl
+                : error
+                ? transparentImageUrl
                 : props.url
             }
             transparent={isTransparent}

@@ -64,6 +64,7 @@ const ActivitiesSummary = (props) => {
                 height="100%"
                 leftalign
                 widthmobile="100%"
+                noLazy
                 url={
                   props?.item?.image
                     ? props?.item.image

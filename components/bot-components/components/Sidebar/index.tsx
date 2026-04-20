@@ -16,6 +16,44 @@ interface Thread {
   filter_session_id?: string;
 }
 
+// ── Relative time formatter (used in chat history drawer) ───────────────────
+const formatRelativeTime = (iso?: string): string => {
+  if (!iso) return "";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "";
+  const now = Date.now();
+  const diffMs = Math.max(0, now - then);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (diffMs < minute) return "just now";
+  if (diffMs < hour) {
+    const mins = Math.floor(diffMs / minute);
+    return `${mins} min ago`;
+  }
+  if (diffMs < day) {
+    const hrs = Math.floor(diffMs / hour);
+    return `${hrs} hr${hrs > 1 ? "s" : ""} ago`;
+  }
+
+  // Day-aware boundary: compare calendar days so "yesterday" is accurate
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const dayDiff = Math.floor((startOfToday.getTime() - then) / day) + 1;
+  if (dayDiff === 1) return "yesterday";
+  if (dayDiff < 7) return `${dayDiff} days ago`;
+
+  // Older — show date (short month + day, include year if not current year)
+  const d = new Date(iso);
+  const currentYear = new Date().getFullYear();
+  const opts: Intl.DateTimeFormatOptions =
+    d.getFullYear() === currentYear
+      ? { month: "short", day: "numeric" }
+      : { month: "short", day: "numeric", year: "numeric" };
+  return d.toLocaleDateString("en-GB", opts);
+};
+
 interface SidebarProps {
   onNewChat?: () => void;
   onToggle?: () => void;
@@ -66,7 +104,19 @@ const ChatHistoryDrawer: React.FC<{
   activeThreadId?: string | null;
   onThreadSelect?: (id: string, sessionId?: string) => void;
   loading: boolean;
-}> = ({ open, onClose, threads, activeThreadId, onThreadSelect, loading }) => {
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
+}> = ({ open, onClose, threads, activeThreadId, onThreadSelect, loading, hasMore, loadingMore, onLoadMore }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el || !hasMore || loadingMore || loading) return;
+    const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 80;
+    if (nearBottom) onLoadMore?.();
+  };
+
   return (
     <>
       {open && <div className="fixed inset-0 z-[300] bg-black/20 backdrop-blur-[1px]" onClick={onClose} />}
@@ -85,7 +135,7 @@ const ChatHistoryDrawer: React.FC<{
             </svg>
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-3 py-3">
+        <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-3 py-3">
           {loading ? (
             <div className="flex flex-col gap-2 mt-2">
               {[...Array(6)].map((_, i) => (
@@ -100,21 +150,47 @@ const ChatHistoryDrawer: React.FC<{
             </div>
           ) : (
             <div className="flex flex-col gap-0.5">
-              {threads.map((thread) => (
+              {threads.map((thread) => {
+                const isActive = activeThreadId === thread.id;
+                const relative = formatRelativeTime(thread.created_at);
+                return (
+                  <button
+                    key={thread.id}
+                    onClick={() => { onThreadSelect?.(thread.id, thread.session_id ?? thread.filter_session_id); onClose(); }}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg text-[13.5px] transition-colors flex items-center gap-2.5 ${
+                      isActive ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                    title={thread.title || "Untitled"}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 opacity-50">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span className="truncate flex-1 min-w-0">{thread.title || "Untitled"}</span>
+                    {relative && (
+                      <span
+                        className={`flex-shrink-0 text-[11px] whitespace-nowrap tabular-nums ${
+                          isActive ? "text-white/70" : "text-gray-400"
+                        }`}
+                      >
+                        {relative}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+              {loadingMore && (
+                <div className="flex items-center justify-center py-3">
+                  <div className="h-4 w-4 rounded-full border-2 border-gray-300 border-t-gray-600 animate-spin" />
+                </div>
+              )}
+              {!loadingMore && hasMore && (
                 <button
-                  key={thread.id}
-                  onClick={() => { onThreadSelect?.(thread.id, thread.session_id ?? thread.filter_session_id); onClose(); }}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg text-[13.5px] transition-colors truncate flex items-center gap-2.5 ${
-                    activeThreadId === thread.id ? "bg-[#07213A] text-white font-medium" : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                  }`}
-                  title={thread.title || "Untitled"}
+                  onClick={() => onLoadMore?.()}
+                  className="w-full text-center py-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 opacity-50">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                  <span className="truncate">{thread.title || "Untitled"}</span>
+                  Load more
                 </button>
-              ))}
+              )}
             </div>
           )}
         </div>
@@ -324,29 +400,60 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [threads, setThreads] = useState<Thread[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerLoading, setDrawerLoading] = useState(false);
+  const [drawerLoadingMore, setDrawerLoadingMore] = useState(false);
+  const [hasMoreThreads, setHasMoreThreads] = useState(false);
   const userId = useSelector((state: any) => state.auth?.id);
 
-  const fetchThreads = async () => {
+  const THREADS_PAGE_SIZE = 20;
+
+  const fetchThreads = async (after?: string) => {
     if (!userId) return;
-    setDrawerLoading(true);
+    const isInitial = !after;
+    if (isInitial) setDrawerLoading(true);
+    else setDrawerLoadingMore(true);
     try {
+      const params: Record<string, unknown> = {
+        limit: THREADS_PAGE_SIZE,
+        order: "desc",
+      };
+      if (after) params.after = after;
+
       const res = await fetch(CHATKIT_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "threads.list",
-          params: { limit: 9999, order: "desc" },
+          params,
           filter_user_id: String(userId),
           // filter_bot: isComplete ? "P2" : "P1",
         }),
       });
       const data = await res.json();
-      setThreads(data.data ?? []);
+      const next: Thread[] = data.data ?? [];
+      setHasMoreThreads(!!data.has_more);
+      if (isInitial) {
+        setThreads(next);
+      } else {
+        setThreads((prev) => {
+          const seen = new Set(prev.map((t) => t.id));
+          const merged = [...prev];
+          for (const t of next) if (!seen.has(t.id)) merged.push(t);
+          return merged;
+        });
+      }
     } catch (err) {
       console.error("Failed to fetch threads:", err);
     } finally {
-      setDrawerLoading(false);
+      if (isInitial) setDrawerLoading(false);
+      else setDrawerLoadingMore(false);
     }
+  };
+
+  const handleLoadMoreThreads = () => {
+    if (drawerLoadingMore || drawerLoading || !hasMoreThreads) return;
+    const lastId = threads.length > 0 ? threads[threads.length - 1].id : undefined;
+    if (!lastId) return;
+    fetchThreads(lastId);
   };
 
   useEffect(() => {
@@ -368,6 +475,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         activeThreadId={activeThreadId}
         onThreadSelect={onThreadSelect}
         loading={drawerLoading}
+        hasMore={hasMoreThreads}
+        loadingMore={drawerLoadingMore}
+        onLoadMore={handleLoadMoreThreads}
       />
 
       {!isCollapsed && <div className="absolute inset-0 z-[150]" onClick={onToggle} />}

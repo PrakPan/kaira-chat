@@ -3530,6 +3530,11 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                               src={op.image}
                               alt={op.name}
                               className="h-5 w-auto object-contain"
+                              loading="lazy"
+                              onError={(e) => {
+                                // Hide broken operator logo rather than showing broken-image chrome
+                                e.currentTarget.style.display = "none";
+                              }}
                             />
                           ),
                       )}
@@ -6112,6 +6117,10 @@ const toggleTransferDetails = (priceOptionId) => {
                           src={op.image}
                           alt={op.name}
                           className="h-5 w-auto object-contain"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                          }}
                         />
                       ),
                   )}

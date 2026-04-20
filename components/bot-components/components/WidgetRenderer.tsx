@@ -185,6 +185,37 @@ function extractAllBadges(node: WidgetNode): WidgetNode[] {
   return badges;
 }
 
+// Collect all descendant nodes of a given type (e.g., "Title", "Caption", "Text", "Image")
+function findNodesByType(node: WidgetNode, type: string): WidgetNode[] {
+  const results: WidgetNode[] = [];
+  if (node.type === type) results.push(node);
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    results.push(...findNodesByType(child, type));
+  }
+  return results;
+}
+
+// Formats a price string like "₹4386.0" or "$45390.15" with locale-appropriate commas.
+// INR (₹) → Indian grouping (1,23,456); others → international grouping (123,456).
+function formatPriceString(raw: string): string {
+  const match = raw.match(/([₹$€£])\s*([\d.,]+)/);
+  if (!match) return raw;
+  const symbol = match[1];
+  const numStr = match[2].replace(/,/g, "");
+  const num = parseFloat(numStr);
+  if (isNaN(num)) return raw;
+  const rounded = Math.round(num);
+  const locale = symbol === "₹" ? "en-IN" : "en-US";
+  return `${symbol}${rounded.toLocaleString(locale)}`;
+}
+
+// Extract a unit label like "(Per Person)" / "(Per Night)" / "(1 - 2 Pax)"
+function extractUnitLabel(texts: string[]): string {
+  const unit = texts.find((t) => /^\s*\(.*\)\s*$/.test(t) && /(Per\s+\w+|Pax)/i.test(t));
+  if (!unit) return "";
+  return unit.replace(/^\s*\(|\)\s*$/g, "").trim();
+}
+
 /**
  * A ListView is a "transport list" when at least one item has a Caption
  * matching the pattern "NNN km • Xh Ym"
@@ -379,7 +410,8 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   const ratingText = texts.find((t) => /^\d\.\d+/.test(t)) ?? "";
   const rating = parseFloat(ratingText) || 0;
   const priceText = texts.find((t) => /[₹$€£]\s*[\d,]+/.test(t)) ?? "";
-  const priceClean = priceText.replace(/\.0$/, "");
+  const priceFormatted = formatPriceString(priceText);
+  const unitLabel = extractUnitLabel(texts);
   const description = texts.find((t) => t.length > 50 && t !== title && !/[₹$€£]/.test(t)) ?? "";
   const stars = Array.from({ length: 5 }, (_, i) =>
   i < Math.round(rating) ? (
@@ -448,10 +480,14 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
       </div>
 
       {/* Price */}
-      {priceClean && (
+      {priceFormatted && (
         <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>{priceClean}</span>
-          <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>/ per person</span>
+          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>{priceFormatted}</span>
+          {unitLabel && (
+            <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>
+              / {unitLabel.toLowerCase()}
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -470,6 +506,233 @@ function ActivityListView({
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
       {children.map((item, idx) => (
         <ActivityCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Hotel cards ───────────────────────────────────────────────────────────────
+//
+// A ListView is a "hotel list" when items contain a building icon, a "Per Night"
+// unit caption, or an "N-Star Hotel" caption.
+
+function isHotelListView(children: WidgetNode[]): boolean {
+  return children.some((item) => {
+    const raw = JSON.stringify(item);
+    return (
+      /"name"\s*:\s*"building"/.test(raw) ||
+      /Per\s+Night/i.test(raw) ||
+      /\d\s*-\s*Star\s+Hotel/i.test(raw)
+    );
+  });
+}
+
+function HotelCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+  const imageNodes = findNodesByType(node, "Image");
+
+  const name = (titleNodes[0]?.value as string) ?? "";
+
+  const starsCaption = captionNodes.find((c) => /★/.test((c.value as string) ?? ""));
+  const starsText = (starsCaption?.value as string) ?? "";
+
+  const typeCaption = captionNodes.find((c) =>
+    /\d\s*-\s*Star\s+Hotel/i.test((c.value as string) ?? "")
+  );
+  const hotelType = (typeCaption?.value as string) ?? "";
+
+  const addressCaption = captionNodes.find((c) => {
+    const v = ((c.value as string) ?? "").trim();
+    if (!v) return false;
+    if (v === starsText || v === hotelType) return false;
+    if (/^\(/.test(v)) return false; // rating/unit captions
+    if (/★/.test(v)) return false;
+    return v.length > 10;
+  });
+  const address = (addressCaption?.value as string) ?? "";
+
+  const descriptionNode = textNodes.find((t) => {
+    const v = ((t.value as string) ?? "").trim();
+    return v.length > 40 && !/[₹$€£]/.test(v);
+  });
+  const description = (descriptionNode?.value as string) ?? "";
+
+  const priceNode = textNodes.find((t) => /[₹$€£]\s*[\d.,]+/.test((t.value as string) ?? ""));
+  const priceRaw = (priceNode?.value as string) ?? "";
+  const priceFormatted = formatPriceString(priceRaw);
+
+  const allTextValues: string[] = [
+    ...captionNodes.map((n) => (n.value as string) ?? ""),
+    ...textNodes.map((n) => (n.value as string) ?? ""),
+  ];
+  const unitLabel = extractUnitLabel(allTextValues);
+
+  const imgSrc = (imageNodes[0]?.src as string) ?? "";
+  const imgAlt = (imageNodes[0]?.alt as string) ?? "";
+
+  const clickAction = node.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+
+  return (
+    <div
+      onClick={() => clickAction && onAction?.(clickAction)}
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        padding: "14px 16px",
+        cursor: clickAction ? "pointer" : "default",
+        width: "100%",
+        marginBottom: 12,
+      }}
+    >
+      {/* Header: name + stars + type */}
+      <div style={{ marginBottom: 10 }}>
+        <div
+          style={{
+            fontSize: 16,
+            fontWeight: 500,
+            color: "var(--color-text-primary)",
+            lineHeight: 1.3,
+            marginBottom: 5,
+            fontFamily: "'Inter', sans-serif",
+          }}
+        >
+          {name}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          {starsText && (
+            <span style={{ color: "#f59e0b", fontSize: 13, letterSpacing: 1 }}>
+              {starsText}
+            </span>
+          )}
+          {starsText && hotelType && (
+            <span style={{ fontSize: 12, color: "var(--color-border-secondary)" }}>|</span>
+          )}
+          {hotelType && (
+            <span
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {hotelType}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Horizontal divider */}
+      <div style={{ height: "0.5px", background: "#e5e5e5", marginBottom: 10 }} />
+
+      {/* Body: address + description + image */}
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {address && (
+            <p
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                margin: "0 0 6px",
+                fontFamily: "'Inter', sans-serif",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {address}
+            </p>
+          )}
+          {description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {description}
+            </p>
+          )}
+        </div>
+        {imgSrc && (
+          <div
+            style={{
+              flexShrink: 0,
+              width: 110,
+              height: 90,
+              borderRadius: 10,
+              overflow: "hidden",
+            }}
+          >
+            <img
+              src={imgSrc}
+              alt={imgAlt}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Price */}
+      {priceFormatted && (
+        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 500,
+              color: "var(--color-text-primary)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            {priceFormatted}
+          </span>
+          {unitLabel && (
+            <span
+              style={{
+                fontSize: 12,
+                color: "var(--color-text-secondary)",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              / {unitLabel.toLowerCase()}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HotelListView({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const children = (node.children ?? []) as WidgetNode[];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {children.map((item, idx) => (
+        <HotelCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
       ))}
     </div>
   );
@@ -995,6 +1258,11 @@ function isRouteListView(children: WidgetNode[]): boolean {
 
 function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
   const children = (node.children ?? []) as WidgetNode[];
+
+  // Delegate to hotel card design when items contain hotel data (building icon / Per Night / N-Star Hotel)
+  if (isHotelListView(children)) {
+    return <HotelListView node={node} onAction={onAction} />;
+  }
 
   // Delegate to activity card design when items contain activity data (price + image)
   if (isActivityListView(children)) {

@@ -101,7 +101,7 @@ function transformDraftToItinerary(draft: any) {
               name: route.hotels.name,
               star_category: null,
               images: [],
-              rating: null,
+              rating: route?.hotels?.star_category ?? null,
               itinerary_city_id: cityId,
             },
           ]
@@ -638,6 +638,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
       const draftStays: any[] = [];
       for (const city of transformed.cities ?? []) {
+        console.log("Processing city:", city);
         const hotels = city.hotels ?? [];
         if (hotels.length === 0 || !hotels[0]?.name) {
           draftStays.push({
@@ -651,7 +652,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
             check_out: null,
           });
         } else {
+          console.log("Processing hotels for city:", city.city?.name, hotels);
           for (const hotel of hotels) {
+            
             draftStays.push({
               ...hotel,
               itinerary_city_id: city.id,
@@ -660,6 +663,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
               city_gmaps_place_id: city.city?.gmaps_place_id ?? null,
               lat: hotel.latitude ?? null,
               long: hotel.longitude ?? null,
+              rating: hotel.rating ?? null,
+              star_category: hotel.star_category ?? null,
             });
           }
         }
@@ -678,14 +683,29 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
-      setActiveItineraryId("draft");
-      setItineraryPollingEnabled(false);
+      const isAlreadyCompleted =
+        finalizedStatus === "SUCCESS" ||
+        botMode === "p2" ||
+        itineraryCreatedInSessionRef.current;
+
+      if (!isAlreadyCompleted) {
+        setActiveItineraryId("draft");
+        setItineraryPollingEnabled(false);
+      }
       setViewMode("itinerary");
       setMobilePanel("map");
       // On mobile: show "Back to Itinerary" popup when itinerary data arrives
       triggerMobileEffectPopup("itinerary");
     },
-    [revealLeftPanel, dispatch, buildSkeletonItinerary, activeItineraryId, triggerMobileEffectPopup],
+       [
+      revealLeftPanel,
+      dispatch,
+      buildSkeletonItinerary,
+      activeItineraryId,
+      triggerMobileEffectPopup,
+      finalizedStatus,
+      botMode,
+    ],
   );
 
   const handleLocationReceived = useCallback(
@@ -768,11 +788,6 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         let completedIdFromEffects: string | null = null;
         let startedIdFromEffects: string | null = null;
 
-        console.log("[loadThread] itinerary_effects:", JSON.stringify(itineraryEffects.map((e: any) => ({ name: e.name, id: e.data?.itinerary_id, dataKeys: Object.keys(e.data ?? {}) }))));
-        console.log("[loadThread] hasItems:", hasItems, "threadSessionId:", threadSessionId);
-        const displayItEffect = itineraryEffects.find((e: any) => e.name === "display_itinerary");
-        if (displayItEffect) console.log("[loadThread] display_itinerary data:", JSON.stringify(displayItEffect.data).slice(0, 500));
-
         // Check if a completed effect exists so we can skip the skeleton build
         const hasCompletedEffectInLoop = itineraryEffects.some(
           (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
@@ -808,7 +823,6 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         const hasDisplayItinerary = itineraryEffects.some((e) => e.name === "display_itinerary");
         const effectItineraryId = completedIdFromEffects ?? startedIdFromEffects;
         const restoredItineraryId = effectItineraryId ?? (hasDisplayItinerary ? (threadSessionId ?? sessionId) : null);
-        console.log("[loadThread] restoredItineraryId:", restoredItineraryId, "completedId:", completedIdFromEffects, "startedId:", startedIdFromEffects, "fromDisplayItinerary:", hasDisplayItinerary && !effectItineraryId);
 
         if (restoredItineraryId) {
           // Check status immediately to determine the actual state
@@ -821,7 +835,6 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
               `/${restoredItineraryId}/status/`,
             );
             const status = statusRes.data?.celery;
-            console.log("[loadThread] status API response:", JSON.stringify(status));
             if (status) {
               dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
               dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
@@ -833,7 +846,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
               const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
                 (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
               );
-              console.log("[loadThread] allDone:", allDone);
+
               if (allDone) {
                 dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
                 setBotMode("p2");
@@ -882,9 +895,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         );
 
         const fallbackSessionId = threadSessionId ?? sessionId;
-        console.log("[loadThread] fallback check:", { restoredItineraryId, hasAnyItineraryEffect, hasItems, fallbackSessionId });
+      
         if (!restoredItineraryId && !hasAnyItineraryEffect && !hasItems && fallbackSessionId) {
-          console.log("[loadThread] falling back to restoreItineraryDirectly with:", fallbackSessionId);
+        
           await restoreItineraryDirectly(fallbackSessionId);
         }
       } catch (err) {
@@ -1136,6 +1149,8 @@ Start Location: ${details.startLocation}`;
       (!activeItineraryId && viewMode === "itinerary"),
     [activeItineraryId, viewMode],
   );
+
+  console.log("Rendering ChatItinerary with activeItineraryId:", activeItineraryId, "viewMode:", viewMode, "isDraft:", isDraft);
 
   // Collect up to 3 unique images across all cities' day_by_day slab elements.
   // Shown in the header in Draft (p1) stage in place of the Settings icon.
@@ -1694,6 +1709,7 @@ const BottomCTABar = React.memo(
       return null;
 
     if (isDraft) {
+
       return (
         <div className="z-20 fixed w-full md:w-[47.5%] max-ph:bottom-0 md:!bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-center justify-center">
           <button

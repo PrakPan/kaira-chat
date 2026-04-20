@@ -183,7 +183,7 @@ const handleUpdate = () => {
 
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center">
+        <div className="flex flex-wrap md:grid md:grid-cols-[1.5fr_1fr_1fr] justify-between items-center">
 
            <label
             htmlFor="add-activities-transfers"

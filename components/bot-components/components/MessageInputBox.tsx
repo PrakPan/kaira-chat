@@ -307,7 +307,8 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
   }, [value]);
 
   const hasUploadedAttachments = attachments.some((a) => a.status === "uploaded");
-  const canSend = (value.trim().length > 0 || hasUploadedAttachments) && !isStreaming;
+  const canSend =
+    (value.trim().length > 0 || hasUploadedAttachments) && !isStreaming && !disabled;
 
   // When user manually types, keep trackTyped in sync
   const handleChange = (text: string) => {
@@ -477,7 +478,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           value={value}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={disabled && !isStreaming}
+          disabled={disabled || isStreaming}
           placeholder=""
           rows={1}
           className="w-full bg-transparent resize-none outline-none"
@@ -542,7 +543,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
             ref={dictateRef}
             stopDictation={stopDictation}
             onTranscriptChange={handleTranscriptChange}
-            disabled={disabled && !isStreaming}
+            disabled={disabled || isStreaming}
           />
 
           {isStreaming ? (
