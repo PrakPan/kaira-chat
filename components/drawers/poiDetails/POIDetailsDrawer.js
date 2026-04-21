@@ -224,6 +224,7 @@ const POIDetailsDrawer = (props) => {
                   activityData={activityData}
                   showCallback={props?.showCallback}
                   setIsModalOpen={props?.setIsModalOpen}
+                  type={props?.activityData?.type}
                   
                 >
                   {props?.children}

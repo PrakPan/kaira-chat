@@ -712,7 +712,13 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     (locationData: { data: Location[] }) => {
       revealLeftPanel();
       if (locationData.data && Array.isArray(locationData.data)) {
+        // Clear any existing polyline/route before rendering new POI pins so
+        // leftover polylines from a prior transfer/route query don't persist.
+        setCurrentRoute(null);
         setLocations(locationData.data);
+        // Focus the map on both desktop and mobile when a map-typed response
+        // arrives so the user immediately sees the new pins.
+        setViewMode("map");
         setMobilePanel("map");
       }
     },
@@ -721,6 +727,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const handleNewQuery = useCallback(() => {
     setLocations([]);
+    setCurrentRoute(null);
   }, []);
 
   const handleClearMap = useCallback((data?: Record<string, unknown>) => {
@@ -1149,8 +1156,6 @@ Start Location: ${details.startLocation}`;
       (!activeItineraryId && viewMode === "itinerary"),
     [activeItineraryId, viewMode],
   );
-
-  console.log("Rendering ChatItinerary with activeItineraryId:", activeItineraryId, "viewMode:", viewMode, "isDraft:", isDraft);
 
   // Collect up to 3 unique images across all cities' day_by_day slab elements.
   // Shown in the header in Draft (p1) stage in place of the Settings icon.

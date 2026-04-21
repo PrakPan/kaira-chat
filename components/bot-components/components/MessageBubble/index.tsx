@@ -1,6 +1,164 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import type { Message, ProgressStep, ThinkingTask } from "../../hooks/useChat";
 import { WidgetRenderer } from "../WidgetRenderer";
+
+// ─── Image lightbox (full-size preview) ───────────────────────────────────────
+const ImageLightbox: React.FC<{ url: string; alt?: string; onClose: () => void }> = ({
+  url,
+  alt,
+  onClose,
+}) => {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.85)",
+        zIndex: 3400,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "zoom-out",
+      }}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        style={{
+          position: "absolute",
+          top: 16,
+          right: 16,
+          width: 36,
+          height: 36,
+          borderRadius: "50%",
+          background: "rgba(0,0,0,0.55)",
+          color: "#fff",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 20,
+          lineHeight: 1,
+          padding: 0,
+          zIndex: 1,
+        }}
+      >
+        &times;
+      </button>
+      <img
+        src={url}
+        alt={alt ?? "preview"}
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "92vw",
+          maxHeight: "92vh",
+          objectFit: "contain",
+          borderRadius: 8,
+          boxShadow: "0 25px 60px rgba(0,0,0,0.5)",
+          cursor: "default",
+        }}
+      />
+    </div>,
+    document.body,
+  );
+};
+
+// ─── Image attachment with hover preview icon ─────────────────────────────────
+const ImageAttachment: React.FC<{ url: string; name?: string }> = ({ url, name }) => {
+  const [hovered, setHovered] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={() => setOpen(true)}
+        style={{
+          position: "relative",
+          width: 140,
+          height: 140,
+          borderRadius: 12,
+          overflow: "hidden",
+          border: "1px solid #e5e7eb",
+          cursor: "pointer",
+          flexShrink: 0,
+        }}
+      >
+        <img
+          src={url}
+          alt={name ?? "attachment"}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            opacity: hovered ? 1 : 0,
+            transition: "opacity 0.15s ease",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.95)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#111827"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      {open && <ImageLightbox url={url} alt={name} onClose={() => setOpen(false)} />}
+    </>
+  );
+};
 
 interface MessageBubbleProps {
   message: Message;
@@ -631,17 +789,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               const isImage = att.mimeType?.startsWith("image/");
               if (isImage && att.previewUrl) {
                 return (
-                  <img
+                  <ImageAttachment
                     key={att.id}
-                    src={att.previewUrl}
-                    alt={att.name ?? "attachment"}
-                    style={{
-                      width: 140,
-                      height: 140,
-                      objectFit: "cover",
-                      borderRadius: 12,
-                      border: "1px solid #e5e7eb",
-                    }}
+                    url={att.previewUrl}
+                    name={att.name}
                   />
                 );
               }

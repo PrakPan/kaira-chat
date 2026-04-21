@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
+import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -249,7 +250,103 @@ itineraryCompleted = false,
     booking_type?: string;
     origin_itinerary_city_id?: string;
     destination_itinerary_city_id?: string;
+    originCityId?: string;
+    destinationCityId?: string;
+    city?: string;
+    dcity?: string;
+    initialMode?: string;
+    initialEdgeId?: string;
+    isMercury?: boolean;
   }>({ show: false });
+
+  // Lookup map built from display_transfers effects so transfer.select
+  // widget actions (which carry only an edge id) can be expanded into the
+  // full context TransferEditDrawer needs to skip its mode-selection step.
+  const transferEdgeMapRef = useRef<
+    Record<
+      string,
+      {
+        mode: string;
+        from_city?: string;
+        to_city?: string;
+        from_city_id?: string;
+        to_city_id?: string;
+        from_itinerary_city_id?: string;
+        to_itinerary_city_id?: string;
+        check_in?: string;
+      }
+    >
+  >({});
+
+  // Walk a widget tree and index any transfer.select click action by its edge
+  // id, inferring the mode from the nearest Badge.label sibling in the same
+  // card. This is a safety net: widget click payloads today only carry {id},
+  // and the display_transfers effect may not always pre-populate the map.
+  const indexEdgesFromWidget = useCallback((widget: any) => {
+    if (!widget || typeof widget !== "object") return;
+    const visit = (node: any, inheritedMode?: string) => {
+      if (!node || typeof node !== "object") return;
+      const kids = Array.isArray(node.children) ? node.children : [];
+      // Pre-scan siblings for a Badge label to use as mode context.
+      let scopeMode = inheritedMode;
+      for (const c of kids) {
+        if (c?.type === "Badge" && typeof c.label === "string") {
+          scopeMode = c.label;
+        }
+      }
+      if (node.onClickAction?.type === "transfer.select") {
+        const id = node.onClickAction?.payload?.id;
+        if (id && !transferEdgeMapRef.current[id]) {
+          transferEdgeMapRef.current[id] = { mode: scopeMode || "" };
+        } else if (
+          id &&
+          scopeMode &&
+          !transferEdgeMapRef.current[id]?.mode
+        ) {
+          transferEdgeMapRef.current[id] = {
+            ...transferEdgeMapRef.current[id],
+            mode: scopeMode,
+          };
+        }
+      }
+      for (const c of kids) visit(c, scopeMode);
+    };
+    visit(widget);
+  }, []);
+
+  const indexTransfersForLookup = useCallback((raw: any) => {
+    if (!raw) return;
+    // Normalise: accept an array of transfers, a { transfers: [...] } wrapper,
+    // or a single transfer object with edges[].
+    const list: any[] = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.transfers)
+        ? raw.transfers
+        : Array.isArray(raw?.data?.transfers)
+          ? raw.data.transfers
+          : Array.isArray(raw?.edges)
+            ? [raw]
+            : [];
+
+    for (const t of list) {
+      const edges = t?.edges ?? [];
+      for (const e of edges) {
+        if (!e?.id) continue;
+        transferEdgeMapRef.current[e.id] = {
+          mode: e.mode,
+          from_city: t.from_city,
+          to_city: t.to_city,
+          from_city_id: t.from_city_id,
+          to_city_id: t.to_city_id,
+          from_itinerary_city_id: t.from_itinerary_city_id,
+          to_itinerary_city_id: t.to_itinerary_city_id,
+          check_in: e.start_datetime
+            ? String(e.start_datetime).slice(0, 10)
+            : undefined,
+        };
+      }
+    }
+  }, []);
 
   // Hotel detail drawer (opened from "hotel.view" widget actions).
   // The server currently emits only { id } in the payload, which is enough
@@ -263,6 +360,16 @@ itineraryCompleted = false,
     itinerary_city_id?: string;
     check_in?: string;
     check_out?: string;
+  }>({ show: false });
+
+  // POI detail drawer — opened by "place.view" widget actions whose payload
+  // only carries { id } (no activity_id / itinerary_city_id). Those are POIs
+  // surfaced in chat (e.g. "Seminyak Beach" cards) rather than itinerary
+  // activities, so they render through POIDetailsDrawer in "poi" mode.
+  const [poiDrawer, setPoiDrawer] = useState<{
+    show: boolean;
+    id?: string;
+    name?: string;
   }>({ show: false });
 
   // ── Pagination state ─────────────────────────────────────────────────────
@@ -408,6 +515,7 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
         case "display_transfers": {
+          indexTransfersForLookup(data);
           onItineraryReceived(data);
   break;
         }
@@ -492,7 +600,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -522,6 +630,16 @@ const sendMessage = useCallback(
     if (isFetchingMoreRef.current) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Index transfer.select edge ids → mode from live widget messages, so the
+  // TransferEditDrawer can skip its mode-selection step when the user clicks.
+  useEffect(() => {
+    for (const m of messages) {
+      if ((m as any)?.type === "widget") {
+        indexEdgesFromWidget((m as any)?.widgetItem?.widget);
+      }
+    }
+  }, [messages, indexEdgesFromWidget]);
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
@@ -631,6 +749,7 @@ useEffect(() => {
           timestamp: new Date(item.created_at), isStreaming: false,
         });
       } else if (item.type === "widget") {
+        indexEdgesFromWidget(item.widget);
         out.push({
           id: item.id, role: "assistant", content: "",
           timestamp: new Date(item.created_at),
@@ -686,6 +805,7 @@ useEffect(() => {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
       onItineraryReceived(effect.data.itinerary);
     } else if (effect.name === "display_transfers" && effect.data) {
+      indexTransfersForLookup(effect.data);
       onItineraryReceived(effect.data);
     }
   }
@@ -711,7 +831,7 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived]);
+}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {
@@ -1056,24 +1176,92 @@ const handleShowLogin = useCallback(() => {
                 onWidgetAction={(action) => {
                   const payload = action.payload ?? {};
 
-                  // Intercept activity detail actions → open drawer
+                  // Intercept place.view → either activity or POI drawer.
+                  // Activity payloads carry activity_id/itinerary_city_id; POI
+                  // payloads only carry { id } and should open POIDetailsDrawer.
                   if (action.type === "place.view") {
-                    setActivityDrawer({
-                      show: true,
-                      activityId: (payload.activity_id ?? payload.id) as string,
-                      date: payload.date as string,
-                      itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string,
-                    });
+                    const hasActivityContext =
+                      payload.activity_id != null ||
+                      payload.itinerary_city_id != null ||
+                      payload.city_id != null ||
+                      payload.date != null;
+
+                    if (hasActivityContext) {
+                      setActivityDrawer({
+                        show: true,
+                        activityId: (payload.activity_id ?? payload.id) as string,
+                        date: payload.date as string,
+                        itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string,
+                      });
+                    } else {
+                      setPoiDrawer({
+                        show: true,
+                        id: (payload.id ?? payload.poi_id) as string,
+                        name: payload.name as string | undefined,
+                      });
+                    }
                     return;
                   }
 
                   // Intercept transfer detail actions → open drawer
                   if (action.type === "transfer.select") {
+                    const edgeId = (payload.id ?? payload.edge_id) as
+                      | string
+                      | undefined;
+                    const indexed = edgeId
+                      ? transferEdgeMapRef.current[edgeId]
+                      : undefined;
+                    console.log("[transfer.select] click", {
+                      payload,
+                      edgeId,
+                      indexed,
+                      mapKeys: Object.keys(transferEdgeMapRef.current),
+                    });
+                    const checkInRaw =
+                      (payload.check_in as string | undefined) ??
+                      (payload.date as string | undefined) ??
+                      indexed?.check_in;
+                    const checkIn = checkInRaw
+                      ? String(checkInRaw).slice(0, 10)
+                      : undefined;
+                    const initialMode =
+                      (payload.mode as string | undefined) ?? indexed?.mode;
                     setTransferDrawer({
                       show: true,
                       routeId: (payload.route_id ?? payload.id) as string,
-                      check_in: (payload.check_in ?? payload.date) as string,
-                      booking_type: (payload.booking_type ?? payload.type ?? "Taxi") as string,
+                      check_in: checkIn,
+                      booking_type: (payload.booking_type ??
+                        payload.type ??
+                        "oneway") as string,
+                      initialEdgeId: edgeId,
+                      initialMode,
+                      isMercury: true,
+                      origin:
+                        (payload.origin_city_id as string | undefined) ??
+                        indexed?.from_city_id,
+                      destination:
+                        (payload.destination_city_id as string | undefined) ??
+                        indexed?.to_city_id,
+                      originCityId:
+                        (payload.origin_city_id as string | undefined) ??
+                        indexed?.from_city_id,
+                      destinationCityId:
+                        (payload.destination_city_id as string | undefined) ??
+                        indexed?.to_city_id,
+                      origin_itinerary_city_id:
+                        (payload.origin_itinerary_city_id as
+                          | string
+                          | undefined) ?? indexed?.from_itinerary_city_id,
+                      destination_itinerary_city_id:
+                        (payload.destination_itinerary_city_id as
+                          | string
+                          | undefined) ?? indexed?.to_itinerary_city_id,
+                      city:
+                        (payload.from_city as string | undefined) ??
+                        indexed?.from_city,
+                      dcity:
+                        (payload.to_city as string | undefined) ??
+                        indexed?.to_city,
                     });
                     return;
                   }
@@ -1254,6 +1442,7 @@ const handleShowLogin = useCallback(() => {
           setShowLoginModal={setShowLoginModal}
           Topheading="Activity Details"
           showPackages={false}
+          type={"activity"}
           itinerary_city_id={activityDrawer.itinerary_city_id}
         />
       )}
@@ -1267,6 +1456,20 @@ const handleShowLogin = useCallback(() => {
           booking_id={transferDrawer.routeId}
           booking_type={transferDrawer.booking_type}
           setShowLoginModal={setShowLoginModal}
+          initialMode={transferDrawer.initialMode}
+          initialEdgeId={transferDrawer.initialEdgeId}
+          isMercury={transferDrawer.isMercury}
+          origin={transferDrawer.origin}
+          destination={transferDrawer.destination}
+          originCityId={transferDrawer.originCityId}
+          destinationCityId={transferDrawer.destinationCityId}
+          origin_itinerary_city_id={transferDrawer.origin_itinerary_city_id}
+          destination_itinerary_city_id={
+            transferDrawer.destination_itinerary_city_id
+          }
+          city={transferDrawer.city}
+          dcity={transferDrawer.dcity}
+          handleClose={() => setTransferDrawer({ show: false })}
         />
       )}
 
@@ -1297,6 +1500,20 @@ const handleShowLogin = useCallback(() => {
           check_in={hotelDrawer.check_in}
           check_out={hotelDrawer.check_out}
           setShowLoginModal={setShowLoginModal}
+        />
+      )}
+
+      {/* ── POI Detail Drawer ───────────────────────────────────────────── */}
+      {poiDrawer.show && poiDrawer.id && (
+        <POIDetailsDrawer
+          show={poiDrawer.show}
+          iconId={poiDrawer.id}
+          id={poiDrawer.id}
+          name={poiDrawer.name}
+          activityData={{ type: "poi", id: poiDrawer.id }}
+          removeDelete={true}
+          removeChange={true}
+          handleCloseDrawer={() => setPoiDrawer({ show: false })}
         />
       )}
     </div>

@@ -99,6 +99,7 @@ export default function ActivityDetails(props) {
   // entry point where props.duration / itinerary.cities may not be populated.
   const resolvedCityDuration = (() => {
     const direct = Number(props.duration);
+    console.log("Direct duration from props:", direct, direct > 0);
     if (direct > 0) return direct;
 
     const fromCityObj = Number(
@@ -123,6 +124,7 @@ export default function ActivityDetails(props) {
       const match = itinerary.cities.find(
         (c) => String(c.id) === String(props.itinerary_city_id),
       );
+      console.log("Matched itinerary city for duration:", match);
       if (match?.duration > 0) return Number(match.duration);
     }
     return 0;

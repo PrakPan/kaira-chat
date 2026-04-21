@@ -1,5 +1,50 @@
 import React, { useState, useContext, createContext } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
+import { useSelector } from "react-redux";
+
+// ─── Widget environment context ───────────────────────────────────────────────
+// Carries ambient data (e.g. botMode) down to individual cards without
+// threading a prop through every intermediate renderer.
+interface WidgetEnv {
+  botMode?: "p1" | "p2";
+}
+const WidgetEnvContext = createContext<WidgetEnv>({});
+function useWidgetEnv() {
+  return useContext(WidgetEnvContext);
+}
+
+// Shallow Redux selector for the Itinerary slice. Cards use this to enrich
+// booking payloads (pax count, currency, cities) when the user hits
+// "Add to Itinerary".
+function useItineraryState(): any {
+  try {
+    return useSelector((s: any) => s?.Itinerary ?? null);
+  } catch {
+    return null;
+  }
+}
+
+// Build a generic booking payload from the Redux itinerary + a specific id.
+// Backend owns "where does this go" — we just provide pax / occupancy and let
+// the chat session's context pick the right city/date if missing.
+function buildBookingPayload(itinerary: any, id: string) {
+  const firstCity = itinerary?.cities?.[0];
+  return {
+    id,
+    number_of_adults: itinerary?.number_of_adults ?? 2,
+    number_of_children: itinerary?.number_of_children ?? 0,
+    number_of_infants: itinerary?.number_of_infants ?? 0,
+    children_ages: itinerary?.hotels_config?.room_configuration?.[0]?.childAges ?? [],
+    currency: itinerary?.currency ?? "INR",
+    room_configuration: itinerary?.hotels_config?.room_configuration ?? [
+      { adults: itinerary?.number_of_adults ?? 2, children: 0, childAges: [] },
+    ],
+    itinerary_city_id: firstCity?.id,
+    city_id: firstCity?.city?.id,
+    check_in: firstCity?.start_date,
+    check_out: firstCity?.end_date,
+  };
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -165,6 +210,156 @@ function getTransportBadgeStyle(label: string, color?: string): React.CSSPropert
   return { background: "#f3f4f6", color: "#374151" };
 }
 
+// ─── Colorful tag palette (for POI / Hotel / Activity category tags) ──────────
+// Picks a stable color for a given label so the same tag always gets the same
+// color across re-renders.
+
+const TAG_PALETTE: { bg: string; color: string; border: string }[] = [
+  { bg: "#FEF3C7", color: "#92400E", border: "#FDE68A" }, // amber
+  { bg: "#DBEAFE", color: "#1E40AF", border: "#BFDBFE" }, // blue
+  { bg: "#D1FAE5", color: "#065F46", border: "#A7F3D0" }, // green
+  { bg: "#FCE7F3", color: "#9D174D", border: "#FBCFE8" }, // pink
+  { bg: "#EDE9FE", color: "#5B21B6", border: "#DDD6FE" }, // purple
+  { bg: "#FFEDD5", color: "#9A3412", border: "#FED7AA" }, // orange
+  { bg: "#CFFAFE", color: "#155E75", border: "#A5F3FC" }, // cyan
+  { bg: "#FEE2E2", color: "#991B1B", border: "#FECACA" }, // red
+  { bg: "#E0F2FE", color: "#075985", border: "#BAE6FD" }, // sky
+  { bg: "#F0FDF4", color: "#166534", border: "#BBF7D0" }, // emerald
+];
+
+function hashLabel(label: string): number {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = (hash * 31 + label.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+// index: position within a card (0, 1, 2…). Combined with a per-card offset,
+// this guarantees adjacent tags get DIFFERENT colors.
+// offset: a per-card starting color (hash of something stable like title) so
+// cards vary from each other but tags within a card are always distinct.
+function ColorfulTag({
+  label,
+  index = 0,
+  offset = 0,
+}: {
+  label: string;
+  index?: number;
+  offset?: number;
+}) {
+  const c = TAG_PALETTE[(offset + index) % TAG_PALETTE.length];
+  return (
+    <span
+      style={{
+        padding: "3px 10px",
+        borderRadius: 9999,
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        background: c.bg,
+        color: c.color,
+        border: `1px solid ${c.border}`,
+        whiteSpace: "nowrap",
+        display: "inline-block",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+// Shared "Add to Itinerary" CTA — only rendered when we're in p2 stage.
+// `onClick` fires the appropriate widget action (activity.add / hotel.add /
+// poi.add) with an enriched payload. Stops propagation so clicking the
+// button doesn't trigger the card's detail drawer.
+function AddToItineraryButton({
+  onClick,
+}: {
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(e);
+      }}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "6px 12px",
+        borderRadius: 9999,
+        background: "#111",
+        color: "#fff",
+        border: "none",
+        fontSize: 12,
+        fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        transition: "background 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "#1f2937";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.background = "#111";
+      }}
+    >
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </svg>
+      Add to Itinerary
+    </button>
+  );
+}
+
+// Shared price-tag icon shown before a price value.
+function PriceLabel() {
+  return (
+    <span
+      aria-label="Price"
+      style={{
+        width: 24,
+        height: 24,
+        borderRadius: 9999,
+        background: "#F0FDF4",
+        border: "1px solid #BBF7D0",
+        color: "#166534",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+        <line x1="7" y1="7" x2="7.01" y2="7" />
+      </svg>
+    </span>
+  );
+}
+
 // ─── NEW: Helpers to detect and parse transport ListViewItems ─────────────────
 
 function extractAllTexts(node: WidgetNode): string[] {
@@ -279,8 +474,8 @@ function TransportCard({
       onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb"; }}
       className="w-full md:max-w-[500px]"
     >
-      {/* Header: icon + name + badges */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+      {/* Header: icon + name + badges (badges wrap to a new line on narrow screens) */}
+      <div className="flex flex-wrap items-center gap-3 mb-[14px]">
         {/* Icon circle */}
         <div style={{
           width: 44, height: 44, borderRadius: "50%",
@@ -293,9 +488,9 @@ function TransportCard({
         </div>
 
         {/* Name + subtitle */}
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontSize: 18, fontWeight: 500,
+            fontSize: 18, fontWeight: 600,
             color: "#111827", fontFamily: "'Inter', sans-serif",
             lineHeight: 1.2, marginBottom: 2,
           }}>
@@ -310,7 +505,7 @@ function TransportCard({
         </div>
 
         {/* Badges */}
-        <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+        <div className="flex gap-[6px] flex-wrap justify-start sm:justify-end basis-full sm:basis-auto">
           {badges.map((b, i) => {
             const label = (b.label ?? b.value ?? "") as string;
             const color = b.color as string | undefined;
@@ -435,6 +630,11 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
 );
   const clickAction = node.onClickAction as { type: string; payload?: Record<string, unknown> } | undefined;
 
+  // Split category into multiple tags (supports comma / slash / pipe / bullet separated)
+  const categoryTags = category
+    ? category.split(/\s*[,/|•·]\s*/).map((s) => s.trim()).filter(Boolean)
+    : [];
+
   return (
     <div
       onClick={() => clickAction && onAction?.(clickAction)}
@@ -446,50 +646,114 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
         cursor: clickAction ? "pointer" : "default",
         width: "100%",
         marginBottom: 12,
-        // transition: "border-color 0.15s",
+        boxSizing: "border-box",
+        transition: "border-color 0.15s, box-shadow 0.15s",
       }}
-      // onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--color-border-secondary)"; }}
-      // onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--color-border-tertiary)"; }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+      }}
     >
-      {/* Header */}
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 16, fontWeight: 500, color: "var(--color-text-primary)", lineHeight: 1.3, marginBottom: 5, fontFamily: "'Inter', sans-serif" }}>
-          {title}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {category && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{category}</span>}
-          {category && <span style={{ fontSize: 12, color: "var(--color-border-secondary)" }}>|</span>}
-          <span style={{ color: "#f59e0b", fontSize: 14, letterSpacing: 1 }} className="flex">{stars}</span>
-          {rating > 0 && <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>{rating.toFixed(2)}</span>}
-        </div>
-      </div>
+      {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* Title + rating on the same line */}
+          {(title || rating > 0) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {title && (
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.3,
+                    fontFamily: "'Inter', sans-serif",
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {title}
+                </div>
+              )}
+              {/* {rating > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                  <StarFilledIcon size={13} />
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "var(--color-text-secondary)",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {rating.toFixed(2)}
+                  </span>
+                </div>
+              )} */}
+            </div>
+          )}
 
-      {/* Horizontal divider */}
-      <div style={{ height: "0.5px", background: "#e5e5e5", marginBottom: 10 }} />
+          {/* Colorful category tags — each distinct */}
+          {categoryTags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {categoryTags.map((c, i) => (
+                <ColorfulTag key={i} label={c} index={i} offset={hashLabel(title)} />
+              ))}
+            </div>
+          )}
 
-      {/* Body: description + image */}
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
-        <p style={{ flex: 1, fontSize: 13, color: "var(--color-text-secondary)", lineHeight: 1.55, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden", margin: 0, fontFamily: "'Inter', sans-serif" }}>
-          {description}
-        </p>
+          {/* Divider */}
+          {(title || categoryTags.length > 0) && (description || priceFormatted) && (
+            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+          )}
+
+          {/* Description */}
+          {description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {description}
+            </p>
+          )}
+
+          {/* Price */}
+          {priceFormatted && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <PriceLabel />
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>
+                  {priceFormatted}
+                </span>
+                {unitLabel && (
+                  <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>
+                    / {unitLabel.toLowerCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         {imgSrc && (
-          <div style={{ flexShrink: 0, width: 110, height: 90, borderRadius: 10, overflow: "hidden" }}>
+          <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
             <img src={imgSrc} alt={imgAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         )}
       </div>
-
-      {/* Price */}
-      {priceFormatted && (
-        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-          <span style={{ fontSize: 15, fontWeight: 500, color: "var(--color-text-primary)", fontFamily: "'Inter', sans-serif" }}>{priceFormatted}</span>
-          {unitLabel && (
-            <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontFamily: "'Inter', sans-serif" }}>
-              / {unitLabel.toLowerCase()}
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -506,6 +770,260 @@ function ActivityListView({
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
       {children.map((item, idx) => (
         <ActivityCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
+    </div>
+  );
+}
+
+// ─── POI cards ─────────────────────────────────────────────────────────────────
+// A ListView is a "POI list" when items carry a place.view onClickAction, or
+// contain the POI-specific signature of discovery-colored badges + a map-pin
+// icon with a numeric distance badge. No price, no "Per Night", no km-duration
+// pattern — that keeps this distinct from hotel / transport / activity lists.
+
+function findClickActionType(node: WidgetNode): string | undefined {
+  const action = node.onClickAction as { type?: string } | undefined;
+  if (action?.type) return action.type;
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const t = findClickActionType(child);
+    if (t) return t;
+  }
+  return undefined;
+}
+
+function isPoiListView(children: WidgetNode[]): boolean {
+  return children.some((item) => {
+    if (findClickActionType(item) === "place.view") return true;
+    const raw = JSON.stringify(item);
+    const hasDiscoveryBadge = /"color"\s*:\s*"discovery"/.test(raw);
+    const hasMapPin = /"name"\s*:\s*"map-pin"/.test(raw);
+    return hasDiscoveryBadge && hasMapPin;
+  });
+}
+
+function MapPinIcon({ size = 14, color = "#6b7280" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function StarFilledIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size * (13 / 14)} viewBox="0 0 14 13" fill="none">
+      <path
+        d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z"
+        fill="#F7E700" stroke="#C1A51B" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PoiCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+  const imageNodes = findNodesByType(node, "Image");
+  const badgeNodes = findNodesByType(node, "Badge");
+
+  const name = ((titleNodes[0]?.value as string) ?? "").trim();
+
+  // Rating caption like "4 (263)" → rating + count
+  const ratingCaption = captionNodes.find((c) => /^\s*\d/.test((c.value as string) ?? ""));
+  const ratingRaw = ((ratingCaption?.value as string) ?? "").trim();
+  const ratingMatch = ratingRaw.match(/^([\d.]+)\s*(?:\(([\d,]+)\))?/);
+  const ratingValue = ratingMatch ? parseFloat(ratingMatch[1]) : 0;
+  const ratingCount = ratingMatch?.[2] ?? "";
+
+  // Discovery badges (category tags)
+  const categoryBadges = badgeNodes.filter((b) => (b.color as string) === "discovery");
+
+  // Distance badge (info color, numeric label like 1.1)
+  const distanceBadge = badgeNodes.find((b) => {
+    const label = b.label;
+    const color = b.color as string | undefined;
+    return color === "info" && (typeof label === "number" || /^[\d.]+$/.test(String(label ?? "")));
+  });
+  const distanceValue = distanceBadge ? String(distanceBadge.label) : "";
+
+  // Description (long text node, not title, not price)
+  const descriptionNode = textNodes.find((t) => {
+    const v = ((t.value as string) ?? "").trim();
+    return v.length > 30 && v !== name && !/[₹$€£]/.test(v);
+  });
+  const description = ((descriptionNode?.value as string) ?? "").trim();
+
+  const imgSrc = (imageNodes[0]?.src as string) ?? "";
+  const imgAlt = (imageNodes[0]?.alt as string) ?? name;
+
+  const clickAction = node.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+
+  const stars = ratingValue > 0
+    ? Array.from({ length: 5 }, (_, i) =>
+        i < Math.round(ratingValue) ? <StarFilledIcon key={i} /> : null,
+      ).filter(Boolean)
+    : [];
+
+  return (
+    <div
+      onClick={() => clickAction && onAction?.(clickAction)}
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        padding: "14px 16px",
+        cursor: clickAction ? "pointer" : "default",
+        width: "100%",
+        marginBottom: 12,
+        transition: "border-color 0.15s, box-shadow 0.15s",
+        boxSizing: "border-box",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+      }}
+    >
+      {/* Body: left column (title + rating inline + badges + divider + desc + distance) + image */}
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* Title + rating on the same line */}
+          {(name || ratingValue > 0) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {name && (
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.3,
+                    fontFamily: "'Inter', sans-serif",
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {name}
+                </div>
+              )}
+              {/* {ratingValue > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+                  <StarFilledIcon size={13} />
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "var(--color-text-secondary)",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {ratingValue}
+                    {ratingCount ? ` (${ratingCount})` : ""}
+                  </span>
+                </div>
+              )} */}
+            </div>
+          )}
+
+          {/* Colorful category badges — each gets a distinct color */}
+          {categoryBadges.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {categoryBadges.map((b, i) => (
+                <ColorfulTag
+                  key={i}
+                  label={String(b.label ?? b.value ?? "")}
+                  index={i}
+                  offset={hashLabel(name)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Divider */}
+          {(name || categoryBadges.length > 0) && (description || distanceValue) && (
+            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+          )}
+
+          {/* Description */}
+          {description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {description}
+            </p>
+          )}
+
+          {/* Distance row */}
+          {distanceValue && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MapPinIcon size={14} color="#6b7280" />
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#0369a1",
+                  background: "#e0f2fe",
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  fontFamily: "'Inter', sans-serif",
+                  border: "1px solid #BAE6FD",
+                }}
+              >
+                {distanceValue} km
+              </span>
+            </div>
+          )}
+        </div>
+
+        {imgSrc && (
+          <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
+            <img
+              src={imgSrc}
+              alt={imgAlt}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PoiListView({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const children = (node.children ?? []) as WidgetNode[];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {children.map((item, idx) => (
+        <PoiCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
       ))}
     </div>
   );
@@ -582,6 +1100,39 @@ function HotelCard({
     | { type: string; payload?: Record<string, unknown> }
     | undefined;
 
+  const ratingCaption = captionNodes.find((c) => /\([\d.]+\)/.test((c.value as string) ?? ""));
+  const ratingMatch = ((ratingCaption?.value as string) ?? "").match(/[\d.]+/);
+  const rating = starsText ? starsText.trim().length : 0;
+
+const starIcons = Array.from({ length: 5 }, (_, i) =>
+  i < Math.round(rating) ? (
+    <svg key={i} xmlns="http://www.w3.org/2000/svg" width="14" height="13" viewBox="0 0 14 13" fill="none">
+      <path
+        d="M6.30562 1.04912C6.45928 0.737826 6.53611 0.582179 6.64041 0.53245C6.73115 0.489183 6.83658 0.489183 6.92732 0.53245C7.03162 0.582179 7.10845 0.737826 7.26211 1.04912L8.71989 4.00243C8.76526 4.09433 8.78794 4.14028 8.82109 4.17596C8.85044 4.20755 8.88563 4.23314 8.92473 4.25132C8.96889 4.27186 9.01959 4.27927 9.121 4.29409L12.3818 4.77071C12.7252 4.8209 12.8969 4.846 12.9764 4.92987C13.0455 5.00284 13.078 5.10311 13.0649 5.20276C13.0497 5.31729 12.9254 5.43836 12.6768 5.6805L10.3182 7.97785C10.2446 8.04947 10.2079 8.08528 10.1841 8.12788C10.1631 8.16561 10.1497 8.20705 10.1445 8.24991C10.1386 8.29832 10.1473 8.3489 10.1646 8.45007L10.7212 11.695C10.7799 12.0372 10.8092 12.2084 10.7541 12.3099C10.7061 12.3983 10.6208 12.4602 10.5219 12.4786C10.4083 12.4996 10.2546 12.4188 9.94726 12.2572L7.03211 10.7241C6.94128 10.6764 6.89586 10.6525 6.84802 10.6431C6.80565 10.6348 6.76208 10.6348 6.71972 10.6431C6.67187 10.6525 6.62645 10.6764 6.53562 10.7241L3.62047 12.2572C3.31313 12.4188 3.15946 12.4996 3.04584 12.4786C2.94698 12.4602 2.86167 12.3983 2.81368 12.3099C2.75852 12.2084 2.78787 12.0372 2.84657 11.695L3.40311 8.45007C3.42046 8.3489 3.42914 8.29832 3.42327 8.24991C3.41807 8.20705 3.4046 8.16561 3.38359 8.12788C3.35987 8.08528 3.32311 8.04947 3.24958 7.97785L0.890894 5.68049C0.642296 5.43836 0.517997 5.31729 0.502872 5.20276C0.489712 5.10311 0.522223 5.00284 0.591355 4.92987C0.670811 4.846 0.842502 4.8209 1.18588 4.77071L4.44673 4.29409C4.54814 4.27927 4.59884 4.27186 4.643 4.25132C4.6821 4.23314 4.7173 4.20755 4.74664 4.17596C4.77979 4.14028 4.80247 4.09433 4.84784 4.00243L6.30562 1.04912Z"
+        fill="#F7E700" stroke="#C1A51B" strokeLinecap="round" strokeLinejoin="round"
+      />
+    </svg>
+  ) : (
+   <></>
+  )
+);
+
+
+  // Build a list of colorful tags for this hotel (hotel type + any extra tag-worthy captions)
+  const hotelTags: string[] = [];
+  if (hotelType) hotelTags.push(hotelType);
+  // Optionally pull any additional short captions that aren't the address/stars/rating as tags
+  for (const c of captionNodes) {
+    const v = ((c.value as string) ?? "").trim();
+    if (!v) continue;
+    if (v === starsText || v === hotelType || v === address) continue;
+    if (/★/.test(v)) continue;
+    if (/^\(/.test(v)) continue; // unit / rating captions like "(Per Night)"
+    if (v.length > 30) continue; // too long to be a tag
+    if (hotelTags.includes(v)) continue;
+    hotelTags.push(v);
+  }
+
   return (
     <div
       onClick={() => clickAction && onAction?.(clickAction)}
@@ -593,67 +1144,62 @@ function HotelCard({
         cursor: clickAction ? "pointer" : "default",
         width: "100%",
         marginBottom: 12,
+        boxSizing: "border-box",
+        transition: "border-color 0.15s, box-shadow 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
       }}
     >
-      {/* Header: name + stars + type */}
-      <div style={{ marginBottom: 10 }}>
-        <div
-          style={{
-            fontSize: 16,
-            fontWeight: 500,
-            color: "var(--color-text-primary)",
-            lineHeight: 1.3,
-            marginBottom: 5,
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          {name}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          {starsText && (
-            <span style={{ color: "#f59e0b", fontSize: 13, letterSpacing: 1 }}>
-              {starsText}
-            </span>
+      {/* Body: left column (title + rating + tags + divider + desc + price) + image */}
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* Title + stars on the same line */}
+          {(name || rating > 0) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {name && (
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.3,
+                    fontFamily: "'Inter', sans-serif",
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {name}
+                </div>
+              )}
+              {/* {rating > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+                  {starIcons}
+                </div>
+              )} */}
+            </div>
           )}
-          {starsText && hotelType && (
-            <span style={{ fontSize: 12, color: "var(--color-border-secondary)" }}>|</span>
-          )}
-          {hotelType && (
-            <span
-              style={{
-                fontSize: 12,
-                color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              {hotelType}
-            </span>
-          )}
-        </div>
-      </div>
 
-      {/* Horizontal divider */}
-      <div style={{ height: "0.5px", background: "#e5e5e5", marginBottom: 10 }} />
-
-      {/* Body: address + description + image */}
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {address && (
-            <p
-              style={{
-                fontSize: 12,
-                color: "var(--color-text-secondary)",
-                margin: "0 0 6px",
-                fontFamily: "'Inter', sans-serif",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}
-            >
-              {address}
-            </p>
+          {/* Colorful tags row — each tag gets a distinct color */}
+          {hotelTags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {hotelTags.map((t, i) => (
+                <ColorfulTag key={i} label={t} index={i} offset={hashLabel(name)} />
+              ))}
+            </div>
           )}
+
+          {/* Divider */}
+          {(name || hotelTags.length > 0) && (address || description || priceFormatted) && (
+            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+          )}
+
+          {/* Description */}
           {description && (
             <p
               style={{
@@ -671,17 +1217,63 @@ function HotelCard({
               {description}
             </p>
           )}
+
+          {/* Address — below description, with a location icon */}
+          {address && (
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+              <span style={{ flexShrink: 0, marginTop: 1 }}>
+                <MapPinIcon size={14} color="#6b7280" />
+              </span>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-text-secondary)",
+                  margin: 0,
+                  fontFamily: "'Inter', sans-serif",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {address}
+              </p>
+            </div>
+          )}
+
+          {/* Price */}
+          {priceFormatted && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <PriceLabel />
+              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  {priceFormatted}
+                </span>
+                {unitLabel && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "var(--color-text-secondary)",
+                      fontFamily: "'Inter', sans-serif",
+                    }}
+                  >
+                    / {unitLabel.toLowerCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
+
         {imgSrc && (
-          <div
-            style={{
-              flexShrink: 0,
-              width: 110,
-              height: 90,
-              borderRadius: 10,
-              overflow: "hidden",
-            }}
-          >
+          <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
             <img
               src={imgSrc}
               alt={imgAlt}
@@ -690,33 +1282,6 @@ function HotelCard({
           </div>
         )}
       </div>
-
-      {/* Price */}
-      {priceFormatted && (
-        <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 500,
-              color: "var(--color-text-primary)",
-              fontFamily: "'Inter', sans-serif",
-            }}
-          >
-            {priceFormatted}
-          </span>
-          {unitLabel && (
-            <span
-              style={{
-                fontSize: 12,
-                color: "var(--color-text-secondary)",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              / {unitLabel.toLowerCase()}
-            </span>
-          )}
-        </div>
-      )}
     </div>
   );
 }
@@ -1267,6 +1832,11 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   // Delegate to activity card design when items contain activity data (price + image)
   if (isActivityListView(children)) {
     return <ActivityListView node={node} onAction={onAction} />;
+  }
+
+  // Delegate to POI card design when items carry place.view actions (no price, map-pin + discovery badges)
+  if (isPoiListView(children)) {
+    return <PoiListView node={node} onAction={onAction} />;
   }
 
   // Delegate to transport card design when items contain transport data
