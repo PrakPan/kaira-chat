@@ -253,6 +253,7 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
+  const [autoSkipConsumed, setAutoSkipConsumed] = useState(false);
   const currency = useSelector((state) => state.currency);
 
   const { email } = useSelector((state) => state.auth);
@@ -268,6 +269,104 @@ const TransferEditDrawer = (props) => {
       fetchRoutes();
     }
   }, [showDrawer]);
+
+  // Reset auto-skip guard when drawer closes so reopening can auto-skip again
+  useEffect(() => {
+    if (!showDrawer) setAutoSkipConsumed(false);
+  }, [showDrawer]);
+
+  // Auto-skip step 0 and open the matching mode's search drawer when the bot
+  // provides an initialEdgeId (matching one of the fetched route legs) or an
+  // initialMode (fallback: first route whose first leg matches that mode).
+  useEffect(() => {
+    if (autoSkipConsumed) return;
+    if (!showDrawer) return;
+    if (currentStep !== 0) return;
+    if (!transfers || transfers.length === 0) {
+      console.log("[TransferEditDrawer][auto-skip] waiting for transfers", {
+        initialMode: props?.initialMode,
+        initialEdgeId: props?.initialEdgeId,
+        transfersLen: transfers?.length ?? 0,
+        loadingTransfers,
+        transfersError,
+      });
+      return;
+    }
+    if (!props?.initialEdgeId && !props?.initialMode) {
+      console.log(
+        "[TransferEditDrawer][auto-skip] no initialMode/initialEdgeId — staying on step 0",
+      );
+      return;
+    }
+
+    const normaliseMode = (m) =>
+      typeof m === "string" ? m.toLowerCase() : m;
+
+    let matchedRouteIdx = -1;
+    let matchedLegIdx = -1;
+    let matchedLeg = null;
+
+    if (props?.initialEdgeId) {
+      for (let i = 0; i < transfers.length; i++) {
+        const legs = transfers[i]?.transfers || [];
+        const legIdx = legs.findIndex((l) => l?.id === props.initialEdgeId);
+        if (legIdx >= 0) {
+          matchedRouteIdx = i;
+          matchedLegIdx = legIdx;
+          matchedLeg = legs[legIdx];
+          break;
+        }
+      }
+    }
+
+    if (matchedRouteIdx === -1 && props?.initialMode) {
+      const targetMode = normaliseMode(props.initialMode);
+      for (let i = 0; i < transfers.length; i++) {
+        const legs = transfers[i]?.transfers || [];
+        const legIdx = legs.findIndex(
+          (l) => normaliseMode(l?.mode) === targetMode,
+        );
+        if (legIdx >= 0) {
+          matchedRouteIdx = i;
+          matchedLegIdx = legIdx;
+          matchedLeg = legs[legIdx];
+          break;
+        }
+      }
+    }
+
+    if (matchedRouteIdx === -1 || !matchedLeg) {
+      console.log("[TransferEditDrawer][auto-skip] no match", {
+        initialMode: props?.initialMode,
+        initialEdgeId: props?.initialEdgeId,
+        transferModes: transfers.map((t) =>
+          (t?.transfers || []).map((l) => ({ id: l?.id, mode: l?.mode })),
+        ),
+      });
+      return;
+    }
+
+    const routeLegs = transfers[matchedRouteIdx]?.transfers || [];
+    const isMulti = routeLegs.length > 1;
+
+    console.log("[TransferEditDrawer][auto-skip] matched", {
+      matchedRouteIdx,
+      matchedLegIdx,
+      mode: matchedLeg.mode,
+    });
+
+    setSelectedTransferIndex(matchedRouteIdx);
+    setCurrentStep(1);
+    setAutoSkipConsumed(true);
+    handleSelect(matchedLegIdx, matchedLeg, isMulti, matchedLeg.mode);
+  }, [
+    transfers,
+    showDrawer,
+    currentStep,
+    autoSkipConsumed,
+    props?.initialEdgeId,
+    props?.initialMode,
+  ]);
 
   const addDaysToDate = (dateString, numberOfDays) => {
     const newDate = dayjs(dateString).add(numberOfDays, "day");

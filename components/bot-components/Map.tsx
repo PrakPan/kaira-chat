@@ -229,6 +229,86 @@ function resolveAccent(accent?: string): string {
   return ACCENT_COLORS[accent.toLowerCase()] ?? "#FD6D6C";
 }
 
+// Resolve an image URL — return absolute URLs as-is, otherwise prepend the
+// CloudFront base. Used anywhere we consume a server-supplied image path.
+function resolvePopupImageUrl(img?: string): string | undefined {
+  if (!img) return undefined;
+  if (/^https?:\/\//i.test(img)) return img;
+  return "https://d31aoa0ehgvjdi.cloudfront.net/" + img.replace(/^\/+/, "");
+}
+
+// Unified compact popup — matches the Figma card design
+// (cover image, title row with rating, pin-icon location line, clamped description).
+// Fixed width 240px, image fills container edge-to-edge (no negative-margin hacks).
+function buildPopupHTML({
+  image,
+  title,
+  rating,
+  ratingCount,
+  locationText,
+  description,
+  accentColor,
+  badge,
+}: {
+  image?: string;
+  title: string;
+  rating?: number;
+  ratingCount?: number;
+  locationText?: string;
+  description?: string;
+  accentColor: string;
+  badge?: string;
+}): string {
+  const safeTitle = title.replace(/"/g, "&quot;");
+  const resolvedImage = resolvePopupImageUrl(image);
+
+  const imageBlock = resolvedImage
+    ? `<div style="width:100%;height:140px;overflow:hidden;border-radius:12px 12px 0 0;">
+         <img src="${resolvedImage}" alt="${safeTitle}" style="width:100%;height:100%;object-fit:cover;display:block;" />
+       </div>`
+    : "";
+
+  const ratingBlock =
+    typeof rating === "number" && rating > 0
+      ? `<div style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#111827;flex-shrink:0;white-space:nowrap;">
+           <span>${Number(rating).toFixed(1)}</span>
+           <svg width="12" height="12" viewBox="0 0 24 24" fill="#F5A623" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+           ${ratingCount ? `<span style="color:#6B7280;font-weight:400;">(${ratingCount})</span>` : ""}
+         </div>`
+      : "";
+
+  const locationBlock = locationText
+    ? `<div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+           <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z"/>
+           <circle cx="12" cy="10" r="3"/>
+         </svg>
+         <span style="font-size:11px;color:#6B7280;">${locationText}</span>
+       </div>`
+    : "";
+
+  const descriptionBlock = description
+    ? `<p style="color:#6B7280;font-size:11px;margin:8px 0 0 0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${description}</p>`
+    : "";
+
+  const badgeBlock = badge
+    ? `<div style="margin-bottom:6px;"><span style="padding:2px 8px;background:${accentColor};color:#fff;border-radius:9999px;font-size:10px;font-weight:600;">${badge}</span></div>`
+    : "";
+
+  return `<div style="width:240px;font-family:'Inter',sans-serif;border-radius:12px;overflow:hidden;background:#fff;">
+    ${imageBlock}
+    <div style="padding:12px;">
+      ${badgeBlock}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+        <h4 style="font-weight:600;margin:0;color:#111827;font-size:14px;line-height:1.3;flex:1;min-width:0;">${title}</h4>
+        ${ratingBlock}
+      </div>
+      ${locationBlock}
+      ${descriptionBlock}
+    </div>
+  </div>`;
+}
+
 const MyMap = forwardRef<google.maps.Map | null, MapProps>(
   ({ state, locations, userLocation, currentRoute }, ref) => {
     const mapRef = useRef<HTMLDivElement>(null);
@@ -572,16 +652,20 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
       });
 
       userMarkerRef.current.addListener("click", () => {
-        infoWindowRef.current!.setContent(`
-      <div style="padding: 12px; min-width: 220px;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <div style="font-size: 20px;">📍</div>
-          <h3 style="font-weight: bold; color: #4285F4; margin: 0;">Your Location</h3>
-        </div>
-        <p style="color: #333; font-size: 14px; margin: 4px 0;">${userLocation.city}, ${userLocation.regionName}</p>
-        <p style="color: #666; font-size: 12px; margin: 4px 0;">${userLocation.country}</p>
-      </div>
-    `);
+        const locationText = [
+          userLocation.city,
+          userLocation.regionName,
+          userLocation.country,
+        ]
+          .filter(Boolean)
+          .join(", ");
+        infoWindowRef.current!.setContent(
+          buildPopupHTML({
+            title: "Your Location",
+            locationText,
+            accentColor: "#4285F4",
+          }),
+        );
         infoWindowRef.current!.open(
           mapInstance.current!,
           userMarkerRef.current!,
@@ -638,79 +722,45 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           zIndex: isRouteStop ? 200 + routeIndex : 100,
         });
 
-        // Info window on click
+        // Info window on click — unified compact card design (Figma)
         marker.addListener("click", () => {
           const accentColor = resolveAccent(loc.accent);
+          // Pass raw image — buildPopupHTML calls resolvePopupImageUrl which
+          // returns absolute URLs as-is and prefixes CloudFront for relative paths.
+          const imageUrl = loc.image as string | undefined;
+          const description = loc.one_liner_description || location.description;
+          const ratingCount =
+            typeof loc.user_ratings_total === "number"
+              ? loc.user_ratings_total
+              : undefined;
 
-          // Route stop popup — rich city card
           if (isRouteStop && currentRoute) {
-             const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-
-const imageLine = loc.image
-  ? `<div style="margin:-10px -12px 8px -12px;border-radius:10px 10px 0 0;overflow:hidden;height:120px;">
-      <img 
-        src="${getImageUrl(loc.image)}" 
-        alt="${location.name}" 
-        style="width:100%;height:100%;object-fit:cover;" 
-      />
-     </div>`
-  : "";
-
-            const oneLiner = loc.one_liner_description
-              ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.one_liner_description}</p>`
-              : loc.description
-                ? `<p style="color:#6b7280;font-size:11px;margin:0 0 8px 0;line-height:1.45;">${loc.description}</p>`
-                : "";
-
-            const durationBadge = loc.duration
-              ? `<span style="font-size:10px;">⏱ ${loc.duration} ${loc.duration === 1 ? "night" : "nights"}</span>`
-              : "";
-
-            const colors = ["#d5f5d3", "#fadadd", "#F5F0FF", "#DDF4C5"];
-
-            const tagsLine = loc.tags?.length
-              ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-      ${loc.tags.map((t: string, i: number) => `<span style="padding:2px 8px;background:${colors[i % colors.length]};border-radius:9999px;font-size:9px;font-weight:500;">${t}</span>`).join("")}
-     </div>`
-              : "";
-
-            const stopBadge = `<div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
-            <div style="width:18px;height:18px;background:${accentColor};color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;">${routeIndex + 1}</div>
-            <span style="font-size:10px;color:${accentColor};font-weight:600;">Stop ${routeIndex + 1} of ${currentRoute.length}</span>
-          </div>`;
-
-            infoWindowRef.current!.setContent(`
-            <div style="padding:10px 12px;min-width:220px;max-width:280px;font-family:Inter,sans-serif;">
-              ${imageLine}
-              <h4 style="font-weight:700;margin:0 0 4px 0;color:#111827;font-size:14px;line-height:1.3;">${location.name}</h4>
-              ${oneLiner}
-              ${durationBadge}
-              ${tagsLine}
-            </div>`);
+            const badge = `Stop ${routeIndex + 1} of ${currentRoute.length}`;
+            const locationText = loc.duration
+              ? `${loc.duration} ${loc.duration === 1 ? "night" : "nights"}`
+              : loc.city;
+            infoWindowRef.current!.setContent(
+              buildPopupHTML({
+                image: imageUrl,
+                title: location.name,
+                locationText,
+                description,
+                accentColor,
+                badge,
+              }),
+            );
           } else {
-            // Non-route location — compact popup
-            const nameLine = `<h4 style="font-weight:600;margin:0 0 3px 0;color:#202124;font-size:12px;line-height:1.3;">${location.name}</h4>`;
-            const descLine = location.description
-              ? `<p style="color:#5f6368;font-size:10px;margin:0 0 3px 0;line-height:1.4;">${location.description}</p>`
-              : "";
-            const cityLine = loc.city
-              ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;margin-bottom:3px;">
-                <svg width="10" height="10" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5C8.62 9.5 7.5 8.38 7.5 7S8.62 4.5 10 4.5 12.5 5.62 12.5 7 11.38 9.5 10 9.5z" fill="${accentColor}"/>
-                </svg>
-                <span style="color:#888;">${loc.city}</span>
-               </div>`
-              : "";
-            const ratingLine = loc.rating
-              ? `<div style="display:flex;align-items:center;gap:3px;font-size:10px;color:#f5a623;">
-                ${"★".repeat(Math.round(loc.rating))}<span style="color:#aaa;margin-left:2px;">${loc.rating}</span>
-               </div>`
-              : "";
-
-            infoWindowRef.current!.setContent(`
-            <div style="padding:8px 10px;min-width:180px;max-width:260px;font-family:Inter,sans-serif;">
-              ${nameLine}${descLine}${cityLine}${ratingLine}
-            </div>`);
+            infoWindowRef.current!.setContent(
+              buildPopupHTML({
+                image: imageUrl,
+                title: location.name,
+                rating: typeof loc.rating === "number" ? loc.rating : undefined,
+                ratingCount,
+                locationText: loc.city,
+                description,
+                accentColor,
+              }),
+            );
           }
 
           infoWindowRef.current!.open(mapInstance.current!, marker);

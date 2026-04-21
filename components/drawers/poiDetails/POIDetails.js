@@ -134,7 +134,8 @@ const POIDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description
   );
   const itinerary = useSelector((state) => state.Itinerary);
-  const isDraft = useSelector((state) => state.Itinerary?.status === "Draft");
+   const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
