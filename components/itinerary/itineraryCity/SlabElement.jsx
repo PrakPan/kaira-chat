@@ -274,7 +274,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
     }
     try {
       let res;
-      if (props?.element?.poi != null) {
+      if (props?.element?.poi != null || props?.element?.element_type === "poi") {
         res = await axios.delete(
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
           {
@@ -304,10 +304,10 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
       let itineraryCities = [];
 
       if (
-        (props?.element?.poi != null && res?.status === 200) ||
+        ((props?.element?.poi != null || props?.element?.element_type === "poi") && res?.status === 200) ||
         (props?.element?.booking?.id && res?.status === 204)
       ) {
-        if (props?.element?.poi != null) {
+        if (props?.element?.poi != null || props?.element?.element_type === "poi") {
           itineraryCities = newItinerary.cities.map((city) => {
             const cityTemp = city;
             if (city.id === props?.itinerary_city_id) {
