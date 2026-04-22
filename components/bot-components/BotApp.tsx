@@ -1123,6 +1123,9 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     initialAttachmentIds,
     isItineraryCompleting,
     itineraryCompleted: finalizedStatus === "SUCCESS" && botMode === "p2" && itineraryCreatedInSessionRef.current,
+    // Route "Make Payment" CTAs from in-chat widgets to the existing
+    // payment drawer instead of the generic widget-action fallback.
+    onPaymentStart: openPaymentDrawer,
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -1751,7 +1754,7 @@ const BottomCTABar = React.memo(
       return (
         <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3">
           <ItineraryStatusLoader
-            displayText={loaderDisplayText || "Calculating best prices for you…"}
+            displayText={loaderDisplayText}
             isVisible={true}
           />
         </div>

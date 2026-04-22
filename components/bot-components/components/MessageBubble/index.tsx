@@ -167,6 +167,12 @@ interface MessageBubbleProps {
     type: string;
     payload?: Record<string, unknown>;
   }) => void;
+  /**
+   * When true, the widget rendered for this message should disable all its
+   * CTAs. ChatKitPanel sets this for history-restored widgets and for widgets
+   * whose CTA was already clicked this session.
+   */
+  widgetDisabled?: boolean;
 }
 
 // ─── Markdown renderer ────────────────────────────────────────────────────────
@@ -747,6 +753,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
   onWidgetAction,
   entities = {},
+  widgetDisabled = false,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -759,6 +766,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
       <WidgetRenderer
         widget={message.widgetItem.widget}
         onAction={onWidgetAction}
+        disabled={widgetDisabled}
       />
     );
   }

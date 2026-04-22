@@ -28,6 +28,8 @@ images: {
     instrumentationHook: true,
   },
 
+
+  
   // webpack: (config) => {
   //   config.plugins.push(
   //     new (require('copy-webpack-plugin'))({

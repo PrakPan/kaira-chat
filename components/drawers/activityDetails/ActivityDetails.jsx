@@ -250,6 +250,29 @@ export default function ActivityDetails(props) {
       day: selectedDayNumber,
     };
 
+    // Chat-opened flow: route the booking intent up to the orchestrator via
+    // a widget action instead of calling the booking API directly. The chat
+    // runtime has the session context (itinerary id, dates) the drawer does
+    // not, so it's the correct place to actually book.
+    if (typeof props?.onAddToItinerary === "function") {
+      props.onAddToItinerary({
+        activity_id: props?.data?.id,
+        itinerary_city_id: props?.itinerary_city_id,
+        result_index: selectedPackage?.result_index,
+        start_date: convertToISODate(startDate),
+        day: selectedDayNumber,
+        number_of_adults: props?.filterState?.adults,
+        number_of_children: props?.filterState?.children,
+        children_ages: props?.filterState?.children_ages,
+        amenities: (props?.data?.amenities ?? [])
+          .filter((a) => a?.included)
+          .map((a) => a?.id),
+      });
+      setLoading(false);
+      props?.handleCloseDrawer(e);
+      return;
+    }
+
     props.updatedActivityBooking(bookingData).then(() => {
       setLoading(false);
       props?.handleCloseDrawer(e);
@@ -824,7 +847,7 @@ export default function ActivityDetails(props) {
         </div>
       )}
 
-      {!isDraft && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
+      {(!isDraft || typeof props?.onAddToItinerary === "function") && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
           <>
             {selectedPackage?.total_price && (
@@ -844,13 +867,11 @@ export default function ActivityDetails(props) {
             )}
           </>
 
-          {!isDraft && (
-            <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
-              Add to Itinerary
-            </button>
-          )}
+          <button onClick={handleUpdate} className="ttw-btn-fill-yellow">
+            Add to Itinerary
+          </button>
         </div>
-        {!isDraft && <div className={`flex justify-between items-center`}>
+        <div className={`flex justify-between items-center`}>
           <span className="text-[12px] font-normal">
             {" "}
             for { (props?.filterState.adults + props?.filterState?.children) || (itinerary?.number_of_adults + itinerary?.number_of_children)}{" "}
@@ -859,7 +880,7 @@ export default function ActivityDetails(props) {
           <div className="text-[14px] sm:text-[16px]">
             on {getHumanDate(startDate) || dateFormat(props?.date)}
           </div>
-        </div>}
+        </div>
       </div>}
     </div>
   );

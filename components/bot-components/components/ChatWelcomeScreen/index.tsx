@@ -172,28 +172,40 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
   const promptChips = [
     {
-      icon: "✈️",
-      label: "Plan a Bali Trip",
-      sublabel: "₹1.2L for 2",
-      prompt: "Plan a 7-day Bali trip for 2 people. Budget ₹1.2 lakh. Include beaches, temples, and at least one villa stay.",
-    },
-    {
-      icon: "🎲",
-      label: "Surprise Me",
-      sublabel: "4 Days, ₹80K",
-      prompt: "Surprise me with an offbeat trip. 4 days, budget ₹80,000. I like experiences over touristy places.",
-    },
-    {
-      icon: "🏕️",
-      label: "Rajasthan Desert Camp",
-      sublabel: "2 nights",
-      prompt: "Plan a 4-night Rajasthan trip. Desert camp in Jaisalmer, camel safari at golden hour, heritage hotel stay.",
-    },
-    {
-      icon: "🏖️",
-      label: "Best Beach in India this April",
+      icon: "🗾",
+      label: "Plan a 10-day Japan trip — temples, bullet trains, ryokans",
       sublabel: "",
-      prompt: "What are the best beaches in India to visit in April? I prefer fewer crowds. Suggest itinerary options.",
+      prompt: "Plan a 10-day Japan trip for 2 people. I want to cover Tokyo, Kyoto, and Osaka. Include bullet train travel, at least one ryokan stay, and key temples and food experiences. Suggest the best itinerary and budget.",
+    },
+    {
+      icon: "💍",
+      label: "Santorini or Amalfi Coast — which one for our honeymoon?",
+      sublabel: "",
+      prompt: "We are planning our honeymoon and deciding between Santorini and the Amalfi Coast. Can you compare both — best time to go, what to do, where to stay, and approximate budget for 7 nights for 2? Help us decide.",
+    },
+    {
+      icon: "🏰",
+      label: "Europe in summer — where should we actually go?",
+      sublabel: "",
+      prompt: "We want to do a Europe trip this summer but are not sure which country or combination works best. We have about 12 days and a budget of Rs 2L per person. Suggest the best Europe itinerary for us and explain why.",
+    },
+    {
+      icon: "🌌",
+      label: "Northern Lights — Iceland or Norway, and can we afford it?",
+      sublabel: "",
+      prompt: "I want to see the Northern Lights. Should I go to Iceland or Norway? What is the best time, what does it cost for an Indian traveller including flights, and what else is there to do beyond the lights? Give me a full picture.",
+    },
+    {
+      icon: "🌏",
+      label: "Best of Southeast Asia in 12 days — Vietnam, Thailand or both?",
+      sublabel: "",
+      prompt: "I have 12 days for a Southeast Asia trip. Should I do Vietnam, Thailand, or a combination of both? Budget is around Rs 1.2L per person. Suggest the best itinerary and tell me what I should not miss.",
+    },
+    {
+      icon: "✨",
+      label: "Take me somewhere in Asia I haven't thought of yet",
+      sublabel: "",
+      prompt: "Suggest an offbeat or underrated Asia destination that most Indian travellers have not explored yet. I want something with great experiences, good food, and preferably easy visa access. Budget flexible, around 8 to 10 days.",
     },
   ];
 
@@ -203,10 +215,10 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       onChange={setInputValue}
       onSubmit={handleSubmit}
       rotatePlaceholders={[
-        "Try:  Plan a Bali Trip",
-        "Try:  Best hill stations near Bangalore",
-        "Try:  La Tomatina trip from India",
-        "Try:  Surprise me — 4 days, ₹80K",
+        "Try:  Plan a 10-day Japan trip",
+        "Try:  Santorini or Amalfi for our honeymoon?",
+        "Try:  Northern Lights — Iceland or Norway?",
+        "Try:  Europe in summer — where should we go?",
       ]}
       showAttach={true}
       onFilesSelected={handleFilesSelected}
@@ -257,8 +269,8 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
           Tell me where you want to go — I'll handle the rest.
         </p>
 
-        {/* Prompt chips — 2-col grid on mobile, 1-col on desktop */}
-        <div className="w-full max-w-sm grid grid-cols-2 md:grid-cols-1 gap-2.5 mb-4 md:mb-6">
+        {/* Prompt chips — 2-col grid on mobile and desktop */}
+        <div className="w-full max-w-sm md:max-w-3xl grid grid-cols-2 gap-2.5 mb-4 md:mb-6">
           {promptChips.map((chip) => (
             <button
               key={chip.label}
@@ -267,7 +279,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             >
               <span className="text-xl md:text-lg flex-shrink-0">{chip.icon}</span>
               <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-sm font-semibold md:font-medium text-gray-900 line-clamp-2 md:truncate">{chip.label}</span>
+                <span className="text-sm font-semibold md:font-medium text-gray-900 line-clamp-2">{chip.label}</span>
                 {chip.sublabel && (
                   <span className="text-xs text-gray-400 mt-0.5">{chip.sublabel}</span>
                 )}
@@ -275,11 +287,11 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Input — desktop only inside scroll area (vertically centered with content) */}
-        <div className="md:block max-ph:hidden w-full max-w-[32rem] flex flex-col justify-end">
-          {inputBox}
-        </div>
+      {/* Input — desktop only, pinned at bottom (pb clears the TrustIndicators bar) */}
+      <div className="max-ph:hidden flex-shrink-0 bg-white px-6 pt-2 pb-[68px] flex justify-center">
+        <div className="w-full max-w-3xl">{inputBox}</div>
       </div>
 
       {/* Input — mobile only, pinned at bottom */}

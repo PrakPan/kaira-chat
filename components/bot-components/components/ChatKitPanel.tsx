@@ -1,17 +1,20 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import axios from "axios";
 import { useChat, generateSessionId, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
 import type { Location, BotMode } from "../types";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import LogInModal from "../../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import ActivityDetailsDrawer from "../../drawers/activityDetails/ActivityDetailsDrawer";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
+import { MERCURY_HOST } from "../../../services/constants";
+import { openNotification } from "../../../store/actions/notification";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -89,6 +92,8 @@ onInitialPromptConsumed?: () => void;
 sessionId?: string;
 isItineraryCompleting?: boolean;
 itineraryCompleted?: boolean;
+/** Fired when a Make Payment CTA is clicked inside a chat widget. */
+onPaymentStart?: () => void;
 }
 
 function useUserLocationData() {
@@ -219,6 +224,7 @@ onInitialPromptConsumed,
 sessionId: propSessionId,
 isItineraryCompleting = false,
 itineraryCompleted = false,
+onPaymentStart,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -232,6 +238,78 @@ itineraryCompleted = false,
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [postLoginLoading, setPostLoginLoading] = useState(false);
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  
+
+    // ── Auth ─────────────────────────────────────────────────────────────────
+  const reduxToken = useSelector((state: any) => state.auth.token);
+  const reduxUserId = useSelector((state: any) => state.auth.id);
+  const authToken = reduxToken ?? getAuthToken();
+  const isLoggedIn = !!authToken;
+
+  // Widget messages whose CTAs should render disabled. Populated when a user
+  // clicks a CTA (to prevent double-submission while the server processes the
+  // action) and when thread history loads (past interactions are frozen).
+  const [disabledWidgetIds, setDisabledWidgetIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const markWidgetDisabled = useCallback((id: string) => {
+    if (!id) return;
+    setDisabledWidgetIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  const dispatch = useDispatch();
+
+  // Shared helper for drawer CTAs opened from chat widgets. The chat flow
+  // used to round-trip through sendWidgetAction("*.add", …); we now call the
+  // real booking API directly so the itinerary updates without depending on
+  // the p2 chatkit handler. Success / failure is surfaced via the standard
+  // notification store.
+  const postBookingAction = useCallback(
+    async (
+      path: string,
+      body: Record<string, unknown>,
+      successText: string,
+    ) => {
+      if (!localItineraryId) return;
+      if (!authToken) {
+        setShowLoginModal(true);
+        return;
+      }
+      try {
+        await axios.post(
+          `${MERCURY_HOST}/api/v1/itinerary/${localItineraryId}/${path}`,
+          body,
+          { headers: { Authorization: `Bearer ${authToken}` } },
+        );
+        dispatch(
+          openNotification({
+            type: "success",
+            text: successText,
+            heading: "Success!",
+          }),
+        );
+      } catch (err: any) {
+        console.error("[Chat drawer booking] error:", err);
+        const msg =
+          err?.response?.data?.errors?.[0]?.message?.[0] ||
+          err?.message ||
+          "Something went wrong. Please try again.";
+        dispatch(
+          openNotification({
+            type: "error",
+            text: msg,
+            heading: "Error!",
+          }),
+        );
+      }
+    },
+    [localItineraryId, authToken, dispatch],
+  );
 
   // ── Detail Drawer State ─────────────────────────────────────────────────
   const [activityDrawer, setActivityDrawer] = useState<{
@@ -278,24 +356,29 @@ itineraryCompleted = false,
     >
   >({});
 
-  // Walk a widget tree and index any transfer.select click action by its edge
-  // id, inferring the mode from the nearest Badge.label sibling in the same
-  // card. This is a safety net: widget click payloads today only carry {id},
-  // and the display_transfers effect may not always pre-populate the map.
+  // Walk a widget tree and index any transfer.* click action by its id, so
+  // TransferEditDrawer can skip its mode-selection step when the user clicks.
+  // Handles three shapes:
+  //   • transfer.select — legacy, payload carries only { id }; mode inferred
+  //     from the nearest Badge.label in the enclosing card.
+  //   • transfer.view   — multi-segment payload with segments[]; use the
+  //     first segment's mode and capture origin/destination cities.
+  //   • transfer.detail — same segment shape as transfer.view.
   const indexEdgesFromWidget = useCallback((widget: any) => {
     if (!widget || typeof widget !== "object") return;
     const visit = (node: any, inheritedMode?: string) => {
       if (!node || typeof node !== "object") return;
       const kids = Array.isArray(node.children) ? node.children : [];
-      // Pre-scan siblings for a Badge label to use as mode context.
       let scopeMode = inheritedMode;
       for (const c of kids) {
         if (c?.type === "Badge" && typeof c.label === "string") {
           scopeMode = c.label;
         }
       }
-      if (node.onClickAction?.type === "transfer.select") {
-        const id = node.onClickAction?.payload?.id;
+      const actionType = node.onClickAction?.type as string | undefined;
+      const payload = node.onClickAction?.payload ?? {};
+      if (actionType === "transfer.select") {
+        const id = payload?.id;
         if (id && !transferEdgeMapRef.current[id]) {
           transferEdgeMapRef.current[id] = { mode: scopeMode || "" };
         } else if (
@@ -306,6 +389,42 @@ itineraryCompleted = false,
           transferEdgeMapRef.current[id] = {
             ...transferEdgeMapRef.current[id],
             mode: scopeMode,
+          };
+        }
+      } else if (
+        actionType === "transfer.view" ||
+        actionType === "transfer.detail"
+      ) {
+        const segments: any[] = Array.isArray(payload.segments)
+          ? payload.segments
+          : [];
+        const firstMode = segments[0]?.mode as string | undefined;
+        const dateRaw = (payload.transfer_date ??
+          payload.date ??
+          payload.startDate) as string | undefined;
+        const checkIn = dateRaw ? String(dateRaw).slice(0, 10) : undefined;
+        // Index every segment id and the payload id itself.
+        const ids = [
+          payload.id,
+          payload.bookingId,
+          payload.booking_id,
+          ...segments.map((s) => s?.id ?? s?.transfer_id),
+        ].filter(Boolean);
+        for (const id of ids) {
+          transferEdgeMapRef.current[id as string] = {
+            ...transferEdgeMapRef.current[id as string],
+            mode: firstMode ?? scopeMode ?? "",
+            from_city: payload.from_city as string | undefined,
+            to_city: payload.to_city as string | undefined,
+            from_city_id: (payload.origin_city_id ??
+              payload.originCityId) as string | undefined,
+            to_city_id: (payload.destination_city_id ??
+              payload.destinationCityId) as string | undefined,
+            from_itinerary_city_id: (payload.origin_itinerary_city_id ??
+              payload.originItineraryCityId) as string | undefined,
+            to_itinerary_city_id: (payload.destination_itinerary_city_id ??
+              payload.destinationItineraryCityId) as string | undefined,
+            check_in: checkIn,
           };
         }
       }
@@ -348,28 +467,31 @@ itineraryCompleted = false,
     }
   }, []);
 
-  // Hotel detail drawer (opened from "hotel.view" widget actions).
-  // The server currently emits only { id } in the payload, which is enough
-  // for AccommodationDetailDrawer to fetch its own data. Change-hotel
-  // context (check_in / check_out / itinerary_city_id / pax) is not part
-  // of the widget payload today — if/when the server starts including it,
-  // pipe it through here so the "Change Hotel" button can swap in place.
+  // Hotel detail drawer (opened from "hotel.view" / "hotel.detail" widget actions).
+  // The server can emit either:
+  //   • hotel.view    : { id, itineraryCityId, dbCityId, startDate, endDate, bookingId }
+  //   • hotel.detail  : { hotelId, itineraryCityId, dbCityId, startDate, endDate, ... }
+  // These drive AccommodationDetailDrawer and, in p2 stage, the Add/Change CTA.
   const [hotelDrawer, setHotelDrawer] = useState<{
     show: boolean;
     accommodationId?: string;
     itinerary_city_id?: string;
+    dbCityId?: string;
     check_in?: string;
     check_out?: string;
+    bookingId?: string;
   }>({ show: false });
 
-  // POI detail drawer — opened by "place.view" widget actions whose payload
-  // only carries { id } (no activity_id / itinerary_city_id). Those are POIs
-  // surfaced in chat (e.g. "Seminyak Beach" cards) rather than itinerary
-  // activities, so they render through POIDetailsDrawer in "poi" mode.
+  // POI / Restaurant detail drawer — opened by place.view / place.detail /
+  // restaurant.view / restaurant.detail widget actions. POIDetailsDrawer
+  // fetches data based on activityData.type ("poi" | "restaurant").
   const [poiDrawer, setPoiDrawer] = useState<{
     show: boolean;
     id?: string;
     name?: string;
+    kind?: "poi" | "restaurant";
+    itinerary_city_id?: string;
+    date?: string;
   }>({ show: false });
 
   // ── Pagination state ─────────────────────────────────────────────────────
@@ -377,6 +499,11 @@ itineraryCompleted = false,
   const hasMoreRef = useRef(false);
   const beforeCursorRef = useRef<string | null>(null);
   const isFetchingMoreRef = useRef(false);
+
+  // Tracks whether the user is pinned to the bottom of the message list. The
+  // auto-scroll effect only fires when this is true, so the transcript won't
+  // yank away from a user who's scrolled up to read earlier messages.
+  const isAtBottomRef = useRef(true);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -426,11 +553,7 @@ const sessionIdRef = useRef<string>((() => {
     ((effect: { name: string; data: Record<string, unknown> }) => void) | null
   >(null);
 
-  // ── Auth ─────────────────────────────────────────────────────────────────
-  const reduxToken = useSelector((state: any) => state.auth.token);
-  const reduxUserId = useSelector((state: any) => state.auth.id);
-  const authToken = reduxToken ?? getAuthToken();
-  const isLoggedIn = !!authToken;
+
 
   // ── Location ─────────────────────────────────────────────────────────────
   const { userLocationData, isLoadingLocation } = useUserLocationData();
@@ -612,6 +735,10 @@ const sendMessage = useCallback(
     setQuickReplies([]);
     lastSentMessageRef.current = text;
 
+    // User-initiated send: snap the view to the latest message even if they
+    // had scrolled up earlier in the session.
+    isAtBottomRef.current = true;
+
     if (isFirstMessageRef.current) {
       isFirstMessageRef.current = false;
     }
@@ -628,6 +755,9 @@ const sendMessage = useCallback(
   useEffect(() => {
     // Don't auto-scroll to bottom when older messages are being prepended
     if (isFetchingMoreRef.current) return;
+    // Respect the user's scroll position: if they've scrolled up to read
+    // earlier messages, don't yank the view back down while streaming.
+    if (!isAtBottomRef.current) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -812,6 +942,20 @@ useEffect(() => {
 
   if (restored.length > 0) setMessages(restored);
 
+  // Freeze CTAs on every widget restored from history — those interactions
+  // belong to a past session and shouldn't be re-clickable.
+  const restoredWidgetIds = restored
+    .filter((m) => (m as any).type === "widget")
+    .map((m) => m.id)
+    .filter((id): id is string => typeof id === "string" && id.length > 0);
+  if (restoredWidgetIds.length > 0) {
+    setDisabledWidgetIds((prev) => {
+      const next = new Set(prev);
+      for (const id of restoredWidgetIds) next.add(id);
+      return next;
+    });
+  }
+
   // Restore thread_id so subsequent messages work
   if (restoredThread.id) threadIdRef.current = restoredThread.id;
 
@@ -892,10 +1036,13 @@ useEffect(() => {
     }
   }, [authToken, parseThreadItems, setMessages]);
 
-  // Detect scroll near top → load more
+  // Detect scroll near top → load more. Also track whether the user is at
+  // the bottom so the auto-scroll effect can respect their position.
   const handleMessagesScroll = useCallback(() => {
     const c = messagesScrollRef.current;
     if (!c) return;
+    const distanceFromBottom = c.scrollHeight - c.scrollTop - c.clientHeight;
+    isAtBottomRef.current = distanceFromBottom < 80;
     if (c.scrollTop <= PAGINATION_SCROLL_THRESHOLD) {
       fetchOlderMessages();
     }
@@ -1173,62 +1320,171 @@ const handleShowLogin = useCallback(() => {
                 key={msg.id}
                 message={msg}
                 entities={entities}
+                widgetDisabled={
+                  msg.type === "widget" && disabledWidgetIds.has(msg.id)
+                }
                 onWidgetAction={(action) => {
+                  // Freeze this widget's CTAs the moment the user clicks one,
+                  // regardless of which drawer or server call it triggers. The
+                  // server response may take time and we don't want a double
+                  // submission.
+                  if (msg.type === "widget") markWidgetDisabled(msg.id);
+
+                  // ── Payment ───────────────────────────────────────────
+                  // Clicking "Make Payment" inside a widget opens the
+                  // existing payment drawer rather than round-tripping via
+                  // sendWidgetAction — the drawer owns the payment flow.
+                  if (action.type === "payment.start") {
+                    onPaymentStart?.();
+                    return;
+                  }
+
                   const payload = action.payload ?? {};
 
-                  // Intercept place.view → either activity or POI drawer.
-                  // Activity payloads carry activity_id/itinerary_city_id; POI
-                  // payloads only carry { id } and should open POIDetailsDrawer.
-                  if (action.type === "place.view") {
+                  // ── Activity ──────────────────────────────────────────
+                  // activity.view / activity.detail / open_activity_drawer
+                  // all route to ActivityDetailsDrawer. Field names differ
+                  // by variant — .view uses {id,itineraryCityId,startDate};
+                  // .detail and open_activity_drawer use {activityId,
+                  // itineraryCityId,startDate}. Accept either.
+                  if (
+                    action.type === "activity.view" ||
+                    action.type === "activity.detail" ||
+                    action.type === "open_activity_drawer"
+                  ) {
+                    const activityId = (payload.activityId ??
+                      payload.activity_id ??
+                      payload.id) as string;
+                    const itineraryCityId = (payload.itineraryCityId ??
+                      payload.itinerary_city_id ??
+                      payload.city_id) as string | undefined;
+                    const date = (payload.startDate ??
+                      payload.start_date ??
+                      payload.date) as string | undefined;
+                    setActivityDrawer({
+                      show: true,
+                      activityId,
+                      date,
+                      itinerary_city_id: itineraryCityId,
+                    });
+                    return;
+                  }
+
+                  // ── Place / POI ──────────────────────────────────────
+                  // place.view / place.detail open POIDetailsDrawer in "poi"
+                  // mode. Legacy widgets may send an activity_id — fall back
+                  // to ActivityDetailsDrawer only if explicit activity context
+                  // is present (preserves the older "place.view carrying
+                  // activity payload" behavior).
+                  if (
+                    action.type === "place.view" ||
+                    action.type === "place.detail" ||
+                    action.type === "open_poi_drawer" ||
+                    action.type === "open_place_drawer"
+                  ) {
                     const hasActivityContext =
                       payload.activity_id != null ||
-                      payload.itinerary_city_id != null ||
-                      payload.city_id != null ||
-                      payload.date != null;
+                      payload.activityId != null;
 
                     if (hasActivityContext) {
                       setActivityDrawer({
                         show: true,
-                        activityId: (payload.activity_id ?? payload.id) as string,
-                        date: payload.date as string,
-                        itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string,
+                        activityId: (payload.activityId ??
+                          payload.activity_id ??
+                          payload.id) as string,
+                        date: (payload.startDate ??
+                          payload.date) as string | undefined,
+                        itinerary_city_id: (payload.itineraryCityId ??
+                          payload.itinerary_city_id ??
+                          payload.city_id) as string | undefined,
                       });
                     } else {
                       setPoiDrawer({
                         show: true,
-                        id: (payload.id ?? payload.poi_id) as string,
-                        name: payload.name as string | undefined,
+                        kind: "poi",
+                        id: (payload.poiId ??
+                          payload.poi_id ??
+                          payload.id) as string,
+                        name: payload.title as string | undefined,
+                        itinerary_city_id: (payload.itineraryCityId ??
+                          payload.itinerary_city_id) as string | undefined,
+                        date: (payload.startDate ??
+                          payload.date) as string | undefined,
                       });
                     }
                     return;
                   }
 
-                  // Intercept transfer detail actions → open drawer
-                  if (action.type === "transfer.select") {
+                  // ── Restaurant ────────────────────────────────────────
+                  // restaurant.view / restaurant.detail share POIDetailsDrawer
+                  // but in "restaurant" mode (fetches /geos/restaurant/:id/).
+                  if (
+                    action.type === "restaurant.view" ||
+                    action.type === "restaurant.detail" ||
+                    action.type === "open_restaurant_drawer"
+                  ) {
+                    setPoiDrawer({
+                      show: true,
+                      kind: "restaurant",
+                      id: (payload.restaurantId ??
+                        payload.restaurant_id ??
+                        payload.id) as string,
+                      name: payload.title as string | undefined,
+                      itinerary_city_id: (payload.itineraryCityId ??
+                        payload.itinerary_city_id) as string | undefined,
+                      date: (payload.startDate ??
+                        payload.date) as string | undefined,
+                    });
+                    return;
+                  }
+
+                  // ── Transfer ──────────────────────────────────────────
+                  // transfer.select is the legacy single-edge payload.
+                  // transfer.view / transfer.detail are the richer multi-
+                  // segment payloads. All three open TransferEditDrawer.
+                  if (
+                    action.type === "transfer.select" ||
+                    action.type === "transfer.view" ||
+                    action.type === "transfer.detail" ||
+                    action.type === "open_transfer_drawer"
+                  ) {
                     const edgeId = (payload.id ?? payload.edge_id) as
                       | string
                       | undefined;
                     const indexed = edgeId
                       ? transferEdgeMapRef.current[edgeId]
                       : undefined;
-                    console.log("[transfer.select] click", {
-                      payload,
-                      edgeId,
-                      indexed,
-                      mapKeys: Object.keys(transferEdgeMapRef.current),
-                    });
                     const checkInRaw =
                       (payload.check_in as string | undefined) ??
+                      (payload.transfer_date as string | undefined) ??
                       (payload.date as string | undefined) ??
                       indexed?.check_in;
                     const checkIn = checkInRaw
                       ? String(checkInRaw).slice(0, 10)
                       : undefined;
+                    const segments = (payload.segments as any[] | undefined) ?? [];
+                    const firstSegmentMode = segments[0]?.mode as
+                      | string
+                      | undefined;
                     const initialMode =
-                      (payload.mode as string | undefined) ?? indexed?.mode;
+                      (payload.mode as string | undefined) ??
+                      firstSegmentMode ??
+                      indexed?.mode;
+                    const originCityId = (payload.origin_city_id ??
+                      payload.originCityId) as string | undefined;
+                    const destinationCityId = (payload.destination_city_id ??
+                      payload.destinationCityId) as string | undefined;
+                    const originItineraryCityId = (payload.origin_itinerary_city_id ??
+                      payload.originItineraryCityId) as string | undefined;
+                    const destinationItineraryCityId = (payload.destination_itinerary_city_id ??
+                      payload.destinationItineraryCityId) as string | undefined;
                     setTransferDrawer({
                       show: true,
-                      routeId: (payload.route_id ?? payload.id) as string,
+                      routeId: (payload.route_id ??
+                        payload.bookingId ??
+                        payload.booking_id ??
+                        payload.id ??
+                        edgeId) as string,
                       check_in: checkIn,
                       booking_type: (payload.booking_type ??
                         payload.type ??
@@ -1236,26 +1492,17 @@ const handleShowLogin = useCallback(() => {
                       initialEdgeId: edgeId,
                       initialMode,
                       isMercury: true,
-                      origin:
-                        (payload.origin_city_id as string | undefined) ??
-                        indexed?.from_city_id,
-                      destination:
-                        (payload.destination_city_id as string | undefined) ??
-                        indexed?.to_city_id,
-                      originCityId:
-                        (payload.origin_city_id as string | undefined) ??
-                        indexed?.from_city_id,
+                      origin: originCityId ?? indexed?.from_city_id,
+                      destination: destinationCityId ?? indexed?.to_city_id,
+                      originCityId: originCityId ?? indexed?.from_city_id,
                       destinationCityId:
-                        (payload.destination_city_id as string | undefined) ??
-                        indexed?.to_city_id,
+                        destinationCityId ?? indexed?.to_city_id,
                       origin_itinerary_city_id:
-                        (payload.origin_itinerary_city_id as
-                          | string
-                          | undefined) ?? indexed?.from_itinerary_city_id,
+                        originItineraryCityId ??
+                        indexed?.from_itinerary_city_id,
                       destination_itinerary_city_id:
-                        (payload.destination_itinerary_city_id as
-                          | string
-                          | undefined) ?? indexed?.to_itinerary_city_id,
+                        destinationItineraryCityId ??
+                        indexed?.to_itinerary_city_id,
                       city:
                         (payload.from_city as string | undefined) ??
                         indexed?.from_city,
@@ -1266,14 +1513,34 @@ const handleShowLogin = useCallback(() => {
                     return;
                   }
 
-                  // Intercept hotel detail actions → open AccommodationDetailDrawer
-                  if (action.type === "hotel.view") {
+                  // ── Hotel ─────────────────────────────────────────────
+                  // hotel.view is the list-card payload ({id,itineraryCityId,
+                  // dbCityId,startDate,endDate,bookingId}); hotel.detail is
+                  // the detail-card payload ({hotelId, ...}). Both open
+                  // AccommodationDetailDrawer.
+                  if (
+                    action.type === "hotel.view" ||
+                    action.type === "hotel.detail" ||
+                    action.type === "open_hotel_drawer"
+                  ) {
                     setHotelDrawer({
                       show: true,
-                      accommodationId: (payload.accommodation_id ?? payload.hotel_id ?? payload.id) as string,
-                      itinerary_city_id: (payload.itinerary_city_id ?? payload.city_id) as string | undefined,
-                      check_in: (payload.check_in ?? payload.date) as string | undefined,
-                      check_out: (payload.check_out) as string | undefined,
+                      accommodationId: (payload.hotelId ??
+                        payload.accommodation_id ??
+                        payload.hotel_id ??
+                        payload.id) as string,
+                      itinerary_city_id: (payload.itineraryCityId ??
+                        payload.itinerary_city_id ??
+                        payload.city_id) as string | undefined,
+                      dbCityId: (payload.dbCityId ??
+                        payload.db_city_id) as string | undefined,
+                      check_in: (payload.startDate ??
+                        payload.check_in ??
+                        payload.date) as string | undefined,
+                      check_out: (payload.endDate ??
+                        payload.check_out) as string | undefined,
+                      bookingId: (payload.bookingId ??
+                        payload.booking_id) as string | undefined,
                     });
                     return;
                   }
@@ -1432,6 +1699,10 @@ const handleShowLogin = useCallback(() => {
         )}
 
       {/* ── Activity Detail Drawer ──────────────────────────────────────── */}
+      {/* Opened by activity.view / activity.detail widget actions. The
+          onAddToItinerary callback routes the booking intent back to the
+          chat orchestrator via a widget action (the chat has the session
+          context the drawer does not). */}
       {activityDrawer.show && (
         <ActivityDetailsDrawer
           show={activityDrawer.show}
@@ -1444,6 +1715,20 @@ const handleShowLogin = useCallback(() => {
           showPackages={false}
           type={"activity"}
           itinerary_city_id={activityDrawer.itinerary_city_id}
+          onAddToItinerary={(payload: Record<string, unknown>) => {
+            void postBookingAction(
+              "bookings/activity/",
+              {
+                ...payload,
+                itinerary_city_id:
+                  (payload as any).itinerary_city_id ??
+                  activityDrawer.itinerary_city_id,
+                date: activityDrawer.date,
+              },
+              "Added activity to your itinerary",
+            );
+            setActivityDrawer({ show: false });
+          }}
         />
       )}
 
@@ -1474,45 +1759,92 @@ const handleShowLogin = useCallback(() => {
       )}
 
       {/* ── Hotel Detail Drawer ─────────────────────────────────────────── */}
-      {/* Opened by "hotel.view" widget actions. AccommodationDetailDrawer
-          fetches its own data given accommodationId. onChangeHotel currently
-          routes the intent back to the server via sendWidgetAction so the
-          assistant can offer the swap flow; if/when a client-side change-hotel
-          UI is wired up, replace the callback below. */}
+      {/* Opened by "hotel.view" / "hotel.detail" widget actions.
+          AccommodationDetailDrawer fetches its own data given accommodationId.
+          onChangeHotel / onAddHotel now call the itinerary booking API
+          directly instead of round-tripping through the chat orchestrator. */}
       {hotelDrawer.show && hotelDrawer.accommodationId && (
         <AccommodationDetailDrawer
           show={hotelDrawer.show}
           accommodationId={hotelDrawer.accommodationId}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
-            sendWidgetAction("hotel.change", {
-              id: hotelDrawer.accommodationId,
-              itinerary_city_id: hotelDrawer.itinerary_city_id,
-              check_in: hotelDrawer.check_in,
-              check_out: hotelDrawer.check_out,
-            });
+            void postBookingAction(
+              "hotel/change/",
+              {
+                id: hotelDrawer.accommodationId,
+                itinerary_city_id: hotelDrawer.itinerary_city_id,
+                db_city_id: hotelDrawer.dbCityId,
+                check_in: hotelDrawer.check_in,
+                check_out: hotelDrawer.check_out,
+                booking_id: hotelDrawer.bookingId,
+              },
+              "Hotel updated",
+            );
             setHotelDrawer({ show: false });
           }}
-          // Context required for the p2-stage "Add / Change" CTA. If the
-          // server doesn't include these in the hotel.view payload yet they'll
-          // be undefined and the drawer falls back to any existing booking.
+          onAddHotel={() => {
+            void postBookingAction(
+              "hotel/add/",
+              {
+                id: hotelDrawer.accommodationId,
+                itinerary_city_id: hotelDrawer.itinerary_city_id,
+                db_city_id: hotelDrawer.dbCityId,
+                check_in: hotelDrawer.check_in,
+                check_out: hotelDrawer.check_out,
+              },
+              "Added hotel to your itinerary",
+            );
+            setHotelDrawer({ show: false });
+          }}
+          // Context required for the p2-stage "Add / Change" CTA.
           itinerary_city_id={hotelDrawer.itinerary_city_id}
           check_in={hotelDrawer.check_in}
           check_out={hotelDrawer.check_out}
+          bookingId={hotelDrawer.bookingId}
           setShowLoginModal={setShowLoginModal}
         />
       )}
 
-      {/* ── POI Detail Drawer ───────────────────────────────────────────── */}
+      {/* ── POI / Restaurant Detail Drawer ──────────────────────────────── */}
+      {/* Opened by place.view / place.detail / restaurant.view /
+          restaurant.detail. The `kind` prop switches POIDetailsDrawer between
+          poi-mode (/geos/poi/:id/) and restaurant-mode (/geos/restaurant/:id/).
+          onAddToItinerary routes "<kind>.add" back to the chat so the
+          assistant can book the element into the itinerary. */}
       {poiDrawer.show && poiDrawer.id && (
         <POIDetailsDrawer
           show={poiDrawer.show}
           iconId={poiDrawer.id}
           id={poiDrawer.id}
           name={poiDrawer.name}
-          activityData={{ type: "poi", id: poiDrawer.id }}
+          activityData={{ type: poiDrawer.kind ?? "poi", id: poiDrawer.id }}
+          itinerary_city_id={poiDrawer.itinerary_city_id}
+          date={poiDrawer.date}
           removeDelete={true}
           removeChange={true}
+          showAddToItinerary={true}
+          onAddToItinerary={() => {
+            const kind = poiDrawer.kind ?? "poi";
+            const path = kind === "restaurant" ? "restaurant/add/" : "poi/add/";
+            const body: Record<string, unknown> = {
+              itinerary_city_id: poiDrawer.itinerary_city_id,
+              date: poiDrawer.date,
+              day_by_day_index: 0,
+              ...(kind === "restaurant"
+                ? { restaurant_id: poiDrawer.id }
+                : { poi_id: poiDrawer.id }),
+            };
+            void postBookingAction(
+              path,
+              body,
+              kind === "restaurant"
+                ? "Added restaurant to your itinerary"
+                : "Added place to your itinerary",
+            );
+            setPoiDrawer({ show: false });
+          }}
+          setShowLoginModal={setShowLoginModal}
           handleCloseDrawer={() => setPoiDrawer({ show: false })}
         />
       )}

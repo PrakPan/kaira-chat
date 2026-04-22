@@ -279,6 +279,7 @@ const ActivityDetailsDrawer = (props) => {
               hotel_pickup_included={hotelPickupIncluded}
               isBotQuery={props?.isBotQuery}
               showPackages={props?.showPackages}
+              onAddToItinerary={props?.onAddToItinerary}
             />
           ) : (
             <ActivityDetailsSkeleton
