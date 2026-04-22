@@ -105,20 +105,33 @@ const starRating = (rating) => {
  * AccommodationDetailDrawer
  *
  * Props:
- *  show            {boolean}   — controls drawer visibility
- *  onHide          {function}  — close handler
- *  accommodationId {string}    — UUID passed to the API
- *  onChangeHotel   {function}  — called when "Change Hotel" is clicked
- *  setShowLoginModal {function}
- *  _setImagesHandler {function} — opens full-screen gallery
+ *  show               {boolean}  — controls drawer visibility
+ *  onHide             {function} — close handler
+ *  accommodationId    {string}   — UUID passed to the API
+ *  onChangeHotel      {function} — called when "Change Hotel" is clicked
+ *  onAddHotel         {function} — called when "Add to Itinerary" is clicked
+ *                                   (chat-opened flow). When provided, an
+ *                                   "Add to Itinerary" CTA is rendered.
+ *  itinerary_city_id  {string}   — chat-opened context, forwarded to caller
+ *  check_in           {string}   — chat-opened context
+ *  check_out          {string}   — chat-opened context
+ *  bookingId          {string}   — present when the hotel is already booked
+ *                                   in the itinerary; suppresses "Add" CTA.
+ *  setShowLoginModal  {function}
+ *  _setImagesHandler  {function} — opens full-screen gallery
  */
 const AccommodationDetailDrawer = ({
   show,
   onHide,
   accommodationId,
   onChangeHotel,
+  onAddHotel,
+  itinerary_city_id,
+  check_in,
+  check_out,
+  bookingId,
   setShowLoginModal,
-  _setImagesHandler,
+  _setImagesHandler = undefined,
 }) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const dispatch = useDispatch();
@@ -529,6 +542,48 @@ const AccommodationDetailDrawer = ({
             </div>
           </div>
 }
+
+        {/* Bottom CTA bar — chat-opened flow. Renders "Add to Itinerary" when
+            no booking exists yet, or "Change Hotel" when there's already a
+            booking for this city+dates. Both callbacks emit a widget action
+            to the chat orchestrator; they do not book directly. */}
+        {data && (onAddHotel || onChangeHotel) && (
+          <div
+            className="fixed bottom-0 left-0 right-0 md:absolute flex items-center justify-between gap-3 border-t-2 bg-white px-[20px] py-[12px] shadow-md"
+            style={{ zIndex: 50 }}
+          >
+            <div className="flex flex-col">
+              {check_in && check_out && (
+                <span className="text-[12px] text-text-spacegrey">
+                  {check_in} → {check_out}
+                </span>
+              )}
+              {data.price_lower_range_ext && (
+                <span className="text-[14px] font-semibold">
+                  From {data.currency} {Math.round(data.price_lower_range_ext).toLocaleString()}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {onChangeHotel && bookingId && (
+                <button
+                  onClick={onChangeHotel}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-[14px] font-medium text-gray-800 hover:bg-gray-50"
+                >
+                  Change Hotel
+                </button>
+              )}
+              {onAddHotel && !bookingId && (
+                <button
+                  onClick={onAddHotel}
+                  className="ttw-btn-fill-yellow"
+                >
+                  Add to Itinerary
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
       </Container>
     </Drawer>

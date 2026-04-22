@@ -834,6 +834,28 @@ const POIDetails = (props) => {
                   </div>
                 </button>
               )}
+
+              {/* Chat-opened flow: "Add to Itinerary" CTA. Emits a widget
+                  action up to ChatKitPanel so the assistant can book the
+                  POI/restaurant into the itinerary. */}
+              {props?.showAddToItinerary && props?.onAddToItinerary && (
+                <button
+                  className="ttw-btn-fill-yellow"
+                  onClick={() => {
+                    if (!token) {
+                      props?.setShowLoginModal?.(true);
+                      return;
+                    }
+                    props.onAddToItinerary({
+                      id: props?.data?.id,
+                      itinerary_city_id: props?.itinerary_city_id,
+                      date: props?.date,
+                    });
+                  }}
+                >
+                  Add to Itinerary
+                </button>
+              )}
             </div>
           </div>
 

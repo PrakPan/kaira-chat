@@ -1,6 +1,7 @@
 import React, { useState, useContext, createContext } from "react";
 import { PiAirplaneTakeoff } from "react-icons/pi";
 import { useSelector } from "react-redux";
+import { currencySymbols } from "../../../data/currencySymbols";
 
 // ─── Widget environment context ───────────────────────────────────────────────
 // Carries ambient data (e.g. botMode) down to individual cards without
@@ -22,6 +23,19 @@ function useItineraryState(): any {
   } catch {
     return null;
   }
+}
+
+// Returns the display name of the itinerary_city whose id matches the given
+// itineraryCityId. Used by RestaurantCard to render "1.8 km from Kyoto city
+// center" etc. Returns "" when the city isn't in Redux (restored threads
+// without an active itinerary, ambiguous ids, …) so callers can gracefully
+// fall back to "from city center".
+function useCityNameById(itineraryCityId?: string): string {
+  const itinerary = useItineraryState();
+  if (!itineraryCityId) return "";
+  const cities: any[] | undefined = itinerary?.cities;
+  const match = cities?.find((c) => c?.id === itineraryCityId);
+  return (match?.city?.name as string) ?? (match?.name as string) ?? "";
 }
 
 // Build a generic booking payload from the Redux itinerary + a specific id.
@@ -58,7 +72,48 @@ interface WidgetNode {
 interface WidgetRendererProps {
   widget: Record<string, unknown>;
   onAction?: (action: { type: string; payload?: Record<string, unknown> }) => void;
+  /**
+   * When true, every CTA inside this widget (list cards, preview card, payment
+   * button, generic <Button> nodes) is disabled. Used for historical widgets
+   * restored from threads.get_by_id and for widgets whose CTA has already
+   * been clicked.
+   */
+  disabled?: boolean;
 }
+
+// ─── Disabled-action context ──────────────────────────────────────────────────
+// MessageBubble sets this to `true` for widgets whose CTAs should not be
+// clickable — either because the user already clicked a flow-gating CTA
+// (e.g. confirm-route, confirm-itinerary) or because the widget was restored
+// from thread history (past interactions are frozen). Individual buttons
+// read the flag and render as disabled.
+const DisabledActionContext = createContext<boolean>(false);
+
+// Actions that must stay clickable even when the widget is "disabled" — the
+// user should always be able to re-open a detail drawer (activity / POI /
+// restaurant / hotel / transfer), tap a list card, or retry payment.
+const ALWAYS_ENABLED_ACTIONS = new Set<string>([
+  "activity.view",
+  "activity.detail",
+  "open_activity_drawer",
+  "place.view",
+  "place.detail",
+  "open_poi_drawer",
+  "open_place_drawer",
+  "poi.view",
+  "poi.detail",
+  "restaurant.view",
+  "restaurant.detail",
+  "open_restaurant_drawer",
+  "hotel.view",
+  "hotel.detail",
+  "open_hotel_drawer",
+  "transfer.view",
+  "transfer.detail",
+  "transfer.select",
+  "open_transfer_drawer",
+  "payment.start",
+]);
 
 // ─── Form Context ─────────────────────────────────────────────────────────────
 
@@ -390,13 +445,34 @@ function findNodesByType(node: WidgetNode, type: string): WidgetNode[] {
   return results;
 }
 
-// Formats a price string like "₹4386.0" or "$45390.15" with locale-appropriate commas.
-// INR (₹) → Indian grouping (1,23,456); others → international grouping (123,456).
-function formatPriceString(raw: string): string {
-  const match = raw.match(/([₹$€£])\s*([\d.,]+)/);
+// A price text is a short, self-contained amount — either "₹129.46", "$200",
+// "USD 16,238.88" or just "16238.88". Anything with currency context or a
+// plain decimal number with very few words around it. Used to tell prices
+// apart from descriptions / titles.
+const PRICE_TEXT_RE = /^\s*(?:[₹$€£]|[A-Z]{3})?\s*[\d][\d,]*(?:\.\d+)?\s*$/;
+
+// Reads the itinerary currency held on Cart (aligned with booking), falling
+// back to the global currency slice. Returns the matching glyph so every card
+// can show a uniform symbol regardless of what the server embedded in the
+// widget's raw text.
+function useItineraryCurrencySymbol(): string {
+  const code = useSelector(
+    (s: any) => s?.Cart?.currency ?? s?.currency?.currency ?? null,
+  ) as string | null;
+  if (code && (currencySymbols as Record<string, string>)[code]) {
+    return (currencySymbols as Record<string, string>)[code];
+  }
+  return "₹";
+}
+
+// Formats a price string. Strips whatever currency prefix the server sent —
+// symbol or 3-letter ISO code — and re-renders with the supplied symbol and
+// locale-appropriate grouping. INR → Indian grouping (1,23,456); everything
+// else → international grouping (123,456).
+function formatPriceString(raw: string, symbol: string = "₹"): string {
+  const match = raw.match(/(?:[₹$€£]|[A-Z]{3})?\s*([\d.,]+)/);
   if (!match) return raw;
-  const symbol = match[1];
-  const numStr = match[2].replace(/,/g, "");
+  const numStr = match[1].replace(/,/g, "");
   const num = parseFloat(numStr);
   if (isNaN(num)) return raw;
   const rounded = Math.round(num);
@@ -585,8 +661,8 @@ function TransportListView({
 function isActivityListView(children: WidgetNode[]): boolean {
   return children.some((item) => {
     const texts = extractAllTexts(item);
-    // Activity items have a price text like "₹5740.0" or "$200" and an image
-    const hasPrice = texts.some((t) => /[₹$€£]\s*[\d,]+/.test(t));
+    // Activity items have a short price text (in any currency) and an image
+    const hasPrice = texts.some((t) => PRICE_TEXT_RE.test(t));
     const hasImage = JSON.stringify(item).includes('"Image"');
     return hasPrice && hasImage;
   });
@@ -599,15 +675,16 @@ function ActivityCard({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   const imgAltMatch = raw.match(/"alt"\s*:\s*"([^"]+)"/);
   const imgAlt = imgAltMatch?.[1] ?? "";
 
+  const symbol = useItineraryCurrencySymbol();
   const texts = extractAllTexts(node);
-  const title = texts.find((t) => t.length > 20 && !/[₹$€£]/.test(t) && !/[•·]/.test(t)) ?? "";
-  const category = texts.find((t) => t.length > 2 && t.length < 30 && !/[₹$€£\d★]/.test(t) && t !== title) ?? "";
+  const title = texts.find((t) => t.length > 20 && !PRICE_TEXT_RE.test(t) && !/[•·]/.test(t)) ?? "";
+  const category = texts.find((t) => t.length > 2 && t.length < 30 && !PRICE_TEXT_RE.test(t) && !/[\d★]/.test(t) && t !== title) ?? "";
   const ratingText = texts.find((t) => /^\d\.\d+/.test(t)) ?? "";
   const rating = parseFloat(ratingText) || 0;
-  const priceText = texts.find((t) => /[₹$€£]\s*[\d,]+/.test(t)) ?? "";
-  const priceFormatted = formatPriceString(priceText);
+  const priceText = texts.find((t) => PRICE_TEXT_RE.test(t)) ?? "";
+  const priceFormatted = priceText ? formatPriceString(priceText, symbol) : "";
   const unitLabel = extractUnitLabel(texts);
-  const description = texts.find((t) => t.length > 50 && t !== title && !/[₹$€£]/.test(t)) ?? "";
+  const description = texts.find((t) => t.length > 50 && t !== title && !PRICE_TEXT_RE.test(t)) ?? "";
   const stars = Array.from({ length: 5 }, (_, i) =>
   i < Math.round(rating) ? (
     <svg
@@ -791,9 +868,17 @@ function findClickActionType(node: WidgetNode): string | undefined {
   return undefined;
 }
 
+function isRestaurantListView(children: WidgetNode[]): boolean {
+  return children.some((item) => {
+    const actionType = findClickActionType(item);
+    return actionType === "restaurant.view" || actionType === "restaurant.detail";
+  });
+}
+
 function isPoiListView(children: WidgetNode[]): boolean {
   return children.some((item) => {
-    if (findClickActionType(item) === "place.view") return true;
+    const actionType = findClickActionType(item);
+    if (actionType === "place.view" || actionType === "place.detail") return true;
     const raw = JSON.stringify(item);
     const hasDiscoveryBadge = /"color"\s*:\s*"discovery"/.test(raw);
     const hasMapPin = /"name"\s*:\s*"map-pin"/.test(raw);
@@ -858,7 +943,7 @@ function PoiCard({
   // Description (long text node, not title, not price)
   const descriptionNode = textNodes.find((t) => {
     const v = ((t.value as string) ?? "").trim();
-    return v.length > 30 && v !== name && !/[₹$€£]/.test(v);
+    return v.length > 30 && v !== name && !PRICE_TEXT_RE.test(v);
   });
   const description = ((descriptionNode?.value as string) ?? "").trim();
 
@@ -1029,6 +1114,225 @@ function PoiListView({
   );
 }
 
+// ─── Restaurant cards ──────────────────────────────────────────────────────────
+// Visually similar to POI cards but drive the restaurant-mode POIDetailsDrawer.
+// Detection is by onClickAction type (restaurant.view / restaurant.detail).
+
+function RestaurantCard({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  const textNodes = findNodesByType(node, "Text");
+  const imageNodes = findNodesByType(node, "Image");
+  const badgeNodes = findNodesByType(node, "Badge");
+
+  const name = ((titleNodes[0]?.value as string) ?? "").trim();
+
+  const ratingCaption = captionNodes.find((c) => /^\s*\d/.test((c.value as string) ?? ""));
+  const ratingRaw = ((ratingCaption?.value as string) ?? "").trim();
+  const ratingMatch = ratingRaw.match(/^([\d.]+)\s*(?:\(([\d,]+)\))?/);
+  const ratingValue = ratingMatch ? parseFloat(ratingMatch[1]) : 0;
+
+  const categoryBadges = badgeNodes.filter((b) => {
+    const color = b.color as string | undefined;
+    return color === "discovery" || color === "accent";
+  });
+
+  const distanceBadge = badgeNodes.find((b) => {
+    const label = b.label;
+    const color = b.color as string | undefined;
+    return color === "info" && (typeof label === "number" || /^[\d.]+$/.test(String(label ?? "")));
+  });
+  const distanceValue = distanceBadge ? String(distanceBadge.label) : "";
+
+  const descriptionNode = textNodes.find((t) => {
+    const v = ((t.value as string) ?? "").trim();
+    return v.length > 30 && v !== name && !PRICE_TEXT_RE.test(v);
+  });
+  const description = ((descriptionNode?.value as string) ?? "").trim();
+
+  const imgSrc = (imageNodes[0]?.src as string) ?? "";
+  const imgAlt = (imageNodes[0]?.alt as string) ?? name;
+
+  const clickAction = node.onClickAction as
+    | { type: string; payload?: Record<string, unknown> }
+    | undefined;
+
+  // The restaurant distance arrives as a raw number in a badge (e.g. 1.82).
+  // We surface the itinerary city it belongs to so the badge reads as
+  // "1.8 km from Kyoto city center" instead of a bare number.
+  const clickPayload = clickAction?.payload ?? {};
+  const itineraryCityId =
+    ((clickPayload as any).itineraryCityId as string | undefined) ??
+    ((clickPayload as any).itinerary_city_id as string | undefined);
+  const cityName = useCityNameById(itineraryCityId);
+
+  // Cuisine / restaurantType caption — short string, not rating / not address
+  const cuisineCaption = captionNodes.find((c) => {
+    const v = ((c.value as string) ?? "").trim();
+    if (!v) return false;
+    if (/^\d/.test(v)) return false;
+    if (/★/.test(v)) return false;
+    if (/^\(/.test(v)) return false;
+    return v.length <= 30;
+  });
+  const cuisine = (cuisineCaption?.value as string) ?? "";
+
+  const tags: string[] = [];
+  if (cuisine) tags.push(cuisine);
+  for (const b of categoryBadges) {
+    const label = String(b.label ?? b.value ?? "");
+    if (label && !tags.includes(label)) tags.push(label);
+  }
+
+  return (
+    <div
+      onClick={() => clickAction && onAction?.(clickAction)}
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        padding: "14px 16px",
+        cursor: clickAction ? "pointer" : "default",
+        width: "100%",
+        marginBottom: 12,
+        transition: "border-color 0.15s, box-shadow 0.15s",
+        boxSizing: "border-box",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+      }}
+    >
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          {(name || ratingValue > 0) && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {name && (
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 600,
+                    color: "var(--color-text-primary)",
+                    lineHeight: 1.3,
+                    fontFamily: "'Inter', sans-serif",
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  {name}
+                </div>
+              )}
+              {/* {ratingValue > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 3, flexShrink: 0 }}>
+                  <StarFilledIcon size={13} />
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#374957",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {ratingValue.toFixed(1)}
+                  </span>
+                </div>
+              )} */}
+            </div>
+          )}
+
+          {tags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {tags.map((t, i) => (
+                <ColorfulTag key={i} label={t} index={i} offset={hashLabel(name)} />
+              ))}
+            </div>
+          )}
+
+          {(name || tags.length > 0) && (description || distanceValue) && (
+            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+          )}
+
+          {description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: "var(--color-text-secondary)",
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {description}
+            </p>
+          )}
+
+          {distanceValue && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MapPinIcon size={14} color="#6b7280" />
+              <span
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#0369a1",
+                  background: "#e0f2fe",
+                  padding: "2px 8px",
+                  borderRadius: 9999,
+                  fontFamily: "'Inter', sans-serif",
+                  border: "1px solid #BAE6FD",
+                }}
+              >
+                {distanceValue} km
+                {cityName ? ` from ${cityName} city center` : " from city center"}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {imgSrc && (
+          <div className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center">
+            <img
+              src={imgSrc}
+              alt={imgAlt}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RestaurantListView({
+  node,
+  onAction,
+}: {
+  node: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const children = (node.children ?? []) as WidgetNode[];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
+      {children.map((item, idx) => (
+        <RestaurantCard key={(item.key as string) ?? idx} node={item} onAction={onAction} />
+      ))}
+    </div>
+  );
+}
+
 // ─── Hotel cards ───────────────────────────────────────────────────────────────
 //
 // A ListView is a "hotel list" when items contain a building icon, a "Per Night"
@@ -1052,6 +1356,7 @@ function HotelCard({
   node: WidgetNode;
   onAction?: WidgetRendererProps["onAction"];
 }) {
+  const symbol = useItineraryCurrencySymbol();
   const titleNodes = findNodesByType(node, "Title");
   const captionNodes = findNodesByType(node, "Caption");
   const textNodes = findNodesByType(node, "Text");
@@ -1079,13 +1384,13 @@ function HotelCard({
 
   const descriptionNode = textNodes.find((t) => {
     const v = ((t.value as string) ?? "").trim();
-    return v.length > 40 && !/[₹$€£]/.test(v);
+    return v.length > 40 && !PRICE_TEXT_RE.test(v);
   });
   const description = (descriptionNode?.value as string) ?? "";
 
-  const priceNode = textNodes.find((t) => /[₹$€£]\s*[\d.,]+/.test((t.value as string) ?? ""));
+  const priceNode = textNodes.find((t) => PRICE_TEXT_RE.test((t.value as string) ?? ""));
   const priceRaw = (priceNode?.value as string) ?? "";
-  const priceFormatted = formatPriceString(priceRaw);
+  const priceFormatted = priceRaw ? formatPriceString(priceRaw, symbol) : "";
 
   const allTextValues: string[] = [
     ...captionNodes.map((n) => (n.value as string) ?? ""),
@@ -1461,12 +1766,23 @@ function ButtonNode({
   onAction?: WidgetRendererProps["onAction"];
 }) {
   const form = useFormContext();
+  const widgetDisabled = useContext(DisabledActionContext);
   const {
     label, iconStart, variant = "solid",
     color = "default", pill, onClickAction, submit,
   } = node;
 
+  // "View Details" / activity / POI / restaurant / hotel / transfer / payment
+  // CTAs stay clickable even after the widget is marked disabled. Only flow-
+  // gating CTAs (route.lock, itinerary.lock, generic actions) get frozen.
+  const actionType = (onClickAction as any)?.type as string | undefined;
+  const isProtectedAction = actionType
+    ? ALWAYS_ENABLED_ACTIONS.has(actionType)
+    : false;
+  const disabled = widgetDisabled && !isProtectedAction && !submit;
+
   const handleClick = () => {
+    if (disabled) return;
     // Form submit button — serialize form values as comma-separated string
     if (submit && form?.submitAction) {
       const csv = Object.entries(form.values)
@@ -1487,6 +1803,10 @@ function ButtonNode({
     }
   };
 
+  const disabledStyle = disabled
+    ? { opacity: 0.55, cursor: "not-allowed" as const, filter: "grayscale(0.15)" }
+    : {};
+
   // ── ··· reorder handle — hidden, space reclaimed ──
   if (iconStart === "dots-horizontal") {
     return null;
@@ -1495,11 +1815,12 @@ function ButtonNode({
   // ── notebook-pencil edit ──
   if (iconStart === "notebook-pencil") {
     return (
-      <button onClick={handleClick} style={{
+      <button onClick={handleClick} disabled={disabled} style={{
         width: 36, height: 36, borderRadius: 8,
         border: "none", background: "transparent",
         display: "flex", alignItems: "center", justifyContent: "center",
         color: "#374151", cursor: "pointer", outline: "none",
+        ...disabledStyle,
       }}>
         <NotebookPencilIcon />
       </button>
@@ -1509,7 +1830,7 @@ function ButtonNode({
   // ── check-circle submit ──
   if (iconStart === "check-circle" || submit) {
     return (
-      <button onClick={handleClick} style={{
+      <button onClick={handleClick} disabled={disabled} style={{
         display: "flex", alignItems: "center", gap: 6,
         padding: "10px 20px",
         borderRadius: pill ? "9999px" : 10,
@@ -1519,6 +1840,7 @@ function ButtonNode({
         fontSize: 14, fontWeight: 600,
         fontFamily: "'Inter', sans-serif",
         cursor: "pointer", outline: "none",
+        ...disabledStyle,
       }}>
         {iconStart === "check-circle" && <CheckCircleIcon />}
         {label as string}
@@ -1536,6 +1858,7 @@ function ButtonNode({
     return (
       <button
         onClick={handleClick}
+        disabled={disabled}
         style={{
           padding: "12px 20px",
           borderRadius: "8px",
@@ -1549,6 +1872,7 @@ function ButtonNode({
           fontFamily: "'Inter', sans-serif",
           cursor: "pointer",
           outline: "none",
+          ...disabledStyle,
         }}
       >
         {label as string}
@@ -1560,6 +1884,7 @@ function ButtonNode({
   return (
     <button
       onClick={handleClick}
+      disabled={disabled}
       style={{
         padding: "12px 20px",
         borderRadius: "8px",
@@ -1573,6 +1898,7 @@ function ButtonNode({
         fontFamily: "'Inter', sans-serif",
         cursor: "pointer",
         outline: "none",
+        ...disabledStyle,
       }}
     >
       {label as string}
@@ -1829,6 +2155,12 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
     return <HotelListView node={node} onAction={onAction} />;
   }
 
+  // Restaurant cards — checked before POI so restaurant.view doesn't fall into
+  // the POI branch when the card happens to carry a discovery badge + map-pin.
+  if (isRestaurantListView(children)) {
+    return <RestaurantListView node={node} onAction={onAction} />;
+  }
+
   // Delegate to activity card design when items contain activity data (price + image)
   if (isActivityListView(children)) {
     return <ActivityListView node={node} onAction={onAction} />;
@@ -1870,9 +2202,685 @@ function ListViewNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetR
   );
 }
 
+// ─── Element preview card ─────────────────────────────────────────────────────
+// Server sometimes emits a Card wrapping a single element (activity / hotel /
+// POI / restaurant / transfer) with a "View & Add to Itinerary" button. The
+// button's onClickAction.type is one of open_activity_drawer /
+// open_hotel_drawer / open_poi_drawer / open_restaurant_drawer /
+// open_transfer_drawer. We render it as a polished preview with an element-
+// typed header, colored tag for the category, description, and a prominent
+// full-width CTA — instead of the generic "just render the children" card.
+
+const OPEN_DRAWER_ACTIONS = new Set([
+  "open_activity_drawer",
+  "open_hotel_drawer",
+  "open_poi_drawer",
+  "open_place_drawer",
+  "open_restaurant_drawer",
+  "open_transfer_drawer",
+  // Newer detail/view variants emitted by the chat widgets for a single
+  // activity / restaurant / place / hotel / transfer preview card.
+  "activity.detail",
+  "activity.view",
+  "restaurant.detail",
+  "restaurant.view",
+  "place.detail",
+  "place.view",
+  "hotel.detail",
+  "hotel.view",
+  "transfer.detail",
+  "transfer.view",
+]);
+
+function findOpenDrawerButton(node: WidgetNode): WidgetNode | null {
+  if (
+    node.type === "Button" &&
+    typeof (node.onClickAction as any)?.type === "string" &&
+    OPEN_DRAWER_ACTIONS.has((node.onClickAction as any).type)
+  ) {
+    return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findOpenDrawerButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function findPaymentButton(node: WidgetNode): WidgetNode | null {
+  if (
+    node.type === "Button" &&
+    (node.onClickAction as any)?.type === "payment.start"
+  ) {
+    return node;
+  }
+  for (const child of (node.children ?? []) as WidgetNode[]) {
+    const hit = findPaymentButton(child);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+// Crisp SVG glyphs keep the header consistent across browsers (emoji renders
+// differently on macOS / Windows / Linux and often looks cartoony).
+const ELEMENT_ICONS: Record<string, React.ReactNode> = {
+  activity: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+    </svg>
+  ),
+  hotel: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21V8l9-5 9 5v13" />
+      <path d="M9 21V12h6v9" />
+    </svg>
+  ),
+  place: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 1 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  ),
+  restaurant: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v8a3 3 0 0 0 3 3v7" />
+      <path d="M6 3v8" />
+      <path d="M9 3v8" />
+      <path d="M15 21V3c-2.5 0-4 2.5-4 5s1.5 5 4 5" />
+    </svg>
+  ),
+  transfer: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V15a1 1 0 0 0 1 1h2" />
+      <circle cx="6.5" cy="16.5" r="2.5" />
+      <circle cx="16.5" cy="16.5" r="2.5" />
+    </svg>
+  ),
+};
+
+const ELEMENT_HEADER_THEME: Record<
+  string,
+  { label: string; iconKey: keyof typeof ELEMENT_ICONS; bg: string; accent: string }
+> = {
+  open_activity_drawer: {
+    label: "Activity",
+    iconKey: "activity",
+    bg: "#FEF3C7",
+    accent: "#92400E",
+  },
+  open_hotel_drawer: {
+    label: "Stay",
+    iconKey: "hotel",
+    bg: "#DBEAFE",
+    accent: "#1E40AF",
+  },
+  open_poi_drawer: {
+    label: "Place",
+    iconKey: "place",
+    bg: "#D1FAE5",
+    accent: "#065F46",
+  },
+  open_place_drawer: {
+    label: "Place",
+    iconKey: "place",
+    bg: "#D1FAE5",
+    accent: "#065F46",
+  },
+  open_restaurant_drawer: {
+    label: "Dining",
+    iconKey: "restaurant",
+    bg: "#FCE7F3",
+    accent: "#9D174D",
+  },
+  open_transfer_drawer: {
+    label: "Transfer",
+    iconKey: "transfer",
+    bg: "#EDE9FE",
+    accent: "#5B21B6",
+  },
+  // Mirror the themes for the new *.detail / *.view action variants so
+  // ElementPreviewCard can look them up without special-casing.
+  "activity.detail":   { label: "Activity", iconKey: "activity", bg: "#FEF3C7", accent: "#92400E" },
+  "activity.view":     { label: "Activity", iconKey: "activity", bg: "#FEF3C7", accent: "#92400E" },
+  "hotel.detail":      { label: "Stay",     iconKey: "hotel",    bg: "#DBEAFE", accent: "#1E40AF" },
+  "hotel.view":        { label: "Stay",     iconKey: "hotel",    bg: "#DBEAFE", accent: "#1E40AF" },
+  "place.detail":      { label: "Place",    iconKey: "place",    bg: "#D1FAE5", accent: "#065F46" },
+  "place.view":        { label: "Place",    iconKey: "place",    bg: "#D1FAE5", accent: "#065F46" },
+  "restaurant.detail": { label: "Dining",   iconKey: "restaurant", bg: "#FCE7F3", accent: "#9D174D" },
+  "restaurant.view":   { label: "Dining",   iconKey: "restaurant", bg: "#FCE7F3", accent: "#9D174D" },
+  "transfer.detail":   { label: "Transfer", iconKey: "transfer", bg: "#EDE9FE", accent: "#5B21B6" },
+  "transfer.view":     { label: "Transfer", iconKey: "transfer", bg: "#EDE9FE", accent: "#5B21B6" },
+};
+
+// Icon chip: circular badge (colored bg) + inline SVG + label. Used both in
+// the header (no image) and as an overlay pill (image). Scales visually at
+// two sizes — "md" for the standalone header, "sm" for the image overlay.
+function ElementIconChip({
+  theme,
+  size = "md",
+  floating = false,
+}: {
+  theme: { label: string; iconKey: keyof typeof ELEMENT_ICONS; bg: string; accent: string };
+  size?: "sm" | "md";
+  floating?: boolean;
+}) {
+  const isSm = size === "sm";
+  return (
+    <></>
+    // <span
+    //   style={{
+    //     display: "inline-flex",
+    //     alignItems: "center",
+    //     gap: 6,
+    //     padding: isSm ? "4px 10px 4px 4px" : "4px 12px 4px 4px",
+    //     borderRadius: 9999,
+    //     background: floating ? "rgba(255,255,255,0.96)" : "#ffffff",
+    //     border: "1px solid rgba(17,24,39,0.08)",
+    //     boxShadow: floating ? "0 2px 8px rgba(0,0,0,0.12)" : "none",
+    //     fontFamily: "'Inter', sans-serif",
+    //     fontWeight: 600,
+    //     fontSize: isSm ? 11 : 12,
+    //     color: theme.accent,
+    //     letterSpacing: 0.2,
+    //   }}
+    // >
+    //   <span
+    //     style={{
+    //       width: isSm ? 20 : 22,
+    //       height: isSm ? 20 : 22,
+    //       borderRadius: "50%",
+    //       background: theme.bg,
+    //       color: theme.accent,
+    //       display: "inline-flex",
+    //       alignItems: "center",
+    //       justifyContent: "center",
+    //       flexShrink: 0,
+    //     }}
+    //   >
+    //     {ELEMENT_ICONS[theme.iconKey]}
+    //   </span>
+    //   {theme.label}
+    // </span>
+  );
+}
+
+function ElementPreviewCard({
+  node,
+  button,
+  onAction,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  const actionType = (button.onClickAction as any).type as string;
+  const theme = ELEMENT_HEADER_THEME[actionType] ?? ELEMENT_HEADER_THEME.open_activity_drawer;
+
+  const titleNodes = findNodesByType(node, "Title");
+  const captionNodes = findNodesByType(node, "Caption");
+  // Caption / Text values can come through as strings, arrays (tag lists for
+  // POI cards), numbers or null — normalise to a trimmed string before we run
+  // regex or string ops against them.
+  const asText = (raw: unknown): string => {
+    if (typeof raw === "string") return raw.trim();
+    if (typeof raw === "number") return String(raw);
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === "string" ? v : typeof v === "number" ? String(v) : ""))
+        .filter(Boolean)
+        .join(" · ")
+        .trim();
+    }
+    return "";
+  };
+  // Same thing but preserves array values as separate tag labels. POI Caption
+  // nodes arrive as string[] (e.g. ["Cultural Deep-Dive", "Story-Rich",
+  // "Shopping & Souvenirs"]) and we want to render each as its own pill.
+  const asTags = (raw: unknown): string[] => {
+    if (Array.isArray(raw)) {
+      return raw
+        .map((v) => (typeof v === "string" ? v.trim() : typeof v === "number" ? String(v) : ""))
+        .filter(Boolean);
+    }
+    const s = asText(raw);
+    return s ? [s] : [];
+  };
+
+  const textNodes = findNodesByType(node, "Text").filter(
+    (t) => !/^View\s*(&|and)\s*Add/i.test(asText(t.value)),
+  );
+  const imageNodes = findNodesByType(node, "Image");
+
+  const payload = (button.onClickAction as any).payload ?? {};
+  const title = asText(titleNodes[0]?.value) || asText(payload.title);
+  // Prefer an explicit array from the Caption node (POI widgets send one).
+  // Otherwise fall back to the string caption, or the payload's category /
+  // restaurantType / tags fields. `tags` is an array of strings on place.*
+  // payloads and should also be treated as separate pills.
+  const tags = ((): string[] => {
+    const captionTags = asTags(captionNodes[0]?.value);
+    if (captionTags.length > 0) return captionTags;
+    if (Array.isArray((payload as any).tags)) return asTags((payload as any).tags);
+    const cat = asText(payload.category) || asText(payload.restaurantType);
+    return cat ? [cat] : [];
+  })();
+  const description =
+    textNodes
+      .map((t) => asText(t.value))
+      .find((v) => v.length > 0) || asText(payload.description);
+  // Prefer an explicit <Image> node when the server renders one, but the
+  // newer *.detail / *.view cards put the hero image on the button payload
+  // instead — fall back to that so the preview still shows a thumbnail.
+  const imgSrc = asText(imageNodes[0]?.src) || asText(payload.image);
+
+  const buttonLabel = (button.label as string) ?? "View & Add to Itinerary";
+
+  // "View Details" / "View & Add to Itinerary" CTAs stay clickable regardless
+  // of the ambient DisabledActionContext — they only re-open a drawer.
+  const handleClick = () => {
+    onAction?.({ type: actionType, payload });
+  };
+
+  return (
+    <div
+      style={{
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        borderRadius: 16,
+        padding: "14px 16px",
+        width: "100%",
+        marginTop: 10,
+        marginBottom: 4,
+        boxSizing: "border-box",
+        transition: "border-color 0.15s, box-shadow 0.15s",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#111827";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e5e5";
+        (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+      }}
+    >
+      <div className="flex flex-col-reverse sm:flex-row gap-3 items-stretch">
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+          {title && (
+            <div
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: "#111827",
+                lineHeight: 1.3,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {title}
+            </div>
+          )}
+
+          {tags.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {tags.map((tag, i) => (
+                <ColorfulTag
+                  key={`${tag}-${i}`}
+                  label={tag}
+                  index={i}
+                  offset={hashLabel(title || tag)}
+                />
+              ))}
+            </div>
+          )}
+
+          {(title || tags.length > 0) && description && (
+            <div style={{ height: "0.5px", background: "#e5e5e5" }} />
+          )}
+
+          {description && (
+            <p
+              style={{
+                fontSize: 13,
+                color: "#4b5563",
+                lineHeight: 1.55,
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                margin: 0,
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              {description}
+            </p>
+          )}
+
+          <button
+            onClick={handleClick}
+            style={{
+              marginTop: 4,
+              alignSelf: "flex-start",
+              padding: "8px 14px",
+              borderRadius: 8,
+              background: "transparent",
+              border: "1px solid #111827",
+              color: "#111827",
+              fontSize: 13,
+              fontWeight: 600,
+              fontFamily: "'Inter', sans-serif",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "background 0.15s, color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "#111827";
+              (e.currentTarget as HTMLButtonElement).style.color = "#ffffff";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+              (e.currentTarget as HTMLButtonElement).style.color = "#111827";
+            }}
+          >
+            {buttonLabel}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+        </div>
+
+        {imgSrc && (
+          <div
+            className="w-full h-40 sm:w-[120px] sm:h-[120px] shrink-0 rounded-xl overflow-hidden self-center"
+            style={{ position: "relative" }}
+          >
+            <img
+              src={imgSrc}
+              alt={title || theme.label}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+            {/* keep the tiny floating chip hook — currently renders nothing */}
+            <div style={{ position: "absolute", top: 6, left: 6 }}>
+              <ElementIconChip theme={theme} size="sm" floating />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Payment preview card ────────────────────────────────────────────────────
+// Server emits a Card containing a "Make Payment" button with
+// onClickAction.type === "payment.start". Render it with a polished
+// Total / Paid / Due summary and swap any USD/EUR/… prefixes for the symbol
+// of the itinerary currency (state.Cart.currency → currencySymbols).
+
+function parsePaymentRows(
+  node: WidgetNode,
+): Array<{ label: string; amount: string }> {
+  const rows = findNodesByType(node, "Row");
+  for (const row of rows) {
+    const cols = ((row.children ?? []) as WidgetNode[]).filter(
+      (c) => c.type === "Col",
+    );
+    if (cols.length < 2) continue;
+    const items: Array<{ label: string; amount: string }> = [];
+    for (const col of cols) {
+      const kids = (col.children ?? []) as WidgetNode[];
+      const captionValue = kids.find((c) => c.type === "Caption")?.value as
+        | string
+        | undefined;
+      const textValue = kids.find((c) => c.type === "Text")?.value as
+        | string
+        | undefined;
+      if (captionValue && textValue) {
+        items.push({ label: captionValue, amount: textValue });
+      }
+    }
+    if (items.length >= 2) return items;
+  }
+  return [];
+}
+
+// "USD 16,238.88" → { code: "USD", amount: "16,238.88" }.  Falls back to the
+// raw value if the amount doesn't start with a 3-letter ISO code.
+function splitCurrencyAmount(
+  raw: string,
+): { code: string | null; amount: string } {
+  const m = raw.trim().match(/^([A-Z]{3})\s*([\d.,]+)$/);
+  if (m) return { code: m[1], amount: m[2] };
+  return { code: null, amount: raw.trim() };
+}
+
+function PaymentCard({
+  node,
+  button,
+  onAction,
+}: {
+  node: WidgetNode;
+  button: WidgetNode;
+  onAction?: WidgetRendererProps["onAction"];
+}) {
+  // Use the shared helper so the payment card shows the same currency glyph
+  // every other card uses (Cart.currency → currencySymbols).
+  const symbol = useItineraryCurrencySymbol();
+
+  const payload = (button.onClickAction as any).payload ?? {};
+  const rows = parsePaymentRows(node);
+
+  const titleNode = findNodesByType(node, "Title")[0];
+  const title = ((titleNode?.value as string) ?? "Complete Your Booking").trim();
+  const buttonLabel = (button.label as string) ?? "Make Payment";
+
+  // Payment CTAs stay active regardless of the widget-disabled context — the
+  // user should always be able to retry or open the drawer.
+  const handlePay = () => {
+    onAction?.({ type: "payment.start", payload });
+  };
+
+  // Pick an accent color per row label so "Balance Due" stands out.
+  const accentFor = (label: string) => {
+    const l = label.toLowerCase();
+    if (l.includes("due") || l.includes("balance")) return "#B45309";
+    if (l.includes("paid")) return "#047857";
+    return "#111827";
+  };
+
+  return (
+    <div
+      style={{
+        marginTop: 10,
+        width: "100%",
+        borderRadius: 18,
+        border: "1px solid #FDE68A",
+        background: "linear-gradient(135deg, #FFFDF5 0%, #FEF3C7 100%)",
+        boxShadow: "0 6px 20px rgba(234, 179, 8, 0.10)",
+        overflow: "hidden",
+        fontFamily: "'Inter', sans-serif",
+        boxSizing: "border-box",
+      }}
+    >
+      <div style={{ padding: "16px 18px 4px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 6,
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              background: "#FDE68A",
+              color: "#92400E",
+              flexShrink: 0,
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="6" width="18" height="13" rx="2" />
+              <path d="M3 10h18" />
+              <path d="M7 15h3" />
+            </svg>
+          </span>
+          <div
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: "#111827",
+              lineHeight: 1.2,
+            }}
+          >
+            {title}
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${Math.max(rows.length, 1)}, minmax(0, 1fr))`,
+          gap: 12,
+          padding: "6px 18px 14px",
+        }}
+      >
+        {rows.map((r, i) => {
+          const parsed = splitCurrencyAmount(r.amount);
+          return (
+            <div
+              key={i}
+              style={{
+                background: "#ffffff",
+                border: "1px solid rgba(17,24,39,0.06)",
+                borderRadius: 12,
+                padding: "10px 12px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                minWidth: 0,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: "#6B7280",
+                  textTransform: "uppercase",
+                  letterSpacing: 0.4,
+                }}
+              >
+                {r.label}
+              </div>
+              <div
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: accentFor(r.label),
+                  lineHeight: 1.2,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                <span style={{ marginRight: 2 }}>{symbol}</span>
+                {parsed.amount}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{ padding: "0 18px 16px" }}>
+        <button
+          onClick={handlePay}
+          style={{
+            width: "100%",
+            padding: "12px 16px",
+            background: "#111827",
+            color: "#ffffff",
+            border: "none",
+            borderRadius: 12,
+            fontSize: 14,
+            fontWeight: 600,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            transition: "background 0.15s",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "#1F2937";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = "#111827";
+          }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <path d="M2 10h20" />
+          </svg>
+          {buttonLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function CardNode({ node, onAction }: { node: WidgetNode; onAction?: WidgetRendererProps["onAction"] }) {
+  // Payment preview (Complete Your Booking) comes before the drawer check so
+  // we never misroute a payment card into the element preview renderer.
+  const paymentButton = findPaymentButton(node);
+  if (paymentButton) {
+    return <PaymentCard node={node} button={paymentButton} onAction={onAction} />;
+  }
+
+  // Detect the "element preview card" pattern and render with the polished
+  // design above instead of the generic passthrough.
+  const drawerButton = findOpenDrawerButton(node);
+  if (drawerButton) {
+    return <ElementPreviewCard node={node} button={drawerButton} onAction={onAction} />;
+  }
+
   const children = (node.children ?? []) as WidgetNode[];
   const size = node.size as string | undefined;
   const customPadding = node.padding as number | undefined;
@@ -1939,10 +2947,12 @@ function NodeRenderer({
 
 // ─── Public export ────────────────────────────────────────────────────────────
 
-export function WidgetRenderer({ widget, onAction }: WidgetRendererProps) {
+export function WidgetRenderer({ widget, onAction, disabled = false }: WidgetRendererProps) {
   return (
-    <div style={{ paddingBottom: 4 }} className="w-full">
-      <NodeRenderer node={widget as WidgetNode} onAction={onAction} />
-    </div>
+    <DisabledActionContext.Provider value={disabled}>
+      <div style={{ paddingBottom: 4 }} className="w-full">
+        <NodeRenderer node={widget as WidgetNode} onAction={onAction} />
+      </div>
+    </DisabledActionContext.Provider>
   );
 }

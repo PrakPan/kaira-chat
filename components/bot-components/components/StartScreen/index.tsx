@@ -18,24 +18,27 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
   const allTrips = [
     {
       image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Beach + Spa vacation.jpg",
-      label: "Romantic Beach Escape",
+        "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1600",
+      label: "Japan — Summer Season",
+      tags: "Premium · Honeymoon",
       prompt:
-        "Plan a romantic beach trip for 2. Suggest the best destinations — Maldives, Bali, or Goa — for 5–7 nights. Include stay options and things to do as a couple.",
+        "Plan a summer trip to Japan for 2 people in July or August. I want to see Mount Fuji at dawn, experience Kyoto's Gion Matsuri festival, feel Tokyo's Shibuya energy, and explore Osaka's food alleys. Suggest the best 10-day itinerary, stays, and budget.",
     },
     {
       image:
-        "https://images.unsplash.com/photo-1540202404-1b927e27fa8b?w=1600",
-      label: "Southeast Asia on a Budget",
+        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600",
+      label: "Greece — Island Hopping",
+      tags: "Iconic · Couples",
       prompt:
-        "I want to plan a Southeast Asia trip on a budget. Cover Bali, Thailand, or Vietnam — or a mix. Suggest the best 10–12 day itinerary with approximate costs for flights, stays, and food.",
+        "Plan a Greek islands trip for a couple. I want Santorini sunsets, Mykonos beaches, the Athens Acropolis, and ferry rides between the islands. Suggest the best 10-day itinerary with stays and budget.",
     },
     {
       image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Luxury Spa Retreat.jpg",
-      label: "Total Unplug — Wellness Retreat",
+        "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1600",
+      label: "Australia & New Zealand",
+      tags: "Adventure · Scenic",
       prompt:
-        "I need a proper digital detox and wellness retreat. Suggest the best options in India or internationally — yoga, spa, nature — where I can completely switch off for 4–6 nights.",
+        "Plan an Australia and New Zealand trip. Include Sydney Harbour, the Great Barrier Reef, Queenstown mountains, and Milford Sound fjords. Suggest the best itinerary across both countries, stays, and budget.",
     },
     {
       image:
@@ -85,6 +88,58 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
       sublabel: "Fewer crowds, better villa prices",
       prompt:
         "Plan a 7-day Bali trip for April. Rice terraces, uncrowded temple, villa stay, and beach time. What's the best itinerary and budget?",
+    },
+  ];
+
+  // ── TTW Running Campaign Themes — 6 cards ────────────────────────────────
+  const campaignThemes = [
+    {
+      image:
+        "https://images.unsplash.com/photo-1519741497674-611481863552?w=1600",
+      label: "Perfect Proposals",
+      sublabel: "Say Yes Spots",
+      prompt:
+        "I am planning a marriage proposal trip. Suggest the most romantic destinations — international or India — with a beautiful setting, ideas to make it memorable, and where to stay. Budget is flexible.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600",
+      label: "Honeymoon Trip Planner",
+      sublabel: "Romantic Escapes",
+      prompt:
+        "Plan a honeymoon trip for 2. Ask me our preferred vibe — beach, mountains, Europe, or Southeast Asia — and our budget, then suggest the best destination and a full itinerary.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600",
+      label: "Road Trips 2025",
+      sublabel: "Drive Diaries",
+      prompt:
+        "I want to plan a road trip. Ask me where I am based and how many days I have — then suggest the best route with stops, stays, and driving distances.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600",
+      label: "Europe Under Rs 1 Lakh",
+      sublabel: "Big Trips, Small Budget",
+      prompt:
+        "I want to plan a Europe trip under Rs 1 lakh. Which countries are most budget-friendly? Suggest a 10 to 12 day itinerary with flights, stays, and transport all within budget.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1600",
+      label: "Japan in Autumn",
+      sublabel: "Golden Gateways",
+      prompt:
+        "Plan a 10-day Japan trip for autumn. I want to see the fall foliage, visit Tokyo and Kyoto, experience local food culture, and stay in a mix of hotels and a ryokan. Suggest the best itinerary and budget.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600",
+      label: "The Great Migration — Kenya",
+      sublabel: "Wildlife Bucket List",
+      prompt:
+        "I want to see the Great Migration in Kenya. When is the best time, which lodges are worth it, and what does a full Kenya safari trip cost for an Indian traveller? Plan it for me.",
     },
   ];
 
@@ -234,6 +289,38 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
           </div>
         </div>
 
+        {/* ── TTW's Trending Themes — 6 campaign cards ─────────────────────── */}
+        <div
+          style={{
+            animation: mounted ? "fadeSlideUp 0.5s ease-out 460ms forwards" : "none",
+            opacity: mounted ? undefined : 0,
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xl">🎯</span>
+            <h2
+              className="text-lg font-semibold text-gray-900"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              TTW's Trending Themes
+            </h2>
+          </div>
+          <div
+            className="flex gap-3 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {campaignThemes.map((trip, index) => (
+              <TrendingCard
+                key={`theme-${index}`}
+                trip={trip}
+                delay={460 + index * 50}
+                mounted={mounted}
+                onSelect={onPromptSelect}
+              />
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );
@@ -241,7 +328,7 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
 
 // ── TripCard (unchanged behaviour, updated data flows through) ──────────────
 interface TripCardProps {
-  trip: { image: string; label: string; prompt: string };
+  trip: { image: string; label: string; prompt: string; tags?: string };
   delay: number;
   mounted: boolean;
   onSelect: (prompt: string) => void;
@@ -285,6 +372,19 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
             "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)",
         }}
       />
+      {trip.tags && (
+        <div
+          className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
+          style={{
+            background: "rgba(255,255,255,0.92)",
+            color: "#07213A",
+            fontFamily: "Inter",
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          {trip.tags}
+        </div>
+      )}
       <div className="absolute bottom-3 left-3 right-3 text-left">
         <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
           {trip.label}

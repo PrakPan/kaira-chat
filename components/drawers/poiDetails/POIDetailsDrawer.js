@@ -208,7 +208,7 @@ const POIDetailsDrawer = (props) => {
       {!loading ? (
         error == null ? (
           <>
-            {props?.activityData?.type != "poi" ? (
+            {props?.activityData?.type != "poi" && props?.activityData?.type != "restaurant" ? (
               <>
                 <ActivityDetails
                   version={props?.version}
@@ -225,7 +225,7 @@ const POIDetailsDrawer = (props) => {
                   showCallback={props?.showCallback}
                   setIsModalOpen={props?.setIsModalOpen}
                   type={props?.activityData?.type}
-                  
+
                 >
                   {props?.children}
                 </ActivityDetails>
@@ -248,6 +248,9 @@ const POIDetailsDrawer = (props) => {
                   name={props.name}
                   cityName={props?.cityName}
                   removeChange={props?.removeChange}
+                  showAddToItinerary={props?.showAddToItinerary}
+                  onAddToItinerary={props?.onAddToItinerary}
+                  kind={props?.activityData?.type}
                 >
                   {props.children}
                 </POIDetails>
