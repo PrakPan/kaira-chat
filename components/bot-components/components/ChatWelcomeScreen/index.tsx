@@ -173,37 +173,37 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
   const promptChips = [
     {
       icon: "🗾",
-      label: "Plan a 10-day Japan trip — temples, bullet trains, ryokans",
+      label: "Plan a 10-day Japan trip",
       sublabel: "",
       prompt: "Plan a 10-day Japan trip for 2 people. I want to cover Tokyo, Kyoto, and Osaka. Include bullet train travel, at least one ryokan stay, and key temples and food experiences. Suggest the best itinerary and budget.",
     },
     {
       icon: "💍",
-      label: "Santorini or Amalfi Coast — which one for our honeymoon?",
+      label: "Santorini or Amalfi Coast",
       sublabel: "",
       prompt: "We are planning our honeymoon and deciding between Santorini and the Amalfi Coast. Can you compare both — best time to go, what to do, where to stay, and approximate budget for 7 nights for 2? Help us decide.",
     },
     {
       icon: "🏰",
-      label: "Europe in summer — where should we actually go?",
+      label: "Europe in summer",
       sublabel: "",
       prompt: "We want to do a Europe trip this summer but are not sure which country or combination works best. We have about 12 days and a budget of Rs 2L per person. Suggest the best Europe itinerary for us and explain why.",
     },
     {
       icon: "🌌",
-      label: "Northern Lights — Iceland or Norway, and can we afford it?",
+      label: "Northern Lights — Iceland or Norway",
       sublabel: "",
       prompt: "I want to see the Northern Lights. Should I go to Iceland or Norway? What is the best time, what does it cost for an Indian traveller including flights, and what else is there to do beyond the lights? Give me a full picture.",
     },
     {
       icon: "🌏",
-      label: "Best of Southeast Asia in 12 days — Vietnam, Thailand or both?",
+      label: "Best of Southeast Asia in 12 days",
       sublabel: "",
       prompt: "I have 12 days for a Southeast Asia trip. Should I do Vietnam, Thailand, or a combination of both? Budget is around Rs 1.2L per person. Suggest the best itinerary and tell me what I should not miss.",
     },
     {
       icon: "✨",
-      label: "Take me somewhere in Asia I haven't thought of yet",
+      label: "Take me somewhere in Asia",
       sublabel: "",
       prompt: "Suggest an offbeat or underrated Asia destination that most Indian travellers have not explored yet. I want something with great experiences, good food, and preferably easy visa access. Budget flexible, around 8 to 10 days.",
     },

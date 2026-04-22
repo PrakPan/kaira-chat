@@ -94,6 +94,26 @@ isItineraryCompleting?: boolean;
 itineraryCompleted?: boolean;
 /** Fired when a Make Payment CTA is clicked inside a chat widget. */
 onPaymentStart?: () => void;
+/** Static traveller-story intro rendered inside the chat. When present, the
+ *  detail card is shown above real messages and its CTAs send the
+ *  corresponding prompt through the /chatkit p1 API. Not posted to the bot. */
+travellerStory?: TravellerStoryIntro | null;
+onTravellerStoryDismiss?: () => void;
+}
+
+export interface TravellerStoryIntro {
+  id: number;
+  name: string;
+  tripName: string;
+  duration: string;
+  groupType: string;
+  destinations: string[];
+  image: string;
+  images?: string[];
+  shortDescription: string;
+  viewItineraryLink: string;
+  rating: number;
+  prompt: string;
 }
 
 function useUserLocationData() {
@@ -225,6 +245,8 @@ sessionId: propSessionId,
 isItineraryCompleting = false,
 itineraryCompleted = false,
 onPaymentStart,
+travellerStory = null,
+onTravellerStoryDismiss,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -1315,6 +1337,16 @@ const handleShowLogin = useCallback(() => {
                 <span className="ml-2 text-xs text-gray-400">Loading older messages…</span>
               </div>
             )}
+            {travellerStory && messages.length === 0 && (
+              <TravellerStoryIntroCard
+                story={travellerStory}
+                disabled={isStreaming || isItineraryCompleting}
+                onBookExact={() => {
+                  sendMessage(travellerStory.prompt);
+                  onTravellerStoryDismiss?.();
+                }}
+              />
+            )}
             {messages.map((msg) => (
               <MessageBubble
                 key={msg.id}
@@ -1851,3 +1883,155 @@ const handleShowLogin = useCallback(() => {
     </div>
   );
 }
+
+// ── Traveller Story intro — static CTA card shown at the top of the chat ────
+// Rendered only when `travellerStory` is set and the chat has no messages yet.
+// CTAs route through `sendMessage`, which sends the prompt to the /chatkit p1
+// endpoint exactly like any user-initiated message.
+
+// Image with a shimmering skeleton placeholder while the bitmap loads. Keyed
+// on src so rapid switches between stories reset the loading state instead of
+// briefly displaying the previous image underneath the new one.
+interface SkeletonImageProps {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+const SkeletonImage: React.FC<SkeletonImageProps> = ({ src, alt, width, height }) => {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    setLoaded(false);
+  }, [src]);
+
+  return (
+    <div
+      className="relative flex-shrink-0 overflow-hidden rounded-xl"
+      style={{ width, height, background: "#E5E7EB" }}
+    >
+      {!loaded && (
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(90deg, #E5E7EB 0%, #F3F4F6 50%, #E5E7EB 100%)",
+            backgroundSize: "200% 100%",
+            animation: "travellerSkeletonShimmer 1.2s ease-in-out infinite",
+          }}
+        />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        className="w-full h-full object-cover"
+        style={{
+          opacity: loaded ? 1 : 0,
+          transition: "opacity 0.25s ease",
+        }}
+      />
+      <style>{`
+        @keyframes travellerSkeletonShimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+interface TravellerStoryIntroCardProps {
+  story: TravellerStoryIntro;
+  disabled: boolean;
+  onBookExact: () => void;
+}
+
+const TravellerStoryIntroCard: React.FC<TravellerStoryIntroCardProps> = ({
+  story,
+  disabled,
+  onBookExact,
+}) => {
+  const gallery = story.images && story.images.length > 0 ? story.images : [story.image];
+
+  return (
+    <div className="mb-4">
+      {/* Image gallery */}
+      <div
+        className="flex gap-2 overflow-x-auto pb-1"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {gallery.map((src, i) => (
+          <SkeletonImage
+            key={`${story.id}-img-${i}`}
+            src={src}
+            alt={`${story.tripName} ${i + 1}`}
+            width={260}
+            height={190}
+          />
+        ))}
+      </div>
+
+      {/* Traveller info row */}
+      <div className="flex items-center justify-start gap-2 mt-3 mb-3">
+        <div
+          className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-[12px] font-semibold text-[#07213A]"
+          style={{ background: "#E5E7EB" }}
+        >
+          {story.name.charAt(0)}
+        </div>
+        <div className="min-w-0">
+          <p className="text-[13px] font-semibold text-[#07213A] leading-tight truncate m-0">
+            {story.name}
+          </p>
+          <p className="text-[11px] text-gray-500 mt-[1px] truncate m-0">
+            {story.duration} · {story.destinations.join(" · ")}
+          </p>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p className="mt-2 text-[12.5px] leading-[18px] text-[#374151] bg-[#FAFAFA] p-2 rounded-lg" style={{ fontFamily: "'Inter', sans-serif" }}>
+        {story.shortDescription}
+      </p>
+
+      {/* CTAs */}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <a
+          href={disabled ? undefined : story.viewItineraryLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            if (disabled) e.preventDefault();
+          }}
+          className="px-4 py-[8px] rounded-lg text-[12px] font-semibold transition-colors"
+          style={{
+            background: "#fff",
+            border: "1px solid #0B1E36",
+            color: "#0B1E36",
+            opacity: disabled ? 0.5 : 1,
+            pointerEvents: disabled ? "none" : "auto",
+            textDecoration: "none",
+          }}
+        >
+          View Itinerary
+        </a>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onBookExact}
+          className="px-4 py-[8px] rounded-lg text-[12px] font-semibold transition-colors"
+          style={{
+            background: "#0B1E36",
+            border: "1px solid #0B1E36",
+            color: "#fff",
+            opacity: disabled ? 0.5 : 1,
+            cursor: disabled ? "not-allowed" : "pointer",
+          }}
+        >
+          Book Exactly This
+        </button>
+      </div>
+    </div>
+  );
+};

@@ -9,7 +9,7 @@ import { ChatKitPanel } from "./components/ChatKitPanel";
 import MapView from "./components/MapView";
 import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
-import StartScreen from "./components/StartScreen";
+import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
@@ -138,6 +138,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const mapRef = useRef<google.maps.Map | null>(null);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<string[] | undefined>(undefined);
+  const [activeTravellerStory, setActiveTravellerStory] = useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
   const dispatch = useDispatch();
 
@@ -1094,6 +1095,14 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     }
   };
 
+  // Open the traveller-story detail view inside ChatKitPanel without pushing a
+  // message to the bot. CTAs on that detail view will call handlePromptSelect
+  // which routes through the /chatkit p1 API.
+  const handleTravellerStorySelect = useCallback((story: TravellerStory) => {
+    setActiveTravellerStory(story);
+    setIsChatActive(true);
+  }, []);
+
   const handleSendMessage = useCallback((message: string) => {
     if (sendMessageRef.current) sendMessageRef.current(message);
   }, []);
@@ -1126,6 +1135,8 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
     // Route "Make Payment" CTAs from in-chat widgets to the existing
     // payment drawer instead of the generic widget-action fallback.
     onPaymentStart: openPaymentDrawer,
+    travellerStory: activeTravellerStory,
+    onTravellerStoryDismiss: () => setActiveTravellerStory(null),
   };
 
   const handleConfirmItinerary = (details: any) => {
@@ -1413,7 +1424,10 @@ Start Location: ${details.startLocation}`;
               opacity: showStartScreen && leftPanelMode === "default" ? 1 : 0,
             }}
           >
-            <StartScreen onPromptSelect={handlePromptSelect} />
+            <StartScreen
+              onPromptSelect={handlePromptSelect}
+              onTravellerStorySelect={handleTravellerStorySelect}
+            />
           </div>
 
           <style>{`#chatContainer::-webkit-scrollbar { display: none; }`}</style>

@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from "react";
+import travellerStories from "../../../../data/travellerStories";
+
+export interface TravellerStory {
+  id: number;
+  name: string;
+  tripName: string;
+  duration: string;
+  groupType: string;
+  destinations: string[];
+  image: string;
+  images?: string[];
+  shortDescription: string;
+  viewItineraryLink: string;
+  rating: number;
+  prompt: string;
+}
 
 interface StartScreenProps {
   onPromptSelect: (prompt: string) => void;
+  onTravellerStorySelect?: (story: TravellerStory) => void;
 }
 
-const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
+const StartScreen: React.FC<StartScreenProps> = ({
+  onPromptSelect,
+  onTravellerStorySelect,
+}) => {
   const [mounted, setMounted] = useState(false);
+  const [activeStoryId, setActiveStoryId] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
@@ -186,8 +207,35 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
     },
   ];
 
+  const scrollRef = React.useRef<HTMLDivElement | null>(null);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const [atBottom, setAtBottom] = useState(false);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const update = () => {
+      const overflow = el.scrollHeight - el.clientHeight > 8;
+      const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+      setHasOverflow(overflow);
+      setAtBottom(bottom);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, []);
+
+  const showScrollHint = hasOverflow && !atBottom;
+
   return (
+    <div className="relative h-full">
     <div
+  ref={scrollRef}
   className="flex-1 h-full overflow-y-auto bg-white pb-16"
   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
 >
@@ -221,9 +269,44 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
         }
       `}</style>
 
-      <div className="start-screen-scroll px-6 py-6 mt-2 space-y-8">
+      <div className="start-screen-scroll px-6 py-6 mt-2 space-y-8 ">
 
-        
+        {/* ── Traveller Stories ───────────────────────────────────────────── */}
+        <div
+          style={{
+            animation: mounted ? "fadeSlideUp 0.5s ease-out 40ms forwards" : "none",
+            opacity: mounted ? undefined : 0,
+            background: "#F1F5FF",
+          }}
+          className="rounded-2xl p-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <h2
+              className="text-[14px] font-semibold text-[#1F4AAF]"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Traveller Stories
+            </h2>
+          </div>
+          <div
+            className="flex gap-3 overflow-x-auto pb-1"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {travellerStories.map((story, index) => (
+              <TravellerStoryCard
+                key={`story-${story.id}`}
+                story={story as TravellerStory}
+                delay={60 + index * 50}
+                mounted={mounted}
+                active={activeStoryId === story.id}
+                onSelect={(s) => {
+                  setActiveStoryId(s.id);
+                  onTravellerStorySelect?.(s);
+                }}
+              />
+            ))}
+          </div>
+        </div>
 
         {/* ── P1: From Relaxation to Adventure (combined, all 6 cards) ──────── */}
         <div
@@ -323,6 +406,36 @@ const StartScreen: React.FC<StartScreenProps> = ({ onPromptSelect }) => {
 
       </div>
     </div>
+
+      {/* Bottom scroll hint — fades away once the user reaches the end. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 right-0 bottom-0 flex flex-col items-center justify-end pb-2"
+        style={{
+          height: 72,
+          background:
+            "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 60%, #fff 100%)",
+          opacity: showScrollHint ? 1 : 0,
+          transition: "opacity 0.2s ease",
+        }}
+      >
+        <div
+          className="flex items-center gap-1 text-[11px] text-gray-500 font-medium"
+          style={{ animation: "startScreenBounce 1.4s ease-in-out infinite" }}
+        >
+          <span>Scroll for more</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+        <style>{`
+          @keyframes startScreenBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(3px); }
+          }
+        `}</style>
+      </div>
+    </div>
   );
 };
 
@@ -342,7 +455,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[250px] aspect-[200/217]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
       style={{
         animation: mounted
           ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
@@ -502,6 +615,89 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           >
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
+        </div>
+      </div>
+    </button>
+  );
+};
+
+// ── TravellerStoryCard — Design matches the reference screenshot ───────────
+interface TravellerStoryCardProps {
+  story: TravellerStory;
+  delay: number;
+  mounted: boolean;
+  active: boolean;
+  onSelect: (story: TravellerStory) => void;
+}
+
+const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
+  story,
+  delay,
+  mounted,
+  active,
+  onSelect,
+}) => {
+  const [hovered, setHovered] = useState(false);
+
+  const headline = `${story.name} did ${story.destinations.join(", ")} in ${story.duration}`;
+
+  return (
+    <button
+      onClick={() => onSelect(story)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="group relative flex-shrink-0 rounded-2xl text-left bg-white overflow-hidden"
+      style={{
+        width: 240,
+        border: active ? "2px solid #2563eb" : "1px solid transparent",
+        animation: mounted
+          ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
+          : "none",
+        opacity: mounted ? undefined : 0,
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition:
+          "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
+        boxShadow: hovered
+          ? "0 12px 28px rgba(0,0,0,0.14)"
+          : "0 4px 12px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div className="relative w-full" style={{ aspectRatio: "16/11" }}>
+        <img
+          src={story.image}
+          alt={story.tripName}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-2.5">
+        <p
+          className="text-[13px] font-semibold text-[#07213A] leading-snug"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            minHeight: 34,
+          }}
+        >
+          {headline}
+        </p>
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
+            <span className="font-medium">{story.rating.toFixed(1)}</span>
+            <span style={{ color: "#F7B500" }}>★</span>
+          </div>
+          <span
+            className="px-2 py-[2px] rounded-full text-[10px] font-medium"
+            style={{
+              background: "#FCE7F3",
+              color: "#9D174D",
+              fontFamily: "Inter",
+            }}
+          >
+            {story.groupType} Trip
+          </span>
         </div>
       </div>
     </button>
