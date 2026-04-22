@@ -121,7 +121,7 @@ const ChatHistoryDrawer: React.FC<{
     <>
       {open && <div className="fixed inset-0 z-[300] bg-black/20 backdrop-blur-[1px]" onClick={onClose} />}
       <div
-        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[40%]"
+        className="fixed top-0 left-0 h-full z-[350] bg-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out w-full md:w-[30%]"
         style={{ transform: open ? "translateX(0)" : "translateX(-110%)" }}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
