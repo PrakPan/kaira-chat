@@ -1966,8 +1966,8 @@ const TravellerStoryIntroCard: React.FC<TravellerStoryIntroCardProps> = ({
             key={`${story.id}-img-${i}`}
             src={src}
             alt={`${story.tripName} ${i + 1}`}
-            width={260}
-            height={190}
+            width={366}
+            height={245}
           />
         ))}
       </div>
