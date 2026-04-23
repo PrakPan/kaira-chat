@@ -19,6 +19,10 @@ images: {
       protocol: "http",
       hostname: "**",
     },
+    {
+      protocol: "https",
+      hostname: "*.cloudfront.net",
+    },
   ],
 },
 
@@ -28,8 +32,6 @@ images: {
     instrumentationHook: true,
   },
 
-
-  
   // webpack: (config) => {
   //   config.plugins.push(
   //     new (require('copy-webpack-plugin'))({

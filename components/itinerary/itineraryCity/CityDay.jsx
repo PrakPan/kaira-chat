@@ -537,6 +537,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
             setShowDrawer={setShowDrawer}
             cityName={props.city.name}
             cityID={props.city.id}
+            regionID={props.city.region}
             date={date}
             setItinerary={props?.setItinerary}
             itinerary_city_id={props?.itinerary_city_id}
