@@ -299,7 +299,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
             opacity: mounted ? undefined : 0,
             background: "#F1F5FF",
           }}
-          className="rounded-2xl p-4"
+          className="rounded-[24px] py-3 pl-3 pr-0"
         >
           <div className="flex items-center gap-2 mb-3">
             <h2
@@ -711,7 +711,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
       onClick={() => onSelect(story)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative flex-shrink-0 rounded-2xl text-left bg-white overflow-hidden"
+      className="group relative flex-shrink-0 rounded-[24px] text-left bg-white overflow-hidden"
       style={{
         width: 240,
         border: active ? "2px solid #2563eb" : "1px solid transparent",
@@ -727,16 +727,16 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
           : "0 4px 12px rgba(0,0,0,0.08)",
       }}
     >
-      <div className="relative w-full" style={{ aspectRatio: "16/11" }}>
+      <div className="relative w-full p-2.5" style={{ aspectRatio: "16/11" }}>
         <img
           src={story.image}
           alt={story.tripName}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-[24px]"
         />
       </div>
       <div className="p-2.5">
         <p
-          className="text-[13px] font-semibold text-[#07213A] leading-snug"
+          className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
           style={{
             fontFamily: "'Inter', sans-serif",
             display: "-webkit-box",
