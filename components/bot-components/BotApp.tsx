@@ -11,6 +11,7 @@ import ViewToggle from "./components/ViewToggle";
 import Sidebar from "./components/Sidebar";
 import StartScreen, { type TravellerStory } from "./components/StartScreen";
 import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
+import type { ThemeConfig } from "./types/themeConfig";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
@@ -129,7 +130,13 @@ function transformDraftToItinerary(draft: any) {
   };
 }
 
-export default function BotApp({ sessionId }: { sessionId?: string }) {
+export default function BotApp({
+  sessionId,
+  themeConfig,
+}: {
+  sessionId?: string;
+  themeConfig?: ThemeConfig;
+}) {
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
     lng: 78,
@@ -1427,6 +1434,7 @@ Start Location: ${details.startLocation}`;
             <StartScreen
               onPromptSelect={handlePromptSelect}
               onTravellerStorySelect={handleTravellerStorySelect}
+              themeConfig={themeConfig}
             />
           </div>
 
@@ -1483,6 +1491,7 @@ Start Location: ${details.startLocation}`;
             <ChatWelcomeScreen
               onSubmit={handlePromptSelect}
               onChatStart={() => setIsChatActive(true)}
+              themeConfig={themeConfig}
             />
           </div>
           <div
@@ -1549,6 +1558,7 @@ Start Location: ${details.startLocation}`;
                 <ChatWelcomeScreen
                   onSubmit={handlePromptSelect}
                   onChatStart={() => setIsChatActive(true)}
+                  themeConfig={themeConfig}
                 />
               </div>
               <div

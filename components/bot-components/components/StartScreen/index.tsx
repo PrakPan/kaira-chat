@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import travellerStories from "../../../../data/travellerStories";
+import type { ThemeConfig } from "../../types/themeConfig";
 
 export interface TravellerStory {
   id: number;
@@ -19,11 +20,13 @@ export interface TravellerStory {
 interface StartScreenProps {
   onPromptSelect: (prompt: string) => void;
   onTravellerStorySelect?: (story: TravellerStory) => void;
+  themeConfig?: ThemeConfig;
 }
 
 const StartScreen: React.FC<StartScreenProps> = ({
   onPromptSelect,
   onTravellerStorySelect,
+  themeConfig,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [activeStoryId, setActiveStoryId] = useState<number | null>(null);
@@ -36,7 +39,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   // ── P1: Combined section — all 6 cards under one heading ──────────────────
-  const allTrips = [
+  const defaultAllTrips = [
     {
       image:
         "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1600",
@@ -85,7 +88,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
   ];
 
   // ── P2: Trending This April — 3 cards ────────────────────────────────────
-  const trendingTrips = [
+  const defaultTrendingTrips = [
     {
       image:
         "https://d31aoa0ehgvjdi.cloudfront.net/media/website/La-Tomatina-01.jpg",
@@ -113,7 +116,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
   ];
 
   // ── TTW Running Campaign Themes — 6 cards ────────────────────────────────
-  const campaignThemes = [
+  const defaultCampaignThemes = [
     {
       image:
         "https://images.unsplash.com/photo-1519741497674-611481863552?w=1600",
@@ -232,6 +235,24 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
   const showScrollHint = hasOverflow && !atBottom;
 
+  // ── Resolved theme-aware data (overridden by themeConfig when provided) ──
+  const row1Heading =
+    themeConfig?.rows?.row1?.heading ?? "From Relaxation to Adventure";
+  const row1Icon = themeConfig?.rows?.row1?.icon ?? "🌅";
+  const row1Cards = themeConfig?.rows?.row1?.cards ?? defaultAllTrips;
+
+  const row2Heading =
+    themeConfig?.rows?.row2?.heading ?? "Trending This April";
+  const row2Icon = themeConfig?.rows?.row2?.icon ?? "🔥";
+  const row2Cards = themeConfig?.rows?.row2?.cards ?? defaultTrendingTrips;
+
+  const row3Heading =
+    themeConfig?.rows?.row3?.heading ?? "TTW's Trending Themes";
+  const row3Icon = themeConfig?.rows?.row3?.icon ?? "🎯";
+  const row3Cards = themeConfig?.rows?.row3?.cards ?? defaultCampaignThemes;
+
+  const row4 = themeConfig?.rows?.row4;
+
   return (
     <div className="relative h-full">
     <div
@@ -316,19 +337,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🌅</span>
+            <span className="text-xl">{row1Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              From Relaxation to Adventure
+              {row1Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {allTrips.map((trip, index) => (
+            {row1Cards.map((trip, index) => (
               <TripCard
                 key={`all-${index}`}
                 trip={trip}
@@ -348,19 +369,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🔥</span>
+            <span className="text-xl">{row2Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              Trending This April
+              {row2Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {trendingTrips.map((trip, index) => (
+            {row2Cards.map((trip, index) => (
               <TrendingCard
                 key={`trending-${index}`}
                 trip={trip}
@@ -380,19 +401,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🎯</span>
+            <span className="text-xl">{row3Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              TTW's Trending Themes
+              {row3Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {campaignThemes.map((trip, index) => (
+            {row3Cards.map((trip, index) => (
               <TrendingCard
                 key={`theme-${index}`}
                 trip={trip}
@@ -403,6 +424,40 @@ const StartScreen: React.FC<StartScreenProps> = ({
             ))}
           </div>
         </div>
+
+        {/* ── Optional Row 4 — themed activity row ─────────────────────────── */}
+        {row4 && (
+          <div
+            style={{
+              animation: mounted ? "fadeSlideUp 0.5s ease-out 620ms forwards" : "none",
+              opacity: mounted ? undefined : 0,
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              {row4.icon && <span className="text-xl">{row4.icon}</span>}
+              <h2
+                className="text-lg font-semibold text-gray-900"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                {row4.heading}
+              </h2>
+            </div>
+            <div
+              className="flex gap-3 overflow-x-auto pb-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {row4.cards.map((trip, index) => (
+                <TripCard
+                  key={`row4-${index}`}
+                  trip={trip}
+                  delay={620 + index * 50}
+                  mounted={mounted}
+                  onSelect={onPromptSelect}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
@@ -441,7 +496,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
 // ── TripCard (unchanged behaviour, updated data flows through) ──────────────
 interface TripCardProps {
-  trip: { image: string; label: string; prompt: string; tags?: string };
+  trip: { image: string; label: string; prompt: string; tags?: string; description?: string };
   delay: number;
   mounted: boolean;
   onSelect: (prompt: string) => void;
@@ -488,20 +543,30 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
       {trip.tags && (
         <div
           className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
-          style={{
-            background: "rgba(255,255,255,0.92)",
-            color: "#07213A",
-            fontFamily: "Inter",
-            backdropFilter: "blur(6px)",
-          }}
+          // style={{
+          //   background: "rgba(255,255,255,0.92)",
+          //   color: "#07213A",
+          //   fontFamily: "Inter",
+          //   backdropFilter: "blur(6px)",
+          // }}
+           style={{
+    background: "#F7E700",
+    color: "#07213A",
+    fontFamily: "Inter",
+  }}
         >
           {trip.tags}
         </div>
       )}
-      <div className="absolute bottom-3 left-3 right-3 text-left">
-        <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
+      <div className="absolute bottom-3 left-3 right-3 text-left" >
+        <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight" >
           {trip.label}
         </p>
+        {trip.description && (
+          <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-2">
+            {trip.description}
+          </p>
+        )}
         <div
           className="flex items-center gap-1 mt-1 overflow-hidden"
           style={{
@@ -549,7 +614,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[250px] aspect-[200/217]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
       style={{
         animation: mounted
           ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
