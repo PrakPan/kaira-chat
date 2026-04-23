@@ -3,6 +3,7 @@ import { MessageInputBox } from "../MessageInputBox";
 import type { AttachmentFile } from "../ChatKitPanel";
 import { useSelector } from "react-redux";
 import StartScreen from "../StartScreen";
+import type { ThemeConfig } from "../../types/themeConfig";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
@@ -18,9 +19,10 @@ function getAuthToken(): string | null {
 interface ChatWelcomeScreenProps {
   onSubmit?: (message: string, attachmentIds?: string[]) => void;
   onChatStart?: () => void;
+  themeConfig?: ThemeConfig;
 }
 
-const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart }) => {
+const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatStart, themeConfig }) => {
   const [inputValue, setInputValue] = useState("");
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const [showInspiration, setShowInspiration] = useState(false);
@@ -170,7 +172,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
     [attachments, authToken, reduxUserId],
   );
 
-  const promptChips = [
+  const defaultPromptChips = [
     {
       icon: "🗾",
       label: "Plan a 10-day Japan trip",
@@ -208,6 +210,11 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
       prompt: "Suggest an offbeat or underrated Asia destination that most Indian travellers have not explored yet. I want something with great experiences, good food, and preferably easy visa access. Budget flexible, around 8 to 10 days.",
     },
   ];
+
+  const promptChips = themeConfig?.welcome?.promptChips ?? defaultPromptChips;
+  const subtitle =
+    themeConfig?.welcome?.subtitle ??
+    "Tell me where you want to go — I'll handle the rest.";
 
   const inputBox = (
     <MessageInputBox
@@ -266,7 +273,7 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
         {/* Subtitle */}
         <p className="text-center text-[#6E757A] mb-5 text-sm md:text-md leading-relaxed">
-          Tell me where you want to go — I'll handle the rest.
+          {subtitle}
         </p>
 
         {/* Prompt chips — 2-col grid on mobile and desktop */}
@@ -382,7 +389,10 @@ const ChatWelcomeScreen: React.FC<ChatWelcomeScreenProps> = ({ onSubmit, onChatS
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto">
-              <StartScreen onPromptSelect={handleInspirationSelect} />
+              <StartScreen
+                onPromptSelect={handleInspirationSelect}
+                themeConfig={themeConfig}
+              />
             </div>
           </div>
         </div>
