@@ -67,6 +67,8 @@ import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
+import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -1209,6 +1211,8 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [showVisaDrawer, setShowVisaDrawer] = useState(false);
+  const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -2604,6 +2608,47 @@ const Details = (props) => {
                       </>
                     }
 
+                    {/* Visa & eSIM CTAs */}
+                    <div className="mt-md mb-md">
+                      <hr className="text-text-placeholder mb-md" />
+                      <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
+                        Enhance Your Trip
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <button
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                          onClick={() => setShowVisaDrawer(true)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                              <span className="text-[18px]">🛂</span>
+                            </div>
+                            <div className="text-left">
+                              <div className="text-[13px] font-600 text-[#01202B]">Add Visa</div>
+                              <div className="text-[11px] text-[#6E757A]">Hassle-free visa assistance</div>
+                            </div>
+                          </div>
+                          <span className="text-[#979393] text-lg">›</span>
+                        </button>
+
+                        <button
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                          onClick={() => setShowEsimDrawer(true)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                              <span className="text-[18px]">📶</span>
+                            </div>
+                            <div className="text-left">
+                              <div className="text-[13px] font-600 text-[#01202B]">Add eSIM</div>
+                              <div className="text-[11px] text-[#6E757A]">Stay connected abroad</div>
+                            </div>
+                          </div>
+                          <span className="text-[#979393] text-lg">›</span>
+                        </button>
+                      </div>
+                    </div>
+
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
                       <div className="text-sm font-500 leading-xl mb-sm">
@@ -2723,6 +2768,16 @@ const Details = (props) => {
           <PassengerDetails />
         </div>
       </Drawer>
+
+      <VisaSearchDrawer
+        show={showVisaDrawer}
+        onHide={() => setShowVisaDrawer(false)}
+      />
+
+      <EsimPackagesDrawer
+        show={showEsimDrawer}
+        onHide={() => setShowEsimDrawer(false)}
+      />
     </>
   );
 };

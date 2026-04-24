@@ -745,6 +745,7 @@ const ItineraryCity = (props) => {
           }}
           cityName={props?.city?.city?.name}
           cityID={props?.city?.city?.id}
+          regionID={props?.city?.city?.region}
           date={props?.city?.day_by_day?.[0]?.date}
           start_date={props?.city?.start_date || props?.city?.day_by_day?.[0]?.date}
           duration={props?.city?.duration}

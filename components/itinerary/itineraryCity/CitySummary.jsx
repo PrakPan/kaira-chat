@@ -660,6 +660,7 @@ const CitySummary = (props) => {
         setShowDrawer={setShowAddDrawer}
         cityName={props.city.city.name}
         cityID={props.city.city.id}
+        regionID={props.city.city.region}
         date={props?.city?.start_date}
         start_date={props?.city?.start_date}
         itinerary_city_id={props?.city?.id}
