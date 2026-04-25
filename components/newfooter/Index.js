@@ -307,7 +307,7 @@ const NewFooter = (props) => {
                 
             
               <RiWhatsappFill className="text-[#fff] text-xl" />
-                +91 8448687703
+                +91 7827441548
               </div>
             </CompanyText>
 

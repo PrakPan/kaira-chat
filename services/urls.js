@@ -2,7 +2,7 @@ export default {
   ERROR404: "/404/",
   ERROR500: "/500/",
   ABOUT_US: "/about-us/",
-  CONTACT: "https://wa.me/918448687703",
+  CONTACT: "https://wa.me/917827441548",
   CORPORATES: "/corporates/",
   COVID_19_SAFE_TRAVEL_INDIA: "/covid-19-safe-travel-india/",
 
@@ -15,7 +15,7 @@ export default {
   TRAVEL_SUPPORT: "/travel-support/",
   TRAVEL_GUIDE: "/travel-guide",
   EXPERIENCES: "/experiences/",
-  WHATSAPP: "https://wa.me/918448687703",
+  WHATSAPP: "https://wa.me/917827441548",
   //some more
 
   supplier_thetarzanway: {

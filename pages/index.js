@@ -110,7 +110,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
               name: "The Tarzan Way",
               image: "https://thetarzanway.com/logoblack.svg",
               url: "https://thetarzanway.com/",
-              telephone: "+91 8448687703",
+              telephone: "+91 7827441548",
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "IN",
