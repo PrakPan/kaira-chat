@@ -15,11 +15,12 @@ import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
-import {
+import setItinerary, {
   deletePoiFromItinerary,
   deleteActivityFromItinerary,
   deleteRestaurantFromItinerary,
 } from "../../../store/actions/itinerary";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -287,6 +288,8 @@ onTravellerStoryDismiss,
     // ── Auth ─────────────────────────────────────────────────────────────────
   const reduxToken = useSelector((state: any) => state.auth.token);
   const reduxUserId = useSelector((state: any) => state.auth.id);
+  const itinerary = useSelector((state: any) => state.Itinerary);
+  const callPaymentInfo = useSelector((state: any) => state.CallPaymentInfo);
   const authToken = reduxToken ?? getAuthToken();
   const isLoggedIn = !!authToken;
 
@@ -318,14 +321,14 @@ onTravellerStoryDismiss,
       path: string,
       body: Record<string, unknown>,
       successText: string,
-    ) => {
-      if (!localItineraryId) return;
+    ): Promise<any | null> => {
+      if (!localItineraryId) return null;
       if (!authToken) {
         setShowLoginModal(true);
-        return;
+        return null;
       }
       try {
-        await axios.post(
+        const res = await axios.post(
           `${MERCURY_HOST}/api/v1/itinerary/${localItineraryId}/${path}`,
           body,
           { headers: { Authorization: `Bearer ${authToken}` } },
@@ -337,6 +340,7 @@ onTravellerStoryDismiss,
             heading: "Success!",
           }),
         );
+        return res?.data ?? null;
       } catch (err: any) {
         console.error("[Chat drawer booking] error:", err);
         const msg =
@@ -350,9 +354,135 @@ onTravellerStoryDismiss,
             heading: "Error!",
           }),
         );
+        return null;
       }
     },
     [localItineraryId, authToken, dispatch],
+  );
+
+  // Mirrors updatedActivityBooking() in ActivityDetailsDrawer.jsx: after the
+  // /bookings/activity/ POST returns, splice the new booking into the city's
+  // activities list and the matching day_by_day slab so the itinerary view
+  // refreshes without waiting for a full refetch.
+  const applyActivityBookingToItinerary = useCallback(
+    (bookingData: any, itineraryCityId: string | undefined) => {
+      if (!bookingData || !itineraryCityId || !itinerary?.cities) return;
+
+      const formatTime = (time24?: string) => {
+        if (!time24) return null;
+        const [hours, minutes] = time24.split(":");
+        const hour = parseInt(hours, 10);
+        if (isNaN(hour)) return null;
+        const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        return `${hour12}:${minutes}`;
+      };
+
+      const bookingDate = bookingData?.check_in?.split(" ")?.[0] ?? null;
+
+      const newCities = itinerary.cities.map((city: any) => {
+        if (city?.id !== itineraryCityId) return city;
+        const updatedActivities = [...(city?.activities || []), bookingData];
+
+        const slabElement = {
+          activity: bookingData?.activity?.id,
+          booking: {
+            id: bookingData?.id,
+            pax:
+              (bookingData?.number_of_adults || 0) +
+              (bookingData?.number_of_children || 0) +
+              (bookingData?.number_of_infants || 0),
+            duration: bookingData?.duration,
+          },
+          element_type: "activity",
+          heading:
+            bookingData?.activity_data?.display_name ||
+            bookingData?.activity?.name,
+          icon: bookingData?.image,
+          poi: null,
+          tags: bookingData?.activity_data?.tags || [],
+          rating: bookingData?.activity?.rating,
+          user_ratings_total: bookingData?.activity?.user_ratings_total,
+          start_time:
+            formatTime(bookingData?.check_in?.split(" ")?.[1]) || null,
+          end_time:
+            formatTime(bookingData?.check_out?.split(" ")?.[1]) || null,
+        };
+
+        const updatedDayByDay = city?.day_by_day?.map((day: any) => {
+          if (day?.date === bookingDate) {
+            return {
+              ...day,
+              slab_elements: [...(day?.slab_elements || []), slabElement],
+            };
+          }
+          return day;
+        });
+
+        return {
+          ...city,
+          activities: updatedActivities,
+          day_by_day: updatedDayByDay,
+        };
+      });
+
+      dispatch(setItinerary({ ...itinerary, cities: newCities }));
+      dispatch(SetCallPaymentInfo(!callPaymentInfo));
+    },
+    [itinerary, callPaymentInfo, dispatch],
+  );
+
+  // POI / restaurant booking: mirrors NewPoiDetailsDrawer's local-state
+  // patch — append the response slab element into the matched day_by_day
+  // bucket. Prefers a date match when available; falls back to the
+  // day_by_day index passed in the request body.
+  const applySlabToItinerary = useCallback(
+    (
+      slabData: any,
+      itineraryCityId: string | undefined,
+      dateISO: string | undefined,
+      dayByDayIndex: number = 0,
+    ) => {
+      if (!slabData || !itineraryCityId || !itinerary?.cities) return;
+
+      const newCities = itinerary.cities.map((city: any) => {
+        if (city?.id !== itineraryCityId) return city;
+        const dayByDay = [...(city?.day_by_day || [])];
+        let targetIndex = dateISO
+          ? dayByDay.findIndex((d) => d?.date === dateISO)
+          : -1;
+        if (targetIndex < 0) targetIndex = dayByDayIndex;
+        if (dayByDay[targetIndex]) {
+          dayByDay[targetIndex] = {
+            ...dayByDay[targetIndex],
+            slab_elements: [
+              ...(dayByDay[targetIndex]?.slab_elements || []),
+              slabData,
+            ],
+          };
+        }
+        return { ...city, day_by_day: dayByDay };
+      });
+
+      dispatch(setItinerary({ ...itinerary, cities: newCities }));
+      dispatch(SetCallPaymentInfo(!callPaymentInfo));
+    },
+    [itinerary, callPaymentInfo, dispatch],
+  );
+
+  // Hotel add / change: the chat backend may return either a full updated
+  // itinerary or just the new booking. If `cities` (or `itinerary.cities`)
+  // is present treat it as a replacement; otherwise rely on the
+  // CallPaymentInfo toggle to refresh price-aware surfaces.
+  const applyHotelMutationToItinerary = useCallback(
+    (responseData: any) => {
+      if (responseData?.cities && Array.isArray(responseData.cities)) {
+        dispatch(setItinerary(responseData));
+      } else if (responseData?.itinerary?.cities) {
+        dispatch(setItinerary(responseData.itinerary));
+      }
+      dispatch(SetCallPaymentInfo(!callPaymentInfo));
+    },
+    [callPaymentInfo, dispatch],
   );
 
   // ── Detail Drawer State ─────────────────────────────────────────────────
@@ -1894,17 +2024,23 @@ const handleShowLogin = useCallback(() => {
           type={"activity"}
           itinerary_city_id={activityDrawer.itinerary_city_id}
           onAddToItinerary={(payload: Record<string, unknown>) => {
-            void postBookingAction(
-              "bookings/activity/",
-              {
-                ...payload,
-                itinerary_city_id:
-                  (payload as any).itinerary_city_id ??
-                  activityDrawer.itinerary_city_id,
-                date: activityDrawer.date,
-              },
-              "Added activity to your itinerary",
-            );
+            const itineraryCityId =
+              (payload as any).itinerary_city_id ??
+              activityDrawer.itinerary_city_id;
+            void (async () => {
+              const data = await postBookingAction(
+                "bookings/activity/",
+                {
+                  ...payload,
+                  itinerary_city_id: itineraryCityId,
+                  date: activityDrawer.date,
+                },
+                "Added activity to your itinerary",
+              );
+              if (data) {
+                applyActivityBookingToItinerary(data, itineraryCityId);
+              }
+            })();
             setActivityDrawer({ show: false });
           }}
         />
@@ -1947,32 +2083,38 @@ const handleShowLogin = useCallback(() => {
           accommodationId={hotelDrawer.accommodationId}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
-            void postBookingAction(
-              "hotel/change/",
-              {
-                id: hotelDrawer.accommodationId,
-                itinerary_city_id: hotelDrawer.itinerary_city_id,
-                db_city_id: hotelDrawer.dbCityId,
-                check_in: hotelDrawer.check_in,
-                check_out: hotelDrawer.check_out,
-                booking_id: hotelDrawer.bookingId,
-              },
-              "Hotel updated",
-            );
+            void (async () => {
+              const data = await postBookingAction(
+                "hotel/change/",
+                {
+                  id: hotelDrawer.accommodationId,
+                  itinerary_city_id: hotelDrawer.itinerary_city_id,
+                  db_city_id: hotelDrawer.dbCityId,
+                  check_in: hotelDrawer.check_in,
+                  check_out: hotelDrawer.check_out,
+                  booking_id: hotelDrawer.bookingId,
+                },
+                "Hotel updated",
+              );
+              if (data) applyHotelMutationToItinerary(data);
+            })();
             setHotelDrawer({ show: false });
           }}
           onAddHotel={() => {
-            void postBookingAction(
-              "hotel/add/",
-              {
-                id: hotelDrawer.accommodationId,
-                itinerary_city_id: hotelDrawer.itinerary_city_id,
-                db_city_id: hotelDrawer.dbCityId,
-                check_in: hotelDrawer.check_in,
-                check_out: hotelDrawer.check_out,
-              },
-              "Added hotel to your itinerary",
-            );
+            void (async () => {
+              const data = await postBookingAction(
+                "hotel/add/",
+                {
+                  id: hotelDrawer.accommodationId,
+                  itinerary_city_id: hotelDrawer.itinerary_city_id,
+                  db_city_id: hotelDrawer.dbCityId,
+                  check_in: hotelDrawer.check_in,
+                  check_out: hotelDrawer.check_out,
+                },
+                "Added hotel to your itinerary",
+              );
+              if (data) applyHotelMutationToItinerary(data);
+            })();
             setHotelDrawer({ show: false });
           }}
           // Context required for the p2-stage "Add / Change" CTA.
@@ -2005,21 +2147,34 @@ const handleShowLogin = useCallback(() => {
           onAddToItinerary={() => {
             const kind = poiDrawer.kind ?? "poi";
             const path = kind === "restaurant" ? "restaurant/add/" : "poi/add/";
+            const itineraryCityId = poiDrawer.itinerary_city_id;
+            const date = poiDrawer.date;
+            const dayByDayIndex = 0;
             const body: Record<string, unknown> = {
-              itinerary_city_id: poiDrawer.itinerary_city_id,
-              date: poiDrawer.date,
-              day_by_day_index: 0,
+              itinerary_city_id: itineraryCityId,
+              date,
+              day_by_day_index: dayByDayIndex,
               ...(kind === "restaurant"
                 ? { restaurant_id: poiDrawer.id }
                 : { poi_id: poiDrawer.id }),
             };
-            void postBookingAction(
-              path,
-              body,
-              kind === "restaurant"
-                ? "Added restaurant to your itinerary"
-                : "Added place to your itinerary",
-            );
+            void (async () => {
+              const data = await postBookingAction(
+                path,
+                body,
+                kind === "restaurant"
+                  ? "Added restaurant to your itinerary"
+                  : "Added place to your itinerary",
+              );
+              if (data) {
+                applySlabToItinerary(
+                  data,
+                  itineraryCityId,
+                  date,
+                  dayByDayIndex,
+                );
+              }
+            })();
             setPoiDrawer({ show: false });
           }}
           setShowLoginModal={setShowLoginModal}

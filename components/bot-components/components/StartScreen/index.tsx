@@ -251,6 +251,15 @@ const StartScreen: React.FC<StartScreenProps> = ({
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes ttwShimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position: 400px 0; }
+        }
+        .ttw-skeleton {
+          background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+          background-size: 800px 100%;
+          animation: ttwShimmer 1.4s linear infinite;
+        }
         .anim-fade-up {
           animation: fadeSlideUp 0.5s ease-out forwards;
           opacity: 0;
@@ -307,7 +316,15 @@ const StartScreen: React.FC<StartScreenProps> = ({
                 active={activeStoryId === story.id}
                 onSelect={(s) => {
                   setActiveStoryId(s.id);
-                  onTravellerStorySelect?.(s);
+                  if (onTravellerStorySelect) {
+                    onTravellerStorySelect(s);
+                  } else {
+                    // Mobile/inspiration context — no detail-view handler is
+                    // wired here, so route the user into the chat using the
+                    // story's prompt. This closes the inspiration sheet and
+                    // flips isChatActive so the chat panel takes over.
+                    onPromptSelect(s.prompt);
+                  }
                 }}
               />
             ))}
@@ -489,6 +506,7 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <button
@@ -509,23 +527,31 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
           : "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
+      {!imgLoaded && (
+        <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
+      )}
       <img
         src={trip.image}
         alt={trip.label}
+        loading="lazy"
+        onLoad={() => setImgLoaded(true)}
+        onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
           transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease",
+          transition: "transform 0.4s ease, opacity 0.3s ease",
+          opacity: imgLoaded ? 1 : 0,
         }}
       />
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)",
+          background: imgLoaded
+            ? "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)"
+            : "transparent",
         }}
       />
-      {trip.tags && (
+      {imgLoaded && trip.tags && (
         <div
           className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
           // style={{
@@ -543,37 +569,39 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
           {trip.tags}
         </div>
       )}
-      <div className="absolute bottom-3 left-3 right-3 text-left" >
-        <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight" >
-          {trip.label}
-        </p>
-        {trip.description && (
-          <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-2">
-            {trip.description}
+      {imgLoaded && (
+        <div className="absolute bottom-3 left-3 right-3 text-left" >
+          <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight" >
+            {trip.label}
           </p>
-        )}
-        <div
-          className="flex items-center gap-1 mt-1 overflow-hidden"
-          style={{
-            maxHeight: hovered ? "20px" : "0",
-            opacity: hovered ? 1 : 0,
-            transition: "max-height 0.25s ease, opacity 0.25s ease",
-          }}
-        >
-          <span className="text-white/80 text-xs">Tap to explore</span>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeOpacity="0.8"
+          {trip.description && (
+            <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-2">
+              {trip.description}
+            </p>
+          )}
+          <div
+            className="flex items-center gap-1 mt-1 overflow-hidden"
+            style={{
+              maxHeight: hovered ? "20px" : "0",
+              opacity: hovered ? 1 : 0,
+              transition: "max-height 0.25s ease, opacity 0.25s ease",
+            }}
           >
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+            <span className="text-white/80 text-xs">Tap to explore</span>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeOpacity="0.8"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
-      </div>
+      )}
     </button>
   );
 };
@@ -591,9 +619,10 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
   delay,
   mounted,
   onSelect,
-  
+
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <button
@@ -614,23 +643,32 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           : "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
+      {!imgLoaded && (
+        <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
+      )}
       <img
         src={trip.image}
         alt={trip.label}
+        loading="lazy"
+        onLoad={() => setImgLoaded(true)}
+        onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
           transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease",
+          transition: "transform 0.4s ease, opacity 0.3s ease",
+          opacity: imgLoaded ? 1 : 0,
         }}
       />
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
+          background: imgLoaded
+            ? "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)"
+            : "transparent",
         }}
       />
 
+    {imgLoaded && (
     <div
   className="max-ph:hidden absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[6px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
   style={{
@@ -641,7 +679,9 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
 >
   {trip.sublabel}
 </div>
+    )}
 
+      {imgLoaded && (
       <div className="absolute bottom-3 left-3 right-3 text-left">
         <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
           {trip.label}
@@ -673,6 +713,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           </svg>
         </div>
       </div>
+      )}
     </button>
   );
 };
@@ -694,6 +735,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
   onSelect,
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const headline = `${story.name} did ${story.destinations.join(", ")} in ${story.duration}`;
 
@@ -719,42 +761,85 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
       }}
     >
       <div className="relative w-full p-2.5" style={{ aspectRatio: "16/11" }}>
+        {!imgLoaded && (
+          <div
+            className="ttw-skeleton absolute rounded-[24px]"
+            style={{ inset: 10 }}
+            aria-hidden="true"
+          />
+        )}
         <img
           src={story.image}
           alt={story.tripName}
+          loading="lazy"
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgLoaded(true)}
           className="w-full h-full object-cover rounded-[24px]"
+          style={{
+            opacity: imgLoaded ? 1 : 0,
+            transition: "opacity 0.3s ease",
+          }}
         />
       </div>
       <div className="p-2.5">
-        <p
-          className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            minHeight: 34,
-          }}
-        >
-          {headline}
-        </p>
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
-            <span className="font-medium">{story.rating.toFixed(1)}</span>
-            <span style={{ color: "#F7B500" }}>★</span>
-          </div>
-          <span
-            className="px-2 py-[2px] rounded-full text-[10px] font-medium"
-            style={{
-              background: "#FCE7F3",
-              color: "#9D174D",
-              fontFamily: "Inter",
-            }}
-          >
-            {story.groupType} Trip
-          </span>
-        </div>
+        {imgLoaded ? (
+          <>
+            <p
+              className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                minHeight: 34,
+              }}
+            >
+              {headline}
+            </p>
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
+                <span className="font-medium">{story.rating.toFixed(1)}</span>
+                <span style={{ color: "#F7B500" }}>★</span>
+              </div>
+              <span
+                className="px-2 py-[2px] rounded-full text-[10px] font-medium"
+                style={{
+                  background: "#FCE7F3",
+                  color: "#9D174D",
+                  fontFamily: "Inter",
+                }}
+              >
+                {story.groupType} Trip
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="ttw-skeleton rounded-md"
+              style={{ height: 12, width: "92%", marginBottom: 6 }}
+              aria-hidden="true"
+            />
+            <div
+              className="ttw-skeleton rounded-md"
+              style={{ height: 12, width: "70%" }}
+              aria-hidden="true"
+            />
+            <div className="flex items-center justify-between mt-2">
+              <div
+                className="ttw-skeleton rounded-md"
+                style={{ height: 10, width: 32 }}
+                aria-hidden="true"
+              />
+              <div
+                className="ttw-skeleton rounded-full"
+                style={{ height: 14, width: 70 }}
+                aria-hidden="true"
+              />
+            </div>
+          </>
+        )}
       </div>
     </button>
   );

@@ -2022,11 +2022,19 @@ Start Location: ${details.startLocation}`;
             setShowSettings={setShowSettings}
             isHotelsPresent={isHotelsPresent}
             handleApply={async (req) => {
-              await axios.patch(
-                `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/update/`,
-                req,
-              );
-            }}
+  const response = await axios.post(
+    `${MERCURY_HOST}/api/v1/itinerary/${activeItineraryId}/itinerary-edit/`,
+    req,
+    {
+      headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` },
+    }
+  );
+  // Re-poll status + canonical fetch instead of trusting the edit response,
+  // which lacks day-by-day, hotels, transfers, pricing and would clobber
+  // status:"Finalized" (hiding Routes/Bookings tabs).
+  if (activeItineraryId) handleItineraryRefresh(activeItineraryId);
+  return response;
+}}
           />
         </ModalWithBackdrop>
       )}
