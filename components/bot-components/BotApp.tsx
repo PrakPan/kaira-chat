@@ -147,7 +147,13 @@ function transformDraftToItinerary(draft: any) {
   };
 }
 
-export default function BotApp({ sessionId }: { sessionId?: string }) {
+export default function BotApp({
+  sessionId,
+  fromTailored = false,
+}: {
+  sessionId?: string;
+  fromTailored?: boolean;
+}) {
   const [mapState, setMapState] = useState<MapState>({
     lat: 20,
     lng: 78,
@@ -421,6 +427,20 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
           setBotMode("p2");
           setItineraryId(itineraryId);
+        } else if (fromTailored) {
+          // Itinerary was just created via the tailored form. Force p2 so the
+          // user lands on the building-status loader + summary chat path even
+          // though celery is still PENDING. Also set the same in-session
+          // completion flags the bot's own creation flow sets so the
+          // "completing" UI stays visible until polling reaches SUCCESS, and
+          // the post-completion `inject.context` summary fires automatically.
+          setBotMode("p2");
+          setItineraryId(itineraryId);
+          setIsItineraryCompleting(true);
+          itineraryCreatedInSessionRef.current = true;
+          if (!status.display_text) {
+            setLoaderDisplayText("Building your itinerary…");
+          }
         }
 
         dispatch(setCart({}));
@@ -434,7 +454,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         setHasBotResponded(true);
         setIsChatActive(true);
         setViewMode("itinerary");
-        setMobilePanel(allDone ? "itinerary" : "map");
+        setMobilePanel(allDone || fromTailored ? "itinerary" : "map");
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
@@ -442,7 +462,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         setIsChatActive(false);
       }
     },
-    [dispatch, setChatBotIdOnce],
+    [dispatch, setChatBotIdOnce, fromTailored],
   );
 
   const countCartItems = useMemo(() => {
@@ -502,6 +522,82 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
       status: "Draft",
     };
   }, []);
+
+  // ── fromTailored mount: seed skeleton from tailored-form route data ──────
+  // The /chat page lands before the status API responds, so without this the
+  // user sees a blank itinerary panel during that window. The tailored form
+  // (components/tailoredform/Index.js) stashes basic_route in sessionStorage
+  // under `tailored_skeleton_<itineraryId>` right before redirecting; we read
+  // it here, build a skeleton, and flip BotApp into the same "completing" UI
+  // state the in-session creation flow uses. Polling replaces the skeleton
+  // with the canonical itinerary. Gated on fromTailored only.
+  const hasHydratedFromTailoredRef = useRef(false);
+  useEffect(() => {
+    if (!fromTailored || hasHydratedFromTailoredRef.current) return;
+    if (!sessionId || typeof window === "undefined") return;
+
+    let basicRoute: any[] = [];
+    let startCityRaw: any = null;
+    let endCityRaw: any = null;
+    const storageKey = `tailored_skeleton_${sessionId}`;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        basicRoute = Array.isArray(parsed?.basic_route)
+          ? parsed.basic_route
+          : [];
+        startCityRaw = parsed?.start_city ?? null;
+        endCityRaw = parsed?.end_city ?? null;
+      }
+    } catch {}
+
+    if (basicRoute.length === 0) return;
+    hasHydratedFromTailoredRef.current = true;
+
+    const cities = basicRoute.map((loc: any) => ({
+      name: loc.name ?? "Loading…",
+      duration: loc.duration ?? loc.nights ?? 1,
+    }));
+    skeletonCitiesRef.current = cities;
+    setSkeletonCities(cities);
+
+    // Match the endpoint shape DaybyDay.jsx expects when reading
+    // itinerary.start_city / itinerary.end_city — same mapper used by
+    // transformDraftToItinerary above.
+    const toEndpointCity = (raw: any) => {
+      if (!raw) return null;
+      return {
+        city_name: raw.name ?? raw.city_name ?? "",
+        gmaps_place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+        place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+        latitude: raw.latitude ?? null,
+        longitude: raw.longitude ?? null,
+      };
+    };
+
+    const skeleton = {
+      ...buildSkeletonItinerary(),
+      start_city: toEndpointCity(startCityRaw),
+      end_city: toEndpointCity(endCityRaw),
+    };
+    dispatch(setItinerary(skeleton));
+    dispatch(setItineraryDaybyDay(skeleton));
+    dispatch(setBreif(skeleton));
+
+    setIsItineraryCompleting(true);
+    itineraryCreatedInSessionRef.current = true;
+    setLoaderDisplayText("Crafting your day by day itinerary…");
+    setShowStartScreen(false);
+    setHasBotResponded(true);
+    setIsChatActive(true);
+    setViewMode("itinerary");
+    setMobilePanel("itinerary");
+
+    try {
+      sessionStorage.removeItem(storageKey);
+    } catch {}
+  }, [fromTailored, sessionId, buildSkeletonItinerary, dispatch]);
 
   const handleItineraryCompletionStart = useCallback(
     (_id?: string) => {
@@ -1252,7 +1348,14 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         if (restoredItineraryId) {
 
           setShowItineraryShimmer(false);
-          dispatch(setCart({}));
+          // Intentionally NOT wiping the cart here. On initial reload,
+          // restoreItineraryDirectly has already cleared it and
+          // ItineraryContainer's polling may race ahead and call
+          // getPaymentInfo — wiping again would clobber that fetch and
+          // leave the CTA stuck on "Calculating price…" until the user
+          // reopens the cart. On thread switch, ItineraryContainer
+          // remounts and its mount effect dispatches pricing_status =
+          // PENDING, so the stale cart isn't visible during the gap.
           if (statusCheckFailed) {
             // Status API failed — treat as draft so CTA shows, settings/share hide
             // Don't override activeItineraryId if display_itinerary already set it to "draft"
@@ -1370,12 +1473,13 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           const threads = listData.data ?? [];
           if (threads.length > 0) {
             await loadThread(threads[0].id);
-          } else if (allDone) {
-            // Status confirms a finalized trip but there's no chat thread
-            // yet — seed the conversation with a summary request so the
-            // user lands with context. restoreItineraryDirectly has
-            // already set botMode to "p2", so ChatKitPanel will route
-            // the message through /chatkit/p2.
+          } else if (allDone || fromTailored) {
+            // Status confirms a finalized trip (or the user just came from
+            // the tailored form) but there's no chat thread yet — seed the
+            // conversation with a summary request so the user lands with
+            // context. restoreItineraryDirectly has already set botMode to
+            // "p2", so ChatKitPanel will route the message through
+            // /chatkit/p2.
             console.log(
               "[restoreLatestThread] status p2 + empty chatkit — seeding summary prompt",
             );
@@ -1432,7 +1536,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         }
       }
     },
-    [restoreItineraryDirectly, loadThread, router],
+    [restoreItineraryDirectly, loadThread, router, fromTailored],
   );
 
   // ── Only restore on initial mount ────────────────────────────────────────
@@ -2271,7 +2375,7 @@ const BottomCTABar = React.memo(
       );
     }
 
-    const hasFreshPricing = cart?.discounted_cost > 0 && pricingStatus === "SUCCESS";
+    const hasFreshPricing = pricingStatus === "SUCCESS";
     const isPricingFailedWithEmptyNotes = pricingStatus === "FAILURE" && (!notes || notes.length === 0);
 
     if (isPricingFailedWithEmptyNotes) {
@@ -2303,25 +2407,34 @@ const BottomCTABar = React.memo(
     }
 
     const perPerson = cart?.pay_only_for_one || cart?.show_per_person_cost;
-    const cost = perPerson
-      ? Math.round(cart?.per_person_discounted_cost)
-      : Math.round(cart?.discounted_cost);
+    const rawCost = perPerson
+      ? cart?.per_person_discounted_cost
+      : cart?.discounted_cost;
+    const cost = Number.isFinite(rawCost) ? Math.round(rawCost) : null;
     const currencySymbol =
       currency?.currency === "USD" ? "$" : currency?.currency === "EUR" ? "€" : "₹";
 
     return (
       <div className="z-20 fixed w-full md:w-[48%] max-ph:bottom-0 md:bottom-[4.2rem] flex-shrink-0 bg-[#fffaf5] border-t border-slate-100 px-4 py-2 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-[11px] text-[#6E757A]">
-            {perPerson
-              ? "Per Person"
-              : cart?.is_estimated_price && cost > 0
-                ? "Estimated Price"
-                : "Total Cost"}
-          </span>
-          <span className="font-bold text-[16px]">
-            {currencySymbol} {cost?.toLocaleString("en-IN")}/-
-          </span>
+          {cost !== null ? (
+            <>
+              <span className="text-[11px] text-[#6E757A]">
+                {perPerson
+                  ? "Per Person"
+                  : cart?.is_estimated_price && cost > 0
+                    ? "Estimated Price"
+                    : "Total Cost"}
+              </span>
+              <span className="font-bold text-[16px]">
+                {currencySymbol} {cost.toLocaleString("en-IN")}/-
+              </span>
+            </>
+          ) : (
+            <span className="text-[13px] text-[#6E757A] italic">
+              Calculating price…
+            </span>
+          )}
         </div>
         <div className="flex gap-3 items-center">
           <div
