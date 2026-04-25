@@ -7,7 +7,6 @@ import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
-import setItinerary  from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 
@@ -141,7 +140,7 @@ const handleUpdate = () => {
   }
 
   handleApply(req)
-    .then((res) => {
+    .then(() => {
       dispatch(openNotification({
         type: "success",
         text: "Itinerary updated successfully",

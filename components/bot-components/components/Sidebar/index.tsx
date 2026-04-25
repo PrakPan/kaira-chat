@@ -84,7 +84,7 @@ const SidebarTooltip: React.FC<{
 
   return (
     <>
-      <div ref={ref} className="w-full flex items-center justify-center" onMouseEnter={show} onMouseLeave={hide}>
+      <div ref={ref} className="w-full flex items-center justify-center" onMouseEnter={show} onMouseLeave={hide} onClick={hide}>
         {children}
       </div>
       {visible && (

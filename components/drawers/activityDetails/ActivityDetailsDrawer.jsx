@@ -60,8 +60,11 @@ const ActivityDetailsDrawer = (props) => {
   const [hotelPickupIncluded, setHotelPickupIncluded] = useState(false);
   const currency = useSelector((state) => state.currency);
 
-  const num_adults = props?.pax?.adults;
-  const num_children = props?.pax?.children;
+  // Default to 1 adult / 0 children when no pax prop is supplied (chat-opened
+  // flow). Without this the request body and Add-to-itinerary payload carry
+  // undefined values, and the card→drawer pax handoff drops to NaN.
+  const num_adults = props?.pax?.adults ?? 1;
+  const num_children = props?.pax?.children ?? 0;
   const child_ages = props?.pax?.childAges || [];
 
   const buildTravelerAges = () => [
@@ -96,7 +99,6 @@ const ActivityDetailsDrawer = (props) => {
   const fetchData = (data) => {
     const paxSource = data?._paxOverride || filterState;
 
-    console
 
     if (!data?.amenities) {
       setLoading(true);
@@ -123,8 +125,24 @@ const ActivityDetailsDrawer = (props) => {
       .then((res) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {
-          setData(res.data?.data?.activity);
-          setHotelPickupIncluded(res?.data?.data?.activity?.hotel_pickup_included);
+          const activity = res.data?.data?.activity;
+          setData(activity);
+          setHotelPickupIncluded(activity?.hotel_pickup_included);
+          // Sync filterState with the pax the API actually priced for
+          // (prices[0].pax_details). Keeps the Travellers pill and the
+          // bottom-bar price in lockstep — important on the chat-opened
+          // flow where no pax prop is passed in.
+          const paxDetails = activity?.prices?.[0]?.pax_details;
+          if (paxDetails) {
+            setFilterState((prev) => ({
+              ...prev,
+              adults: paxDetails.adults ?? prev.adults,
+              children: paxDetails.children ?? prev.children,
+              number_of_travelers:
+                (paxDetails.adults ?? prev.adults ?? 0) +
+                (paxDetails.children ?? prev.children ?? 0),
+            }));
+          }
         } else throw new Error(res.data?.message);
         setLoading(false);
         setUpdateAmenities(false);
@@ -153,6 +171,7 @@ const ActivityDetailsDrawer = (props) => {
         itinerary_city_id: props?.itinerary_city_id,
         trace_id: traceId,
         ...(data?.result_index !== undefined && { result_index: data.result_index }),
+        ...(data?.time !== undefined && { time: data.time }),
       };
 
       const res = await activityBooking.post(
@@ -280,6 +299,7 @@ const ActivityDetailsDrawer = (props) => {
               isBotQuery={props?.isBotQuery}
               showPackages={props?.showPackages}
               onAddToItinerary={props?.onAddToItinerary}
+              traceId={traceId}
             />
           ) : (
             <ActivityDetailsSkeleton

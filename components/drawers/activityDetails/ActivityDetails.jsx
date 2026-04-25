@@ -147,20 +147,56 @@ export default function ActivityDetails(props) {
 
   const [startDate, setStartDate] = useState(effectiveDate);
   const [showCalender, setShowCalender] = useState(false);
-  const calendarRef = useRef(null);
-  // FIX: separate ref for the date box trigger so outside-click doesn't
-  // immediately close the dropdown right after it opens
+  const [selectedTimeOfDay, setSelectedTimeOfDay] = useState(null);
+  // Desktop and mobile dropdowns are rendered separately — keep distinct
+  // refs so the click-outside handler doesn't treat a click on the visible
+  // (desktop) dropdown as outside just because a single shared ref points
+  // at the hidden mobile sheet.
+  const calendarDesktopRef = useRef(null);
+  const calendarMobileRef = useRef(null);
+
+  // Bucket availability slots into Morning (06:00–11:59),
+  // Afternoon (12:00–15:59), Evening (16:00+). Periods with no slots
+  // are hidden — e.g. an activity that only runs in the morning won't
+  // render Afternoon/Evening buttons.
+  const availableTimePeriods = (() => {
+    const slots = props?.data?.availabilities?.slots || [];
+    const periods = { Morning: false, Afternoon: false, Evening: false };
+    for (const slot of slots) {
+      const hour = parseInt((slot?.start_time || "").split(":")[0], 10);
+      if (isNaN(hour)) continue;
+      if (hour >= 6 && hour < 12) periods.Morning = true;
+      else if (hour >= 12 && hour < 16) periods.Afternoon = true;
+      else if (hour >= 16) periods.Evening = true;
+    }
+    return ["Morning", "Afternoon", "Evening"].filter((p) => periods[p]);
+  })();
+
+  // Default-select the first available period whenever the slot list
+  // changes (e.g. after the activity detail response lands).
+  useEffect(() => {
+    if (availableTimePeriods.length === 0) {
+      setSelectedTimeOfDay(null);
+      return;
+    }
+    if (!selectedTimeOfDay || !availableTimePeriods.includes(selectedTimeOfDay)) {
+      setSelectedTimeOfDay(availableTimePeriods[0]);
+    }
+  }, [props?.data?.availabilities?.slots]);
   const dateBoxRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Only close if the click is outside BOTH the dropdown AND the trigger box
-      if (
-        calendarRef.current &&
-        !calendarRef.current.contains(event.target) &&
-        dateBoxRef.current &&
-        !dateBoxRef.current.contains(event.target)
-      ) {
+      const target = event.target;
+      const insideDesktop =
+        calendarDesktopRef.current &&
+        calendarDesktopRef.current.contains(target);
+      const insideMobile =
+        calendarMobileRef.current &&
+        calendarMobileRef.current.contains(target);
+      const insideTrigger =
+        dateBoxRef.current && dateBoxRef.current.contains(target);
+      if (!insideDesktop && !insideMobile && !insideTrigger) {
         setShowCalender(false);
       }
     };
@@ -245,9 +281,10 @@ export default function ActivityDetails(props) {
     const bookingData = {
       ...e,
       result_index: selectedPackage?.result_index,
-      date: startDate,
+      date: convertToISODate(startDate) || startDate,
       start_date: convertToISODate(startDate),
       day: selectedDayNumber,
+      time: selectedTimeOfDay,
     };
 
     // Chat-opened flow: route the booking intent up to the orchestrator via
@@ -260,6 +297,7 @@ export default function ActivityDetails(props) {
         itinerary_city_id: props?.itinerary_city_id,
         result_index: selectedPackage?.result_index,
         start_date: convertToISODate(startDate),
+        date: convertToISODate(startDate) || startDate,
         day: selectedDayNumber,
         number_of_adults: props?.filterState?.adults,
         number_of_children: props?.filterState?.children,
@@ -267,6 +305,8 @@ export default function ActivityDetails(props) {
         amenities: (props?.data?.amenities ?? [])
           .filter((a) => a?.included)
           .map((a) => a?.id),
+        time: selectedTimeOfDay,
+        trace_id: props?.traceId,
       });
       setLoading(false);
       props?.handleCloseDrawer(e);
@@ -442,7 +482,7 @@ export default function ActivityDetails(props) {
                   + checkout), and even a single-day option is informational. */}
               <div className="relative">
                 {/* Date box trigger */}
-                <div
+                {/* <div
                   ref={dateBoxRef}
                   className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
                   onClick={() => setShowCalender((prev) => !prev)}
@@ -458,19 +498,41 @@ export default function ActivityDetails(props) {
                       showCalender ? "rotate-180" : ""
                     }`}
                   />
-                </div>
+                </div> */}
 
                 {/* Desktop dropdown — positioned absolutely below the trigger */}
-                {showCalender && (
+                {/* {showCalender && (
                   <div
-                    ref={calendarRef}
+                    ref={calendarDesktopRef}
                     className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
                   >
                     <DayListContent />
                   </div>
-                )}
+                )} */}
               </div>
             </div>
+
+            {/* {availableTimePeriods.length > 0 && (
+              <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
+                {availableTimePeriods.map((period) => {
+                  const isSelected = selectedTimeOfDay === period;
+                  return (
+                    <button
+                      key={period}
+                      type="button"
+                      onClick={() => setSelectedTimeOfDay(period)}
+                      className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-[14px] font-medium transition-colors ${
+                        isSelected
+                          ? "bg-[#07213A] text-white"
+                          : "bg-transparent text-[#7a7a7a] hover:text-[#01202B]"
+                      }`}
+                    >
+                      {period}
+                    </button>
+                  );
+                })}
+              </div>
+            )} */}
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
@@ -838,14 +900,14 @@ export default function ActivityDetails(props) {
       </div>
 
       {/* Mobile bottom sheet — hidden on md+ screens */}
-      {showCalender && (
+      {/* {showCalender && (
         <div
           className="fixed bottom-0 left-0 right-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-t-xl space-y-5 text-sm z-[1091] max-h-[60vh] overflow-y-auto md:hidden"
-          ref={calendarRef}
+          ref={calendarMobileRef}
         >
           <DayListContent />
         </div>
-      )}
+      )} */}
 
       {(!isDraft || typeof props?.onAddToItinerary === "function") && <div className="scroll-none border-t-2 fixed bottom-0 right-0 left-0 gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
         <div className="flex justify-between items-center">
