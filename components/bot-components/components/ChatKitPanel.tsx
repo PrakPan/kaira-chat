@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/router";
 import axios from "axios";
 import { useChat, generateSessionId, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
@@ -310,6 +311,7 @@ onTravellerStoryDismiss,
   }, []);
 
   const dispatch = useDispatch();
+  const router = useRouter();
 
   // Shared helper for drawer CTAs opened from chat widgets. The chat flow
   // used to round-trip through sendWidgetAction("*.add", …); we now call the
@@ -654,6 +656,7 @@ onTravellerStoryDismiss,
     check_in?: string;
     check_out?: string;
     bookingId?: string;
+    cityName?: string;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -1849,6 +1852,9 @@ const handleShowLogin = useCallback(() => {
                         payload.check_out) as string | undefined,
                       bookingId: (payload.bookingId ??
                         payload.booking_id) as string | undefined,
+                      cityName: (payload.cityName ??
+                        payload.city_name ??
+                        payload.city) as string | undefined,
                     });
                     return;
                   }
@@ -2083,22 +2089,63 @@ const handleShowLogin = useCallback(() => {
           accommodationId={hotelDrawer.accommodationId}
           onHide={() => setHotelDrawer({ show: false })}
           onChangeHotel={() => {
-            void (async () => {
-              const data = await postBookingAction(
-                "hotel/change/",
-                {
-                  id: hotelDrawer.accommodationId,
-                  itinerary_city_id: hotelDrawer.itinerary_city_id,
-                  db_city_id: hotelDrawer.dbCityId,
-                  check_in: hotelDrawer.check_in,
-                  check_out: hotelDrawer.check_out,
-                  booking_id: hotelDrawer.bookingId,
-                },
-                "Hotel updated",
-              );
-              if (data) applyHotelMutationToItinerary(data);
-            })();
+            // Don't POST from chat; close the detail drawer and route the
+            // user into the existing changeHotelBooking drawer (rendered by
+            // the itinerary tree) by setting the URL params it consumes.
+            const matchedCity = itinerary?.cities?.find(
+              (c: any) =>
+                String(c?.id) === String(hotelDrawer.itinerary_city_id),
+            );
+            const dbCityId =
+              hotelDrawer.dbCityId ?? matchedCity?.city?.id ?? "";
+            const cityName =
+              hotelDrawer.cityName ?? matchedCity?.city?.name ?? "";
+
+            // Backend expects a "YYYY-MM-DD HH:MM:SS" string. Append the
+            // zero-time suffix only when the input is a bare date.
+            const ensureDateTime = (v?: string) => {
+              if (!v) return "";
+              return v.includes(" ") ? v : `${v} 00:00:00`;
+            };
+            const checkIn = ensureDateTime(hotelDrawer.check_in);
+            const checkOut = ensureDateTime(hotelDrawer.check_out);
+
+            // Nights between check_in and check_out (UTC midnights to avoid
+            // DST edge-cases). Falls back to 0 when either side is missing.
+            let hotelDuration = 0;
+            if (hotelDrawer.check_in && hotelDrawer.check_out) {
+              const ms =
+                new Date(hotelDrawer.check_out).getTime() -
+                new Date(hotelDrawer.check_in).getTime();
+              if (!isNaN(ms)) {
+                hotelDuration = Math.max(
+                  0,
+                  Math.round(ms / (1000 * 60 * 60 * 24)),
+                );
+              }
+            }
+
             setHotelDrawer({ show: false });
+
+            router.push(
+              {
+                pathname: router.pathname,
+                query: {
+                  ...router.query,
+                  drawer: "changeHotelBooking",
+                  clickType: "Change",
+                  itineraryCityId: hotelDrawer.itinerary_city_id ?? "",
+                  booking_id: hotelDrawer.bookingId ?? "",
+                  check_in: checkIn,
+                  check_out: checkOut,
+                  hotel_duration: String(hotelDuration),
+                  city_id: dbCityId,
+                  city_name: cityName,
+                },
+              },
+              undefined,
+              { scroll: false },
+            );
           }}
           onAddHotel={() => {
             void (async () => {
