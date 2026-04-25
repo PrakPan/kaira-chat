@@ -218,7 +218,9 @@ const RouteEditSection = (props) => {
   const [loading, setLoading] = useState(false);
   const [itineraryLoading, setItineraryLoading] = useState(false);
   const [polling, setPolling] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState(null);
+  // Hold the interval id in a ref so the polling teardown isn't dependent on
+  // re-renders (state updates are batched and the cleanup needs the latest id).
+  const pollingIntervalRef = useRef(null);
   const destinationRef = useRef(null);
   const itinerary = useSelector((state) => state.Itinerary);
   const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
@@ -458,6 +460,14 @@ const RouteEditSection = (props) => {
     waitingForStatusUpdate,
   ]);
 
+  const stopStatusPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    setPolling(false);
+  };
+
   const fetchItineraryStatus = async (itineraryId) => {
     try {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
@@ -474,9 +484,20 @@ const RouteEditSection = (props) => {
       dispatch(
         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
       );
-      fetchItinerary();
+
+      // Stop polling once every backend task has terminated. The
+      // waitingForStatusUpdate effect will then surface the success
+      // notification and close the drawer.
+      const allDone = ["PRICING", "TRANSFERS", "HOTELS", "ITINERARY"].every(
+        (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+      );
+      if (allDone) {
+        stopStatusPolling();
+        await fetchItinerary();
+      }
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+      stopStatusPolling();
     }
   };
 
@@ -486,15 +507,10 @@ const RouteEditSection = (props) => {
         await props.resetRef();
       }
 
-      setWaitingForStatusUpdate(true);
-
       if (props.fetchData) {
         await props.fetchData(true);
       }
 
-      // if (resetSession) {
-      //   await resetSession();
-      // }
       dispatch(resetChatSession());
     } catch (error) {
       console.error("Error in fetchItinerary:", error);
@@ -502,11 +518,32 @@ const RouteEditSection = (props) => {
   };
 
   const startStatusPolling = (itineraryId) => {
+    if (!itineraryId) return;
+    // Guard against double-start (e.g. rapid duplicate save clicks).
+    if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
+
     setItineraryLoading(true);
     setPolling(true);
+    setWaitingForStatusUpdate(true);
 
+    // Fire once immediately so we don't pay the full interval delay before
+    // the first status read, then keep polling until everything resolves.
     fetchItineraryStatus(itineraryId);
+    pollingIntervalRef.current = setInterval(() => {
+      fetchItineraryStatus(itineraryId);
+    }, 4000);
   };
+
+  // Cleanup the polling interval if the user navigates away mid-update
+  // (e.g. closes the drawer) so we don't leak timers.
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   const validateDates = () => {
     const today = new Date();
@@ -624,14 +661,20 @@ const RouteEditSection = (props) => {
       axiosItineraryUpdateInstance
         .post("", data, { headers })
         .then((response) => {
+          if (response?.data) {
+            dispatch(setItinerary(response.data));
+          }
           setLoading(false);
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose();
+          // handleClose is intentionally deferred — the waiting-for-status
+          // effect closes the drawer once polling completes so the spinner
+          // stays mounted while the backend tasks finish.
         })
         .catch((err) => {
           setLoading(false);
+          setItineraryLoading(false);
           if (err?.response?.status === 403) {
             props.openNotification({
               text: "You are not allowed to make changes to this itinerary",
@@ -675,7 +718,7 @@ const RouteEditSection = (props) => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose();
+          // handleClose deferred — see non-mercury branch above.
         })
         .catch((err) => {
           setLoading(false);
