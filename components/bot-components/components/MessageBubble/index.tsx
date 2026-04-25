@@ -173,7 +173,94 @@ interface MessageBubbleProps {
    * whose CTA was already clicked this session.
    */
   widgetDisabled?: boolean;
+  /** Current feedback (thumbs up/down) for this message, or null. */
+  feedback?: { feedbackId: string; type: "up" | "down" } | null;
+  /** Disables feedback buttons while a request is in flight. */
+  feedbackLoading?: boolean;
+  /** Toggle feedback for this message; ChatKitPanel handles create/change/delete. */
+  onFeedback?: (messageId: string, type: "up" | "down") => void;
 }
+
+// ─── Feedback icons (thumbs up / thumbs down) ─────────────────────────────────
+
+const ThumbsUpIcon: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path
+      d="M18.9775 6.43432C18.5867 5.98399 18.1038 5.62288 17.5613 5.37545C17.0189 5.12801 16.4296 5.00002 15.8333 5.00015H12.5092L12.7892 3.29932C12.8882 2.70037 12.7687 2.08576 12.4524 1.5676C12.1361 1.04944 11.644 0.662246 11.066 0.476645C10.488 0.291044 9.8625 0.319403 9.30365 0.556548C8.74479 0.793693 8.2898 1.22382 8.02167 1.76849L6.42667 5.00015H4.16667C3.062 5.00147 2.00296 5.44089 1.22185 6.222C0.440735 7.00312 0.00132321 8.06216 0 9.16682L0 13.3335C0.00132321 14.4381 0.440735 15.4972 1.22185 16.2783C2.00296 17.0594 3.062 17.4988 4.16667 17.5002H15.25C16.2529 17.496 17.221 17.1321 17.9782 16.4745C18.7354 15.8168 19.2313 14.9092 19.3758 13.9168L19.9633 9.75015C20.0461 9.1591 20.0009 8.55716 19.8308 7.98509C19.6607 7.41302 19.3697 6.88417 18.9775 6.43432ZM1.66667 13.3335V9.16682C1.66667 8.50378 1.93006 7.86789 2.3989 7.39905C2.86774 6.93021 3.50363 6.66682 4.16667 6.66682H5.83333V15.8335H4.16667C3.50363 15.8335 2.86774 15.5701 2.3989 15.1013C1.93006 14.6324 1.66667 13.9965 1.66667 13.3335ZM18.3092 9.51599L17.7208 13.6827C17.6348 14.2776 17.3381 14.822 16.8847 15.2167C16.4312 15.6114 15.8512 15.8303 15.25 15.8335H7.5V6.44515C7.57853 6.37673 7.64355 6.2942 7.69167 6.20182L9.51583 2.50599C9.58424 2.38259 9.68095 2.27719 9.79802 2.19845C9.91509 2.11971 10.0492 2.06987 10.1893 2.05303C10.3293 2.0362 10.4714 2.05284 10.6038 2.10159C10.7362 2.15035 10.8551 2.22982 10.9508 2.33348C11.0327 2.42869 11.0926 2.54079 11.1261 2.66179C11.1597 2.78279 11.1661 2.90971 11.145 3.03349L10.705 5.70015C10.6857 5.8193 10.6925 5.94123 10.7249 6.05749C10.7574 6.17375 10.8147 6.28158 10.8929 6.37351C10.9711 6.46544 11.0684 6.53928 11.178 6.58993C11.2875 6.64057 11.4068 6.6668 11.5275 6.66682H15.8333C16.1912 6.66677 16.5448 6.74354 16.8705 6.89194C17.1961 7.04034 17.486 7.25691 17.7207 7.52701C17.9555 7.79712 18.1294 8.11446 18.231 8.4576C18.3325 8.80073 18.3591 9.16166 18.3092 9.51599Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const ThumbsDownIcon: React.FC = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path
+      d="M19.9592 10.25L19.3717 6.08333C19.2273 5.09161 18.7319 4.18459 17.9756 3.52706C17.2193 2.86952 16.2522 2.5051 15.25 2.5H4.16666C3.062 2.50132 2.00296 2.94073 1.22184 3.72185C0.440727 4.50296 0.00131559 5.562 -7.62939e-06 6.66667L-7.62939e-06 10.8333C0.00131559 11.938 0.440727 12.997 1.22184 13.7782C2.00296 14.5593 3.062 14.9987 4.16666 15H6.42666L8.02166 18.2317C8.2898 18.7763 8.74479 19.2065 9.30364 19.4436C9.86249 19.6807 10.488 19.7091 11.066 19.5235C11.644 19.3379 12.1361 18.9507 12.4524 18.4326C12.7687 17.9144 12.8882 17.2998 12.7892 16.7008L12.5092 15H15.8333C16.4298 15 17.0193 14.872 17.5621 14.6245C18.1048 14.3771 18.5881 14.016 18.9792 13.5657C19.3704 13.1154 19.6603 12.5863 19.8293 12.0143C19.9984 11.4423 20.0427 10.8406 19.9592 10.25ZM4.16666 4.16667H5.83333V13.3333H4.16666C3.50362 13.3333 2.86773 13.0699 2.39889 12.6011C1.93005 12.1323 1.66666 11.4964 1.66666 10.8333V6.66667C1.66666 6.00363 1.93005 5.36774 2.39889 4.8989C2.86773 4.43006 3.50362 4.16667 4.16666 4.16667ZM17.72 12.4733C17.4853 12.7433 17.1955 12.9598 16.87 13.1081C16.5445 13.2565 16.191 13.3333 15.8333 13.3333H11.5275C11.4066 13.3333 11.2872 13.3596 11.1775 13.4103C11.0678 13.4611 10.9704 13.5351 10.8922 13.6272C10.8139 13.7193 10.7567 13.8273 10.7243 13.9438C10.692 14.0603 10.6854 14.1824 10.705 14.3017L11.145 16.9683C11.1661 17.0921 11.1597 17.219 11.1261 17.34C11.0926 17.461 11.0327 17.5731 10.9508 17.6683C10.8548 17.7718 10.7356 17.851 10.603 17.8995C10.4705 17.9479 10.3283 17.9642 10.1882 17.9469C10.0481 17.9297 9.91405 17.8794 9.79716 17.8003C9.68028 17.7211 9.58386 17.6154 9.51583 17.4917L7.69166 13.7983C7.64354 13.706 7.57853 13.6234 7.49999 13.555V4.16667H15.25C15.8519 4.16887 16.4329 4.38727 16.8872 4.78208C17.3416 5.17689 17.6389 5.7218 17.725 6.3175L18.3133 10.4842C18.3627 10.8389 18.3352 11.2001 18.2329 11.5432C18.1305 11.8864 17.9556 12.2036 17.72 12.4733Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+const FeedbackButtons: React.FC<{
+  messageId: string;
+  feedback: { feedbackId: string; type: "up" | "down" } | null;
+  loading: boolean;
+  onFeedback: (messageId: string, type: "up" | "down") => void;
+}> = ({ messageId, feedback, loading, onFeedback }) => {
+  const baseStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    border: "none",
+    background: "transparent",
+    cursor: loading ? "not-allowed" : "pointer",
+    transition: "background 0.15s ease, color 0.15s ease",
+    padding: 0,
+  };
+  const activeColor = "#0d0d0d";
+  const idleColor = "#9ca3af";
+  const upActive = feedback?.type === "up";
+  const downActive = feedback?.type === "down";
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 4,
+        marginTop: 8,
+        marginLeft: -6,
+      }}
+    >
+      <button
+        type="button"
+        aria-label={upActive ? "Remove thumbs up" : "Thumbs up"}
+        aria-pressed={upActive}
+        disabled={loading}
+        onClick={() => onFeedback(messageId, "up")}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        style={{ ...baseStyle, color: upActive ? activeColor : idleColor }}
+      >
+        <ThumbsUpIcon />
+      </button>
+      <button
+        type="button"
+        aria-label={downActive ? "Remove thumbs down" : "Thumbs down"}
+        aria-pressed={downActive}
+        disabled={loading}
+        onClick={() => onFeedback(messageId, "down")}
+        onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        style={{ ...baseStyle, color: downActive ? activeColor : idleColor }}
+      >
+        <ThumbsDownIcon />
+      </button>
+    </div>
+  );
+};
 
 // ─── Markdown renderer ────────────────────────────────────────────────────────
 
@@ -754,6 +841,9 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
   onWidgetAction,
   entities = {},
   widgetDisabled = false,
+  feedback = null,
+  feedbackLoading = false,
+  onFeedback,
 }) => {
   const rendered = useMemo(
     () => renderContent(message.content, entities ?? {}),
@@ -906,6 +996,16 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
           {/* Fallback bubble dots */}
           {showDots && <ThinkingDots />}
+
+          {/* Feedback (thumbs up / down) — only on completed bot text replies */}
+          {hasContent && !streaming && onFeedback && message.id && (
+            <FeedbackButtons
+              messageId={message.id}
+              feedback={feedback}
+              loading={feedbackLoading}
+              onFeedback={onFeedback}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import FaqSection from "../components/revamp/home/FaqSection";
+import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -53,13 +54,6 @@ const PartnersSection = dynamic(() => import("../components/theme/PartnersSectio
   ssr: false,
   loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
 });
-const LuxuryEuropeDestinations = dynamic(
-  () => import("../components/revamp/home/LuxuryEuropeDestinations"),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-  }
-);
 const TravelerMadeItinerariesSection = dynamic(
   () => import("../components/revamp/home/TravelerMadeItinerariesSection"),
   {

@@ -1780,7 +1780,7 @@ function ButtonNode({
   const isProtectedAction = actionType
     ? ALWAYS_ENABLED_ACTIONS.has(actionType)
     : false;
-  const disabled = widgetDisabled && !isProtectedAction && !submit;
+  const disabled = false;
 
   const handleClick = () => {
     if (disabled) return;

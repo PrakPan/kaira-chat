@@ -1063,6 +1063,19 @@ const CityItem = ({
   const isDesktop = useMediaQuery("(min-width:767px)");
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
 
+  // P1 (Draft) fallback: when the shimmer/draft itinerary doesn't yet carry
+  // a start city name, label the row with the user's cached IP location so
+  // the start pin/label isn't blank during the loading state.
+  const userLocationFallback = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = JSON.parse(localStorage.getItem("userLocation") || "null");
+      return cached?.city || null;
+    } catch {
+      return null;
+    }
+  })();
+
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
   const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
@@ -1593,7 +1606,17 @@ useEffect(() => {
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
+          {!(upPresent && downPresent) && (
+            <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
+              {/* P1 fallback: when the draft itinerary hasn't surfaced a
+                  start-city name yet, use the user's IP-derived city so the
+                  label isn't blank under the start pin. */}
+              {city ||
+                (Itinerary?.status === "Draft" && isFirstCity
+                  ? userLocationFallback
+                  : null)}
+            </div>
+          )}
 
           {transfers_status === "PENDING" && !(Itinerary.status == "Draft")  ? (
   upPresent && downPresent ? (

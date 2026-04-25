@@ -383,6 +383,13 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
         {/* ── Name + tag ── */}
         <div className="flex flex-col min-w-0">
+          {/* "Recommendation:" prefix — distinguishes a recommendation row
+              from a real bookable item (activity / restaurant / poi). */}
+          {/* {isRecommendationOnly && (
+            <span className="text-[11px] text-[#07213A] font-medium leading-none mb-0.5">
+              Recommendation
+            </span>
+          )} */}
           <TooltipWrapper
             onMouseEnter={(e) => handleMouseEnter(e, `${idxInSlot}-${name}`)}
             onMouseLeave={() => setHoveredItem(null)}
@@ -432,6 +439,12 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
+  // Only render time-of-day slot headers when at least one element actually
+  // carries a `time` value. Otherwise buildSlotGroups would fall back to
+  // "Morning" for every item and show a misleading slot label.
+  const hasAnyTime = elements.some(
+    (item) => typeof item?.time === "string" && item.time.trim() !== "",
+  );
   const groups = buildSlotGroups();
   const presentSlots = TIME_ORDER.filter((s) => groups[s]);
 
@@ -473,37 +486,53 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
         <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {elements.length > 0 ? (
-            <div className="relative">
-              {/* Vertical timeline line — shown when there are slots to connect */}
-              {(presentSlots.length > 1 || elements.length > 1) && (
-                <div
-                  className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                  style={{ left: "3px", top: "8px", bottom: "8px" }}
-                />
-              )}
+            hasAnyTime ? (
+              <div className="relative">
+                {/* Vertical timeline line — shown when there are slots to connect */}
+                {(presentSlots.length > 1 || elements.length > 1) && (
+                  <div
+                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
+                    style={{ left: "3px", top: "8px", bottom: "8px" }}
+                  />
+                )}
 
-              <div className="flex flex-col gap-1">
-                {presentSlots.map((slot) => (
-                  <div key={slot}>
-                    {/* Slot header */}
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
-                      <span className="text-[14px] font-[500] text-[#111]">
-                        {slot}
-                      </span>
-                    </div>
+                <div className="flex flex-col gap-1">
+                  {presentSlots.map((slot) => (
+                    <div key={slot}>
+                      {/* Slot header */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
+                        <span className="text-[14px] font-[500] text-[#111]">
+                          {slot}
+                        </span>
+                      </div>
 
-                    {/* Items in slot */}
-                    <div className="ml-[22px] flex flex-col gap-3">
-                      {groups[slot].map((item, idxInSlot) =>
-                        renderItem(item, idxInSlot)
-                      )}
+                      {/* Items in slot */}
+                      <div className="ml-[22px] flex flex-col gap-3">
+                        {groups[slot].map((item, idxInSlot) =>
+                          renderItem(item, idxInSlot)
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-
+            ) : (
+              // No item carries a `time` value — drop the time-slot headers
+              // but keep the vertical timeline rail so the column still reads
+              // as a connected day instead of a bare list.
+              <div className="relative">
+                {elements.length > 1 && (
+                  <div
+                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
+                    style={{ left: "3px", top: "8px", bottom: "8px" }}
+                  />
+                )}
+                <div className="ml-[22px] flex flex-col gap-3">
+                  {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
+                </div>
+              </div>
+            )
           ) : props?.isLastDay ? (
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <IoBagCheckOutline size={15} />

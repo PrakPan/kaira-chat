@@ -14,6 +14,7 @@ import ChatWelcomeScreen from "./components/ChatWelcomeScreen";
 import TrustIndicators from "./components/TrustIndicators";
 import { useUserLocation } from "./hooks/useUserLocation";
 import { useMapBounds } from "./hooks/useMapBounds";
+import { getPlatform } from "./hooks/useChat";
 import { ItineraryStatusLoader } from "../../containers/itinerary/ItineraryContainer";
 import ItineraryContainer from "../../containers/itinerary/ItineraryContainer";
 import type {
@@ -42,6 +43,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import SmallGallery from "../../containers/newitinerary/overview/SmallGallery";
 import NewSummaryContainers from "../../containers/itinerary/NewSummaryContainers";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import ModalWithBackdrop from "../ui/ModalWithBackdrop";
 import Settings from "../settings/Index";
 import { SocialShareDesktop } from "../../containers/itinerary/booking1/SocialShare";
@@ -157,6 +159,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const [activeTravellerStory, setActiveTravellerStory] = useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [locations, setLocations] = useState<Location[] | null>(null);
   const [currentRoute, setCurrentRoute] = useState<Location[] | null>(null);
@@ -166,7 +169,10 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   const [transfers, setTransfers] = useState<TransfersData | null>(null);
   const [showItineraryShimmer, setShowItineraryShimmer] = useState(false);
 
-  const [viewMode, setViewMode] = useState<ViewMode>("map");
+  // On refresh (sessionId present), default desktop to the itinerary tab so
+  // P1 / P2 reloads land on the itinerary panel — not the map. Fresh sessions
+  // (no sessionId) still start on map for the StartScreen → P1 route flow.
+  const [viewMode, setViewMode] = useState<ViewMode>(sessionId ? "itinerary" : "map");
   const [botMode, setBotMode] = useState<BotMode>("p1");
   const [itineraryId, setItineraryId] = useState("");
   const [chatKey, setChatKey] = useState(0);
@@ -700,18 +706,34 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
   }, [isMobile]);
 
   const handleLoadRouteOnMap = useCallback(() => {
+    // load_route_on_map is the bot's signal to switch to the map for the
+    // initial route preview. Past P1 (during completion or after the
+    // itinerary is built) we just keep the user on the itinerary panel.
+    if (botMode !== "p1" || isItineraryCompleting || itineraryCreatedInSessionRef.current) {
+      revealLeftPanel();
+      return;
+    }
     setIsRoutePreparing(true);
     setViewMode("map");
     setMobilePanel("map");
     revealLeftPanel();
-  }, [revealLeftPanel]);
+  }, [revealLeftPanel, botMode, isItineraryCompleting]);
 
   const handleRouteReceived = useCallback(
     (routeData: { data: Location[] }) => {
       setIsRoutePreparing(false);
       revealLeftPanel();
       if (routeData.data && Array.isArray(routeData.data) && routeData.data.length > 0) {
-        if (!isRestoringRef.current) {
+        // Auto-focus the map only in the initial route-creation stage (P1, not
+        // mid-completion). Once the itinerary is being built or finalized
+        // (P2), focus_route effects re-emitted by drawers/refreshes must not
+        // yank the user off the itinerary panel.
+        const canFocusMap =
+          !isRestoringRef.current &&
+          botMode === "p1" &&
+          !isItineraryCompleting &&
+          !itineraryCreatedInSessionRef.current;
+        if (canFocusMap) {
           setViewMode("map");
           setMobilePanel("map");
           // On mobile: show "Back to Map" popup so user knows the map has updated
@@ -736,7 +758,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         });
       }
     },
-    [revealLeftPanel, triggerMobileEffectPopup],
+    [revealLeftPanel, triggerMobileEffectPopup, botMode, isItineraryCompleting],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -778,6 +800,37 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
         if (!hasRealCities) {
           const skeleton = buildSkeletonItinerary();
+          // Stamp start/end city so the P1 day-by-day rail shows the trip
+          // origin/return labels straight away, even before the canonical
+          // display_itinerary effect lands. Falls back to the user's IP
+          // location when the shimmer payload doesn't carry an endpoint —
+          // mirrors the same fallback that handleItineraryReceived applies
+          // for non-shimmer drafts below.
+          const buildShimmerEndpoint = (raw: any) => {
+            const name = raw?.name ?? raw?.city ?? raw?.city_name;
+            const placeId = raw?.gmaps_place_id ?? raw?.place_id;
+            if (name || placeId) {
+              return {
+                city_name: String(name ?? ""),
+                gmaps_place_id: placeId ?? null,
+                place_id: placeId ?? null,
+                latitude: raw?.latitude ?? null,
+                longitude: raw?.longitude ?? null,
+              };
+            }
+            if (userLocation) {
+              return {
+                city_name: userLocation.city ?? "Your location",
+                gmaps_place_id: null,
+                place_id: null,
+                latitude: userLocation.lat,
+                longitude: userLocation.lng,
+              };
+            }
+            return null;
+          };
+          (skeleton as any).start_city = buildShimmerEndpoint(data?.start_city);
+          (skeleton as any).end_city = buildShimmerEndpoint(data?.end_city);
           dispatch(setItinerary(skeleton));
           dispatch(setItineraryDaybyDay(skeleton));
           dispatch(setBreif(skeleton));
@@ -933,15 +986,22 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
         // leftover polylines from a prior transfer/route query don't persist.
         setCurrentRoute(null);
         setLocations(locationData.data);
-        // Focus the map on both desktop and mobile when a map-typed response
-        // arrives so the user immediately sees the new pins.
-        if (!isRestoringRef.current) {
+        // Only auto-focus map in P1 (route-creation stage). In P2 / during
+        // completion, drawer-triggered focus_on_map / display_pois effects
+        // must update the underlying pins without yanking the view off the
+        // itinerary panel.
+        const canFocusMap =
+          !isRestoringRef.current &&
+          botMode === "p1" &&
+          !isItineraryCompleting &&
+          !itineraryCreatedInSessionRef.current;
+        if (canFocusMap) {
           setViewMode("map");
           setMobilePanel("map");
         }
       }
     },
-    [revealLeftPanel],
+    [revealLeftPanel, botMode, isItineraryCompleting],
   );
 
   // Start / end trip endpoint pins (derived from shimmer_day_by_day,
@@ -1056,6 +1116,7 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
           body: JSON.stringify({
             type: "threads.get_by_id",
             params: { thread_id: threadId },
+            platform: getPlatform(),
           }),
         });
         const data = await res.json();
@@ -1249,6 +1310,93 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
 
   const restoreLatestThread = useCallback(
     async (sid: string) => {
+      // ── Refresh restore: status API has priority ──────────────────────────
+      // Order intentionally matches the UX: render the itinerary first from
+      // the canonical APIs, then layer chat history on top.
+      //
+      //   1. Status API (source of truth for trip existence).
+      //      ├─ ok  → restoreItineraryDirectly(sid) fires the canonical
+      //      │       itinerary fetch + dispatches Redux statuses so the
+      //      │       itinerary panel starts rendering immediately. Then
+      //      │       chatkit threads.list / get_by_id pulls in messages.
+      //      │       Empty chatkit response is fine — we keep the itinerary.
+      //      └─ fail → fall through to chatkit-only path.
+      //
+      //   2. Chatkit fallback — threads.list, then loadThread (which
+      //      internally does threads.get_by_id). Any thread is enough to
+      //      keep the chat alive even with no status data.
+      //
+      //   3. Both empty → no recoverable session, push to /thank-you.
+
+      // ── Step 1: status API ───────────────────────────────────────────────
+      let statusOk = false;
+      let allDone = false;
+      try {
+        const { axiosGetItineraryStatus } = await import(
+          "../../services/itinerary/daybyday/preview"
+        );
+        const statusRes = await axiosGetItineraryStatus.get(`/${sid}/status/`);
+        const celery = statusRes?.data?.celery;
+        statusOk = !!celery;
+        if (celery) {
+          allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
+            (k) => celery[k] === "SUCCESS" || celery[k] === "FAILURE",
+          );
+        }
+      } catch (e) {
+        console.warn("[restoreLatestThread] status check failed:", e);
+        statusOk = false;
+      }
+
+      if (statusOk) {
+        // 1a. Itinerary APIs first — Redux statuses, activeItineraryId
+        //     (drives ItineraryContainer's canonical fetch + polling).
+        await restoreItineraryDirectly(sid);
+
+        // 1b. Chatkit second — only for chat history. Empty / failed
+        //     response is non-fatal: the itinerary is already on screen.
+        try {
+          const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              type: "threads.list",
+              params: { limit: 9999, order: "desc" },
+              filter_session_id: sid,
+              platform: getPlatform(),
+            }),
+          });
+          const listData = await listRes.json();
+          const threads = listData.data ?? [];
+          if (threads.length > 0) {
+            await loadThread(threads[0].id);
+          } else if (allDone) {
+            // Status confirms a finalized trip but there's no chat thread
+            // yet — seed the conversation with a summary request so the
+            // user lands with context. restoreItineraryDirectly has
+            // already set botMode to "p2", so ChatKitPanel will route
+            // the message through /chatkit/p2.
+            console.log(
+              "[restoreLatestThread] status p2 + empty chatkit — seeding summary prompt",
+            );
+            setInitialPrompt("Hey Kaira! provide summary of my itinerary");
+            setIsChatActive(true);
+          } else {
+            console.log(
+              "[restoreLatestThread] status ok (still building), chatkit empty — chat skipped",
+            );
+          }
+        } catch (err) {
+          console.warn(
+            "[restoreLatestThread] status ok but chatkit fetch failed:",
+            err,
+          );
+        }
+        return;
+      }
+
+      // ── Step 2: status failed → chatkit-only fallback ────────────────────
+      let threads: any[] = [];
       try {
         const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
@@ -1257,27 +1405,34 @@ export default function BotApp({ sessionId }: { sessionId?: string }) {
             type: "threads.list",
             params: { limit: 9999, order: "desc" },
             filter_session_id: sid,
+            platform: getPlatform(),
           }),
         });
         const listData = await listRes.json();
-        const threads = listData.data ?? [];
-
-        console.log("[restoreLatestThread] threads found:", threads.length, "sid:", sid);
-        if (threads.length === 0) {
-          // No chatkit threads → old itinerary, load directly
-          console.log("[restoreLatestThread] no threads, falling back to restoreItineraryDirectly");
-          await restoreItineraryDirectly(sid);
-          return;
-        }
-
-        console.log("[restoreLatestThread] loading thread:", threads[0].id);
-        await loadThread(threads[0].id);
+        threads = listData.data ?? [];
       } catch (err) {
-        console.error("Failed to restore session:", err);
-        await restoreItineraryDirectly(sid);
+        console.error("[restoreLatestThread] threads.list failed:", err);
+        threads = [];
+      }
+
+      if (threads.length > 0) {
+        await loadThread(threads[0].id);
+        return;
+      }
+
+      // ── Step 3: both empty → /thank-you ──────────────────────────────────
+      console.warn(
+        "[restoreLatestThread] no status + no chatkit threads — redirecting to /thank-you",
+      );
+      try {
+        await router.replace("/thank-you");
+      } catch {
+        if (typeof window !== "undefined") {
+          window.location.href = "/thank-you";
+        }
       }
     },
-    [restoreItineraryDirectly, loadThread],
+    [restoreItineraryDirectly, loadThread, router],
   );
 
   // ── Only restore on initial mount ────────────────────────────────────────
@@ -2275,7 +2430,8 @@ const MobileHeader = React.memo(({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: "threads.list", params: { limit: 9999, order: "desc" }, filter_user_id: String(userId),
-        //  filter_bot: isComplete ? "P2" : "P1" 
+          platform: getPlatform(),
+        //  filter_bot: isComplete ? "P2" : "P1"
         }),
       });
       const data = await res.json();

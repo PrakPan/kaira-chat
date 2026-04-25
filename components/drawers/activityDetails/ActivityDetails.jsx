@@ -482,7 +482,7 @@ export default function ActivityDetails(props) {
                   + checkout), and even a single-day option is informational. */}
               <div className="relative">
                 {/* Date box trigger */}
-                {/* <div
+                <div
                   ref={dateBoxRef}
                   className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
                   onClick={() => setShowCalender((prev) => !prev)}
@@ -498,21 +498,21 @@ export default function ActivityDetails(props) {
                       showCalender ? "rotate-180" : ""
                     }`}
                   />
-                </div> */}
+                </div>
 
                 {/* Desktop dropdown — positioned absolutely below the trigger */}
-                {/* {showCalender && (
+                {showCalender && (
                   <div
                     ref={calendarDesktopRef}
                     className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
                   >
                     <DayListContent />
                   </div>
-                )} */}
+                )}
               </div>
             </div>
 
-            {/* {availableTimePeriods.length > 0 && (
+            {availableTimePeriods.length > 0 && (
               <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
                 {availableTimePeriods.map((period) => {
                   const isSelected = selectedTimeOfDay === period;
@@ -532,7 +532,7 @@ export default function ActivityDetails(props) {
                   );
                 })}
               </div>
-            )} */}
+            )}
 
             {props?.data?.rating && (
               <div className="flex items-center gap-1">

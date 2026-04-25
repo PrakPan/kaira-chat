@@ -5,6 +5,7 @@ import Link from "next/link";
 import LogInModal from "../../../userauth/LogInModal";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import { getPlatform } from "../../hooks/useChat";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 
@@ -425,6 +426,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           type: "threads.list",
           params,
           filter_user_id: String(userId),
+          platform: getPlatform(),
           // filter_bot: isComplete ? "P2" : "P1",
         }),
       });

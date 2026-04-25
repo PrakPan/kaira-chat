@@ -107,18 +107,7 @@ const HeadingContent = ({ title, subtitle }) => {
           size="medium"
           className="mt-6 !bg-primary-indigo !border-primary-indigo hover:!bg-primary-indigo/90"
           onClick={() => {
-            router.push(
-              {
-                pathname: router.pathname,
-                query: {
-                  ...router.query,
-                  "tailored-travel": "true",
-                },
-              },
-              undefined,
-              { shallow: true }
-            );
-            setShowMobilePlanner(true);
+            router.push("/chat");
           }}
         >
           <div className="flex items-center space-x-2">
