@@ -111,19 +111,17 @@ const Details = (props) => {
             postion?.duration !== "0"
           ) {
             Locationlatlong.push({
-              // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              dayId: "12",
-              cityData: postion,
-              id: postion?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY",
-              city_id: postion.city?.id || postion?.gmaps_place_id,
-              lat: postion.city?.latitude,
-              long: postion.city?.longitude,
-              name: postion.city?.name || postion?.city_name,
-              duration: postion.duration,
-              color: color,
-              // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              date: postion.start_date,
-            });
+  dayId: "12",
+  cityData: postion,
+  id: postion?.gmaps_place_id || postion?.city?.gmaps_place_id || "ChIJ78XjhlaF4TgRxgXjwXxLJGY",
+  city_id: postion.city?.id || postion?.city_id || postion?.gmaps_place_id,
+  lat: postion?.lat ?? postion?.city?.latitude ?? postion?.latitude,
+  long: postion?.long ?? postion?.city?.longitude ?? postion?.longitude,
+  name: postion?.name || postion.city?.name || postion?.city_name,
+  duration: postion.duration,
+  color: postion?.color || color,
+  date: postion?.date || postion?.start_date,
+});
           }
         }
       }
@@ -182,90 +180,9 @@ const Details = (props) => {
   }, []);
 
   return (
-    <div id="brief" className="mb-3xl mt-lg max-ph:mt-xl max-ph:mb-xl">
-      <DetailsContainer>
-        {/* <RoutesRow className="flex w-full justify-between">
-          <div className="flex gap-[10px]"> */}
-        {/* <Image src={'/assets/Itinerary/route.svg'} width={18} height={20} />   */}
-        {/* <span className="Body2M_14">Trip Summary</span></div>
-          <button
-            className="underline underline-offset-1 text-[#3A85FC] cursor-pointer"
-           onClick={() => {
-              props?.requireAuth('view',()=>{
-                // if(id != customer){
-                //   dispatch(setCloneItineraryDrawer(true));
-                //   return;
-                // }
+    <div id="brief" className="mb-2xl mt-lg max-ph:mt-xl max-ph:mb-xl">
 
-                router.push({
-                pathname: `/itinerary/${router?.query?.id}`,
-                query: {
-                  drawer: "handleEditRoute",
-                },
-              })
-            })  
-            }}
-          >
-            View
-          </button>
-
-        </RoutesRow> */}
-        {/* <div
-          className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
-          id="MapcontainerRoute"
-        >
-          <div
-            className="absolute w-[100%] h-[100%] rounded-xl"
-            style={{ overflow: "hidden" }}
-          >
-            <RoutesMap
-              locations={locationsLatLong}
-              setShowDrawer={setShowDrawer}
-              setShowDrawerData={setShowDrawerData}
-            />
-          </div>
-        </div>
-
-        <RouteComponent>
-          <div id="route">
-            <Route
-              mercuryItinerary={props?.mercuryItinerary}
-              loadbookings={props?.loadbookings}
-              payment={props.payment}
-              dayslab={props.itinerary?.day_slabs}
-              breif={props.breif}
-              routesData={props.routesData}
-              CityData={props?.CityData}
-              transfers={props.transfersData}
-              cityTransferBookings={props.cityTransferBookings}
-              setPlaceID={setActive}
-              active={active}
-              setCurrentPopup={setCurrentPopup}
-              setShowDrawer={setShowDrawer}
-              setShowDrawerData={setShowDrawerData}
-              fetchData={props.fetchData}
-              resetRef={props?.resetRef}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowLoginModal={props.setShowLoginModal}
-              _GetInTouch={props._GetInTouch}
-              setEdit={props.setEditRoute}
-              _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              _updateBookingHandler={props._updateBookingHandler}
-              setHideFlightModal={props.setHideFlightModal}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              setHideBookingModal={props.setHideBookingModal}
-              showFlightModal={props.showFlightModal}
-              setShowFlightModal={props.setShowFlightModal}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              setShowTaxiModal={props.setShowTaxiModal}
-              showTaxiModal={props.showTaxiModal}
-              findDayIdByCityId={findDayIdByCityId}
-            />
-          </div>
-        </RouteComponent> */}
-      </DetailsContainer>
-
-      {router.query.drawer === "handleEditRoute" && (
+      {/* {router.query.drawer === "handleEditRoute" && ( */}
         <RouteEditSection
           mercuryItinerary={props?.mercuryItinerary}
           routes={props?.CityData}
@@ -281,17 +198,18 @@ const Details = (props) => {
           setLocationsLatLong={setLocationsLatLong}
           resetRef={props?.resetRef}
           setActiveTab={props?.setActiveTab}
+          fromChat={props.fromChat}
         >
-          {isDesktop ? (
+          {/* {isDesktop ? (
             <RoutesMap
               locations={locationsLatLong}
               setShowDrawer={setShowDrawer}
               setShowDrawerData={setShowDrawerData}
               setEditRoute={props.setEditRoute}
             />
-          ) : null}
+          ) : null} */}
         </RouteEditSection>
-      )}
+      {/* )} */}
 
       {props.traveleritinerary ? (
         <DesktopBanner

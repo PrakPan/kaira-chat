@@ -67,6 +67,8 @@ import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
+import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -1289,6 +1291,8 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [showVisaDrawer, setShowVisaDrawer] = useState(false);
+  const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -1522,17 +1526,21 @@ const Details = (props) => {
   const handleCloseDrawer = () => {
     if (isDirectlyOpenPaymentDrawer) {
       setIsDirectlyOpenPaymentDrawer(false);
-      props.setShowFooterBannerMobile();
+      props.setShowFooterBannerMobile?.();
     }
     setShowPaymentDrawer(false);
     setShowDetailedPayment(false);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}`,
-      },
-      undefined,
-      { scroll: false },
-    );
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("drawer");
+      window.history.pushState({}, "", url.toString());
+    } else {
+      router.push(
+        { pathname: `/itinerary/${router.query.id}` },
+        undefined,
+        { scroll: false },
+      );
+    }
   };
 
   const scrollToElement = (elementId) => {
@@ -1712,8 +1720,8 @@ const Details = (props) => {
   // setBookingSummary();
 
   function getURL() {
-    const url = router.asPath.split("?")[0];
-    const searchParams = new URLSearchParams(router.asPath.split("?")[1]);
+    const url = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
     searchParams.delete("t");
     const newPath =
       url + (searchParams.toString() ? `?${searchParams.toString()}` : "");
@@ -1744,7 +1752,7 @@ const Details = (props) => {
 
       axios
       .post(
-            "https://mercury.tarzanway.com/payment/verify/",
+            "https://dev.mercury.tarzanway.com/payment/verify/",
             { ...response },
             { headers: { Authorization: `Bearer ${props.token}` } }
           )
@@ -2066,16 +2074,21 @@ const Details = (props) => {
   const handleProceedToPayment = () => {
     setShowDetailedPayment(true);
     setShowPaymentDrawer(true);
-    router.push(
-      {
-        pathname: `/itinerary/${router.query.id}/`,
-        query: {
-          drawer: "payment",
+    // On the chat page (/chat/*) don't navigate away — just update the URL param
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/chat/")) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("drawer", "payment");
+      window.history.pushState({}, "", url.toString());
+    } else {
+      router.push(
+        {
+          pathname: `/itinerary/${router.query.id}/`,
+          query: { drawer: "payment" },
         },
-      },
-      undefined,
-      { scroll: false },
-    );
+        undefined,
+        { scroll: false },
+      );
+    }
   };
 
   const areAllInclusionsPaid = () => {
@@ -2198,11 +2211,19 @@ const Details = (props) => {
               </div>
             </div>
 
+            {/* Mobile-only: LivePriceTimer right below back button */}
+            {!(pricing_status === "PENDING" || props?.loadpricing) &&
+              !(final_status == "Paid" || final_status == "Released") && (
+              <div className="block md:hidden mb-2 -mx-[12px]">
+                <LivePriceTimer priceValidUntil={Cart?.price_valid_until} />
+              </div>
+            )}
+
             {/* Updated row with proper overflow handling */}
             <div className="row py-md bg-text-white">
               {/* Left column - Scrollable content */}
               <div
-                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pr-md"
+                className="col-md-8 border-r-sm border-text-disabled overflow-y-auto max-h-[calc(100vh-210px)] pb-[80px] md:pb-0 pr-md"
                 style={{
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
@@ -2475,7 +2496,7 @@ const Details = (props) => {
               </div>
 
               {/* Right column - Fixed/Sticky pricing section */}
-              <div className="col-md-4">
+              <div className="col-md-4 pb-[70px] md:pb-0">
                 <div
                   className="md:sticky md:top-4 md:max-h-[calc(100vh-120px)] md:overflow-y-auto"
                   style={{
@@ -2488,7 +2509,7 @@ const Details = (props) => {
                       <PricingSkeleton />
                     </div>
                   ) : (
-                    <div>
+                    <div className="hidden md:block">
                       {!(
                         final_status == "Paid" || final_status == "Released"
                       ) && (
@@ -2606,12 +2627,14 @@ const Details = (props) => {
                         </div>
                       </>
                     ) : (
-                      <PaymentButton
-                        amount={calculateFilteredTotal()}
-                        isLoading={paymentLoading}
-                        paymentType={"full"}
-                        onClick={() => handlePayNow("full")}
-                      />
+                      <div className="fixed bottom-0 left-0 right-0 bg-white px-4 pt-2 pb-4 z-[100] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] md:static md:bg-transparent md:px-0 md:pt-0 md:pb-0 md:z-auto md:shadow-none">
+                        <PaymentButton
+                          amount={calculateFilteredTotal()}
+                          isLoading={paymentLoading}
+                          paymentType={"full"}
+                          onClick={() => handlePayNow("full")}
+                        />
+                      </div>
                     )}
 
                     {/* WhatsApp Button */}
@@ -2664,6 +2687,47 @@ const Details = (props) => {
                         </div>
                       </>
                     }
+
+                    {/* Visa & eSIM CTAs */}
+                    <div className="mt-md mb-md">
+                      <hr className="text-text-placeholder mb-md" />
+                      <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
+                        Enhance Your Trip
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <button
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                          onClick={() => setShowVisaDrawer(true)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                              <span className="text-[18px]">🛂</span>
+                            </div>
+                            <div className="text-left">
+                              <div className="text-[13px] font-600 text-[#01202B]">Add Visa</div>
+                              <div className="text-[11px] text-[#6E757A]">Hassle-free visa assistance</div>
+                            </div>
+                          </div>
+                          <span className="text-[#979393] text-lg">›</span>
+                        </button>
+
+                        <button
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                          onClick={() => setShowEsimDrawer(true)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                              <span className="text-[18px]">📶</span>
+                            </div>
+                            <div className="text-left">
+                              <div className="text-[13px] font-600 text-[#01202B]">Add eSIM</div>
+                              <div className="text-[11px] text-[#6E757A]">Stay connected abroad</div>
+                            </div>
+                          </div>
+                          <span className="text-[#979393] text-lg">›</span>
+                        </button>
+                      </div>
+                    </div>
 
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
@@ -2784,6 +2848,16 @@ const Details = (props) => {
           <PassengerDetails />
         </div>
       </Drawer>
+
+      <VisaSearchDrawer
+        show={showVisaDrawer}
+        onHide={() => setShowVisaDrawer(false)}
+      />
+
+      <EsimPackagesDrawer
+        show={showEsimDrawer}
+        onHide={() => setShowEsimDrawer(false)}
+      />
     </>
   );
 };

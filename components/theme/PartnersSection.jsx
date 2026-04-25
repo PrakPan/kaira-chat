@@ -140,6 +140,7 @@ const PartnersSection = () => {
                     src={partner.logo}
                     alt={partner.alt}
                     className="max-w-full max-h-full object-contain px-4"
+                    loading='lazy'
                     onError={(e) => {
                       e.target.style.display = 'none';
                       e.target.parentElement.innerHTML = `<div class="text-gray-400 font-semibold text-sm text-center">${partner.name}</div>`;

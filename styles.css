@@ -1,7 +1,21 @@
 
 /* Globally applied Inter font on priority */
-*:not(.fa):not(.glyphicon) {
+/* *:not(.fa):not(.glyphicon) {
     font-family: Inter !important;
+} */
+
+
+
+html, body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+* {
+  font-family: inherit !important;
+}
+
+.fa, .glyphicon {
+  font-family: initial !important;
 }
 
 /* Freshchat bot */

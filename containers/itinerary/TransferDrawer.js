@@ -71,6 +71,8 @@ const TransferDrawer = ({
   const dispatch = useDispatch();
   const router = useRouter();
   const [error, setError] = useState(false);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -92,8 +94,9 @@ const TransferDrawer = ({
   const handleEditRoute = (data = null) => {
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer:
             data?.is_airport_drop || data?.is_airport_pickup
               ? "addPickupDrop"
@@ -131,7 +134,7 @@ const TransferDrawer = ({
       setLoading(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
+          `${MERCURY_HOST}/api/v1/itinerary/${router.query.sessionId || router?.query?.id}/bookings/${
             combo ? `combo` : booking_type?.toLowerCase()
           }/${booking_id}/`,
         );

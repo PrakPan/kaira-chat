@@ -11,6 +11,7 @@ import NavigationMenu from "./revamp/home/NavigationMenu";
 import TailoredFormMobileModal from "./modals/OldFormTailoredFomrMobile";
 import { useRouter } from "next/router";
 import { closeTailoredModal } from "../services/openTailoredModalV2";
+import TrustFactor from "./tailoredform/TrustFactor";
 
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -107,7 +108,7 @@ const Layout = React.memo((props) => {
 
       <div
         style={{ marginTop: props.isItinerary === true
-        ? (isPageWide ? "72px" : "0px")
+        ? (isPageWide ? "22px" : "0px")
         : "0px" }}
       >
         {props.children}
@@ -127,7 +128,8 @@ const Layout = React.memo((props) => {
       {!props.itinerary ? (
         <Footer page={props.page} slug={props.slug}></Footer>
       ) : null}
-
+     
+    
 
     </div>
   );

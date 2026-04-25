@@ -1,5 +1,3 @@
-// components/ClarityInit.jsx
-
 import { useEffect } from "react";
 import { initClaritySession, getJupiterSessionId } from "../utils/claritySession";
 import { useAnalytics } from "../hooks/useAnalytics";

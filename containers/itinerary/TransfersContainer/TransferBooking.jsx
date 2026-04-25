@@ -4,30 +4,18 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect,  useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
-import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
 import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail2";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
-import {
-  updateAirportTransferBooking,
-  updateTransferBookings,
-} from "../../../store/actions/transferBookingsStore";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
-import TransferDrawer from "../TransferDrawer";
-import PickupDropDrawer from "../PickupDropDrawer";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { useAnalytics } from "../../../hooks/useAnalytics";
 import { setCloneItineraryDrawer } from "../../../store/actions/cloneItinerary";
+import { useDispatch } from "react-redux";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -35,23 +23,22 @@ const LineContainer = styled.div`
   left: 11px;
   bottom: 0;
   right: -25px;
-  width: 1px;
-  z-index: -1;
+  width: 2px;
+  z-index: 0;
   display: flex;
   flex-direction: column;
 `;
 
 const HalfLine = styled.div`
   flex: ${(props) => props.flex || 1};
-  width: 100%;
+  width: 2px;
   background-image: repeating-linear-gradient(
     to bottom,
-    ${(props) => props.color || "black"},
-    ${(props) => props.color || "black"} 4px,
+    ${(props) => props.color || "#AAAAAA"},
+    ${(props) => props.color || "#AAAAAA"} 4px,
     transparent 4px,
     transparent 8px
   );
-  background-repeat: repeat-y;
 `;
 
 const Container = styled.div`
@@ -100,6 +87,8 @@ const TransferBooking = ({
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+  const currentItineraryId = router.query.id || reduxItineraryId;
   const {
     trackTransferBookingAdd,
     trackTransferBookingChange,
@@ -120,15 +109,16 @@ const TransferBooking = ({
 
   const handleAddTransfer = () => {
     trackTransferBookingChange(
-      router.query.id,
+      currentItineraryId,
       transferId,
       oCityData?.name || oCityData?.city_name,
       dCityData?.name || dCityData?.city_name
     );
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -144,25 +134,19 @@ const TransferBooking = ({
   };
 
   const handleRoute = (book) => {
-    // if( id != customer){
-    //   dispatch(setCloneItineraryDrawer(true));
-    //   return;
-    // }
     trackTransferCardClicked(
-      router.query.id,
+      currentItineraryId,
       book?.id || booking_id,
       "transfer_section",
       oCityData?.name || oCityData?.city_name,
       dCityData?.name || dCityData?.city_name
     );
-    // if(isAirport){
-    //   setAirportBookingId(book?.id)
-    // }
 
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer:
             book?.transfer_type == "sightseeing" ? "SightSeeing" : "Intracity",
           bookingId: book?.id || booking_id,
@@ -324,7 +308,7 @@ const TransferBooking = ({
                         <div
                           id={booking?.id}
                           className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                            !isPageWide ? "w-full" : "max-w-[54vw]"
+                            !isPageWide ? "w-full" : "max-w-[51vw]"
                           }`}
                         >
                           <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
@@ -340,6 +324,7 @@ const TransferBooking = ({
                                           ?.taxi_category?.image
                                       }
                                       leftalign
+                                      noLazy
                                       height={
                                         booking?.image?.includes("gozo")
                                           ? "3rem"
@@ -670,7 +655,7 @@ const TransferBooking = ({
                       <div
                         id={book?.id}
                         className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                          !isPageWide ? "w-full" : "max-w-[54vw]"
+                          !isPageWide ? "w-full" : "max-w-[51vw]"
                         }`}
                       >
                         <div className="flex flex-row items-center justify-between gap-1 w-full">
@@ -683,6 +668,7 @@ const TransferBooking = ({
                                     ?.image
                                 }
                                 leftalign
+                                noLazy
                                 height={
                                   book?.image?.includes("gozo")
                                     ? "3rem"
@@ -998,7 +984,7 @@ const FlightBooking = ({
     // }
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "Intracity",
           bookingId: booking_id || booking?.id || booking_id,

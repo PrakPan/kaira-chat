@@ -7,25 +7,41 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import { useRouter } from "next/router";
 import * as ga from "../services/ga/Index";
-import { FACEBOOK_PIXEL_ID } from "../services/constants";
-import { GOOGLE_CLIENT_ID } from "../services/constants";
+import { FACEBOOK_PIXEL_ID, GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
 import { useDispatch, useSelector } from "react-redux";
 import { authLogout } from "../store/actions/auth";
-import Loading from "./loading";
-import { usePathname } from "next/navigation";
 import { cleanExpiredLocalStorage } from "../services/localStorageUtils";
-import JupyterAnalytics from "../components/JupyterAnalytics";
-import { changeUserLocation } from "../store/actions/userLocation";
-import Cookies from "js-cookie";
-import { setCurrencySymbols } from "../store/actions/currencyActions";
-import axios from "axios";
-import ClarityInit from "../components/ClarityInit";
+import { usePathname } from "next/navigation";
+import BotApp from "../components/bot-components/BotApp";
 
-function MyApp({ Component, pageProps, store }) {
+// Polyfill for requestIdleCallback (Safari compatibility)
+if (typeof window !== "undefined" && !window.requestIdleCallback) {
+  window.requestIdleCallback = function (callback) {
+    const start = Date.now();
+    return setTimeout(function () {
+      callback({
+        didTimeout: false,
+        timeRemaining: function () {
+          return Math.max(0, 50 - (Date.now() - start));
+        },
+      });
+    }, 1);
+  };
+  window.cancelIdleCallback = function (id) {
+    clearTimeout(id);
+  };
+}
+
+// Lazy-loaded components (non-critical)
+const ClarityInit = dynamic(() => import("../components/ClarityInit"), {
+  ssr: false,
+});
+
+function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const ref = useRef();
   const dispatch = useDispatch();
@@ -42,209 +58,57 @@ function MyApp({ Component, pageProps, store }) {
 
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
-    if (jssStyles) {
-      jssStyles.parentElement.removeChild(jssStyles);
-    }
+    if (jssStyles) jssStyles.parentElement.removeChild(jssStyles);
   }, []);
 
+  // Clean expired local storage
   useEffect(() => {
-    cleanExpiredLocalStorage(); 
+    cleanExpiredLocalStorage();
   }, []);
 
-  // useEffect(() => {
-  //   if(currentPath=="") {
-  //     setCurrentPath(newPath)
-  //     return
-  //   }
-  //   const handleStart = (url) => {
-  //     const isSameItineraryPage = currentPath===newPath
-      
-  //     if (isSameItineraryPage) {
-  //       return;
-  //     }
-  //     setCurrentPath(newPath)
-      
-  //     setLoading(true);
-  //   };
-    
-  //   const handleComplete = (url) => {
-  //     setCurrentPath(newPath);
-  //     setLoading(false);
-  //   };
+  // Token expiry watcher
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  //   router.events.on("routeChangeStart", handleStart);
-  //   router.events.on("routeChangeComplete", handleComplete);
-  //   router.events.on("routeChangeError", handleComplete);
-
-  //   return () => {
-  //     router.events.off("routeChangeStart", handleStart);
-  //     router.events.off("routeChangeComplete", handleComplete);
-  //     router.events.off("routeChangeError", handleComplete);
-  //   };
-  // }, [router, currentPath]);
-
-  function setupTokenExpiryWatcher() {
-    if (typeof window === 'undefined') return;
-    
-    const expiry = localStorage.getItem('expirationDate');
+    const expiry = localStorage.getItem("expirationDate");
     if (!expiry) return;
 
     const timeLeft = new Date(expiry).getTime() - Date.now();
-    
     if (timeLeft <= 0) {
       dispatch(authLogout());
       localStorage.clear();
-      // restartBot();
     } else {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         dispatch(authLogout());
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
-        localStorage.removeItem("phone");
-        localStorage.removeItem("user_id");
-        localStorage.removeItem("expirationDate");
-        localStorage.removeItem("MyPlans");
-        localStorage.removeItem("user_image");
+        [
+          "access_token",
+          "name",
+          "email",
+          "phone",
+          "user_id",
+          "expirationDate",
+          "MyPlans",
+          "user_image",
+        ].forEach((key) => localStorage.removeItem(key));
       }, timeLeft);
+      return () => clearTimeout(timer);
     }
-  }
-
-  useEffect(() => {
-    setupTokenExpiryWatcher();
   }, []);
 
+  // Analytics & routing
   useEffect(() => {
     const handleRouteChange = (url) => {
-      ga.pageview(url);
-      
-      // Track with Jupiter Analytics if available
-      if (window.JupiterAnalytics?.trackPageView) {
-        window.JupiterAnalytics.trackPageView(url);
-      }
-
-      // Facebook Pixel - only on client side
-      if (typeof window !== 'undefined' && window.fbq) {
-        window.fbq('track', 'PageView');
-      }
+      requestIdleCallback(() => {
+        ga.pageview(url);
+        if (window.fbq) window.fbq("track", "PageView");
+        if (window.JupiterAnalytics?.trackPageView)
+          window.JupiterAnalytics.trackPageView(url);
+      });
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
-
-    // Initialize Facebook Pixel - ONLY on client side
-    if (typeof window !== 'undefined') {
-      import("react-facebook-pixel")
-        .then((x) => x.default)
-        .then((ReactPixel) => {
-          ReactPixel.init(FACEBOOK_PIXEL_ID);
-          ReactPixel.pageView();
-        })
-        .catch(err => console.error('Facebook Pixel load error:', err));
-    }
-
-    return () => {
-      router.events.off("routeChangeComplete", handleRouteChange);
-    };
+    return () => router.events.off("routeChangeComplete", handleRouteChange);
   }, [router.events]);
-
-  // Jupiter Analytics initialization
-  useEffect(() => {
-    if (typeof window === 'undefined' || jupiterInitialized) return;
-
-    const tryInitialize = () => {
-      initializationAttempts.current += 1;
-
-      if (window.JupiterAnalytics) {
-        const analytics = window.JupiterAnalytics;
-        
-        // Try different initialization methods
-        const initMethods = [
-          'initializeAnalytics',
-          'init',
-          'initialize'
-        ];
-
-        for (const method of initMethods) {
-          if (typeof analytics[method] === 'function') {
-            try {
-              analytics[method]({
-                userId: id || null,
-                siteId: 'tarzanway-web',
-                apiHost: 'https://jupiter.tarzanway.com',
-                anonymousId: "abc",
-              });
-              setJupiterInitialized(true);
-              
-              return;
-            } catch (error) {
-              
-            }
-          }
-        }
-      }
-
-      // Retry if not successful and under max attempts
-      if (initializationAttempts.current < maxAttempts) {
-        setTimeout(tryInitialize, 1000);
-      } else {
-        
-        setJupiterInitialized(true);
-      }
-    };
-
-    const initTimeout = setTimeout(tryInitialize, 1000);
-    return () => clearTimeout(initTimeout);
-  }, [id, jupiterInitialized]);
-
-
-  useEffect(() => {
-    const userLocationCookie = Cookies.get('userLocation');
-
-    if (userLocationCookie) {
-      try {
-        const parsedLocation = JSON.parse(userLocationCookie);
-        dispatch(changeUserLocation({ location: parsedLocation }));
-      } catch (e) {
-        console.error('Error parsing cookie:', e);
-        fetchUserLocation();
-      }
-    }
-
-    else if (!userLocationCookie) {
-      fetchUserLocation();
-    }
-
-    async function fetchUserLocation() {
-      try {
-        const ipRes = await axios.get("https://api.ipify.org?format=json");
-        const ipAddress = ipRes.data.ip;
-
-        if (ipAddress) {
-          const locationRes = await axios.get(
-            `https://mercury.tarzanway.com/api/v1/geos/search/user_location/?ip=${ipAddress}`
-          );
-
-          const data = locationRes.data;
-          if (data) {
-            Cookies.set("userLocation", JSON.stringify(data), { expires: 1 });
-            dispatch(changeUserLocation({ location: data }));
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching user location:", error);
-        const defaultLocation = {
-          country: 'India',
-          city: 'Delhi',
-          currency: 'INR',
-          country_code: 'IN'
-        };
-        Cookies.set("userLocation", JSON.stringify(defaultLocation), { expires: 1 });
-        dispatch(changeUserLocation({ location: defaultLocation }));
-      }
-    }
-  }, []);
-
-
 
   return (
     <>
@@ -261,44 +125,82 @@ function MyApp({ Component, pageProps, store }) {
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* <title>Plan your trip with The Tarzan Way</title> */}
       </Head>
 
-      <div id="modal-root"></div>
-      {loading && <Loading />}
-
-      {/* CRMOne bot - load after page is interactive */}
+      {/* Google Analytics */}
       <Script
-        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+        src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
         strategy="afterInteractive"
-        onLoad={() => {
-          console.log("CRMOne bot script loaded");
-          if (typeof restartBot === 'function') {
-            // restartBot();
-          }
-        }}
       />
+      <Script strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-EV1KHKN8VV');
+        `}
+      </Script>
 
+      {/* Facebook Pixel */}
+      <Script strategy="afterInteractive">
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}
+          (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${FACEBOOK_PIXEL_ID}');
+          fbq('track', 'PageView');
+        `}
+      </Script>
+
+      {/* Jupiter Analytics */}
+      <Script
+        src="https://dev.jupiter.tarzanway.com/jupiter.js"
+        strategy="afterInteractive"
+      />
+      <Script strategy="afterInteractive">
+        {`
+          if(window.JupiterAnalytics){
+            window.JupiterAnalytics.init({ siteId: 'tarzanway-web', apiHost: 'https://dev.jupiter.tarzanway.com' });
+          }
+        `}
+      </Script>
+
+      <div id="modal-root"></div>
+
+      {/* App */}
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ClarityInit />
           <Theme>
-            <JupyterAnalytics
+            {/* <JupyterAnalytics
               apiEndpoint="https://jupiter.tarzanway.com"
               userId={id || null}
               batchSize={10}
               flushInterval={3000}
               siteId="tarzanway-web"
               anonymousId="abc"
-            /> 
+            />  */}
+           
             <Component {...pageProps}  />
           </Theme>
         </GoogleOAuthProvider>
       </div>
+
+      {/* CRMOne Bot */}
+      <Script
+        src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+        strategy="afterInteractive"
+      />
     </>
   );
 }
 
+// Support for page-level getInitialProps
 MyApp.getInitialProps = async ({ Component, ctx }) => {
   return {
     pageProps: {
@@ -309,6 +211,7 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
   };
 };
 
+// Wrap Redux store and disable SSR for heavy hydration
 export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
   ssr: false,
 });

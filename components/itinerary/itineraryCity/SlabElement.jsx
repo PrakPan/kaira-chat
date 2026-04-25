@@ -210,7 +210,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
     if (e) e.stopPropagation(e);
     router.push(
       {
-        pathname: `/itinerary/${router?.query?.id}`,
+        pathname: window.location.pathname,
         query: {}, // remove "drawer"
       },
       undefined,
@@ -239,7 +239,7 @@ const isIncluded = cart?.summary && Object.values(cart.summary).some(
     }
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "showPoiDetail",
           poi_id: poi?.booking?.id || poi?.poi || poi?.id,

@@ -363,27 +363,20 @@ const LogIn = React.memo((props) => {
       props.onStartLoading();
     }
 
-    const recaptchaValue = recaptchaRef.current.getValue();
-    if (recaptchaValue) {
-      if (!props.otpSent) otpHandler(recaptchaValue);
-      else resetOtpHandler(recaptchaValue);
-    } else {
-      recaptchaRef.current.execute();
-    }
+  recaptchaRef.current.reset();   
+  recaptchaRef.current.execute(); 
   };
 
   const handleEditPhone = () => {
-    setOtp("");
-    setUserDetailsRequired(false);
-    setCounter(30);
-    props.onResetLogin();
-
-    setTimeout(() => {
-      if (mobileRef.current) {
-        mobileRef.current.focus();
-      }
-    }, 100);
-  };
+  setOtp("");
+  setUserDetailsRequired(false);
+  setCounter(30);
+  props.onResetLogin();
+  recaptchaRef.current.reset(); // ← add this
+  setTimeout(() => {
+    if (mobileRef.current) mobileRef.current.focus();
+  }, 100);
+};
 
   mobileInput = (
     <div className="w-full">
@@ -474,7 +467,7 @@ const LogIn = React.memo((props) => {
           : "pt-[12px] pb-[13px] px-[16px] h-full"
       } h-max`}
     >
-      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full">
+      <div className="flex flex-col gap-[12px] sm:gap-[24px] h-full pb-[12px]">
         {!isPageWide && (
           <div className="flex justify-end">
             <RxCross2

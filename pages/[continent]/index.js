@@ -20,31 +20,31 @@ const TravelPlanner = (props) => {
   }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
-    // trackPageView(props.Type, `${props.destination} Page`);
+    // trackPageView(props.Type, `${props?.destination} Page`);
   }, [props.hotLocationSearch]);
 
   return (
     <Layout
-      destination={props.Data.destination}
-      id={props.Data.id}
+      destination={props.Data?.destination}
+      id={props.Data?.id}
       page="Continent Page"
     >
       <Head>
-        <title>{`${props.Data.slug
+        <title>{`${props.Data?.slug
               .split("_")
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
               .join(" ")} AI Trip Planner & Custom Travel Itineraries | The Tarzan Way`}</title>
         <meta
           name="description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         ></meta>
         <meta
           property="og:title"
-          content={`${props.Data.social_share_title}`}
+          content={`${props.Data?.social_share_title}`}
         />
         <meta
           property="og:description"
-          content={`${props.Data.meta_description}`}
+          content={`${props.Data?.meta_description}`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
@@ -77,7 +77,7 @@ const TravelPlanner = (props) => {
         data={props.Data}
         locations={props.locations}
         continetCarousel={props.continetCarousel}
-        destination={convertDbNameToCapitalFirst(props.Data.slug)}
+        destination={convertDbNameToCapitalFirst(props.Data?.slug)}
         type={props.Type}
       ></ContinentPage>
     </Layout>
@@ -148,7 +148,7 @@ export async function getStaticProps(context) {
   }
 
   try {
-    for (let i = 0; i < contientTheme.length; i++) {
+    for (let i = 0; i < 2; i++) {
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
         `?limit=100&offset=0&continent=${contientTheme[i].path}`

@@ -134,6 +134,8 @@ const POIDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description
   );
   const itinerary = useSelector((state) => state.Itinerary);
+   const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
@@ -280,7 +282,7 @@ const POIDetails = (props) => {
           </div>
           <div className="flex justify-between">
             <Title>{props.data.name}</Title>
-            {!(props?.removeChange === true) && (
+            {!(props?.removeChange === true) && !isDraft && (
               <Button
                 padding="7px 25px"
                 borderRadius="7px"
@@ -803,7 +805,7 @@ const POIDetails = (props) => {
                 </a>
               </div>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" && (
+              {!(props?.removeDelete == true) && props?.version != "v1" && !isDraft && (
                 <button
                   className="ttw-btn-fill-error"
                   onClick={handleDelete}
@@ -830,6 +832,28 @@ const POIDetails = (props) => {
                       />
                     )}
                   </div>
+                </button>
+              )}
+
+              {/* Chat-opened flow: "Add to Itinerary" CTA. Emits a widget
+                  action up to ChatKitPanel so the assistant can book the
+                  POI/restaurant into the itinerary. */}
+              {props?.showAddToItinerary && props?.onAddToItinerary && (
+                <button
+                  className="ttw-btn-fill-yellow"
+                  onClick={() => {
+                    if (!token) {
+                      props?.setShowLoginModal?.(true);
+                      return;
+                    }
+                    props.onAddToItinerary({
+                      id: props?.data?.id,
+                      itinerary_city_id: props?.itinerary_city_id,
+                      date: props?.date,
+                    });
+                  }}
+                >
+                  Add to Itinerary
                 </button>
               )}
             </div>

@@ -477,7 +477,9 @@ const Enquiry = (props) => {
       });
       const resData = res.data;
 
-      setApiSucceeded(true);
+      if(resData){
+        setApiSucceeded(true);
+      }
 
       trackItineraryInitiated("itinerary_initiated");
       trackItineraryPreference(itineraryId, slideOneData?.selectedPreferences);
@@ -623,7 +625,7 @@ const Enquiry = (props) => {
             return;
           }
           hasNavigated = true;
-          router.push(`/itinerary/${itineraryId}`);
+          router.push(`/chat/${itineraryId}`);
         };
 
         if (hasGtag) {

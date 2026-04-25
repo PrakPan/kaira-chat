@@ -396,7 +396,7 @@ const AirportBookingItem = ({
         return (
           <FaBus
             className="text-2xl text-[#a5a5a5]"
-            size={16}
+            size={14}
             color={"#a5a5a5"}
           />
         );
@@ -520,7 +520,7 @@ const AirportBookingItem = ({
       supportsTransfers(bookingMode)
     ) {
       return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center text-sm gap-1">
           <span>{`+ Add ${firstCity ? "Pickup" : lastCity ? "Drop" :"Pickup and Drop"}`}</span>
         </div>
       );
@@ -538,7 +538,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {uniqueIcons}
-          <span>Pickup & Drop Added</span>
+          <span className="text-sm">Pickup & Drop Added</span>
         </div>
       );
     } else if (hasCurrentPickup) {
@@ -548,7 +548,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {pickupIcons}
-          <span>Pickup Added</span>
+          <span className="text-sm">Pickup Added</span>
         </div>
       );
     } else if (hasCurrentDrop) {
@@ -558,7 +558,7 @@ const AirportBookingItem = ({
       return (
         <div className="flex items-center gap-1">
           {dropIcons}
-          <span>Drop Added</span>
+          <span className="text-sm">Drop Added</span>
         </div>
       );
     } else if (currentNoPickupDropBookings.length > 0) {
@@ -1049,14 +1049,32 @@ const CityItem = ({
   bookingIdToDelete,
   pinColour,
   isLast,
+  isFirstCity,
   check_in,
   check_out,
-  date_of_journey
+  date_of_journey,
+  fromChat,
+  isDraft,
+  showPins
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { transfers_status,pricing_status } = useSelector((state) => state.ItineraryStatus);
   const isDesktop = useMediaQuery("(min-width:767px)");
+  const reduxItineraryId = useSelector((state) => state.ItineraryId);
+
+  // P1 (Draft) fallback: when the shimmer/draft itinerary doesn't yet carry
+  // a start city name, label the row with the user's cached IP location so
+  // the start pin/label isn't blank during the loading state.
+  const userLocationFallback = (() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const cached = JSON.parse(localStorage.getItem("userLocation") || "null");
+      return cached?.city || null;
+    } catch {
+      return null;
+    }
+  })();
 
   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
   const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
@@ -1066,6 +1084,10 @@ const CityItem = ({
 
   const { drawer, bookingId, oItineraryCity, dItineraryCity, drawerType,  doj} =
     router?.query;
+
+  // Use Redux ItineraryId as the canonical ID (works on /chat/[sessionId] pages too)
+  const currentItineraryId = router.query.id || reduxItineraryId;
+  const isDraftMode = fromChat && !currentItineraryId;
 
   const handlePickupClick = () => {
     setTransferDrawerType("pickup");
@@ -1087,7 +1109,7 @@ const CityItem = ({
         return (
           <MdOutlineFlightTakeoff
             className="text-2xl text-[#a5a5a5]"
-            size={16}
+            size={18}
             color={"#a5a5a5"}
           />
         );
@@ -1159,6 +1181,8 @@ const CityItem = ({
     }
   }, [router.query.bookingId, router.query.transferType, router.query.drawer]);
 
+  const Itinerary = useSelector(state =>state.Itinerary)
+
 useEffect(() => {
   const isDrawerClosed = !drawer;
   
@@ -1181,7 +1205,7 @@ useEffect(() => {
   //   setLoading(true);
   //   router.push(
   //     {
-  //       pathname: `/itinerary/${router.query.id}`,
+  //       pathname: window.location.pathname,
   //       query: {
   //         drawer: "Intracity",
   //         bookingId: book?.id,
@@ -1216,8 +1240,9 @@ useEffect(() => {
     // Navigate to the URL with bookingId and transferType
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "Intracity",
           bookingId: book?.id,
           transferType: bookingType,
@@ -1235,8 +1260,9 @@ useEffect(() => {
   const handlePickupDropDrawer = (drawerType) => {
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "addPickupDrop",
           drawerType: drawerType,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -1254,15 +1280,12 @@ useEffect(() => {
 
   const handleAddTransfer = () => {
     if(localStorage.getItem("access_token")){
-    // if( id != customer){
-    //   dispatch(setCloneItineraryDrawer(true));
-    //   return;
-    // }
-    trackTransferBookingChange(router.query.id, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
+    trackTransferBookingChange(currentItineraryId, bookingIdToDelete, oCityData?.name || oCityData?.city_name, dCityData?.name || dCityData?.city_name);
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
+          ...(currentItineraryId ? { id: currentItineraryId } : {}),
           drawer: "editTransfer",
           bookingId: booking?.id,
           oItineraryCity: oCityData?.id || oCityData?.gmaps_place_id,
@@ -1300,6 +1323,7 @@ useEffect(() => {
       setLoading(false);
     }
   };
+
 
    const handleDelete = async (val) => {
   if (!localStorage?.getItem("access_token")) {
@@ -1379,7 +1403,7 @@ useEffect(() => {
   //   if (transferType !== null && airportBookingId) {
   //     router.push(
   //       {
-  //         pathname: `/itinerary/${router.query.id}`,
+  //         pathname: window.location.pathname,
   //         query: {
   //           drawer: "Intracity",
   //           bookingId: airportBookingId,
@@ -1527,51 +1551,74 @@ useEffect(() => {
   ) || [];
 
 
-
   return (
     <Container className={`${isLast && "mb-[60px]"}`}>
-      <PinWrapper>
-        {upPresent && <VerticalLine height={"50px"} gradient="top" />}
-        {upPresent && downPresent ? (
-          <Pin length={length} pinColour={pinColour} />
-        ) : (
+    {!(Itinerary.status == "Draft") ?  <PinWrapper>
+  {upPresent &&  <VerticalLine height={"50px"} gradient="top" />}
+  {upPresent && downPresent ? (
+    <div className="flex items-center justify-center">
+      {/* {correctIcon(booking_type)} */}
+    </div>
+  ) : (
+   <Pin length={length} pinColour={"black"} inner={true} className="-ml-[8.5px]" />
+  )}
+  {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
+</PinWrapper> :  <PinWrapper>
+ { upPresent && downPresent && !firstCity && !lastCity &&
+    <div className="flex items-center justify-center m-2 py-2">
+      <VerticalLine height={"50px"} gradient="top" />
+    </div>}
+  {/* P1 (Draft) stage: line stays in flow so it doesn't overlap the next
+      DayByDay element. The city-name div (below) uses align-self to line
+      up with the pin. `isLast` is only passed to the end-city label. */}
 
-          <Pin length={length} pinColour={"black"} inner={true} />
-          // <svg
-          //   width="24"
-          //   height="24"
-          //   viewBox="0 0 24 24"
-          //   fill="none"
-          //   xmlns="http://www.w3.org/2000/svg"
-          // >
-          //   <circlex
-          //     opacity="0.5"
-          //     cx="12.0551"
-          //     cy="12.0558"
-          //     r="6.57534"
-          //     fill="#F7E700"
-          //   />
-          //   <path
-          //     d="M10.9041 24V21.8082C8.621 21.5525 6.6621 20.6073 5.0274 18.9726C3.39269 17.3379 2.44749 15.379 2.19178 13.0959H0V10.9041H2.19178C2.44749 8.621 3.39269 6.6621 5.0274 5.0274C6.6621 3.39269 8.621 2.44749 10.9041 2.19178V0H13.0959V2.19178C15.379 2.44749 17.3379 3.39269 18.9726 5.0274C20.6073 6.6621 21.5525 8.621 21.8082 10.9041H24V13.0959H21.8082C21.5525 15.379 20.6073 17.3379 18.9726 18.9726C17.3379 20.6073 15.379 21.5525 13.0959 21.8082V24H10.9041ZM12 19.6712C14.1187 19.6712 15.9269 18.9224 17.4247 17.4247C18.9224 15.9269 19.6712 14.1187 19.6712 12C19.6712 9.88128 18.9224 8.07306 17.4247 6.57534C15.9269 5.07763 14.1187 4.32877 12 4.32877C9.88128 4.32877 8.07306 5.07763 6.57534 6.57534C5.07763 8.07306 4.32877 9.88128 4.32877 12C4.32877 14.1187 5.07763 15.9269 6.57534 17.4247C8.07306 18.9224 9.88128 19.6712 12 19.6712ZM12 16.3836C10.7945 16.3836 9.76256 15.9543 8.90411 15.0959C8.04566 14.2374 7.61644 13.2055 7.61644 12C7.61644 10.7945 8.04566 9.76256 8.90411 8.90411C9.76256 8.04566 10.7945 7.61644 12 7.61644C13.2055 7.61644 14.2374 8.04566 15.0959 8.90411C15.9543 9.76256 16.3836 10.7945 16.3836 12C16.3836 13.2055 15.9543 14.2374 15.0959 15.0959C14.2374 15.9543 13.2055 16.3836 12 16.3836ZM12 14.1918C12.6027 14.1918 13.1187 13.9772 13.5479 13.5479C13.9772 13.1187 14.1918 12.6027 14.1918 12C14.1918 11.3973 13.9772 10.8813 13.5479 10.4521C13.1187 10.0228 12.6027 9.80822 12 9.80822C11.3973 9.80822 10.8813 10.0228 10.4521 10.4521C10.0228 10.8813 9.80822 11.3973 9.80822 12C9.80822 12.6027 10.0228 13.1187 10.4521 13.5479C10.8813 13.9772 11.3973 14.1918 12 14.1918Z"
-          //     fill="#1F1F1F"
-          //   />
-          // </svg>
-        )}
-        {downPresent && <VerticalLine height={"50px"} gradient="bottom" />}
-      </PinWrapper>
+
+  {!upPresent && !downPresent && isFirstCity && (
+    <>
+      <Pin length={length} pinColour={"black"} inner={true} />
+      <VerticalLine height={"50px"} gradient="bottom" />
+    </>
+  )}
+  {!upPresent && !downPresent && isLast && (
+    <>
+      <VerticalLine height={"50px"} gradient="top" />
+      <Pin length={length} pinColour={"black"} inner={true} />
+    </>
+  )}
+</PinWrapper>}
+     
 
       <div
         className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
           } ${!upPresent && downPresent && "mb-[41px]"}`}
+        style={
+          // P1 (Draft) start/end city label rows: pin sits at one end of a
+          // taller PinWrapper (pin + line). align-self pulls the city name
+          // to the same end so the text lines up with the pin instead of
+          // the wrapper's vertical centre.
+          Itinerary?.status === "Draft" && !upPresent && !downPresent
+            ? { alignSelf: isLast ? "flex-end" : "flex-start" }
+            : undefined
+        }
       >
         {/* City and Duration Section - Aligned with Pin */}
         <div
           className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center" : ""
             }`}
         >
-          {!(upPresent && downPresent) && <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>{city}</div>}
+          {!(upPresent && downPresent) && (
+            <div className={`${isDesktop ? "Body1M_16" : "Body2M_14"}`}>
+              {/* P1 fallback: when the draft itinerary hasn't surfaced a
+                  start-city name yet, use the user's IP-derived city so the
+                  label isn't blank under the start pin. */}
+              {city ||
+                (Itinerary?.status === "Draft" && isFirstCity
+                  ? userLocationFallback
+                  : null)}
+            </div>
+          )}
 
-          {transfers_status === "PENDING" ? (
+          {transfers_status === "PENDING" && !(Itinerary.status == "Draft")  ? (
   upPresent && downPresent ? (
     <TransferSkeleton />
   ) : (
@@ -1621,9 +1668,11 @@ useEffect(() => {
                   upPresent && downPresent ? "group hover:cursor-pointer" : ""
                 }`}
                 onClick={() => {
+                  if(!(Itinerary.status == "Draft")){
                   upPresent &&
                     downPresent &&
                     handleEdit(transfer_type === "combo", booking);
+                  }
                 }}
               >
                 <div
@@ -1633,7 +1682,7 @@ useEffect(() => {
                 >
                   {upPresent && downPresent ? city : ""}
                 </div>
-                {upPresent && downPresent && (
+                {upPresent && downPresent && !(Itinerary.status == "Draft") && (
                   <div className="">
                     <FaPen
                       size={12}
@@ -1700,7 +1749,8 @@ useEffect(() => {
         <>
           {/* NO BOOKING - Show both CTAs */}
           {/* First CTA: Add Transfer */}
-          {isPageWide ? (
+          { !(Itinerary.status == "Draft")  ? 
+          isPageWide ? (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1709,7 +1759,7 @@ useEffect(() => {
             >
               + Add Transfer from {origin_city_name} to {destination_city_name}
             </button>
-          ) : (
+          ) :  (
             <button
               onClick={handleAddTransfer}
               className={`${
@@ -1718,10 +1768,10 @@ useEffect(() => {
             >
               + Add Transfer
             </button>
-          )}
+          ) : null}
 
           {/* Second CTA: Add Taxi Pickup/Drop - Only when NO booking */}
-          {transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
+          {!isDraftMode && transfers_status == "SUCCESS" && pricing_status == "SUCCESS" && (
             <TaxiPickupDropItem
               key={`taxi-no-booking`}
               handlePickupDropDrawer={handlePickupDropDrawer}

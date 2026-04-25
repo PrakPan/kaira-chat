@@ -7,7 +7,6 @@ import Preferences from "../tailoredform/slidetwo/preferences/Index";
 import Buttons from "./Buttons";
 import useMediaQuery from "../../hooks/useMedia";
 import { useDispatch } from "react-redux";
-import setItinerary  from "../../store/actions/itinerary";
 import { openNotification } from "../../store/actions/notification";
 import { togglePreference } from "../../store/actions/slideOneActions";
 
@@ -141,7 +140,7 @@ const handleUpdate = () => {
   }
 
   handleApply(req)
-    .then((res) => {
+    .then(() => {
       dispatch(openNotification({
         type: "success",
         text: "Itinerary updated successfully",
@@ -153,7 +152,7 @@ const handleUpdate = () => {
       console.log("error is:", err);
       dispatch(openNotification({
         type: "error",
-        text: err?.response?.data?.errors?.[0]?.detail?.[0] || err?.response?.data?.errors[0]?.message?.[0] || "Something went wrong",
+        text: err?.response?.data?.errors?.[0]?.detail?.[0] || err?.response?.data?.errors?.[0]?.message?.[0] || "Something went wrong",
         heading: "Error!",
       }));
     })
@@ -171,7 +170,7 @@ const handleUpdate = () => {
   }
 
   return (
-    <div className={`flex flex-col gap-[24px] md:max-w-[537px]`}>
+    <div className={`flex flex-col gap-[24px] md:max-w-[537px] z-[9999] p-3`}>
       <div className="Heading1SB font-semibold">Update Your Trip Preferences</div>
 
       <DateComponent 
@@ -183,7 +182,7 @@ const handleUpdate = () => {
 
       <div>
         <div className="Body1M_16 mb-[12px]">Pick Your Inclusions</div>
-        <div className="flex flex-wrap md:grid md:grid-cols-3 justify-between items-center">
+        <div className="flex flex-wrap md:grid md:grid-cols-[1.5fr_1fr_1fr] justify-between items-center">
 
            <label
             htmlFor="add-activities-transfers"

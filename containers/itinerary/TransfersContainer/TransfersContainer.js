@@ -440,6 +440,7 @@ const TransfersContainer = (props) => {
           <PinSection
             transfersPin
             setCurrentPopup={false}
+            key={i + props.transferBookings[i]?.city}
             // city={props?.transferBookings[i - 1]?.destination_city}
             city={props.transferBookings[i] && props.transferBookings[i].city}
             duration={

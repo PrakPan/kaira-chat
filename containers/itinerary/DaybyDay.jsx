@@ -54,6 +54,10 @@ const DaybyDay = ({
   setShowLoginModal,
   index,
   setShowSettings,
+  setShowCityDrawer,
+  isDraft,
+  showPins,
+  onSendMessage,
   ...props
 }) => {
   const router = useRouter()
@@ -93,7 +97,7 @@ const DaybyDay = ({
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
     router.push(
       {
-        pathname: `/itinerary/${router.query.id}`,
+        pathname: window.location.pathname,
         query: {
           drawer: "changeHotelBooking",
           clickType: clickType,
@@ -133,21 +137,14 @@ const DaybyDay = ({
   return (
     <>
       <div
-        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[54vw]"
+        className={`flex flex-col gap-3 mt-4xl max-ph:mt-lg ${!isPageWide ? "" : "max-w-[51vw]"
           }`}
       >
-        {/* <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
-          Day By Day Itinerary
-          <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
-        </h1> */}
-
-        {/* to navigate between cities in frontend */}
-        {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
 
         <div className="flex flex-col">
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={startCity?.place_id || 1}
+            key="start-city-label"
             city={startCity?.city_name}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
@@ -161,18 +158,23 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
+            fromChat={props.fromChat}
+            isDraft={isDraft}
+            isFirstCity={true}
+            showPins={showPins}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
+            showPins={showPins}
             loadbookings={loadbookings}
             hotelName={startCity?.city_name}
             sourceGmaps={startCity?.gmaps_place_id}
-            destinationHotelName={stay?.[0]?.name ? stay[0]?.name : null}
+            destinationHotelName={stay?.[0]?.name ? stay?.[0]?.name : null}
             sourceLat={startCity?.latitude}
             sourceLong={startCity?.longitude}
-            destinationLat={stay?.[0] ? stay[0]?.lat : null}
-            destinationLong={stay?.[0] ? stay[0]?.long : null}
-            destinationGmaps={stay?.[0] ? stay[0]?.city_gmaps_place_id || itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[0]?.city?.gmaps_place_id}
+            destinationLat={stay?.[0] ? stay?.[0]?.lat : null}
+            destinationLong={stay?.[0] ? stay?.[0]?.long : null}
+            destinationGmaps={stay?.[0] ? stay?.[0]?.city_gmaps_place_id || itineraryDaybyDay?.cities?.[0]?.city?.gmaps_place_id: itineraryDaybyDay?.cities?.[0]?.city?.gmaps_place_id}
             key={2}
             date_of_journey={Itinerary?.start_date}
             pinColour={getCityColor(index)}
@@ -261,6 +263,8 @@ const DaybyDay = ({
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             getPaymentHandler={getPaymentHandler}
             firstCity={true}
+            fromChat={props.fromChat}
+            isDraft={isDraft}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -294,10 +298,10 @@ const DaybyDay = ({
 
 
             return (
-              <>
+              <div key={city.id}>    
                 <ItineraryCity
                   mercuryItinerary={props?.mercuryItinerary}
-                  key={city.id}
+                  key={`itinerary-city-${city.id}`}
                   nextCity={ itineraryDaybyDay?.cities?.[index + 1]}
                   city={city}
                   cityRefs={cityRefs}
@@ -318,6 +322,9 @@ const DaybyDay = ({
                   _updatePaymentHandler={_updatePaymentHandler}
                   getPaymentHandler={getPaymentHandler}
                   setShowSettings={setShowSettings}
+                  setShowCityDrawer={setShowCityDrawer}
+                  isDraft={isDraft}
+                  onSendMessage={onSendMessage}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
@@ -326,14 +333,14 @@ const DaybyDay = ({
                       mercury
                       check_in={stay?.[index] ? stay?.[index]?.check_in : null}
                       check_out={stay?.[index] ? stay?.[index]?.check_out : null}
-                      hotelName={stay?.[index]?.name ? stay[index]?.name : null}
-                      sourceGmaps={stay?.[index] ? stay[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
-                      destinationGmaps={stay?.[index + 1] ? stay[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities[index + 1]?.city?.gmaps_place_id}
-                      sourceLat={stay?.[index] ? stay[index]?.lat : null}
-                      sourceLong={stay?.[index] ? stay[index]?.long : null}
-                      destinationLat={stay?.[index + 1] ? stay[index + 1]?.lat : null}
-                      destinationLong={stay?.[index + 1] ? stay[index + 1]?.long : null}
-                      destinationHotelName={stay?.[index + 1]?.name ? stay[index + 1]?.name : null}
+                      hotelName={stay?.[index]?.name ? stay?.[index]?.name : null}
+                      sourceGmaps={stay?.[index] ? stay?.[index]?.city_gmaps_place_id || city?.city?.gmaps_place_id : city?.city?.gmaps_place_id}
+                      destinationGmaps={stay?.[index + 1] ? stay?.[index + 1]?.city_gmaps_place_id || itineraryDaybyDay?.cities?.[index + 1]?.city?.gmaps_place_id: itineraryDaybyDay?.cities?.[index + 1]?.city?.gmaps_place_id}
+                      sourceLat={stay?.[index] ? stay?.[index]?.lat : null}
+                      sourceLong={stay?.[index] ? stay?.[index]?.long : null}
+                      destinationLat={stay?.[index + 1] ? stay?.[index + 1]?.lat : null}
+                      destinationLong={stay?.[index + 1] ? stay?.[index + 1]?.long : null}
+                      destinationHotelName={stay?.[index + 1]?.name ? stay?.[index + 1]?.name : null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -379,23 +386,24 @@ const DaybyDay = ({
                       _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
+                      fromChat={props.fromChat}
                     />
                   </div>
                 )}
-              </>
+              </div>
             );
           })}
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={endCity?.gmaps_place_id}
+            key="end-city-transfer"
             loadbookings={loadbookings}
             // airportBookings={transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
-            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1]?.name ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.name : null}
+            sourceGmaps={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.city_gmaps_place_id : itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]?.city?.gmaps_place_id}
             sourceLat={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.lat : null}
             sourceLong={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay?.[itineraryDaybyDay?.cities?.length - 1]?.long : null}
             destinationLat={endCity?.latitude}
@@ -406,7 +414,7 @@ const DaybyDay = ({
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>
                   booking?.is_airport_pickup &&
-                  booking?.check_in?.split(" ")[0] >=
+                  booking?.check_in?.split?.(" ")?.[0] >=
                   itineraryDaybyDay?.cities?.[
                     itineraryDaybyDay?.cities?.length - 1
                   ]?.start_date
@@ -525,10 +533,13 @@ const DaybyDay = ({
             getPaymentHandler={getPaymentHandler}
             lastCity={true}
             date_of_journey={Itinerary?.end_date}
+            fromChat={props.fromChat}
+            isDraft={isDraft}
+            showPins={showPins}
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={endCity?.place_id}
+            key="end-city-label"
             city={endCity?.city_name}
             pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
@@ -543,6 +554,9 @@ const DaybyDay = ({
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
             isLast={true}
+            fromChat={props.fromChat}
+            isDraft={isDraft}
+            showPins={showPins}
           />
         </div>
       </div>

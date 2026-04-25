@@ -3,6 +3,7 @@ import Modal from "../ui/Modal";
 import media from "../media";
 import TailoredForm from "../tailoredform/Index";
 import NewTrip from "../../containers/new-trip";
+import BotApp from "../bot-components/BotApp";
 
 const TailoredFormMobileModal = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -34,6 +35,7 @@ const TailoredFormMobileModal = (props) => {
           onHide={props.onHide}
           eventDates={props.eventDates}
         ></TailoredForm> */}
+         {/* <BotApp/> */}
       </div>
       </div>
     </Modal>

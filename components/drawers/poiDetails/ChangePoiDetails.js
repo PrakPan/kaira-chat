@@ -229,7 +229,6 @@ export default function ChangePoiDetails(props) {
                   className="object-cover"
                   onLoad={() => OnImageLoad(0)}
                   onError={() => OnImageError(0)}
-                  priority
                 />
                 <div
                   style={{
@@ -254,7 +253,6 @@ export default function ChangePoiDetails(props) {
                   className="object-cover"
                   onLoad={() => OnImageLoad(1)}
                   onError={() => OnImageError(1)}
-                  priority
                 />{" "}
                 <div
                   style={{
@@ -279,7 +277,6 @@ export default function ChangePoiDetails(props) {
                   className="object-cover"
                   onLoad={() => OnImageLoad(2)}
                   onError={() => OnImageError(2)}
-                  priority
                 />
                 <div
                   style={{
@@ -304,7 +301,6 @@ export default function ChangePoiDetails(props) {
                   className="object-cover"
                   onLoad={() => OnImageLoad(3)}
                   onError={() => OnImageError(3)}
-                  priority
                 />
                 <div
                   style={{

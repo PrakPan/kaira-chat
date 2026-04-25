@@ -18,7 +18,7 @@ const ActivitiesSummary = (props) => {
     try {
       router.push(
         {
-          pathname: `/itinerary/${router.query.id}`,
+          pathname: window.location.pathname,
           query: {
             drawer: "showPoiDetail",
             poi_id: poi,
@@ -64,6 +64,7 @@ const ActivitiesSummary = (props) => {
                 height="100%"
                 leftalign
                 widthmobile="100%"
+                noLazy
                 url={
                   props?.item?.image
                     ? props?.item.image

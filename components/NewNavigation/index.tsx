@@ -77,11 +77,7 @@ export const Navigation = ({ items, BarName, ClickHandler, selectedItem, trackSe
           </NavigationLink>
         ))}
 
-        <NavigationMarker
-          x={markerPos.x}
-          height={2}
-          width={markerPos.width}
-        />
+        <NavigationMarker x={markerPos.x} height={2} width={markerPos.width} />
       </InnerContainer>
     </Container>
   );

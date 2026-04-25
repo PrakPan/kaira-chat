@@ -218,7 +218,9 @@ const RouteEditSection = (props) => {
   const [loading, setLoading] = useState(false);
   const [itineraryLoading, setItineraryLoading] = useState(false);
   const [polling, setPolling] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState(null);
+  // Hold the interval id in a ref so the polling teardown isn't dependent on
+  // re-renders (state updates are batched and the cleanup needs the latest id).
+  const pollingIntervalRef = useRef(null);
   const destinationRef = useRef(null);
   const itinerary = useSelector((state) => state.Itinerary);
   const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
@@ -458,6 +460,14 @@ const RouteEditSection = (props) => {
     waitingForStatusUpdate,
   ]);
 
+  const stopStatusPolling = () => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    setPolling(false);
+  };
+
   const fetchItineraryStatus = async (itineraryId) => {
     try {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
@@ -474,9 +484,20 @@ const RouteEditSection = (props) => {
       dispatch(
         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
       );
-      fetchItinerary();
+
+      // Stop polling once every backend task has terminated. The
+      // waitingForStatusUpdate effect will then surface the success
+      // notification and close the drawer.
+      const allDone = ["PRICING", "TRANSFERS", "HOTELS", "ITINERARY"].every(
+        (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+      );
+      if (allDone) {
+        stopStatusPolling();
+        await fetchItinerary();
+      }
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+      stopStatusPolling();
     }
   };
 
@@ -486,15 +507,10 @@ const RouteEditSection = (props) => {
         await props.resetRef();
       }
 
-      setWaitingForStatusUpdate(true);
-
       if (props.fetchData) {
         await props.fetchData(true);
       }
 
-      // if (resetSession) {
-      //   await resetSession();
-      // }
       dispatch(resetChatSession());
     } catch (error) {
       console.error("Error in fetchItinerary:", error);
@@ -502,11 +518,32 @@ const RouteEditSection = (props) => {
   };
 
   const startStatusPolling = (itineraryId) => {
+    if (!itineraryId) return;
+    // Guard against double-start (e.g. rapid duplicate save clicks).
+    if (pollingIntervalRef.current) clearInterval(pollingIntervalRef.current);
+
     setItineraryLoading(true);
     setPolling(true);
+    setWaitingForStatusUpdate(true);
 
+    // Fire once immediately so we don't pay the full interval delay before
+    // the first status read, then keep polling until everything resolves.
     fetchItineraryStatus(itineraryId);
+    pollingIntervalRef.current = setInterval(() => {
+      fetchItineraryStatus(itineraryId);
+    }, 4000);
   };
+
+  // Cleanup the polling interval if the user navigates away mid-update
+  // (e.g. closes the drawer) so we don't leak timers.
+  useEffect(() => {
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, []);
 
   const validateDates = () => {
     const today = new Date();
@@ -624,14 +661,20 @@ const RouteEditSection = (props) => {
       axiosItineraryUpdateInstance
         .post("", data, { headers })
         .then((response) => {
+          if (response?.data) {
+            dispatch(setItinerary(response.data));
+          }
           setLoading(false);
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose();
+          // handleClose is intentionally deferred — the waiting-for-status
+          // effect closes the drawer once polling completes so the spinner
+          // stays mounted while the backend tasks finish.
         })
         .catch((err) => {
           setLoading(false);
+          setItineraryLoading(false);
           if (err?.response?.status === 403) {
             props.openNotification({
               text: "You are not allowed to make changes to this itinerary",
@@ -675,7 +718,7 @@ const RouteEditSection = (props) => {
           const itineraryId =
             props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
-          handleClose();
+          // handleClose deferred — see non-mercury branch above.
         })
         .catch((err) => {
           setLoading(false);
@@ -764,14 +807,18 @@ const handleRouteTabClick = (label) => {
     },
   });
 };
-  return (
-    <>
-      <div
-        onClick={(e) => handleOutsideClick(e)}
-        className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
-      >
+ return (
+  <>
+    <div
+      onClick={(e) => handleOutsideClick(e)}
+      className={
+        props.fromChat
+          ? "flex flex-col items-center w-full h-full overflow-y-auto"
+          : "inset-0 flex flex-col items-center bg-white"
+      }
+    >
         {/* {loading && <Loader />} */}
-        <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
+        {/* <NavigationMenu message={"Welcome to The Tarzan Way!"}/>
         <Header
           setEdit={props.setEdit}
           title={props?.itinerary.name}
@@ -818,11 +865,11 @@ const handleRouteTabClick = (label) => {
           selectedItem={activeRouteTab}
           trackSectionViewed={trackSectionViewed}
         />
-      </div>
+      </div> */}
 
 
         {itineraryLoading && <Spinner isEdit={true} />}
-        {!isDesktop && (
+        {!props.fromChat && !isDesktop && (
           <>
             <div
               className={`max-ph:hidden w-full md:w-[50%] flex flex-col gap-3 items-center h-[300px] md:h-[600px] px-2 mt-4`}
@@ -836,7 +883,7 @@ const handleRouteTabClick = (label) => {
                 </div>
               )}
             </div>
-            <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+            <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
               {editDestination && !itineraryLoading ? (
                 <div className="w-full relative flex flex-row justify-center gap-5 px-3">
                   <EditDestinations
@@ -856,9 +903,9 @@ const handleRouteTabClick = (label) => {
           </>
         )}
         {isDesktop && (
-          <div className="w-full h-fit md:w-[85%] lg:w-[85%]  hide-scrollbar overflow-y-auto py-5">
+          <div className="w-full h-fit hide-scrollbar overflow-y-auto py-5">
             {editDestination && !itineraryLoading ? (
-              <div className="w-full flex flex-row justify-center gap-5">
+              <div className="w-full flex flex-row  gap-5">
                 <EditDestinations
                   destinations={destinations}
                   setDestinations={setDestinations}
@@ -868,7 +915,7 @@ const handleRouteTabClick = (label) => {
                   setLocationsLatLong={props.setLocationsLatLong}
                   setDestinationChanges={setDestinationChanges}
                 />
-                {isDesktop && (
+                {/* {!props.fromChat &&  isDesktop && (
                   <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
                     {props.children}
 
@@ -879,7 +926,7 @@ const handleRouteTabClick = (label) => {
                       </div>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
             ) : (
               // <EditDates
@@ -898,7 +945,7 @@ const handleRouteTabClick = (label) => {
         )}
 
         {!itineraryLoading && (
-          <div className={`w-full md:w-[85%] ${isDesktop ? "" : "px-3"}`}>
+          <div className={`w-full  ${isDesktop ? "" : "px-3"}`}>
             <ActionPanel
               setEdit={props.setEdit}
               editDestination={editDestination}
@@ -1036,7 +1083,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
   }
 
   return (
-    <div className="w-full md:w-[85%] pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
+    <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
           onClick={() => handleEditPanel()}
@@ -1140,7 +1187,7 @@ export const EditDestinations = (props) => {
   }
 
   return (
-    <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
+    <div className="w-full flex flex-col items-center justify-center pb-[150px] gap-3">
       <div className="w-full flex flex-row justify-between">
         <div className="text-[20px] pb-3 text-black">Route</div>
 
@@ -2530,7 +2577,7 @@ export const DatePicker = (props) => {
 /* Force calendar to stay in normal document flow */
 .SingleDatePicker_picker,
 .SingleDatePicker_picker__portal {
-  z-index: 15 !important;
+  z-index: 115 !important;
   // transform: none !important;
   // top: 100% !important;
   // left: 0 !important;
@@ -2745,7 +2792,7 @@ export const ActionPanel = (props) => {
       className={`${!isDesktop && "gap-2"}`}
     >
    
-<button
+{/* <button
   className={`LargeIndigoOutlinedButton ${!isDesktop && "w-1/2"}`}
   onClick={() => {
     if (editDestination) {
@@ -2765,28 +2812,30 @@ export const ActionPanel = (props) => {
   }}
 >
   {editDestination ? "Cancel" : "Back"}
-</button>
-      <Button
-        fontSize="1rem"
-        padding="0.5rem 2rem"
-        fontWeight="500"
-        margin="1rem 0"
-        borderRadius="5px"
-        borderWidth={destinationChanges ? "1px" : "0px"}
-        bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
-        zIndex={9999}
-        onclick={handleSaveButton}
-        height="50px"
-        color="white"
-        disabled={!destinationChanges}
-        style={{
-          maxWidth: isDesktop ? "500px" : "50%",
-          width: "100%",
-          fontSize: isDesktop ? "1rem" : "0.8rem"
-        }}
-      >
-        Update Route
-      </Button>
+</button> */}
+     {destinationChanges ? <div className="z-20 fixed w-[98%] md:w-[47.5%] max-ph:bottom-0 bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
+  <Button
+    fontSize="1rem"
+    padding="0.5rem 2rem"
+    fontWeight="500"
+    margin="0"
+    borderRadius="5px"
+    borderWidth={destinationChanges ? "1px" : "0px"}
+    bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
+    zIndex={9999}
+    onclick={handleSaveButton}
+    height="50px"
+    color="white"
+    disabled={!destinationChanges}
+    style={{
+      maxWidth: isDesktop ? "200px" : "50%",
+      width: "100%",
+      fontSize: isDesktop ? "1rem" : "0.8rem"
+    }}
+  >
+    Update Route
+  </Button>
+</div> : null}
     </div>
   );
 };
