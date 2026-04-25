@@ -788,12 +788,16 @@ const fetchStatus = async () => {
       setPolling(true);
     }
 
-    // ── 3. fetchItinerary now runs with redux already reflecting real status ─
+    // The status endpoint's top-level `status` (e.g. "Finalized") is the
+    // source of truth — the itinerary GET can lag and still return "Draft".
+    // Pass it into fetchItinerary so the Itinerary dispatch uses it instead
+    // of the stale data.status.
     fetchItinerary(
       status?.ITINERARY,
       status?.HOTELS,
       status?.TRANSFERS,
-      status?.PRICING
+      status?.PRICING,
+      res?.data?.status
     );
   } catch (err) {
     console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
@@ -813,7 +817,7 @@ const fetchStatus = async () => {
   }
 };
 
-    const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
+    const fetchItinerary = async (itinerary, hotels, transfers, pricing, statusApiStatus) => {
       try {
         if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
           if (true) window.scrollTo(0, 0);
@@ -830,10 +834,23 @@ const fetchStatus = async () => {
             return;
           } else {
             setShowMercuryItinerary(true);
-            dispatch(setItineraryStatus("final_status", data?.status));
+            dispatch(setItineraryStatus("final_status", statusApiStatus || data?.status));
           }
 
-          dispatch(setItinerary(data));
+          // Status resolution priority:
+          //   1. Status API's top-level `status` (most authoritative).
+          //   2. Prior Redux status when it's not "Draft" (preserves a
+          //      finalized state that was set on the pre-refresh skeleton).
+          //   3. `data.status` from the itinerary GET (can lag as "Draft").
+          // Without (2), a status API response that omits `status` would let
+          // the itinerary GET's stale "Draft" overwrite a freshly preserved
+          // "Finalized", hiding Routes/Bookings tabs post-poll.
+          const priorStatus = props.itinerary?.status;
+          const resolvedStatus =
+            statusApiStatus ||
+            (priorStatus && priorStatus !== "Draft" ? priorStatus : null) ||
+            data?.status;
+          dispatch(setItinerary({ ...data, status: resolvedStatus }));
 
           // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
@@ -955,7 +972,10 @@ useEffect(() => {
   // }
   setPolling(true);
   fetchDataRef.current?.(true, thisInstance);
-}, [props.id, props.skipPolling]); // ← fromChat removed from deps
+  // refetchCounter bumps when `refresh_itinerary` fires on an unchanged id —
+  // needed because neither `props.id` nor `skipPolling` change in that case,
+  // so without it the poll loop would never restart.
+}, [props.id, props.skipPolling, props.refetchCounter]);
 
 
 useEffect(() => {

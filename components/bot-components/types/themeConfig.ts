@@ -18,6 +18,7 @@ export interface ThemeTrendingCard {
   label: string;
   sublabel: string;
   prompt: string;
+  description?: string;
 }
 
 export interface ThemeRow<T> {

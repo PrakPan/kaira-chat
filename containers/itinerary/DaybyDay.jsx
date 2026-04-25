@@ -144,7 +144,7 @@ const DaybyDay = ({
         <div className="flex flex-col">
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={startCity?.place_id || 1}
+            key="start-city-label"
             city={startCity?.city_name}
             onClick={() => alert(`Clicked`)}
             downPresent={false}
@@ -160,6 +160,7 @@ const DaybyDay = ({
             getPaymentHandler={getPaymentHandler}
             fromChat={props.fromChat}
             isDraft={isDraft}
+            isFirstCity={true}
             showPins={showPins}
           />
           <CityItem
@@ -394,7 +395,7 @@ const DaybyDay = ({
           })}
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={endCity?.gmaps_place_id}
+            key="end-city-transfer"
             loadbookings={loadbookings}
             // airportBookings={transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
@@ -538,7 +539,7 @@ const DaybyDay = ({
           />
           <CityItem
             setShowLoginModal={setShowLoginModal}
-            key={endCity?.place_id}
+            key="end-city-label"
             city={endCity?.city_name}
             pinColour={getCityColor(index)}
             onClick={() => alert(`Clicked`)}
