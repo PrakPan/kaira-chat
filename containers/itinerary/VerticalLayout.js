@@ -1049,6 +1049,7 @@ const CityItem = ({
   bookingIdToDelete,
   pinColour,
   isLast,
+  isFirstCity,
   check_in,
   check_out,
   date_of_journey,
@@ -1554,12 +1555,38 @@ useEffect(() => {
     <div className="flex items-center justify-center m-2 py-2">
       <VerticalLine height={"50px"} gradient="top" />
     </div>}
+  {/* P1 (Draft) stage: line stays in flow so it doesn't overlap the next
+      DayByDay element. The city-name div (below) uses align-self to line
+      up with the pin. `isLast` is only passed to the end-city label. */}
+
+
+  {!upPresent && !downPresent && isFirstCity && (
+    <>
+      <Pin length={length} pinColour={"black"} inner={true} />
+      <VerticalLine height={"50px"} gradient="bottom" />
+    </>
+  )}
+  {!upPresent && !downPresent && isLast && (
+    <>
+      <VerticalLine height={"50px"} gradient="top" />
+      <Pin length={length} pinColour={"black"} inner={true} />
+    </>
+  )}
 </PinWrapper>}
      
 
       <div
         className={`flex flex-col gap-2 ${!downPresent && upPresent && "mt-[41px]z"
           } ${!upPresent && downPresent && "mb-[41px]"}`}
+        style={
+          // P1 (Draft) start/end city label rows: pin sits at one end of a
+          // taller PinWrapper (pin + line). align-self pulls the city name
+          // to the same end so the text lines up with the pin instead of
+          // the wrapper's vertical centre.
+          Itinerary?.status === "Draft" && !upPresent && !downPresent
+            ? { alignSelf: isLast ? "flex-end" : "flex-start" }
+            : undefined
+        }
       >
         {/* City and Duration Section - Aligned with Pin */}
         <div

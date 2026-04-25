@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import travellerStories from "../../../../data/travellerStories";
+import type { ThemeConfig } from "../../types/themeConfig";
 
 export interface TravellerStory {
   id: number;
@@ -19,11 +20,13 @@ export interface TravellerStory {
 interface StartScreenProps {
   onPromptSelect: (prompt: string) => void;
   onTravellerStorySelect?: (story: TravellerStory) => void;
+  themeConfig?: ThemeConfig;
 }
 
 const StartScreen: React.FC<StartScreenProps> = ({
   onPromptSelect,
   onTravellerStorySelect,
+  themeConfig,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [activeStoryId, setActiveStoryId] = useState<number | null>(null);
@@ -36,133 +39,118 @@ const StartScreen: React.FC<StartScreenProps> = ({
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   // ── P1: Combined section — all 6 cards under one heading ──────────────────
-  const allTrips = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1600",
-      label: "Japan — Summer Season",
-      tags: "Premium · Honeymoon",
-      prompt:
-        "Plan a summer trip to Japan for 2 people in July or August. I want to see Mount Fuji at dawn, experience Kyoto's Gion Matsuri festival, feel Tokyo's Shibuya energy, and explore Osaka's food alleys. Suggest the best 10-day itinerary, stays, and budget.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600",
-      label: "Greece — Island Hopping",
-      tags: "Iconic · Couples",
-      prompt:
-        "Plan a Greek islands trip for a couple. I want Santorini sunsets, Mykonos beaches, the Athens Acropolis, and ferry rides between the islands. Suggest the best 10-day itinerary with stays and budget.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1600",
-      label: "Australia & New Zealand",
-      tags: "Adventure · Scenic",
-      prompt:
-        "Plan an Australia and New Zealand trip. Include Sydney Harbour, the Great Barrier Reef, Queenstown mountains, and Milford Sound fjords. Suggest the best itinerary across both countries, stays, and budget.",
-    },
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mountain hiking adventure.jpg",
-      label: "Himalayan Road Trip",
-      prompt:
-        "Plan a 10-day Himalayan road trip — Spiti or Ladakh, starting from Delhi. I want scenic drives, camping, monasteries, and mountain stays.",
-    },
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Road trip explorer.jpg",
-      label: "Plan a Road Trip from My City",
-      prompt:
-        "I want to plan a road trip. Ask me which city I'm starting from and how many days I have — then suggest the best route, stops, and places to stay.",
-    },
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Water sports getaway.jpg",
-      label: "Water Sports Getaway",
-      prompt:
-        "Plan a 4-day water sports trip — surfing, kayaking, snorkelling. Goa, Andamans, or Bali. Budget ₹50K for 2.",
-    },
-  ];
+ const defaultAllTrips = [
+  {
+    image: "https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=1600",
+    label: "Japan — Summer Season",
+    tags: "Premium · Honeymoon",
+    description: "Fuji, Kyoto, Gion. All of it.",
+    prompt: "Plan a summer trip to Japan for 2 people in July or August. I want to see Mount Fuji at dawn, experience Kyoto's Gion Matsuri festival, feel Tokyo's Shibuya energy, and explore Osaka's food alleys. Suggest the best 10-day itinerary, stays, and budget.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=1600",
+    label: "Greece — Island Hopping",
+    tags: "Iconic · Couples",
+    description: "Sunsets, ferries, and blue domes.",
+    prompt: "Plan a Greek islands trip for a couple. I want Santorini sunsets, Mykonos beaches, the Athens Acropolis, and ferry rides between the islands. Suggest the best 10-day itinerary with stays and budget.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1600",
+    label: "Australia & New Zealand",
+    tags: "Adventure · Scenic",
+    description: "Two countries. Infinite landscapes.",
+    prompt: "Plan an Australia and New Zealand trip. Include Sydney Harbour, the Great Barrier Reef, Queenstown mountains, and Milford Sound fjords. Suggest the best itinerary across both countries, stays, and budget.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Mountain hiking adventure.jpg",
+    label: "Himalayan Road Trip",
+    description: "Monasteries, mountains, and open roads.",
+    prompt: "Plan a 10-day Himalayan road trip — Spiti or Ladakh, starting from Delhi. I want scenic drives, camping, monasteries, and mountain stays.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Road trip explorer.jpg",
+    label: "Plan a Road Trip from My City",
+    description: "Your city. Your route. Let's go.",
+    prompt: "I want to plan a road trip. Ask me which city I'm starting from and how many days I have — then suggest the best route, stops, and places to stay.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Water sports getaway.jpg",
+    label: "Water Sports Getaway",
+    description: "Surf, snorkel, kayak. Repeat.",
+    prompt: "Plan a 4-day water sports trip — surfing, kayaking, snorkelling. Goa, Andamans, or Bali. Budget ₹50K for 2.",
+  },
+];
 
   // ── P2: Trending This April — 3 cards ────────────────────────────────────
-  const trendingTrips = [
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/La-Tomatina-01.jpg",
-      label: "Spain 🇪🇸 — La Tomatina",
-      sublabel: "Book early — festival in August",
-      prompt:
-        "I want to attend La Tomatina in Spain. Help me plan the full trip — flights from India, where to stay near Buñol, and things to do around the festival.",
-    },
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Rajasthan Desert Nights.jpg",
-      label: "Rajasthan 🏰 — Desert Nights",
-      sublabel: "Best before the summer heat",
-      prompt:
-        "Plan a 4-day Rajasthan trip. Desert camp under the stars in Jaisalmer, camel safari at golden hour, and a heritage hotel stay.",
-    },
-    {
-      image:
-        "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Bali.jpg",
-      label: "Bali 🇮🇩 — Shoulder Season",
-      sublabel: "Fewer crowds, better villa prices",
-      prompt:
-        "Plan a 7-day Bali trip for April. Rice terraces, uncrowded temple, villa stay, and beach time. What's the best itinerary and budget?",
-    },
-  ];
+ const defaultTrendingTrips = [
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/La-Tomatina-01.jpg",
+    label: "Spain 🇪🇸 — La Tomatina",
+    sublabel: "Book early — festival in August",
+    description: "Tomatoes, chaos, and pure joy.",
+    prompt: "I want to attend La Tomatina in Spain. Help me plan the full trip — flights from India, where to stay near Buñol, and things to do around the festival.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Rajasthan Desert Nights.jpg",
+    label: "Rajasthan 🏰 — Desert Nights",
+    sublabel: "Best before the summer heat",
+    description: "Stars above. Sand below. Magic.",
+    prompt: "Plan a 4-day Rajasthan trip. Desert camp under the stars in Jaisalmer, camel safari at golden hour, and a heritage hotel stay.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/Bali.jpg",
+    label: "Bali 🇮🇩 — Shoulder Season",
+    sublabel: "Fewer crowds, better villa prices",
+    description: "Same Bali. Half the tourists.",
+    prompt: "Plan a 7-day Bali trip for April. Rice terraces, uncrowded temple, villa stay, and beach time. What's the best itinerary and budget?",
+  },
+];
 
   // ── TTW Running Campaign Themes — 6 cards ────────────────────────────────
-  const campaignThemes = [
-    {
-      image:
-        "https://images.unsplash.com/photo-1519741497674-611481863552?w=1600",
-      label: "Perfect Proposals",
-      sublabel: "Say Yes Spots",
-      prompt:
-        "I am planning a marriage proposal trip. Suggest the most romantic destinations — international or India — with a beautiful setting, ideas to make it memorable, and where to stay. Budget is flexible.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600",
-      label: "Honeymoon Trip Planner",
-      sublabel: "Romantic Escapes",
-      prompt:
-        "Plan a honeymoon trip for 2. Ask me our preferred vibe — beach, mountains, Europe, or Southeast Asia — and our budget, then suggest the best destination and a full itinerary.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600",
-      label: "Road Trips 2025",
-      sublabel: "Drive Diaries",
-      prompt:
-        "I want to plan a road trip. Ask me where I am based and how many days I have — then suggest the best route with stops, stays, and driving distances.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600",
-      label: "Europe Under Rs 1 Lakh",
-      sublabel: "Big Trips, Small Budget",
-      prompt:
-        "I want to plan a Europe trip under Rs 1 lakh. Which countries are most budget-friendly? Suggest a 10 to 12 day itinerary with flights, stays, and transport all within budget.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1600",
-      label: "Japan in Autumn",
-      sublabel: "Golden Gateways",
-      prompt:
-        "Plan a 10-day Japan trip for autumn. I want to see the fall foliage, visit Tokyo and Kyoto, experience local food culture, and stay in a mix of hotels and a ryokan. Suggest the best itinerary and budget.",
-    },
-    {
-      image:
-        "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600",
-      label: "The Great Migration — Kenya",
-      sublabel: "Wildlife Bucket List",
-      prompt:
-        "I want to see the Great Migration in Kenya. When is the best time, which lodges are worth it, and what does a full Kenya safari trip cost for an Indian traveller? Plan it for me.",
-    },
-  ];
+ const defaultCampaignThemes = [
+  {
+    image: "https://images.unsplash.com/photo-1519741497674-611481863552?w=1600",
+    label: "Perfect Proposals",
+    sublabel: "Say Yes Spots",
+    description: "Say yes in the right place.",
+    prompt: "I am planning a marriage proposal trip. Suggest the most romantic destinations — international or India — with a beautiful setting, ideas to make it memorable, and where to stay. Budget is flexible.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1600",
+    label: "Honeymoon Trip Planner",
+    sublabel: "Romantic Escapes",
+    description: "Romance, curated for two.",
+    prompt: "Plan a honeymoon trip for 2. Ask me our preferred vibe — beach, mountains, Europe, or Southeast Asia — and our budget, then suggest the best destination and a full itinerary.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600",
+    label: "Road Trips 2025",
+    sublabel: "Drive Diaries",
+    description: "Your route. Your rules.",
+    prompt: "I want to plan a road trip. Ask me where I am based and how many days I have — then suggest the best route with stops, stays, and driving distances.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1600",
+    label: "Europe Under Rs 1 Lakh",
+    sublabel: "Big Trips, Small Budget",
+    description: "Big Europe. Honest budget.",
+    prompt: "I want to plan a Europe trip under Rs 1 lakh. Which countries are most budget-friendly? Suggest a 10 to 12 day itinerary with flights, stays, and transport all within budget.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1600",
+    label: "Japan in Autumn",
+    sublabel: "Golden Gateways",
+    description: "Gold leaves. Zero regrets.",
+    prompt: "Plan a 10-day Japan trip for autumn. I want to see the fall foliage, visit Tokyo and Kyoto, experience local food culture, and stay in a mix of hotels and a ryokan. Suggest the best itinerary and budget.",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600",
+    label: "The Great Migration — Kenya",
+    sublabel: "Wildlife Bucket List",
+    description: "One million wildebeest. Go.",
+    prompt: "I want to see the Great Migration in Kenya. When is the best time, which lodges are worth it, and what does a full Kenya safari trip cost for an Indian traveller? Plan it for me.",
+  },
+];
 
   // ── P2: Prompt chips ──────────────────────────────────────────────────────
   const promptChips = [
@@ -232,6 +220,24 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
   const showScrollHint = hasOverflow && !atBottom;
 
+  // ── Resolved theme-aware data (overridden by themeConfig when provided) ──
+  const row1Heading =
+    themeConfig?.rows?.row1?.heading ?? "From Relaxation to Adventure";
+  const row1Icon = themeConfig?.rows?.row1?.icon ?? "🌅";
+  const row1Cards = themeConfig?.rows?.row1?.cards ?? defaultAllTrips;
+
+  const row2Heading =
+    themeConfig?.rows?.row2?.heading ?? "Trending This April";
+  const row2Icon = themeConfig?.rows?.row2?.icon ?? "🔥";
+  const row2Cards = themeConfig?.rows?.row2?.cards ?? defaultTrendingTrips;
+
+  const row3Heading =
+    themeConfig?.rows?.row3?.heading ?? "TTW's Trending Themes";
+  const row3Icon = themeConfig?.rows?.row3?.icon ?? "🎯";
+  const row3Cards = themeConfig?.rows?.row3?.cards ?? defaultCampaignThemes;
+
+  const row4 = themeConfig?.rows?.row4;
+
   return (
     <div className="relative h-full">
     <div
@@ -244,6 +250,15 @@ const StartScreen: React.FC<StartScreenProps> = ({
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ttwShimmer {
+          0%   { background-position: -400px 0; }
+          100% { background-position: 400px 0; }
+        }
+        .ttw-skeleton {
+          background: linear-gradient(90deg, #e5e7eb 0%, #f3f4f6 50%, #e5e7eb 100%);
+          background-size: 800px 100%;
+          animation: ttwShimmer 1.4s linear infinite;
         }
         .anim-fade-up {
           animation: fadeSlideUp 0.5s ease-out forwards;
@@ -301,7 +316,15 @@ const StartScreen: React.FC<StartScreenProps> = ({
                 active={activeStoryId === story.id}
                 onSelect={(s) => {
                   setActiveStoryId(s.id);
-                  onTravellerStorySelect?.(s);
+                  if (onTravellerStorySelect) {
+                    onTravellerStorySelect(s);
+                  } else {
+                    // Mobile/inspiration context — no detail-view handler is
+                    // wired here, so route the user into the chat using the
+                    // story's prompt. This closes the inspiration sheet and
+                    // flips isChatActive so the chat panel takes over.
+                    onPromptSelect(s.prompt);
+                  }
                 }}
               />
             ))}
@@ -316,19 +339,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🌅</span>
+            <span className="text-xl">{row1Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              From Relaxation to Adventure
+              {row1Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {allTrips.map((trip, index) => (
+            {row1Cards.map((trip, index) => (
               <TripCard
                 key={`all-${index}`}
                 trip={trip}
@@ -348,19 +371,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🔥</span>
+            <span className="text-xl">{row2Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              Trending This April
+              {row2Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {trendingTrips.map((trip, index) => (
+            {row2Cards.map((trip, index) => (
               <TrendingCard
                 key={`trending-${index}`}
                 trip={trip}
@@ -380,19 +403,19 @@ const StartScreen: React.FC<StartScreenProps> = ({
           }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-xl">🎯</span>
+            <span className="text-xl">{row3Icon}</span>
             <h2
               className="text-lg font-semibold text-gray-900"
               style={{ fontFamily: "'Inter', sans-serif" }}
             >
-              TTW's Trending Themes
+              {row3Heading}
             </h2>
           </div>
           <div
             className="flex gap-3 overflow-x-auto pb-2"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {campaignThemes.map((trip, index) => (
+            {row3Cards.map((trip, index) => (
               <TrendingCard
                 key={`theme-${index}`}
                 trip={trip}
@@ -403,6 +426,40 @@ const StartScreen: React.FC<StartScreenProps> = ({
             ))}
           </div>
         </div>
+
+        {/* ── Optional Row 4 — themed activity row ─────────────────────────── */}
+        {row4 && (
+          <div
+            style={{
+              animation: mounted ? "fadeSlideUp 0.5s ease-out 620ms forwards" : "none",
+              opacity: mounted ? undefined : 0,
+            }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              {row4.icon && <span className="text-xl">{row4.icon}</span>}
+              <h2
+                className="text-lg font-semibold text-gray-900"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                {row4.heading}
+              </h2>
+            </div>
+            <div
+              className="flex gap-3 overflow-x-auto pb-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {row4.cards.map((trip, index) => (
+                <TripCard
+                  key={`row4-${index}`}
+                  trip={trip}
+                  delay={620 + index * 50}
+                  mounted={mounted}
+                  onSelect={onPromptSelect}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
@@ -441,7 +498,7 @@ const StartScreen: React.FC<StartScreenProps> = ({
 
 // ── TripCard (unchanged behaviour, updated data flows through) ──────────────
 interface TripCardProps {
-  trip: { image: string; label: string; prompt: string; tags?: string };
+  trip: { image: string; label: string; prompt: string; tags?: string; description?: string };
   delay: number;
   mounted: boolean;
   onSelect: (prompt: string) => void;
@@ -449,6 +506,7 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <button
@@ -469,68 +527,88 @@ const TripCard: React.FC<TripCardProps> = ({ trip, delay, mounted, onSelect }) =
           : "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
+      {!imgLoaded && (
+        <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
+      )}
       <img
         src={trip.image}
         alt={trip.label}
+        loading="lazy"
+        onLoad={() => setImgLoaded(true)}
+        onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
           transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease",
+          transition: "transform 0.4s ease, opacity 0.3s ease",
+          opacity: imgLoaded ? 1 : 0,
         }}
       />
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)",
+          background: imgLoaded
+            ? "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.15) 55%, transparent 100%)"
+            : "transparent",
         }}
       />
-      {trip.tags && (
+      {imgLoaded && trip.tags && (
         <div
           className="absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[8px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
-          style={{
-            background: "rgba(255,255,255,0.92)",
-            color: "#07213A",
-            fontFamily: "Inter",
-            backdropFilter: "blur(6px)",
-          }}
+          // style={{
+          //   background: "rgba(255,255,255,0.92)",
+          //   color: "#07213A",
+          //   fontFamily: "Inter",
+          //   backdropFilter: "blur(6px)",
+          // }}
+           style={{
+    background: "#F7E700",
+    color: "#07213A",
+    fontFamily: "Inter",
+  }}
         >
           {trip.tags}
         </div>
       )}
-      <div className="absolute bottom-3 left-3 right-3 text-left">
-        <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
-          {trip.label}
-        </p>
-        <div
-          className="flex items-center gap-1 mt-1 overflow-hidden"
-          style={{
-            maxHeight: hovered ? "20px" : "0",
-            opacity: hovered ? 1 : 0,
-            transition: "max-height 0.25s ease, opacity 0.25s ease",
-          }}
-        >
-          <span className="text-white/80 text-xs">Tap to explore</span>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeOpacity="0.8"
+      {imgLoaded && (
+        <div className="absolute bottom-3 left-3 right-3 text-left" >
+          <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight" >
+            {trip.label}
+          </p>
+          {trip.description && (
+            <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-2">
+              {trip.description}
+            </p>
+          )}
+          <div
+            className="flex items-center gap-1 mt-1 overflow-hidden"
+            style={{
+              maxHeight: hovered ? "20px" : "0",
+              opacity: hovered ? 1 : 0,
+              transition: "max-height 0.25s ease, opacity 0.25s ease",
+            }}
           >
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+            <span className="text-white/80 text-xs">Tap to explore</span>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeOpacity="0.8"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </div>
         </div>
-      </div>
+      )}
     </button>
   );
 };
 
 // ── TrendingCard — wider card with sublabel badge ──────────────────────────
 interface TrendingCardProps {
-  trip: { image: string; label: string; sublabel: string; prompt: string };
+  trip: { image: string; label: string; sublabel: string; prompt: string,description?: string };
   delay: number;
   mounted: boolean;
   onSelect: (prompt: string) => void;
@@ -541,15 +619,17 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
   delay,
   mounted,
   onSelect,
+
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <button
       onClick={() => onSelect(trip.prompt)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[250px] aspect-[200/217]"
+      className="group relative overflow-hidden rounded-2xl flex-shrink-0 max-w-[180px] md:max-w-[240px] aspect-[240/244]"
       style={{
         animation: mounted
           ? `fadeSlideUp 0.5s ease-out ${delay}ms forwards`
@@ -563,23 +643,32 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           : "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
+      {!imgLoaded && (
+        <div className="ttw-skeleton absolute inset-0" aria-hidden="true" />
+      )}
       <img
         src={trip.image}
         alt={trip.label}
+        loading="lazy"
+        onLoad={() => setImgLoaded(true)}
+        onError={() => setImgLoaded(true)}
         className="w-full h-full object-cover"
         style={{
           transform: hovered ? "scale(1.06)" : "scale(1)",
-          transition: "transform 0.4s ease",
+          transition: "transform 0.4s ease, opacity 0.3s ease",
+          opacity: imgLoaded ? 1 : 0,
         }}
       />
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
+          background: imgLoaded
+            ? "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)"
+            : "transparent",
         }}
       />
 
+    {imgLoaded && (
     <div
   className="max-ph:hidden absolute top-3 left-2 flex items-center justify-center gap-[6px] px-[6px] py-[4px] rounded-[26px] text-[10px] font-medium leading-[14px]"
   style={{
@@ -590,11 +679,18 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
 >
   {trip.sublabel}
 </div>
+    )}
 
+      {imgLoaded && (
       <div className="absolute bottom-3 left-3 right-3 text-left">
         <p className="text-white font-semibold text-sm drop-shadow-lg leading-tight">
           {trip.label}
         </p>
+        {trip.description && (
+  <p className="text-white/85 text-[11px] mt-1 leading-snug drop-shadow-md line-clamp-1">
+    {trip.description}
+  </p>
+)}
         <div
           className="flex items-center gap-1 mt-1 overflow-hidden"
           style={{
@@ -617,6 +713,7 @@ const TrendingCard: React.FC<TrendingCardProps> = ({
           </svg>
         </div>
       </div>
+      )}
     </button>
   );
 };
@@ -638,6 +735,7 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
   onSelect,
 }) => {
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const headline = `${story.name} did ${story.destinations.join(", ")} in ${story.duration}`;
 
@@ -663,42 +761,85 @@ const TravellerStoryCard: React.FC<TravellerStoryCardProps> = ({
       }}
     >
       <div className="relative w-full p-2.5" style={{ aspectRatio: "16/11" }}>
+        {!imgLoaded && (
+          <div
+            className="ttw-skeleton absolute rounded-[24px]"
+            style={{ inset: 10 }}
+            aria-hidden="true"
+          />
+        )}
         <img
           src={story.image}
           alt={story.tripName}
+          loading="lazy"
+          onLoad={() => setImgLoaded(true)}
+          onError={() => setImgLoaded(true)}
           className="w-full h-full object-cover rounded-[24px]"
+          style={{
+            opacity: imgLoaded ? 1 : 0,
+            transition: "opacity 0.3s ease",
+          }}
         />
       </div>
       <div className="p-2.5">
-        <p
-          className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            minHeight: 34,
-          }}
-        >
-          {headline}
-        </p>
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
-            <span className="font-medium">{story.rating.toFixed(1)}</span>
-            <span style={{ color: "#F7B500" }}>★</span>
-          </div>
-          <span
-            className="px-2 py-[2px] rounded-full text-[10px] font-medium"
-            style={{
-              background: "#FCE7F3",
-              color: "#9D174D",
-              fontFamily: "Inter",
-            }}
-          >
-            {story.groupType} Trip
-          </span>
-        </div>
+        {imgLoaded ? (
+          <>
+            <p
+              className="text-[13px] font-semibold text-[#07213A] leading-snug mb-0"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                minHeight: 34,
+              }}
+            >
+              {headline}
+            </p>
+            <div className="flex items-center justify-between mt-2">
+              <div className="flex items-center gap-1 text-[11px] text-[#07213A]">
+                <span className="font-medium">{story.rating.toFixed(1)}</span>
+                <span style={{ color: "#F7B500" }}>★</span>
+              </div>
+              <span
+                className="px-2 py-[2px] rounded-full text-[10px] font-medium"
+                style={{
+                  background: "#FCE7F3",
+                  color: "#9D174D",
+                  fontFamily: "Inter",
+                }}
+              >
+                {story.groupType} Trip
+              </span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="ttw-skeleton rounded-md"
+              style={{ height: 12, width: "92%", marginBottom: 6 }}
+              aria-hidden="true"
+            />
+            <div
+              className="ttw-skeleton rounded-md"
+              style={{ height: 12, width: "70%" }}
+              aria-hidden="true"
+            />
+            <div className="flex items-center justify-between mt-2">
+              <div
+                className="ttw-skeleton rounded-md"
+                style={{ height: 10, width: 32 }}
+                aria-hidden="true"
+              />
+              <div
+                className="ttw-skeleton rounded-full"
+                style={{ height: 14, width: 70 }}
+                aria-hidden="true"
+              />
+            </div>
+          </>
+        )}
       </div>
     </button>
   );

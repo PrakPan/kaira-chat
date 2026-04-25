@@ -1,11 +1,15 @@
 // components/itinerary/ConfirmationModal.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BsCalendar2, BsGeoAlt } from "react-icons/bs";
+import { FaMapMarkerAlt } from "react-icons/fa";
 import { FaX } from "react-icons/fa6";
 import ModalWithBackdrop from "../../../components/ui/ModalWithBackdrop";
 import BottomModal from "../../../components/ui/LowerModal";
 import { useDispatch } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
+import axiossearchstartinginstance from "../../../services/search/startinglocation";
+import useDebounce from "../../../hooks/useDebounce";
+import Spinner from "../../../components/Spinner";
 import {
   PassengerRow,
   HeaderRow,
@@ -16,6 +20,22 @@ import {
   ApplyButton,
   Section,
 } from "../../../components/tailoredform/slidetwo/EnterPassenger";
+
+interface StartLocationResult {
+  text: string;
+  place_id: string;
+  image?: string;
+}
+
+const LocationSkeleton = () => (
+  <div className="flex items-center gap-3 px-2 py-2 animate-pulse">
+    <div className="w-[34px] h-[34px] rounded-full bg-gray-200" />
+    <div className="flex-1 space-y-1.5">
+      <div className="h-3 w-1/2 bg-gray-200 rounded" />
+      <div className="h-2.5 w-1/3 bg-gray-200 rounded" />
+    </div>
+  </div>
+);
 
 interface ConfirmationModalProps {
   show: boolean;
@@ -32,6 +52,7 @@ export interface ConfirmationDetails {
   children: number;
   infants: number;
   startLocation: string;
+  startLocationPlaceId?: string;
 }
 
 // Simple Date Picker Component
@@ -278,6 +299,13 @@ interface ModalContentProps {
   onOpenDatePicker: () => void;
   onOpenPassengerPicker: () => void;
   totalTravelers: number;
+  searchResults: StartLocationResult[];
+  searchLoading: boolean;
+  showResults: boolean;
+  onLocationFocus: () => void;
+  onLocationBlur: () => void;
+  onSelectResult: (result: StartLocationResult) => void;
+  isDraftLoading: boolean;
 }
 
 const ModalContent: React.FC<ModalContentProps> = ({
@@ -290,6 +318,13 @@ const ModalContent: React.FC<ModalContentProps> = ({
   onOpenDatePicker,
   onOpenPassengerPicker,
   totalTravelers,
+  searchResults,
+  searchLoading,
+  showResults,
+  onLocationFocus,
+  onLocationBlur,
+  onSelectResult,
+  isDraftLoading,
 }) => {
   return (
     <div className="p-6">
@@ -307,16 +342,52 @@ const ModalContent: React.FC<ModalContentProps> = ({
           Start Location <span className="text-red-400">*</span>
         </label>
         <div className="relative">
-          <BsGeoAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#07213A]/50" size={15} />
+          <BsGeoAlt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#07213A]/50 z-[1]" size={15} />
           <input
             type="text"
             value={location}
             onChange={onLocationChange}
-            placeholder="e.g., New Delhi"
-            className="w-full pl-9 pr-3 py-2.5 border rounded-[8px] bg-white focus:outline-none text-sm transition-all placeholder:text-gray-400"
+            onFocus={onLocationFocus}
+            onBlur={onLocationBlur}
+            placeholder="Enter the start Location"
+            className="w-full pl-9 pr-8 py-2.5 border rounded-[8px] bg-white focus:outline-none text-sm transition-all placeholder:text-gray-400"
             autoComplete="off"
             spellCheck={false}
           />
+          {searchLoading ? (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {/* <Spinner size={16} margin="0" /> */}
+            </div>
+          ) : null}
+          {showResults && (searchLoading || searchResults.length > 0) ? (
+            <div className="absolute left-0 right-0 top-[calc(100%+4px)] bg-white border rounded-[8px] shadow-lg z-[5] max-h-[260px] overflow-y-auto p-2">
+              {searchLoading ? (
+                <>
+                  <LocationSkeleton />
+                  <LocationSkeleton />
+                  <LocationSkeleton />
+                </>
+              ) : (
+                <div className="flex flex-col gap-[8px]">
+                  {searchResults.map((r) => (
+                    <div
+                      key={r.place_id}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        onSelectResult(r);
+                      }}
+                      className="grid grid-cols-[34px_1fr] gap-4 items-center rounded px-2 py-1 cursor-pointer hover:bg-[#FEFFC0]"
+                    >
+                      <div className="bg-[#dfdfdf] rounded-full p-2.5 flex items-center justify-center">
+                        <FaMapMarkerAlt />
+                      </div>
+                      <div className="font-medium text-sm">{r.text}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -360,12 +431,19 @@ const ModalContent: React.FC<ModalContentProps> = ({
         >
           Cancel
         </button>
-        <button
-          onClick={onConfirm}
-          className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl text-sm hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
-        >
-          Confirm & View Prices
-        </button>
+        {isDraftLoading ? (
+          <div className="flex-1 px-3 py-2.5 bg-gray-100 text-gray-500 font-medium rounded-xl text-sm flex items-center justify-center gap-2">
+            <Spinner size={14} margin="0" />
+            <span>Preparing itinerary…</span>
+          </div>
+        ) : (
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-3 py-2.5 bg-[#07213A] text-white font-medium rounded-xl text-sm hover:bg-[#07213A]/90 active:scale-[0.98] transition-all"
+          >
+            Confirm & View Itinerary
+          </button>
+        )}
       </div>
     </div>
   );
@@ -392,6 +470,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const [location, setLocation] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPassengerPicker, setShowPassengerPicker] = useState(false);
+  const [searchResults, setSearchResults] = useState<StartLocationResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
+  const debouncedLocation = useDebounce(location);
+  const skipNextSearchRef = useRef(false);
 
   useEffect(() => {
     const checkScreenSize = () => setIsMobile(window.innerWidth < 768);
@@ -400,8 +484,56 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  useEffect(() => {
+    if (skipNextSearchRef.current) {
+      skipNextSearchRef.current = false;
+      return;
+    }
+    const query = debouncedLocation.trim();
+    if (query.length < 2) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setSearchLoading(true);
+    axiossearchstartinginstance
+      .get(`?q=${encodeURIComponent(query)}`)
+      .then((res) => {
+        if (cancelled) return;
+        setSearchLoading(false);
+        setSearchResults(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setSearchLoading(false);
+        setSearchResults([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedLocation]);
+
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(e.target.value);
+    if (selectedPlaceId) setSelectedPlaceId("");
+    setShowResults(true);
+  };
+
+  const handleLocationFocus = () => {
+    if (location.trim().length >= 2) setShowResults(true);
+  };
+
+  const handleLocationBlur = () => {
+    setTimeout(() => setShowResults(false), 150);
+  };
+
+  const handleSelectResult = (result: StartLocationResult) => {
+    skipNextSearchRef.current = true;
+    setLocation(result.text);
+    setSelectedPlaceId(result.place_id);
+    setSearchResults([]);
+    setShowResults(false);
   };
 
   const handlePassengerApply = (adults: number, children: number, infants: number) => {
@@ -419,7 +551,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       dispatch(openNotification({ type: "error", text: "Please enter start location", heading: "Error!" }));
       return;
     }
-    onConfirm({ ...details, startLocation: location });
+    if (!selectedPlaceId) {
+      dispatch(openNotification({ type: "error", text: "Please select a start location from the suggestions", heading: "Error!" }));
+      return;
+    }
+    onConfirm({ ...details, startLocation: location, startLocationPlaceId: selectedPlaceId });
     onHide();
     // On mobile, switch to chat view
     if (isMobile && onMobileChatSwitch) {
@@ -437,10 +573,16 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onOpenDatePicker: () => setShowDatePicker(true),
     onOpenPassengerPicker: () => setShowPassengerPicker(true),
     totalTravelers,
+    searchResults,
+    searchLoading,
+    showResults,
+    onLocationFocus: handleLocationFocus,
+    onLocationBlur: handleLocationBlur,
+    onSelectResult: handleSelectResult,
+    isDraftLoading: !!isLoading,
   };
 
   const renderContent = () => {
-    if (isLoading) return <ConfirmationSkeleton />;
     return <ModalContent {...modalContentProps} />;
   };
 

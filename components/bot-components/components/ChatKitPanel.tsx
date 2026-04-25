@@ -15,6 +15,11 @@ import AccommodationDetailDrawer from "../../modals/AccommodationDetailDrawer";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { MERCURY_HOST } from "../../../services/constants";
 import { openNotification } from "../../../store/actions/notification";
+import {
+  deletePoiFromItinerary,
+  deleteActivityFromItinerary,
+  deleteRestaurantFromItinerary,
+} from "../../../store/actions/itinerary";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
@@ -71,12 +76,26 @@ interface QuickReply {
   value?: string;
 }
 
+export interface CityEndpoint {
+  name: string;
+  gmaps_place_id: string;
+}
+
+export interface RouteEndpoints {
+  start_city: CityEndpoint | null;
+  end_city: CityEndpoint | null;
+}
+
 interface ChatKitPanelProps {
   onLocationReceived: (locationData: { data: Location[] }) => void;
   onRouteReceived: (routeData: { data: Location[] }) => void;
   onNewQuery: () => void;
   onClearMap?: (data?: Record<string, unknown>) => void;
   onItineraryReceived: (itineraryData: unknown) => void;
+  /** Fired when shimmer_day_by_day / display_itinerary / display_transfers
+   *  deliver start/end city info. Falls back to the user's current location
+   *  when the effect omits either endpoint. */
+  onRouteEndpointsReceived?: (endpoints: RouteEndpoints) => void;
   botMode?: BotMode;
   itineraryId?: string;
   onBotModeChange?: (mode: BotMode) => void;
@@ -86,6 +105,7 @@ interface ChatKitPanelProps {
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
 onItineraryCompletionDone?: (itineraryId: string, summary?: string) => void;
+onItineraryRefresh?: (itineraryId: string) => void;
 onLoadRouteOnMap?: () => void;
 restoredThread?: any;
 onInitialPromptConsumed?: () => void;
@@ -229,6 +249,7 @@ export function ChatKitPanel({
   onClearMap,
   onRouteReceived,
   onItineraryReceived,
+  onRouteEndpointsReceived,
   botMode = "p1",
   itineraryId = "",
   onBotModeChange,
@@ -238,6 +259,7 @@ export function ChatKitPanel({
   onSendReady,
   onItineraryCompletionStart,
 onItineraryCompletionDone,
+onItineraryRefresh,
   onLoadRouteOnMap,
 restoredThread,
 onInitialPromptConsumed,
@@ -637,6 +659,74 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
   // Keep sendWidgetActionRef current after every render
   sendWidgetActionRef.current = sendWidgetAction;
 
+  // Remember the most recently emitted start/end so we only fire the endpoint
+  // callback when it actually changes (back-to-back effects in one turn often
+  // repeat the same endpoints).
+  const lastEndpointsRef = useRef<string>("");
+
+  // Resolve an endpoint from an effect payload, falling back to the user's
+  // current location when the server omits name/place id. Returns null only if
+  // both the effect and the user location are empty (ChatKitPanel has no
+  // sensible default beyond that).
+  const resolveEndpoint = useCallback(
+    (raw: any): CityEndpoint | null => {
+      const name = raw?.name ?? raw?.city ?? raw?.city_name;
+      const placeId = raw?.gmaps_place_id ?? raw?.place_id;
+      if (name || placeId) {
+        return {
+          name: String(name ?? ""),
+          gmaps_place_id: String(placeId ?? ""),
+        };
+      }
+      if (userLocationData?.place_id || userLocationData?.text) {
+        return {
+          name: userLocationData.text ?? "",
+          gmaps_place_id: userLocationData.place_id ?? "",
+        };
+      }
+      return null;
+    },
+    [userLocationData],
+  );
+
+  // Extract start_city / end_city from any supported effect payload and
+  // forward to the parent. Shapes handled:
+  //   • shimmer_day_by_day / display_itinerary: { start_city, end_city } at the
+  //     effect data root (or nested under .itinerary for display_itinerary).
+  //   • display_transfers: uses start_transfer.from_city / end_transfer.to_city.
+  const emitEndpointsFromEffect = useCallback(
+    (effectName: string, data: Record<string, unknown>) => {
+      if (!onRouteEndpointsReceived) return;
+      let startRaw: any = null;
+      let endRaw: any = null;
+
+      if (effectName === "display_transfers") {
+        const st = (data as any)?.start_transfer;
+        const et = (data as any)?.end_transfer;
+        if (st) startRaw = { name: st.from_city, gmaps_place_id: st.from_itinerary_city_id };
+        if (et) endRaw = { name: et.to_city, gmaps_place_id: et.to_itinerary_city_id };
+      } else {
+        const root: any =
+          effectName === "display_itinerary"
+            ? ((data as any)?.itinerary ?? data)
+            : data;
+        startRaw = root?.start_city ?? null;
+        endRaw = root?.end_city ?? null;
+      }
+
+      const start = resolveEndpoint(startRaw);
+      const end = resolveEndpoint(endRaw);
+
+      // Skip no-op re-emits so the map doesn't re-geocode on every chunk.
+      const signature = JSON.stringify({ start, end });
+      if (signature === lastEndpointsRef.current) return;
+      lastEndpointsRef.current = signature;
+
+      onRouteEndpointsReceived({ start_city: start, end_city: end });
+    },
+    [onRouteEndpointsReceived, resolveEndpoint],
+  );
+
   // ── handleEffect (defined after useChat — safe, no hook-order issue) ──────
   const handleEffect = useCallback(
     ({ name, data }: { name: string; data: Record<string, unknown> }) => {
@@ -656,10 +746,12 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
           break;
         }
         case "display_itinerary": {
+          emitEndpointsFromEffect(name, data);
           onItineraryReceived(data.itinerary);
           break;
         }
         case "display_transfers": {
+          emitEndpointsFromEffect(name, data);
           indexTransfersForLookup(data);
           onItineraryReceived(data);
   break;
@@ -709,6 +801,15 @@ case "itinerary_completion_process_completed": {
   break;
 }
 
+case "refresh_itinerary": {
+  // Always fire so BotApp can clear stale cities/start_city/end_city and
+  // avoid the stacked-ghost-pins problem on mid-chat edits. Polling only
+  // starts if we have a real id to poll against.
+  const refreshId = (data.itinerary_id as string) || localItineraryId || "";
+  onItineraryRefresh?.(refreshId);
+  break;
+}
+
 case "start_itinerary_completion_process": {
   const startId = data.itinerary_id as string;
   onItineraryCompletionStart?.(startId ?? "pending");
@@ -719,9 +820,31 @@ case "start_itinerary_completion_process": {
   break;
 }
 case "shimmer_day_by_day": {
+  emitEndpointsFromEffect(name, data);
   onItineraryReceived({ shimmer: true });
   break;
 }
+        case "delete_poi_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          dispatch(deletePoiFromItinerary(payload));
+          const text = typeof data.message === "string" ? data.message : "POI removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_activity_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          dispatch(deleteActivityFromItinerary(payload));
+          const text = typeof data.message === "string" ? data.message : "Activity removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
+        case "delete_restaurant_from_itinerary": {
+          const payload = (data.data ?? {}) as Record<string, unknown>;
+          dispatch(deleteRestaurantFromItinerary(payload));
+          const text = typeof data.message === "string" ? data.message : "Restaurant removed from your itinerary.";
+          dispatch(openNotification({ type: "success", heading: "Success!", text }));
+          break;
+        }
         case "load_quick_replies": {
           const raw =
             (data.replies as any[]) ??
@@ -745,7 +868,7 @@ case "shimmer_day_by_day": {
           console.warn("[Effect] unhandled:", name);
       }
     },
-    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup],
+    [onLocationReceived, onNewQuery, onClearMap, onRouteReceived, onItineraryReceived, input, indexTransfersForLookup, emitEndpointsFromEffect, dispatch],
   );
 
   // Wire handleEffect into the ref so the stable onEffect wrapper picks it up
@@ -953,13 +1076,36 @@ useEffect(() => {
   }
 
   // ── Replay itinerary + transfers so the right panel re-populates on reload ─
+  // Also replay endpoint pins from the latest endpoint-bearing effect, so the
+  // map re-hydrates origin/departure pins on thread reload.
+  //
+  // If the thread already emitted an `itinerary_completion_process_completed`
+  // effect (i.e. the trip has reached P2), skip replaying the draft-shaped
+  // display_itinerary / display_transfers. These transform into a
+  // status="Draft" itinerary and clobber the real P2 data that the
+  // ItineraryContainer fetches for the finalized trip — which is what made
+  // P1 start-city pins resurface on P2 reloads.
+  const threadIsCompleted = itineraryEffects.some(
+    (e: any) => e?.name === "itinerary_completion_process_completed" && e?.data?.itinerary_id,
+  );
+
+  let latestEndpointEffect: { name: string; data: Record<string, unknown> } | null = null;
   for (const effect of itineraryEffects) {
     if (effect.name === "display_itinerary" && effect.data?.itinerary) {
-      onItineraryReceived(effect.data.itinerary);
+      if (!threadIsCompleted) onItineraryReceived(effect.data.itinerary);
+      latestEndpointEffect = effect;
     } else if (effect.name === "display_transfers" && effect.data) {
       indexTransfersForLookup(effect.data);
-      onItineraryReceived(effect.data);
+      if (!threadIsCompleted) onItineraryReceived(effect.data);
+      latestEndpointEffect = effect;
+    } else if (effect.name === "shimmer_day_by_day" && effect.data) {
+      latestEndpointEffect = effect;
     }
+  }
+  // Endpoint pins are only meaningful in P1; the P2 itinerary renders its
+  // own start/end city pins via the normal itinerary path.
+  if (latestEndpointEffect && !threadIsCompleted) {
+    emitEndpointsFromEffect(latestEndpointEffect.name, latestEndpointEffect.data);
   }
 
   if (restored.length > 0) setMessages(restored);
@@ -997,7 +1143,7 @@ useEffect(() => {
   if (qrEffect?.data?.quick_replies) {
     setQuickReplies(qrEffect.data.quick_replies.map((r: string) => ({ label: r })));
   }
-}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup]);
+}, [restoredThread, parseThreadItems, onRouteReceived, onLocationReceived, onItineraryReceived, indexTransfersForLookup, emitEndpointsFromEffect]);
 
   // ── Pagination: fetch older messages ──────────────────────────────────────
   const fetchOlderMessages = useCallback(async () => {

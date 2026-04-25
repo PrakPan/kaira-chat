@@ -159,6 +159,36 @@ function getNumberedPin(number: number): google.maps.Icon {
   };
 }
 
+// Start / end city endpoint pin — teardrop shape with a take-off/landing glyph.
+// Used for the trip's origin (green) and departure (dark) cities so users can
+// visually distinguish them from numbered route stops.
+function getEndpointPin(kind: "start" | "end"): google.maps.Icon {
+  const fill = kind === "start" ? "#22C55E" : "#111827";
+  const glyph =
+    kind === "start"
+      ? // Takeoff arrow
+        `<path d="M6 22l20-6-2-3-6 1-8-7-3 1 4 6-5 1-2-2-2 1 4 5z" fill="white"/>`
+      : // Landing arrow (mirrored)
+        `<path d="M26 22L6 16l2-3 6 1 8-7 3 1-4 6 5 1 2-2 2 1-4 5z" fill="white"/>`;
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="61" viewBox="0 0 48 61" fill="none">
+      <defs>
+        <filter id="sh" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="rgba(0,0,0,0.30)"/>
+        </filter>
+      </defs>
+      <path d="M24 0C10.7314 0 0 10.7155 0 23.9643C0 39.495 17.9202 55.8391 22.7908 59.9944C23.4984 60.5982 24.5016 60.5982 25.2092 59.9944C30.0798 55.8391 48 39.495 48 23.9643C48 10.7155 37.2686 0 24 0Z" fill="${fill}" filter="url(#sh)"/>
+      <g transform="translate(8, 8)">
+        ${glyph}
+      </g>
+    </svg>`;
+  return {
+    url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg),
+    scaledSize: new google.maps.Size(36, 46),
+    anchor: new google.maps.Point(18, 46),
+  };
+}
+
 // Generic category marker (non-route stops)
 function getMarkerIcon(type: string): google.maps.Icon {
   const configs: Record<string, { bg: string; svg: string }> = {
@@ -689,7 +719,16 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
         const isRouteStop = routeIndex !== -1;
 
         let markerIcon: google.maps.Icon;
-        if (isRouteStop) {
+        const endpointKind: "start" | "end" | null =
+          loc.type === "start_city"
+            ? "start"
+            : loc.type === "end_city"
+              ? "end"
+              : null;
+        if (endpointKind) {
+          // Trip origin / departure pin — distinct from numbered route stops.
+          markerIcon = getEndpointPin(endpointKind);
+        } else if (isRouteStop) {
           // Numbered pink pin
           markerIcon = getNumberedPin(routeIndex + 1);
         } else if (loc.type) {
@@ -719,7 +758,7 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
           map: mapInstance.current!,
           title: location.name,
           icon: markerIcon,
-          zIndex: isRouteStop ? 200 + routeIndex : 100,
+          zIndex: endpointKind ? 400 : isRouteStop ? 200 + routeIndex : 100,
         });
 
         // Info window on click — unified compact card design (Figma)
@@ -734,7 +773,16 @@ const MyMap = forwardRef<google.maps.Map | null, MapProps>(
               ? loc.user_ratings_total
               : undefined;
 
-          if (isRouteStop && currentRoute) {
+          if (endpointKind) {
+            infoWindowRef.current!.setContent(
+              buildPopupHTML({
+                title: location.name,
+                locationText: endpointKind === "start" ? "Trip starts here" : "Trip ends here",
+                accentColor: endpointKind === "start" ? "#22C55E" : "#111827",
+                badge: endpointKind === "start" ? "Start" : "End",
+              }),
+            );
+          } else if (isRouteStop && currentRoute) {
             const badge = `Stop ${routeIndex + 1} of ${currentRoute.length}`;
             const locationText = loc.duration
               ? `${loc.duration} ${loc.duration === 1 ? "night" : "nights"}`

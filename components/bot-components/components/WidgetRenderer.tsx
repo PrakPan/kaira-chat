@@ -1078,6 +1078,7 @@ function PoiCard({
                 }}
               >
                 {distanceValue} km
+      
               </span>
             </div>
           )}
