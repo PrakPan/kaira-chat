@@ -1,4 +1,3 @@
-// const { default: axios } = require("axios");
 const axios = require("axios");
 const fs = require("fs");
 const { baseApiUrl } = require("mapbox-gl");
@@ -7,10 +6,8 @@ require('dotenv').config();
 
 
 const generateSitemap = async () => {
-  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST || "https://dev.mercury.tarzanway.com";
-  const PROD_BASE_URL=  "https://dev.thetarzanway.com";
-
-  const allowedCountries = ["india", "thailand", "vietnam", "indonesia"];
+  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST || "https://mercury.tarzanway.com";
+  const PROD_BASE_URL=  "https://thetarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
@@ -31,13 +28,8 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/geos/search/all/?type=Country`
   );
   const countriesData = countries.data;
-let countriesPaths = countriesData
-  .filter(
-    (object) =>
-      object.path !== undefined &&
-      object.path.split("/").length === 2 &&
-      allowedCountries.includes(object.path.toLowerCase())
-  )
+  let countriesPaths = countriesData
+  .filter((object) => object.path !== undefined && object.path.split("/").length === 2)
   .map((object) => {
     return { title: "Country Planner", link: PROD_BASE_URL + "/" + object.path };
   });
@@ -109,11 +101,11 @@ let countriesPaths = countriesData
   const allPaths = [
     ...StaticPaths,
     ...continentsPaths,
-    // ...countriesPaths,
-    // ...statesPaths,
-    // ...cityPaths,
-    // ...subRegionsPaths,
-    // ...tripsPaths,
+    ...countriesPaths,
+    ...statesPaths,
+    ...cityPaths,
+    ...subRegionsPaths,
+    ...tripsPaths,
   ];
   console.log("all paths length: ",allPaths.length)
 
