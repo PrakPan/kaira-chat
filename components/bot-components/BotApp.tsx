@@ -112,11 +112,27 @@ function transformDraftToItinerary(draft: any) {
     };
   });
 
+  // Map the bot's `{ name, gmaps_place_id }` endpoint shape to the
+  // `{ city_name, gmaps_place_id, latitude, longitude }` shape DaybyDay.jsx
+  // expects when reading `itinerary.start_city` / `itinerary.end_city`.
+  const toEndpointCity = (raw: any) => {
+    if (!raw) return null;
+    return {
+      city_name: raw.name ?? raw.city_name ?? "",
+      gmaps_place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+      place_id: raw.gmaps_place_id ?? raw.place_id ?? null,
+      latitude: raw.latitude ?? null,
+      longitude: raw.longitude ?? null,
+    };
+  };
+
   return {
     name: draft?.name ?? "Your Itinerary",
     start_date: null,
     end_date: null,
     cities,
+    start_city: toEndpointCity(draft?.start_city),
+    end_city: toEndpointCity(draft?.end_city),
     version: "v2",
     celery: {
       ITINERARY: "SUCCESS",
@@ -179,6 +195,9 @@ export default function BotApp({
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>(sessionId ? "itinerary" : "chat");
   const [activeItineraryId, setActiveItineraryId] = useState<string | null>(null);
   const [itineraryPollingEnabled, setItineraryPollingEnabled] = useState(false);
+  // Bumped on `refresh_itinerary` to force ItineraryContainer to re-run its
+  // status-poll + canonical fetch when `id` hasn't changed.
+  const [itineraryRefetchCounter, setItineraryRefetchCounter] = useState(0);
   const initialPromptRef = useRef<string | null>(null);
   const [showChatBot, setShowChatBot] = useState(false);
 
@@ -276,6 +295,16 @@ export default function BotApp({
   const itineraryRedux = useSelector((state: any) => state.Itinerary);
   const galleryImages = useSelector((state: any) => state.galleryImages);
   const itineraryReduxName = itineraryRedux?.name;
+  // Mirror the Redux itinerary status into a ref so handleItineraryRefresh
+  // (a stable useCallback) can read the latest canonical status — e.g.
+  // "Finalized" from the status API — without re-creating the callback.
+  // currentItineraryRef.current is fed from bot draft events and always
+  // carries status:"Draft", so it cannot preserve a finalized status on its
+  // own during a refresh_itinerary.
+  const itineraryStatusRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    itineraryStatusRef.current = itineraryRedux?.status;
+  }, [itineraryRedux?.status]);
   const isV1 = useSelector((state: any) => state.ItineraryStatus?.version) === "v1";
   const statusDisplayText = useSelector((state: any) => state.ItineraryStatus?.display_text);
   const statusNotes = useSelector((state: any) => state.ItineraryStatus?.notes);
@@ -288,6 +317,12 @@ export default function BotApp({
   const userSelectedThreadRef = useRef(false);
   const chatBotInjectedMessageRef = useRef<string | null>(null);
   const isLoadingThreadRef = useRef(false);
+  // True while replaying a thread's effects on refresh/thread-select. Stops
+  // map-effect replays in handleRouteReceived/handleLocationReceived from
+  // flipping viewMode to "map" — on a finalized P2 refresh that would land
+  // the user on the map (desktop) or a display:none'd itinerary panel (mobile,
+  // where the tab is "itinerary" but the inner panel still gates on viewMode).
+  const isRestoringRef = useRef(false);
 
   const [activeChatSessionId, setActiveChatSessionId] = useState<string | undefined>(
   sessionId ?? undefined
@@ -309,6 +344,26 @@ export default function BotApp({
       setIsItineraryCompleting(false);
     }
   }, [finalizedStatus, isItineraryCompleting]);
+
+  // ── On the first time we land in P2 (finalized) state, default the desktop
+  //    viewMode to itinerary. The chatkit restore flow can leave viewMode on
+  //    "map" because ChatKitPanel's restoredThread useEffect replays
+  //    map_effects via onRouteReceived after BotApp's post-status
+  //    setViewMode("itinerary") has run. Fires once per mount so a user who
+  //    later toggles to map isn't yanked back. ─────────────────────────────
+  const hasDefaultedP2ViewModeRef = useRef(false);
+  useEffect(() => {
+    if (
+      !hasDefaultedP2ViewModeRef.current &&
+      finalizedStatus === "SUCCESS" &&
+      activeItineraryId &&
+      activeItineraryId !== "skeleton" &&
+      activeItineraryId !== "draft"
+    ) {
+      hasDefaultedP2ViewModeRef.current = true;
+      setViewMode("itinerary");
+    }
+  }, [finalizedStatus, activeItineraryId]);
 
   const handleSendMessageReady = useCallback(
     (sendFn: (msg: string) => void) => {
@@ -380,7 +435,7 @@ export default function BotApp({
         setHasBotResponded(true);
         setIsChatActive(true);
         setViewMode("itinerary");
-        setMobilePanel("map");
+        setMobilePanel(allDone ? "itinerary" : "map");
       } catch (err) {
         console.error("Failed to restore itinerary directly:", err);
         setShowStartScreen(true);
@@ -509,6 +564,121 @@ export default function BotApp({
     [dispatch, setChatBotIdOnce],
   );
 
+  const handleItineraryRefresh = useCallback(
+    (id: string) => {
+      // Fired when backend sends `refresh_itinerary` (e.g. after a chat edit to
+      // start/end city or cities). Replace cities with a day-by-day skeleton
+      // that preserves the current city count + duration so the user sees a
+      // structured loading state (not just two bare pins) while the canonical
+      // data is re-fetched.
+      dispatch(setCart({}));
+      dispatch(setStays([]));
+      dispatch(setTransfersBookings(null));
+      dispatch(setItineraryStatus("itinerary_status", "PENDING"));
+      dispatch(setItineraryStatus("hotels_status", "PENDING"));
+      dispatch(setItineraryStatus("transfers_status", "PENDING"));
+      dispatch(setItineraryStatus("pricing_status", "PENDING"));
+      dispatch(setItineraryStatus("finalized_status", "PENDING"));
+
+      const current = currentItineraryRef.current;
+      const placeholderCities = (current?.cities ?? []).map(
+        (c: any, i: number) => ({
+          id: `skeleton-city-${i}`,
+          city: {
+            id: null,
+            name: c?.city?.name ?? "Loading…",
+            latitude: null,
+            longitude: null,
+            gmaps_place_id: null,
+            image: [],
+            car_free_city: false,
+          },
+          start_date: null,
+          end_date: null,
+          duration: c?.duration ?? 1,
+          day_by_day: Array.from({ length: c?.duration ?? 1 }, (_, d) => ({
+            day: d + 1,
+            date: null,
+            day_summary: "",
+            slab_id: null,
+            slab_elements: [],
+          })),
+          hotels: [],
+          activities: [],
+          transfers: { sightseeing: [], airport: [] },
+        }),
+      );
+      // Fallback so users still see at least one skeleton block if we have no
+      // prior city shape to base the placeholder on.
+      if (placeholderCities.length === 0) {
+        placeholderCities.push({
+          id: "skeleton-city-0",
+          city: {
+            id: null,
+            name: "Loading…",
+            latitude: null,
+            longitude: null,
+            gmaps_place_id: null,
+            image: [],
+            car_free_city: false,
+          },
+          start_date: null,
+          end_date: null,
+          duration: 3,
+          day_by_day: [1, 2, 3].map((d) => ({
+            day: d,
+            date: null,
+            day_summary: "",
+            slab_id: null,
+            slab_elements: [],
+          })),
+          hotels: [],
+          activities: [],
+          transfers: { sightseeing: [], airport: [] },
+        } as any);
+      }
+
+      const skeletonState = {
+        ...(current ?? {}),
+        name: current?.name ?? "Refreshing itinerary…",
+        cities: placeholderCities,
+        // Preserve start/end city strings so the first/last pin labels stay
+        // visible through the refresh instead of flickering to blank.
+        start_city: current?.start_city ?? null,
+        end_city: current?.end_city ?? null,
+        // Preserve the current top-level status (e.g. "Finalized") so that
+        // ViewToggle's Routes/Bookings tabs don't briefly disappear during a
+        // mid-P2 refresh. Prefer Redux (which reflects the status endpoint's
+        // authoritative value) over currentItineraryRef, which is fed from
+        // bot draft events that always carry status:"Draft".
+        status: itineraryStatusRef.current ?? current?.status ?? "Draft",
+      };
+      dispatch(setItinerary(skeletonState));
+      dispatch(setItineraryDaybyDay(skeletonState));
+      dispatch(setBreif(skeletonState));
+      currentItineraryRef.current = skeletonState;
+      // Keep skeletonCitiesRef in sync so any trailing shimmer_day_by_day
+      // effect rebuilds from the same placeholder shape, not stale waypoints.
+      skeletonCitiesRef.current = placeholderCities.map((c: any) => ({
+        name: c.city?.name,
+        duration: c.duration,
+      }));
+
+      // Bump counter so ItineraryContainer re-runs its status-poll + canonical
+      // fetch. Required because the id is usually unchanged across a refresh,
+      // and the existing [props.id, props.skipPolling] effect wouldn't fire.
+      setItineraryRefetchCounter((c) => c + 1);
+
+      if (id && id !== "undefined") {
+        dispatch(setItineraryIdAction(id));
+        setActiveItineraryId(id);
+        setItineraryId(id);
+        setItineraryPollingEnabled(true);
+      }
+    },
+    [dispatch],
+  );
+
   const revealLeftPanel = useCallback(() => {
     if (!hasBotResponded) {
       setIsLeftPanelRevealing(true);
@@ -548,16 +718,18 @@ export default function BotApp({
       setIsRoutePreparing(false);
       revealLeftPanel();
       if (routeData.data && Array.isArray(routeData.data) && routeData.data.length > 0) {
-        setViewMode("map");
-        setMobilePanel("map");
+        if (!isRestoringRef.current) {
+          setViewMode("map");
+          setMobilePanel("map");
+          // On mobile: show "Back to Map" popup so user knows the map has updated
+          triggerMobileEffectPopup("map");
+        }
         const cities = routeData.data.map((loc: any) => ({
           name: loc.name,
           duration: loc.duration ?? 1,
         }));
         setSkeletonCities(cities);
         skeletonCitiesRef.current = cities;
-        // On mobile: show "Back to Map" popup so user knows the map has updated
-        triggerMobileEffectPopup("map");
       }
       if (routeData.data && Array.isArray(routeData.data)) {
         setCurrentRoute(routeData.data);
@@ -584,6 +756,15 @@ export default function BotApp({
     (data: any) => {
       revealLeftPanel();
 
+      // Once the trip has reached P2 (finalized), draft-shaped events
+      // (shimmer_day_by_day / display_itinerary / display_transfers) must NOT
+      // re-dispatch setItinerary — transformDraftToItinerary always carries
+      // status:"Draft" and would clobber the canonical "Finalized" status the
+      // post-refresh poll just resolved, hiding Routes/Bookings tabs and
+      // flipping the itinerary panel back to P1 styling. The canonical fetch
+      // in ItineraryContainer is the source of truth for P2 data.
+      if (botMode === "p2") return;
+
       if (data?.shimmer) {
         dispatch(setItineraryStatus("itinerary_status", "PENDING"));
         dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
@@ -592,10 +773,22 @@ export default function BotApp({
         setShowStartScreen(false);
         setHasBotResponded(true);
 
-        const skeleton = buildSkeletonItinerary();
-        dispatch(setItinerary(skeleton));
-        dispatch(setItineraryDaybyDay(skeleton));
-        dispatch(setBreif(skeleton));
+        // Only paint the skeleton over genuinely empty state. Once a real
+        // display_itinerary has populated Redux (cities with UUID ids), a
+        // follow-up shimmer must NOT re-dispatch skeleton — skeletonCitiesRef
+        // is seeded from cumulative focus_route effects and would clobber the
+        // real 2-city payload with stale waypoint rows.
+        const existingCities = currentItineraryRef.current?.cities ?? [];
+        const hasRealCities =
+          existingCities.length > 0 &&
+          !String(existingCities[0]?.id ?? "").startsWith("skeleton-city-");
+
+        if (!hasRealCities) {
+          const skeleton = buildSkeletonItinerary();
+          dispatch(setItinerary(skeleton));
+          dispatch(setItineraryDaybyDay(skeleton));
+          dispatch(setBreif(skeleton));
+        }
 
         if (activeItineraryId !== "skeleton" && activeItineraryId !== "draft") {
           setActiveItineraryId("skeleton");
@@ -642,6 +835,27 @@ export default function BotApp({
 
       const draft = data?.itinerary ?? data;
       const transformed = transformDraftToItinerary(draft);
+      // Fill in missing start/end city from the user's current location so the
+      // P1 panel always shows a name + pin, matching the "use default user
+      // location when not present" contract established in ChatKitPanel.
+      if (!transformed.start_city?.city_name && userLocation) {
+        transformed.start_city = {
+          city_name: userLocation.city ?? "Your location",
+          gmaps_place_id: null,
+          place_id: null,
+          latitude: userLocation.lat,
+          longitude: userLocation.lng,
+        };
+      }
+      if (!transformed.end_city?.city_name && userLocation) {
+        transformed.end_city = {
+          city_name: userLocation.city ?? "Your location",
+          gmaps_place_id: null,
+          place_id: null,
+          latitude: userLocation.lat,
+          longitude: userLocation.lng,
+        };
+      }
       currentItineraryRef.current = transformed;
 
       const draftStays: any[] = [];
@@ -691,9 +905,10 @@ export default function BotApp({
       dispatch(setItineraryStatus("pricing_status", "PENDING"));
       dispatch(setItineraryStatus("finalized_status", "PENDING"));
 
+      // botMode === "p2" was checked at the top of this callback and caused an
+      // early return, so it can't be true here.
       const isAlreadyCompleted =
         finalizedStatus === "SUCCESS" ||
-        botMode === "p2" ||
         itineraryCreatedInSessionRef.current;
 
       if (!isAlreadyCompleted) {
@@ -713,6 +928,7 @@ export default function BotApp({
       triggerMobileEffectPopup,
       finalizedStatus,
       botMode,
+      userLocation,
     ],
   );
 
@@ -726,21 +942,105 @@ export default function BotApp({
         setLocations(locationData.data);
         // Focus the map on both desktop and mobile when a map-typed response
         // arrives so the user immediately sees the new pins.
-        setViewMode("map");
-        setMobilePanel("map");
+        if (!isRestoringRef.current) {
+          setViewMode("map");
+          setMobilePanel("map");
+        }
       }
     },
     [revealLeftPanel],
   );
 
+  // Start / end trip endpoint pins (derived from shimmer_day_by_day,
+  // display_itinerary, display_transfers effects in ChatKitPanel). Kept in a
+  // separate slice from `locations` so they survive focus_on_map clears.
+  // Rendered only in P1 — P2 uses its own itinerary visualization and would
+  // duplicate these pins otherwise.
+  const [endpointPins, setEndpointPins] = useState<Location[]>([]);
+  // Cache of gmaps_place_id → LatLng so we don't re-geocode the same city
+  // twice in a session (shimmer + display_itinerary + display_transfers all
+  // repeat the same endpoints).
+  const geocodeCacheRef = useRef<Record<string, { lat: number; lng: number }>>({});
+
+  const geocodePlaceId = useCallback(
+    async (placeId: string): Promise<{ lat: number; lng: number } | null> => {
+      if (!placeId) return null;
+      if (geocodeCacheRef.current[placeId]) return geocodeCacheRef.current[placeId];
+      if (typeof window === "undefined" || !window.google?.maps?.Geocoder) return null;
+      try {
+        const geocoder = new window.google.maps.Geocoder();
+        const result = await geocoder.geocode({ placeId });
+        const loc = result.results?.[0]?.geometry?.location;
+        if (!loc) return null;
+        const coords = { lat: loc.lat(), lng: loc.lng() };
+        geocodeCacheRef.current[placeId] = coords;
+        return coords;
+      } catch (err) {
+        console.warn("[BotApp] geocode failed for", placeId, err);
+        return null;
+      }
+    },
+    [],
+  );
+
+  const handleRouteEndpointsReceived = useCallback(
+    async ({
+      start_city,
+      end_city,
+    }: {
+      start_city: { name: string; gmaps_place_id: string } | null;
+      end_city: { name: string; gmaps_place_id: string } | null;
+    }) => {
+      const resolve = async (
+        raw: { name: string; gmaps_place_id: string } | null,
+        kind: "start_city" | "end_city",
+      ): Promise<Location | null> => {
+        if (!raw) return null;
+        let coords = await geocodePlaceId(raw.gmaps_place_id);
+        // Fallback: if geocoding failed or no place id was provided, drop back
+        // to the user's IP-resolved location so the user always sees a pin.
+        if (!coords && userLocation) {
+          coords = { lat: userLocation.lat, lng: userLocation.lng };
+        }
+        if (!coords) return null;
+        return {
+          id: `endpoint-${kind}`,
+          name: raw.name || (kind === "start_city" ? "Start" : "End"),
+          lat: coords.lat,
+          lng: coords.lng,
+          type: kind,
+        } as Location;
+      };
+
+      const [startPin, endPin] = await Promise.all([
+        resolve(start_city, "start_city"),
+        resolve(end_city, "end_city"),
+      ]);
+
+      setEndpointPins([startPin, endPin].filter((p): p is Location => !!p));
+    },
+    [geocodePlaceId, userLocation],
+  );
+
   const handleNewQuery = useCallback(() => {
     setLocations([]);
     setCurrentRoute(null);
+    // A new query clears route-related endpoint pins too; they'll be
+    // re-emitted by the next shimmer/display_itinerary/display_transfers.
+    setEndpointPins([]);
   }, []);
+
+  // Drop any P1 endpoint pins when the itinerary finalizes into P2. The P2
+  // stage has its own full itinerary rendering and start/end pin handling;
+  // letting these linger causes duplicate pins on the P2 map.
+  useEffect(() => {
+    if (botMode === "p2") setEndpointPins([]);
+  }, [botMode]);
 
   const handleClearMap = useCallback((data?: Record<string, unknown>) => {
     setLocations([]);
     setCurrentRoute(null);
+    setEndpointPins([]);
     // If the effect includes a new location to pan to, display it
     if (data?.data && Array.isArray(data.data) && (data.data as any[]).length > 0) {
       setLocations(data.data as Location[]);
@@ -751,6 +1051,11 @@ export default function BotApp({
     async (threadId: string, sessionIdOverride?: string) => {
       if (isLoadingThreadRef.current) return;
       isLoadingThreadRef.current = true;
+      // Stays true through ChatKitPanel's restoredThread useEffect, which
+      // replays map_effects via onRouteReceived/onLocationReceived — without
+      // this guard those calls flip viewMode back to "map" after the
+      // pre-emptive/post-status setViewMode("itinerary") below.
+      isRestoringRef.current = true;
       try {
         const res = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
@@ -803,45 +1108,42 @@ export default function BotApp({
         let completedIdFromEffects: string | null = null;
         let startedIdFromEffects: string | null = null;
 
-        // Check if a completed effect exists so we can skip the skeleton build
-        const hasCompletedEffectInLoop = itineraryEffects.some(
-          (e) => e.name === "itinerary_completion_process_completed" && e.data?.itinerary_id,
-        );
-
+        // First pass — extract IDs only. We need to know the itinerary's live
+        // status before deciding whether to replay draft-shaped effects, since
+        // replaying stale display_itinerary on a finalized trip stamps pre-edit
+        // start/end cities onto Redux (phantom P1 pins that flicker until the
+        // canonical fetch arrives).
         for (const effect of itineraryEffects) {
-          switch (effect.name) {
-            case "display_itinerary":
-              handleItineraryReceived(effect.data);
-              break;
-            case "display_transfers":
-              handleItineraryReceived({ transfers: effect.data.transfers });
-              break;
-            case "start_itinerary_completion_process":
-              startedIdFromEffects = (effect.data?.itinerary_id as string) ?? null;
-              // Skip skeleton build on restore — we'll check status directly
-              if (!hasCompletedEffectInLoop) {
-                // Don't build skeleton; instead we'll check status below
-              }
-              break;
-            case "itinerary_completion_process_completed": {
-              const completedId = effect.data?.itinerary_id;
-              completedIdFromEffects = completedId ?? null;
-              break;
-            }
-            default:
-              break;
+          if (effect.name === "start_itinerary_completion_process") {
+            startedIdFromEffects = (effect.data?.itinerary_id as string) ?? null;
+          } else if (effect.name === "itinerary_completion_process_completed") {
+            completedIdFromEffects = (effect.data?.itinerary_id as string) ?? null;
           }
         }
 
-        // Determine the itinerary ID from effects or fall back to sessionId
-        // when display_itinerary exists (itinerary was created but start/completed effects missing)
+        const hasCompletedEffectInLoop = !!completedIdFromEffects;
         const hasDisplayItinerary = itineraryEffects.some((e) => e.name === "display_itinerary");
         const effectItineraryId = completedIdFromEffects ?? startedIdFromEffects;
         const restoredItineraryId = effectItineraryId ?? (hasDisplayItinerary ? (threadSessionId ?? sessionId) : null);
 
+        let isTripFinalized = hasCompletedEffectInLoop;
+        let statusCheckFailed = false;
+
+        // Pre-emptively land on the itinerary view whenever the thread has a
+        // restored itinerary. The map_effects replay above can call
+        // setViewMode("map") and the status check below is async, so without
+        // this the user briefly sees the map on every reload (especially P2)
+        // before the post-await setViewMode("itinerary") at the bottom of this
+        // block fires. For finalized trips also default the mobile panel to
+        // itinerary; non-finalized restores keep the existing mobile=map default
+        // until the status check resolves below.
+        if (restoredItineraryId) {
+          setViewMode("itinerary");
+          if (hasCompletedEffectInLoop) setMobilePanel("itinerary");
+        }
+
         if (restoredItineraryId) {
           // Check status immediately to determine the actual state
-          let statusCheckFailed = false;
           try {
             const { axiosGetItineraryStatus } = await import(
               "../../services/itinerary/daybyday/preview"
@@ -866,6 +1168,7 @@ export default function BotApp({
                 dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
                 setBotMode("p2");
                 setItineraryId(restoredItineraryId);
+                isTripFinalized = true;
               } else {
                 // Still in progress — set up polling
                 dispatch(setItineraryStatus("finalized_status", "PENDING"));
@@ -879,6 +1182,20 @@ export default function BotApp({
             setItineraryId("");
             statusCheckFailed = true;
           }
+        }
+
+        // Second pass — replay effects. Skip draft-shaped itinerary/transfers
+        // effects when the trip is already finalized; ItineraryContainer will
+        // fetch canonical P2 data shortly.
+        for (const effect of itineraryEffects) {
+          if (effect.name === "display_itinerary" && !isTripFinalized) {
+            handleItineraryReceived(effect.data);
+          } else if (effect.name === "display_transfers" && !isTripFinalized) {
+            handleItineraryReceived({ transfers: effect.data.transfers });
+          }
+        }
+
+        if (restoredItineraryId) {
 
           setShowItineraryShimmer(false);
           dispatch(setCart({}));
@@ -900,7 +1217,7 @@ export default function BotApp({
           setShowStartScreen(false);
           setHasBotResponded(true);
           setViewMode("itinerary");
-          setMobilePanel("map");
+          setMobilePanel(isTripFinalized ? "itinerary" : "map");
         }
 
         // No itinerary effects at all — this is an old itinerary
@@ -919,6 +1236,11 @@ export default function BotApp({
         console.error("Failed to load thread:", err);
       } finally {
         isLoadingThreadRef.current = false;
+        // Defer clearing so ChatKitPanel's restoredThread useEffect (which
+        // fires after restoredThread state commits) still sees the guard.
+        setTimeout(() => {
+          isRestoringRef.current = false;
+        }, 0);
       }
     },
     [
@@ -1120,14 +1442,44 @@ export default function BotApp({
 
   const handleToggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
+  // Merge endpoint pins into locations just for the map. Endpoint pins are
+  // kept separate from `locations` (which get cleared by focus_on_map/POI
+  // flows) so the trip origin/departure stay visible across interactions.
+  // Scoped to P1 only — once the itinerary is finalized (P2), the regular
+  // itinerary visualization takes over and these would duplicate the
+  // start/end pins. De-duped by lat/lng so the same coordinate never renders
+  // twice — P2 could otherwise show a second start_city pin if `locations`
+  // still holds a numbered route stop at the same coordinate as the itinerary
+  // start. When two pins share a coordinate, the endpoint-typed one wins so
+  // the start/end icon is preserved.
+  const mapLocations = useMemo<Location[] | null>(() => {
+    const base = locations ?? [];
+    const extras = botMode === "p1" ? endpointPins : [];
+    if (base.length === 0 && extras.length === 0) return locations;
+
+    const byKey = new Map<string, Location>();
+    const pinPriority = (l: Location) =>
+      (l as any)?.type === "start_city" || (l as any)?.type === "end_city" ? 1 : 0;
+    const consider = (pin: Location) => {
+      const key = `${pin.lat},${pin.lng}`;
+      const existing = byKey.get(key);
+      if (!existing || pinPriority(pin) > pinPriority(existing)) byKey.set(key, pin);
+    };
+    base.forEach(consider);
+    extras.forEach(consider);
+    return Array.from(byKey.values());
+  }, [locations, endpointPins, botMode]);
+
   const sharedChatKitProps = {
     onLocationReceived: handleLocationReceived,
     onNewQuery: handleNewQuery,
     onClearMap: handleClearMap,
     onRouteReceived: handleRouteReceived,
     onItineraryReceived: handleItineraryReceived,
+    onRouteEndpointsReceived: handleRouteEndpointsReceived,
     onItineraryCompletionStart: handleItineraryCompletionStart,
     onItineraryCompletionDone: handleItineraryCompletionDone,
+    onItineraryRefresh: handleItineraryRefresh,
     botMode,
     sessionId: activeChatSessionId,
     itineraryId,
@@ -1234,17 +1586,25 @@ Start Location: ${details.startLocation}`;
       mercuryItinerary
       fromChat={true}
       skipPolling={activeItineraryId === "skeleton" ? true : !itineraryPollingEnabled}
+      refetchCounter={itineraryRefetchCounter}
       onSendMessage={handleItineraryContainerSendMessage}
       activeTab={activeTab}
     />
   ) : null;
 
   // ── Shared itinerary panel content (header strip + container + CTA) ──────
+  // On mobile, MobileLayout's activeTab already gates visibility (the panel
+  // sits inside an absolute-positioned container that toggles opacity per
+  // tab). Adding a `display:none` here based on viewMode caused a blank
+  // itinerary tab on P2 refresh: activeTab landed on "itinerary" but
+  // viewMode was still "map" because of timing in the chatkit restore flow.
+  // Desktop keeps the gate so the ViewToggle can swap map ↔ itinerary.
   const itineraryPanel = (
     <div
       style={{
-        display:
-          viewMode === "itinerary" || viewMode === "bookings" || viewMode === "routes"
+        display: isMobile
+          ? "flex"
+          : viewMode === "itinerary" || viewMode === "bookings" || viewMode === "routes"
             ? "flex"
             : "none",
         flexDirection: "column",
@@ -1365,7 +1725,11 @@ Start Location: ${details.startLocation}`;
               {itineraryContainerNode}
             </div>
             <BottomCTABar
-              viewMode={viewMode}
+              // Force itinerary on mobile: the panel itself is rendered
+              // inside MobileLayout's itinerary tab, so the CTA bar should
+              // never be gated by viewMode (which can lag on "map" after a
+              // chatkit-restore on refresh).
+              viewMode={isMobile ? "itinerary" : viewMode}
               activeItineraryId={activeItineraryId}
               showItineraryShimmer={showItineraryShimmer}
               isDraft={isDraft}
@@ -1462,7 +1826,7 @@ Start Location: ${details.startLocation}`;
             >
               <MapView
                 mapState={mapState}
-                locations={locations}
+                locations={mapLocations}
                 userLocation={userLocation}
                 currentRoute={currentRoute}
                 isLoadingLocation={isLoadingLocation}
@@ -1536,7 +1900,7 @@ Start Location: ${details.startLocation}`;
           mapContent={
             <MapView
               mapState={mapState}
-              locations={locations}
+              locations={mapLocations}
               userLocation={userLocation}
               currentRoute={currentRoute}
               isLoadingLocation={isLoadingLocation}
@@ -2186,6 +2550,18 @@ const MobileLayout = React.memo(({
     if (!prevHasActivityRef.current && hasItineraryActivity && activeTab === "chat") {
       setActiveTab("itinerary");
       setViewMode("itinerary");
+    }
+    // Activity dropped (e.g. switched from a P2 thread to a P1 thread that
+    // hasn't built an itinerary yet). The itinerary/routes/bookings tabs
+    // disappear from the top bar AND their content div is gated by
+    // `hasItineraryActivity`, so leaving activeTab on one of them paints a
+    // blank screen — fall back to chat.
+    if (
+      prevHasActivityRef.current &&
+      !hasItineraryActivity &&
+      ["itinerary", "routes", "bookings"].includes(activeTab)
+    ) {
+      setActiveTab("chat");
     }
     prevHasActivityRef.current = hasItineraryActivity;
   }, [hasItineraryActivity, activeTab, setViewMode]);

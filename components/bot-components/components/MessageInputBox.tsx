@@ -208,7 +208,7 @@ const AttachmentCard: React.FC<{
               style={{
                 fontSize: 13,
                 fontWeight: 500,
-                color: isError ? "#dc2626" : "#1f2937",
+                color: isError ? "#dc2626" : "#000000",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
@@ -485,7 +485,7 @@ export const MessageInputBox: React.FC<MessageInputBoxProps> = ({
           style={{
             fontFamily: "'Inter', sans-serif",
             fontSize: 16,
-            color: "#111827",
+            color: "#000000",
             lineHeight: "22px",
             minHeight: 24,
             maxHeight: 120,

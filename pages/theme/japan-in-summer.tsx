@@ -40,137 +40,118 @@ const japanThemeConfig: ThemeConfig = {
     row1: {
       heading: "From Cherry Blossoms to Bullet Trains",
       icon: "🌸",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TokyoR1.jpg",
-          label: "Tokyo — City of Everything",
-          tags: "Urban · First Timer",
-          description: "Where every street surprises you.",
-          prompt:
-            "Plan 4 days in Tokyo in summer. I want to cover the highlights — Shibuya, Shinjuku, Asakusa — but also find the less obvious spots. Include food, transport, and one day trip suggestion.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/KyotoR1.jpg",
-          label: "Kyoto — Temples and Tatami",
-          tags: "Culture · Ryokan",
-          description: "Ancient Japan, perfectly preserved.",
-          prompt:
-            "Plan a 3 to 4 day Kyoto itinerary for summer. Include the top temples, a ryokan stay, a traditional kaiseki dinner, and the best times to visit each site to avoid peak crowds.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HakoneR1.jpg",
-          label: "Hakone — Mt. Fuji Views",
-          tags: "Scenic · Onsen",
-          description: "Fuji on one side. Hot spring on the other.",
-          prompt:
-            "Plan a 2-day Hakone trip from Tokyo. I want a ryokan with an onsen, the best views of Mt. Fuji, and what to do if the mountain is clouded over. Include transport from Tokyo.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/OsakaR1.jpg",
-          label: "Osaka — Eat Everything",
-          tags: "Food · Nightlife",
-          description: "Japan's most delicious city. Obviously.",
-          prompt:
-            "Plan 2 to 3 days in Osaka focused on food and culture. Give me the must-eat list — takoyaki, okonomiyaki, ramen — the best neighbourhoods, and how to combine it with a Kyoto trip.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HiroshimaR1.jpg",
-          label: "Hiroshima and Miyajima",
-          tags: "History · Bucket List",
-          description: "The trip that stays with you.",
-          prompt:
-            "Plan a day or two in Hiroshima and Miyajima Island. I want to visit the Peace Memorial, understand the history properly, and see the floating torii gate. Best approached as a day trip or overnight?",
-        },
-      ],
+     cards: [
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TokyoR1.jpg",
+    label: "Tokyo — City of Everything",
+    tags: "Urban · First Timer",
+    description: "Where every street surprises you.",
+    prompt: "Plan 4 days in Tokyo in summer. I want to cover the highlights — Shibuya, Shinjuku, Asakusa — but also find the less obvious spots. Include food, transport, and one day trip suggestion.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/KyotoR1.jpg",
+    label: "Kyoto — Temples and Tatami",
+    tags: "Culture · Ryokan",
+    description: "Ancient Japan, perfectly preserved.",
+    prompt: "Plan a 3 to 4 day Kyoto itinerary for summer. Include the top temples, a ryokan stay, a traditional kaiseki dinner, and the best times to visit each site to avoid peak crowds.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HakoneR1.jpg",
+    label: "Hakone — Mt. Fuji Views",
+    tags: "Scenic · Onsen",
+    description: "Fuji on one side. Hot spring on the other.",
+    prompt: "Plan a 2-day Hakone trip from Tokyo. I want a ryokan with an onsen, the best views of Mt. Fuji, and what to do if the mountain is clouded over. Include transport from Tokyo.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/OsakaR1.jpg",
+    label: "Osaka — Eat Everything",
+    tags: "Food · Nightlife",
+    description: "Japan's most delicious city. Obviously.",
+    prompt: "Plan 2 to 3 days in Osaka focused on food and culture. Give me the must-eat list — takoyaki, okonomiyaki, ramen — the best neighbourhoods, and how to combine it with a Kyoto trip.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HiroshimaR1.jpg",
+    label: "Hiroshima and Miyajima",
+    tags: "History · Bucket List",
+    description: "The trip that stays with you.",
+    prompt: "Plan a day or two in Hiroshima and Miyajima Island. I want to visit the Peace Memorial, understand the history properly, and see the floating torii gate. Best approached as a day trip or overnight?",
+  },
+],
     },
     row2: {
       heading: "Japan This Summer",
       icon: "🎐",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/GionR2.jpg",
-          label: "Gion Matsuri — Kyoto's Greatest Festival",
-          sublabel: "Book by May — hotels fill 3 months out",
-          prompt:
-            "I want to attend the Gion Matsuri festival in Kyoto in July. Plan a trip around it — best days to be there, where to stay, what the festival involves, and how to combine it with a broader Kyoto and Japan itinerary.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ObonR2.jpg",
-          label: "Obon Week — Ancestral Fire and Dance",
-          sublabel: "Mid-August",
-          prompt:
-            "I want to experience Obon in Japan in August. Which city or town gives the most authentic experience? Plan a trip around the Obon period including bon odori dances, lantern ceremonies, and the best places to witness it.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/FujiR2.jpg",
-          label: "Fuji Climbing Season Opens",
-          sublabel: "Only 2 months to climb. Plan now.",
-          prompt:
-            "I want to climb Mount Fuji this summer. When does the season open, which trail is best for a first-timer, how fit do I need to be, and what does the full trip cost? Plan this as part of a broader Japan trip from India.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HokkaidoR2.jpg",
-          label: "Hokkaido — Japan's Cool North",
-          sublabel: "While everyone melts in Tokyo",
-          prompt:
-            "Plan a summer trip to Hokkaido. I want to escape the heat of mainland Japan, see the lavender fields in Furano, explore Sapporo, and understand how to combine Hokkaido with Tokyo in a 10-12 day trip.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapneseR2.jpg",
-          label: "Japanese Summer Fireworks — Hanabi Season",
-          sublabel: "The nights are worth the flight.",
-          prompt:
-            "Tell me about the best hanabi — fireworks — festivals in Japan in summer. Which ones are truly spectacular, where are they held, and how do I plan a trip that includes one? Recommend the best combination with other Japan stops.",
-        },
-      ],
+     cards: [
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/GionR2.jpg",
+    label: "Gion Matsuri — Kyoto's Greatest Festival",
+    sublabel: "Book by May — hotels fill 3 months out",
+    description: "Kyoto's wildest July night.",
+    prompt: "I want to attend the Gion Matsuri festival in Kyoto in July. Plan a trip around it — best days to be there, where to stay, what the festival involves, and how to combine it with a broader Kyoto and Japan itinerary.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/ObonR2.jpg",
+    label: "Obon Week — Ancestral Fire and Dance",
+    sublabel: "Mid-August",
+    description: "Fire, dance, and ancestors.",
+    prompt: "I want to experience Obon in Japan in August. Which city or town gives the most authentic experience? Plan a trip around the Obon period including bon odori dances, lantern ceremonies, and the best places to witness it.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/FujiR2.jpg",
+    label: "Fuji Climbing Season Opens",
+    sublabel: "Only 2 months to climb. Plan now.",
+    description: "Two months. One summit.",
+    prompt: "I want to climb Mount Fuji this summer. When does the season open, which trail is best for a first-timer, how fit do I need to be, and what does the full trip cost? Plan this as part of a broader Japan trip from India.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HokkaidoR2.jpg",
+    label: "Hokkaido — Japan's Cool North",
+    sublabel: "While everyone melts in Tokyo",
+    description: "Cool air. Lavender fields.",
+    prompt: "Plan a summer trip to Hokkaido. I want to escape the heat of mainland Japan, see the lavender fields in Furano, explore Sapporo, and understand how to combine Hokkaido with Tokyo in a 10-12 day trip.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapneseR2.jpg",
+    label: "Japanese Summer Fireworks — Hanabi Season",
+    sublabel: "The nights are worth the flight.",
+    description: "Japan's sky, on fire.",
+    prompt: "Tell me about the best hanabi — fireworks — festivals in Japan in summer. Which ones are truly spectacular, where are they held, and how do I plan a trip that includes one? Recommend the best combination with other Japan stops.",
+  },
+],
     },
     row3: {
       heading: "TTW's Japan Themes",
       icon: "🎯",
-      cards: [
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TraditionalR3.jpg",
-          label: "Traditional Japan",
-          sublabel: "Less Rush. More Ritual.",
-          prompt:
-            "I want to do Japan slowly. No rushed itinerary — I want ryokans, onsens, morning temple walks, and quiet towns. Suggest a 10-day Japan trip that prioritises the unhurried side of the country. Kyoto and smaller towns over Tokyo crowds.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapankidsR3.jpg",
-          label: "Japan With Kids",
-          sublabel: "Family Summer Trips",
-          prompt:
-            "Plan a Japan summer trip for a family with young children. I want it to be fun and manageable — not overwhelming. What are the best cities, kid-friendly attractions, food that children will eat, and how to handle transport with kids? 8 to 10 days.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HoneymoonR3.jpg",
-          label: "Honeymoon in Japan",
-          sublabel: "Romantic and Refined",
-          prompt:
-            "Plan a honeymoon trip to Japan. We want the romantic side — a ryokan with a private onsen, beautiful scenery, good food, and a mix of Kyoto culture and Tokyo energy. 10 days, suggest a full itinerary and what to splurge on.",
-        },
-        {
-          image:
-            "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapanR3.jpg",
-          label: "Japan Under Rs 1.5 Lakh",
-          sublabel: "Premium Feel, Honest Budget",
-          prompt:
-            "Plan a Japan trip for under Rs 1.5 lakh per person including flights. I want it to feel premium — not budget-backpacker. What does this budget actually get me, where do I stay, and what should I prioritise and skip to make the numbers work?",
-        },
-      ],
+     cards: [
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/TraditionalR3.jpg",
+    label: "Traditional Japan",
+    sublabel: "Less Rush. More Ritual.",
+    description: "Slow down. Feel every moment.",
+    prompt: "I want to do Japan slowly. No rushed itinerary — I want ryokans, onsens, morning temple walks, and quiet towns. Suggest a 10-day Japan trip that prioritises the unhurried side of the country. Kyoto and smaller towns over Tokyo crowds.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapankidsR3.jpg",
+    label: "Japan With Kids",
+    sublabel: "Family Summer Trips",
+    description: "Fun for the whole family.",
+    prompt: "Plan a Japan summer trip for a family with young children. I want it to be fun and manageable — not overwhelming. What are the best cities, kid-friendly attractions, food that children will eat, and how to handle transport with kids? 8 to 10 days.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/HoneymoonR3.jpg",
+    label: "Honeymoon in Japan",
+    sublabel: "Romantic and Refined",
+    description: "Private onsens. Perfect dinners.",
+    prompt: "Plan a honeymoon trip to Japan. We want the romantic side — a ryokan with a private onsen, beautiful scenery, good food, and a mix of Kyoto culture and Tokyo energy. 10 days, suggest a full itinerary and what to splurge on.",
+  },
+  {
+    image: "https://d31aoa0ehgvjdi.cloudfront.net/media/website/JapanR3.jpg",
+    label: "Japan Under Rs 1.5 Lakh",
+    sublabel: "Premium Feel, Honest Budget",
+    description: "Premium feel. Honest price.",
+    prompt: "Plan a Japan trip for under Rs 1.5 lakh per person including flights. I want it to feel premium — not budget-backpacker. What does this budget actually get me, where do I stay, and what should I prioritise and skip to make the numbers work?",
+  },
+],
     },
     row4: {
       heading: "Only in Japan — Experiences Worth Flying For",

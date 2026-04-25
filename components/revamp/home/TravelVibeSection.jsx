@@ -33,7 +33,7 @@ const TravelVibeSection = (props) => {
       id: 1,
       title: "Honeymoon Trip Planner",
       description: "ROMANTIC ESCAPES",
-      image: `media/page/173815280124938845634460449219/.jpg`,
+      image: `${imgUrlEndPoint}media/page/173815280124938845634460449219.jpg`,
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -43,7 +43,7 @@ const TravelVibeSection = (props) => {
       id: 2,
       title: "Road Trips 2025",
       description: "DRIVE DIARIES",
-      image: `media/page/174860004456110548973083496094/.jpg`,
+      image: `${imgUrlEndPoint}media/page/174860004456110548973083496094.jpg`,
       tags: ["Trending"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -53,7 +53,7 @@ const TravelVibeSection = (props) => {
       id: 3,
       title: "Perfect Proposals",
       description: "SAY YES SPOTS",
-      image: `${imgUrlEndPoint}/media/page/174120792530050110816955566406/.png`, 
+      image: `${imgUrlEndPoint}media/page/174120792530050110816955566406.png`,
       tags: ["TTW Exclusive"],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
@@ -63,7 +63,7 @@ const TravelVibeSection = (props) => {
       id: 4,
       title: "Japan In Autumn",
       description: "GOLDEN GATEWAYS",
-      image: `${imgUrlEndPoint}/media/page/176061499439999198913574218750.jpg`,
+      image: `${imgUrlEndPoint}media/page/176061499439999198913574218750.jpg`,
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
       link: "theme/japan-cherry-blossom",
@@ -72,7 +72,7 @@ const TravelVibeSection = (props) => {
       id: 5,
       title: "Europe Under 1 Lakh",
       description: "BIG TRIPS, SMALL BUDGET",
-      image: `media/website/compressedImage (7).jpeg`,
+      image: `${imgUrlEndPoint}media/website/compressedImage (7).jpeg`,
       tags: [],
       gradientOverlay:
         "linear-gradient(178deg, rgba(0, 0, 0, 0.00) 49.92%, rgba(0, 0, 0, 0.70) 98.41%)",
