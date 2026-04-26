@@ -40,6 +40,11 @@ export default function ActivityDetails(props) {
   const currency = useSelector((state) => state.currency);
   const itinerary = useSelector((state) => state.Itinerary);
   const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+  // P1 stage = pre-finalize (PENDING). Treat P1 like Draft for scheduling UI:
+  // hide the date picker and time-of-day chips since the itinerary is not
+  // yet pinned to specific dates/slots.
+  const hideSchedule = isDraft || finalized_status === "PENDING";
 
   const pad = (n) => (n < 10 ? `0${n}` : n);
 
@@ -480,39 +485,41 @@ export default function ActivityDetails(props) {
                   the desktop dropdown can be positioned with absolute top-full.
                   Always rendered — a 1-night stay still has 2 options (arrival
                   + checkout), and even a single-day option is informational. */}
-              <div className="relative">
-                {/* Date box trigger */}
-                <div
-                  ref={dateBoxRef}
-                  className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
-                  onClick={() => setShowCalender((prev) => !prev)}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-[14px]">
-                      {getHumanDate(startDate) + " | "}
-                    </span>
-                    <span>Day {selectedDayNumber}</span>
-                  </div>
-                  <IoIosArrowDown
-                    className={`transition-transform ml-2 ${
-                      showCalender ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-
-                {/* Desktop dropdown — positioned absolutely below the trigger */}
-                {showCalender && (
+              {!hideSchedule && (
+                <div className="relative">
+                  {/* Date box trigger */}
                   <div
-                    ref={calendarDesktopRef}
-                    className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                    ref={dateBoxRef}
+                    className="flex items-center w-auto bg-[#F9F9F9] py-[0.7rem] px-4 rounded-lg justify-between cursor-pointer"
+                    onClick={() => setShowCalender((prev) => !prev)}
                   >
-                    <DayListContent />
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-[14px]">
+                        {getHumanDate(startDate) + " | "}
+                      </span>
+                      <span>Day {selectedDayNumber}</span>
+                    </div>
+                    <IoIosArrowDown
+                      className={`transition-transform ml-2 ${
+                        showCalender ? "rotate-180" : ""
+                      }`}
+                    />
                   </div>
-                )}
-              </div>
+
+                  {/* Desktop dropdown — positioned absolutely below the trigger */}
+                  {showCalender && (
+                    <div
+                      ref={calendarDesktopRef}
+                      className="max-ph:hidden md:flex md:flex-col absolute top-full left-0 mt-1 w-[260px] bg-white border border-gray-200 shadow-lg rounded-lg p-4 gap-3 text-sm z-[1091] max-h-[300px] overflow-y-auto"
+                    >
+                      <DayListContent />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {availableTimePeriods.length > 0 && (
+            {!hideSchedule && availableTimePeriods.length > 0 && (
               <div className="inline-flex w-fit sm:w-fit bg-[#F9F9F9] rounded-lg p-1 gap-1">
                 {availableTimePeriods.map((period) => {
                   const isSelected = selectedTimeOfDay === period;
