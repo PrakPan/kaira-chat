@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { useChat, generateSessionId, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
+import { useChat, generateSessionId, getPlatform, type UserLocationData, type MessageAttachment, Message } from "../hooks/useChat";
 import { MessageBubble } from "./MessageBubble";
 import { MessageInputBox } from "./MessageInputBox";
 import { CHATKIT_API_DOMAIN_KEY as CHATKIT_DOMAIN_KEY } from "../lib/chatkitConfig";
@@ -25,6 +25,7 @@ import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const CHATKIT_API_URL = "https://chat.tarzanway.com/chatkit";
 const PAGINATION_SCROLL_THRESHOLD = 80;
+const CHATKIT = "https://chat.tarzanway.com"
 
 export interface AttachmentFile {
   /** Temporary local ID (before server responds) or server-assigned ID */
@@ -103,6 +104,11 @@ interface ChatKitPanelProps {
   onBotModeChange?: (mode: BotMode) => void;
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
+  /** When true and the user is not logged in, the initialPrompt is queued as
+   *  the post-login message and a login/signup CTA is shown instead of being
+   *  auto-sent. Used by BotApp's restore flow so unauthenticated reloads of a
+   *  finished P2 trip don't fire a "Hey Kaira!" summary request. */
+  initialPromptRequiresLogin?: boolean;
   initialAttachmentIds?: string[];
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
@@ -121,6 +127,10 @@ onPaymentStart?: () => void;
  *  corresponding prompt through the /chatkit p1 API. Not posted to the bot. */
 travellerStory?: TravellerStoryIntro | null;
 onTravellerStoryDismiss?: () => void;
+/** Mobile-only: rendered to the right of "Chat with Kaira" in the top bar.
+ *  Lets BotApp inject MobileHeaderMenu so the chat tab can drop the global
+ *  MobileHeader without losing the history/new-chat/profile actions. */
+mobileMenu?: React.ReactNode;
 }
 
 export interface TravellerStoryIntro {
@@ -257,6 +267,7 @@ export function ChatKitPanel({
   onBotModeChange,
   onItineraryIdChange,
   initialPrompt = null,
+  initialPromptRequiresLogin = false,
   initialAttachmentIds,
   onSendReady,
   onItineraryCompletionStart,
@@ -271,6 +282,7 @@ itineraryCompleted = false,
 onPaymentStart,
 travellerStory = null,
 onTravellerStoryDismiss,
+mobileMenu,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -309,6 +321,18 @@ onTravellerStoryDismiss,
       return next;
     });
   }, []);
+
+  // ── Per-message thumbs-up / thumbs-down feedback ─────────────────────────
+  // Keyed by assistant message id. Null = no feedback yet. The feedbackId is
+  // returned by POST /feedback and is required for subsequent change/delete.
+  const [feedbackByMessageId, setFeedbackByMessageId] = useState<
+    Record<string, { feedbackId: string; type: "up" | "down" }>
+  >({});
+  // Per-message loading flag so we can disable both icons while a request is
+  // in flight (prevents racing POST → PATCH → DELETE clicks).
+  const [feedbackLoadingIds, setFeedbackLoadingIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -487,6 +511,28 @@ onTravellerStoryDismiss,
     [callPaymentInfo, dispatch],
   );
 
+  // Fetch the full itinerary detail and push it into Redux. Called after
+  // a successful POI / activity / restaurant add so derived state (the
+  // day-by-day buckets, city duration, pricing surfaces) reflects what
+  // the backend now has — the optimistic local patches in
+  // applySlabToItinerary / applyActivityBookingToItinerary are best-effort.
+  const fetchAndApplyItineraryDetail = useCallback(async () => {
+    if (!localItineraryId) return;
+    try {
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${localItineraryId}/`,
+        authToken
+          ? { headers: { Authorization: `Bearer ${authToken}` } }
+          : undefined,
+      );
+      if (res?.data && res.data?.version !== "v1") {
+        dispatch(setItinerary(res.data));
+      }
+    } catch (err) {
+      console.error("[fetchAndApplyItineraryDetail] error:", err);
+    }
+  }, [localItineraryId, authToken, dispatch]);
+
   // ── Detail Drawer State ─────────────────────────────────────────────────
   const [activityDrawer, setActivityDrawer] = useState<{
     show: boolean;
@@ -657,6 +703,9 @@ onTravellerStoryDismiss,
     check_out?: string;
     bookingId?: string;
     cityName?: string;
+    source?: string;
+    occupancies?: Array<{ num_adults: number; child_ages: number[] }>;
+    traceId?: string;
   }>({ show: false });
 
   // POI / Restaurant detail drawer — opened by place.view / place.detail /
@@ -681,6 +730,11 @@ onTravellerStoryDismiss,
   // auto-scroll effect only fires when this is true, so the transcript won't
   // yank away from a user who's scrolled up to read earlier messages.
   const isAtBottomRef = useRef(true);
+  // True between a thread restore and the moment we've actually parked the
+  // scroll container at the bottom. Widgets/images in restored threads finish
+  // laying out asynchronously, so a single smooth scroll lands mid-thread —
+  // we re-snap on a few ticks until the content has settled.
+  const initialScrollPendingRef = useRef(false);
 
   // ── Refs ─────────────────────────────────────────────────────────────────
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -791,6 +845,96 @@ const { messages, isStreaming, error, sendMessage: rawSendMessage,
 
   // Keep sendWidgetActionRef current after every render
   sendWidgetActionRef.current = sendWidgetAction;
+
+  // ── Feedback (thumbs up / down) handler ──────────────────────────────────
+  // Three-state toggle per assistant message:
+  //   no feedback        + click X     →  POST   /feedback           (create)
+  //   feedback type !== X + click X    →  POST   /feedback/{id}      (change)
+  //   feedback type === X + click X    →  DELETE /feedback/{id}      (clear)
+  const handleFeedback = useCallback(
+    async (messageId: string, type: "up" | "down") => {
+      if (!messageId) return;
+      if (!authToken) {
+        setShowLoginModal(true);
+        return;
+      }
+      if (feedbackLoadingIds.has(messageId)) return;
+
+      const threadId = threadIdRef.current;
+      if (!threadId) {
+        // Without a thread id the create call has no anchor — bail silently.
+        return;
+      }
+
+      const headers = { Authorization: `Bearer ${authToken}` };
+      const setLoading = (on: boolean) =>
+        setFeedbackLoadingIds((prev) => {
+          const next = new Set(prev);
+          if (on) next.add(messageId);
+          else next.delete(messageId);
+          return next;
+        });
+
+      const current = feedbackByMessageId[messageId];
+      setLoading(true);
+      try {
+        if (!current) {
+          const body = {
+            session_id: sessionIdRef.current,
+            thread_id: threadId,
+            message_id: messageId,
+            type,
+            platform: getPlatform(),
+            ...(reduxUserId != null ? { author: parseInt(reduxUserId) } : {}),
+          };
+          const res = await axios.post(
+            `${CHATKIT}/feedback`,
+            body,
+            { headers },
+          );
+          const newId = (res.data?.id ?? res.data?.feedback_id) as string | undefined;
+          if (newId) {
+            setFeedbackByMessageId((prev) => ({
+              ...prev,
+              [messageId]: { feedbackId: String(newId), type },
+            }));
+          }
+        } else if (current.type === type) {
+          await axios.delete(
+            `${CHATKIT}/feedback/${current.feedbackId}`,
+            { headers },
+          );
+          setFeedbackByMessageId((prev) => {
+            const next = { ...prev };
+            delete next[messageId];
+            return next;
+          });
+        } else {
+          await axios.post(
+            `${CHATKIT}/feedback/${current.feedbackId}`,
+            { type, platform: getPlatform() },
+            { headers },
+          );
+          setFeedbackByMessageId((prev) => ({
+            ...prev,
+            [messageId]: { ...current, type },
+          }));
+        }
+      } catch (err) {
+        console.error("[Feedback] failed:", err);
+        dispatch(
+          openNotification({
+            type: "error",
+            heading: "Couldn't save feedback",
+            text: "Please try again in a moment.",
+          }),
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [authToken, feedbackByMessageId, feedbackLoadingIds, reduxUserId, threadIdRef, dispatch],
+  );
 
   // Remember the most recently emitted start/end so we only fire the endpoint
   // callback when it actually changes (back-to-back effects in one turn often
@@ -954,7 +1098,14 @@ case "start_itinerary_completion_process": {
 }
 case "shimmer_day_by_day": {
   emitEndpointsFromEffect(name, data);
-  onItineraryReceived({ shimmer: true });
+  // Forward start/end city to BotApp so the skeleton itinerary in Redux
+  // carries them too — otherwise VerticalLayout has nothing to label the
+  // P1 start pin with until display_itinerary lands.
+  onItineraryReceived({
+    shimmer: true,
+    start_city: data?.start_city ?? null,
+    end_city: data?.end_city ?? null,
+  });
   break;
 }
         case "delete_poi_from_itinerary": {
@@ -1036,6 +1187,14 @@ const sendMessage = useCallback(
     // Respect the user's scroll position: if they've scrolled up to read
     // earlier messages, don't yank the view back down while streaming.
     if (!isAtBottomRef.current) return;
+    // While a thread restore is still settling (widgets/images laying out),
+    // snap instantly to the absolute bottom instead of smooth-scrolling — a
+    // smooth scroll fires once and is overtaken by content that grows after.
+    if (initialScrollPendingRef.current) {
+      const c = messagesScrollRef.current;
+      if (c) c.scrollTop = c.scrollHeight;
+      return;
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
@@ -1051,11 +1210,22 @@ const sendMessage = useCallback(
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    // Defer prompts that require login: queue as the post-login message and
+    // show the existing login/signup CTA. The authToken-change effect below
+    // will fire the queued message once the user authenticates.
+    if (initialPromptRequiresLogin && !isLoggedIn) {
+      hasProcessedInitial.current = true;
+      pendingPostLoginMsg.current = initialPrompt;
+      loginFlowArmedRef.current = true;
+      setShowLoginPrompt(true);
+      onInitialPromptConsumed?.();
+      return;
+    }
     hasProcessedInitial.current = true;
     sendMessage(initialPrompt, initialAttachmentIds);
     onInitialPromptConsumed?.();
   }
-}, [initialPrompt, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
+}, [initialPrompt, initialPromptRequiresLogin, isLoggedIn, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);
@@ -1241,7 +1411,34 @@ useEffect(() => {
     emitEndpointsFromEffect(latestEndpointEffect.name, latestEndpointEffect.data);
   }
 
-  if (restored.length > 0) setMessages(restored);
+  if (restored.length > 0) {
+    setMessages(restored);
+    // Land at the bottom of the restored transcript. Widgets and images lay
+    // out asynchronously, so the scrollable height keeps growing for a beat
+    // after setMessages — a single rAF snap leaves the user mid-thread.
+    // Keep snapping for ~1s; the auto-scroll effect also honours this flag
+    // so it uses instant scroll instead of smooth animation in the meantime.
+    initialScrollPendingRef.current = true;
+    isAtBottomRef.current = true;
+    const snapToBottom = () => {
+      const c = messagesScrollRef.current;
+      if (!c) return;
+      c.scrollTop = c.scrollHeight;
+    };
+    requestAnimationFrame(() => {
+      snapToBottom();
+      requestAnimationFrame(snapToBottom);
+    });
+    const timers = [50, 150, 300, 600, 1000].map((ms) =>
+      setTimeout(() => {
+        snapToBottom();
+        if (ms === 1000) initialScrollPendingRef.current = false;
+      }, ms),
+    );
+    // Best-effort cleanup if the effect re-runs (e.g. switching to another
+    // restored thread); harmless if timers already fired.
+    void timers;
+  }
 
   // Freeze CTAs on every widget restored from history — those interactions
   // belong to a past session and shouldn't be re-clickable.
@@ -1305,6 +1502,7 @@ useEffect(() => {
         body: JSON.stringify({
           type: "threads.get_by_id",
           params: { thread_id: threadId, before: beforeId },
+          platform: getPlatform(),
         }),
       });
       if (!res.ok) throw new Error(`${res.status}`);
@@ -1352,7 +1550,11 @@ useEffect(() => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
   const currentInput = inputRef.current.trim();
-  const msg = currentInput || lastSentMessageRef.current;
+  // Preserve an existing queued message (e.g. an initialPrompt already
+  // stashed by the restore flow) if the user opens the modal without
+  // typing anything new — otherwise we'd clobber it with null and the
+  // post-login send would be a no-op.
+  const msg = currentInput || lastSentMessageRef.current || pendingPostLoginMsg.current;
   console.log("[handleShowLogin] storing pending:", msg);
   pendingPostLoginMsg.current = msg || null;
   loginFlowArmedRef.current = true;
@@ -1523,22 +1725,26 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100vh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
             <img src="/KairaInsta.png" alt="Kaira" />
           </div>
-          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Chat with Kaira <span className="font-normal">- Your AI Trip Planner</span></span>
+          <span className="text-sm md:text-[14px] font-semibold text-gray-800 truncate">
+            Chat with Kaira
+            <span className="font-normal hidden md:inline"> - Your AI Trip Planner</span>
+          </span>
           {isLoadingLocation && (
-            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+            <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
               <Spinner size={10} /> locating…
             </span>
           )}
         </div>
+        {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
           onClick={() => setShowControls((v) => !v)}
           className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
@@ -1634,6 +1840,9 @@ const handleShowLogin = useCallback(() => {
                 widgetDisabled={
                   msg.type === "widget" && disabledWidgetIds.has(msg.id)
                 }
+                feedback={feedbackByMessageId[msg.id] ?? null}
+                feedbackLoading={feedbackLoadingIds.has(msg.id)}
+                onFeedback={handleFeedback}
                 onWidgetAction={(action) => {
                   // Freeze this widget's CTAs the moment the user clicks one,
                   // regardless of which drawer or server call it triggers. The
@@ -1765,62 +1974,43 @@ const handleShowLogin = useCallback(() => {
                     const indexed = edgeId
                       ? transferEdgeMapRef.current[edgeId]
                       : undefined;
-                    const checkInRaw =
-                      (payload.check_in as string | undefined) ??
-                      (payload.transfer_date as string | undefined) ??
-                      (payload.date as string | undefined) ??
-                      indexed?.check_in;
-                    const checkIn = checkInRaw
-                      ? String(checkInRaw).slice(0, 10)
-                      : undefined;
-                    const segments = (payload.segments as any[] | undefined) ?? [];
-                    const firstSegmentMode = segments[0]?.mode as
-                      | string
-                      | undefined;
-                    const initialMode =
-                      (payload.mode as string | undefined) ??
-                      firstSegmentMode ??
-                      indexed?.mode;
-                    const originCityId = (payload.origin_city_id ??
-                      payload.originCityId) as string | undefined;
-                    const destinationCityId = (payload.destination_city_id ??
-                      payload.destinationCityId) as string | undefined;
-                    const originItineraryCityId = (payload.origin_itinerary_city_id ??
-                      payload.originItineraryCityId) as string | undefined;
-                    const destinationItineraryCityId = (payload.destination_itinerary_city_id ??
-                      payload.destinationItineraryCityId) as string | undefined;
-                    setTransferDrawer({
-                      show: true,
-                      routeId: (payload.route_id ??
-                        payload.bookingId ??
+                    const bookingId =
+                      (payload.bookingId ??
                         payload.booking_id ??
+                        payload.route_id ??
                         payload.id ??
-                        edgeId) as string,
-                      check_in: checkIn,
-                      booking_type: (payload.booking_type ??
-                        payload.type ??
-                        "oneway") as string,
-                      initialEdgeId: edgeId,
-                      initialMode,
-                      isMercury: true,
-                      origin: originCityId ?? indexed?.from_city_id,
-                      destination: destinationCityId ?? indexed?.to_city_id,
-                      originCityId: originCityId ?? indexed?.from_city_id,
-                      destinationCityId:
-                        destinationCityId ?? indexed?.to_city_id,
-                      origin_itinerary_city_id:
-                        originItineraryCityId ??
-                        indexed?.from_itinerary_city_id,
-                      destination_itinerary_city_id:
-                        destinationItineraryCityId ??
-                        indexed?.to_itinerary_city_id,
-                      city:
-                        (payload.from_city as string | undefined) ??
-                        indexed?.from_city,
-                      dcity:
-                        (payload.to_city as string | undefined) ??
-                        indexed?.to_city,
-                    });
+                        edgeId) as string | undefined;
+                    const oItineraryCity =
+                      (payload.originItineraryCityId ??
+                        payload.origin_itinerary_city_id ??
+                        indexed?.from_itinerary_city_id) as string | undefined;
+                    const dItineraryCity =
+                      (payload.destinationItineraryCityId ??
+                        payload.destination_itinerary_city_id ??
+                        indexed?.to_itinerary_city_id) as string | undefined;
+                    const doj =
+                      (payload.date ??
+                        payload.check_in ??
+                        payload.transfer_date ??
+                        indexed?.check_in) as string | undefined;
+
+                    router.push(
+                      {
+                        pathname: "/chat/[id]",
+                        query: {
+                          ...router.query,
+                          id: sessionIdRef.current,
+                          drawer: "editTransfer",
+                          drawerType: "",
+                          bookingId: bookingId ?? "",
+                          oItineraryCity: oItineraryCity ?? "",
+                          dItineraryCity: dItineraryCity ?? "",
+                          doj: doj ?? "",
+                        },
+                      },
+                      undefined,
+                      { scroll: false },
+                    );
                     return;
                   }
 
@@ -1855,6 +2045,15 @@ const handleShowLogin = useCallback(() => {
                       cityName: (payload.cityName ??
                         payload.city_name ??
                         payload.city) as string | undefined,
+                      source:
+                        ((payload.source ?? payload.provider) as string) ??
+                        "Travclan",
+                      occupancies: (payload.occupancies ??
+                        payload.occupancy) as
+                        | Array<{ num_adults: number; child_ages: number[] }>
+                        | undefined,
+                      traceId: (payload.traceId ??
+                        payload.trace_id) as string | undefined,
                     });
                     return;
                   }
@@ -1885,7 +2084,7 @@ const handleShowLogin = useCallback(() => {
             )}
 
             {showLoginPrompt && !isLoggedIn && (
-              <div className="mt-[24px] p-4">
+              <div className="mt-[12px] p-2">
                  <div
           style={{
             maxWidth: "100%",
@@ -2033,18 +2232,29 @@ const handleShowLogin = useCallback(() => {
             const itineraryCityId =
               (payload as any).itinerary_city_id ??
               activityDrawer.itinerary_city_id;
+            // Prefer the picker-chosen date (start_date / date in the
+            // payload) over the date the card was originally opened with —
+            // and keep `time` from the payload so the booking POST records
+            // the slot the user picked.
+            const pickerStartDate =
+              ((payload as any).start_date as string | undefined) ??
+              ((payload as any).date as string | undefined);
             void (async () => {
               const data = await postBookingAction(
                 "bookings/activity/",
                 {
                   ...payload,
                   itinerary_city_id: itineraryCityId,
-                  date: activityDrawer.date,
+                  date: pickerStartDate ?? activityDrawer.date,
                 },
                 "Added activity to your itinerary",
               );
               if (data) {
                 applyActivityBookingToItinerary(data, itineraryCityId);
+                // Re-pull the full itinerary so derived state (city
+                // duration / day-by-day, pricing) reflects what the
+                // backend now has.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setActivityDrawer({ show: false });
@@ -2169,6 +2379,10 @@ const handleShowLogin = useCallback(() => {
           check_in={hotelDrawer.check_in}
           check_out={hotelDrawer.check_out}
           bookingId={hotelDrawer.bookingId}
+          dbCityId={hotelDrawer.dbCityId}
+          source={hotelDrawer.source}
+          occupancies={hotelDrawer.occupancies}
+          traceId={hotelDrawer.traceId}
           setShowLoginModal={setShowLoginModal}
         />
       )}
@@ -2191,16 +2405,28 @@ const handleShowLogin = useCallback(() => {
           removeDelete={true}
           removeChange={true}
           showAddToItinerary={true}
-          onAddToItinerary={() => {
+          onAddToItinerary={(payload?: Record<string, unknown>) => {
             const kind = poiDrawer.kind ?? "poi";
             const path = kind === "restaurant" ? "restaurant/add/" : "poi/add/";
             const itineraryCityId = poiDrawer.itinerary_city_id;
-            const date = poiDrawer.date;
-            const dayByDayIndex = 0;
+            // Prefer the date the picker chose (start_date / date in the
+            // payload) over the date the card was originally opened with.
+            const pickerStartDate =
+              ((payload as any)?.start_date as string | undefined) ??
+              ((payload as any)?.date as string | undefined);
+            const date = pickerStartDate ?? poiDrawer.date;
+            const dayByDayIndex = Math.max(
+              0,
+              ((payload as any)?.day as number | undefined) != null
+                ? ((payload as any).day as number) - 1
+                : 0,
+            );
+            const time = (payload as any)?.time as string | undefined;
             const body: Record<string, unknown> = {
               itinerary_city_id: itineraryCityId,
               date,
               day_by_day_index: dayByDayIndex,
+              ...(time ? { time } : {}),
               ...(kind === "restaurant"
                 ? { restaurant_id: poiDrawer.id }
                 : { poi_id: poiDrawer.id }),
@@ -2220,6 +2446,9 @@ const handleShowLogin = useCallback(() => {
                   date,
                   dayByDayIndex,
                 );
+                // Re-pull the full itinerary so the next drawer open
+                // reads the up-to-date day-by-day and city duration.
+                void fetchAndApplyItineraryDetail();
               }
             })();
             setPoiDrawer({ show: false });

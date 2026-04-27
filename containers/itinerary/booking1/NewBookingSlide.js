@@ -67,6 +67,8 @@ import { FcCalendar } from "react-icons/fc";
 import { MdArrowBackIosNew } from "react-icons/md";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { resetChatSession } from "../../../store/actions/chatState";
+import VisaSearchDrawer from "../../../components/drawers/visaDetails/VisaSearchDrawer";
+import EsimPackagesDrawer from "../../../components/drawers/esimDetails/EsimPackagesDrawer";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -874,8 +876,21 @@ const ItineraryInclusions = ({
     Transfers: true,
     Flights: true,
     Activities: true,
+     "Activities & Ancillaries": true,
   });
   const { currency } = useSelector((state) => state.currency);
+  const TransferBookings = useSelector(
+    (state) => state.TransferBookings?.transferBookings,
+  );
+
+  // Find children flights for a combo (roundtrip) booking from TransferBookings store
+ const getChildrenFlights = (parentBookingId) => {
+  if (!TransferBookings?.intercity) return [];
+
+  return Object.values(TransferBookings.intercity).filter(
+    (booking) => booking?.parent === parentBookingId
+  );
+};
 
   const categorizeBookings = () => {
     const categories = {
@@ -1032,147 +1047,214 @@ const ItineraryInclusions = ({
             {/* Category Items */}
             {expandedCategories[category] && (
               <div className="divide-y divide-gray-100">
-                {bookings.map((booking) => (
-                  <div
-                    key={booking.id}
-                    className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
-                      !selectedInclusions[booking.id] ? "" : ""
-                    }`}
-                  >
-                    {/* Booking Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-md font-500 leading-xl mb-sm">
-                        {booking.detail.name}
-                      </div>
-                      {booking.status === "Paid" && (
-                        <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
-                          PAID
-                        </div>
-                      )}
+                {bookings.map((booking) => {
+                  // For roundtrip (combo) flights, get children from TransferBookings
+                  const isRoundTripFlight =
+                    booking.booking_type === "Flight" &&
+                    booking.detail?.transfer_type === "combo";
+                  const childrenFlights = isRoundTripFlight
+                    ? getChildrenFlights(booking.id)
+                    : [];
 
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {/* <BsCalendar2 className="flex-shrink-0" /> */}
-                          <span className="text-sm font-400 leading-md text-text-spacegrey">
-                            {formatDate(booking.detail.check_in)}{" "}
-                            {category == "Stays"
-                              ? "- " + formatDate(booking.detail.check_out)
-                              : null}
-                          </span>
-                        </div>
 
-                        {booking.detail.duration && (
-                          <>
-                            <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
-                            <span className="text-sm font-400 leading-md text-text-spacegrey">
-                              {booking.detail.duration}N
-                            </span>
-                          </>
-                        )}
-
-                        {booking.detail.pax && (
-                          <>
-                            <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
-                            <div className="flex items-center gap-1 ">
-                              {/* <span>•</span> */}
-                              {/* <BsPeopleFill className="flex-shrink-0" /> */}
-                              <span className="text-sm font-400 leading-md text-text-spacegrey">
-                                {booking.detail.pax.number_of_adults +
-                                  (booking.detail?.pax?.number_of_children ||
-                                    0) +
-                                  (booking.detail?.pax?.number_of_infants ||
-                                    0) >
-                                1
-                                  ? booking.detail.pax.number_of_adults +
-                                    (booking.detail?.pax?.number_of_children ||
-                                      0) +
-                                    (booking.detail?.pax?.number_of_infants ||
-                                      0) +
-                                    " Travelers"
-                                  : booking.detail.pax.number_of_adults +
-                                    (booking.detail?.pax?.number_of_children ||
-                                      0) +
-                                    (booking.detail?.pax?.number_of_infants ||
-                                      0) +
-                                    " Traveler"}{" "}
-                              </span>
+                  return (
+                    <div key={booking.id}>
+                      <div
+                        className={`p-3 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
+                          !selectedInclusions[booking.id] ? "" : ""
+                        }`}
+                      >
+                        {/* Booking Details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-md font-500 leading-xl mb-sm">
+                            {booking.detail.name}
+                          </div>
+                          {booking.status === "Paid" && (
+                            <div className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded mb-1">
+                              PAID
                             </div>
-                          </>
-                        )}
+                          )}
 
-                        {/* Show individual booking cost */}
-                        {/* {
-                          !arePricesHidden &&
-                          booking.booking_cost > 0 && (
+                          <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-1">
-                              <span className="text-sm font-500 leading-md">
-                                {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
-                                {getIndianPrice(
-                                  Math.round(booking.booking_cost)
-                                )}
-                              </span>
+                              {/* <BsCalendar2 className="flex-shrink-0" /> */}
+                              {!isRoundTripFlight && <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                {formatDate(booking.detail.check_in)}{" "}
+                                {category == "Stays"
+                                  ? "- " + formatDate(booking.detail.check_out)
+                                  : null}
+                              </span>}
                             </div>
-                          )
-                        } */}
-                      </div>
-                    </div>
 
-                    {/* Checkbox */}
-                    <div className="pt-0.5">
-                      {updatingInclusions[booking.id] ? (
-                        <div className="w-4 h-4 flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
-                        </div>
-                      ) : arePricesExpired ? (
-                        <div className="relative group cursor-pointer">
-                          <span className="relative mr-xl pointer-events-none">
-                            <label className="ttw-custom-greenCheckbox-label opacity-60">
-                              <input
-                                type="checkbox"
-                                checked={selectedInclusions[booking.id]}
-                                disabled
-                                className="ttw-custom-greenCheckbox"
-                              />
-                            </label>
-                          </span>
+                            {booking.detail.duration && (
+                              <>
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
+                                <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                  {booking.detail.duration}N
+                                </span>
+                              </>
+                            )}
 
-                          {/* Tooltip */}
-                          <div
-                            className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
-                       hidden group-hover:!block whitespace-nowrap overflow-visible
-                      bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
-                          >
-                            Reprice itinerary to add/remove this booking
+                            {booking.detail.pax && (
+                              <>
+                                <div className="border-r-sm border-text-spacegrey h-[12px]"></div>
+                                <div className="flex items-center gap-1 ">
+                                  {/* <span>•</span> */}
+                                  {/* <BsPeopleFill className="flex-shrink-0" /> */}
+                                  <span className="text-sm font-400 leading-md text-text-spacegrey">
+                                    {booking.detail.pax.number_of_adults +
+                                      (booking.detail?.pax?.number_of_children ||
+                                        0) +
+                                      (booking.detail?.pax?.number_of_infants ||
+                                        0) >
+                                    1
+                                      ? booking.detail.pax.number_of_adults +
+                                        (booking.detail?.pax
+                                          ?.number_of_children || 0) +
+                                        (booking.detail?.pax
+                                          ?.number_of_infants || 0) +
+                                        " Travelers"
+                                      : booking.detail.pax.number_of_adults +
+                                        (booking.detail?.pax
+                                          ?.number_of_children || 0) +
+                                        (booking.detail?.pax
+                                          ?.number_of_infants || 0) +
+                                        " Traveler"}{" "}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+
+                            {/* Show individual booking cost */}
+                            {/* {
+                              !arePricesHidden &&
+                              booking.booking_cost > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <span className="text-sm font-500 leading-md">
+                                    {currencySymbols?.[currency] ? currencySymbols?.[currency] : '₹'}
+                                    {getIndianPrice(
+                                      Math.round(booking.booking_cost)
+                                    )}
+                                  </span>
+                                </div>
+                              )
+                            } */}
                           </div>
                         </div>
-                      ) : (
-                        <span className="relative mr-xl">
-                          <label className="cursor-pointer ttw-custom-greenCheckbox-label">
-                            <input
-                              type="checkbox"
-                              checked={selectedInclusions[booking.id]}
-                              onChange={() => onToggleInclusion(booking.id)}
-                              disabled={booking.status === "Paid"}
-                              className="accent-primary-yellow cursor-pointer
-                     disabled:cursor-not-allowed disabled:opacity-50
-                     ttw-custom-greenCheckbox"
-                            />
-                          </label>
-                        </span>
-                      )}
-                    </div>
 
-                    {/* Price - Desktop only */}
-                    {!arePricesHidden && booking.booking_cost > 0 && (
-                      <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
-                        {currencySymbols?.[currency]
-                          ? currencySymbols?.[currency]
-                          : "₹"}
-                        {getIndianPrice(Math.round(booking.booking_cost))}
+                        {/* Checkbox */}
+                        <div className="pt-0.5">
+                          {updatingInclusions[booking.id] ? (
+                            <div className="w-4 h-4 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-yellow-400"></div>
+                            </div>
+                          ) : arePricesExpired ? (
+                            <div className="relative group cursor-pointer">
+                              <span className="relative mr-xl pointer-events-none">
+                                <label className="ttw-custom-greenCheckbox-label opacity-60">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedInclusions[booking.id]}
+                                    disabled
+                                    className="ttw-custom-greenCheckbox"
+                                  />
+                                </label>
+                              </span>
+
+                              {/* Tooltip */}
+                              <div
+                                className="absolute z-[999] bottom-full -left-20 -translate-x-1/2 mb-2
+                           hidden group-hover:!block whitespace-nowrap overflow-visible
+                          bg-black text-white text-xs px-2 py-1 rounded cursor-pointer"
+                              >
+                                Reprice itinerary to add/remove this booking
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="relative mr-xl">
+                              <label className="cursor-pointer ttw-custom-greenCheckbox-label">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedInclusions[booking.id]}
+                                  onChange={() => onToggleInclusion(booking.id)}
+                                  disabled={booking.status === "Paid"}
+                                  className="accent-primary-yellow cursor-pointer
+                         disabled:cursor-not-allowed disabled:opacity-50
+                         ttw-custom-greenCheckbox"
+                                />
+                              </label>
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Price - Desktop only */}
+                        {!arePricesHidden && booking.booking_cost > 0 && (
+                          <div className="hidden md:block font-semibold text-sm whitespace-nowrap">
+                            {currencySymbols?.[currency]
+                              ? currencySymbols?.[currency]
+                              : "₹"}
+                            {getIndianPrice(Math.round(booking.booking_cost))}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                ))}
+
+                      {/* Children flights for roundtrip combo bookings */}
+                      {isRoundTripFlight &&
+                        childrenFlights.length > 0 &&
+                        childrenFlights.map((childFlight, childIndex) => {
+            
+                          const originCity =
+                            childFlight?.transfer_details?.items?.[0]
+                              ?.segments?.[0]?.origin?.city_name ||
+                            childFlight?.transfer_details?.source?.city_name ||
+                            "";
+                          const lastSegments =
+                            childFlight?.transfer_details?.items?.[0]?.segments;
+                          const destinationCity = lastSegments?.length
+                            ? lastSegments[lastSegments.length - 1]?.destination
+                                ?.city_name ||
+                              childFlight?.transfer_details?.destination
+                                ?.city_name ||
+                              ""
+                            : childFlight?.transfer_details?.destination
+                                ?.city_name || "";
+                          const childName = childFlight?.name ||
+                            originCity && destinationCity
+                              ? `${originCity} → ${destinationCity}`
+                              :  "Flight Leg";
+
+                          return (
+                            <div
+                              key={childFlight?.id || childIndex}
+                              className="pl-8 pr-3 py-2 flex items-start gap-2 bg-gray-50/50 border-t border-gray-50"
+                            >
+                          
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-500 leading-md text-black">
+                                  {childFlight?.name || childName}
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                                  {childFlight?.check_in && (
+                                    <span className="text-xs font-400 leading-md text-text-spacegrey">
+                                      {formatDate(childFlight.check_in)}
+                                    </span>
+                                  )}
+                                  {childFlight?.duration && (
+                                    <>
+                                      <div className="border-r-sm border-text-spacegrey h-[10px]"></div>
+                                      <span className="text-xs font-400 leading-md text-text-spacegrey">
+                                        {childFlight.duration}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1209,6 +1291,8 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
+  const [showVisaDrawer, setShowVisaDrawer] = useState(false);
+  const [showEsimDrawer, setShowEsimDrawer] = useState(false);
   const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, final_status } =
     useSelector((state) => state.ItineraryStatus);
@@ -2604,6 +2688,78 @@ const Details = (props) => {
                       </>
                     }
 
+                    {/* Visa & eSIM CTAs */}
+                    {(() => {
+                      const ancillaryBookings =
+                        Cart?.summary?.Ancillaries?.bookings || [];
+                      const hasEsim = ancillaryBookings.some((b) =>
+                        (b?.name || "").toLowerCase().includes("esim"),
+                      );
+                      const hasVisa = ancillaryBookings.some((b) => {
+                        const n = (b?.name || "").toLowerCase();
+                        return !n.includes("esim") && n.includes("visa");
+                      });
+                      return (
+                        <div className="mt-md mb-md">
+                          <hr className="text-text-placeholder mb-md" />
+                          <div className="text-sm font-500 leading-xl mb-sm text-[#01202B]">
+                            Enhance Your Trip
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => setShowVisaDrawer(true)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#F5F0FF] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">🛂</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasVisa ? "Visa added" : "Add Visa"}
+                                    {hasVisa && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Hassle-free visa assistance
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
+
+                            <button
+                              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-[#E5E5E5] bg-white hover:bg-[#FAFAFA] transition-colors"
+                              onClick={() => setShowEsimDrawer(true)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-[36px] h-[36px] rounded-full bg-[#DDF4C5] flex items-center justify-center flex-shrink-0">
+                                  <span className="text-[18px]">📶</span>
+                                </div>
+                                <div className="text-left">
+                                  <div className="text-[13px] font-600 text-[#01202B] flex items-center gap-1">
+                                    {hasEsim ? "eSIM added" : "Add eSIM"}
+                                    {hasEsim && (
+                                      <span className="inline-flex items-center justify-center w-[14px] h-[14px] rounded-full bg-[#22C55E] text-white text-[9px] font-700">
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="text-[11px] text-[#6E757A]">
+                                    Stay connected abroad
+                                  </div>
+                                </div>
+                              </div>
+                              <span className="text-[#979393] text-lg">›</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
                     {/* Trip Conditions */}
                     <div className="bg-primary-lightPurple p-sm mt-xl">
                       <div className="text-sm font-500 leading-xl mb-sm">
@@ -2723,6 +2879,16 @@ const Details = (props) => {
           <PassengerDetails />
         </div>
       </Drawer>
+
+      <VisaSearchDrawer
+        show={showVisaDrawer}
+        onHide={() => setShowVisaDrawer(false)}
+      />
+
+      <EsimPackagesDrawer
+        show={showEsimDrawer}
+        onHide={() => setShowEsimDrawer(false)}
+      />
     </>
   );
 };

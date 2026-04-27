@@ -14,6 +14,7 @@ import FullScreenGallery from "../../fullscreengallery/Index";
 import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
 import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
+import { FaTaxi } from "react-icons/fa6";
 import styled from "styled-components";
 import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import useMediaQuery from "../../media";
@@ -140,7 +141,7 @@ const ItineraryCity = (props) => {
   const stay = useSelector((state) => state.Stays);
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const { itinerary_status, hotels_status } = useSelector(
+  const { itinerary_status, hotels_status, transfers_status } = useSelector(
     (state) => state.ItineraryStatus,
   );
 
@@ -164,10 +165,25 @@ const ItineraryCity = (props) => {
   const reduxItineraryId = useSelector((state) => state.ItineraryId);
   const currentItineraryId = router.query.id || reduxItineraryId;
 
-  // Compute how many days precede this city so CityDay can show a continuous day index
-  const dayOffset = (itineraryDaybyDay?.cities || [])
-    .slice(0, props.index)
-    .reduce((sum, c) => sum + (c.day_by_day?.length || c.duration || 0), 0);
+  // Compute how many days precede this city so CityDay can show a continuous
+  // day index. Intermediate cities have a checkout day whose date matches the
+  // next city's first day — collapse those so the same date keeps the same
+  // Day N label across the city boundary instead of incrementing.
+  const dayOffset = (() => {
+    const cities = itineraryDaybyDay?.cities || [];
+    let offset = 0;
+    for (let i = 0; i < props.index; i++) {
+      const city = cities[i];
+      const days = city?.day_by_day || [];
+      offset += days.length || city?.duration || 0;
+      const lastDate = days[days.length - 1]?.date;
+      const nextFirstDate = cities[i + 1]?.day_by_day?.[0]?.date;
+      if (lastDate && nextFirstDate && lastDate === nextFirstDate) {
+        offset -= 1;
+      }
+    }
+    return offset;
+  })();
 
   const [images, setImages] = useState(null);
 
@@ -278,7 +294,7 @@ const ItineraryCity = (props) => {
 
   const handleStay = (e, label, value, clickType, hotelId) => {
     e.stopPropagation();
-    if (!localStorage?.getItem("access_token")) {
+    if (localStorage?.getItem("access_token")) {
       const index = multiHotelStays.findIndex((h) => h?.id === hotelId);
       props?.handleClickAc(
         index !== -1 ? index : props?.index,
@@ -613,6 +629,62 @@ const ItineraryCity = (props) => {
               </button>
             </div>
           )}
+
+        {/* Sightseeing taxi chips — shown when intracity taxi bookings exist for this city.
+            While bookings API is still loading, render a skeleton chip so the slot doesn't
+            shift in once data arrives. */}
+        {transfers_status === "PENDING" ? (
+          <div className="mt-1 flex flex-wrap items-center justify-end gap-2">
+            <SkeletonCard
+              width="160px"
+              height="24px"
+              borderRadius="8px"
+              variant="default"
+            />
+          </div>
+        ) : Array.isArray(props?.intracityBookings) &&
+          props.intracityBookings.length > 0 ? (
+          <div className="mt-2 flex flex-wrap items-center justify-start gap-2">
+              {props.intracityBookings.map((taxi) => {
+                const fromName =
+                  taxi?.transfer_details?.source?.name || "";
+                const toName =
+                  taxi?.transfer_details?.destination?.name || "";
+                const label =
+                  taxi?.name ||
+                  (toName && toName !== fromName
+                    ? `Sightseeing: ${fromName} → ${toName}`
+                    : `Sightseeing Taxi in ${props?.city?.city?.name}`);
+                return (
+                  <button
+                    key={taxi.id}
+                    onClick={() => {
+                      router.push(
+                        {
+                          pathname: window.location.pathname,
+                          query: {
+                            ...(currentItineraryId
+                              ? { id: currentItineraryId }
+                              : {}),
+                            drawer: "SightSeeing",
+                            bookingId: taxi.id,
+                            itinerary_city_id: props?.city?.id,
+                          },
+                        },
+                        undefined,
+                        { scroll: false },
+                      );
+                    }}
+                    className="inline-flex items-center gap-[6px] px-[10px] py-[4px] rounded-[5px] border border-[#FDE68A] bg-[#FFFBEA] text-[12px] text-[#01202B] hover:bg-[#FFF3C4] whitespace-nowrap max-w-full"
+                    title={label}
+                  >
+                    <FaTaxi size={11} className="text-[#B45309] shrink-0" />
+                    <span className="truncate">{label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
       </div>
       {/* ── End header ──────────────────────────────────────────────────── */}
 
@@ -745,6 +817,7 @@ const ItineraryCity = (props) => {
           }}
           cityName={props?.city?.city?.name}
           cityID={props?.city?.city?.id}
+          regionID={props?.city?.city?.region}
           date={props?.city?.day_by_day?.[0]?.date}
           start_date={props?.city?.start_date || props?.city?.day_by_day?.[0]?.date}
           duration={props?.city?.duration}

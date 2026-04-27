@@ -1,6 +1,7 @@
 
 
 import React, { useRef, useState } from "react";
+import { useRouter } from "next/router";
 import Button from "../common/components/button";
 import { gsap, useGSAP } from "../common/gsapConfig";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import useMediaQuery from "../../media";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 const JourneySimplified = (props) => {
+  const router = useRouter();
   // Refs for GSAP animations
   const containerRef = useRef(null);
   const headingRef = useRef(null);
@@ -190,11 +192,7 @@ const journeyFeatures = [
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                      if(!props?.oldForm)
-                      setShowTailoredModal(true);
-                      else
-                      props.handlePlanButton(props.page_id, "home", "default");
+                      router.push("/chat");
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

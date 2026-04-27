@@ -90,12 +90,19 @@ const NewPoiDetailsDrawer = (props) => {
     }
   };
 
-  const updatedActivityBooking = async () => {
+  const updatedActivityBooking = async (overrides = {}) => {
     try {
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
         poi_id: props?.id,
         day_by_day_index: props?.dayIndex || 0,
+        // Forward the picker selections (start_date / day / time) when the
+        // child drawer supplies them. Older callers that pass no args still
+        // work because spread of an empty object is a no-op.
+        ...(overrides.start_date && { start_date: overrides.start_date }),
+        ...(overrides.date && { date: overrides.date }),
+        ...(overrides.day != null && { day: overrides.day }),
+        ...(overrides.time && { time: overrides.time }),
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,

@@ -14,10 +14,12 @@ import {
 import Itinerary1Carousel from "../../theme/Itinerary1Carousel";
 import Button from "../common/components/button";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 import { corporateItineraries } from "../../../data/corporatesItineraries";
 
 const TravelerMadeItinerariesSection = (props) => {
+  const router = useRouter();
   // Sample traveler-made itinerary data
   const itineraries = [
     {
@@ -3741,8 +3743,7 @@ const TravelerMadeItinerariesSection = (props) => {
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      console.log("Create a Trip Now! clicked");
-                      setShowMobilePlanner(true);
+                      router.push("/chat");
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

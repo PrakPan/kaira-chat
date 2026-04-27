@@ -12,6 +12,7 @@ import NewFooter from "../components/newfooter/Index";
 import MyTripsSection from "../components/revamp/destination/mytrips";
 import TrustFactors from "../components/revamp/home/TrustFactors";
 import FaqSection from "../components/revamp/home/FaqSection";
+import LuxuryEuropeDestinations from "../components/revamp/home/LuxuryEuropeDestinations";
 
 import * as authaction from "../store/actions/auth";
 import setHotLocationSearch from "../store/actions/hotLocationSearch";
@@ -47,19 +48,12 @@ if (typeof window !== "undefined" && !window.requestIdleCallback) {
 
 const TestimonialCarousel = dynamic(() => import("../components/theme/TestimonialCarousel"), {
   ssr: false,
-  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
+  loading: () => <div style={{ height: 260, background: "#f3f4f6" }} className="mt-[2rem]" />,
 });
 const PartnersSection = dynamic(() => import("../components/theme/PartnersSection"), {
   ssr: false,
   loading: () => <div style={{ height: 160, background: "#f3f4f6" }} />,
 });
-const LuxuryEuropeDestinations = dynamic(
-  () => import("../components/revamp/home/LuxuryEuropeDestinations"),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 260, background: "#f3f4f6" }} />,
-  }
-);
 const TravelerMadeItinerariesSection = dynamic(
   () => import("../components/revamp/home/TravelerMadeItinerariesSection"),
   {
@@ -116,7 +110,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
               name: "The Tarzan Way",
               image: "https://thetarzanway.com/logoblack.svg",
               url: "https://thetarzanway.com/",
-              telephone: "+91 8448687703",
+              telephone: "+91 7827441548",
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "IN",
@@ -158,7 +152,7 @@ const Home = ({ token, hotLocationSearch, checkAuthState, setHotLocationSearch }
         <TravelerMadeItinerariesSection />
         <PartnersSection />
         <WhereNextSection />
-        <WhatMakesUsSection />
+        {/* <WhatMakesUsSection /> */}
         <TestimonialCarousel />
         <FaqSection />
       </div>

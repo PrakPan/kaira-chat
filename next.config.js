@@ -5,9 +5,9 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 const nextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
-  // output: "export",
-  // trailingSlash: true,
-  // skipTrailingSlashRedirect: true,
+//   output: "export",
+//   trailingSlash: true,
+//   skipTrailingSlashRedirect: true,
 
 images: {
   remotePatterns: [
@@ -22,8 +22,6 @@ images: {
     instrumentationHook: true,
   },
 
-
-  
   // webpack: (config) => {
   //   config.plugins.push(
   //     new (require('copy-webpack-plugin'))({

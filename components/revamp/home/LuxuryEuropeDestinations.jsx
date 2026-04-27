@@ -9,6 +9,7 @@ import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons
 import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 import Button from "../common/components/button";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 
 
@@ -137,6 +138,7 @@ const LuxuryEuropeDestinations = () => {
   const [slideCount, setSlideCount] = useState(0);
   const [showMoiblePlanner,setShowMobilePlanner] = useState(false)
   const swiperRef = useRef(null);
+  const router = useRouter();
 
   const handleSwiper = (swiper) => {
     swiperRef.current = swiper;
@@ -232,7 +234,7 @@ const LuxuryEuropeDestinations = () => {
                     variant="filled"
                     size="medium"
                     onClick={() => {
-                      setShowMobilePlanner(true);
+                      router.push("/chat");
                     }}
                     className="!bg-primary-indigo !border-primary-indigo !text-white hover:!bg-primary-indigo/90 !font-medium !text-base !px-6 !py-3 !rounded-lg"
                   >

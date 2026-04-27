@@ -208,7 +208,36 @@ const RouteEditSection = (props) => {
   const [endDate, setEndDate] = useState(
     getDate(props?.plan ? props?.plan.end_date : props?.itinerary?.end_date)
   );
-  const [destinations, setDestinations] = useState([]);
+
+    const [destinations, setDestinations] = useState([]);
+  // Chat-loaded itineraries hydrate `state.Itinerary` asynchronously, so the
+  // initial useState above can capture null. Keep the local dates in sync as
+  // the redux store fills in — without this, validateDates() fails on a frozen
+  // null startDate even though destinations[].checkin_date is set correctly.
+  // Fall back to destinations[0]/last when the itinerary itself doesn't carry
+  // start_date / end_date (chat-built drafts).
+  useEffect(() => {
+    const nextStart =
+      getDate(
+        props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
+      ) || destinations?.[0]?.cityData?.checkin_date;
+    if (nextStart) setStartDate((prev) => prev || nextStart);
+    const lastDest = destinations?.[destinations.length - 1]?.cityData;
+    const nextEnd =
+      getDate(
+        props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
+      ) ||
+      lastDest?.checkout_date ||
+      lastDest?.checkin_date;
+    if (nextEnd) setEndDate((prev) => prev || nextEnd);
+  }, [
+    props?.plan?.start_date,
+    props?.plan?.end_date,
+    props?.itinerary?.start_date,
+    props?.itinerary?.end_date,
+    destinations,
+  ]);
+
   const [editDestination, setEditDestination] = useState(
     props.editRoute === "editDates" ? false : true
   );
@@ -484,6 +513,10 @@ const RouteEditSection = (props) => {
       dispatch(
         setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
       );
+      // Also surface display_text + notes so the chat panel's BottomCTABar
+      // can render <ItineraryStatusLoader/> while the backend recomputes.
+      dispatch(setItineraryStatus("display_text", status?.display_text || null));
+      dispatch(setItineraryStatus("notes", status?.notes || []));
 
       // Stop polling once every backend task has terminated. The
       // waitingForStatusUpdate effect will then surface the success
@@ -752,6 +785,10 @@ const RouteEditSection = (props) => {
       props.setShowLoginModal(true);
       return;
     }
+
+    console.log("Validating dates before submission...",validateDates());
+    const ok = validateDates();
+console.log("validateDates:", ok, "invalidDateError:", invalidDateError, { startDate, endDate, destinations });
 
     if (validateDates()) {
       setLoading(true);
@@ -2814,27 +2851,30 @@ export const ActionPanel = (props) => {
   {editDestination ? "Cancel" : "Back"}
 </button> */}
      {destinationChanges ? <div className="z-20 fixed w-[98%] md:w-[47.5%] max-ph:bottom-0 bottom-[4.2rem] flex-shrink-0 bg-white border-t border-slate-100 px-4 py-3 flex items-end justify-end">
-  <Button
-    fontSize="1rem"
-    padding="0.5rem 2rem"
-    fontWeight="500"
-    margin="0"
-    borderRadius="5px"
-    borderWidth={destinationChanges ? "1px" : "0px"}
-    bgColor={destinationChanges ? "#07213A" : "#B0B0B0"}
-    zIndex={9999}
-    onclick={handleSaveButton}
-    height="50px"
-    color="white"
+  <button
+    type="button"
+    onClick={handleSaveButton}
     disabled={!destinationChanges}
     style={{
       maxWidth: isDesktop ? "200px" : "50%",
       width: "100%",
-      fontSize: isDesktop ? "1rem" : "0.8rem"
+      height: "50px",
+      padding: "0.5rem 2rem",
+      margin: 0,
+      borderRadius: "5px",
+      borderWidth: destinationChanges ? "1px" : "0px",
+      borderStyle: "solid",
+      borderColor: "#07213A",
+      backgroundColor: destinationChanges ? "#07213A" : "#B0B0B0",
+      color: "white",
+      fontWeight: 500,
+      fontSize: isDesktop ? "1rem" : "0.8rem",
+      cursor: destinationChanges ? "pointer" : "not-allowed",
+      zIndex: 9999,
     }}
   >
     Update Route
-  </Button>
+  </button>
 </div> : null}
     </div>
   );

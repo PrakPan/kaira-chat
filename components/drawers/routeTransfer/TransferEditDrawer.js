@@ -69,6 +69,7 @@ import { useAnalytics } from "../../../hooks/useAnalytics";
 import { currencySymbols } from "../../../data/currencySymbols";
 import { Link } from "react-scroll";
 import SkeletonCard from "../../ui/SkeletonCard";
+import { is } from "date-fns/locale";
 
 const svgIcons = {
   time: (
@@ -210,6 +211,8 @@ const TransferEditDrawer = (props) => {
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [sightseeingSuggestions, setSightseeingSuggestions] = useState(null);
+  const [airportSuggestions, setAirportSuggestions] = useState(null);
+  const [multicityTab, setMulticityTab] = useState("multicity");
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
   const [loadingMulticityTransfers, setLoadingMulticityTransfers] =
@@ -429,13 +432,21 @@ const TransferEditDrawer = (props) => {
                 }
                 setMulticityRoundtripTraceId(response?.data?.trace_id);
                 const suggestions = response?.data?.suggestions || [];
-                // Categorize by type: "multicity" → multiCitySuggestions, everything else → roundTripSuggestions array
-                // Filter out pickup_drop type suggestions
+                // Categorize by type into three buckets surfaced as tabs:
+                //   "multicity"   → multiCitySuggestions
+                //   "pickup_drop" → airportSuggestions (Airport pickup/drop tab)
+                //   everything else (sightseeing etc.) → roundTripSuggestions
                 const multicitySuggs = suggestions.filter(s => s.type === "multicity");
+                const airportSuggs = suggestions.filter(s => s.type === "pickup_drop");
                 const otherSuggs = suggestions.filter(s => s.type !== "multicity" && s.type !== "pickup_drop");
                 setMultiCitySuggestions(multicitySuggs.length > 0 ? multicitySuggs[0] : null);
+                setAirportSuggestions(airportSuggs.length > 0 ? airportSuggs : null);
                 setRoundTripSuggestions(otherSuggs.length > 0 ? otherSuggs : null);
                 setSightseeingSuggestions(null); // cleared — handled in roundTripSuggestions array now
+                // Pick a sensible default tab based on what came back
+                if (multicitySuggs.length > 0) setMulticityTab("multicity");
+                else if (otherSuggs.length > 0) setMulticityTab("sightseeing");
+                else if (airportSuggs.length > 0) setMulticityTab("airport");
                 setLoadingMulticityTransfers(false);
                 setLoadingTransfers(false);
                 // If no suggestions found at all, show a message
@@ -909,6 +920,42 @@ const TransferEditDrawer = (props) => {
                 suits you best.{" "}
               </div>
             </div>
+
+            {transferType === TRANSFER_TYPES.MULTICITYROUNDTRIP.name && (
+              <div className="w-full flex flex-wrap items-center gap-md mt-md">
+                {[
+                  { id: "sightseeing", label: "Sightseeing" },
+                  { id: "airport", label: "Airport pickup/drop" },
+                  { id: "multicity", label: "Multicity Taxi" },
+                ].map((tab) => {
+                  const isActive = multicityTab === tab.id;
+                  return (
+                    <label
+                      key={tab.id}
+                      className={`flex items-center gap-xs cursor-pointer text-sm-md px-md py-xs rounded-md-lg border-sm border-solid ${
+                        isActive
+                          ? "border-black bg-text-smoothwhite font-600"
+                          : "border-text-disabled font-500"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="multicityTripType"
+                        value={tab.id}
+                        checked={isActive}
+                        onChange={() => {
+                          setMulticityTab(tab.id);
+                          setSelectedCab(null);
+                          setSelectedTripType(null);
+                        }}
+                        className="accent-black"
+                      />
+                      <span>{tab.label}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
 
@@ -995,7 +1042,8 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : transfersError &&
           roundTripSuggestions === null &&
-          multiCitySuggestions === null ? (
+          multiCitySuggestions === null &&
+          airportSuggestions === null ? (
           <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
               {transfersError}
@@ -1504,7 +1552,7 @@ const TransferEditDrawer = (props) => {
             ) : transferType === "MULTICITYROUNDTRIP" ? (
               <div className="w-full flex flex-col items-center gap-4">
                 {/* Multicity suggestions */}
-                {multiCitySuggestions && (
+                {multicityTab === "multicity" && multiCitySuggestions && (
                   <div className="w-full">
                     {multiCitySuggestions?.data?.duration?.text && (
                       <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -1525,63 +1573,87 @@ const TransferEditDrawer = (props) => {
                   </div>
                 )}
 
-                {/* Non-multicity suggestions (sightseeing, pickup_drop etc) — now an array */}
-                {Array.isArray(roundTripSuggestions) && roundTripSuggestions.map((sugg, idx) => (
-                  <div key={idx} className="w-full">
-                    {/* <div className="px-1 pb-1 text-sm font-semibold text-gray-700 flex items-center gap-2">
-                      <span>{sugg.name}</span>
-                      {sugg?.data?.duration?.text && (
-                        <span className="text-xs font-normal text-gray-500 bg-gray-100 rounded px-2 py-0.5">
-                          {sugg.data.duration.text}
-                        </span>
-                      )}
-                    </div> */}
-                    <MultiCityTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      multiCitySuggestions={sugg}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                ))}
+                {/* Sightseeing (and any other non-airport, non-multicity) suggestions */}
+                {multicityTab === "sightseeing" &&
+                  Array.isArray(roundTripSuggestions) &&
+                  roundTripSuggestions.map((sugg, idx) => (
+                    <div key={idx} className="w-full">
+                      <MultiCityTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        multiCitySuggestions={sugg}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
+                    </div>
+                  ))}
 
                 {/* Backward-compat: single roundTripSuggestions object (non-array) */}
-                {roundTripSuggestions && !Array.isArray(roundTripSuggestions) && (
-                  <div className="w-full">
-                    <RoundTripSuggestion
-                      handleRoundTripSelect={handleMultiCitySelect}
-                      roundTripSuggestions={roundTripSuggestions}
-                      selectedCab={selectedCab}
-                      setSelectedCab={setSelectedCab}
-                      selectedTripType={selectedTripType}
-                      setSelectedTripType={setSelectedTripType}
-                    />
-                  </div>
-                )}
-
-                {/* No suggestions available message */}
-                {!multiCitySuggestions && !roundTripSuggestions && !loadingMulticityTransfers && (
-                  <div className="w-full flex flex-col items-center justify-center py-8">
-                    <div className="text-center text-gray-500 text-sm">
-                      {transfersError ? (
-                        <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
-                          {transfersError}
-                        </div>
-                      ) : (
-                        <p>No taxi options available for this route. Please get in touch with us!</p>
-                      )}
+                {multicityTab === "sightseeing" &&
+                  roundTripSuggestions &&
+                  !Array.isArray(roundTripSuggestions) && (
+                    <div className="w-full">
+                      <RoundTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        roundTripSuggestions={roundTripSuggestions}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
                     </div>
-                  </div>
-                )}
+                  )}
+
+                {/* Airport pickup/drop suggestions */}
+                {multicityTab === "airport" &&
+                  Array.isArray(airportSuggestions) &&
+                  airportSuggestions.map((sugg, idx) => (
+                    <div key={idx} className="w-full">
+                      <MultiCityTripSuggestion
+                        handleRoundTripSelect={handleMultiCitySelect}
+                        multiCitySuggestions={sugg}
+                        selectedCab={selectedCab}
+                        setSelectedCab={setSelectedCab}
+                        selectedTripType={selectedTripType}
+                        setSelectedTripType={setSelectedTripType}
+                      />
+                    </div>
+                  ))}
+
+                {/* Empty state per tab */}
+                {!loadingMulticityTransfers &&
+                  ((multicityTab === "multicity" && !multiCitySuggestions) ||
+                    (multicityTab === "sightseeing" && !roundTripSuggestions) ||
+                    (multicityTab === "airport" && !airportSuggestions)) && (
+                    <div className="w-full flex flex-col items-center justify-center py-8">
+                      <div className="text-center text-gray-500 text-sm">
+                        {transfersError ? (
+                          <div className="flex items-center justify-center bg-red-50 text-red-600 rounded-lg p-4 border border-red-200">
+                            {transfersError}
+                          </div>
+                        ) : (
+                          <p>
+                            No{" "}
+                            {multicityTab === "multicity"
+                              ? "multicity taxi"
+                              : multicityTab === "airport"
+                                ? "airport pickup/drop"
+                                : "sightseeing"}{" "}
+                            options available for this route. Please get in
+                            touch with us!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
               </div>
             ) : null}
           </div>
         )}
 
         {transferType === "MULTICITYROUNDTRIP" &&
-          (roundTripSuggestions || multiCitySuggestions) && (
+          (roundTripSuggestions || multiCitySuggestions || airportSuggestions) && (
             <div className="w-full  bg-white border-t border-gray-200 z-10 md:relative md:border-0 md:bg-transparent">
               <div className="flex justify-end items-end px-1 py-3 md:p-0">
                 <button
@@ -2191,10 +2263,9 @@ const NewMultiModeContainer = ({
   const [isProcessingWarning, setIsProcessingWarning] = useState(false);
   const [isProcessingBooking, setIsProcessingBooking] = useState(false);
   const { trackTransferBookingAdd } = useAnalytics();
-  const { intercity } = useSelector(
-    (state) => state.TransferBookings,
-  )?.transferBookings;
-
+ const { intercity } = useSelector(
+  (state) => state.TransferBookings
+)?.transferBookings ?? {};
   const {
     number_of_adults,
     number_of_children,
@@ -2209,6 +2280,11 @@ const NewMultiModeContainer = ({
   const [showPax, setShowPax] = useState(false);
 
   const [expandedTransfersMulti, setExpandedTransfersMulti] = useState({});
+
+  // Pagination state for AllAboard results in combo mode
+  const [comboAllAboardOffset, setComboAllAboardOffset] = useState(0);
+  const [comboHasMoreAllAboard, setComboHasMoreAllAboard] = useState(false);
+  const [comboLoadingMore, setComboLoadingMore] = useState(false);
 
 const toggleTransferDetailsMulti = (priceOptionId) => {
   setExpandedTransfersMulti(prev => ({
@@ -2536,9 +2612,16 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
     );
   };
 
-  const loadTransfers = async (option, paxData, departureDateTime) => {
+  const loadTransfers = async (option, paxData, departureDateTime, { isLoadMore = false, currentOffset = 0 } = {}) => {
     const transferKey = `${option.id}-${currentStep}`;
-    setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+
+    if (!isLoadMore) {
+      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+      setComboAllAboardOffset(0);
+      setComboHasMoreAllAboard(false);
+    } else {
+      setComboLoadingMore(true);
+    }
 
     try {
       const requestBody = {
@@ -2547,6 +2630,8 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         number_of_adults: paxData.adults,
         number_of_children: paxData.children,
         number_of_infants: paxData.infants,
+        limit: 5,
+        offset: currentOffset,
       };
 
       const response = await loadOtherTransfers.post(`/search/`, requestBody, {
@@ -2559,13 +2644,45 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
       const data = response.data;
 
       if (data.success && data.data) {
-        setDynamicTransferData((prev) => ({
-          ...prev,
-          [transferKey]: {
-            ...data.data,
-            trace_id: data?.trace_id,
-          },
-        }));
+        const isAllAboardSource = data.data.booking_source === "AllAboard";
+
+        if (isLoadMore) {
+          // Append new results to existing ones
+          const newResults = data.data.results || [];
+          const existingData = dynamicTransferData[transferKey];
+
+          const mergedData = {
+            ...existingData,
+            results: [...(existingData?.results || []), ...newResults],
+            trace_id: data?.trace_id || existingData?.trace_id,
+          };
+
+          const shouldShowMore = isAllAboardSource && newResults.length === 5;
+          setComboHasMoreAllAboard(shouldShowMore);
+          setComboAllAboardOffset(currentOffset + 5);
+
+          setDynamicTransferData((prev) => ({
+            ...prev,
+            [transferKey]: mergedData,
+          }));
+        } else {
+          // Initial load
+          const results = data.data.results || [];
+          const shouldShowMore = isAllAboardSource && results.length === 5;
+          setComboHasMoreAllAboard(shouldShowMore);
+          if (shouldShowMore) {
+            setComboAllAboardOffset(5);
+          }
+
+          setDynamicTransferData((prev) => ({
+            ...prev,
+            [transferKey]: {
+              ...data.data,
+              trace_id: data?.trace_id,
+            },
+          }));
+        }
+
         setTransferErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[transferKey];
@@ -2573,18 +2690,44 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
         });
       }
     } catch (error) {
-      setTransferErrors((prev) => ({
-        ...prev,
-        [transferKey]:
-          error.response?.data?.errors[0]?.message[0] ||
-          error.message ||
-          "Failed to load transfer options",
-      }));
+      if (!isLoadMore) {
+        setTransferErrors((prev) => ({
+          ...prev,
+          [transferKey]:
+            error.response?.data?.errors[0]?.message[0] ||
+            error.message ||
+            "Failed to load transfer options",
+        }));
+      } else {
+        setComboHasMoreAllAboard(false);
+      }
 
       console.error("Error loading transfers:", error);
     } finally {
-      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+      if (!isLoadMore) {
+        setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+      }
+      setComboLoadingMore(false);
     }
+  };
+
+  const handleComboLoadMore = () => {
+    if (comboLoadingMore) return;
+    const currentTransfer = transfer[currentStep - 1];
+    if (!currentTransfer) return;
+    const finalDate = currentModeDepartureDate;
+    const finalTime = currentModeDepartureTime;
+    if (!finalDate || !finalTime) return;
+    const departureDateTime = `${finalDate}T${finalTime}:00`;
+    const paxData = {
+      adults: pax.adults,
+      children: pax.children,
+      infants: pax.infants,
+    };
+    loadTransfers(currentTransfer, paxData, departureDateTime, {
+      isLoadMore: true,
+      currentOffset: comboAllAboardOffset,
+    });
   };
 
   const handleDateSelect = (date) => {
@@ -3003,6 +3146,11 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
+
+    // Reset AllAboard pagination state when switching combo steps
+    setComboAllAboardOffset(0);
+    setComboHasMoreAllAboard(false);
+    setComboLoadingMore(false);
 
     const currentTransfer = transfer[currentStep - 1];
 
@@ -4148,13 +4296,26 @@ const toggleTransferDetailsMulti = (priceOptionId) => {
                               },
                             );
                           })()}
+
+                      {/* Load More button for AllAboard pagination in combo mode */}
+                      {comboHasMoreAllAboard && (
+                        <div className="flex justify-center mt-md">
+                          <button
+                            onClick={handleComboLoadMore}
+                            disabled={comboLoadingMore}
+                            className="px-6 py-2 bg-[#07213A] text-white rounded-lg hover:bg-[#0a2942] transition-colors cursor-pointer text-sm font-500 disabled:opacity-50"
+                          >
+                            {comboLoadingMore ? "Loading..." : "Load More"}
+                          </button>
+                        </div>
+                      )}
                       </div>
                     );
                   } else {
                     return (
                       <div
                         key={index}
-                        className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md 
+                        className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md
                           ${
                             selectedModeIds[currentStep - 1] === option.id
                               ? "border border-yellow-400 bg-yellow-50"
@@ -5134,6 +5295,11 @@ const OtherTransfer = ({
 
   const [expandedTransfers, setExpandedTransfers] = useState({});
 
+  // Pagination state for AllAboard results
+  const [allAboardOffset, setAllAboardOffset] = useState(0);
+  const [hasMoreAllAboard, setHasMoreAllAboard] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
 const toggleTransferDetails = (priceOptionId) => {
   setExpandedTransfers(prev => ({
     ...prev,
@@ -5153,6 +5319,9 @@ const toggleTransferDetails = (priceOptionId) => {
         setIsResultSelected(false);
         setLocalSelectedData([]);
         setLoadingRequestKey(null);
+        setAllAboardOffset(0);
+        setHasMoreAllAboard(false);
+        setLoadingMore(false);
       }
     }
   }, [selectedResult?.transfer?.id, otherTransfer?.id]);
@@ -5205,31 +5374,39 @@ const toggleTransferDetails = (priceOptionId) => {
 
   // FIXED: Add request deduplication and abort previous requests
   const loadTransfers = useCallback(
-    async (transferData, paxData, departureDateTime) => {
+    async (transferData, paxData, departureDateTime, { isLoadMore = false, currentOffset = 0 } = {}) => {
       if (!transferData?.id) return;
 
       const transferKey = `${transferData.id}-${currentStep}`;
       const requestKey = `${transferKey}-${departureDateTime}-${JSON.stringify(
         paxData,
-      )}`;
+      )}${isLoadMore ? `-offset-${currentOffset}` : ''}`;
 
-      // Prevent duplicate requests
-      if (loadingRequestKey === requestKey) {
+      // Prevent duplicate requests (skip for load more)
+      if (!isLoadMore && loadingRequestKey === requestKey) {
         return;
       }
 
-      // Abort previous request if still pending
-      if (abortControllerRef.current) {
+      // Abort previous request if still pending (not for load more)
+      if (!isLoadMore && abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
 
       // Create new abort controller
       abortControllerRef.current = new AbortController();
 
-      setOtherTransfer(null);
+      if (!isLoadMore) {
+        setOtherTransfer(null);
+        setAllAboardOffset(0);
+        setHasMoreAllAboard(false);
+      } else {
+        setLoadingMore(true);
+      }
 
-      setLoadingRequestKey(requestKey);
-      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+      if (!isLoadMore) {
+        setLoadingRequestKey(requestKey);
+        setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+      }
       setError(null);
 
       try {
@@ -5240,6 +5417,10 @@ const toggleTransferDetails = (priceOptionId) => {
           number_of_children: paxData.children,
           number_of_infants: paxData.infants,
         };
+
+        // Add limit/offset for pagination (always send for AllAboard support)
+        requestBody.limit = 5;
+        requestBody.offset = currentOffset;
 
         const response = await loadOtherTransfers.post(
           `/search/?currency=${currency?.currency || "INR"}`,
@@ -5257,24 +5438,65 @@ const toggleTransferDetails = (priceOptionId) => {
 
         if (data.success && data.data) {
           setTraceId(data.trace_id);
-          setDynamicTransferData((prev) => ({
-            ...prev,
-            [transferKey]: data.data,
-          }));
-          setOtherTransfer(data.data);
+
+          if (isLoadMore && otherTransfer) {
+            // Append new results to existing ones
+            const newResults = data.data.results || [];
+            const isAllAboardSource = data.data.booking_source === "AllAboard";
+
+            const mergedData = {
+              ...otherTransfer,
+              results: [...(otherTransfer.results || []), ...newResults],
+            };
+
+            console.log("Merged Data on Load More:", isAllAboardSource,newResults.length);
+
+            // Hide load more if: not AllAboard source, or results < 5
+            const shouldShowMore = isAllAboardSource && newResults.length === 5;
+            setHasMoreAllAboard(shouldShowMore);
+            setAllAboardOffset(currentOffset + 5);
+
+            setDynamicTransferData((prev) => ({
+              ...prev,
+              [transferKey]: mergedData,
+            }));
+            setOtherTransfer(mergedData);
+          } else {
+            // Initial load - check if booking_source is AllAboard
+            const results = data.data.results || [];
+            const isAllAboardSource = data.data.booking_source === "AllAboard";
+
+            // Show load more only if source is AllAboard and results count >= 5
+            const shouldShowMore = isAllAboardSource && results.length === 5;
+            setHasMoreAllAboard(shouldShowMore);
+            if (shouldShowMore) {
+              setAllAboardOffset(5);
+            }
+
+            setDynamicTransferData((prev) => ({
+              ...prev,
+              [transferKey]: data.data,
+            }));
+            setOtherTransfer(data.data);
+          }
           setError(null);
         } else {
-          const errorMessage =
-            data?.errors?.[0]?.message?.[0] ||
-            data?.message ||
-            "No transfer options available";
-          setError(errorMessage);
+          if (isLoadMore) {
+            // No more results on load more - just hide the button
+            setHasMoreAllAboard(false);
+          } else {
+            const errorMessage =
+              data?.errors?.[0]?.message?.[0] ||
+              data?.message ||
+              "No transfer options available";
+            setError(errorMessage);
 
-          setDynamicTransferData((prev) => {
-            const newData = { ...prev };
-            delete newData[transferKey];
-            return newData;
-          });
+            setDynamicTransferData((prev) => {
+              const newData = { ...prev };
+              delete newData[transferKey];
+              return newData;
+            });
+          }
         }
       } catch (error) {
         if (error.name === "AbortError") {
@@ -5288,19 +5510,27 @@ const toggleTransferDetails = (priceOptionId) => {
           error?.response?.data?.error ||
           error?.message ||
           "Failed to load transfer options";
-        setError(errorMsg);
 
-        setDynamicTransferData((prev) => {
-          const newData = { ...prev };
-          delete newData[transferKey];
-          return newData;
-        });
+        if (!isLoadMore) {
+          setError(errorMsg);
+          setDynamicTransferData((prev) => {
+            const newData = { ...prev };
+            delete newData[transferKey];
+            return newData;
+          });
+        } else {
+          // On load more error, just hide load more
+          setHasMoreAllAboard(false);
+        }
       } finally {
-        setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
-        setLoadingRequestKey(null);
+        if (!isLoadMore) {
+          setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+          setLoadingRequestKey(null);
+        }
+        setLoadingMore(false);
       }
     },
-    [token, currentStep],
+    [token, currentStep, otherTransfer],
   );
 
   useEffect(() => {
@@ -5925,6 +6155,18 @@ const toggleTransferDetails = (priceOptionId) => {
     setIsProcessingBooking(false);
   };
 
+  const handleLoadMore = () => {
+    if (loadingMore || !otherTransfer || !selectedResult?.transfer) return;
+    const finalDate = departureDate || currentModeDepartureDate;
+    const finalTime = departureTime || currentModeDepartureTime;
+    if (!finalDate || !finalTime) return;
+    const departureDateTime = `${finalDate}T${finalTime}:00`;
+    loadTransfers(selectedResult.transfer, pax, departureDateTime, {
+      isLoadMore: true,
+      currentOffset: allAboardOffset,
+    });
+  };
+
   const formatTimeForDisplay = (timeValue) => {
     if (!timeValue) return "";
 
@@ -6171,7 +6413,8 @@ const toggleTransferDetails = (priceOptionId) => {
 
       if (hasOmioResults) {
   // ─── OMIO RESULTS RENDERING ───
-  return otherTransfer.results.map((result, resultIndex) => {
+  return (<>
+  {otherTransfer.results.map((result, resultIndex) => {
     const resultPrices = result.prices || [];
     return resultPrices.map((priceOption, priceIndex) => {
       const price = priceOption.price || 0;
@@ -6512,7 +6755,28 @@ const toggleTransferDetails = (priceOptionId) => {
         </div>
       );
     });
-  });
+  })}
+
+  {/* Load More button for AllAboard pagination */}
+  {hasMoreAllAboard && (
+    <div className="flex justify-center mt-md">
+      <button
+        onClick={handleLoadMore}
+        disabled={loadingMore}
+        className="px-6 py-2 bg-[#07213A] text-white rounded-lg hover:bg-[#0a2942] transition-colors cursor-pointer text-sm font-500 disabled:opacity-50"
+      >
+        {loadingMore ? "Loading..." : "Load More"}
+      </button>
+    </div>
+  )}
+
+  {/* Loading indicator for load more */}
+  {loadingMore && (
+    <div className="flex justify-center items-center py-4">
+      <PulseLoader size={8} speedMultiplier={0.8} color="#3B82F6" />
+    </div>
+  )}
+  </>);
 }
 
           // ─── SELF / NON-OMIO RESULTS (original prices rendering) ───

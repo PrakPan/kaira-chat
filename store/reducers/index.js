@@ -32,6 +32,7 @@ import currency from "./currency";
 import cloneItinerary from './cloneItinerary'
 import chatStateReducer from "./chatState";
 import galleryImages from "./galleryImages";
+import AncillaryBookings from "./ancillaryBookings";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -67,6 +68,7 @@ const rootReducer = combineReducers({
   cloneItinerary,
   chatState: chatStateReducer,
   galleryImages,
+  AncillaryBookings
 });
 
 export default rootReducer;

@@ -72,12 +72,12 @@ const Experience = (props) => {
             type={props?.type}
           /> */}
 
-          <HeroSection title={validateTextSize(
-            // `Craft a personalized itinerary to ${props.cityData.name} now!`,
-            `Your ${props.cityData.name} Trip, Designed Around You`,
-            9,
-            `Craft a trip to ${props.cityData.name} now!`
-          )} x
+          <HeroSection
+            title={validateTextSize(
+              `Your ${props.cityData.name} Trip, Designed Around You`,
+              9,
+              `Craft a trip to ${props.cityData.name} now!`
+            )}
             image={`${imgUrlEndPoint}${props.cityData.images[0].image}`}
             slug={props?.cityData?.name}
             setShowTailoredModal={setShowTailoredModal}

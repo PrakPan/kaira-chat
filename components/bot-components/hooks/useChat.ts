@@ -122,7 +122,7 @@ function buildAuthFields(opts: {
 
 // ─── Request bodies ───────────────────────────────────────────────────────────
 
-function getPlatform(): "mobile" | "desktop" {
+export function getPlatform(): "mobile" | "desktop" {
   if (typeof window !== "undefined" && window.innerWidth < 768) return "mobile";
   return "desktop";
 }
@@ -457,6 +457,7 @@ export function useChat({
         },
         domain_key: domainKey,
         model,
+        platform: getPlatform(),
         // user_location: loc,
         ...buildAuthFields({
           authToken: authTokenRef.current,

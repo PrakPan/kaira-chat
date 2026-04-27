@@ -65,6 +65,9 @@ const resolveElementType = (item) => {
   // Old format: activity element that is actually a POI (self-exploration)
   if (item.element_type === "activity" && item.poi != null) return "poi";
 
+  // Old format: activity element
+  if (item.element_type === "activity" && item.activity) return "activity";
+
   // Old format: recommendation element that is actually a restaurant
   if (
     item.element_type === "recommendation" &&
@@ -229,7 +232,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
   try {
     setActivityLoading(true);
     const response = await fetch(
-      `https://dev.mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
+      `https://mercury.tarzanway.com/api/v1/ancillaries/activity/${activityId}/?currency=INR`,
       {
         method: "POST",
         headers: {
@@ -285,39 +288,57 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
     );
   };
 
- const handleItemClick = (item) => {
-  if (!item) return;
-
+const handleItemClick = (item) => {
   const resolvedType = resolveElementType(item);
+  if (!resolvedType || resolvedType === "recommendation") return;
+
   const itemId = getItemId(item, resolvedType);
+  if (!itemId) return;
 
-  if (!resolvedType || !itemId || resolvedType === "recommendation") return;
+  trackActivityCardClicked(router.query.id, itemId, "day_by_day_collapse");
 
-  // Draft itinerary: activities open ActivityDetailsDrawer via API
-
-  console.log("Item clicked:", { item, resolvedType, itemId, isDraft });
-  if (isDraft && resolvedType === "activity") {
+  if (resolvedType === "activity" && (isDraft || finalized_status === "PENDING")) {
     handleDraftActivityClick(item);
     return;
   }
 
-  trackActivityCardClicked(router.query.id, resolvedType);
   router.push(
     {
       pathname: window.location.pathname,
       query: {
+        ...router.query,
         drawer: "showPoiDetail",
-        itinerary_city_id: props?.itinerary_city_id,
         poi_id: itemId,
         type: resolvedType,
+        dayIndex: props?.dayIndex,
+        slabIndex: item?.index,
+        itinerary_city_id: props?.itinerary_city_id,
       },
     },
     undefined,
     { scroll: false }
   );
 };
+useEffect(() => {
+  let elements = [];
+  for (let elem of props.day.slab_elements) {
+    if (["activity", "poi", "restaurant"].includes(elem.element_type)) {
+      elements.push(elem);
+    } else if (
+      elem.element_type === "recommendation" &&
+      elem.restaurants?.length > 0
+    ) {
+      elements.push(elem);
+    }
+  }
+  setElements(elements);
+}, [props.day?.slab_elements]);
 
-  // ── Intracity / taxi bookings ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (props?.index === 0) {
+      // setViewMore(true);
+    }
+  }, []);
 
   const matchingIntracityBookings = props?.intracityBookings?.filter(
     (booking) => {
@@ -383,6 +404,13 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
         {/* ── Name + tag ── */}
         <div className="flex flex-col min-w-0">
+          {/* "Recommendation:" prefix — distinguishes a recommendation row
+              from a real bookable item (activity / restaurant / poi). */}
+          {/* {isRecommendationOnly && (
+            <span className="text-[11px] text-[#07213A] font-medium leading-none mb-0.5">
+              Recommendation
+            </span>
+          )} */}
           <TooltipWrapper
             onMouseEnter={(e) => handleMouseEnter(e, `${idxInSlot}-${name}`)}
             onMouseLeave={() => setHoveredItem(null)}
@@ -418,20 +446,26 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
 
   // ── Build time-slot groups ────────────────────────────────────────────────────
 
-  const buildSlotGroups = () => {
-    const groups = {};
+ const buildSlotGroups = () => {
+  const groups = {};
     elements.forEach((item) => {
-      const slot = item?.time
-        ? getTimeOfDay(item.time) || "Morning"
-        : "Morning";
-      if (!groups[slot]) groups[slot] = [];
+    const slot = item?.time
+      ? getTimeOfDay(item.time) || "Morning"
+      : "Morning";
+    if (!groups[slot]) groups[slot] = [];
       groups[slot].push(item);
-    });
-    return groups;
-  };
+  });
+  return groups;
+};
 
   // ── Render ────────────────────────────────────────────────────────────────────
 
+  // Only render time-of-day slot headers when at least one element actually
+  // carries a `time` value. Otherwise buildSlotGroups would fall back to
+  // "Morning" for every item and show a misleading slot label.
+  const hasAnyTime = elements.some(
+    (item) => typeof item?.time === "string" && item.time.trim() !== "",
+  );
   const groups = buildSlotGroups();
   const presentSlots = TIME_ORDER.filter((s) => groups[s]);
 
@@ -473,37 +507,53 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
         <div className="flex-1 sm:pr-4 px-4 sm:pt-6 md:pt-4 pb-4 sm:pb-6 min-w-0">
 
           {elements.length > 0 ? (
-            <div className="relative">
-              {/* Vertical timeline line — shown when there are slots to connect */}
-              {(presentSlots.length > 1 || elements.length > 1) && (
-                <div
-                  className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
-                  style={{ left: "3px", top: "8px", bottom: "8px" }}
-                />
-              )}
+            hasAnyTime ? (
+              <div className="relative">
+                {/* Vertical timeline line — shown when there are slots to connect */}
+                {(presentSlots.length > 1 || elements.length > 1) && (
+                  <div
+                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
+                    style={{ left: "3px", top: "8px", bottom: "8px" }}
+                  />
+                )}
 
-              <div className="flex flex-col gap-1">
-                {presentSlots.map((slot) => (
-                  <div key={slot}>
-                    {/* Slot header */}
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
-                      <span className="text-[14px] font-[500] text-[#111]">
-                        {slot}
-                      </span>
-                    </div>
+                <div className="flex flex-col gap-1">
+                  {presentSlots.map((slot) => (
+                    <div key={slot}>
+                      {/* Slot header */}
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-[7px] h-[7px] rounded-full bg-[#e5e5e5] shrink-0 z-10 relative" />
+                        <span className="text-[14px] font-[500] text-[#111]">
+                          {slot}
+                        </span>
+                      </div>
 
-                    {/* Items in slot */}
-                    <div className="ml-[22px] flex flex-col gap-3">
-                      {groups[slot].map((item, idxInSlot) =>
-                        renderItem(item, idxInSlot)
-                      )}
+                      {/* Items in slot */}
+                      <div className="ml-[22px] flex flex-col gap-3">
+                        {groups[slot].map((item, idxInSlot) =>
+                          renderItem(item, idxInSlot)
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-
+            ) : (
+              // No item carries a `time` value — drop the time-slot headers
+              // but keep the vertical timeline rail so the column still reads
+              // as a connected day instead of a bare list.
+              <div className="relative">
+                {elements.length > 1 && (
+                  <div
+                    className="absolute w-[1.5px] bg-[#E5E7EB] z-0"
+                    style={{ left: "3px", top: "8px", bottom: "8px" }}
+                  />
+                )}
+                <div className="ml-[22px] flex flex-col gap-3">
+                  {elements.map((item, idxInSlot) => renderItem(item, idxInSlot))}
+                </div>
+              </div>
+            )
           ) : props?.isLastDay ? (
             <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <IoBagCheckOutline size={15} />
@@ -513,7 +563,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
             </div>
 
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:ml-5 md:py-2">
               <MdOutlineDownhillSkiing size={15} className="text-[#9CA3AF]" />
               <span className="text-[13px] text-[#6B7280]">
                 No activity added.
@@ -537,6 +587,7 @@ const isDraft = useSelector((state) => state.Itinerary.status) === "Draft";
             setShowDrawer={setShowDrawer}
             cityName={props.city.name}
             cityID={props.city.id}
+            regionID={props.city.region}
             date={date}
             setItinerary={props?.setItinerary}
             itinerary_city_id={props?.itinerary_city_id}

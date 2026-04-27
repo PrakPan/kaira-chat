@@ -32,6 +32,7 @@ import axiosPaymentInstance, {
 import axiosBookingsInstance, {
   axiosGetAllStays,
   axiosGetTransfers,
+  axiosGetAncillaryBookings,
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
@@ -53,6 +54,7 @@ import useMediaQuery from "../../components/media";
 import { setCloneItineraryDrawer } from "../../store/actions/cloneItinerary";
 import { set } from "nprogress";
 import { setGalleryImages } from "../../store/actions/galleryImages";
+import { setAncillaryBookings } from "../../store/actions/ancillaryBookings";
 
 const Container = styled.div`
   width: 100%;
@@ -582,6 +584,17 @@ const ItineraryContainer = (props) => {
     }
   };
 
+  const getAncillaryBookings = async () => {
+    try {
+      const res = await axiosGetAncillaryBookings.get(
+        props.id + "/bookings/?booking_type=ancillary"
+      );
+      dispatch(setAncillaryBookings(res.data?.ancillary_bookings || []));
+    } catch (error) {
+      console.log("ERROR[AncillaryBookings][Itinerary]", error);
+    }
+  };
+
   const getPaymentInfo = async () => {
     let stay_data = {};
     let activity_data = {};
@@ -861,6 +874,7 @@ const fetchStatus = async () => {
           let activities = getItineraryActivities();
           props.setItineraryActivities(activities);
           setItineraryLoading(false);
+          getAncillaryBookings();
           // dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
         }
 

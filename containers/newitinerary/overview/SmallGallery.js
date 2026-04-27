@@ -100,7 +100,6 @@ function SmallGallery(props) {
 
     useEffect(() => {
         const newArr = props.images.slice(0, props.maxShow).filter((item) => item != "");
-        console.log('new array is: ', newArr, "props images are: ", props.images);
         setRenderImages(newArr);
     }, [])
 
@@ -140,6 +139,7 @@ function SmallGallery(props) {
                     mercury
                     imgUrlEndPoint={imgUrlEndPoint}
                     closeGalleryHandler={closeGallery}
+                    closeLabel={props.closeLabel}
                     images={props.images}
                 ></FullScreenGallery>
             }

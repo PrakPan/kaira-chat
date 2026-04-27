@@ -353,6 +353,7 @@ const ActivityAddDrawer = (props) => {
       try {
         const requestData = {
           city: props?.cityID,
+          region_id: props?.regionID ?? null,
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
@@ -529,6 +530,7 @@ const ActivityAddDrawer = (props) => {
       if (elementType == "Activity" || elementType == "") {
         const requestData = {
           city: props?.cityID,
+          region_id: props?.regionID,
           start_date: getDate(startDate),
           number_of_adults: pax?.adults || 1,
           number_of_children: pax?.children || 0,
@@ -910,7 +912,7 @@ const ClickHandler = (child) => {
               BarName="TabsName"
               ClickHandler={ClickHandler}
               selectedItem={
-                elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+                elementType === "Activity" ? items[0].label : items[1].label
               }
             />
             {/* </div> */}
