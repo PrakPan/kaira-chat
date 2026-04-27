@@ -2192,15 +2192,15 @@ Start Location: ${details.startLocation}`;
           showStartScreen={showStartScreen}
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
-          // Redux content check mirrors ViewToggle. Without it, a stale or
-          // overly-eager activeItineraryId (e.g. backend returns stage="P2"
-          // for a chat-only session on reload) makes all four tabs render
-          // even though no itinerary exists, leaving the Itinerary tab
-          // blank. Gating on real Redux content keeps the tab strip in sync
-          // with what's actually there to show.
+          // Mirrors desktop ViewToggle gating. Routes/Bookings are still
+          // gated on `isComplete` (which checks Redux content), so a
+          // restoring/half-built itinerary only surfaces Map + Itinerary
+          // until Redux populates — restored P2 itineraries no longer get
+          // stuck on the Chat tab while ItineraryContainer is polling.
           hasItineraryActivity={
             !!activeItineraryId &&
-            !!(itineraryRedux && (itineraryRedux.name || itineraryRedux.cities?.length))
+            activeItineraryId !== "skeleton" &&
+            activeItineraryId !== "draft"
           }
           isComplete={
             activeItineraryId !== "skeleton" &&
