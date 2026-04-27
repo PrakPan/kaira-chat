@@ -140,7 +140,7 @@ const POIDetails = (props) => {
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-  const { slabIndex} = router.query;
+  const { slabIndex, dayIndex} = router.query;
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -197,10 +197,10 @@ const POIDetails = (props) => {
           if (city.id === props?.itinerary_city_id) {
             console.log(
               "here:",
-              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
+              cityTemp.day_by_day[dayIndex]?.slab_elements
             );
-            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
-              props?.slabIndex,
+            cityTemp.day_by_day[dayIndex]?.slab_elements.splice(
+              slabIndex,
               1
             );
           }
