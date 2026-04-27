@@ -2068,7 +2068,7 @@ Start Location: ${details.startLocation}`;
 
   return (
     <main
-      className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
+      className="flex flex-col h-dvh md:h-screen overflow-hidden bg-slate-100 dark:bg-slate-950"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Desktop layout ── */}
@@ -2183,8 +2183,26 @@ Start Location: ${details.startLocation}`;
           showStartScreen={showStartScreen}
           hasBotResponded={hasBotResponded}
           isChatActive={isChatActive}
-          hasItineraryActivity={!!activeItineraryId}
-          isComplete={activeItineraryId !== "skeleton" && activeItineraryId !== "draft" && !!activeItineraryId}
+          // Redux content check mirrors ViewToggle. Without it, a stale or
+          // overly-eager activeItineraryId (e.g. backend returns stage="P2"
+          // for a chat-only session on reload) makes all four tabs render
+          // even though no itinerary exists, leaving the Itinerary tab
+          // blank. Gating on real Redux content keeps the tab strip in sync
+          // with what's actually there to show.
+          hasItineraryActivity={
+            !!activeItineraryId &&
+            !!(itineraryRedux && (itineraryRedux.name || itineraryRedux.cities?.length))
+          }
+          isComplete={
+            activeItineraryId !== "skeleton" &&
+            activeItineraryId !== "draft" &&
+            !!activeItineraryId &&
+            !!(itineraryRedux && (itineraryRedux.name || itineraryRedux.cities?.length)) &&
+            itineraryRedux?.status !== "Draft" &&
+            itineraryRedux?.status !== undefined &&
+            itineraryRedux?.status !== null &&
+            itineraryRedux?.status !== "undefined"
+          }
           showChatBot={showChatBot}
           chatBotItineraryId={chatBotItineraryId}
           chatBotInjectedMessage={chatBotInjectedMessageRef.current}
