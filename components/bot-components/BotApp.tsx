@@ -413,7 +413,22 @@ export default function BotApp({
           `/${itineraryId}/status/`,
         );
         const status = statusRes.data?.celery;
+        const stage = statusRes.data?.stage;
         if (!status) return;
+
+        // Stage P1 — no itinerary yet (or still in chat-only stage). Don't
+        // dispatch celery statuses or enable itinerary polling; otherwise
+        // ItineraryContainer mounts, polls, sees a FAILURE/PENDING status
+        // and either redirects to /thank-you or shows a stale loader.
+        // The chatkit thread alone drives the P1 UI.
+        if (stage === "P1" && !fromTailored) {
+          setBotMode("p1");
+          setShowChatBot(true);
+          setShowStartScreen(false);
+          setHasBotResponded(true);
+          setIsChatActive(true);
+          return;
+        }
 
         dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
         dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
@@ -426,10 +441,17 @@ export default function BotApp({
         const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
           (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
         );
-        if (allDone) {
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+        if (stage === "P2") {
+          dispatch(setItineraryStatus("finalized_status", allDone ? "SUCCESS" : "PENDING"));
           setBotMode("p2");
           setItineraryId(itineraryId);
+          if (!allDone) {
+            setIsItineraryCompleting(true);
+            itineraryCreatedInSessionRef.current = true;
+            if (!status.display_text) {
+              setLoaderDisplayText("Building your itinerary…");
+            }
+          }
         } else if (fromTailored) {
           // Itinerary was just created via the tailored form. Force p2 so the
           // user lands on the building-status loader + summary chat path even
@@ -1281,6 +1303,7 @@ export default function BotApp({
 
         let isTripFinalized = hasCompletedEffectInLoop;
         let statusCheckFailed = false;
+        let stageIsP1 = false;
 
         // Pre-emptively land on the itinerary view whenever the thread has a
         // restored itinerary. The map_effects replay above can call
@@ -1296,7 +1319,10 @@ export default function BotApp({
         }
 
         if (restoredItineraryId) {
-          // Check status immediately to determine the actual state
+          // Check status immediately to determine the actual state. The
+          // response's `stage` key ("P1" | "P2") drives which path we take —
+          // P1 skips itinerary status dispatches entirely; P2 hydrates them
+          // so ItineraryContainer can render the canonical trip.
           try {
             const { axiosGetItineraryStatus } = await import(
               "../../services/itinerary/daybyday/preview"
@@ -1305,35 +1331,54 @@ export default function BotApp({
               `/${restoredItineraryId}/status/`,
             );
             const status = statusRes.data?.celery;
+            const stage = statusRes.data?.stage;
             if (status) {
-              dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
-              dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
-              dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
-              dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
-              dispatch(setItineraryStatus("display_text", status.display_text || null));
-              dispatch(setItineraryStatus("notes", status.notes || []));
+              if (stage === "P2") {
+                dispatch(setItineraryStatus("itinerary_status", status.ITINERARY || "PENDING"));
+                dispatch(setItineraryStatus("hotels_status", status.HOTELS || "PENDING"));
+                dispatch(setItineraryStatus("transfers_status", status.TRANSFERS || "PENDING"));
+                dispatch(setItineraryStatus("pricing_status", status.PRICING || "PENDING"));
+                dispatch(setItineraryStatus("display_text", status.display_text || null));
+                dispatch(setItineraryStatus("notes", status.notes || []));
 
-              const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
-                (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
-              );
+                const allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
+                  (k) => status[k] === "SUCCESS" || status[k] === "FAILURE",
+                );
 
-              if (allDone) {
-                dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-                setBotMode("p2");
-                setItineraryId(restoredItineraryId);
-                isTripFinalized = true;
+                if (allDone) {
+                  dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+                  setBotMode("p2");
+                  setItineraryId(restoredItineraryId);
+                  isTripFinalized = true;
+                } else {
+                  dispatch(setItineraryStatus("finalized_status", "PENDING"));
+                  setBotMode("p2");
+                  setItineraryId(restoredItineraryId);
+                  setIsItineraryCompleting(true);
+                }
               } else {
-                // Still in progress — set up polling
-                dispatch(setItineraryStatus("finalized_status", "PENDING"));
-                setIsItineraryCompleting(true);
+                // Stage P1 (or missing) — chatkit-only path. No itinerary
+                // dispatches; the thread's effects already drive P1 visuals.
+                // Skip enabling itinerary polling below — ItineraryContainer
+                // would otherwise poll and redirect to /thank-you on FAILURE.
+                stageIsP1 = true;
+                setBotMode("p1");
+                setItineraryId("");
               }
             }
           } catch (e) {
-            // Status API failed — stay on p1, just show whatever the thread has
-            console.warn("Status check on restore failed, staying on p1:", e);
-            setBotMode("p1");
-            setItineraryId("");
+            // Status API failed — bounce to /thank-you rather than rendering
+            // a half-restored session.
+            console.warn("[loadThread] status check failed, redirecting to /thank-you:", e);
             statusCheckFailed = true;
+            try {
+              await router.replace("/thank-you");
+            } catch {
+              if (typeof window !== "undefined") {
+                window.location.href = "/thank-you";
+              }
+            }
+            return;
           }
         }
 
@@ -1359,9 +1404,11 @@ export default function BotApp({
           // reopens the cart. On thread switch, ItineraryContainer
           // remounts and its mount effect dispatches pricing_status =
           // PENDING, so the stale cart isn't visible during the gap.
-          if (statusCheckFailed) {
-            // Status API failed — treat as draft so CTA shows, settings/share hide
-            // Don't override activeItineraryId if display_itinerary already set it to "draft"
+          if (statusCheckFailed || stageIsP1) {
+            // Either status API failed, or trip is still in P1 (chat-only)
+            // stage — treat as draft so CTA shows and ItineraryContainer
+            // doesn't mount/poll. Don't override activeItineraryId if
+            // display_itinerary already set it to "draft".
             if (!hasDisplayItinerary) {
               setActiveItineraryId("draft");
             }
@@ -1411,31 +1458,30 @@ export default function BotApp({
       restoreItineraryDirectly,
       setChatBotIdOnce,
       sessionId,
+      router,
     ],
   );
 
   const restoreLatestThread = useCallback(
     async (sid: string) => {
-      // ── Refresh restore: status API has priority ──────────────────────────
-      // Order intentionally matches the UX: render the itinerary first from
-      // the canonical APIs, then layer chat history on top.
+      // ── Refresh restore: status API drives the path ──────────────────────
+      // Status response now includes a `stage` key ("P1" | "P2") that decides
+      // which APIs to fire:
       //
-      //   1. Status API (source of truth for trip existence).
-      //      ├─ ok  → restoreItineraryDirectly(sid) fires the canonical
-      //      │       itinerary fetch + dispatches Redux statuses so the
-      //      │       itinerary panel starts rendering immediately. Then
-      //      │       chatkit threads.list / get_by_id pulls in messages.
-      //      │       Empty chatkit response is fine — we keep the itinerary.
-      //      └─ fail → fall through to chatkit-only path.
-      //
-      //   2. Chatkit fallback — threads.list, then loadThread (which
-      //      internally does threads.get_by_id). Any thread is enough to
-      //      keep the chat alive even with no status data.
-      //
-      //   3. Both empty → no recoverable session, push to /thank-you.
+      //   1. Status API (source of truth — failure is fatal).
+      //      ├─ stage P2 → restoreItineraryDirectly(sid) hydrates the
+      //      │            canonical itinerary + Redux statuses, then chatkit
+      //      │            threads.list / get_by_id pulls in messages.
+      //      ├─ stage P1 → skip itinerary APIs entirely; only chatkit
+      //      │            threads.list / get_by_id (botMode stays on p1).
+      //      └─ fail     → /thank-you. No chatkit fallback.
 
       // ── Step 1: status API ───────────────────────────────────────────────
+      // The status response carries a `stage` key ("P1" | "P2") that drives
+      // which restore path we take. Status API failure is fatal — bounce to
+      // /thank-you rather than falling back to chatkit alone.
       let statusOk = false;
+      let stage: string | null = null;
       let allDone = false;
       try {
         const { axiosGetItineraryStatus } = await import(
@@ -1443,6 +1489,7 @@ export default function BotApp({
         );
         const statusRes = await axiosGetItineraryStatus.get(`/${sid}/status/`);
         const celery = statusRes?.data?.celery;
+        stage = statusRes?.data?.stage ?? null;
         statusOk = !!celery;
         if (celery) {
           allDone = ["ITINERARY", "HOTELS", "TRANSFERS", "PRICING"].every(
@@ -1454,56 +1501,33 @@ export default function BotApp({
         statusOk = false;
       }
 
-      if (statusOk) {
-        // 1a. Itinerary APIs first — Redux statuses, activeItineraryId
-        //     (drives ItineraryContainer's canonical fetch + polling).
-        await restoreItineraryDirectly(sid);
-
-        // 1b. Chatkit second — only for chat history. Empty / failed
-        //     response is non-fatal: the itinerary is already on screen.
+      if (!statusOk) {
+        console.warn(
+          "[restoreLatestThread] status API failed — redirecting to /thank-you",
+        );
         try {
-          const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "threads.list",
-              params: { limit: 9999, order: "desc" },
-              filter_session_id: sid,
-              platform: getPlatform(),
-            }),
-          });
-          const listData = await listRes.json();
-          const threads = listData.data ?? [];
-          if (threads.length > 0) {
-            await loadThread(threads[0].id);
-          } else if (allDone || fromTailored) {
-            // Status confirms a finalized trip (or the user just came from
-            // the tailored form) but there's no chat thread yet — seed the
-            // conversation with a summary request so the user lands with
-            // context. restoreItineraryDirectly has already set botMode to
-            // "p2", so ChatKitPanel will route the message through
-            // /chatkit/p2.
-            console.log(
-              "[restoreLatestThread] status p2 + empty chatkit — seeding summary prompt",
-            );
-            setInitialPrompt("Hey Kaira! provide summary of my itinerary");
-            setIsChatActive(true);
-          } else {
-            console.log(
-              "[restoreLatestThread] status ok (still building), chatkit empty — chat skipped",
-            );
+          await router.replace("/thank-you");
+        } catch {
+          if (typeof window !== "undefined") {
+            window.location.href = "/thank-you";
           }
-        } catch (err) {
-          console.warn(
-            "[restoreLatestThread] status ok but chatkit fetch failed:",
-            err,
-          );
         }
         return;
       }
 
-      // ── Step 2: status failed → chatkit-only fallback ────────────────────
-      let threads: any[] = [];
+      // ── Step 2: P2 — itinerary APIs first, then chatkit get_by_id ────────
+      if (stage === "P2") {
+        await restoreItineraryDirectly(sid);
+      } else {
+        // Stage P1 — chatkit only. Mark the chat as active and ensure botMode
+        // stays on p1 so ChatKitPanel routes through the /chatkit p1 endpoint.
+        setBotMode("p1");
+        setShowChatBot(true);
+        setShowStartScreen(false);
+        setIsChatActive(true);
+      }
+
+      // ── Step 3: chatkit threads.list → loadThread (threads.get_by_id) ────
       try {
         const listRes = await fetch("https://chat.tarzanway.com/chatkit", {
           method: "POST",
@@ -1516,27 +1540,25 @@ export default function BotApp({
           }),
         });
         const listData = await listRes.json();
-        threads = listData.data ?? [];
-      } catch (err) {
-        console.error("[restoreLatestThread] threads.list failed:", err);
-        threads = [];
-      }
-
-      if (threads.length > 0) {
-        await loadThread(threads[0].id);
-        return;
-      }
-
-      // ── Step 3: both empty → /thank-you ──────────────────────────────────
-      console.warn(
-        "[restoreLatestThread] no status + no chatkit threads — redirecting to /thank-you",
-      );
-      try {
-        await router.replace("/thank-you");
-      } catch {
-        if (typeof window !== "undefined") {
-          window.location.href = "/thank-you";
+        const threads = listData.data ?? [];
+        if (threads.length > 0) {
+          await loadThread(threads[0].id);
+        } else if (stage === "P2" && (allDone || fromTailored)) {
+          // P2 trip confirmed but no chat thread yet — seed a summary prompt
+          // so the user lands with context. botMode is already "p2" via
+          // restoreItineraryDirectly, so ChatKitPanel routes through /chatkit/p2.
+          console.log(
+            "[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt",
+          );
+          setInitialPrompt("Hey Kaira! provide summary of my itinerary");
+          setIsChatActive(true);
+        } else {
+          console.log(
+            `[restoreLatestThread] stage ${stage ?? "unknown"} + empty chatkit — chat skipped`,
+          );
         }
+      } catch (err) {
+        console.warn("[restoreLatestThread] chatkit fetch failed:", err);
       }
     },
     [restoreItineraryDirectly, loadThread, router, fromTailored],
