@@ -104,6 +104,11 @@ interface ChatKitPanelProps {
   onBotModeChange?: (mode: BotMode) => void;
   onItineraryIdChange?: (id: string) => void;
   initialPrompt?: string | null;
+  /** When true and the user is not logged in, the initialPrompt is queued as
+   *  the post-login message and a login/signup CTA is shown instead of being
+   *  auto-sent. Used by BotApp's restore flow so unauthenticated reloads of a
+   *  finished P2 trip don't fire a "Hey Kaira!" summary request. */
+  initialPromptRequiresLogin?: boolean;
   initialAttachmentIds?: string[];
   onSendReady?: (sendFn: (message: string) => void) => void;
   onItineraryCompletionStart?: (itineraryId: string) => void;
@@ -262,6 +267,7 @@ export function ChatKitPanel({
   onBotModeChange,
   onItineraryIdChange,
   initialPrompt = null,
+  initialPromptRequiresLogin = false,
   initialAttachmentIds,
   onSendReady,
   onItineraryCompletionStart,
@@ -1179,11 +1185,22 @@ const sendMessage = useCallback(
 
 useEffect(() => {
   if (initialPrompt && !hasProcessedInitial.current && locationReady) {
+    // Defer prompts that require login: queue as the post-login message and
+    // show the existing login/signup CTA. The authToken-change effect below
+    // will fire the queued message once the user authenticates.
+    if (initialPromptRequiresLogin && !isLoggedIn) {
+      hasProcessedInitial.current = true;
+      pendingPostLoginMsg.current = initialPrompt;
+      loginFlowArmedRef.current = true;
+      setShowLoginPrompt(true);
+      onInitialPromptConsumed?.();
+      return;
+    }
     hasProcessedInitial.current = true;
     sendMessage(initialPrompt, initialAttachmentIds);
     onInitialPromptConsumed?.();
   }
-}, [initialPrompt, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
+}, [initialPrompt, initialPromptRequiresLogin, isLoggedIn, initialAttachmentIds, locationReady, sendMessage, onInitialPromptConsumed]);
 
   useEffect(() => {
     onSendReady?.(sendMessage);
@@ -1508,7 +1525,11 @@ useEffect(() => {
   // ── Handlers ──────────────────────────────────────────────────────────────
 const handleShowLogin = useCallback(() => {
   const currentInput = inputRef.current.trim();
-  const msg = currentInput || lastSentMessageRef.current;
+  // Preserve an existing queued message (e.g. an initialPrompt already
+  // stashed by the restore flow) if the user opens the modal without
+  // typing anything new — otherwise we'd clobber it with null and the
+  // post-login send would be a no-op.
+  const msg = currentInput || lastSentMessageRef.current || pendingPostLoginMsg.current;
   console.log("[handleShowLogin] storing pending:", msg);
   pendingPostLoginMsg.current = msg || null;
   loginFlowArmedRef.current = true;
@@ -2029,7 +2050,7 @@ const handleShowLogin = useCallback(() => {
             )}
 
             {showLoginPrompt && !isLoggedIn && (
-              <div className="mt-[24px] p-4">
+              <div className="mt-[12px] p-2">
                  <div
           style={{
             maxWidth: "100%",

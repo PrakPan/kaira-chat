@@ -164,6 +164,7 @@ export default function BotApp({
   });
   const mapRef = useRef<google.maps.Map | null>(null);
   const [initialPrompt, setInitialPrompt] = useState<string | null>(null);
+  const [initialPromptRequiresLogin, setInitialPromptRequiresLogin] = useState(false);
   const [initialAttachmentIds, setInitialAttachmentIds] = useState<string[] | undefined>(undefined);
   const [activeTravellerStory, setActiveTravellerStory] = useState<TravellerStory | null>(null);
   const sendMessageRef = useRef<((msg: string) => void) | null>(null);
@@ -1547,10 +1548,15 @@ export default function BotApp({
           // P2 trip confirmed but no chat thread yet — seed a summary prompt
           // so the user lands with context. botMode is already "p2" via
           // restoreItineraryDirectly, so ChatKitPanel routes through /chatkit/p2.
+          // If the user is not logged in, defer the prompt: ChatKitPanel will
+          // queue it as the post-login message and surface a login/signup CTA
+          // instead of auto-sending an unauthenticated summary request.
+          const loggedIn = !!getAuthToken();
           console.log(
-            "[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt",
+            `[restoreLatestThread] stage P2 + empty chatkit — seeding summary prompt (loggedIn=${loggedIn})`,
           );
           setInitialPrompt("Hey Kaira! provide summary of my itinerary");
+          setInitialPromptRequiresLogin(!loggedIn);
           setIsChatActive(true);
         } else {
           console.log(
@@ -1662,6 +1668,7 @@ export default function BotApp({
     setIsItineraryCompleting(false);
     itineraryCreatedInSessionRef.current = false;
     setInitialPrompt(null);
+    setInitialPromptRequiresLogin(false);
     setLocations([]);
     setCurrentRoute(null);
     setItineraryData(null);
@@ -1815,6 +1822,7 @@ Start Location: ${details.startLocation}`;
 
   const handleInitialPromptConsumed = useCallback(() => {
     setInitialPrompt(null);
+    setInitialPromptRequiresLogin(false);
     setInitialAttachmentIds(undefined);
   }, []);
 
@@ -2169,6 +2177,7 @@ Start Location: ${details.startLocation}`;
                 key={chatKey}
                 {...sharedChatKitProps}
                 initialPrompt={initialPrompt}
+                initialPromptRequiresLogin={initialPromptRequiresLogin}
                 onInitialPromptConsumed={handleInitialPromptConsumed}
                 onSendReady={handleSendMessageReady}
               />
@@ -2266,6 +2275,7 @@ Start Location: ${details.startLocation}`;
                     key={`${chatKey}`}
                     {...sharedChatKitProps}
                     initialPrompt={initialPrompt}
+                    initialPromptRequiresLogin={initialPromptRequiresLogin}
                     onInitialPromptConsumed={handleInitialPromptConsumed}
                     onSendReady={handleSendMessageReady}
                     mobileMenu={
