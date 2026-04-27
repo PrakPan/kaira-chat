@@ -310,7 +310,7 @@ const handleItemClick = (item) => {
         drawer: "showPoiDetail",
         poi_id: itemId,
         type: resolvedType,
-          dayIndex: props?.index,
+        dayIndex: props?.dayIndex,
         slabIndex: item?.index,
         itinerary_city_id: props?.itinerary_city_id,
       },

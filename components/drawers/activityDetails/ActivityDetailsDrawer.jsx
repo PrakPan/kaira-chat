@@ -236,9 +236,9 @@ const ActivityDetailsDrawer = (props) => {
       dispatch(setItinerary(newItinerary));
 
       if (props?.activityBookings == null) {
-        props?.setActivityBookings([res?.data]);
+        props?.setActivityBookings?.([res?.data]);
       } else {
-        props.setActivityBookings([...props?.activityBookings, res?.data]);
+        props?.setActivityBookings?.([...props?.activityBookings, res?.data]);
       }
 
       props.openNotification({
