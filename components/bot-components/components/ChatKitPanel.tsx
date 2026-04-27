@@ -122,6 +122,10 @@ onPaymentStart?: () => void;
  *  corresponding prompt through the /chatkit p1 API. Not posted to the bot. */
 travellerStory?: TravellerStoryIntro | null;
 onTravellerStoryDismiss?: () => void;
+/** Mobile-only: rendered to the right of "Chat with Kaira" in the top bar.
+ *  Lets BotApp inject MobileHeaderMenu so the chat tab can drop the global
+ *  MobileHeader without losing the history/new-chat/profile actions. */
+mobileMenu?: React.ReactNode;
 }
 
 export interface TravellerStoryIntro {
@@ -272,6 +276,7 @@ itineraryCompleted = false,
 onPaymentStart,
 travellerStory = null,
 onTravellerStoryDismiss,
+mobileMenu,
 }: ChatKitPanelProps) {
   // ── State ────────────────────────────────────────────────────────────────
   const [input, setInput] = useState("");
@@ -1674,22 +1679,26 @@ const handleShowLogin = useCallback(() => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
-      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100vh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
+      className={`flex flex-col h-full min-h-0 bg-white  max-h-[100dvh] md:max-h-[93.5vh] border-[0.5px] border-l-[#e5e5e5]`}
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* ── Top bar ───────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-4 py-2.5 bg-white/80 backdrop-blur-sm mt-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
             <img src="/KairaInsta.png" alt="Kaira" />
           </div>
-          <span className="text-sm md:text-[14px] font-semibold text-gray-800">Chat with Kaira <span className="font-normal">- Your AI Trip Planner</span></span>
+          <span className="text-sm md:text-[14px] font-semibold text-gray-800 truncate">
+            Chat with Kaira
+            <span className="font-normal hidden md:inline"> - Your AI Trip Planner</span>
+          </span>
           {isLoadingLocation && (
-            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+            <span className="text-[11px] text-gray-400 flex items-center gap-1 flex-shrink-0">
               <Spinner size={10} /> locating…
             </span>
           )}
         </div>
+        {mobileMenu && <div className="md:hidden flex-shrink-0">{mobileMenu}</div>}
         {/* <button
           onClick={() => setShowControls((v) => !v)}
           className="text-[11px] text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors"
