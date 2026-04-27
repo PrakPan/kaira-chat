@@ -722,7 +722,7 @@ export default function BotApp({
           },
           start_date: null,
           end_date: null,
-          duration: 3,
+          duration: null,
           day_by_day: [1, 2, 3].map((d) => ({
             day: d,
             date: null,
@@ -834,7 +834,7 @@ export default function BotApp({
           !itineraryCreatedInSessionRef.current;
         if (canFocusMap) {
           setViewMode("map");
-          setMobilePanel("map");
+          if (!isMobile) setMobilePanel("map");
           // On mobile: show "Back to Map" popup so user knows the map has updated
           triggerMobileEffectPopup("map");
         }
@@ -857,7 +857,7 @@ export default function BotApp({
         });
       }
     },
-    [revealLeftPanel, triggerMobileEffectPopup, botMode, isItineraryCompleting],
+    [revealLeftPanel, triggerMobileEffectPopup, botMode, isItineraryCompleting, isMobile],
   );
 
   const sessionIdFromUrl = useMemo(() => {
@@ -1096,11 +1096,11 @@ export default function BotApp({
           !itineraryCreatedInSessionRef.current;
         if (canFocusMap) {
           setViewMode("map");
-          setMobilePanel("map");
+          if (!isMobile) setMobilePanel("map");
         }
       }
     },
-    [revealLeftPanel, botMode, isItineraryCompleting],
+    [revealLeftPanel, botMode, isItineraryCompleting, isMobile],
   );
 
   // Start / end trip endpoint pins (derived from shimmer_day_by_day,
